@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import RoleGuard from "@/components/auth/RoleGuard";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 interface Order {
   id: string;
@@ -292,18 +292,17 @@ export default function AdminOrdersPage() {
 
   if (loading) {
     return (
-      <RoleGuard requiredRole="admin">
+      <AdminLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </RoleGuard>
+      </AdminLayout>
     );
   }
 
   return (
-    <RoleGuard requiredRole="admin">
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
+    <AdminLayout>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
@@ -627,8 +626,7 @@ export default function AdminOrdersPage() {
               </div>
             )}
           </div>
-        </div>
       </div>
-    </RoleGuard>
+    </AdminLayout>
   );
 }
