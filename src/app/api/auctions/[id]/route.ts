@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auctionId = params.id;
+    const { id: auctionId } = await params;
 
     // Mock auction data - replace with database query
     const auction = {

@@ -1,0 +1,67 @@
+[debug] [2025-10-23T13:09:46.372Z] ----------------------------------------------------------------------
+[debug] [2025-10-23T13:09:46.375Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\mohsi\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2025-10-23T13:09:46.375Z] CLI Version:   14.21.0
+[debug] [2025-10-23T13:09:46.375Z] Platform:      win32
+[debug] [2025-10-23T13:09:46.375Z] Node Version:  v22.17.0
+[debug] [2025-10-23T13:09:46.376Z] Time:          Thu Oct 23 2025 18:39:46 GMT+0530 (India Standard Time)
+[debug] [2025-10-23T13:09:46.376Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\mohsi\OneDrive\Desktop\project\justforview.in
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-10-23T13:09:54.606Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-23T13:09:54.606Z] > authorizing via signed-in user (letitrip.in@gmail.com)
+[debug] [2025-10-23T13:09:54.607Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:54.607Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:54.608Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/justforview1 [none]
+[debug] [2025-10-23T13:09:55.356Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/justforview1 200
+[debug] [2025-10-23T13:09:55.356Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/justforview1 {"projectId":"justforview1","projectNumber":"995821948299","displayName":"Justforviewin","name":"projects/justforview1","resources":{"hostingSite":"justforview1"},"state":"ACTIVE","etag":"1_1d17170a-9186-4f04-bb68-10bd3494e1b9"}
+[info] i  Using project justforview1 (Justforviewin) . 
+[info] 
+=== Functions Setup
+[debug] [2025-10-23T13:09:55.362Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-23T13:09:55.362Z] > authorizing via signed-in user (letitrip.in@gmail.com)
+[debug] [2025-10-23T13:09:55.362Z] [iam] checking project justforview1 for permissions ["firebase.projects.get"]
+[debug] [2025-10-23T13:09:55.363Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:55.363Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:55.363Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/justforview1:testIamPermissions [none]
+[debug] [2025-10-23T13:09:55.363Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/justforview1:testIamPermissions x-goog-quota-user=projects/justforview1
+[debug] [2025-10-23T13:09:55.363Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/justforview1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-10-23T13:09:57.858Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/justforview1:testIamPermissions 200
+[debug] [2025-10-23T13:09:57.858Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/justforview1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-10-23T13:09:57.859Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:57.859Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:57.859Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:57.859Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:57.859Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-10-23T13:09:57.859Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/justforview1
+[debug] [2025-10-23T13:09:57.860Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/runtimeconfig.googleapis.com [none]
+[debug] [2025-10-23T13:09:57.860Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/justforview1
+[debug] [2025-10-23T13:09:59.640Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/runtimeconfig.googleapis.com 200
+[debug] [2025-10-23T13:09:59.640Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2025-10-23T13:09:59.702Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com 200
+[debug] [2025-10-23T13:09:59.702Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2025-10-23T13:09:59.702Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:59.702Z] Checked if tokens are valid: true, expires at: 1761226796821
+[debug] [2025-10-23T13:09:59.703Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2025-10-23T13:09:59.703Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com:enable x-goog-quota-user=projects/justforview1
+[debug] [2025-10-23T13:10:01.638Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2025-10-23T13:10:01.638Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/justforview1/services/cloudfunctions.googleapis.com:enable [omitted]

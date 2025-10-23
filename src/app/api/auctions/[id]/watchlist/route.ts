@@ -3,7 +3,7 @@ import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -12,7 +12,7 @@ export async function POST(
       return ApiResponse.unauthorized("Authentication required");
     }
 
-    const auctionId = params.id;
+    const { id: auctionId } = await params;
     const userId = user.userId;
 
     // Mock watchlist check - replace with database query
@@ -54,7 +54,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -63,7 +63,7 @@ export async function DELETE(
       return ApiResponse.unauthorized("Authentication required");
     }
 
-    const auctionId = params.id;
+    const { id: auctionId } = await params;
     const userId = user.userId;
 
     // Mock watchlist check - replace with database query

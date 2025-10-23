@@ -1,0 +1,188 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Products collection - read for all, write for admins only
+    match /products/{productId} {
+      allow read: if true; // Anyone can read products
+      allow write: if request.auth != null && 
+                      exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Product reviews subcollection
+      match /reviews/{reviewId} {
+        allow read: if true; // Anyone can read reviews
+        allow create: if request.auth != null && 
+                         request.auth.uid == resource.data.userId &&
+                         validateReview();
+        allow update: if request.auth != null && 
+                         request.auth.uid == resource.data.userId;
+        allow delete: if request.auth != null && 
+                         (request.auth.uid == resource.data.userId || 
+                          isAdmin());
+      }
+    }
+    
+    // Categories collection - read for all, write for admins only
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin();
+    }
+    
+    // Orders collection - users can read their own orders, admins can read all
+    match /orders/{orderId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId &&
+                       validateOrder();
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    
+    // Auctions collection
+    match /auctions/{auctionId} {
+      allow read: if true; // Anyone can read auctions
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.sellerId &&
+                       validateAuction();
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.sellerId || isAdmin());
+      allow delete: if request.auth != null && 
+                       (request.auth.uid == resource.data.sellerId || isAdmin());
+      
+      // Auction bids subcollection
+      match /bids/{bidId} {
+        allow read: if true; // Anyone can read bids
+        allow create: if request.auth != null && 
+                         request.auth.uid == request.resource.data.bidderId &&
+                         validateBid();
+        allow update: if false; // Bids cannot be updated
+        allow delete: if false; // Bids cannot be deleted
+      }
+    }
+    
+    // Cart collection - users can only access their own cart
+    match /carts/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Cart items subcollection
+      match /items/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Watchlist collection - users can only access their own watchlist
+    match /watchlists/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Watchlist items subcollection
+      match /items/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // User addresses collection
+    match /users/{userId}/addresses/{addressId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Contact messages - anyone can create, only admins can read
+    match /contacts/{contactId} {
+      allow create: if validateContact();
+      allow read: if request.auth != null && isAdmin();
+      allow update: if request.auth != null && isAdmin();
+    }
+    
+    // Returns/Refunds collection
+    match /returns/{returnId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId &&
+                       validateReturn();
+      allow update: if request.auth != null && isAdmin();
+    }
+    
+    // Admin logs collection - only admins can access
+    match /admin_logs/{logId} {
+      allow read, write: if request.auth != null && isAdmin();
+    }
+    
+    // Helper functions
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function validateReview() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['rating', 'comment', 'userId', 'productId']) &&
+             data.rating is int &&
+             data.rating >= 1 &&
+             data.rating <= 5 &&
+             data.comment is string &&
+             data.comment.size() <= 1000;
+    }
+    
+    function validateOrder() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['userId', 'items', 'total', 'status']) &&
+             data.items is list &&
+             data.items.size() > 0 &&
+             data.total is number &&
+             data.total > 0 &&
+             data.status in ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    }
+    
+    function validateAuction() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['title', 'description', 'startingBid', 'endTime', 'sellerId']) &&
+             data.title is string &&
+             data.title.size() <= 200 &&
+             data.description is string &&
+             data.description.size() <= 2000 &&
+             data.startingBid is number &&
+             data.startingBid > 0 &&
+             data.endTime is timestamp &&
+             data.endTime > request.time;
+    }
+    
+    function validateBid() {
+      let data = request.resource.data;
+      let auction = get(/databases/$(database)/documents/auctions/$(data.auctionId));
+      return data.keys().hasAll(['amount', 'bidderId', 'auctionId']) &&
+             data.amount is number &&
+             data.amount > auction.data.currentBid &&
+             data.amount >= auction.data.minimumBid &&
+             auction.data.status == 'live' &&
+             auction.data.endTime > request.time;
+    }
+    
+    function validateContact() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'email', 'subject', 'message']) &&
+             data.name is string &&
+             data.name.size() <= 100 &&
+             data.email is string &&
+             data.email.matches('.*@.*\\..*') &&
+             data.subject is string &&
+             data.subject.size() <= 200 &&
+             data.message is string &&
+             data.message.size() <= 2000;
+    }
+    
+    function validateReturn() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['orderId', 'reason', 'userId']) &&
+             data.reason is string &&
+             data.reason.size() <= 1000;
+    }
+  }
+}

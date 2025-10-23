@@ -54,13 +54,15 @@ export interface Product {
   tags: string[];
   status: 'active' | 'draft' | 'archived';
   isFeatured: boolean;
-  seo: {
+  rating?: number;
+  reviewCount?: number;
+  seo?: {
     title: string;
     description: string;
     keywords: string[];
   };
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 export interface ProductImage {

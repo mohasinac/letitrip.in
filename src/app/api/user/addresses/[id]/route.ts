@@ -4,7 +4,7 @@ import { addressSchema } from "@/lib/validations/schemas";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -13,7 +13,7 @@ export async function GET(
       return ApiResponse.unauthorized("Authentication required");
     }
 
-    const addressId = params.id;
+    const { id: addressId } = await params;
     const userId = user.userId;
 
     // Mock address data - replace with database query
@@ -58,7 +58,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -73,7 +73,7 @@ export async function PUT(
       return validation.error;
     }
 
-    const addressId = params.id;
+    const { id: addressId } = await params;
     const userId = user.userId;
     const updateData = validation.data;
 
@@ -130,7 +130,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -139,7 +139,7 @@ export async function DELETE(
       return ApiResponse.unauthorized("Authentication required");
     }
 
-    const addressId = params.id;
+    const { id: addressId } = await params;
     const userId = user.userId;
 
     // Mock address check - replace with database query

@@ -3,7 +3,7 @@ import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -12,7 +12,7 @@ export async function POST(
       return ApiResponse.unauthorized("Authentication required");
     }
 
-    const auctionId = params.id;
+    const { id: auctionId } = await params;
     const { amount } = await request.json();
 
     // Validate bid amount
@@ -104,10 +104,10 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auctionId = params.id;
+    const { id: auctionId } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");

@@ -4,11 +4,11 @@ import { JWTPayload } from "@/lib/auth/jwt";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return withAuth(async (req: NextRequest, user: JWTPayload) => {
     try {
-      const orderId = params.id;
+      const { id: orderId } = await params;
 
       // Mock order data - replace with database query
       const mockOrder = {
