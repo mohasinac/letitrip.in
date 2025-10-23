@@ -22,8 +22,10 @@
     "deploy:vercel": "vercel --prod"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
+    "chart.js": "^4.5.1",
     "cookie": "^0.6.0",
     "date-fns": "^3.0.0",
     "firebase": "^12.4.0",
@@ -34,6 +36,7 @@
     "next-themes": "^0.2.1",
     "razorpay": "^2.9.0",
     "react": "^18.3.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.0",
     "react-hot-toast": "^2.4.1",
     "sharp": "^0.33.0",
