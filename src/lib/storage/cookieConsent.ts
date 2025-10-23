@@ -1,5 +1,6 @@
 /**
- * Cookie Consent & Storage Management
+ * Cookie Consent & Storage Management (Legacy)
+ * @deprecated Use cookieStorage.ts instead for new implementations
  * Handles localStorage fallback to cookies with user consent
  */
 

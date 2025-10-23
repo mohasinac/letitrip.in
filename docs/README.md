@@ -5,7 +5,7 @@ This folder contains all project documentation and guides.
 ## Available Documentation
 
 - **Authentication Guide** - Enhanced authentication system details
-- **API Documentation** - Comprehensive API reference  
+- **API Documentation** - Comprehensive API reference
 - **Setup Guide** - Complete installation and configuration
 - **Deployment Guide** - Production deployment instructions
 - **Role-Based Access Control** - RBAC implementation details

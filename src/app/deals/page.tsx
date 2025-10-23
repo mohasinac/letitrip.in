@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
 interface Deal {
   id: string;
@@ -30,12 +32,26 @@ interface FlashSale {
 }
 
 export default function DealsPage() {
+  const { user, loading: authLoading } = useEnhancedAuth();
+  const router = useRouter();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("discount");
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Redirect sellers to their deals page
+  useEffect(() => {
+    if (
+      !authLoading &&
+      user &&
+      (user.role === "seller" || user.role === "admin")
+    ) {
+      router.push("/seller/deals");
+      return;
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     // Update time every second for countdown
@@ -224,12 +240,17 @@ export default function DealsPage() {
   const featuredDeals = deals.filter((deal) => deal.isFeatured).slice(0, 3);
   const flashDeals = deals.filter((deal) => deal.isFlashDeal);
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  // Don't render for sellers/admins as they will be redirected
+  if (user && (user.role === "seller" || user.role === "admin")) {
+    return null;
   }
 
   return (

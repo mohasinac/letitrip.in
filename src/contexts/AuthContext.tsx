@@ -253,8 +253,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         cache: "no-store", // Ensure fresh data
       });
 
+      console.log("Auth check response:", response.status);
+
       if (response.ok) {
         const result = await response.json();
+        console.log("Auth check result:", result);
         if (result.success && result.data) {
           // Enhance user data with claims if not present
           const userData = result.data;
@@ -265,15 +268,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               sessionId: generateSessionId(),
             };
           }
+          console.log("Setting authenticated user:", userData);
           dispatch({ type: "SET_USER", payload: userData });
         } else {
+          console.log("Auth check failed: no user data");
           dispatch({ type: "SET_USER", payload: null });
         }
       } else if (response.status === 401) {
         // Unauthorized - clear any stale auth state
+        console.log("Auth check failed: unauthorized");
         dispatch({ type: "SET_USER", payload: null });
       } else {
         // Other errors - might be network issues, don't clear auth state
+        console.log("Auth check failed: network error", response.status);
         dispatch({ type: "SET_LOADING", payload: false });
       }
     } catch (error) {

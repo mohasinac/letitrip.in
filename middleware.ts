@@ -31,7 +31,11 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico') ||
     pathname.startsWith('/images') ||
-    pathname.includes('.')
+    pathname.startsWith('/public') ||
+    pathname.includes('.') ||
+    pathname === '/test-roles' ||
+    pathname === '/test-navigation' ||
+    pathname === '/test-auth'
   ) {
     return NextResponse.next();
   }
@@ -41,7 +45,15 @@ export async function middleware(request: NextRequest) {
   let user = null;
 
   if (token) {
-    user = verifyToken(token);
+    try {
+      user = verifyToken(token);
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      // Clear invalid token
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('auth_token');
+      return response;
+    }
   }
 
   // Check if route is protected
@@ -60,11 +72,13 @@ export async function middleware(request: NextRequest) {
 
     // Check admin access
     if (isAdminRoute && user.role !== 'admin') {
+      console.log(`Admin access denied for user role: ${user.role} on path: ${pathname}`);
       return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
 
     // Check seller access (admin and seller can access)
     if (isSellerRoute && !['admin', 'seller'].includes(user.role)) {
+      console.log(`Seller access denied for user role: ${user.role} on path: ${pathname}`);
       return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
   }

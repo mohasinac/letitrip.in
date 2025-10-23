@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 export interface CartItem {
   id: string;
@@ -154,21 +155,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           dispatch({ type: "SET_ITEMS", payload: [] });
         }
       } else {
-        // Load cart from localStorage for guest users
-        const guestCart = localStorage.getItem("guest_cart");
+        // Load cart from cookies for guest users
+        const guestCart = cookieStorage.getCartData<CartItem[]>();
         if (guestCart) {
           try {
-            const cartItems = JSON.parse(guestCart);
             dispatch({
               type: "SET_ITEMS",
-              payload: cartItems.map((item: any) => ({
+              payload: guestCart.map((item: any) => ({
                 ...item,
                 addedAt: new Date(item.addedAt),
               })),
             });
           } catch (error) {
             console.error("Error parsing guest cart:", error);
-            localStorage.removeItem("guest_cart");
+            cookieStorage.removeCartData();
             dispatch({ type: "SET_ITEMS", payload: [] });
           }
         } else {
@@ -181,9 +181,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Save cart to localStorage (for guest users)
+  // Save cart to cookies (for guest users)
   const saveGuestCart = (items: CartItem[]) => {
-    localStorage.setItem("guest_cart", JSON.stringify(items));
+    cookieStorage.setCartData(items);
   };
 
   // Sync guest cart to user cart when user logs in
@@ -191,30 +191,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
 
     try {
-      const guestCart = localStorage.getItem("guest_cart");
-      if (guestCart) {
-        const guestItems = JSON.parse(guestCart);
-
-        if (guestItems.length > 0) {
-          // Add guest cart items to user cart
-          for (const item of guestItems) {
-            await fetch("/api/cart", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({
-                productId: item.productId,
-                quantity: item.quantity,
-              }),
-            });
-          }
-
-          // Clear guest cart
-          localStorage.removeItem("guest_cart");
-
-          // Reload cart from API
-          loadCart();
+      const guestCart = cookieStorage.getCartData<CartItem[]>();
+      if (guestCart && guestCart.length > 0) {
+        // Add guest cart items to user cart
+        for (const item of guestCart) {
+          await fetch("/api/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              productId: item.productId,
+              quantity: item.quantity,
+            }),
+          });
         }
+
+        // Clear guest cart
+        cookieStorage.removeCartData();
+
+        // Reload cart from API
+        loadCart();
       }
     } catch (error) {
       console.error("Error syncing cart:", error);
@@ -344,7 +340,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Clear guest cart
         dispatch({ type: "CLEAR_CART" });
-        localStorage.removeItem("guest_cart");
+        cookieStorage.removeCartData();
       }
     } catch (error) {
       console.error("Error clearing cart:", error);

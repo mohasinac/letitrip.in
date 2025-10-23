@@ -2,6 +2,7 @@
 
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useEffect, useState } from "react";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 export default function AutoLoginTestPage() {
   const { login, user, loading } = useEnhancedAuth();
@@ -14,7 +15,7 @@ export default function AutoLoginTestPage() {
       setLoginAttempted(true);
 
       // Check if there's a redirect path stored
-      const storedPath = localStorage.getItem("auth_redirect_after_login");
+      const storedPath = cookieStorage.get("auth_redirect_after_login");
       console.log("Auto-login test: Stored redirect path:", storedPath);
 
       // Log in with test credentials

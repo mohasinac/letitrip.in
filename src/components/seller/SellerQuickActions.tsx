@@ -41,8 +41,8 @@ export default function SellerQuickActions() {
       name: "Inventory",
       description: "Stock management",
       href: "/seller/inventory",
-      icon: TagIcon,
-      color: "bg-orange-500 hover:bg-orange-600",
+      icon: DocumentTextIcon,
+      color: "bg-yellow-500 hover:bg-yellow-600",
     },
     {
       name: "Shipping",
@@ -59,11 +59,18 @@ export default function SellerQuickActions() {
       color: "bg-pink-500 hover:bg-pink-600",
     },
     {
+      name: "Deals & Offers",
+      description: "Manage special deals",
+      href: "/seller/deals",
+      icon: TagIcon,
+      color: "bg-red-500 hover:bg-red-600",
+    },
+    {
       name: "Promotions",
       description: "Create campaigns",
       href: "/seller/promotions",
       icon: MegaphoneIcon,
-      color: "bg-red-500 hover:bg-red-600",
+      color: "bg-orange-500 hover:bg-orange-600",
     },
     {
       name: "Settings",

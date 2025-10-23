@@ -8,6 +8,7 @@ import {
   canAccessAdmin,
   canAccessSeller,
 } from "@/lib/auth/roles";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 interface User {
   id: string;
@@ -50,8 +51,8 @@ export default function TestRoles() {
       role: role,
     };
 
-    // Store test user in localStorage
-    localStorage.setItem("test_user", JSON.stringify(testUser));
+    // Store test user in cookies
+    cookieStorage.setJson("test_user", testUser);
 
     // Refresh auth state
     await checkAuth();
@@ -64,7 +65,7 @@ export default function TestRoles() {
   };
 
   const clearTestUser = () => {
-    localStorage.removeItem("test_user");
+    cookieStorage.remove("test_user");
     window.location.reload();
   };
 

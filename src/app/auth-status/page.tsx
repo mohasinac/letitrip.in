@@ -2,6 +2,7 @@
 
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 export default function AuthStatusPage() {
   const { user, loading } = useEnhancedAuth();
@@ -83,13 +84,13 @@ export default function AuthStatusPage() {
               <div>
                 <strong>Redirect Path:</strong>{" "}
                 {typeof window !== "undefined"
-                  ? localStorage.getItem("auth_redirect_after_login") || "None"
+                  ? cookieStorage.get("auth_redirect_after_login") || "None"
                   : "Loading..."}
               </div>
               <div>
                 <strong>Guest Cart:</strong>{" "}
                 {typeof window !== "undefined"
-                  ? localStorage.getItem("guest_cart")
+                  ? JSON.stringify(cookieStorage.getCartData())
                     ? "Present"
                     : "None"
                   : "Loading..."}

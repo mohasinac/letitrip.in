@@ -12,20 +12,18 @@ export function useCategories(options?: { subcategories?: boolean; featured?: bo
       setLoading(true);
       setError(null);
       
-      // For now, use mock data until API is fully integrated
-      const mockCategories = categoriesService.getMockCategories();
+      // Use actual API call
+      const result = await categoriesService.getCategories({
+        subcategories: options?.subcategories,
+        featured: options?.featured
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      let filteredCategories = mockCategories;
-      if (options?.featured) {
-        filteredCategories = mockCategories.filter(cat => cat.featured);
-      }
-      
-      setCategories(filteredCategories);
+      setCategories(result.categories);
     } catch (err) {
+      console.error('Failed to fetch categories:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch categories');
+      // Fallback to empty array on error
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -52,18 +50,8 @@ export function useCategoryManagement() {
       setLoading(true);
       setError(null);
       
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newCategory: Category = {
-        id: Date.now().toString(),
-        ...data,
-        productCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        order: data.sortOrder,
-      };
-      
+      // Use actual API call
+      const newCategory = await categoriesService.createCategory(data);
       return newCategory;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create category';
@@ -79,24 +67,8 @@ export function useCategoryManagement() {
       setLoading(true);
       setError(null);
       
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const updatedCategory: Category = {
-        id,
-        name: data.name || '',
-        slug: data.slug || '',
-        description: data.description || '',
-        image: data.image || '',
-        icon: data.icon,
-        productCount: 0, // This would come from the API
-        featured: data.featured || false,
-        sortOrder: data.sortOrder,
-        isActive: data.isActive,
-        updatedAt: new Date().toISOString(),
-        order: data.sortOrder || 0,
-      };
-      
+      // Use actual API call
+      const updatedCategory = await categoriesService.updateCategory(id, data);
       return updatedCategory;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update category';
@@ -112,10 +84,8 @@ export function useCategoryManagement() {
       setLoading(true);
       setError(null);
       
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // In a real implementation, this would call categoriesService.deleteCategory(id)
+      // Use actual API call
+      await categoriesService.deleteCategory(id);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete category';
       setError(errorMessage);
@@ -130,10 +100,12 @@ export function useCategoryManagement() {
       setLoading(true);
       setError(null);
       
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Use actual API call to update category status
+      const updatedCategory = await categoriesService.updateCategory(id, { 
+        isActive: !currentStatus 
+      });
       
-      return !currentStatus;
+      return updatedCategory.isActive || false;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to toggle category status';
       setError(errorMessage);

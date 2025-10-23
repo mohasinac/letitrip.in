@@ -5,7 +5,36 @@
 
 import { getAdminDb } from '../../firebase/admin';
 import { Product, ProductFilters, PaginatedResponse } from '@/types';
-import { FirebaseService, generateMockProducts } from '../../firebase/services';
+import { FirebaseService } from '../../firebase/services';
+
+// Mock data generator
+function generateMockProducts(): Product[] {
+  return [
+    {
+      id: 'mock-1',
+      name: 'Sample Product',
+      slug: 'sample-product',
+      description: 'This is a sample product',
+      price: 99.99,
+      sku: 'SAMPLE-001',
+      quantity: 10,
+      lowStockThreshold: 5,
+      images: [{
+        url: '/api/placeholder/300/300',
+        alt: 'Sample Product',
+        order: 0
+      }],
+      category: 'Electronics',
+      tags: ['sample', 'mock'],
+      status: 'active' as const,
+      isFeatured: false,
+      rating: 4.5,
+      reviewCount: 10,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+  ];
+}
 
 export class ProductService {
   /**

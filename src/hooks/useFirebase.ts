@@ -68,34 +68,8 @@ export function useProducts(filters: {
           },
           (err) => {
             console.error('Firebase products error:', err);
-            setError('Failed to load products');
-            
-            // Fallback to mock data
-            const mockProducts: Product[] = [
-              {
-                id: "prod_1",
-                name: "Rare Vintage Beyblade Metal Series",
-                slug: "rare-vintage-beyblade-metal-series",
-                description: "Authentic Takara Tomy Beyblade with metal fusion technology",
-                price: 1590,
-                compareAtPrice: 1890,
-                sku: "BB-001-VTG",
-                quantity: 15,
-                lowStockThreshold: 5,
-                images: [
-                  { url: "/images/product-1.jpg", alt: "Vintage Beyblade", order: 1 }
-                ],
-                category: "Beyblades",
-                tags: ["vintage", "metal", "fusion", "takara tomy"],
-                status: "active",
-                isFeatured: true,
-                rating: 4.8,
-                reviewCount: 24,
-                createdAt: new Date(),
-                updatedAt: new Date()
-              }
-            ];
-            setProducts(mockProducts);
+            setError('Failed to load products from database');
+            setProducts([]);
             setLoading(false);
           }
         );
@@ -155,31 +129,8 @@ export function useProduct(productId: string) {
           },
           (err) => {
             console.error('Firebase product error:', err);
-            setError('Failed to load product');
-            
-            // Fallback to mock data
-            const mockProduct: Product = {
-              id: productId,
-              name: "Sample Product",
-              slug: "sample-product",
-              description: "This is a sample product description",
-              price: 999,
-              sku: "SAMPLE-001",
-              quantity: 10,
-              lowStockThreshold: 5,
-              images: [
-                { url: "/images/product-placeholder.jpg", alt: "Sample Product", order: 1 }
-              ],
-              category: "General",
-              tags: ["sample"],
-              status: "active",
-              isFeatured: false,
-              rating: 4.0,
-              reviewCount: 0,
-              createdAt: new Date(),
-              updatedAt: new Date()
-            };
-            setProduct(mockProduct);
+            setError('Failed to load product from database');
+            setProduct(null);
             setLoading(false);
           }
         );
@@ -254,46 +205,8 @@ export function useAuctions(filters: {
           },
           (err) => {
             console.error('Firebase auctions error:', err);
-            setError('Failed to load auctions');
-            
-            // Fallback to mock data
-            const mockAuctions: Auction[] = [
-              {
-                id: "auction_1",
-                title: "Rare Vintage Beyblade Metal Series",
-                description: "This is an extremely rare vintage Beyblade from the Metal Fusion series",
-                images: ["/images/auction-1.jpg"],
-                currentBid: 2500,
-                startingBid: 1000,
-                minimumBid: 2600,
-                endTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
-                status: "live",
-                bidCount: 15,
-                category: "Beyblades",
-                condition: "Mint",
-                isAuthentic: true,
-                sellerId: "seller_1",
-                seller: {
-                  id: "seller_1",
-                  name: "CollectorPro",
-                  rating: 4.9,
-                  totalSales: 156,
-                  memberSince: "2020-01-15",
-                  verified: true
-                },
-                watchlist: [],
-                shippingInfo: {
-                  domestic: {
-                    cost: 99,
-                    time: "3-5 business days"
-                  }
-                },
-                returnPolicy: "No returns on auction items unless item is not as described",
-                createdAt: new Date(),
-                updatedAt: new Date()
-              }
-            ];
-            setAuctions(mockAuctions);
+            setError('Failed to load auctions from database');
+            setAuctions([]);
             setLoading(false);
           }
         );

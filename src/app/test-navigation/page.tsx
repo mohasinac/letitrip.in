@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 export default function TestNavigationPage() {
   const { user, login, checkAuth } = useEnhancedAuth();
@@ -17,8 +18,8 @@ export default function TestNavigationPage() {
       role: testRole,
     };
 
-    // Store test user in localStorage for the auth check
-    localStorage.setItem("test_user", JSON.stringify(testUser));
+    // Store test user in cookies for the auth check
+    cookieStorage.setJson("test_user", testUser);
 
     // Call checkAuth to refresh the user state immediately
     await checkAuth();

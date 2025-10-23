@@ -6,6 +6,7 @@
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { ApiResponse } from '@/types';
+import { cookieStorage } from '@/lib/storage/cookieStorage';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -53,7 +54,7 @@ class ApiClient {
   setToken(token: string) {
     this.token = token;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('auth_token', token);
+      cookieStorage.setAuthToken(token);
     }
   }
 
@@ -63,7 +64,8 @@ class ApiClient {
   clearToken() {
     this.token = null;
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('auth_token');
+      cookieStorage.removeAuthToken();
+      cookieStorage.removeUserData();
     }
   }
 
@@ -72,7 +74,7 @@ class ApiClient {
    */
   getToken(): string | null {
     if (!this.token && typeof window !== 'undefined') {
-      this.token = localStorage.getItem('auth_token');
+      this.token = cookieStorage.getAuthToken() || null;
     }
     return this.token;
   }
@@ -121,9 +123,9 @@ class ApiClient {
 // Create singleton instance
 const apiClient = new ApiClient();
 
-// Initialize token from localStorage if available
+// Initialize token from cookies if available
 if (typeof window !== 'undefined') {
-  const token = localStorage.getItem('auth_token');
+  const token = cookieStorage.getAuthToken();
   if (token) {
     apiClient.setToken(token);
   }

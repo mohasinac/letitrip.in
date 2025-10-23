@@ -296,3 +296,172 @@ export interface OrderFilters {
   page?: number;
   pageSize?: number;
 }
+
+// Coupon Types
+export interface Coupon {
+  id: string;
+  code: string;
+  name: string;
+  description?: string;
+  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo';
+  value: number; // percentage (0-100) or fixed amount
+  minimumAmount?: number; // minimum order amount required
+  maximumAmount?: number; // maximum discount amount (for percentage coupons)
+  maxUses?: number; // total usage limit
+  maxUsesPerUser?: number; // per-user usage limit
+  usedCount: number;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'inactive' | 'expired';
+  applicableProducts?: string[]; // product IDs
+  applicableCategories?: string[]; // category IDs
+  excludeProducts?: string[]; // excluded product IDs
+  excludeCategories?: string[]; // excluded category IDs
+  restrictions?: {
+    firstTimeOnly?: boolean;
+    newCustomersOnly?: boolean;
+    existingCustomersOnly?: boolean;
+    minQuantity?: number;
+    maxQuantity?: number;
+  };
+  combinable?: boolean; // can be combined with other coupons
+  priority: number; // for stacking order
+  createdBy: string; // admin user ID
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponUsage {
+  id: string;
+  couponId: string;
+  couponCode: string;
+  userId: string;
+  orderId: string;
+  discountAmount: number;
+  usedAt: string;
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  coupon?: Coupon;
+  discountAmount?: number;
+  error?: string;
+  warnings?: string[];
+}
+
+export interface CouponFormData {
+  code: string;
+  name: string;
+  description: string;
+  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo';
+  value: number;
+  minimumAmount: number;
+  maximumAmount: number;
+  maxUses: number;
+  maxUsesPerUser: number;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'inactive';
+  applicableProducts: string[];
+  applicableCategories: string[];
+  excludeProducts: string[];
+  excludeCategories: string[];
+  restrictions: {
+    firstTimeOnly: boolean;
+    newCustomersOnly: boolean;
+    existingCustomersOnly: boolean;
+    minQuantity: number;
+    maxQuantity: number;
+  };
+  combinable: boolean;
+  priority: number;
+}
+
+// Payment Gateway Types
+export interface RazorpayConfig {
+  keyId: string;
+  keySecret: string;
+  webhookSecret: string;
+}
+
+export interface RazorpayPayment {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  status: 'created' | 'authorized' | 'captured' | 'refunded' | 'failed';
+  method: string;
+  description: string;
+  notes: any;
+  createdAt: number;
+}
+
+// Shipping Gateway Types
+export interface ShiprocketConfig {
+  email: string;
+  password: string;
+  channelId: string;
+  token?: string;
+  tokenExpiry?: number;
+}
+
+export interface ShiprocketOrderRequest {
+  order_id: string;
+  order_date: string;
+  pickup_location: string;
+  billing_customer_name: string;
+  billing_last_name: string;
+  billing_address: string;
+  billing_city: string;
+  billing_pincode: string;
+  billing_state: string;
+  billing_country: string;
+  billing_email: string;
+  billing_phone: string;
+  shipping_is_billing: boolean;
+  shipping_customer_name?: string;
+  shipping_last_name?: string;
+  shipping_address?: string;
+  shipping_city?: string;
+  shipping_pincode?: string;
+  shipping_state?: string;
+  shipping_country?: string;
+  shipping_email?: string;
+  shipping_phone?: string;
+  order_items: Array<{
+    name: string;
+    sku: string;
+    units: number;
+    selling_price: string;
+    discount?: string;
+    tax?: string;
+    hsn?: string;
+  }>;
+  payment_method: 'Prepaid' | 'COD';
+  shipping_charges: number;
+  giftwrap_charges?: number;
+  transaction_charges?: number;
+  total_discount?: number;
+  sub_total: number;
+  length: number;
+  breadth: number;
+  height: number;
+  weight: number;
+}
+
+export interface ShiprocketServiceabilityRequest {
+  pickup_postcode: string;
+  delivery_postcode: string;
+  weight: number;
+  cod: 0 | 1;
+}
+
+export interface ShiprocketRateCalculation {
+  courier_company_id: number;
+  courier_name: string;
+  freight_charge: number;
+  cod_charges: number;
+  other_charges: number;
+  total_charge: number;
+  etd: string;
+}

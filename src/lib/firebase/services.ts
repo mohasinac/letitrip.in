@@ -203,44 +203,7 @@ export interface CartItem {
   addedAt: Date;
 }
 
-// Mock data generators
-export const generateMockProducts = (): Product[] => [
-  {
-    id: "prod_1",
-    name: "Rare Vintage Beyblade Metal Series",
-    slug: "rare-vintage-beyblade-metal-series",
-    description: "Authentic Takara Tomy Beyblade with metal fusion technology. This rare vintage piece is in excellent condition and comes with original packaging.",
-    price: 1590,
-    compareAtPrice: 1890,
-    sku: "BB-001-VTG",
-    quantity: 15,
-    lowStockThreshold: 5,
-    images: [
-      { url: "/images/product-1.jpg", alt: "Vintage Beyblade", order: 1 },
-      { url: "/images/product-1-2.jpg", alt: "Beyblade Detail", order: 2 }
-    ],
-    category: "Beyblades",
-    tags: ["vintage", "metal", "fusion", "takara tomy"],
-    status: "active",
-    isFeatured: true,
-    rating: 4.8,
-    reviewCount: 24,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
-export const generateMockUsers = (): User[] => [
-  {
-    id: "user_1",
-    email: "john.doe@example.com",
-    name: "John Doe",
-    phone: "+91 9876543210",
-    role: "user",
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+// Firebase service functions
 
 // Firebase service functions
 export class FirebaseService {
@@ -271,7 +234,7 @@ export class FirebaseService {
       };
     } catch (error) {
       console.error('Firebase createUser error:', error);
-      return generateMockUsers()[0];
+      return null;
     }
   }
 
@@ -290,7 +253,7 @@ export class FirebaseService {
       return null;
     } catch (error) {
       console.error('Firebase getUserById error:', error);
-      return generateMockUsers()[0];
+      return null;
     }
   }
 
@@ -325,7 +288,7 @@ export class FirebaseService {
       return this.getUserById(userId);
     } catch (error) {
       console.error('Firebase updateUser error:', error);
-      return generateMockUsers()[0];
+      return null;
     }
   }
 
@@ -391,8 +354,8 @@ export class FirebaseService {
     } catch (error) {
       console.error('Firebase getProducts error:', error);
       return {
-        products: generateMockProducts(),
-        total: generateMockProducts().length
+        products: [],
+        total: 0
       };
     }
   }
@@ -412,7 +375,7 @@ export class FirebaseService {
       return null;
     } catch (error) {
       console.error('Firebase getProductById error:', error);
-      return generateMockProducts()[0];
+      return null;
     }
   }
 
