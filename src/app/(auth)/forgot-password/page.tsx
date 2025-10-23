@@ -5,6 +5,9 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
+// Force dynamic rendering to prevent static generation
+export const dynamic = "force-dynamic";
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);

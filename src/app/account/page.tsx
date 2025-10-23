@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import Link from "next/link";
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("profile");
-  const { user, logout, updateProfile, loading, error } = useAuth();
+  const { user, logout, updateProfile, loading, error } = useEnhancedAuth();
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",

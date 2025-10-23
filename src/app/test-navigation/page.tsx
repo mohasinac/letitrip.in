@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
 export default function TestNavigationPage() {
-  const { user, login, checkAuth } = useAuth();
+  const { user, login, checkAuth } = useEnhancedAuth();
   const [testRole, setTestRole] = useState<"user" | "admin" | "seller">("user");
 
   const handleTestLogin = async () => {

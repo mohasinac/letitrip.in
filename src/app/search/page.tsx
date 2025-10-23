@@ -7,6 +7,9 @@ import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/products/ProductCard";
 import Link from "next/link";
 
+// Force dynamic rendering to prevent static generation
+export const dynamic = "force-dynamic";
+
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";

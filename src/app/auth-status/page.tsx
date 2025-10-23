@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
 
 export default function AuthStatusPage() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useEnhancedAuth();
   const { items, totalItems } = useCart();
 
   return (

@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { getRoleDisplayName, getRoleBadgeClasses } from "@/lib/auth/roles";
 
-export default function RegisterPage() {
-  const { register, loading, error } = useAuth();
+// Force dynamic rendering to prevent static generation
+export const dynamic = "force-dynamic";
+
+function RegisterForm() {
+  const { register, loading, error, cookieConsentRequired, setStorageItem } =
+    useEnhancedAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,6 +22,19 @@ export default function RegisterPage() {
     role: "user" as "admin" | "seller" | "user",
     acceptTerms: false,
   });
+  const [redirectInfo, setRedirectInfo] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check for redirect parameter and store it
+    const redirect = searchParams.get("redirect");
+    if (redirect) {
+      setRedirectInfo(redirect);
+      // Store the redirect for after registration
+      setStorageItem("auth_redirect_after_login", redirect);
+    }
+  }, [searchParams, setStorageItem]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -59,9 +77,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <>
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
@@ -82,9 +98,76 @@ export default function RegisterPage() {
 
           <div className="card p-8">
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {redirectInfo && (
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
+                  <div className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <p className="font-medium">
+                        You'll be redirected after registration
+                      </p>
+                      <p className="text-sm text-blue-600">
+                        To:{" "}
+                        {redirectInfo.length > 50
+                          ? `${redirectInfo.substring(0, 50)}...`
+                          : redirectInfo}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {cookieConsentRequired && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded">
+                  <div className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <p className="font-medium">Cookie consent required</p>
+                      <p className="text-sm text-amber-600">
+                        Your browser doesn't support local storage. Please
+                        accept cookies to save your registration data.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-                  {error}
+                  <div className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>{error}</span>
+                  </div>
                 </div>
               )}
 
@@ -330,7 +413,30 @@ export default function RegisterPage() {
           </div>
         </div>
       </main>
+    </>
+  );
+}
 
+export default function RegisterPage() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <Suspense
+        fallback={
+          <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <div className="max-w-md w-full space-y-8">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold">Loading...</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Please wait while we prepare the registration form
+                </p>
+              </div>
+            </div>
+          </main>
+        }
+      >
+        <RegisterForm />
+      </Suspense>
       <Footer />
     </div>
   );

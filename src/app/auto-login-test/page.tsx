@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useEffect, useState } from "react";
 
 export default function AutoLoginTestPage() {
-  const { login, user, loading } = useAuth();
+  const { login, user, loading } = useEnhancedAuth();
   const [loginAttempted, setLoginAttempted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

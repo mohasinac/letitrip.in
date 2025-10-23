@@ -72,17 +72,41 @@ export interface ProductImage {
 }
 
 // Category Types
+export interface SubCategory {
+  id: string;
+  name: string;
+  slug: string;
+  productCount: number;
+}
+
 export interface Category {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
+  description: string;
+  image: string;
+  icon?: string;
+  productCount: number;
   parentId?: string;
+  subcategories?: SubCategory[];
+  featured: boolean;
+  sortOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   order: number;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
+}
+
+export interface CategoryFormData {
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  icon: string;
+  parentId: string;
+  featured: boolean;
+  sortOrder: number;
+  isActive: boolean;
 }
 
 // Order Types

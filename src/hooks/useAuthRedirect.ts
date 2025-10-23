@@ -1,14 +1,13 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
 import { useEffect } from 'react';
 
 export const useAuthRedirect = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const { user, loading } = useAuth();
+  const { user, loading, isRole, setStorageItem } = useEnhancedAuth();
 
   // Save current path when user tries to access protected content
   const saveReturnPath = (path?: string) => {
@@ -16,7 +15,7 @@ export const useAuthRedirect = () => {
     // Don't store login/register pages as return URLs
     if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/') {
       console.log('Saving return path:', currentPath);
-      localStorage.setItem('auth_redirect_after_login', currentPath);
+      setStorageItem('auth_redirect_after_login', currentPath);
     }
   };
 
@@ -40,17 +39,15 @@ export const useAuthRedirect = () => {
     return true;
   };
 
-  // Check if user has specific role
+  // Check if user has specific role using enhanced auth
   const requireRole = (requiredRole: 'admin' | 'seller' | 'user', redirectOnFail = true) => {
     if (!requireAuth(redirectOnFail)) {
       return false;
     }
 
-    const roleHierarchy = { admin: 3, seller: 2, user: 1 };
-    const userLevel = roleHierarchy[user!.role];
-    const requiredLevel = roleHierarchy[requiredRole];
+    const hasRequiredRole = isRole(requiredRole);
 
-    if (userLevel < requiredLevel) {
+    if (!hasRequiredRole) {
       if (redirectOnFail) {
         router.push('/unauthorized');
       }

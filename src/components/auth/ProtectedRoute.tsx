@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export default function ProtectedRoute({
   fallbackUrl = "/login",
   requireRole,
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, isRole, setStorageItem } = useEnhancedAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -28,25 +28,23 @@ export default function ProtectedRoute({
 
     if (!loading) {
       if (!user) {
-        // Store current path for redirect after login
+        // Store current path for redirect after login using enhanced storage
         console.log(
           "ProtectedRoute: No user, storing path and redirecting",
           pathname
         );
         if (pathname !== "/login" && pathname !== "/register") {
-          localStorage.setItem("auth_redirect_after_login", pathname);
+          setStorageItem("auth_redirect_after_login", pathname);
         }
-        router.push(fallbackUrl);
+        router.push(`${fallbackUrl}?redirect=${encodeURIComponent(pathname)}`);
         return;
       }
 
-      // Check role requirements
+      // Check role requirements using enhanced auth
       if (requireRole) {
-        const roleHierarchy = { admin: 3, seller: 2, user: 1 };
-        const userLevel = roleHierarchy[user.role];
-        const requiredLevel = roleHierarchy[requireRole];
+        const hasRequiredRole = isRole(requireRole);
 
-        if (userLevel < requiredLevel) {
+        if (!hasRequiredRole) {
           console.log(
             "ProtectedRoute: Insufficient role, redirecting to unauthorized"
           );

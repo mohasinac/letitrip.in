@@ -3,7 +3,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,7 +17,7 @@ export default function CartPage() {
     loading,
     clearCart,
   } = useCart();
-  const { user } = useAuth();
+  const { user } = useEnhancedAuth();
 
   const shipping = totalPrice > 1000 ? 0 : 99;
   const tax = Math.round(totalPrice * 0.18);

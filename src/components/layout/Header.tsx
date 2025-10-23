@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, isRole, canAccess } = useEnhancedAuth();
   const { totalItems } = useCart();
   const { redirectToLogin } = useAuthRedirect();
   const userMenuRef = useRef<HTMLDivElement>(null);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { hasRoleAccess, UserRole } from "@/lib/auth/roles";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -18,7 +18,8 @@ export default function RoleGuard({
   fallbackUrl = "/login",
   loadingComponent,
 }: RoleGuardProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, isRole, canAccess, setStorageItem } =
+    useEnhancedAuth();
   const [hasAccess, setHasAccess] = useState(false);
   const router = useRouter();
 
@@ -26,19 +27,36 @@ export default function RoleGuard({
     if (loading) return;
 
     if (!user) {
-      router.push(fallbackUrl);
+      // Store the current path for redirect after login
+      const currentPath = window.location.pathname + window.location.search;
+      setStorageItem("auth_redirect_after_login", currentPath);
+
+      router.push(`${fallbackUrl}?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 
-    // Check if user has required role access
-    const access = hasRoleAccess(user.role as UserRole, requiredRole);
+    // Check if user has required role access using enhanced auth
+    const access =
+      hasRoleAccess(user.role as UserRole, requiredRole) ||
+      isRole(requiredRole as any) ||
+      canAccess(`${requiredRole}_panel`);
+
     setHasAccess(access);
 
     if (!access) {
-      router.push(fallbackUrl);
+      router.push(fallbackUrl === "/login" ? "/unauthorized" : fallbackUrl);
       return;
     }
-  }, [user, loading, requiredRole, fallbackUrl, router]);
+  }, [
+    user,
+    loading,
+    requiredRole,
+    fallbackUrl,
+    router,
+    isRole,
+    canAccess,
+    setStorageItem,
+  ]);
 
   if (loading) {
     return (
