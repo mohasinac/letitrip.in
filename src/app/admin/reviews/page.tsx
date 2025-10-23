@@ -53,20 +53,30 @@ export default function ReviewsManagement() {
     }
   };
 
-  const handleReviewAction = async (reviewId: string, action: "approve" | "reject") => {
+  const handleReviewAction = async (
+    reviewId: string,
+    action: "approve" | "reject"
+  ) => {
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: action === "approve" ? "approved" : "rejected" }),
+        body: JSON.stringify({
+          status: action === "approve" ? "approved" : "rejected",
+        }),
       });
 
       if (response.ok) {
-        setReviews(reviews.map(review =>
-          review.id === reviewId 
-            ? { ...review, status: action === "approve" ? "approved" : "rejected" }
-            : review
-        ));
+        setReviews(
+          reviews.map((review) =>
+            review.id === reviewId
+              ? {
+                  ...review,
+                  status: action === "approve" ? "approved" : "rejected",
+                }
+              : review
+          )
+        );
         setShowModal(false);
         setSelectedReview(null);
       }
@@ -76,18 +86,20 @@ export default function ReviewsManagement() {
   };
 
   const filteredReviews = reviews.filter((review) => {
-    const matchesSearch = 
+    const matchesSearch =
       review.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.comment.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || review.status === statusFilter;
+
+    const matchesStatus =
+      statusFilter === "all" || review.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex px-2 py-1 text-xs font-medium rounded-full";
+    const baseClasses =
+      "inline-flex px-2 py-1 text-xs font-medium rounded-full";
     switch (status) {
       case "approved":
         return `${baseClasses} bg-green-100 text-green-800`;
@@ -130,7 +142,8 @@ export default function ReviewsManagement() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                {reviews.filter(r => r.status === "pending").length} pending reviews
+                {reviews.filter((r) => r.status === "pending").length} pending
+                reviews
               </span>
             </div>
           </div>
@@ -201,7 +214,10 @@ export default function ReviewsManagement() {
                   </tr>
                 ) : filteredReviews.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={7}
+                      className="px-6 py-12 text-center text-gray-500"
+                    >
                       No reviews found matching your criteria
                     </td>
                   </tr>
@@ -236,7 +252,8 @@ export default function ReviewsManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={getStatusBadge(review.status)}>
-                          {review.status.charAt(0).toUpperCase() + review.status.slice(1)}
+                          {review.status.charAt(0).toUpperCase() +
+                            review.status.slice(1)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -257,14 +274,18 @@ export default function ReviewsManagement() {
                           {review.status === "pending" && (
                             <>
                               <button
-                                onClick={() => handleReviewAction(review.id, "approve")}
+                                onClick={() =>
+                                  handleReviewAction(review.id, "approve")
+                                }
                                 className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
                                 title="Approve review"
                               >
                                 <CheckIcon className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => handleReviewAction(review.id, "reject")}
+                                onClick={() =>
+                                  handleReviewAction(review.id, "reject")
+                                }
                                 className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
                                 title="Reject review"
                               >
@@ -305,27 +326,43 @@ export default function ReviewsManagement() {
             <div className="space-y-6">
               {/* Product Info */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Product</h4>
-                <p className="text-sm text-gray-900">{selectedReview.productName}</p>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  Product
+                </h4>
+                <p className="text-sm text-gray-900">
+                  {selectedReview.productName}
+                </p>
               </div>
 
               {/* User Info */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Reviewer</h4>
-                <p className="text-sm text-gray-900">{selectedReview.userName}</p>
-                <p className="text-sm text-gray-500">{selectedReview.userEmail}</p>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  Reviewer
+                </h4>
+                <p className="text-sm text-gray-900">
+                  {selectedReview.userName}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {selectedReview.userEmail}
+                </p>
               </div>
 
               {/* Rating */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Rating</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  Rating
+                </h4>
                 {renderStars(selectedReview.rating)}
               </div>
 
               {/* Review Content */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Review</h4>
-                <h5 className="font-medium text-gray-900 mb-2">{selectedReview.title}</h5>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  Review
+                </h4>
+                <h5 className="font-medium text-gray-900 mb-2">
+                  {selectedReview.title}
+                </h5>
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">
                   {selectedReview.comment}
                 </p>
@@ -334,7 +371,9 @@ export default function ReviewsManagement() {
               {/* Images */}
               {selectedReview.images && selectedReview.images.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Images</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Images
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     {selectedReview.images.map((image, index) => (
                       <img
@@ -352,13 +391,17 @@ export default function ReviewsManagement() {
               {selectedReview.status === "pending" && (
                 <div className="flex justify-end space-x-3 pt-4 border-t">
                   <button
-                    onClick={() => handleReviewAction(selectedReview.id, "reject")}
+                    onClick={() =>
+                      handleReviewAction(selectedReview.id, "reject")
+                    }
                     className="px-4 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-md hover:bg-red-200"
                   >
                     Reject Review
                   </button>
                   <button
-                    onClick={() => handleReviewAction(selectedReview.id, "approve")}
+                    onClick={() =>
+                      handleReviewAction(selectedReview.id, "approve")
+                    }
                     className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
                   >
                     Approve Review

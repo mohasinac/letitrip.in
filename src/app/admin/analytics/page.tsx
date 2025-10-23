@@ -71,18 +71,18 @@ export default function Analytics() {
     }
   };
 
-  const StatCard = ({ 
-    title, 
-    value, 
-    icon: Icon, 
-    change, 
-    changeType 
-  }: { 
-    title: string; 
-    value: string | number; 
-    icon: any; 
-    change?: number; 
-    changeType?: 'positive' | 'negative';
+  const StatCard = ({
+    title,
+    value,
+    icon: Icon,
+    change,
+    changeType,
+  }: {
+    title: string;
+    value: string | number;
+    icon: any;
+    change?: number;
+    changeType?: "positive" | "negative";
   }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <div className="flex items-center justify-between">
@@ -90,10 +90,12 @@ export default function Analytics() {
           <p className="text-sm font-medium text-gray-600">{title}</p>
           <p className="text-3xl font-bold text-gray-900">{value}</p>
           {change !== undefined && (
-            <div className={`flex items-center mt-2 text-sm ${
-              changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {changeType === 'positive' ? (
+            <div
+              className={`flex items-center mt-2 text-sm ${
+                changeType === "positive" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {changeType === "positive" ? (
                 <ArrowTrendingUpIcon className="h-4 w-4 mr-1" />
               ) : (
                 <ArrowTrendingDownIcon className="h-4 w-4 mr-1" />
@@ -157,7 +159,11 @@ export default function Analytics() {
             value={data?.totalUsers.toLocaleString() || "0"}
             icon={UsersIcon}
             change={data?.userGrowth.growth}
-            changeType={data?.userGrowth.growth && data.userGrowth.growth > 0 ? 'positive' : 'negative'}
+            changeType={
+              data?.userGrowth.growth && data.userGrowth.growth > 0
+                ? "positive"
+                : "negative"
+            }
           />
           <StatCard
             title="Total Orders"
@@ -169,7 +175,11 @@ export default function Analytics() {
             value={`$${data?.totalRevenue.toLocaleString() || "0"}`}
             icon={CurrencyDollarIcon}
             change={data?.revenueGrowth.growth}
-            changeType={data?.revenueGrowth.growth && data.revenueGrowth.growth > 0 ? 'positive' : 'negative'}
+            changeType={
+              data?.revenueGrowth.growth && data.revenueGrowth.growth > 0
+                ? "positive"
+                : "negative"
+            }
           />
           <StatCard
             title="Reviews"
@@ -286,7 +296,10 @@ export default function Analytics() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={3}
+                      className="px-6 py-12 text-center text-gray-500"
+                    >
                       No product data available
                     </td>
                   </tr>

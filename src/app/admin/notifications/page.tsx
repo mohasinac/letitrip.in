@@ -27,7 +27,8 @@ export default function NotificationsManagement() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editingNotification, setEditingNotification] = useState<Notification | null>(null);
+  const [editingNotification, setEditingNotification] =
+    useState<Notification | null>(null);
   const [formData, setFormData] = useState<{
     title: string;
     message: string;
@@ -65,14 +66,14 @@ export default function NotificationsManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const url = editingNotification 
+      const url = editingNotification
         ? `/api/admin/notifications/${editingNotification.id}`
         : "/api/admin/notifications";
-      
+
       const method = editingNotification ? "PUT" : "POST";
-      
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -81,15 +82,17 @@ export default function NotificationsManagement() {
 
       if (response.ok) {
         const savedNotification = await response.json();
-        
+
         if (editingNotification) {
-          setNotifications(notifications.map(n => 
-            n.id === editingNotification.id ? savedNotification : n
-          ));
+          setNotifications(
+            notifications.map((n) =>
+              n.id === editingNotification.id ? savedNotification : n
+            )
+          );
         } else {
           setNotifications([savedNotification, ...notifications]);
         }
-        
+
         handleCloseModal();
       }
     } catch (error) {
@@ -99,14 +102,14 @@ export default function NotificationsManagement() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this notification?")) return;
-    
+
     try {
       const response = await fetch(`/api/admin/notifications/${id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setNotifications(notifications.filter(n => n.id !== id));
+        setNotifications(notifications.filter((n) => n.id !== id));
       }
     } catch (error) {
       console.error("Failed to delete notification:", error);
@@ -122,9 +125,9 @@ export default function NotificationsManagement() {
       });
 
       if (response.ok) {
-        setNotifications(notifications.map(n => 
-          n.id === id ? { ...n, isActive } : n
-        ));
+        setNotifications(
+          notifications.map((n) => (n.id === id ? { ...n, isActive } : n))
+        );
       }
     } catch (error) {
       console.error("Failed to toggle notification:", error);
@@ -219,8 +222,12 @@ export default function NotificationsManagement() {
           ) : notifications.length === 0 ? (
             <div className="p-12 text-center">
               <BellIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first notification</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No notifications
+              </h3>
+              <p className="text-gray-500 mb-4">
+                Get started by creating your first notification
+              </p>
               <button
                 onClick={() => setShowModal(true)}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -238,22 +245,36 @@ export default function NotificationsManagement() {
                         <h3 className="text-lg font-medium text-gray-900">
                           {notification.title}
                         </h3>
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(notification.type)}`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(
+                            notification.type
+                          )}`}
+                        >
                           {notification.type}
                         </span>
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getAudienceColor(notification.targetAudience)}`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getAudienceColor(
+                            notification.targetAudience
+                          )}`}
+                        >
                           {notification.targetAudience}
                         </span>
                         <div className="flex items-center">
-                          <div className={`w-2 h-2 rounded-full mr-2 ${
-                            notification.isActive ? "bg-green-400" : "bg-gray-400"
-                          }`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full mr-2 ${
+                              notification.isActive
+                                ? "bg-green-400"
+                                : "bg-gray-400"
+                            }`}
+                          ></div>
                           <span className="text-xs text-gray-500">
                             {notification.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-3">{notification.message}</p>
+                      <p className="text-gray-600 mb-3">
+                        {notification.message}
+                      </p>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span>Created: {notification.createdAt}</span>
                         {notification.scheduledFor && (
@@ -263,7 +284,12 @@ export default function NotificationsManagement() {
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       <button
-                        onClick={() => handleToggleActive(notification.id, !notification.isActive)}
+                        onClick={() =>
+                          handleToggleActive(
+                            notification.id,
+                            !notification.isActive
+                          )
+                        }
                         className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
                           notification.isActive
                             ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
@@ -301,7 +327,9 @@ export default function NotificationsManagement() {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-medium text-gray-900">
-                {editingNotification ? "Edit Notification" : "Create New Notification"}
+                {editingNotification
+                  ? "Edit Notification"
+                  : "Create New Notification"}
               </h3>
               <button
                 onClick={handleCloseModal}
@@ -319,7 +347,9 @@ export default function NotificationsManagement() {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   required
                 />
@@ -331,7 +361,9 @@ export default function NotificationsManagement() {
                 </label>
                 <textarea
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, message: e.target.value })
+                  }
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   required
@@ -345,7 +377,9 @@ export default function NotificationsManagement() {
                   </label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, type: e.target.value as any })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="info">Info</option>
@@ -361,7 +395,12 @@ export default function NotificationsManagement() {
                   </label>
                   <select
                     value={formData.targetAudience}
-                    onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as any })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        targetAudience: e.target.value as any,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="all">All Users</option>
@@ -379,7 +418,9 @@ export default function NotificationsManagement() {
                 <input
                   type="datetime-local"
                   value={formData.scheduledFor}
-                  onChange={(e) => setFormData({ ...formData, scheduledFor: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, scheduledFor: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -389,10 +430,15 @@ export default function NotificationsManagement() {
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isActive: e.target.checked })
+                  }
                   className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                 />
-                <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
+                <label
+                  htmlFor="isActive"
+                  className="ml-2 text-sm text-gray-700"
+                >
                   Active (visible to users)
                 </label>
               </div>

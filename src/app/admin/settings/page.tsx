@@ -84,7 +84,7 @@ export default function SettingsManagement() {
 
   const saveSettings = async () => {
     if (!settings) return;
-    
+
     try {
       setSaving(true);
       const response = await fetch("/api/admin/settings", {
@@ -107,15 +107,15 @@ export default function SettingsManagement() {
 
   const updateSettings = (path: string, value: any) => {
     if (!settings) return;
-    
+
     const keys = path.split(".");
     const newSettings = { ...settings };
     let current: any = newSettings;
-    
+
     for (let i = 0; i < keys.length - 1; i++) {
       current = current[keys[i]];
     }
-    
+
     current[keys[keys.length - 1]] = value;
     setSettings(newSettings);
   };
@@ -213,8 +213,10 @@ export default function SettingsManagement() {
               {/* General Settings */}
               {activeTab === "general" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">General Settings</h3>
-                  
+                  <h3 className="text-lg font-medium text-gray-900">
+                    General Settings
+                  </h3>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -223,7 +225,9 @@ export default function SettingsManagement() {
                       <input
                         type="text"
                         value={settings.siteName}
-                        onChange={(e) => updateSettings("siteName", e.target.value)}
+                        onChange={(e) =>
+                          updateSettings("siteName", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
@@ -235,7 +239,9 @@ export default function SettingsManagement() {
                       <input
                         type="email"
                         value={settings.contactEmail}
-                        onChange={(e) => updateSettings("contactEmail", e.target.value)}
+                        onChange={(e) =>
+                          updateSettings("contactEmail", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
@@ -247,7 +253,9 @@ export default function SettingsManagement() {
                       <input
                         type="tel"
                         value={settings.phoneNumber}
-                        onChange={(e) => updateSettings("phoneNumber", e.target.value)}
+                        onChange={(e) =>
+                          updateSettings("phoneNumber", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
@@ -258,7 +266,9 @@ export default function SettingsManagement() {
                       </label>
                       <select
                         value={settings.currency}
-                        onChange={(e) => updateSettings("currency", e.target.value)}
+                        onChange={(e) =>
+                          updateSettings("currency", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       >
                         <option value="USD">USD ($)</option>
@@ -275,7 +285,9 @@ export default function SettingsManagement() {
                     </label>
                     <textarea
                       value={settings.siteDescription}
-                      onChange={(e) => updateSettings("siteDescription", e.target.value)}
+                      onChange={(e) =>
+                        updateSettings("siteDescription", e.target.value)
+                      }
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
@@ -287,7 +299,9 @@ export default function SettingsManagement() {
                     </label>
                     <textarea
                       value={settings.address}
-                      onChange={(e) => updateSettings("address", e.target.value)}
+                      onChange={(e) =>
+                        updateSettings("address", e.target.value)
+                      }
                       rows={2}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
@@ -296,13 +310,18 @@ export default function SettingsManagement() {
                   <div className="border-t pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">Site Status</h4>
+                        <h4 className="text-sm font-medium text-gray-900">
+                          Site Status
+                        </h4>
                         <p className="text-sm text-gray-500">
-                          Control whether your site is live or in maintenance mode
+                          Control whether your site is live or in maintenance
+                          mode
                         </p>
                       </div>
                       <button
-                        onClick={() => updateSettings("isLive", !settings.isLive)}
+                        onClick={() =>
+                          updateSettings("isLive", !settings.isLive)
+                        }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                           settings.isLive ? "bg-green-600" : "bg-gray-200"
                         }`}
@@ -314,7 +333,7 @@ export default function SettingsManagement() {
                         />
                       </button>
                     </div>
-                    
+
                     {!settings.isLive && (
                       <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -322,7 +341,9 @@ export default function SettingsManagement() {
                         </label>
                         <textarea
                           value={settings.maintenanceMessage}
-                          onChange={(e) => updateSettings("maintenanceMessage", e.target.value)}
+                          onChange={(e) =>
+                            updateSettings("maintenanceMessage", e.target.value)
+                          }
                           rows={2}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                           placeholder="We're currently performing scheduled maintenance. Please check back soon!"
@@ -336,26 +357,39 @@ export default function SettingsManagement() {
               {/* Payment Settings */}
               {activeTab === "payments" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">Payment Settings</h3>
-                  
+                  <h3 className="text-lg font-medium text-gray-900">
+                    Payment Settings
+                  </h3>
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-3">
                         <CreditCardIcon className="h-6 w-6 text-blue-600" />
                         <div>
                           <h4 className="font-medium text-gray-900">Stripe</h4>
-                          <p className="text-sm text-gray-500">Credit card payments</p>
+                          <p className="text-sm text-gray-500">
+                            Credit card payments
+                          </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => updateSettings("paymentSettings.stripeEnabled", !settings.paymentSettings.stripeEnabled)}
+                        onClick={() =>
+                          updateSettings(
+                            "paymentSettings.stripeEnabled",
+                            !settings.paymentSettings.stripeEnabled
+                          )
+                        }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          settings.paymentSettings.stripeEnabled ? "bg-green-600" : "bg-gray-200"
+                          settings.paymentSettings.stripeEnabled
+                            ? "bg-green-600"
+                            : "bg-gray-200"
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            settings.paymentSettings.stripeEnabled ? "translate-x-6" : "translate-x-1"
+                            settings.paymentSettings.stripeEnabled
+                              ? "translate-x-6"
+                              : "translate-x-1"
                           }`}
                         />
                       </button>
@@ -369,7 +403,12 @@ export default function SettingsManagement() {
                         <input
                           type="text"
                           value={settings.paymentSettings.stripePublicKey}
-                          onChange={(e) => updateSettings("paymentSettings.stripePublicKey", e.target.value)}
+                          onChange={(e) =>
+                            updateSettings(
+                              "paymentSettings.stripePublicKey",
+                              e.target.value
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                           placeholder="pk_..."
                         />
@@ -381,18 +420,29 @@ export default function SettingsManagement() {
                         <CreditCardIcon className="h-6 w-6 text-yellow-600" />
                         <div>
                           <h4 className="font-medium text-gray-900">PayPal</h4>
-                          <p className="text-sm text-gray-500">PayPal payments</p>
+                          <p className="text-sm text-gray-500">
+                            PayPal payments
+                          </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => updateSettings("paymentSettings.paypalEnabled", !settings.paymentSettings.paypalEnabled)}
+                        onClick={() =>
+                          updateSettings(
+                            "paymentSettings.paypalEnabled",
+                            !settings.paymentSettings.paypalEnabled
+                          )
+                        }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          settings.paymentSettings.paypalEnabled ? "bg-green-600" : "bg-gray-200"
+                          settings.paymentSettings.paypalEnabled
+                            ? "bg-green-600"
+                            : "bg-gray-200"
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            settings.paymentSettings.paypalEnabled ? "translate-x-6" : "translate-x-1"
+                            settings.paymentSettings.paypalEnabled
+                              ? "translate-x-6"
+                              : "translate-x-1"
                           }`}
                         />
                       </button>
@@ -402,19 +452,32 @@ export default function SettingsManagement() {
                       <div className="flex items-center space-x-3">
                         <CreditCardIcon className="h-6 w-6 text-green-600" />
                         <div>
-                          <h4 className="font-medium text-gray-900">Cash on Delivery</h4>
-                          <p className="text-sm text-gray-500">Pay when product is delivered</p>
+                          <h4 className="font-medium text-gray-900">
+                            Cash on Delivery
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            Pay when product is delivered
+                          </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => updateSettings("paymentSettings.codEnabled", !settings.paymentSettings.codEnabled)}
+                        onClick={() =>
+                          updateSettings(
+                            "paymentSettings.codEnabled",
+                            !settings.paymentSettings.codEnabled
+                          )
+                        }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          settings.paymentSettings.codEnabled ? "bg-green-600" : "bg-gray-200"
+                          settings.paymentSettings.codEnabled
+                            ? "bg-green-600"
+                            : "bg-gray-200"
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            settings.paymentSettings.codEnabled ? "translate-x-6" : "translate-x-1"
+                            settings.paymentSettings.codEnabled
+                              ? "translate-x-6"
+                              : "translate-x-1"
                           }`}
                         />
                       </button>
@@ -430,7 +493,12 @@ export default function SettingsManagement() {
                         type="number"
                         step="0.01"
                         value={settings.taxRate}
-                        onChange={(e) => updateSettings("taxRate", parseFloat(e.target.value) || 0)}
+                        onChange={(e) =>
+                          updateSettings(
+                            "taxRate",
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
@@ -443,7 +511,12 @@ export default function SettingsManagement() {
                         type="number"
                         step="0.01"
                         value={settings.shippingCost}
-                        onChange={(e) => updateSettings("shippingCost", parseFloat(e.target.value) || 0)}
+                        onChange={(e) =>
+                          updateSettings(
+                            "shippingCost",
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
@@ -454,33 +527,45 @@ export default function SettingsManagement() {
               {/* Add more tab content here for homepage, policies, and firebase settings */}
               {activeTab === "homepage" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">Home Page Settings</h3>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    Home Page Settings
+                  </h3>
                   <div className="text-center py-12 text-gray-500">
                     <PhotoIcon className="h-12 w-12 mx-auto mb-4" />
                     <p>Home page section management coming soon...</p>
-                    <p className="text-sm">Configure hero images, featured sections, and layout</p>
+                    <p className="text-sm">
+                      Configure hero images, featured sections, and layout
+                    </p>
                   </div>
                 </div>
               )}
 
               {activeTab === "policies" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">Legal Policies</h3>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    Legal Policies
+                  </h3>
                   <div className="text-center py-12 text-gray-500">
                     <DocumentTextIcon className="h-12 w-12 mx-auto mb-4" />
                     <p>Policy management coming soon...</p>
-                    <p className="text-sm">Manage privacy policy, terms of service, and return policy</p>
+                    <p className="text-sm">
+                      Manage privacy policy, terms of service, and return policy
+                    </p>
                   </div>
                 </div>
               )}
 
               {activeTab === "firebase" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">Firebase Configuration</h3>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    Firebase Configuration
+                  </h3>
                   <div className="text-center py-12 text-gray-500">
                     <ShieldCheckIcon className="h-12 w-12 mx-auto mb-4" />
                     <p>Firebase settings coming soon...</p>
-                    <p className="text-sm">Configure Firebase project settings and storage</p>
+                    <p className="text-sm">
+                      Configure Firebase project settings and storage
+                    </p>
                   </div>
                 </div>
               )}

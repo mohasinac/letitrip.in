@@ -101,7 +101,9 @@ export default function AdminSidebar() {
                       >
                         <item.icon
                           className={`h-6 w-6 shrink-0 ${
-                            isActive ? "text-red-700" : "text-gray-400 group-hover:text-red-700"
+                            isActive
+                              ? "text-red-700"
+                              : "text-gray-400 group-hover:text-red-700"
                           }`}
                           aria-hidden="true"
                         />

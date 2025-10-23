@@ -59,9 +59,11 @@ export default function CustomerManagement() {
       });
 
       if (response.ok) {
-        setUsers(users.map(user => 
-          user.id === userId ? { ...user, role: newRole as any } : user
-        ));
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, role: newRole as any } : user
+          )
+        );
         setShowModal(false);
         setSelectedUser(null);
       }
@@ -70,7 +72,10 @@ export default function CustomerManagement() {
     }
   };
 
-  const handleVerificationToggle = async (userId: string, verified: boolean) => {
+  const handleVerificationToggle = async (
+    userId: string,
+    verified: boolean
+  ) => {
     try {
       const response = await fetch(`/api/admin/users/${userId}/verify`, {
         method: "PATCH",
@@ -79,9 +84,11 @@ export default function CustomerManagement() {
       });
 
       if (response.ok) {
-        setUsers(users.map(user => 
-          user.id === userId ? { ...user, verified } : user
-        ));
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, verified } : user
+          )
+        );
       }
     } catch (error) {
       console.error("Failed to update verification:", error);
@@ -89,14 +96,16 @@ export default function CustomerManagement() {
   };
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
 
   const getRoleBadge = (role: string) => {
-    const baseClasses = "inline-flex px-2 py-1 text-xs font-medium rounded-full";
+    const baseClasses =
+      "inline-flex px-2 py-1 text-xs font-medium rounded-full";
     switch (role) {
       case "admin":
         return `${baseClasses} bg-red-100 text-red-800`;
@@ -186,7 +195,10 @@ export default function CustomerManagement() {
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={6}
+                      className="px-6 py-12 text-center text-gray-500"
+                    >
                       No users found matching your criteria
                     </td>
                   </tr>
@@ -212,7 +224,8 @@ export default function CustomerManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={getRoleBadge(user.role)}>
-                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          {user.role.charAt(0).toUpperCase() +
+                            user.role.slice(1)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -241,15 +254,25 @@ export default function CustomerManagement() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => handleVerificationToggle(user.id, !user.verified)}
+                            onClick={() =>
+                              handleVerificationToggle(user.id, !user.verified)
+                            }
                             className={`p-2 rounded-lg transition-colors ${
                               user.verified
                                 ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
                                 : "bg-green-100 text-green-700 hover:bg-green-200"
                             }`}
-                            title={user.verified ? "Remove verification" : "Verify user"}
+                            title={
+                              user.verified
+                                ? "Remove verification"
+                                : "Verify user"
+                            }
                           >
-                            {user.verified ? <StarIcon className="h-4 w-4" /> : <ShieldCheckIcon className="h-4 w-4" />}
+                            {user.verified ? (
+                              <StarIcon className="h-4 w-4" />
+                            ) : (
+                              <ShieldCheckIcon className="h-4 w-4" />
+                            )}
                           </button>
                           <button
                             onClick={() => {
@@ -308,7 +331,11 @@ export default function CustomerManagement() {
               </button>
               <button
                 onClick={() => {
-                  const newRole = (document.querySelector('input[name="role"]:checked') as HTMLInputElement)?.value;
+                  const newRole = (
+                    document.querySelector(
+                      'input[name="role"]:checked'
+                    ) as HTMLInputElement
+                  )?.value;
                   if (newRole && newRole !== selectedUser.role) {
                     handleRoleChange(selectedUser.id, newRole);
                   } else {

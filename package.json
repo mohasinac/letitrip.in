@@ -19,7 +19,9 @@
     "firebase:emulator-ui": "firebase emulators:start --import=./firebase-emulator-data --export-on-exit=./firebase-emulator-data",
     "build:static": "node scripts/build-static.js",
     "deploy": "npm run build:static && firebase deploy --only hosting",
-    "deploy:vercel": "vercel --prod"
+    "deploy:vercel": "vercel --prod",
+    "vercel:env-sync": "node scripts/sync-vercel-env.js",
+    "vercel:setup": "npm run vercel:env-sync && vercel --prod"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
