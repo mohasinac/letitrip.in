@@ -16,7 +16,7 @@ if (!JWT_SECRET || JWT_SECRET.length < 32) {
 export interface JWTPayload {
   userId: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'seller' | 'user';
   iat?: number;
   exp?: number;
 }

@@ -1,0 +1,85 @@
+"use client";
+
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
+
+export const useAuthRedirect = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { user, loading } = useAuth();
+
+  // Save current path when user tries to access protected content
+  const saveReturnPath = (path?: string) => {
+    const currentPath = path || pathname;
+    // Don't store login/register pages as return URLs
+    if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/') {
+      console.log('Saving return path:', currentPath);
+      localStorage.setItem('auth_redirect_after_login', currentPath);
+    }
+  };
+
+  // Redirect to login with current page stored for later redirect
+  const redirectToLogin = (returnUrl?: string) => {
+    saveReturnPath(returnUrl);
+    router.push('/login');
+  };
+
+  // Check if user needs to be authenticated for protected routes
+  const requireAuth = (redirectOnFail = true) => {
+    if (loading) return false; // Still loading, don't redirect yet
+    
+    if (!user) {
+      if (redirectOnFail) {
+        saveReturnPath();
+        router.push('/login');
+      }
+      return false;
+    }
+    return true;
+  };
+
+  // Check if user has specific role
+  const requireRole = (requiredRole: 'admin' | 'seller' | 'user', redirectOnFail = true) => {
+    if (!requireAuth(redirectOnFail)) {
+      return false;
+    }
+
+    const roleHierarchy = { admin: 3, seller: 2, user: 1 };
+    const userLevel = roleHierarchy[user!.role];
+    const requiredLevel = roleHierarchy[requiredRole];
+
+    if (userLevel < requiredLevel) {
+      if (redirectOnFail) {
+        router.push('/unauthorized');
+      }
+      return false;
+    }
+    return true;
+  };
+
+  // Auto-redirect for protected routes
+  useEffect(() => {
+    if (!loading && !user) {
+      const protectedRoutes = ['/account', '/orders', '/admin', '/seller', '/checkout'];
+      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+      
+      if (isProtectedRoute) {
+        console.log('Protected route detected, redirecting to login:', pathname);
+        saveReturnPath();
+        router.push('/login');
+      }
+    }
+  }, [user, loading, pathname, router]);
+
+  return {
+    redirectToLogin,
+    requireAuth,
+    requireRole,
+    isAuthenticated: !!user,
+    user,
+    loading,
+    saveReturnPath,
+  };
+};

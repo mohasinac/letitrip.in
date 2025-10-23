@@ -1,52 +1,42 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: "1",
-      name: "Premium Beyblade Stadium Pro",
-      slug: "premium-stadium-pro",
-      price: 2999,
-      image: "/images/product-1.jpg",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Metal Fusion Beyblade Set",
-      slug: "metal-fusion-set",
-      price: 1499,
-      image: "/images/product-2.jpg",
-      quantity: 2,
-    },
-  ]);
+  const {
+    items: cartItems,
+    updateQuantity,
+    removeFromCart,
+    totalPrice,
+    totalItems,
+    loading,
+    clearCart,
+  } = useCart();
+  const { user } = useAuth();
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      setCartItems(cartItems.filter((item) => item.id !== id));
-    } else {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
-  };
+  const shipping = totalPrice > 1000 ? 0 : 99;
+  const tax = Math.round(totalPrice * 0.18);
+  const total = totalPrice + shipping + tax;
 
-  const removeItem = (id: string) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const shipping = subtotal > 1000 ? 0 : 99;
-  const tax = Math.round(subtotal * 0.18);
-  const total = subtotal + shipping + tax;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading your cart...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -162,7 +152,7 @@ export default function CartPage() {
                         </div>
 
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeFromCart(item.id)}
                           className="text-red-500 hover:text-red-700 p-1"
                         >
                           <svg
@@ -203,7 +193,7 @@ export default function CartPage() {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>₹{subtotal.toLocaleString("en-IN")}</span>
+                    <span>₹{totalPrice.toLocaleString("en-IN")}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
@@ -233,11 +223,31 @@ export default function CartPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full btn btn-primary py-3 text-base">
-                    Proceed to Checkout
-                  </button>
-                  <button className="w-full btn btn-outline py-3 text-base">
-                    Save for Later
+                  {user ? (
+                    <Link
+                      href="/checkout"
+                      className="w-full btn btn-primary py-3 text-base text-center block"
+                    >
+                      Proceed to Checkout
+                    </Link>
+                  ) : (
+                    <div className="space-y-2">
+                      <Link
+                        href="/login"
+                        className="w-full btn btn-primary py-3 text-base text-center block"
+                      >
+                        Sign In to Checkout
+                      </Link>
+                      <p className="text-xs text-center text-muted-foreground">
+                        Your cart will be saved
+                      </p>
+                    </div>
+                  )}
+                  <button
+                    onClick={clearCart}
+                    className="w-full btn btn-outline py-3 text-base"
+                  >
+                    Clear Cart
                   </button>
                 </div>
 

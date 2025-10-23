@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  BellIcon, 
+import {
+  BellIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CheckCircleIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 interface Notification {
   id: string;
-  type: 'info' | 'warning' | 'success' | 'error';
+  type: "info" | "warning" | "success" | "error";
   title: string;
   message: string;
   timestamp: string;
@@ -30,7 +30,7 @@ export default function SellerNotifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('/api/seller/notifications?limit=6');
+        const response = await fetch("/api/seller/notifications?limit=6");
         if (response.ok) {
           const data = await response.json();
           setNotifications(data);
@@ -41,7 +41,8 @@ export default function SellerNotifications() {
               id: "1",
               type: "warning",
               title: "Low Stock Alert",
-              message: "Beyblade Burst Turbo Achilles is running low (5 units left)",
+              message:
+                "Beyblade Burst Turbo Achilles is running low (5 units left)",
               timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
               read: false,
               actionRequired: true,
@@ -63,7 +64,9 @@ export default function SellerNotifications() {
               type: "info",
               title: "New Review Received",
               message: "You received a 5-star review for Stadium Pro Arena",
-              timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+              timestamp: new Date(
+                Date.now() - 1000 * 60 * 60 * 2
+              ).toISOString(),
               read: true,
               action: {
                 label: "View Review",
@@ -74,8 +77,11 @@ export default function SellerNotifications() {
               id: "4",
               type: "warning",
               title: "Payment Pending",
-              message: "Customer payment for Order #ORD-2024-102 is pending verification",
-              timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+              message:
+                "Customer payment for Order #ORD-2024-102 is pending verification",
+              timestamp: new Date(
+                Date.now() - 1000 * 60 * 60 * 4
+              ).toISOString(),
               read: true,
               actionRequired: true,
               action: {
@@ -87,16 +93,22 @@ export default function SellerNotifications() {
               id: "5",
               type: "success",
               title: "Sales Milestone",
-              message: "Congratulations! You've reached ₹1,00,000 in total sales",
-              timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+              message:
+                "Congratulations! You've reached ₹1,00,000 in total sales",
+              timestamp: new Date(
+                Date.now() - 1000 * 60 * 60 * 8
+              ).toISOString(),
               read: true,
             },
             {
               id: "6",
               type: "info",
               title: "Platform Update",
-              message: "New analytics features are now available in your dashboard",
-              timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+              message:
+                "New analytics features are now available in your dashboard",
+              timestamp: new Date(
+                Date.now() - 1000 * 60 * 60 * 12
+              ).toISOString(),
               read: true,
               action: {
                 label: "Explore Features",
@@ -107,7 +119,7 @@ export default function SellerNotifications() {
           setNotifications(mockNotifications);
         }
       } catch (error) {
-        console.error('Failed to fetch notifications:', error);
+        console.error("Failed to fetch notifications:", error);
         setNotifications([]);
       } finally {
         setIsLoading(false);
@@ -120,33 +132,41 @@ export default function SellerNotifications() {
   const getNotificationIcon = (type: string) => {
     const iconClass = "w-5 h-5";
     switch (type) {
-      case 'warning':
-        return <ExclamationTriangleIcon className={`${iconClass} text-orange-500`} />;
-      case 'success':
+      case "warning":
+        return (
+          <ExclamationTriangleIcon className={`${iconClass} text-orange-500`} />
+        );
+      case "success":
         return <CheckCircleIcon className={`${iconClass} text-green-500`} />;
-      case 'error':
+      case "error":
         return <XMarkIcon className={`${iconClass} text-red-500`} />;
       default:
-        return <InformationCircleIcon className={`${iconClass} text-blue-500`} />;
+        return (
+          <InformationCircleIcon className={`${iconClass} text-blue-500`} />
+        );
     }
   };
 
   const getNotificationBg = (type: string, read: boolean) => {
-    const baseClasses = read ? 'bg-gray-50' : 'bg-white border-l-4';
+    const baseClasses = read ? "bg-gray-50" : "bg-white border-l-4";
     const borderColors = {
-      warning: 'border-l-orange-500',
-      success: 'border-l-green-500',
-      error: 'border-l-red-500',
-      info: 'border-l-blue-500',
+      warning: "border-l-orange-500",
+      success: "border-l-green-500",
+      error: "border-l-red-500",
+      info: "border-l-blue-500",
     };
-    return `${baseClasses} ${!read ? borderColors[type as keyof typeof borderColors] : ''}`;
+    return `${baseClasses} ${
+      !read ? borderColors[type as keyof typeof borderColors] : ""
+    }`;
   };
 
   const getTimeAgo = (dateString: string) => {
     const now = new Date();
     const notificationDate = new Date(dateString);
-    const diffInMinutes = Math.floor((now.getTime() - notificationDate.getTime()) / (1000 * 60));
-    
+    const diffInMinutes = Math.floor(
+      (now.getTime() - notificationDate.getTime()) / (1000 * 60)
+    );
+
     if (diffInMinutes < 60) {
       return `${diffInMinutes}m ago`;
     } else if (diffInMinutes < 1440) {
@@ -157,16 +177,14 @@ export default function SellerNotifications() {
   };
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, read: true }
-          : notification
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
       )
     );
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   if (isLoading) {
     return (
@@ -220,9 +238,12 @@ export default function SellerNotifications() {
         ) : (
           <div className="divide-y divide-gray-200">
             {notifications.map((notification) => (
-              <div 
-                key={notification.id} 
-                className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${getNotificationBg(notification.type, notification.read)}`}
+              <div
+                key={notification.id}
+                className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${getNotificationBg(
+                  notification.type,
+                  notification.read
+                )}`}
                 onClick={() => markAsRead(notification.id)}
               >
                 <div className="flex space-x-3">
@@ -231,7 +252,11 @@ export default function SellerNotifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
-                      <p className={`text-sm font-medium ${notification.read ? 'text-gray-700' : 'text-gray-900'}`}>
+                      <p
+                        className={`text-sm font-medium ${
+                          notification.read ? "text-gray-700" : "text-gray-900"
+                        }`}
+                      >
                         {notification.title}
                       </p>
                       <div className="flex items-center space-x-2">
@@ -243,19 +268,33 @@ export default function SellerNotifications() {
                         </span>
                       </div>
                     </div>
-                    <p className={`text-sm mt-1 ${notification.read ? 'text-gray-500' : 'text-gray-700'}`}>
+                    <p
+                      className={`text-sm mt-1 ${
+                        notification.read ? "text-gray-500" : "text-gray-700"
+                      }`}
+                    >
                       {notification.message}
                     </p>
                     {notification.action && (
                       <div className="mt-2">
-                        <a 
+                        <a
                           href={notification.action.href}
                           className="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-700"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {notification.action.label}
-                          <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg
+                            className="w-3 h-3 ml-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
                           </svg>
                         </a>
                       </div>

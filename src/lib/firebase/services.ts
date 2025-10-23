@@ -30,7 +30,7 @@ export interface User {
   name: string;
   phone?: string;
   avatar?: string;
-  role: 'user' | 'admin';
+  role: 'admin' | 'seller' | 'user';
   dateOfBirth?: string;
   gender?: string;
   preferences?: {

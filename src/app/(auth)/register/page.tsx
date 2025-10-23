@@ -4,22 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { getRoleDisplayName, getRoleBadgeClasses } from "@/lib/auth/roles";
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { register, loading, error } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    role: "user" as "admin" | "seller" | "user",
     acceptTerms: false,
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -28,47 +31,30 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
+      // You could add a local error state for form validation if needed
+      alert("Passwords do not match");
       return;
     }
 
     if (!formData.acceptTerms) {
-      setError("Please accept the terms and conditions");
-      setLoading(false);
+      alert("Please accept the terms and conditions");
       return;
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
-      }
-
-      // Redirect to login or dashboard
-      router.push(
-        "/login?message=Account created successfully. Please sign in."
+      await register(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.role
       );
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      // Redirect is handled by the register function in AuthContext
+    } catch (err) {
+      // Error is handled by AuthContext
+      console.error("Registration error:", err);
     }
   };
 
@@ -81,6 +67,9 @@ export default function RegisterPage() {
           <div className="text-center">
             <h2 className="text-3xl font-bold">Create your account</h2>
             <p className="mt-2 text-sm text-muted-foreground">
+              Join our platform as a customer, seller, or administrator
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
               Already have an account?{" "}
               <Link
                 href="/login"
@@ -137,6 +126,76 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium mb-2"
+                >
+                  Account Type
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  required
+                  className="input w-full"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="user">
+                    🛒 Customer - Browse and purchase products
+                  </option>
+                  <option value="seller">
+                    🏪 Seller - Sell products and manage inventory
+                  </option>
+                  <option value="admin">
+                    ⚡ Administrator - Full platform access
+                  </option>
+                </select>
+                <div className="mt-2 flex items-center space-x-2">
+                  <span className="text-xs text-gray-500">Selected:</span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeClasses(
+                      formData.role
+                    )}`}
+                  >
+                    {getRoleDisplayName(formData.role)}
+                  </span>
+                </div>
+
+                {/* Role Information */}
+                <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">
+                    Access Permissions:
+                  </h4>
+                  {formData.role === "user" && (
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      <li>✅ Browse and purchase products</li>
+                      <li>✅ Manage account and orders</li>
+                      <li>✅ Leave reviews and ratings</li>
+                      <li>✅ Participate in auctions</li>
+                    </ul>
+                  )}
+                  {formData.role === "seller" && (
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      <li>✅ All customer features</li>
+                      <li>✅ Access to seller dashboard</li>
+                      <li>✅ Add and manage products</li>
+                      <li>✅ Process orders and inventory</li>
+                      <li>✅ View sales analytics</li>
+                    </ul>
+                  )}
+                  {formData.role === "admin" && (
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      <li>✅ All customer and seller features</li>
+                      <li>✅ Access to admin dashboard</li>
+                      <li>✅ Manage all users and orders</li>
+                      <li>✅ Platform-wide analytics</li>
+                      <li>✅ System configuration</li>
+                    </ul>
+                  )}
+                </div>
               </div>
 
               <div>

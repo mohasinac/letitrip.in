@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { 
-  PlusIcon, 
-  ShoppingBagIcon, 
+import {
+  PlusIcon,
+  ShoppingBagIcon,
   ChartBarIcon,
   CogIcon,
   BellIcon,
@@ -11,7 +11,7 @@ import {
   TagIcon,
   TruckIcon,
   CameraIcon,
-  MegaphoneIcon
+  MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SellerQuickActions() {
@@ -93,7 +93,9 @@ export default function SellerQuickActions() {
                 className="group relative bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-all duration-200 hover:shadow-sm border hover:border-gray-200 text-center"
               >
                 <div className="flex flex-col items-center space-y-2">
-                  <div className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                  <div
+                    className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center transition-transform group-hover:scale-110`}
+                  >
                     <Icon className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -130,15 +132,28 @@ export default function SellerQuickActions() {
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-gray-900">Seller Tip</h4>
+                <h4 className="text-sm font-semibold text-gray-900">
+                  Seller Tip
+                </h4>
                 <p className="text-xs text-gray-600 mt-1">
-                  Upload high-quality product images to increase your conversion rate by up to 40%!
+                  Upload high-quality product images to increase your conversion
+                  rate by up to 40%!
                 </p>
               </div>
             </div>

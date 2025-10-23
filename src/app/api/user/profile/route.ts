@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
 import { updateProfileSchema } from "@/lib/validations/schemas";
+import { AuthService } from "@/lib/api/services/auth.service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,12 +13,18 @@ export async function GET(request: NextRequest) {
 
     const userId = user.userId;
 
-    // Mock user profile - replace with database query
-    const userProfile = {
-      id: userId,
-      email: user.email,
-      name: "John Doe",
-      phone: "+91 9876543210",
+    // Get user profile from database
+    const userProfile = await AuthService.getUserById(userId);
+    if (!userProfile) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Add additional profile data (mock for now)
+    const enhancedProfile = {
+      ...userProfile,
       dateOfBirth: "1990-05-15",
       gender: "male",
       avatar: "/images/avatar-placeholder.jpg",
@@ -33,18 +40,6 @@ export async function GET(request: NextRequest) {
           pincode: "201301",
           country: "India",
           isDefault: true
-        },
-        {
-          id: "addr_2",
-          type: "work",
-          name: "Office Address",
-          street: "456 Business Park",
-          area: "Cyber City",
-          city: "Gurgaon",
-          state: "Haryana",
-          pincode: "122002",
-          country: "India",
-          isDefault: false
         }
       ],
       preferences: {
@@ -73,14 +68,12 @@ export async function GET(request: NextRequest) {
         email: true,
         phone: true,
         identity: false
-      },
-      createdAt: "2023-01-15T00:00:00Z",
-      updatedAt: new Date().toISOString()
+      }
     };
 
     return NextResponse.json({
       success: true,
-      data: userProfile
+      data: enhancedProfile
     });
 
   } catch (error) {
@@ -109,14 +102,8 @@ export async function PUT(request: NextRequest) {
     const userId = user.userId;
     const updateData = validation.data;
 
-    // Mock profile update - replace with database update
-    const updatedProfile = {
-      id: userId,
-      name: updateData.name || "John Doe",
-      phone: updateData.phone || "+91 9876543210",
-      avatar: updateData.avatar || "/images/avatar-placeholder.jpg",
-      updatedAt: new Date().toISOString()
-    };
+    // Update profile in database
+    const updatedProfile = await AuthService.updateProfile(userId, updateData);
 
     return NextResponse.json({
       success: true,
@@ -124,10 +111,10 @@ export async function PUT(request: NextRequest) {
       data: updatedProfile
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update profile error:", error);
     return NextResponse.json(
-      { error: "Failed to update profile" },
+      { error: error.message || "Failed to update profile" },
       { status: 500 }
     );
   }

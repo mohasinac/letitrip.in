@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
       validatedData.email,
       validatedData.password,
       validatedData.name,
-      validatedData.phone
+      validatedData.phone,
+      validatedData.role
     );
 
     // Set authentication cookie

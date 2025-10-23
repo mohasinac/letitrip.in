@@ -73,13 +73,20 @@ Professional authentication page with:
 - Desktop navigation menu (Products, Auctions, Categories, About)
 - Search icon button
 - Shopping cart with item count badge
-- Sign In button
+- **Role-Based Navigation Buttons**:
+  - 🔴 **Admin users**: See BOTH Admin + Seller buttons
+  - 🔵 **Seller users**: See ONLY Seller button
+  - ⚪ **Regular users**: See NO role-based buttons
+  - Hierarchical access design
+- Sign In button for unauthenticated users
 - **Mobile Menu**:
   - Hamburger icon
   - Slide-out menu
-  - Full navigation links
+  - Full navigation links including role-based buttons
   - Responsive toggle
 - Smooth transitions
+
+> 📋 **See [`NAVIGATION_SYSTEM.md`](./NAVIGATION_SYSTEM.md) for detailed role-based navigation behavior**
 
 #### 2. **Footer** (`src/components/layout/Footer.tsx`)
 

@@ -128,6 +128,47 @@ async function deleteHandler(request: NextRequest) {
   }
 }
 
+async function postHandler(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { productId, quantity = 1 } = body;
+
+    if (!productId) {
+      return NextResponse.json(
+        { error: "Product ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const user = (request as any).user;
+
+    // Mock add to cart logic - replace with database operations
+    const cartItem = {
+      id: `item_${productId}_${Date.now()}`,
+      productId,
+      quantity,
+      price: 1499, // This would come from product lookup
+      name: "Product Name", // This would come from product lookup
+      image: "/images/product-placeholder.jpg",
+      addedAt: new Date().toISOString()
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: cartItem,
+      message: "Item added to cart successfully"
+    });
+
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    return NextResponse.json(
+      { error: "Failed to add item to cart" },
+      { status: 500 }
+    );
+  }
+}
+
 export const GET = withAuth(getHandler);
+export const POST = withAuth(postHandler);
 export const PUT = withAuth(putHandler);
 export const DELETE = withAuth(deleteHandler);

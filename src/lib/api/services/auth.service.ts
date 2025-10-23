@@ -13,7 +13,7 @@ export class AuthService {
   /**
    * Register a new user
    */
-  static async register(email: string, password: string, name: string, phone?: string): Promise<{ user: User; token: string }> {
+  static async register(email: string, password: string, name: string, phone?: string, role: 'admin' | 'seller' | 'user' = 'user'): Promise<{ user: User; token: string }> {
     const firebaseService = FirebaseService.getInstance();
     
     try {
@@ -36,62 +36,39 @@ export class AuthService {
         displayName: name,
       });
 
-      // Create user document using FirebaseService
-      const userData = await firebaseService.createUser({
+      // Create user document directly in Firestore with password hash
+      const userData = {
         email,
         name,
-        phone,
-        role: 'user',
-      });
-
-      if (!userData) {
-        throw new Error('Failed to create user document');
-      }
-
-      // Also store password hash in Firestore for login validation
-      await db.collection('users').doc(userRecord.uid).update({
+        ...(phone && { phone }), // Only include phone if it's provided
+        role: role,
         passwordHash: hashedPassword,
-      });
-
-      // Generate JWT token
-      const token = generateToken({
-        userId: userRecord.uid,
-        email,
-        role: 'user',
-      });
-
-      return {
-        user: { 
-          ...userData, 
-          id: userRecord.uid, 
-          addresses: [],
-          createdAt: userData.createdAt.toISOString(),
-          updatedAt: userData.updatedAt.toISOString()
-        } as User,
-        token,
-      };
-    } catch (error) {
-      console.error('Firebase registration error:', error);
-      
-      // Fallback to mock user creation
-      const mockUser: User = {
-        id: `user_${Date.now()}`,
-        email,
-        name,
-        phone,
-        role: 'user',
         addresses: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
+      await db.collection('users').doc(userRecord.uid).set(userData);
+
+      // Generate JWT token
       const token = generateToken({
-        userId: mockUser.id,
+        userId: userRecord.uid,
         email,
-        role: 'user',
+        role: role,
       });
 
-      return { user: mockUser, token };
+      return {
+        user: { 
+          ...userData, 
+          id: userRecord.uid
+        } as User,
+        token,
+      };
+    } catch (error: any) {
+      console.error('Firebase registration error:', error);
+      
+      // Don't fallback to mock users - throw the actual error
+      throw new Error(`Registration failed: ${error?.message || 'Unknown error'}`);
     }
   }
 
