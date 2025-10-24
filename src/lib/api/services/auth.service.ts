@@ -67,7 +67,7 @@ export class AuthService {
     } catch (error: any) {
       console.error('Firebase registration error:', error);
       
-      // Don't fallback to mock users - throw the actual error
+      
       throw new Error(`Registration failed: ${error?.message || 'Unknown error'}`);
     }
   }
