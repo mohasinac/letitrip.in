@@ -306,18 +306,34 @@ export default function HelpPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Submit to contact API
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      category: "general",
-      message: "",
-      orderNumber: "",
-    });
+      if (response.ok) {
+        // Reset form on success
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          category: "general",
+          message: "",
+          orderNumber: "",
+        });
+        alert("Your message has been sent successfully!");
+      } else {
+        alert("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Contact form error:", error);
+      alert("Failed to send message. Please try again.");
+    }
     setIsSubmitting(false);
 
     alert(

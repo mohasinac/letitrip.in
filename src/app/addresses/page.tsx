@@ -64,8 +64,8 @@ export default function AddressesPage() {
     const fetchAddresses = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/user/addresses', {
-          credentials: 'include'
+        const response = await fetch("/api/user/addresses", {
+          credentials: "include",
         });
         if (response.ok) {
           const data = await response.json();
@@ -74,53 +74,13 @@ export default function AddressesPage() {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch addresses:', error);
+        console.error("Failed to fetch addresses:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAddresses();
-      {
-        id: "2",
-        type: "work",
-        isDefault: false,
-        firstName: "John",
-        lastName: "Doe",
-        company: "Acme Corporation",
-        addressLine1: "456 Business Ave",
-        addressLine2: "Suite 200",
-        city: "New York",
-        state: "NY",
-        postalCode: "10002",
-        country: "United States",
-        phone: "+1 (555) 987-6543",
-        instructions: "Call when arrived - security required",
-        createdAt: "2024-01-10T14:20:00Z",
-        updatedAt: "2024-01-10T14:20:00Z",
-      },
-      {
-        id: "3",
-        type: "other",
-        isDefault: false,
-        firstName: "Jane",
-        lastName: "Smith",
-        addressLine1: "789 Oak Street",
-        city: "Brooklyn",
-        state: "NY",
-        postalCode: "11201",
-        country: "United States",
-        instructions: "Gift delivery - Mom's house",
-        createdAt: "2024-01-08T09:15:00Z",
-        updatedAt: "2024-01-08T09:15:00Z",
-      },
-    ];
-
-    // Simulate API call
-    setTimeout(() => {
-      setAddresses(mockAddresses);
-      setLoading(false);
-    }, 1000);
   }, []);
 
   const handleAddNew = () => {

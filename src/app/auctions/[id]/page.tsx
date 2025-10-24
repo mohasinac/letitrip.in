@@ -53,19 +53,21 @@ export default function AuctionDetailPage({
         setLoading(true);
         const response = await fetch(`/api/auctions/${params.id}`);
         if (!response.ok) {
-          throw new Error('Auction not found');
+          throw new Error("Auction not found");
         }
         const data = await response.json();
         if (data.success) {
           setAuction({
             ...data.data,
-            endTime: new Date(data.data.endTime)
+            endTime: new Date(data.data.endTime),
           });
         } else {
-          throw new Error(data.error || 'Failed to fetch auction');
+          throw new Error(data.error || "Failed to fetch auction");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch auction');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch auction"
+        );
       } finally {
         setLoading(false);
       }
@@ -82,14 +84,16 @@ export default function AuctionDetailPage({
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            setBids(data.data.map((bid: any) => ({
-              ...bid,
-              timestamp: new Date(bid.timestamp)
-            })));
+            setBids(
+              data.data.map((bid: any) => ({
+                ...bid,
+                timestamp: new Date(bid.timestamp),
+              }))
+            );
           }
         }
       } catch (err) {
-        console.error('Failed to fetch bids:', err);
+        console.error("Failed to fetch bids:", err);
       }
     };
 
@@ -113,13 +117,14 @@ export default function AuctionDetailPage({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {error === 'Auction not found' ? 'Auction Not Found' : 'Error Loading Auction'}
+            {error === "Auction not found"
+              ? "Auction Not Found"
+              : "Error Loading Auction"}
           </h1>
           <p className="text-gray-600 mb-6">
-            {error === 'Auction not found' 
+            {error === "Auction not found"
               ? "The auction you're looking for doesn't exist or has been removed."
-              : "There was an error loading the auction. Please try again."
-            }
+              : "There was an error loading the auction. Please try again."}
           </p>
           <Link href="/auctions" className="btn btn-primary">
             Browse Auctions
@@ -156,11 +161,11 @@ export default function AuctionDetailPage({
     if (amount >= auction.minimumBid) {
       try {
         const response = await fetch(`/api/auctions/${params.id}/bids`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify({ amount }),
         });
 
@@ -171,10 +176,10 @@ export default function AuctionDetailPage({
             window.location.reload();
           }
         } else {
-          console.error('Failed to place bid');
+          console.error("Failed to place bid");
         }
       } catch (error) {
-        console.error('Error placing bid:', error);
+        console.error("Error placing bid:", error);
       }
       setBidAmount("");
     }
@@ -183,15 +188,15 @@ export default function AuctionDetailPage({
   const handleWatchAuction = async () => {
     try {
       const response = await fetch(`/api/auctions/${params.id}/watchlist`, {
-        method: isWatching ? 'DELETE' : 'POST',
-        credentials: 'include',
+        method: isWatching ? "DELETE" : "POST",
+        credentials: "include",
       });
 
       if (response.ok) {
         setIsWatching(!isWatching);
       }
     } catch (error) {
-      console.error('Error updating watchlist:', error);
+      console.error("Error updating watchlist:", error);
     }
   };
 

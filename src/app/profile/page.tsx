@@ -106,17 +106,37 @@ export default function ProfilePage() {
 
     setSaving(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Update password via API
+      const response = await fetch("/api/user/password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
 
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+      if (response.ok) {
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        alert("Password updated successfully!");
+      } else {
+        const error = await response.json();
+        alert(error.message || "Failed to update password");
+      }
+    } catch (error) {
+      console.error("Password update error:", error);
+      alert("Failed to update password. Please try again.");
+    }
 
     setSaving(false);
-    alert("Password updated successfully!");
   };
 
   if (loading) {

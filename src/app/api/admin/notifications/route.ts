@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/jwt";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { API_RESPONSES, HTTP_STATUS, PAGINATION_DEFAULTS, NOTIFICATION_CONSTANTS } from "@/lib/api/constants";
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
     
     if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        API_RESPONSES.UNAUTHORIZED("Admin access required"), 
+        { status: HTTP_STATUS.UNAUTHORIZED }
+      );
     }
 
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const page = parseInt(searchParams.get('page') || PAGINATION_DEFAULTS.DEFAULT_PAGE.toString());
+    const limit = Math.min(
+      parseInt(searchParams.get('limit') || PAGINATION_DEFAULTS.DEFAULT_LIMIT.toString()),
+      PAGINATION_DEFAULTS.MAX_LIMIT
+    );
     const type = searchParams.get('type');
     const isActive = searchParams.get('isActive');
 
@@ -47,15 +54,17 @@ export async function GET(request: NextRequest) {
     const totalSnapshot = await db.collection('notifications').get();
     const total = totalSnapshot.size;
 
-    return NextResponse.json({
-      notifications,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      }
-    });
+    return NextResponse.json(
+      API_RESPONSES.SUCCESS({
+        notifications,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        }
+      })
+    );
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
@@ -87,7 +96,7 @@ export async function POST(request: NextRequest) {
       type,
       targetAudience,
       isActive,
-      createdBy: user.id || user.sub,
+      createdBy: user.userId || 'admin',
       createdAt: new Date(),
       updatedAt: new Date(),
     };

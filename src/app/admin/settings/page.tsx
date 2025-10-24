@@ -79,12 +79,27 @@ export default function SettingsManagement() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/settings");
+
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
+      } else if (response.status === 404) {
+        // Handle case where settings don't exist yet
+        const data = await response.json();
+        // Set default settings if API provides them
+        if (data.siteName) {
+          setSettings(data);
+        } else {
+          console.warn("Settings not found, using defaults");
+          setSettings(null);
+        }
+      } else {
+        console.error("Failed to fetch settings:", response.status);
+        setSettings(null);
       }
     } catch (error) {
       console.error("Failed to fetch settings:", error);
+      setSettings(null);
     } finally {
       setLoading(false);
     }
@@ -149,7 +164,15 @@ export default function SettingsManagement() {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
-          <p className="text-muted">Failed to load settings</p>
+          <h2 className="text-xl font-semibold text-primary mb-2">
+            Settings Not Available
+          </h2>
+          <p className="text-muted mb-4">
+            Failed to load settings. Please try refreshing the page.
+          </p>
+          <button onClick={fetchSettings} className="btn btn-danger">
+            Retry Loading Settings
+          </button>
         </div>
       </div>
     );
@@ -162,9 +185,7 @@ export default function SettingsManagement() {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-primary">
-                Site Settings
-              </h1>
+              <h1 className="text-3xl font-bold text-primary">Site Settings</h1>
               <p className="mt-1 text-sm text-muted">
                 Configure your website settings and preferences
               </p>
@@ -227,7 +248,7 @@ export default function SettingsManagement() {
                       </label>
                       <input
                         type="text"
-                        value={settings.siteName}
+                        value={settings.siteName || ""}
                         onChange={(e) =>
                           updateSettings("siteName", e.target.value)
                         }
@@ -241,7 +262,7 @@ export default function SettingsManagement() {
                       </label>
                       <input
                         type="email"
-                        value={settings.contactEmail}
+                        value={settings.contactEmail || ""}
                         onChange={(e) =>
                           updateSettings("contactEmail", e.target.value)
                         }
@@ -255,7 +276,7 @@ export default function SettingsManagement() {
                       </label>
                       <input
                         type="tel"
-                        value={settings.phoneNumber}
+                        value={settings.phoneNumber || ""}
                         onChange={(e) =>
                           updateSettings("phoneNumber", e.target.value)
                         }
@@ -268,7 +289,7 @@ export default function SettingsManagement() {
                         Currency
                       </label>
                       <select
-                        value={settings.currency}
+                        value={settings.currency || "INR"}
                         onChange={(e) =>
                           updateSettings("currency", e.target.value)
                         }
@@ -287,7 +308,7 @@ export default function SettingsManagement() {
                       Site Description
                     </label>
                     <textarea
-                      value={settings.siteDescription}
+                      value={settings.siteDescription || ""}
                       onChange={(e) =>
                         updateSettings("siteDescription", e.target.value)
                       }
@@ -301,7 +322,7 @@ export default function SettingsManagement() {
                       Address
                     </label>
                     <textarea
-                      value={settings.address}
+                      value={settings.address || ""}
                       onChange={(e) =>
                         updateSettings("address", e.target.value)
                       }
@@ -323,27 +344,31 @@ export default function SettingsManagement() {
                       </div>
                       <button
                         onClick={() =>
-                          updateSettings("isLive", !settings.isLive)
+                          updateSettings("isLive", !(settings.isLive ?? true))
                         }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          settings.isLive ? "bg-green-600" : "bg-gray-200"
+                          settings.isLive ?? true
+                            ? "bg-green-600"
+                            : "bg-gray-200"
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            settings.isLive ? "translate-x-6" : "translate-x-1"
+                            settings.isLive ?? true
+                              ? "translate-x-6"
+                              : "translate-x-1"
                           }`}
                         />
                       </button>
                     </div>
 
-                    {!settings.isLive && (
+                    {!(settings.isLive ?? true) && (
                       <div className="mt-4">
                         <label className="block text-sm font-medium text-secondary mb-2">
                           Maintenance Message
                         </label>
                         <textarea
-                          value={settings.maintenanceMessage}
+                          value={settings.maintenanceMessage || ""}
                           onChange={(e) =>
                             updateSettings("maintenanceMessage", e.target.value)
                           }
@@ -393,18 +418,18 @@ export default function SettingsManagement() {
                         onClick={() =>
                           updateSettings(
                             "paymentSettings.stripeEnabled",
-                            !settings.paymentSettings.stripeEnabled
+                            !settings.paymentSettings?.stripeEnabled
                           )
                         }
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          settings.paymentSettings.stripeEnabled
+                          settings.paymentSettings?.stripeEnabled
                             ? "bg-green-600"
                             : "bg-gray-200"
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            settings.paymentSettings.stripeEnabled
+                            settings.paymentSettings?.stripeEnabled
                               ? "translate-x-6"
                               : "translate-x-1"
                           }`}
@@ -412,14 +437,16 @@ export default function SettingsManagement() {
                       </button>
                     </div>
 
-                    {settings.paymentSettings.stripeEnabled && (
+                    {settings.paymentSettings?.stripeEnabled && (
                       <div className="ml-9">
                         <label className="block text-sm font-medium text-secondary mb-2">
                           Stripe Public Key
                         </label>
                         <input
                           type="text"
-                          value={settings.paymentSettings.stripePublicKey}
+                          value={
+                            settings.paymentSettings?.stripePublicKey || ""
+                          }
                           onChange={(e) =>
                             updateSettings(
                               "paymentSettings.stripePublicKey",
@@ -437,9 +464,7 @@ export default function SettingsManagement() {
                         <CreditCardIcon className="h-6 w-6 text-yellow-600" />
                         <div>
                           <h4 className="font-medium text-primary">PayPal</h4>
-                          <p className="text-sm text-muted">
-                            PayPal payments
-                          </p>
+                          <p className="text-sm text-muted">PayPal payments</p>
                         </div>
                       </div>
                       <button
@@ -509,7 +534,7 @@ export default function SettingsManagement() {
                       <input
                         type="number"
                         step="0.01"
-                        value={settings.taxRate}
+                        value={settings.taxRate || 0}
                         onChange={(e) =>
                           updateSettings(
                             "taxRate",
@@ -527,7 +552,7 @@ export default function SettingsManagement() {
                       <input
                         type="number"
                         step="0.01"
-                        value={settings.shippingCost}
+                        value={settings.shippingCost || 0}
                         onChange={(e) =>
                           updateSettings(
                             "shippingCost",

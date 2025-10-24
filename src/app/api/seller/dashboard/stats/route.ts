@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
+import { calculateSellerPerformance, calculateConversionRate, calculateWeightedRating, SELLER_CONSTANTS } from '@/lib/api/constants/system';
 
 interface SellerStats {
   totalRevenue: number;
@@ -125,14 +126,30 @@ export async function GET(request: NextRequest) {
       ['delivered', 'completed'].includes(order.status)
     ).length;
 
-    // Calculate ratings (mock for now - you'd implement review aggregation)
-    const averageRating = 4.5; // Mock average rating
-    const totalReviews = Math.floor(completedOrders * 0.3); // Mock review count
+    // Calculate ratings using real data and system constants
+    // Get actual reviews for this seller's products
+    const reviewsSnapshot = await db.collection('reviews')
+      .where('sellerId', '==', sellerId)
+      .where('status', '==', 'approved')
+      .get();
+    
+    const reviews = reviewsSnapshot.docs.map(doc => doc.data());
+    const averageRating = calculateWeightedRating(reviews);
+    const totalReviews = reviews.length;
+
+    // Calculate performance metrics using system constants
+    const avgShippingDays = 3; // This would be calculated from actual order data
+    const performanceMetrics = calculateSellerPerformance({
+      totalOrders: currentMonthOrders.length,
+      completedOrders,
+      totalReviews,
+      avgShippingDays
+    });
 
     // Calculate changes
     const revenueChange = lastRevenue > 0 ? ((currentRevenue - lastRevenue) / lastRevenue) * 100 : 0;
     const ordersChange = lastMonthOrders.length > 0 ? ((currentMonthOrders.length - lastMonthOrders.length) / lastMonthOrders.length) * 100 : 0;
-    const conversionRate = 3.2; // Mock conversion rate
+    const conversionRate = calculateConversionRate(performanceMetrics);
 
     // Calculate goal progress
     const monthlyGoal = 50000; // Default monthly goal

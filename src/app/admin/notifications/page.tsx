@@ -54,10 +54,27 @@ export default function NotificationsManagement() {
       const response = await fetch("/api/admin/notifications");
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data);
+        // Handle the correct API response structure
+        if (
+          data.success &&
+          data.data &&
+          Array.isArray(data.data.notifications)
+        ) {
+          setNotifications(data.data.notifications);
+        } else if (data.notifications && Array.isArray(data.notifications)) {
+          // Fallback for old response format
+          setNotifications(data.notifications);
+        } else {
+          console.error("API returned invalid notifications data:", data);
+          setNotifications([]);
+        }
+      } else {
+        console.error("Failed to fetch notifications");
+        setNotifications([]);
       }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -84,12 +101,18 @@ export default function NotificationsManagement() {
 
         if (editingNotification) {
           setNotifications(
-            notifications.map((n) =>
-              n.id === editingNotification.id ? savedNotification : n
-            )
+            Array.isArray(notifications)
+              ? notifications.map((n) =>
+                  n.id === editingNotification.id ? savedNotification : n
+                )
+              : [savedNotification]
           );
         } else {
-          setNotifications([savedNotification, ...notifications]);
+          setNotifications(
+            Array.isArray(notifications)
+              ? [savedNotification, ...notifications]
+              : [savedNotification]
+          );
         }
 
         handleCloseModal();
@@ -108,7 +131,11 @@ export default function NotificationsManagement() {
       });
 
       if (response.ok) {
-        setNotifications(notifications.filter((n) => n.id !== id));
+        setNotifications(
+          Array.isArray(notifications)
+            ? notifications.filter((n) => n.id !== id)
+            : []
+        );
       }
     } catch (error) {
       console.error("Failed to delete notification:", error);
@@ -125,7 +152,9 @@ export default function NotificationsManagement() {
 
       if (response.ok) {
         setNotifications(
-          notifications.map((n) => (n.id === id ? { ...n, isActive } : n))
+          Array.isArray(notifications)
+            ? notifications.map((n) => (n.id === id ? { ...n, isActive } : n))
+            : []
         );
       }
     } catch (error) {
@@ -218,7 +247,7 @@ export default function NotificationsManagement() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
               <p className="mt-2 text-muted">Loading notifications...</p>
             </div>
-          ) : notifications.length === 0 ? (
+          ) : !Array.isArray(notifications) || notifications.length === 0 ? (
             <div className="p-12 text-center">
               <BellIcon className="h-12 w-12 text-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-primary mb-2">
@@ -236,85 +265,90 @@ export default function NotificationsManagement() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {notifications.map((notification) => (
-                <div key={notification.id} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-medium text-primary">
-                          {notification.title}
-                        </h3>
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(
-                            notification.type
-                          )}`}
-                        >
-                          {notification.type}
-                        </span>
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getAudienceColor(
-                            notification.targetAudience
-                          )}`}
-                        >
-                          {notification.targetAudience}
-                        </span>
-                        <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full mr-2 ${
-                              notification.isActive
-                                ? "bg-green-400"
-                                : "bg-gray-400"
-                            }`}
-                          ></div>
-                          <span className="text-xs text-muted">
-                            {notification.isActive ? "Active" : "Inactive"}
+              {(Array.isArray(notifications) &&
+                notifications.map((notification) => (
+                  <div key={notification.id} className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-medium text-primary">
+                            {notification.title}
+                          </h3>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(
+                              notification.type
+                            )}`}
+                          >
+                            {notification.type}
                           </span>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getAudienceColor(
+                              notification.targetAudience
+                            )}`}
+                          >
+                            {notification.targetAudience}
+                          </span>
+                          <div className="flex items-center">
+                            <div
+                              className={`w-2 h-2 rounded-full mr-2 ${
+                                notification.isActive
+                                  ? "bg-green-400"
+                                  : "bg-gray-400"
+                              }`}
+                            ></div>
+                            <span className="text-xs text-muted">
+                              {notification.isActive ? "Active" : "Inactive"}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-secondary mb-3">
+                          {notification.message}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-muted">
+                          <span>Created: {notification.createdAt}</span>
+                          {notification.scheduledFor && (
+                            <span>Scheduled: {notification.scheduledFor}</span>
+                          )}
                         </div>
                       </div>
-                      <p className="text-secondary mb-3">
-                        {notification.message}
-                      </p>
-                      <div className="flex items-center space-x-4 text-sm text-muted">
-                        <span>Created: {notification.createdAt}</span>
-                        {notification.scheduledFor && (
-                          <span>Scheduled: {notification.scheduledFor}</span>
-                        )}
+                      <div className="flex items-center space-x-2 ml-4">
+                        <button
+                          onClick={() =>
+                            handleToggleActive(
+                              notification.id,
+                              !notification.isActive
+                            )
+                          }
+                          className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                            notification.isActive
+                              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                              : "bg-green-100 text-green-800 hover:bg-green-200"
+                          }`}
+                        >
+                          {notification.isActive ? "Deactivate" : "Activate"}
+                        </button>
+                        <button
+                          onClick={() => handleEdit(notification)}
+                          className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                          title="Edit notification"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(notification.id)}
+                          className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                          title="Delete notification"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 ml-4">
-                      <button
-                        onClick={() =>
-                          handleToggleActive(
-                            notification.id,
-                            !notification.isActive
-                          )
-                        }
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                          notification.isActive
-                            ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                            : "bg-green-100 text-green-800 hover:bg-green-200"
-                        }`}
-                      >
-                        {notification.isActive ? "Deactivate" : "Activate"}
-                      </button>
-                      <button
-                        onClick={() => handleEdit(notification)}
-                        className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                        title="Edit notification"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(notification.id)}
-                        className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-                        title="Delete notification"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </div>
                   </div>
+                ))) || (
+                <div className="p-6 text-center text-muted">
+                  No notifications available
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>

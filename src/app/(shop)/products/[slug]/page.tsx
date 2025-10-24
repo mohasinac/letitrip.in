@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ProductCard from "@/components/products/ProductCard";
@@ -12,30 +12,41 @@ export default function ProductDetailPage({
 }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-  // Mock product data - replace with API call using params.slug
-  const product = {
-    id: "1",
-    name: "Premium Beyblade Stadium Pro",
-    slug: "premium-stadium-pro",
-    price: 2999,
-    compareAtPrice: 3999,
-    description:
-      "Experience the ultimate battle arena with our Premium Beyblade Stadium Pro. Featuring reinforced walls, optimal spin surface, and tournament-grade design.",
-    images: [
-      "/images/product-1.jpg",
-      "/images/product-2.jpg",
-      "/images/product-3.jpg",
-    ],
-    category: "Stadiums",
-    sku: "STD-PRO-001",
-    inStock: true,
-    quantity: 25,
-    rating: 4.8,
-    reviews: 142,
-  };
+  useEffect(() => {
+    // Fetch product data using slug
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        // TODO: Implement product fetching by slug
+        // const response = await fetch(`/api/products/slug/${params.slug}`);
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   setProduct(data.data);
+        // }
+        
+        // For now, show loading state
+        setProduct(null);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const relatedProducts = [
+    fetchProduct();
+  }, [params.slug]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading product...</div>;
+  }
+
+  if (!product) {
+    return <div className="min-h-screen flex items-center justify-center">Product not found</div>;
+  }
     {
       id: "2",
       name: "Metal Fusion Set",
