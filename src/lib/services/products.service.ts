@@ -262,14 +262,14 @@ export class ProductsService {
   /**
    * Get featured products
    */
-  static async getFeatured(limit: number = 10): Promise<Product[]> {
+  static async getFeatured(maxCount: number = 10): Promise<Product[]> {
     try {
       const q = query(
         this.collection,
         where('isFeatured', '==', true),
         where('status', '==', 'active'),
         orderBy('createdAt', 'desc'),
-        limit(limit)
+        limit(maxCount)
       );
 
       const querySnapshot = await getDocs(q);

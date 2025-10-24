@@ -10,10 +10,11 @@ import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/config/api';
 // GET: Get coupon by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const coupon = await couponService.getCouponById(params.id);
+    const { id } = await params;
+    const coupon = await couponService.getCouponById(id);
     
     if (!coupon) {
       return NextResponse.json(
@@ -38,9 +39,10 @@ export async function GET(
 // PUT: Update coupon (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -64,7 +66,7 @@ export async function PUT(
     }
 
     const updates = await request.json();
-    const coupon = await couponService.updateCoupon(params.id, updates);
+    const coupon = await couponService.updateCoupon(id, updates);
 
     return NextResponse.json({
       success: true,
@@ -82,9 +84,10 @@ export async function PUT(
 // DELETE: Delete coupon (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -107,7 +110,7 @@ export async function DELETE(
       );
     }
 
-    await couponService.deleteCoupon(params.id);
+    await couponService.deleteCoupon(id);
 
     return NextResponse.json({
       success: true,

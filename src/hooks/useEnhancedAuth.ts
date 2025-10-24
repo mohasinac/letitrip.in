@@ -6,18 +6,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { User } from "@/types";
 
-// Authentication-specific user type with claims
-interface AuthUser extends User {
-  claims?: {
-    permissions: string[];
-    lastLogin?: string;
-    sessionId?: string;
-  };
-}
-
 export interface AuthHookReturn {
   // Core auth state
-  user: AuthUser | null;
+  user: any | null;
   loading: boolean;
   error: string | null;
   cookieConsentRequired: boolean;
@@ -27,7 +18,7 @@ export interface AuthHookReturn {
   register: (name: string, email: string, password: string, role?: "admin" | "seller" | "user") => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
-  updateProfile: (updates: Partial<AuthUser>) => Promise<void>;
+  updateProfile: (updates: Partial<any>) => Promise<void>;
 
   // Storage methods
   setStorageItem: (key: string, value: string) => boolean;

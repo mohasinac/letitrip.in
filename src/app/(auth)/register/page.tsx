@@ -73,8 +73,7 @@ function RegisterForm() {
         formData.name,
         formData.email,
         formData.password,
-        formData.role,
-        formData.isOver18
+        formData.role
       );
       // Redirect is handled by the register function in AuthContext
     } catch (err) {

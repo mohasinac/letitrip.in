@@ -74,7 +74,7 @@ export default function ProtectedRoute({
   // Don't render children if user doesn't have required role
   if (requireRole) {
     const roleHierarchy = { admin: 3, seller: 2, user: 1 };
-    const userLevel = roleHierarchy[user.role];
+    const userLevel = roleHierarchy[user.role as keyof typeof roleHierarchy];
     const requiredLevel = roleHierarchy[requireRole];
 
     if (userLevel < requiredLevel) {

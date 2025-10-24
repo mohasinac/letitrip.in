@@ -10,9 +10,10 @@ import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/config/api';
 // GET: Track shipment by AWB code
 export async function GET(
   request: NextRequest,
-  { params }: { params: { awb: string } }
+  { params }: { params: Promise<{ awb: string }> }
 ) {
   try {
+    const { awb } = await params;
     // Verify user authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -26,7 +27,7 @@ export async function GET(
     const auth = getAdminAuth();
     await auth.verifyIdToken(token);
 
-    const awbCode = params.awb;
+    const awbCode = awb;
     if (!awbCode) {
       return NextResponse.json(
         { success: false, error: 'AWB code is required' },

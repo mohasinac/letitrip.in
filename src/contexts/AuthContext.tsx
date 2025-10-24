@@ -15,7 +15,17 @@ import {
 import { User } from "@/types";
 
 // Extend the base User type with authentication-specific claims
-interface AuthUser extends User {
+interface AuthUser {
+  id: string;
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  name?: string;
+  role: "admin" | "seller" | "user";
+  addresses?: any[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  getIdToken: () => Promise<string>;
   claims?: {
     permissions: string[];
     lastLogin?: string;

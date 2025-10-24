@@ -42,9 +42,15 @@ export default function StoresPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-
-
-  const categories = ["All", "Official", "Collectibles", "Tournament", "General", "Vintage", "Custom"];
+  const categories = [
+    "All",
+    "Official",
+    "Collectibles",
+    "Tournament",
+    "General",
+    "Vintage",
+    "Custom",
+  ];
 
   const fetchSellers = async () => {
     setLoading(true);
@@ -92,11 +98,11 @@ export default function StoresPage() {
 
   const getActiveStatus = (seller: Seller) => {
     if (!seller.isActive) return "Inactive";
-    
+
     const lastSeen = new Date(seller.lastSeen);
     const now = new Date();
     const diffHours = (now.getTime() - lastSeen.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffHours < 1) return "Online";
     if (diffHours < 24) return "Active today";
     if (diffHours < 168) return "Active this week";
@@ -105,10 +111,14 @@ export default function StoresPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Online": return "text-green-600 bg-green-100";
-      case "Active today": return "text-blue-600 bg-blue-100";
-      case "Active this week": return "text-yellow-600 bg-yellow-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "Online":
+        return "text-green-600 bg-green-100";
+      case "Active today":
+        return "text-blue-600 bg-blue-100";
+      case "Active this week":
+        return "text-yellow-600 bg-yellow-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
@@ -190,7 +200,9 @@ export default function StoresPage() {
           </div>
         ) : sellers.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">No stores found matching your criteria</p>
+            <p className="text-gray-500">
+              No stores found matching your criteria
+            </p>
           </div>
         ) : (
           <>
@@ -230,16 +242,22 @@ export default function StoresPage() {
                               <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
                             )}
                           </div>
-                          
+
                           <div className="flex items-center space-x-1 mb-2">
                             <StarIcon className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-sm font-medium">{seller.rating}</span>
+                            <span className="text-sm font-medium">
+                              {seller.rating}
+                            </span>
                             <span className="text-sm text-gray-500">
                               ({seller.totalSales} sales)
                             </span>
                           </div>
 
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              status
+                            )}`}
+                          >
                             {status}
                           </span>
                         </div>
@@ -255,14 +273,18 @@ export default function StoresPage() {
                         <div className="text-center">
                           <div className="flex items-center justify-center text-blue-600 mb-1">
                             <ShoppingBagIcon className="w-4 h-4 mr-1" />
-                            <span className="font-semibold">{seller.totalProducts}</span>
+                            <span className="font-semibold">
+                              {seller.totalProducts}
+                            </span>
                           </div>
                           <p className="text-xs text-gray-500">Products</p>
                         </div>
                         <div className="text-center">
                           <div className="flex items-center justify-center text-green-600 mb-1">
                             <UsersIcon className="w-4 h-4 mr-1" />
-                            <span className="font-semibold">{seller.totalSales}</span>
+                            <span className="font-semibold">
+                              {seller.totalSales}
+                            </span>
                           </div>
                           <p className="text-xs text-gray-500">Sales</p>
                         </div>

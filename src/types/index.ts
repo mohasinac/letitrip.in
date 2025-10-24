@@ -297,6 +297,8 @@ export interface ProductFilters {
   sort?: 'price-asc' | 'price-desc' | 'newest' | 'popular';
   page?: number;
   pageSize?: number;
+  sellerId?: string;
+  status?: 'active' | 'inactive' | 'pending';
 }
 
 export interface OrderFilters {

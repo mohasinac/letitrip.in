@@ -5,10 +5,10 @@ const db = getAdminDb();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { sellerId: string } }
+  { params }: { params: Promise<{ sellerId: string }> }
 ) {
   try {
-    const { sellerId } = params;
+    const { sellerId } = await params;
 
     // Get seller info from users collection
     const sellerDoc = await db.collection('users').doc(sellerId).get();

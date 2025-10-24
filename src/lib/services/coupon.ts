@@ -10,6 +10,10 @@ import {
   CartItem, 
   User 
 } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
+
+// Get database instance
+const db = getAdminDb();
 
 // Simple UUID generator
 function generateId(): string {
@@ -86,7 +90,7 @@ class CouponService {
         }
       }
 
-      await db.collection(this.couponsCollection).doc(couponId).update(updatedCoupon);
+      await db.collection(this.couponsCollection).doc(couponId).update({...updatedCoupon});
       return updatedCoupon;
     } catch (error) {
       console.error('Update coupon error:', error);
@@ -244,7 +248,7 @@ class CouponService {
 
       // Check per-user usage limit
       if (coupon.maxUsesPerUser) {
-        const userUsageCount = await this.getUserCouponUsageCount(couponId, userId);
+        const userUsageCount = await this.getUserCouponUsageCount(coupon.id!, userId);
         if (userUsageCount >= coupon.maxUsesPerUser) {
           return { valid: false, error: 'You have reached the usage limit for this coupon' };
         }

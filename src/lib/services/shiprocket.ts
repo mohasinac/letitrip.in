@@ -47,7 +47,7 @@ class ShiprocketService {
         this.token = response.data.token;
         // Token typically expires in 24 hours
         this.tokenExpiry = Date.now() + (23 * 60 * 60 * 1000);
-        return this.token;
+        return this.token!;
       }
 
       throw new Error('No token received from Shiprocket');
