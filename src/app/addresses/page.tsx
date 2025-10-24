@@ -60,25 +60,27 @@ export default function AddressesPage() {
   });
 
   useEffect(() => {
-    // Mock data for demonstration
-    const mockAddresses: Address[] = [
-      {
-        id: "1",
-        type: "home",
-        isDefault: true,
-        firstName: "John",
-        lastName: "Doe",
-        addressLine1: "123 Main Street",
-        addressLine2: "Apt 4B",
-        city: "New York",
-        state: "NY",
-        postalCode: "10001",
-        country: "United States",
-        phone: "+1 (555) 123-4567",
-        instructions: "Leave package at front door",
-        createdAt: "2024-01-15T10:30:00Z",
-        updatedAt: "2024-01-15T10:30:00Z",
-      },
+    // TODO: Fetch addresses from Firebase/API
+    const fetchAddresses = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/user/addresses', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setAddresses(data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch addresses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAddresses();
       {
         id: "2",
         type: "work",

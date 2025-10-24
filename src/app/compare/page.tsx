@@ -37,125 +37,35 @@ function CompareContent() {
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
-    // Mock products data
-    const mockProducts: Product[] = [
-      {
-        id: "1",
-        name: "iPhone 15 Pro",
-        price: 999,
-        originalPrice: 1099,
-        image: "/api/placeholder/300/300",
-        brand: "Apple",
-        rating: 4.8,
-        reviewCount: 2847,
-        category: "Smartphones",
-        specifications: {
-          "Display Size": "6.1 inches",
-          Storage: "128GB",
-          RAM: "8GB",
-          Camera: "48MP + 12MP + 12MP",
-          Battery: "3274 mAh",
-          OS: "iOS 17",
-          Processor: "A17 Pro",
-          "5G": true,
-          "Wireless Charging": true,
-          "Water Resistant": "IP68",
-        },
-        features: [
-          "Action Button",
-          "Titanium Design",
-          "ProRAW Photography",
-          "Cinematic Mode",
-          "Face ID",
-          "MagSafe Compatible",
-        ],
-        availability: "In Stock",
-        shipping: "Free 2-day shipping",
-      },
-      {
-        id: "2",
-        name: "Samsung Galaxy S24 Ultra",
-        price: 1199,
-        image: "/api/placeholder/300/300",
-        brand: "Samsung",
-        rating: 4.6,
-        reviewCount: 1923,
-        category: "Smartphones",
-        specifications: {
-          "Display Size": "6.8 inches",
-          Storage: "256GB",
-          RAM: "12GB",
-          Camera: "200MP + 50MP + 12MP + 10MP",
-          Battery: "5000 mAh",
-          OS: "Android 14",
-          Processor: "Snapdragon 8 Gen 3",
-          "5G": true,
-          "Wireless Charging": true,
-          "Water Resistant": "IP68",
-        },
-        features: [
-          "S Pen Included",
-          "AI Photo Enhancement",
-          "8K Video Recording",
-          "Ultra Wideband",
-          "Samsung DeX",
-          "Reverse Wireless Charging",
-        ],
-        availability: "In Stock",
-        shipping: "Free shipping",
-      },
-      {
-        id: "3",
-        name: "Google Pixel 8 Pro",
-        price: 899,
-        originalPrice: 999,
-        image: "/api/placeholder/300/300",
-        brand: "Google",
-        rating: 4.5,
-        reviewCount: 1456,
-        category: "Smartphones",
-        specifications: {
-          "Display Size": "6.7 inches",
-          Storage: "128GB",
-          RAM: "12GB",
-          Camera: "50MP + 48MP + 48MP",
-          Battery: "5050 mAh",
-          OS: "Android 14",
-          Processor: "Google Tensor G3",
-          "5G": true,
-          "Wireless Charging": true,
-          "Water Resistant": "IP68",
-        },
-        features: [
-          "Magic Eraser",
-          "Real Tone",
-          "Live Translate",
-          "Call Screen",
-          "Titan M Security",
-          "Pure Android Experience",
-        ],
-        availability: "Limited Stock",
-        shipping: "Free 3-day shipping",
-      },
-    ];
+    // TODO: Fetch products from Firebase/API
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setProducts(data.data);
+            setSearchResults(data.data);
 
-    // Get products from URL params
-    const productIds = searchParams.get("products")?.split(",") || [];
-
-    setTimeout(() => {
-      setProducts(mockProducts);
-      setSearchResults(mockProducts);
-
-      // Set selected products based on URL params
-      if (productIds.length > 0) {
-        const preselected = mockProducts.filter((p) =>
-          productIds.includes(p.id)
-        );
-        setSelectedProducts(preselected);
+            // Set selected products based on URL params
+            const productIds = searchParams.get("products")?.split(",") || [];
+            if (productIds.length > 0) {
+              const preselected = data.data.filter((p: Product) =>
+                productIds.includes(p.id)
+              );
+              setSelectedProducts(preselected);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setLoading(false);
-    }, 1000);
+    fetchProducts();
   }, [searchParams]);
 
   const handleAddProduct = (product: Product) => {

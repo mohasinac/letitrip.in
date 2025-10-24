@@ -24,13 +24,14 @@ export default function UserActivityChart() {
     return data;
   };
 
-  const { data: activityData, loading: isLoading, error } = useRealTimeData(
-    fetchUserActivity,
-    {
-      enabled: true,
-      interval: 60000, // Refresh every minute
-    }
-  );
+  const {
+    data: activityData,
+    loading: isLoading,
+    error,
+  } = useRealTimeData(fetchUserActivity, {
+    enabled: true,
+    interval: 60000, // Refresh every minute
+  });
 
   // Default data structure for loading state
   const defaultData: UserActivityData = {

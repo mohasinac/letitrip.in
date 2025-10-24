@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/auth/middleware";
-import { FirebaseService } from "@/lib/firebase/services";
+import { getAdminDb } from '@/lib/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 async function handler(request: NextRequest) {
   try {
@@ -24,12 +25,11 @@ async function handler(request: NextRequest) {
     }
 
     const user = (request as any).user;
-    const firebaseService = FirebaseService.getInstance();
+    const db = getAdminDb();
 
-    // Mock order creation - replace with database operations
-    const newOrder = {
-      id: `order_${Date.now()}`,
-      userId: user.id,
+    // Create order in Firestore
+    const orderData = {
+      userId: user.userId || user.id,
       status: "processing",
       items,
       shippingAddress,
@@ -39,19 +39,30 @@ async function handler(request: NextRequest) {
       tax,
       total,
       trackingNumber: `TRK${Date.now()}`,
-      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp()
     };
+
+    const orderRef = await db.collection('orders').add(orderData);
 
     // Mock payment processing
     if (paymentMethod === "card") {
-      // Simulate payment gateway integration
-      // In real implementation, integrate with Razorpay/Stripe
+      // TODO: Integrate with Razorpay/Stripe payment gateway
+      console.log("Processing card payment...");
     }
 
-    // Clear cart after successful order
-    // Mock cart clearing logic
+    // Clear user's cart after successful order
+    const cartRef = db.collection('carts').doc(user.userId || user.id);
+    await cartRef.delete();
+
+    const newOrder = {
+      id: orderRef.id,
+      ...orderData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+    };
 
     return NextResponse.json({
       success: true,

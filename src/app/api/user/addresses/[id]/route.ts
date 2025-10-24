@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
 import { addressSchema } from "@/lib/validations/schemas";
+import { db } from "@/lib/firebase/config";
+import { doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
 
 export async function GET(
   request: NextRequest,
@@ -16,23 +18,22 @@ export async function GET(
     const { id: addressId } = await params;
     const userId = user.userId;
 
-    // Mock address data - replace with database query
+    // Fetch address from Firestore
+    const addressDoc = await getDoc(doc(db, "addresses", addressId));
+    
+    if (!addressDoc.exists()) {
+      return NextResponse.json(
+        { error: "Address not found" },
+        { status: 404 }
+      );
+    }
+
     const address = {
-      id: addressId,
-      userId,
-      type: "home",
-      name: "John Doe",
-      phone: "+91 9876543210",
-      addressLine1: "123 Main Street, Apartment 4B",
-      addressLine2: "Near City Mall",
-      city: "Noida",
-      state: "Uttar Pradesh",
-      pincode: "201301",
-      country: "India",
-      isDefault: true,
-      createdAt: "2023-01-15T00:00:00Z",
-      updatedAt: "2023-01-15T00:00:00Z"
-    };
+      id: addressDoc.id,
+      ...addressDoc.data(),
+      createdAt: addressDoc.data()?.createdAt?.toDate?.()?.toISOString() || addressDoc.data()?.createdAt,
+      updatedAt: addressDoc.data()?.updatedAt?.toDate?.()?.toISOString() || addressDoc.data()?.updatedAt
+    } as any;
 
     // Check if address belongs to user
     if (address.userId !== userId) {
@@ -77,40 +78,46 @@ export async function PUT(
     const userId = user.userId;
     const updateData = validation.data;
 
-    // Mock address check - replace with database query
-    const existingAddress = {
-      id: addressId,
-      userId,
-      exists: true
-    };
-
-    if (!existingAddress.exists || existingAddress.userId !== userId) {
+    // Check if address exists and belongs to user
+    const addressDoc = await getDoc(doc(db, "addresses", addressId));
+    
+    if (!addressDoc.exists() || addressDoc.data()?.userId !== userId) {
       return NextResponse.json(
         { error: "Address not found" },
         { status: 404 }
       );
     }
 
-    // If this is set as default, unset other defaults - replace with database logic
+    // If this is set as default, unset other defaults
     if (updateData.isDefault) {
-      // Mock: Update other addresses to set isDefault = false
+      const addressesQuery = query(
+        collection(db, "addresses"),
+        where("userId", "==", userId),
+        where("isDefault", "==", true)
+      );
+      
+      const currentDefaultAddresses = await getDocs(addressesQuery);
+      const updatePromises = currentDefaultAddresses.docs.map(addrDoc => 
+        updateDoc(addrDoc.ref, { isDefault: false })
+      );
+      await Promise.all(updatePromises);
     }
 
-    // Update address - replace with database update
+    // Update address in Firestore
+    const updatePayload = {
+      ...updateData,
+      updatedAt: new Date()
+    };
+
+    await updateDoc(doc(db, "addresses", addressId), updatePayload);
+
+    // Fetch updated address
+    const updatedDoc = await getDoc(doc(db, "addresses", addressId));
     const updatedAddress = {
-      id: addressId,
-      userId,
-      name: updateData.name || "John Doe",
-      phone: updateData.phone || "+91 9876543210",
-      addressLine1: updateData.addressLine1 || "123 Main Street",
-      addressLine2: updateData.addressLine2 || "",
-      city: updateData.city || "Noida",
-      state: updateData.state || "Uttar Pradesh",
-      pincode: updateData.pincode || "201301",
-      country: updateData.country || "India",
-      isDefault: updateData.isDefault || false,
-      createdAt: "2023-01-15T00:00:00Z",
-      updatedAt: new Date().toISOString()
+      id: updatedDoc.id,
+      ...updatedDoc.data(),
+      createdAt: updatedDoc.data()?.createdAt?.toDate?.()?.toISOString() || updatedDoc.data()?.createdAt,
+      updatedAt: updatedDoc.data()?.updatedAt?.toDate?.()?.toISOString() || updatedDoc.data()?.updatedAt
     };
 
     return NextResponse.json({
@@ -142,31 +149,36 @@ export async function DELETE(
     const { id: addressId } = await params;
     const userId = user.userId;
 
-    // Mock address check - replace with database query
-    const existingAddress = {
-      id: addressId,
-      userId,
-      exists: true,
-      isDefault: false
-    };
-
-    if (!existingAddress.exists || existingAddress.userId !== userId) {
+    // Check if address exists and belongs to user
+    const addressDoc = await getDoc(doc(db, "addresses", addressId));
+    
+    if (!addressDoc.exists() || addressDoc.data()?.userId !== userId) {
       return NextResponse.json(
         { error: "Address not found" },
         { status: 404 }
       );
     }
 
+    const addressData = addressDoc.data();
+
     // Prevent deletion of default address if it's the only one
-    if (existingAddress.isDefault) {
-      return NextResponse.json(
-        { error: "Cannot delete default address. Please set another address as default first." },
-        { status: 400 }
+    if (addressData?.isDefault) {
+      const userAddressesQuery = query(
+        collection(db, "addresses"),
+        where("userId", "==", userId)
       );
+      const userAddressesSnapshot = await getDocs(userAddressesQuery);
+      
+      if (userAddressesSnapshot.docs.length <= 1) {
+        return NextResponse.json(
+          { error: "Cannot delete the only address. Add another address first." },
+          { status: 400 }
+        );
+      }
     }
 
-    // Delete address - replace with database delete
-    // Mock deletion operation
+    // Delete address from Firestore
+    await deleteDoc(doc(db, "addresses", addressId));
 
     return NextResponse.json({
       success: true,

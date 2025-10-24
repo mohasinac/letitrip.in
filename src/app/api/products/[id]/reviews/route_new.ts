@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateBody } from "@/lib/auth/middleware";
 import { createReviewSchema } from "@/lib/validations/schemas";
-import { getAdminDb } from '@/lib/firebase/admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { db } from "@/lib/firebase/config";
+import { collection, getDocs, query, orderBy, where, addDoc, doc, getDoc } from "firebase/firestore";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(
   request: NextRequest,
@@ -31,7 +32,7 @@ export async function GET(
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
       updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt
-    }));
+    })) as any[];
 
     // Filter by rating if specified
     if (rating) {
@@ -108,8 +109,14 @@ export async function POST(
   try {
     const { id: productId } = await params;
 
-    // Note: In a real implementation, you'd check authentication here
-    // For now, we'll create a mock review
+    // Get current user
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
     // Validate request body
     const validation = await validateBody(request, createReviewSchema);
@@ -119,9 +126,9 @@ export async function POST(
 
     const reviewData = validation.data;
 
-    // Check if product exists in database
-    const productDoc = await db.collection('products').doc(productId).get();
-    if (!productDoc.exists) {
+    // Check if product exists
+    const productDoc = await getDoc(doc(db, "products", productId));
+    if (!productDoc.exists()) {
       return NextResponse.json(
         { error: "Product not found" },
         { status: 404 }
@@ -129,25 +136,31 @@ export async function POST(
     }
 
     // Create new review in Firestore
-    const reviewDoc = await db.collection('reviews').add({
+    const newReview = {
       productId,
-      userId: "user_current", // Would come from auth
-      userName: "Anonymous User", // Would come from user profile
-      userAvatar: "/images/default-avatar.jpg",
+      userId: user.userId,
+      userName: (user as any).name || "Anonymous User",
+      userAvatar: (user as any).avatar || "/images/default-avatar.jpg",
       rating: reviewData.rating,
       title: reviewData.title,
       comment: reviewData.comment,
       images: reviewData.images || [],
       verified: false, // Would be true if user purchased the product
       helpful: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "pending", // Reviews need admin approval
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
+
+    const docRef = await addDoc(collection(db, "reviews"), newReview);
 
     return NextResponse.json({
       success: true,
-      message: "Review added successfully",
-      data: newReview
+      message: "Review submitted for approval",
+      data: {
+        id: docRef.id,
+        ...newReview
+      }
     }, { status: 201 });
 
   } catch (error) {

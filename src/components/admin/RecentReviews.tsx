@@ -26,13 +26,14 @@ export default function RecentReviews() {
     return data;
   };
 
-  const { data: reviews, loading: isLoading, error } = useRealTimeData(
-    fetchRecentReviews,
-    {
-      enabled: true,
-      interval: 30000, // Refresh every 30 seconds
-    }
-  );
+  const {
+    data: reviews,
+    loading: isLoading,
+    error,
+  } = useRealTimeData(fetchRecentReviews, {
+    enabled: true,
+    interval: 30000, // Refresh every 30 seconds
+  });
 
   const getStatusColor = (status: string) => {
     const colors = {

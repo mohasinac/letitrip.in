@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
+import { db } from "@/lib/firebase/config";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 
 export async function POST(
   request: NextRequest,
@@ -15,26 +17,35 @@ export async function POST(
     const { id: auctionId } = await params;
     const userId = user.userId;
 
-    // Mock watchlist check - replace with database query
-    const existingWatchlist = {
-      userId,
-      auctionId,
-      exists: false // Simulate not in watchlist
-    };
+    // Check if already in watchlist
+    const watchlistQuery = query(
+      collection(db, "watchlist"),
+      where("userId", "==", userId),
+      where("auctionId", "==", auctionId)
+    );
 
-    if (existingWatchlist.exists) {
+    const existingWatchlist = await getDocs(watchlistQuery);
+
+    if (!existingWatchlist.empty) {
       return NextResponse.json(
         { error: "Already in watchlist" },
         { status: 400 }
       );
     }
 
-    // Add to watchlist - replace with database insert
-    const watchlistItem = {
-      id: `watchlist_${Date.now()}`,
+    // Add to watchlist in Firestore
+    const watchlistData = {
       userId,
       auctionId,
-      addedAt: new Date().toISOString()
+      addedAt: new Date()
+    };
+
+    const docRef = await addDoc(collection(db, "watchlist"), watchlistData);
+
+    const watchlistItem = {
+      id: docRef.id,
+      ...watchlistData,
+      addedAt: watchlistData.addedAt.toISOString()
     };
 
     return NextResponse.json({
@@ -66,22 +77,25 @@ export async function DELETE(
     const { id: auctionId } = await params;
     const userId = user.userId;
 
-    // Mock watchlist check - replace with database query
-    const existingWatchlist = {
-      userId,
-      auctionId,
-      exists: true // Simulate exists in watchlist
-    };
+    // Find existing watchlist item
+    const watchlistQuery = query(
+      collection(db, "watchlist"),
+      where("userId", "==", userId),
+      where("auctionId", "==", auctionId)
+    );
 
-    if (!existingWatchlist.exists) {
+    const existingWatchlist = await getDocs(watchlistQuery);
+
+    if (existingWatchlist.empty) {
       return NextResponse.json(
         { error: "Not in watchlist" },
         { status: 400 }
       );
     }
 
-    // Remove from watchlist - replace with database delete
-    // Mock removal operation
+    // Remove from watchlist in Firestore
+    const watchlistDoc = existingWatchlist.docs[0];
+    await deleteDoc(watchlistDoc.ref);
 
     return NextResponse.json({
       success: true,

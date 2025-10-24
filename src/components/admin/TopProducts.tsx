@@ -22,13 +22,14 @@ export default function TopProducts() {
     return data;
   };
 
-  const { data: products, loading: isLoading, error } = useRealTimeData(
-    fetchTopProducts,
-    {
-      enabled: true,
-      interval: 60000, // Refresh every minute
-    }
-  );
+  const {
+    data: products,
+    loading: isLoading,
+    error,
+  } = useRealTimeData(fetchTopProducts, {
+    enabled: true,
+    interval: 60000, // Refresh every minute
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {

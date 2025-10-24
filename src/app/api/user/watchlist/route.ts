@@ -112,8 +112,25 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Mock bulk removal - replace with database operations
-    const removedCount = auctionIds.length;
+    const db = getAdminDb();
+    const batch = db.batch();
+    let removedCount = 0;
+
+    // Find and delete watchlist items for this user and auction IDs
+    for (const auctionId of auctionIds) {
+      const watchlistQuery = await db.collection('watchlist')
+        .where('userId', '==', userId)
+        .where('auctionId', '==', auctionId)
+        .get();
+
+      watchlistQuery.forEach(doc => {
+        batch.delete(doc.ref);
+        removedCount++;
+      });
+    }
+
+    // Commit the batch delete
+    await batch.commit();
 
     return NextResponse.json({
       success: true,

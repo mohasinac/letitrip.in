@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
 import { addressSchema } from "@/lib/validations/schemas";
+import { db } from "@/lib/firebase/config";
+import { collection, getDocs, query, where, orderBy, addDoc, updateDoc, doc } from "firebase/firestore";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,41 +14,20 @@ export async function GET(request: NextRequest) {
 
     const userId = user.userId;
 
-    // Mock user addresses - replace with database query
-    const addresses = [
-      {
-        id: "addr_1",
-        userId,
-        type: "home",
-        name: "John Doe",
-        phone: "+91 9876543210",
-        addressLine1: "123 Main Street, Apartment 4B",
-        addressLine2: "Near City Mall",
-        city: "Noida",
-        state: "Uttar Pradesh",
-        pincode: "201301",
-        country: "India",
-        isDefault: true,
-        createdAt: "2023-01-15T00:00:00Z",
-        updatedAt: "2023-01-15T00:00:00Z"
-      },
-      {
-        id: "addr_2",
-        userId,
-        type: "work",
-        name: "John Doe",
-        phone: "+91 9876543210",
-        addressLine1: "456 Business Park, Tower A, Floor 10",
-        addressLine2: "Sector 125",
-        city: "Noida",
-        state: "Uttar Pradesh",
-        pincode: "201303",
-        country: "India",
-        isDefault: false,
-        createdAt: "2023-02-01T00:00:00Z",
-        updatedAt: "2023-02-01T00:00:00Z"
-      }
-    ];
+    // Fetch addresses from Firestore
+    const addressesQuery = query(
+      collection(db, "addresses"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
+
+    const addressesSnapshot = await getDocs(addressesQuery);
+    const addresses = addressesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
+      updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt
+    }));
 
     return NextResponse.json({
       success: true,
@@ -79,18 +60,36 @@ export async function POST(request: NextRequest) {
     const userId = user.userId;
     const addressData = validation.data;
 
-    // If this is set as default, unset other defaults - replace with database logic
+    // If this is set as default, unset other defaults
     if (addressData.isDefault) {
-      // Mock: Update other addresses to set isDefault = false
+      const addressesQuery = query(
+        collection(db, "addresses"),
+        where("userId", "==", userId),
+        where("isDefault", "==", true)
+      );
+      
+      const currentDefaultAddresses = await getDocs(addressesQuery);
+      const updatePromises = currentDefaultAddresses.docs.map(addressDoc => 
+        updateDoc(addressDoc.ref, { isDefault: false })
+      );
+      await Promise.all(updatePromises);
     }
 
-    // Create new address - replace with database insert
-    const newAddress = {
-      id: `addr_${Date.now()}`,
+    // Create new address in Firestore
+    const newAddressData = {
       userId,
       ...addressData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const docRef = await addDoc(collection(db, "addresses"), newAddressData);
+
+    const newAddress = {
+      id: docRef.id,
+      ...newAddressData,
+      createdAt: newAddressData.createdAt.toISOString(),
+      updatedAt: newAddressData.updatedAt.toISOString()
     };
 
     return NextResponse.json({

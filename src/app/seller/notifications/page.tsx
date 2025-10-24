@@ -16,14 +16,8 @@ import {
 
 export default function SellerNotifications() {
   const { user } = useAuth();
-  const {
-    notifications,
-    unreadCount,
-    loading,
-    error,
-    refresh,
-    markAsRead,
-  } = useRealTimeNotifications();
+  const { notifications, unreadCount, loading, error, refresh, markAsRead } =
+    useRealTimeNotifications();
 
   const [filter, setFilter] = useState<
     "all" | "unread" | "order" | "product" | "review" | "payment"
@@ -40,9 +34,7 @@ export default function SellerNotifications() {
     // Mark all notifications as read via API
     try {
       await Promise.all(
-        notifications
-          .filter(n => !n.isRead)
-          .map(n => markAsRead(n.id))
+        notifications.filter((n) => !n.isRead).map((n) => markAsRead(n.id))
       );
       refresh();
     } catch (error) {
@@ -52,10 +44,13 @@ export default function SellerNotifications() {
 
   const deleteNotification = async (notificationId: string) => {
     try {
-      const response = await fetch(`/api/seller/notifications/${notificationId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `/api/seller/notifications/${notificationId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         refresh();
       }

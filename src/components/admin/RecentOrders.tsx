@@ -10,7 +10,7 @@ interface RecentOrdersData {
 
 export default function RecentOrders() {
   const fetchRecentOrders = async () => {
-    const response = await fetch('/api/admin/orders?limit=5&sort=newest');
+    const response = await fetch("/api/admin/orders?limit=5&sort=newest");
     if (!response.ok) {
       throw new Error("Failed to fetch recent orders");
     }
@@ -18,31 +18,32 @@ export default function RecentOrders() {
     return orders;
   };
 
-  const { data: orders, loading, error } = useRealTimeData(
-    fetchRecentOrders,
-    {
-      enabled: true,
-      interval: 30000, // Refresh every 30 seconds
-    }
-  );
+  const {
+    data: orders,
+    loading,
+    error,
+  } = useRealTimeData(fetchRecentOrders, {
+    enabled: true,
+    interval: 30000, // Refresh every 30 seconds
+  });
 
   const getStatusColor = (status: string) => {
     const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      processing: 'bg-purple-100 text-purple-800',
-      shipped: 'bg-indigo-100 text-indigo-800',
-      delivered: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-      refunded: 'bg-gray-100 text-gray-800',
+      pending: "bg-yellow-100 text-yellow-800",
+      confirmed: "bg-blue-100 text-blue-800",
+      processing: "bg-purple-100 text-purple-800",
+      shipped: "bg-indigo-100 text-indigo-800",
+      delivered: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+      refunded: "bg-gray-100 text-gray-800",
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 0,
     }).format(amount);
   };
@@ -125,15 +126,20 @@ export default function RecentOrders() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                        order.status
+                      )}`}
+                    >
+                      {order.status.charAt(0).toUpperCase() +
+                        order.status.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {formatCurrency(order.total)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleDateString('en-IN')}
+                    {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </td>
                 </tr>
               ))

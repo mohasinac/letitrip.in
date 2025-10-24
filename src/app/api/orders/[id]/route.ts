@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/auth/middleware";
 import { JWTPayload } from "@/lib/auth/jwt";
+import { getAdminDb } from '@/lib/firebase/admin';
 
 export async function GET(
   request: NextRequest,
@@ -9,70 +10,46 @@ export async function GET(
   return withAuth(async (req: NextRequest, user: JWTPayload) => {
     try {
       const { id: orderId } = await params;
+      const db = getAdminDb();
 
-      // Mock order data - replace with database query
-      const mockOrder = {
-        id: orderId,
-        userId: user.userId,
-        status: "shipped",
-        items: [
-          {
-            id: "1",
-            productId: "prod_1",
-            name: "Premium Beyblade Stadium",
-            image: "/images/product-1.jpg",
-            price: 2999,
-            quantity: 1
-          }
-        ],
-        shippingAddress: {
-          firstName: "John",
-          lastName: "Doe",
-          address: "123 Main Street",
-          city: "Mumbai",
-          state: "Maharashtra",
-          pincode: "400001",
-          phone: "+91 9876543210"
-        },
-        paymentMethod: "card",
-        subtotal: 2999,
-        shipping: 0,
-        tax: 539,
-        total: 3538,
-        trackingNumber: "TRK123456789",
-        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-        createdAt: "2024-01-15T10:30:00Z",
-        updatedAt: new Date().toISOString(),
-        statusHistory: [
-          {
-            status: "processing",
-            timestamp: "2024-01-15T10:30:00Z",
-            message: "Order received and being processed"
-          },
-          {
-            status: "confirmed",
-            timestamp: "2024-01-15T12:00:00Z",
-            message: "Payment confirmed, preparing for shipment"
-          },
-          {
-            status: "shipped",
-            timestamp: "2024-01-16T09:00:00Z",
-            message: "Order shipped with tracking number TRK123456789"
-          }
-        ]
-      };
-
-      // Check if user owns this order
-      if (mockOrder.userId !== user.userId) {
+      // Get order from Firestore
+      const orderDoc = await db.collection('orders').doc(orderId).get();
+      
+      if (!orderDoc.exists) {
         return NextResponse.json(
           { error: "Order not found" },
           { status: 404 }
         );
       }
 
+      const orderData = orderDoc.data();
+      
+      // Check if user owns this order
+      if (orderData?.userId !== user.userId) {
+        return NextResponse.json(
+          { error: "Order not found" },
+          { status: 404 }
+        );
+      }
+
+      const order = {
+        id: orderDoc.id,
+        ...orderData,
+        createdAt: orderData?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        updatedAt: orderData?.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        estimatedDelivery: orderData?.estimatedDelivery?.toDate?.()?.toISOString() || new Date().toISOString(),
+        statusHistory: orderData?.statusHistory || [
+          {
+            status: orderData?.status || 'processing',
+            timestamp: orderData?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+            message: `Order ${orderData?.status || 'processing'}`
+          }
+        ]
+      };
+
       return NextResponse.json({
         success: true,
-        data: mockOrder
+        data: order
       });
 
     } catch (error) {

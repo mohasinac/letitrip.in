@@ -12,6 +12,26 @@ interface Bid {
   isWinning: boolean;
 }
 
+interface Auction {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+  currentBid: number;
+  startingBid: number;
+  minimumBid: number;
+  endTime: Date;
+  bidCount: number;
+  seller: {
+    name: string;
+    rating: number;
+    totalSales: number;
+  };
+  category: string;
+  condition: string;
+  isAuthentic: boolean;
+}
+
 export default function AuctionDetailPage({
   params,
 }: {
@@ -21,69 +41,93 @@ export default function AuctionDetailPage({
   const [bidAmount, setBidAmount] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [isWatching, setIsWatching] = useState(false);
+  const [auction, setAuction] = useState<Auction | null>(null);
+  const [bids, setBids] = useState<Bid[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock auction data
-  const auction = {
-    id: params.id,
-    title: "Rare Vintage Beyblade Metal Series",
-    description: `This is an extremely rare vintage Beyblade from the Metal Fusion series, manufactured in 2010. 
-    
-    Features:
-    • Authentic Takara Tomy product
-    • Metal Fusion technology
-    • Complete with ripcord launcher
-    • Original packaging included
-    • Certificate of authenticity
-    
-    Condition: Mint condition, barely used. No scratches or damage.
-    
-    This is a collector's dream item and perfect for serious Beyblade enthusiasts. The metal series is known for its superior performance and durability.`,
-    images: [
-      "/images/auction-1.jpg",
-      "/images/auction-2.jpg",
-      "/images/auction-3.jpg",
-    ],
-    currentBid: 2500,
-    startingBid: 1000,
-    minimumBid: 2600, // currentBid + increment
-    endTime: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-    bidCount: 15,
-    seller: {
-      name: "CollectorPro",
-      rating: 4.9,
-      totalSales: 156,
-    },
-    category: "Beyblades",
-    condition: "Mint",
-    isAuthentic: true,
-  };
+  // Fetch auction data from API
+  useEffect(() => {
+    const fetchAuction = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/auctions/${params.id}`);
+        if (!response.ok) {
+          throw new Error('Auction not found');
+        }
+        const data = await response.json();
+        if (data.success) {
+          setAuction({
+            ...data.data,
+            endTime: new Date(data.data.endTime)
+          });
+        } else {
+          throw new Error(data.error || 'Failed to fetch auction');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch auction');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const bids: Bid[] = [
-    {
-      id: "1",
-      userId: "user1",
-      userName: "BeybladeExpert",
-      amount: 2500,
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      isWinning: true,
-    },
-    {
-      id: "2",
-      userId: "user2",
-      userName: "MetalFusionFan",
-      amount: 2400,
-      timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      isWinning: false,
-    },
-    {
-      id: "3",
-      userId: "user3",
-      userName: "CollectorKing",
-      amount: 2300,
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      isWinning: false,
-    },
-  ];
+    fetchAuction();
+  }, [params.id]);
+
+  // Fetch bid history
+  useEffect(() => {
+    const fetchBids = async () => {
+      try {
+        const response = await fetch(`/api/auctions/${params.id}/bids`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setBids(data.data.map((bid: any) => ({
+              ...bid,
+              timestamp: new Date(bid.timestamp)
+            })));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch bids:', err);
+      }
+    };
+
+    if (auction) {
+      fetchBids();
+    }
+  }, [params.id, auction]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !auction) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {error === 'Auction not found' ? 'Auction Not Found' : 'Error Loading Auction'}
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {error === 'Auction not found' 
+              ? "The auction you're looking for doesn't exist or has been removed."
+              : "There was an error loading the auction. Please try again."
+            }
+          </p>
+          <Link href="/auctions" className="btn btn-primary">
+            Browse Auctions
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Update countdown timer
   useEffect(() => {
@@ -107,18 +151,48 @@ export default function AuctionDetailPage({
     return () => clearInterval(timer);
   }, [auction.endTime]);
 
-  const handlePlaceBid = () => {
+  const handlePlaceBid = async () => {
     const amount = parseFloat(bidAmount);
     if (amount >= auction.minimumBid) {
-      console.log(`Placing bid of ₹${amount}`);
-      // API call to place bid
+      try {
+        const response = await fetch(`/api/auctions/${params.id}/bids`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ amount }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            // Refresh auction data and bids
+            window.location.reload();
+          }
+        } else {
+          console.error('Failed to place bid');
+        }
+      } catch (error) {
+        console.error('Error placing bid:', error);
+      }
       setBidAmount("");
     }
   };
 
-  const handleWatchAuction = () => {
-    setIsWatching(!isWatching);
-    // API call to add/remove from watchlist
+  const handleWatchAuction = async () => {
+    try {
+      const response = await fetch(`/api/auctions/${params.id}/watchlist`, {
+        method: isWatching ? 'DELETE' : 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setIsWatching(!isWatching);
+      }
+    } catch (error) {
+      console.error('Error updating watchlist:', error);
+    }
   };
 
   return (

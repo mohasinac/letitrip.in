@@ -37,7 +37,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const { user } = useEnhancedAuth();
-  
+
   const fetchProfile = async () => {
     const response = await fetch("/api/user/profile", {
       credentials: "include",
@@ -48,13 +48,15 @@ export default function ProfilePage() {
     return await response.json();
   };
 
-  const { data: profile, loading, error, refresh } = useRealTimeData(
-    fetchProfile,
-    {
-      enabled: !!user,
-      interval: 60000, // Refresh every minute
-    }
-  );
+  const {
+    data: profile,
+    loading,
+    error,
+    refresh,
+  } = useRealTimeData(fetchProfile, {
+    enabled: !!user,
+    interval: 60000, // Refresh every minute
+  });
 
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
