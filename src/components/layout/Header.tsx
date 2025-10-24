@@ -54,6 +54,12 @@ export default function Header() {
             Auctions
           </Link>
           <Link
+            href="/stores"
+            className="text-sm font-medium hover:text-primary transition-colors"
+          >
+            Stores
+          </Link>
+          <Link
             href="/reviews"
             className="text-sm font-medium hover:text-primary transition-colors"
           >
@@ -301,6 +307,12 @@ export default function Header() {
               className="block py-2 text-sm font-medium hover:text-primary"
             >
               Auctions
+            </Link>
+            <Link
+              href="/stores"
+              className="block py-2 text-sm font-medium hover:text-primary"
+            >
+              Stores
             </Link>
             <Link
               href="/reviews"

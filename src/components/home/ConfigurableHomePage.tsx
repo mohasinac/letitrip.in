@@ -196,6 +196,12 @@ export default function ConfigurableHomePage() {
                 >
                   {mainBanner?.auctionButton?.text || "View Auctions"}
                 </Link>
+                <Link
+                  href="/stores"
+                  className="btn bg-transparent border-2 border-white hover:bg-white/10 px-8 py-3 text-lg"
+                >
+                  Browse Stores
+                </Link>
               </div>
             </div>
 
