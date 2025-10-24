@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
 
 interface Review {
   id: string;
@@ -16,88 +17,22 @@ interface Review {
 }
 
 export default function RecentReviews() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const fetchRecentReviews = async () => {
+    const response = await fetch("/api/admin/reviews?limit=5&sort=newest");
+    if (!response.ok) {
+      throw new Error("Failed to fetch reviews");
+    }
+    const data = await response.json();
+    return data;
+  };
 
-  useEffect(() => {
-    const fetchRecentReviews = async () => {
-      try {
-        const response = await fetch("/api/admin/reviews?limit=5&sort=newest");
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        } else {
-          // Mock data for development
-          const mockReviews: Review[] = [
-            {
-              id: "1",
-              productName: "Beyblade Burst Evolution",
-              userName: "Arjun Sharma",
-              rating: 5,
-              comment:
-                "Amazing product! My son loves it. Great quality and fast shipping.",
-              createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-              status: "pending",
-            },
-            {
-              id: "2",
-              productName: "Stadium Arena Pro",
-              userName: "Priya Patel",
-              rating: 4,
-              comment:
-                "Good stadium but a bit expensive. Quality is excellent though.",
-              createdAt: new Date(
-                Date.now() - 1000 * 60 * 60 * 2
-              ).toISOString(), // 2 hours ago
-              status: "approved",
-            },
-            {
-              id: "3",
-              productName: "Launcher Grip Set",
-              userName: "Rohit Kumar",
-              rating: 3,
-              comment: "Average product. Could be better for the price.",
-              createdAt: new Date(
-                Date.now() - 1000 * 60 * 60 * 5
-              ).toISOString(), // 5 hours ago
-              status: "pending",
-            },
-            {
-              id: "4",
-              productName: "Metal Fight Series",
-              userName: "Ananya Singh",
-              rating: 5,
-              comment:
-                "Excellent build quality! Highly recommended for serious players.",
-              createdAt: new Date(
-                Date.now() - 1000 * 60 * 60 * 8
-              ).toISOString(), // 8 hours ago
-              status: "approved",
-            },
-            {
-              id: "5",
-              productName: "Accessories Pack",
-              userName: "Vikram Joshi",
-              rating: 4,
-              comment: "Great value for money. All accessories are useful.",
-              createdAt: new Date(
-                Date.now() - 1000 * 60 * 60 * 12
-              ).toISOString(), // 12 hours ago
-              status: "pending",
-            },
-          ];
-          setReviews(mockReviews);
-        }
-      } catch (error) {
-        console.error("Failed to fetch recent reviews:", error);
-        setReviews([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRecentReviews();
-  }, []);
+  const { data: reviews, loading: isLoading, error } = useRealTimeData(
+    fetchRecentReviews,
+    {
+      enabled: true,
+      interval: 30000, // Refresh every 30 seconds
+    }
+  );
 
   const getStatusColor = (status: string) => {
     const colors = {
@@ -181,12 +116,12 @@ export default function RecentReviews() {
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          {reviews.length === 0 ? (
+          {!reviews || reviews.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
-              No recent reviews found
+              {error ? "Failed to load reviews" : "No recent reviews found"}
             </div>
           ) : (
-            reviews.map((review) => (
+            (reviews as Review[]).map((review) => (
               <div
                 key={review.id}
                 className="border-b border-gray-200 pb-4 last:border-b-0"

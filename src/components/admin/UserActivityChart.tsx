@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -14,54 +15,38 @@ interface UserActivityData {
 }
 
 export default function UserActivityChart() {
-  const [activityData, setActivityData] = useState<UserActivityData>({
+  const fetchUserActivity = async () => {
+    const response = await fetch("/api/admin/analytics/user-activity");
+    if (!response.ok) {
+      throw new Error("Failed to fetch user activity");
+    }
+    const data = await response.json();
+    return data;
+  };
+
+  const { data: activityData, loading: isLoading, error } = useRealTimeData(
+    fetchUserActivity,
+    {
+      enabled: true,
+      interval: 60000, // Refresh every minute
+    }
+  );
+
+  // Default data structure for loading state
+  const defaultData: UserActivityData = {
     newUsers: 0,
     returningUsers: 0,
     activeUsers: 0,
     bounceRate: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  };
 
-  useEffect(() => {
-    const fetchUserActivity = async () => {
-      try {
-        const response = await fetch("/api/admin/analytics/user-activity");
-        if (response.ok) {
-          const data = await response.json();
-          setActivityData(data);
-        } else {
-          // Mock data for development
-          const mockData: UserActivityData = {
-            newUsers: 342,
-            returningUsers: 658,
-            activeUsers: 1000,
-            bounceRate: 32.5,
-          };
-          setActivityData(mockData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user activity:", error);
-        // Mock data fallback
-        const mockData: UserActivityData = {
-          newUsers: 342,
-          returningUsers: 658,
-          activeUsers: 1000,
-          bounceRate: 32.5,
-        };
-        setActivityData(mockData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserActivity();
-  }, []);
+  const currentData = activityData || defaultData;
 
   const chartData = {
     labels: ["New Users", "Returning Users"],
     datasets: [
       {
-        data: [activityData.newUsers, activityData.returningUsers],
+        data: [currentData.newUsers, currentData.returningUsers],
         backgroundColor: [
           "#3B82F6", // Blue
           "#10B981", // Green
@@ -127,7 +112,7 @@ export default function UserActivityChart() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-900">
-                {activityData.activeUsers.toLocaleString()}
+                {currentData.activeUsers.toLocaleString()}
               </div>
               <div className="text-sm text-gray-500">Active Users</div>
             </div>
@@ -138,13 +123,13 @@ export default function UserActivityChart() {
         <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-gray-200">
           <div className="text-center">
             <div className="text-lg font-semibold text-blue-600">
-              {activityData.newUsers}
+              {currentData.newUsers}
             </div>
             <div className="text-sm text-gray-500">New Users</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-semibold text-green-600">
-              {activityData.returningUsers}
+              {currentData.returningUsers}
             </div>
             <div className="text-sm text-gray-500">Returning Users</div>
           </div>
@@ -155,13 +140,13 @@ export default function UserActivityChart() {
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-500">Bounce Rate</span>
             <span className="text-sm font-semibold text-gray-900">
-              {activityData.bounceRate}%
+              {currentData.bounceRate}%
             </span>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-2">
             <div
               className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${activityData.bounceRate}%` }}
+              style={{ width: `${currentData.bounceRate}%` }}
             ></div>
           </div>
         </div>

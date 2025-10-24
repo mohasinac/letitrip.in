@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Order } from "@/types";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
 
 interface RecentOrdersData {
   orders: Order[];
@@ -9,82 +9,22 @@ interface RecentOrdersData {
 }
 
 export default function RecentOrders() {
-  const [data, setData] = useState<RecentOrdersData>({
-    orders: [],
-    loading: true,
-  });
+  const fetchRecentOrders = async () => {
+    const response = await fetch('/api/admin/orders?limit=5&sort=newest');
+    if (!response.ok) {
+      throw new Error("Failed to fetch recent orders");
+    }
+    const orders = await response.json();
+    return orders;
+  };
 
-  useEffect(() => {
-    const fetchRecentOrders = async () => {
-      try {
-        const response = await fetch('/api/admin/orders?limit=5&sort=newest');
-        if (response.ok) {
-          const orders = await response.json();
-          setData({ orders, loading: false });
-        } else {
-          // Mock data for development
-          const mockOrders: Order[] = [
-            {
-              id: "1",
-              orderNumber: "ORD-2024-001",
-              userId: "user1",
-              items: [
-                {
-                  id: "item1",
-                  productId: "prod1",
-                  productName: "Premium Beyblade",
-                  productImage: "/images/beyblade1.jpg",
-                  sku: "BEY001",
-                  price: 2999,
-                  quantity: 1,
-                  total: 2999,
-                }
-              ],
-              subtotal: 2999,
-              shipping: 99,
-              tax: 0,
-              discount: 0,
-              total: 3098,
-              status: "processing",
-              paymentStatus: "paid",
-              paymentMethod: "razorpay",
-              shippingAddress: {
-                id: "addr1",
-                name: "John Doe",
-                phone: "9876543210",
-                addressLine1: "123 Main St",
-                city: "Mumbai",
-                state: "Maharashtra",
-                pincode: "400001",
-                country: "India",
-                isDefault: true,
-              },
-              billingAddress: {
-                id: "addr1",
-                name: "John Doe",
-                phone: "9876543210",
-                addressLine1: "123 Main St",
-                city: "Mumbai",
-                state: "Maharashtra",
-                pincode: "400001",
-                country: "India",
-                isDefault: true,
-              },
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-            // Add more mock orders...
-          ];
-          setData({ orders: mockOrders, loading: false });
-        }
-      } catch (error) {
-        console.error('Failed to fetch recent orders:', error);
-        setData({ orders: [], loading: false });
-      }
-    };
-
-    fetchRecentOrders();
-  }, []);
+  const { data: orders, loading, error } = useRealTimeData(
+    fetchRecentOrders,
+    {
+      enabled: true,
+      interval: 30000, // Refresh every 30 seconds
+    }
+  );
 
   const getStatusColor = (status: string) => {
     const colors = {
@@ -107,7 +47,7 @@ export default function RecentOrders() {
     }).format(amount);
   };
 
-  if (data.loading) {
+  if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-sm border">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -159,14 +99,14 @@ export default function RecentOrders() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.orders.length === 0 ? (
+            {!orders || orders.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                  No recent orders found
+                  {error ? "Failed to load orders" : "No recent orders found"}
                 </td>
               </tr>
             ) : (
-              data.orders.map((order) => (
+              (orders as Order[]).map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

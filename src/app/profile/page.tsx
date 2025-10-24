@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface UserProfile {
@@ -36,8 +37,25 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const { user } = useEnhancedAuth();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  const fetchProfile = async () => {
+    const response = await fetch("/api/user/profile", {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch profile");
+    }
+    return await response.json();
+  };
+
+  const { data: profile, loading, error, refresh } = useRealTimeData(
+    fetchProfile,
+    {
+      enabled: !!user,
+      interval: 60000, // Refresh every minute
+    }
+  );
+
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [passwordData, setPasswordData] = useState({
@@ -46,56 +64,31 @@ export default function ProfilePage() {
     confirmPassword: "",
   });
 
-  useEffect(() => {
-    // Mock profile data
-    const mockProfile: UserProfile = {
-      id: user?.id || "user-123",
-      firstName: "John",
-      lastName: "Doe",
-      email: user?.email || "john.doe@example.com",
-      phone: "+1 (555) 123-4567",
-      dateOfBirth: "1990-05-15",
-      gender: "male",
-      bio: "Beyblade enthusiast and collector. Love competitive battling!",
-      preferences: {
-        emailNotifications: true,
-        smsNotifications: false,
-        marketingEmails: true,
-        orderUpdates: true,
-        auctionAlerts: true,
-        newsletter: true,
-      },
-      privacy: {
-        profileVisibility: "public",
-        showPurchaseHistory: false,
-        showWishlist: true,
-      },
-      security: {
-        twoFactorEnabled: false,
-        lastPasswordChange: "2024-01-15T10:30:00Z",
-        loginAttempts: 0,
-      },
-    };
-
-    // Simulate API call
-    setTimeout(() => {
-      setProfile(mockProfile);
-      setLoading(false);
-    }, 1000);
-  }, [user]);
-
   const handleProfileUpdate = async (updatedProfile: Partial<UserProfile>) => {
     setSaving(true);
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedProfile),
+      });
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
 
-    if (profile) {
-      setProfile({ ...profile, ...updatedProfile });
+      // Refresh the profile data
+      await refresh();
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    alert("Profile updated successfully!");
   };
 
   const handlePasswordChange = async () => {
@@ -528,7 +521,7 @@ export default function ProfilePage() {
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={value}
+                            checked={Boolean(value)}
                             onChange={(e) => {
                               const updatedPreferences = {
                                 ...profile.preferences,

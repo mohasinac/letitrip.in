@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRealTimeStats } from "@/hooks/useRealTimeData";
 import {
   ShoppingBagIcon,
   UsersIcon,
@@ -22,7 +23,10 @@ interface Stats {
 }
 
 export default function StatsCards() {
-  const [stats, setStats] = useState<Stats>({
+  const { data: stats, loading: isLoading, error } = useRealTimeStats("admin");
+
+  // Default stats for loading state
+  const defaultStats: Stats = {
     totalRevenue: 0,
     totalOrders: 0,
     totalCustomers: 0,
@@ -31,49 +35,9 @@ export default function StatsCards() {
     ordersChange: 0,
     customersChange: 0,
     aovChange: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  };
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch("/api/admin/dashboard/stats");
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        } else {
-          // Mock data for development
-          setStats({
-            totalRevenue: 125430,
-            totalOrders: 1245,
-            totalCustomers: 892,
-            averageOrderValue: 100.74,
-            revenueChange: 12.5,
-            ordersChange: 8.2,
-            customersChange: 15.3,
-            aovChange: -2.1,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-        // Mock data fallback
-        setStats({
-          totalRevenue: 125430,
-          totalOrders: 1245,
-          totalCustomers: 892,
-          averageOrderValue: 100.74,
-          revenueChange: 12.5,
-          ordersChange: 8.2,
-          customersChange: 15.3,
-          aovChange: -2.1,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
+  const currentStats = stats || defaultStats;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -91,29 +55,29 @@ export default function StatsCards() {
   const cards = [
     {
       name: "Total Revenue",
-      value: formatCurrency(stats.totalRevenue),
-      change: stats.revenueChange,
+      value: formatCurrency(currentStats.totalRevenue),
+      change: currentStats.revenueChange,
       icon: CurrencyDollarIcon,
       color: "bg-blue-500",
     },
     {
       name: "Total Orders",
-      value: formatNumber(stats.totalOrders),
-      change: stats.ordersChange,
+      value: formatNumber(currentStats.totalOrders),
+      change: currentStats.ordersChange,
       icon: ShoppingBagIcon,
       color: "bg-green-500",
     },
     {
       name: "Total Customers",
-      value: formatNumber(stats.totalCustomers),
-      change: stats.customersChange,
+      value: formatNumber(currentStats.totalCustomers),
+      change: currentStats.customersChange,
       icon: UsersIcon,
       color: "bg-purple-500",
     },
     {
       name: "Average Order Value",
-      value: formatCurrency(stats.averageOrderValue),
-      change: stats.aovChange,
+      value: formatCurrency(currentStats.averageOrderValue),
+      change: currentStats.aovChange,
       icon: ChartBarIcon,
       color: "bg-orange-500",
     },

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { SellerNotification } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRealTimeNotifications } from "@/hooks/useRealTimeData";
 import {
   BellIcon,
   CheckIcon,
@@ -15,98 +16,52 @@ import {
 
 export default function SellerNotifications() {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<SellerNotification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    error,
+    refresh,
+    markAsRead,
+  } = useRealTimeNotifications();
+
   const [filter, setFilter] = useState<
     "all" | "unread" | "order" | "product" | "review" | "payment"
   >("all");
 
-  useEffect(() => {
-    if (user) {
-      loadNotifications();
-    }
-  }, [user, filter]);
-
-  const loadNotifications = async () => {
-    try {
-      setLoading(true);
-      // Mock data for now - in production, fetch from API
-      const mockNotifications: SellerNotification[] = [
-        {
-          id: "1",
-          sellerId: user?.id || "",
-          type: "order",
-          title: "New Order Received",
-          message:
-            "You have received a new order #ORD-001 from John Doe for ₹2,499",
-          orderId: "ORD-001",
-          isRead: false,
-          createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
-        },
-        {
-          id: "2",
-          sellerId: user?.id || "",
-          type: "product",
-          title: "Low Stock Alert",
-          message:
-            'Your product "Wireless Headphones" is running low on stock (2 units remaining)',
-          productId: "prod-1",
-          isRead: false,
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        },
-        {
-          id: "3",
-          sellerId: user?.id || "",
-          type: "review",
-          title: "New Product Review",
-          message:
-            'Your product "Smart Watch" received a 5-star review from Sarah',
-          productId: "prod-2",
-          isRead: true,
-          createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-        },
-        {
-          id: "4",
-          sellerId: user?.id || "",
-          type: "payment",
-          title: "Payment Received",
-          message:
-            "Payment of ₹2,499 for order #ORD-001 has been processed successfully",
-          orderId: "ORD-001",
-          isRead: true,
-          createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
-        },
-      ];
-
-      const filteredNotifications =
-        filter === "all"
-          ? mockNotifications
-          : filter === "unread"
-          ? mockNotifications.filter((n) => !n.isRead)
-          : mockNotifications.filter((n) => n.type === filter);
-
-      setNotifications(filteredNotifications);
-    } catch (error) {
-      console.error("Error loading notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markAsRead = async (notificationId: string) => {
-    setNotifications(
-      notifications.map((n) =>
-        n.id === notificationId ? { ...n, isRead: true } : n
-      )
-    );
-  };
+  // Filter notifications based on current filter
+  const filteredNotifications = notifications.filter((notification) => {
+    if (filter === "all") return true;
+    if (filter === "unread") return !notification.isRead;
+    return notification.type === filter;
+  });
 
   const markAllAsRead = async () => {
-    setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
+    // Mark all notifications as read via API
+    try {
+      await Promise.all(
+        notifications
+          .filter(n => !n.isRead)
+          .map(n => markAsRead(n.id))
+      );
+      refresh();
+    } catch (error) {
+      console.error("Failed to mark all as read:", error);
+    }
   };
 
   const deleteNotification = async (notificationId: string) => {
-    setNotifications(notifications.filter((n) => n.id !== notificationId));
+    try {
+      const response = await fetch(`/api/seller/notifications/${notificationId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        refresh();
+      }
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -138,8 +93,6 @@ export default function SellerNotifications() {
     if (minutes > 0) return `${minutes}m ago`;
     return "Just now";
   };
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div>
@@ -209,7 +162,7 @@ export default function SellerNotifications() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-2 text-muted">Loading notifications...</p>
           </div>
-        ) : notifications.length === 0 ? (
+        ) : filteredNotifications.length === 0 ? (
           <div className="text-center py-12">
             <BellIcon className="h-12 w-12 text-muted mx-auto mb-4" />
             <p className="text-muted mb-2">No notifications found</p>
@@ -220,7 +173,7 @@ export default function SellerNotifications() {
         ) : (
           <div className="bg-background shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-border">
-              {notifications.map((notification) => (
+              {filteredNotifications.map((notification) => (
                 <li key={notification.id}>
                   <div
                     className={`px-4 py-4 ${

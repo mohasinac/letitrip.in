@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
 
 interface TopProduct {
   id: string;
@@ -12,72 +13,22 @@ interface TopProduct {
 }
 
 export default function TopProducts() {
-  const [products, setProducts] = useState<TopProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const fetchTopProducts = async () => {
+    const response = await fetch("/api/admin/analytics/top-products");
+    if (!response.ok) {
+      throw new Error("Failed to fetch top products");
+    }
+    const data = await response.json();
+    return data;
+  };
 
-  useEffect(() => {
-    const fetchTopProducts = async () => {
-      try {
-        const response = await fetch("/api/admin/analytics/top-products");
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        } else {
-          // Mock data for development
-          const mockProducts: TopProduct[] = [
-            {
-              id: "1",
-              name: "Beyblade Burst Evolution",
-              image: "/images/beyblade1.jpg",
-              sales: 245,
-              revenue: 367500,
-              growth: 15.2,
-            },
-            {
-              id: "2",
-              name: "Stadium Arena Pro",
-              image: "/images/stadium1.jpg",
-              sales: 156,
-              revenue: 234000,
-              growth: 8.7,
-            },
-            {
-              id: "3",
-              name: "Launcher Grip Set",
-              image: "/images/launcher1.jpg",
-              sales: 189,
-              revenue: 189000,
-              growth: -2.1,
-            },
-            {
-              id: "4",
-              name: "Metal Fight Series",
-              image: "/images/beyblade2.jpg",
-              sales: 134,
-              revenue: 201000,
-              growth: 12.5,
-            },
-            {
-              id: "5",
-              name: "Accessories Pack",
-              image: "/images/accessories1.jpg",
-              sales: 98,
-              revenue: 98000,
-              growth: 5.3,
-            },
-          ];
-          setProducts(mockProducts);
-        }
-      } catch (error) {
-        console.error("Failed to fetch top products:", error);
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTopProducts();
-  }, []);
+  const { data: products, loading: isLoading, error } = useRealTimeData(
+    fetchTopProducts,
+    {
+      enabled: true,
+      interval: 60000, // Refresh every minute
+    }
+  );
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -121,12 +72,12 @@ export default function TopProducts() {
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          {products.length === 0 ? (
+          {!products || products.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
-              No top products found.
+              {error ? "Failed to load top products" : "No top products found."}
             </div>
           ) : (
-            products.map((product, index) => (
+            (products as TopProduct[]).map((product, index) => (
               <div
                 key={product.id}
                 className="flex items-center justify-between gap-x-4 rounded-lg p-4 admin-card shadow-sm"
