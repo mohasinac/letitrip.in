@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import SellerLayout from "@/components/seller/SellerLayout";
 import { StorageService } from "@/lib/services/storage.service";
 import { ProductsService } from "@/lib/services/products.service";
 import { useAuth } from "@/contexts/AuthContext";
@@ -308,23 +307,23 @@ export default function AddProduct() {
   };
 
   return (
-    <SellerLayout>
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Add New Product
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted">
                 Create a new product for your store
               </p>
             </div>
             <div className="flex space-x-3">
               <button
                 onClick={() => router.back()}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-border rounded-md text-secondary hover: bg-surface"
               >
                 Cancel
               </button>
@@ -345,40 +344,40 @@ export default function AddProduct() {
         <div className="max-w-4xl mx-auto">
           <div className="space-y-8">
             {/* Basic Information */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 Basic Information
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Product Name *
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter product name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     SKU *
                   </label>
                   <input
                     type="text"
                     value={formData.sku}
                     onChange={(e) => handleInputChange("sku", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter SKU"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Barcode
                   </label>
                   <input
@@ -387,13 +386,13 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("barcode", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter barcode"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Description *
                   </label>
                   <textarea
@@ -402,13 +401,13 @@ export default function AddProduct() {
                       handleInputChange("description", e.target.value)
                     }
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Describe your product"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Short Description
                   </label>
                   <textarea
@@ -417,7 +416,7 @@ export default function AddProduct() {
                       handleInputChange("shortDescription", e.target.value)
                     }
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Brief description for product listings"
                   />
                 </div>
@@ -425,14 +424,14 @@ export default function AddProduct() {
             </div>
 
             {/* Pricing & Inventory */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 Pricing & Inventory
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Price *
                   </label>
                   <input
@@ -444,7 +443,7 @@ export default function AddProduct() {
                         parseFloat(e.target.value) || 0
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
@@ -452,7 +451,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Compare at Price
                   </label>
                   <input
@@ -464,7 +463,7 @@ export default function AddProduct() {
                         parseFloat(e.target.value) || 0
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
@@ -472,7 +471,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Cost
                   </label>
                   <input
@@ -481,7 +480,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("cost", parseFloat(e.target.value) || 0)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
@@ -489,7 +488,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Quantity *
                   </label>
                   <input
@@ -501,14 +500,14 @@ export default function AddProduct() {
                         parseInt(e.target.value) || 0
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0"
                     min="0"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Low Stock Threshold
                   </label>
                   <input
@@ -520,7 +519,7 @@ export default function AddProduct() {
                         parseInt(e.target.value) || 10
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="10"
                     min="0"
                   />
@@ -529,14 +528,14 @@ export default function AddProduct() {
             </div>
 
             {/* Shipping Information */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 Shipping Information
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Weight *
                   </label>
                   <div className="flex">
@@ -549,7 +548,7 @@ export default function AddProduct() {
                           parseFloat(e.target.value) || 0
                         )
                       }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0.0"
                       min="0"
                       step="0.1"
@@ -559,7 +558,7 @@ export default function AddProduct() {
                       onChange={(e) =>
                         handleInputChange("weightUnit", e.target.value)
                       }
-                      className="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-3 py-2 border border-l-0 border-border rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="kg">kg</option>
                       <option value="g">g</option>
@@ -570,7 +569,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Dimensions Unit
                   </label>
                   <select
@@ -578,7 +577,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("unit", e.target.value, "dimensions")
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="cm">cm</option>
                     <option value="in">in</option>
@@ -586,7 +585,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Length
                   </label>
                   <input
@@ -599,7 +598,7 @@ export default function AddProduct() {
                         "dimensions"
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.0"
                     min="0"
                     step="0.1"
@@ -607,7 +606,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Width
                   </label>
                   <input
@@ -620,7 +619,7 @@ export default function AddProduct() {
                         "dimensions"
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.0"
                     min="0"
                     step="0.1"
@@ -628,7 +627,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Height
                   </label>
                   <input
@@ -641,7 +640,7 @@ export default function AddProduct() {
                         "dimensions"
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="0.0"
                     min="0"
                     step="0.1"
@@ -651,18 +650,18 @@ export default function AddProduct() {
             </div>
 
             {/* Media */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 Product Media
               </h3>
 
               {/* Images */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-4">
+                <label className="block text-sm font-medium text-secondary mb-4">
                   Product Images * (Drag and drop or click to upload)
                 </label>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <div className="border-2 border-dashed border-border rounded-lg p-6">
                   <input
                     type="file"
                     accept="image/*"
@@ -675,11 +674,11 @@ export default function AddProduct() {
                     htmlFor="image-upload"
                     className="cursor-pointer flex flex-col items-center"
                   >
-                    <PhotoIcon className="h-12 w-12 text-gray-400 mb-4" />
-                    <span className="text-sm text-gray-600">
+                    <PhotoIcon className="h-12 w-12 text-muted mb-4" />
+                    <span className="text-sm text-secondary">
                       Choose images or drag and drop
                     </span>
-                    <span className="text-xs text-gray-500 mt-1">
+                    <span className="text-xs text-muted mt-1">
                       PNG, JPG, WEBP up to 10MB each
                     </span>
                   </label>
@@ -708,11 +707,11 @@ export default function AddProduct() {
 
               {/* Videos */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-4">
+                <label className="block text-sm font-medium text-secondary mb-4">
                   Product Videos (Optional)
                 </label>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <div className="border-2 border-dashed border-border rounded-lg p-6">
                   <input
                     type="file"
                     accept="video/*"
@@ -725,11 +724,11 @@ export default function AddProduct() {
                     htmlFor="video-upload"
                     className="cursor-pointer flex flex-col items-center"
                   >
-                    <VideoCameraIcon className="h-12 w-12 text-gray-400 mb-4" />
-                    <span className="text-sm text-gray-600">
+                    <VideoCameraIcon className="h-12 w-12 text-muted mb-4" />
+                    <span className="text-sm text-secondary">
                       Choose videos or drag and drop
                     </span>
-                    <span className="text-xs text-gray-500 mt-1">
+                    <span className="text-xs text-muted mt-1">
                       MP4, WEBM up to 100MB each
                     </span>
                   </label>
@@ -758,14 +757,14 @@ export default function AddProduct() {
             </div>
 
             {/* Organization */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 Organization
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Category *
                   </label>
                   <select
@@ -773,7 +772,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("category", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select a category</option>
                     <option value="electronics">Electronics</option>
@@ -785,7 +784,7 @@ export default function AddProduct() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Status
                   </label>
                   <select
@@ -793,7 +792,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("status", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="draft">Draft</option>
                     <option value="active">Active</option>
@@ -802,13 +801,13 @@ export default function AddProduct() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Tags
                   </label>
                   <input
                     type="text"
                     onKeyDown={handleTagInput}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Type and press Enter to add tags"
                   />
                   {formData.tags.length > 0 && (
@@ -840,11 +839,11 @@ export default function AddProduct() {
                       onChange={(e) =>
                         handleInputChange("isFeatured", e.target.checked)
                       }
-                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="h-4 w-4 text-blue-600 border-border rounded focus:ring-blue-500"
                     />
                     <label
                       htmlFor="featured"
-                      className="ml-2 text-sm text-gray-700"
+                      className="ml-2 text-sm text-secondary"
                     >
                       Featured Product
                     </label>
@@ -854,14 +853,14 @@ export default function AddProduct() {
             </div>
 
             {/* SEO */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="bg-background shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-primary mb-6">
                 SEO Settings
               </h3>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     SEO Title
                   </label>
                   <input
@@ -870,17 +869,17 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handleInputChange("title", e.target.value, "seo")
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="SEO title (max 60 characters)"
                     maxLength={60}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     {formData.seo.title.length}/60 characters
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     SEO Description
                   </label>
                   <textarea
@@ -889,23 +888,23 @@ export default function AddProduct() {
                       handleInputChange("description", e.target.value, "seo")
                     }
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="SEO description (max 160 characters)"
                     maxLength={160}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     {formData.seo.description.length}/160 characters
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     SEO Keywords
                   </label>
                   <input
                     type="text"
                     onKeyDown={handleSEOKeywordInput}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Type and press Enter to add keywords"
                   />
                   {formData.seo.keywords.length > 0 && (
@@ -932,6 +931,6 @@ export default function AddProduct() {
           </div>
         </div>
       </div>
-    </SellerLayout>
+    </div>
   );
 }

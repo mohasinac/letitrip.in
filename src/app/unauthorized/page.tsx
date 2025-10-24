@@ -1,12 +1,8 @@
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 export default function UnauthorizedPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full text-center">
           <div className="mb-8">
@@ -47,8 +43,6 @@ export default function UnauthorizedPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 interface Bid {
   id: string;
@@ -125,8 +123,6 @@ export default function AuctionDetailPage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1">
         {/* Breadcrumb */}
         <div className="bg-gray-50 border-b">
@@ -404,8 +400,6 @@ export default function AuctionDetailPage({
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

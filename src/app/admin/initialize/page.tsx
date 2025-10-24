@@ -29,7 +29,7 @@ export default function AdminInitializePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="admin-layout py-12">
       <div className="container max-w-2xl">
         <div className="card p-8">
           <h1 className="text-3xl font-bold mb-6">

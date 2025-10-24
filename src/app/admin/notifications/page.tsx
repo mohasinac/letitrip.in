@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   BellIcon,
   PlusIcon,
@@ -187,22 +186,22 @@ export default function NotificationsManagement() {
   };
 
   return (
-    <AdminLayout>
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Notifications Management
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted">
                 Create and manage website notifications
               </p>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center space-x-2 btn btn-danger transition-colors"
             >
               <PlusIcon className="h-5 w-5" />
               <span>New Notification</span>
@@ -213,36 +212,36 @@ export default function NotificationsManagement() {
 
       {/* Notifications List */}
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-background shadow-sm rounded-lg overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-              <p className="mt-2 text-gray-500">Loading notifications...</p>
+              <p className="mt-2 text-muted">Loading notifications...</p>
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-12 text-center">
-              <BellIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <BellIcon className="h-12 w-12 text-muted mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-primary mb-2">
                 No notifications
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-muted mb-4">
                 Get started by creating your first notification
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="btn btn-danger transition-colors"
               >
                 Create Notification
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-border">
               {notifications.map((notification) => (
                 <div key={notification.id} className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-primary">
                           {notification.title}
                         </h3>
                         <span
@@ -267,15 +266,15 @@ export default function NotificationsManagement() {
                                 : "bg-gray-400"
                             }`}
                           ></div>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted">
                             {notification.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-3">
+                      <p className="text-secondary mb-3">
                         {notification.message}
                       </p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-4 text-sm text-muted">
                         <span>Created: {notification.createdAt}</span>
                         {notification.scheduledFor && (
                           <span>Scheduled: {notification.scheduledFor}</span>
@@ -324,16 +323,16 @@ export default function NotificationsManagement() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+          <div className="bg-background rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-primary">
                 {editingNotification
                   ? "Edit Notification"
                   : "Create New Notification"}
               </h3>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted hover: text-secondary"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -341,7 +340,7 @@ export default function NotificationsManagement() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Title
                 </label>
                 <input
@@ -350,13 +349,13 @@ export default function NotificationsManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Message
                 </label>
                 <textarea
@@ -365,14 +364,14 @@ export default function NotificationsManagement() {
                     setFormData({ ...formData, message: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Type
                   </label>
                   <select
@@ -380,7 +379,7 @@ export default function NotificationsManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, type: e.target.value as any })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="info">Info</option>
                     <option value="success">Success</option>
@@ -390,7 +389,7 @@ export default function NotificationsManagement() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Target Audience
                   </label>
                   <select
@@ -401,7 +400,7 @@ export default function NotificationsManagement() {
                         targetAudience: e.target.value as any,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="all">All Users</option>
                     <option value="customers">Customers Only</option>
@@ -412,7 +411,7 @@ export default function NotificationsManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Schedule For (Optional)
                 </label>
                 <input
@@ -421,7 +420,7 @@ export default function NotificationsManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, scheduledFor: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
 
@@ -433,11 +432,11 @@ export default function NotificationsManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, isActive: e.target.checked })
                   }
-                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-border rounded"
                 />
                 <label
                   htmlFor="isActive"
-                  className="ml-2 text-sm text-gray-700"
+                  className="ml-2 text-sm text-secondary"
                 >
                   Active (visible to users)
                 </label>
@@ -447,7 +446,7 @@ export default function NotificationsManagement() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200"
                 >
                   Cancel
                 </button>
@@ -462,6 +461,6 @@ export default function NotificationsManagement() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }

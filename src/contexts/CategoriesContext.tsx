@@ -136,17 +136,8 @@ export function CategoriesProvider({
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const newCategory: Category = {
-        id: `cat_${Date.now()}`,
-        ...data,
-        productCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        order: data.sortOrder || 0,
-      };
+      // Create category via Firebase API
+      const newCategory = await categoriesService.createCategory(data);
 
       dispatch({ type: "ADD_CATEGORY", payload: newCategory });
       return newCategory;
@@ -167,17 +158,8 @@ export function CategoriesProvider({
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const existingCategory = state.categories.find((cat) => cat.id === id);
-      const updatedCategory: Category = {
-        ...existingCategory,
-        id,
-        ...data,
-        updatedAt: new Date().toISOString(),
-        order: data.sortOrder || 0,
-      } as Category;
+      // Update category via Firebase API
+      const updatedCategory = await categoriesService.updateCategory(id, data);
 
       dispatch({
         type: "UPDATE_CATEGORY",
@@ -198,8 +180,8 @@ export function CategoriesProvider({
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Delete category via Firebase API
+      await categoriesService.deleteCategory(id);
 
       dispatch({ type: "DELETE_CATEGORY", payload: id });
     } catch (error) {
@@ -219,15 +201,14 @@ export function CategoriesProvider({
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Toggle category status via Firebase API
+      const updatedCategory = await categoriesService.toggleCategoryStatus(id);
 
-      const newStatus = !currentStatus;
       dispatch({
         type: "TOGGLE_CATEGORY_STATUS",
-        payload: { id, isActive: newStatus },
+        payload: { id, isActive: updatedCategory.isActive! },
       });
-      return newStatus;
+      return updatedCategory.isActive!;
     } catch (error) {
       const errorMessage =
         error instanceof Error

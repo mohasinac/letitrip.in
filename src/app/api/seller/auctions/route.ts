@@ -1,21 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
+import { getAuth } from 'firebase-admin/auth';
 
 export async function GET(request: NextRequest) {
   try {
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
-    const sellerId = searchParams.get('sellerId');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const sort = searchParams.get('sort') || 'newest';
-    const status = searchParams.get('status') || 'all';
-
-    if (!sellerId) {
+    
+    // Get seller ID from authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
-        { error: 'Seller ID is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const token = authHeader.substring(7);
+    const decodedToken = await getAuth().verifyIdToken(token);
+    const sellerId = decodedToken.uid;
+    
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const sort = searchParams.get('sort') || 'newest';
+    const status = searchParams.get('status') || 'all';
+    const search = searchParams.get('search') || '';
 
     let query: any = db.collection('auctions').where('sellerId', '==', sellerId);
 
@@ -38,10 +46,16 @@ export async function GET(request: NextRequest) {
     query = query.limit(limit);
 
     const auctionsSnapshot = await query.get();
-    const auctions: any[] = [];
+    let auctions: any[] = [];
 
     for (const doc of auctionsSnapshot.docs) {
       const auctionData = doc.data();
+      
+      // Apply search filter
+      if (search && !auctionData.title?.toLowerCase().includes(search.toLowerCase()) && 
+          !auctionData.description?.toLowerCase().includes(search.toLowerCase())) {
+        continue;
+      }
       
       // Calculate metrics
       let views = 0;
@@ -63,12 +77,34 @@ export async function GET(request: NextRequest) {
         console.error('Error fetching auction metrics:', error);
       }
 
+      // Get related product information
+      let product = null;
+      if (auctionData.productId) {
+        try {
+          const productDoc = await db.collection('products').doc(auctionData.productId).get();
+          if (productDoc.exists) {
+            const productData = productDoc.data();
+            product = {
+              id: productDoc.id,
+              name: productData?.name,
+              slug: productData?.slug,
+              images: productData?.images || [],
+              category: productData?.category
+            };
+          }
+        } catch (error) {
+          console.error('Error fetching product data:', error);
+        }
+      }
+
       auctions.push({
         id: doc.id,
         ...auctionData,
+        product,
         views,
         watchlistCount,
         createdAt: auctionData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        startTime: auctionData.startTime?.toDate?.()?.toISOString() || new Date().toISOString(),
         endTime: auctionData.endTime?.toDate?.()?.toISOString() || new Date().toISOString(),
         updatedAt: auctionData.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
       });
@@ -89,13 +125,29 @@ export async function POST(request: NextRequest) {
     const db = getAdminDb();
     const body = await request.json();
     
+    // Get seller ID from authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    const decodedToken = await getAuth().verifyIdToken(token);
+    const sellerId = decodedToken.uid;
+    
     const auctionData = {
       ...body,
+      sellerId,
       status: 'upcoming',
-      currentBid: body.startingBid,
+      currentBid: body.startingPrice || 0,
       bidCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+      startTime: new Date(body.startTime),
+      endTime: new Date(body.endTime),
     };
 
     const docRef = await db.collection('auctions').add(auctionData);
@@ -103,6 +155,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       id: docRef.id,
       ...auctionData,
+      startTime: auctionData.startTime.toISOString(),
+      endTime: auctionData.endTime.toISOString(),
+      createdAt: auctionData.createdAt.toISOString(),
+      updatedAt: auctionData.updatedAt.toISOString(),
       message: 'Auction created successfully'
     });
   } catch (error) {

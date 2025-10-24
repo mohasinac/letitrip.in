@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/auth/middleware";
 import { FirebaseService } from "@/lib/firebase/services";
 
-async function getHandler(request: NextRequest) {
+async function getHandler(request: NextRequest, user: any) {
   try {
-    const user = (request as any).user;
     const firebaseService = FirebaseService.getInstance();
 
     try {
@@ -79,7 +78,7 @@ async function getHandler(request: NextRequest) {
   }
 }
 
-async function putHandler(request: NextRequest) {
+async function putHandler(request: NextRequest, user: any) {
   try {
     const body = await request.json();
     const { itemId, quantity } = body;
@@ -91,7 +90,6 @@ async function putHandler(request: NextRequest) {
       );
     }
 
-    const user = (request as any).user;
     const firebaseService = FirebaseService.getInstance();
 
     try {
@@ -148,9 +146,8 @@ async function putHandler(request: NextRequest) {
   }
 }
 
-async function deleteHandler(request: NextRequest) {
+async function deleteHandler(request: NextRequest, user: any) {
   try {
-    const user = (request as any).user;
     const firebaseService = FirebaseService.getInstance();
     
     try {
@@ -188,7 +185,7 @@ async function deleteHandler(request: NextRequest) {
   }
 }
 
-async function postHandler(request: NextRequest) {
+async function postHandler(request: NextRequest, user: any) {
   try {
     const body = await request.json();
     const { productId, quantity = 1 } = body;
@@ -200,7 +197,6 @@ async function postHandler(request: NextRequest) {
       );
     }
 
-    const user = (request as any).user;
     const firebaseService = FirebaseService.getInstance();
 
     try {

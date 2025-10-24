@@ -6,8 +6,6 @@ export default function TestAuthPage() {
   return (
     <ProtectedRoute requireRole="user">
       <div className="min-h-screen flex flex-col">
-        <Header />
-
         <main className="flex-1 flex items-center justify-center py-12">
           <div className="max-w-md w-full text-center">
             <div className="mb-8">
@@ -52,8 +50,6 @@ export default function TestAuthPage() {
             </div>
           </div>
         </main>
-
-        <Footer />
       </div>
     </ProtectedRoute>
   );

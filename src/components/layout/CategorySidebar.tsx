@@ -66,139 +66,26 @@ export default function CategorySidebar() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock categories data - in production this would come from API
-    const mockCategories: Category[] = [
-      {
-        id: "1",
-        name: "Beyblades",
-        slug: "beyblades",
-        count: 156,
-        subcategories: [
-          {
-            id: "1-1",
-            name: "Metal Fight",
-            slug: "beyblades/metal-fight",
-            count: 45,
-          },
-          {
-            id: "1-2",
-            name: "Burst Series",
-            slug: "beyblades/burst",
-            count: 67,
-          },
-          {
-            id: "1-3",
-            name: "X Series",
-            slug: "beyblades/x-series",
-            count: 32,
-          },
-          { id: "1-4", name: "Classic", slug: "beyblades/classic", count: 12 },
-        ],
-      },
-      {
-        id: "2",
-        name: "Launchers",
-        slug: "launchers",
-        count: 43,
-        subcategories: [
-          {
-            id: "2-1",
-            name: "String Launchers",
-            slug: "launchers/string",
-            count: 23,
-          },
-          {
-            id: "2-2",
-            name: "Ripcord Launchers",
-            slug: "launchers/ripcord",
-            count: 15,
-          },
-          {
-            id: "2-3",
-            name: "Digital Launchers",
-            slug: "launchers/digital",
-            count: 5,
-          },
-        ],
-      },
-      {
-        id: "3",
-        name: "Stadiums",
-        slug: "stadiums",
-        count: 28,
-        subcategories: [
-          {
-            id: "3-1",
-            name: "Standard Stadiums",
-            slug: "stadiums/standard",
-            count: 18,
-          },
-          {
-            id: "3-2",
-            name: "Tournament Stadiums",
-            slug: "stadiums/tournament",
-            count: 7,
-          },
-          {
-            id: "3-3",
-            name: "Special Stadiums",
-            slug: "stadiums/special",
-            count: 3,
-          },
-        ],
-      },
-      {
-        id: "4",
-        name: "Accessories",
-        slug: "accessories",
-        count: 89,
-        subcategories: [
-          { id: "4-1", name: "Grips", slug: "accessories/grips", count: 25 },
-          {
-            id: "4-2",
-            name: "Tool Sets",
-            slug: "accessories/tools",
-            count: 18,
-          },
-          {
-            id: "4-3",
-            name: "Storage",
-            slug: "accessories/storage",
-            count: 22,
-          },
-          { id: "4-4", name: "Parts", slug: "accessories/parts", count: 24 },
-        ],
-      },
-      {
-        id: "5",
-        name: "Collectibles",
-        slug: "collectibles",
-        count: 34,
-        subcategories: [
-          {
-            id: "5-1",
-            name: "Limited Edition",
-            slug: "collectibles/limited",
-            count: 12,
-          },
-          {
-            id: "5-2",
-            name: "Vintage",
-            slug: "collectibles/vintage",
-            count: 8,
-          },
-          {
-            id: "5-3",
-            name: "Merchandise",
-            slug: "collectibles/merchandise",
-            count: 14,
-          },
-        ],
-      },
-    ];
+    // Fetch categories from API
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data.categories || []);
+        } else {
+          setCategories([]);
+          console.error("Failed to fetch categories:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setCategories(mockCategories);
-    setLoading(false);
+    fetchCategories();
   }, []);
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(

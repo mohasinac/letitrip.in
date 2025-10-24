@@ -10,10 +10,6 @@ import {
   CartItem, 
   User 
 } from '@/types';
-import { v4 as uuidv4 } from 'uuid';
-
-// Get database instance
-const db = getAdminDb();
 
 // Simple UUID generator
 function generateId(): string {
@@ -90,7 +86,7 @@ class CouponService {
         }
       }
 
-      await db.collection(this.couponsCollection).doc(couponId).update({...updatedCoupon});
+      await this.db.collection(this.couponsCollection).doc(couponId).update({...updatedCoupon});
       return updatedCoupon;
     } catch (error) {
       console.error('Update coupon error:', error);
@@ -109,7 +105,7 @@ class CouponService {
       }
 
       // Delete the coupon
-      await db.collection(this.couponsCollection).doc(couponId).delete();
+      await this.db.collection(this.couponsCollection).doc(couponId).delete();
 
       // Optionally keep usage history but mark coupon as deleted
       // You might want to soft delete instead for audit purposes
@@ -124,7 +120,7 @@ class CouponService {
    */
   async getCouponById(couponId: string): Promise<Coupon | null> {
     try {
-      const doc = await db.collection(this.couponsCollection).doc(couponId).get();
+      const doc = await this.db.collection(this.couponsCollection).doc(couponId).get();
       return doc.exists ? (doc.data() as Coupon) : null;
     } catch (error) {
       console.error('Get coupon by ID error:', error);
@@ -137,7 +133,7 @@ class CouponService {
    */
   async getCouponByCode(code: string): Promise<Coupon | null> {
     try {
-      const snapshot = await db
+      const snapshot = await this.db
         .collection(this.couponsCollection)
         .where('code', '==', code.toUpperCase())
         .limit(1)
@@ -163,7 +159,7 @@ class CouponService {
       const { page = 1, pageSize = 20, status, search } = params;
       const offset = (page - 1) * pageSize;
 
-      let query = db.collection(this.couponsCollection).orderBy('createdAt', 'desc');
+      let query = this.db.collection(this.couponsCollection).orderBy('createdAt', 'desc');
 
       // Filter by status
       if (status) {
@@ -176,12 +172,12 @@ class CouponService {
 
       // Apply pagination
       const snapshot = await query.offset(offset).limit(pageSize).get();
-      let coupons = snapshot.docs.map(doc => doc.data() as Coupon);
+      let coupons = snapshot.docs.map((doc: any) => doc.data() as Coupon);
 
       // Apply search filter (in-memory since Firestore doesn't support full-text search)
       if (search) {
         const searchLower = search.toLowerCase();
-        coupons = coupons.filter(coupon => 
+        coupons = coupons.filter((coupon: any) => 
           coupon.code.toLowerCase().includes(searchLower) ||
           coupon.name.toLowerCase().includes(searchLower) ||
           (coupon.description && coupon.description.toLowerCase().includes(searchLower))
@@ -189,7 +185,7 @@ class CouponService {
       }
 
       // Get total count
-      const totalSnapshot = await db.collection(this.couponsCollection).get();
+      const totalSnapshot = await this.db.collection(this.couponsCollection).get();
       const total = totalSnapshot.size;
 
       return {
@@ -309,7 +305,7 @@ class CouponService {
       }
 
       // Create usage record
-      const usageId = uuidv4();
+      const usageId = generateId();
       const usage: CouponUsage = {
         id: usageId,
         couponId,
@@ -321,10 +317,10 @@ class CouponService {
       };
 
       // Save usage record
-      await db.collection(this.couponUsageCollection).doc(usageId).set(usage);
+      await this.db.collection(this.couponUsageCollection).doc(usageId).set(usage);
 
       // Update coupon usage count
-      await db.collection(this.couponsCollection).doc(couponId).update({
+      await this.db.collection(this.couponsCollection).doc(couponId).update({
         usedCount: coupon.usedCount + 1,
         updatedAt: new Date().toISOString(),
       });
@@ -343,7 +339,7 @@ class CouponService {
     try {
       const offset = (page - 1) * pageSize;
 
-      const snapshot = await db
+      const snapshot = await this.db
         .collection(this.couponUsageCollection)
         .where('couponId', '==', couponId)
         .orderBy('usedAt', 'desc')
@@ -351,7 +347,7 @@ class CouponService {
         .limit(pageSize)
         .get();
 
-      const usage = snapshot.docs.map(doc => doc.data() as CouponUsage);
+      const usage = snapshot.docs.map((doc: any) => doc.data() as CouponUsage);
 
       return {
         usage,
@@ -370,7 +366,7 @@ class CouponService {
    */
   private async getUserCouponUsageCount(couponId: string, userId: string): Promise<number> {
     try {
-      const snapshot = await db
+      const snapshot = await this.db
         .collection(this.couponUsageCollection)
         .where('couponId', '==', couponId)
         .where('userId', '==', userId)
@@ -560,7 +556,7 @@ class CouponService {
    */
   private async getUserOrderCount(userId: string): Promise<number> {
     try {
-      const snapshot = await db
+      const snapshot = await this.db
         .collection('orders')
         .where('userId', '==', userId)
         .get();
@@ -579,15 +575,15 @@ class CouponService {
     try {
       const now = new Date().toISOString();
       
-      const snapshot = await db
+      const snapshot = await this.db
         .collection(this.couponsCollection)
         .where('status', '==', 'active')
         .where('endDate', '<', now)
         .get();
 
-      const batch = db.batch();
+      const batch = this.db.batch();
       
-      snapshot.docs.forEach(doc => {
+      snapshot.docs.forEach((doc: any) => {
         batch.update(doc.ref, { 
           status: 'expired',
           updatedAt: now 

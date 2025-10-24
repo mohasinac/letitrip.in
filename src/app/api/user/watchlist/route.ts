@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
+import { getAdminDb } from '@/lib/firebase/admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,73 +16,71 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const userId = user.userId;
+    const db = getAdminDb();
 
-    // Mock watchlist items - replace with database query
-    const watchlistItems = [
-      {
-        id: "watchlist_1",
-        userId,
-        auctionId: "auction_1",
-        addedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        auction: {
-          id: "auction_1",
-          title: "Rare Vintage Beyblade Metal Series",
-          image: "/images/auction-1.jpg",
-          currentBid: 2500,
-          startingBid: 1000,
-          endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-          status: "live",
-          bidCount: 15,
-          isWatched: true
-        }
-      },
-      {
-        id: "watchlist_2",
-        userId,
-        auctionId: "auction_4",
-        addedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-        auction: {
-          id: "auction_4",
-          title: "Classic Comic Book Collection",
-          image: "/images/auction-4.jpg",
-          currentBid: 1200,
-          startingBid: 500,
-          endTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          status: "live",
-          bidCount: 8,
-          isWatched: true
-        }
-      },
-      {
-        id: "watchlist_3",
-        userId,
-        auctionId: "auction_5",
-        addedAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-        auction: {
-          id: "auction_5",
-          title: "Retro Gaming Console Bundle",
-          image: "/images/auction-5.jpg",
-          currentBid: 4500,
-          startingBid: 2000,
-          endTime: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
-          status: "live",
-          bidCount: 23,
-          isWatched: true
+    // Get watchlist items from Firebase
+    const watchlistSnapshot = await db.collection('watchlist')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .offset(offset)
+      .get();
+
+    const watchlistItems = [];
+    
+    for (const doc of watchlistSnapshot.docs) {
+      const watchlistData = doc.data();
+      
+      // Get auction details
+      let auction = null;
+      if (watchlistData.auctionId) {
+        try {
+          const auctionDoc = await db.collection('auctions').doc(watchlistData.auctionId).get();
+          if (auctionDoc.exists) {
+            const auctionData = auctionDoc.data();
+            auction = {
+              id: auctionDoc.id,
+              title: auctionData?.title || 'Untitled Auction',
+              image: auctionData?.images?.[0]?.url || '/images/placeholder-auction.jpg',
+              currentBid: auctionData?.currentBid || auctionData?.startingPrice || 0,
+              startingBid: auctionData?.startingPrice || 0,
+              endTime: auctionData?.endTime?.toDate?.()?.toISOString() || new Date().toISOString(),
+              status: auctionData?.status || 'upcoming',
+              bidCount: auctionData?.bidCount || 0,
+              isWatched: true
+            };
+          }
+        } catch (error) {
+          console.error('Error fetching auction:', error);
         }
       }
-    ];
 
-    const paginatedItems = watchlistItems.slice(offset, offset + limit);
+      if (auction) {
+        watchlistItems.push({
+          id: doc.id,
+          userId,
+          auctionId: watchlistData.auctionId,
+          addedAt: watchlistData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          auction
+        });
+      }
+    }
+
+    // Get total count for pagination
+    const totalSnapshot = await db.collection('watchlist')
+      .where('userId', '==', userId)
+      .get();
+    const total = totalSnapshot.size;
 
     return NextResponse.json({
       success: true,
       data: {
-        watchlist: paginatedItems,
+        watchlist: watchlistItems,
         pagination: {
           currentPage: page,
-          totalPages: Math.ceil(watchlistItems.length / limit),
-          totalItems: watchlistItems.length,
-          hasMore: offset + limit < watchlistItems.length
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          hasMore: offset + limit < total
         }
       }
     });

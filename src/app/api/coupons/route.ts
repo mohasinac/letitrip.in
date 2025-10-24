@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { couponService } from '@/lib/services/coupon-simple';
+import { couponService } from '@/lib/services/coupon';
 import { getAdminAuth } from '@/lib/firebase/admin';
 import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/config/api';
 

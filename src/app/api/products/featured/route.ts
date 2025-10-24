@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAdminDb } from '@/lib/firebase/admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -6,115 +7,63 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type") || "most-visited";
     const limit = parseInt(searchParams.get("limit") || "8");
 
-    // Mock data - in production this would come from database with real analytics
-    const mockProducts = [
-      {
-        id: "1",
-        name: "Premium Beyblade Stadium",
-        slug: "premium-beyblade-stadium",
-        price: 2999,
-        compareAtPrice: 3999,
-        image: "/images/product-1.jpg",
-        isFeatured: true,
-        views: 1250,
-        wishlisted: 89,
-        createdAt: "2024-10-20T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "2",
-        name: "Metal Fusion Beyblade Set",
-        slug: "metal-fusion-set",
-        price: 1499,
-        compareAtPrice: 1999,
-        image: "/images/product-2.jpg",
-        isFeatured: true,
-        views: 980,
-        wishlisted: 67,
-        createdAt: "2024-10-18T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "3",
-        name: "Launcher Grip Pro",
-        slug: "launcher-grip-pro",
-        price: 799,
-        image: "/images/product-3.jpg",
-        isFeatured: true,
-        views: 850,
-        wishlisted: 45,
-        createdAt: "2024-10-15T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "4",
-        name: "Beyblade Burst Starter Pack",
-        slug: "burst-starter-pack",
-        price: 1299,
-        compareAtPrice: 1599,
-        image: "/images/product-4.jpg",
-        isFeatured: true,
-        views: 720,
-        wishlisted: 38,
-        createdAt: "2024-10-12T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "5",
-        name: "Dragon Storm Beyblade",
-        slug: "dragon-storm-beyblade",
-        price: 899,
-        image: "/images/product-5.jpg",
-        isFeatured: true,
-        views: 650,
-        wishlisted: 72,
-        createdAt: "2024-10-22T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "6",
-        name: "Lightning L-Drago",
-        slug: "lightning-l-drago",
-        price: 1199,
-        compareAtPrice: 1399,
-        image: "/images/product-6.jpg",
-        isFeatured: true,
-        views: 580,
-        wishlisted: 55,
-        createdAt: "2024-10-10T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "7",
-        name: "Thunder Dome Stadium",
-        slug: "thunder-dome-stadium",
-        price: 2499,
-        image: "/images/product-7.jpg",
-        isFeatured: true,
-        views: 920,
-        wishlisted: 43,
-        createdAt: "2024-10-08T00:00:00Z",
-        inStock: true,
-      },
-      {
-        id: "8",
-        name: "Power Launcher Set",
-        slug: "power-launcher-set",
-        price: 699,
-        compareAtPrice: 799,
-        image: "/images/product-8.jpg",
-        isFeatured: true,
-        views: 480,
-        wishlisted: 29,
-        createdAt: "2024-10-25T00:00:00Z",
-        inStock: true,
-      },
-    ];
+    const db = getAdminDb();
+    
+    // Simplified query to avoid composite index requirements
+    let productsQuery = db.collection('products').where('status', '==', 'active');
+    
+    // For specific types, we'll use different query strategies
+    switch (type) {
+      case "most-visited":
+        // Only order by views, filter inStock in post-processing
+        productsQuery = productsQuery.orderBy('views', 'desc').limit(limit * 3);
+        break;
+      case "wishlisted":
+        // Only order by wishlisted, filter inStock in post-processing
+        productsQuery = productsQuery.orderBy('wishlisted', 'desc').limit(limit * 3);
+        break;
+      case "newest":
+        // Only order by createdAt, filter inStock in post-processing
+        productsQuery = productsQuery.orderBy('createdAt', 'desc').limit(limit * 3);
+        break;
+      case "sale":
+        // Get products with compareAtPrice and filter in post-processing
+        productsQuery = productsQuery.where('compareAtPrice', '>', 0).limit(limit * 3);
+        break;
+      case "popularity":
+        // Get all active products for popularity calculation
+        productsQuery = productsQuery.limit(100); // Reasonable limit
+        break;
+      default:
+        // Default case - get featured products
+        productsQuery = productsQuery.where('featured', '==', true).limit(limit * 2);
+    }
 
-    // Filter to only in-stock products
-    let products = mockProducts.filter(product => product.inStock);
+    const productsSnapshot = await productsQuery.get();
+    
+    let products = productsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name,
+        slug: data.slug,
+        price: data.price || 0,
+        compareAtPrice: data.compareAtPrice || 0,
+        image: data.images?.[0] || data.image || '/images/products/default.jpg',
+        isFeatured: data.featured || false,
+        views: data.views || 0,
+        wishlisted: data.wishlisted || 0,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        inStock: data.inStock !== false,
+        category: data.category,
+        description: data.description
+      };
+    });
 
-    // Sort based on type
+    // Filter out of stock products and apply additional post-processing
+    products = products.filter(product => product.inStock);
+
+    // Apply additional filtering and sorting based on type
     switch (type) {
       case "most-visited":
         products = products.sort((a, b) => b.views - a.views);
@@ -127,11 +76,26 @@ export async function GET(request: NextRequest) {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         break;
-      default:
-        // Combined score of views and wishlisted
+      case "sale":
+        products = products
+          .filter(product => product.compareAtPrice && product.compareAtPrice > product.price)
+          .sort((a, b) => 
+            ((a.compareAtPrice - a.price) / a.compareAtPrice) - 
+            ((b.compareAtPrice - b.price) / b.compareAtPrice)
+          );
+        break;
+      case "popularity":
         products = products.sort((a, b) => 
-          (b.views + (b.wishlisted * 2)) - (a.views + (a.wishlisted * 2))
+          (b.views + (b.wishlisted * 3)) - (a.views + (a.wishlisted * 3))
         );
+        break;
+      default:
+        // Default: prioritize featured, then by views
+        products = products.sort((a, b) => {
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          return b.views - a.views;
+        });
     }
 
     // Limit results
@@ -144,8 +108,27 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching featured products:", error);
+    
+    // If it's a Firestore index error, return empty result with message
+    if (error && typeof error === 'object' && 'code' in error && error.code === 9) {
+      console.log("Firestore index not ready, returning empty result");
+      
+      return NextResponse.json({
+        products: [],
+        type: "unknown",
+        total: 0,
+        error: "Database indexes are still building. Please try again in a few minutes.",
+        indexError: true
+      });
+    }
+    
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Internal server error",
+        products: [],
+        type: "unknown", 
+        total: 0
+      },
       { status: 500 }
     );
   }

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/products/ProductCard";
 
 export default function ProductDetailPage({
@@ -54,8 +52,6 @@ export default function ProductDetailPage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1">
         {/* Breadcrumb */}
         <div className="bg-gray-50 border-b">
@@ -298,8 +294,6 @@ export default function ProductDetailPage({
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

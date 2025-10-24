@@ -1,303 +1,267 @@
 /**
- * Type-safe API hooks and services for client-side
- * This layer provides a clean interface for the UI to interact with the API
+ * API Services Export Index
+ * Centralized export for all API services
  */
 
+// Import API services
 import apiClient from './client';
+import { productsAPI } from './products';
+import { authAPI } from './auth';
+import { cartAPI } from './cart';
+import { ordersAPI } from './orders';
+
+// Export API client
+export { default as apiClient } from './client';
+
+// Export structured API services
+export { productsAPI } from './products';
+export { authAPI } from './auth';
+export { cartAPI } from './cart';
+export { ordersAPI } from './orders';
+
+// Export types
+export type {
+  ProductsApiParams,
+  FeaturedProductsParams,
+} from './products';
+
+export type {
+  LoginCredentials,
+  RegisterCredentials,
+  AuthResponse,
+  ResetPasswordRequest,
+  ChangePasswordRequest,
+} from './auth';
+
+export type {
+  AddToCartRequest,
+  UpdateCartItemRequest,
+} from './cart';
+
+export type {
+  CreateOrderRequest,
+  OrderTrackingInfo,
+} from './orders';
+
+// Convenience object for accessing all APIs
+export const API = {
+  products: productsAPI,
+  auth: authAPI,
+  cart: cartAPI,
+  orders: ordersAPI,
+} as const;
+
+// Legacy API exports (for backward compatibility)
 import { User, Product, Order, Cart, Auction, Review, PaginatedResponse, ProductFilters } from '@/types';
 import type { RegisterInput, LoginInput, CreateProductInput, CreateOrderInput, PlaceBidInput } from '@/lib/validations/schemas';
 
 /**
- * Authentication API
+ * Legacy Authentication API (deprecated - use authAPI instead)
  */
 export const authApi = {
-  /**
-   * Register a new user
-   */
   register: async (data: RegisterInput): Promise<{ user: User; token: string }> => {
-    return apiClient.post('/auth/register', data);
+    return authAPI.register({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role as 'user' | 'seller',
+      isOver18: data.isOver18,
+    });
   },
 
-  /**
-   * Login user
-   */
   login: async (data: LoginInput): Promise<{ user: User; token: string }> => {
-    const result = await apiClient.post<{ user: User; token: string }>('/auth/login', data);
-    // Store token in client
-    apiClient.setToken(result.token);
-    return result;
+    return authAPI.login(data);
   },
 
-  /**
-   * Logout user
-   */
   logout: async (): Promise<void> => {
-    await apiClient.post('/auth/logout');
-    apiClient.clearToken();
+    return authAPI.logout();
   },
 
-  /**
-   * Get current user
-   */
   me: async (): Promise<User> => {
-    return apiClient.get('/auth/me');
+    const user = await authAPI.getCurrentUser();
+    if (!user) throw new Error('User not found');
+    return user;
   },
 
-  /**
-   * Update user profile
-   */
   updateProfile: async (data: Partial<User>): Promise<User> => {
-    return apiClient.patch('/auth/profile', data);
+    return authAPI.updateProfile(data);
   },
 
-  /**
-   * Change password
-   */
   changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
-    return apiClient.post('/auth/change-password', { currentPassword, newPassword });
+    await authAPI.changePassword({ currentPassword, newPassword });
   },
 };
 
 /**
- * Products API
+ * Legacy Products API (deprecated - use productsAPI instead)
  */
 export const productsApi = {
-  /**
-   * Get all products with filters
-   */
   getAll: async (filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
-    return apiClient.get('/products', filters);
+    return productsAPI.getProducts({
+      page: filters?.page,
+      limit: filters?.pageSize,
+      category: filters?.category,
+      search: filters?.search,
+      minPrice: filters?.minPrice,
+      maxPrice: filters?.maxPrice,
+      sortBy: filters?.sort?.includes('price') ? 'price' : 
+             filters?.sort === 'newest' ? 'created' : 
+             filters?.sort === 'popular' ? 'views' : undefined,
+      sortOrder: filters?.sort?.includes('desc') ? 'desc' : 'asc',
+    });
   },
 
-  /**
-   * Get product by ID
-   */
   getById: async (id: string): Promise<Product> => {
-    return apiClient.get(`/products/${id}`);
+    const product = await productsAPI.getProduct(id);
+    if (!product) throw new Error('Product not found');
+    return product;
   },
 
-  /**
-   * Get product by slug
-   */
   getBySlug: async (slug: string): Promise<Product> => {
-    return apiClient.get(`/products/slug/${slug}`);
+    const product = await productsAPI.getProduct(slug);
+    if (!product) throw new Error('Product not found');
+    return product;
   },
 
-  /**
-   * Get featured products
-   */
   getFeatured: async (limit = 8): Promise<Product[]> => {
-    return apiClient.get('/products/featured', { limit });
+    return productsAPI.getFeaturedProducts({ limit });
   },
 
-  /**
-   * Get related products
-   */
   getRelated: async (productId: string, limit = 4): Promise<Product[]> => {
+    // This would need to be implemented in the new API
     return apiClient.get(`/products/${productId}/related`, { limit });
   },
 
-  /**
-   * Create product (admin only)
-   */
   create: async (data: CreateProductInput): Promise<Product> => {
-    return apiClient.post('/products', data);
+    return productsAPI.createProduct(data as any);
   },
 
-  /**
-   * Update product (admin only)
-   */
   update: async (id: string, data: Partial<CreateProductInput>): Promise<Product> => {
-    return apiClient.patch(`/products/${id}`, data);
+    return productsAPI.updateProduct(id, data as any);
   },
 
-  /**
-   * Delete product (admin only)
-   */
   delete: async (id: string): Promise<void> => {
-    return apiClient.delete(`/products/${id}`);
+    return productsAPI.deleteProduct(id);
   },
 };
 
 /**
- * Cart API
+ * Legacy Cart API (deprecated - use cartAPI instead)
  */
 export const cartApi = {
-  /**
-   * Get user's cart
-   */
   get: async (): Promise<Cart> => {
-    return apiClient.get('/cart');
+    const cart = await cartAPI.getCart();
+    if (!cart) throw new Error('Cart not found');
+    return cart;
   },
 
-  /**
-   * Add item to cart
-   */
   addItem: async (productId: string, quantity: number = 1): Promise<Cart> => {
-    return apiClient.post('/cart/items', { productId, quantity });
+    return cartAPI.addToCart({ productId, quantity });
   },
 
-  /**
-   * Update cart item quantity
-   */
   updateItem: async (productId: string, quantity: number): Promise<Cart> => {
-    return apiClient.patch(`/cart/items/${productId}`, { quantity });
+    return cartAPI.updateCartItem({ productId, quantity });
   },
 
-  /**
-   * Remove item from cart
-   */
   removeItem: async (productId: string): Promise<Cart> => {
-    return apiClient.delete(`/cart/items/${productId}`);
+    return cartAPI.removeFromCart(productId);
   },
 
-  /**
-   * Clear entire cart
-   */
   clear: async (): Promise<void> => {
-    return apiClient.delete('/cart');
+    await cartAPI.clearCart();
   },
 };
 
 /**
- * Orders API
+ * Legacy Orders API (deprecated - use ordersAPI instead)
  */
 export const ordersApi = {
-  /**
-   * Get all orders for current user
-   */
   getAll: async (filters?: any): Promise<PaginatedResponse<Order>> => {
-    return apiClient.get('/orders', filters);
+    return ordersAPI.getOrders(filters);
   },
 
-  /**
-   * Get order by ID
-   */
   getById: async (id: string): Promise<Order> => {
-    return apiClient.get(`/orders/${id}`);
+    const order = await ordersAPI.getOrder(id);
+    if (!order) throw new Error('Order not found');
+    return order;
   },
 
-  /**
-   * Create new order
-   */
   create: async (data: CreateOrderInput): Promise<Order> => {
-    return apiClient.post('/orders', data);
+    return ordersAPI.createOrder(data as any);
   },
 
-  /**
-   * Cancel order
-   */
   cancel: async (id: string): Promise<Order> => {
-    return apiClient.post(`/orders/${id}/cancel`);
+    return ordersAPI.cancelOrder(id);
   },
 };
 
 /**
- * Auctions API
+ * Auctions API (unchanged)
  */
 export const auctionsApi = {
-  /**
-   * Get all active auctions
-   */
   getActive: async (): Promise<Auction[]> => {
     return apiClient.get('/auctions/active');
   },
 
-  /**
-   * Get auction by ID
-   */
   getById: async (id: string): Promise<Auction> => {
     return apiClient.get(`/auctions/${id}`);
   },
 
-  /**
-   * Place bid on auction
-   */
   placeBid: async (auctionId: string, data: PlaceBidInput): Promise<Auction> => {
     return apiClient.post(`/auctions/${auctionId}/bids`, data);
   },
 
-  /**
-   * Get user's bids
-   */
   getMyBids: async (): Promise<Auction[]> => {
     return apiClient.get('/auctions/my-bids');
   },
 };
 
 /**
- * Reviews API
+ * Reviews API (unchanged)
  */
 export const reviewsApi = {
-  /**
-   * Get reviews for a product
-   */
   getByProduct: async (productId: string): Promise<Review[]> => {
     return apiClient.get(`/products/${productId}/reviews`);
   },
 
-  /**
-   * Create review
-   */
   create: async (data: any): Promise<Review> => {
     return apiClient.post('/reviews', data);
   },
 
-  /**
-   * Update review
-   */
   update: async (id: string, data: any): Promise<Review> => {
     return apiClient.patch(`/reviews/${id}`, data);
   },
 
-  /**
-   * Delete review
-   */
   delete: async (id: string): Promise<void> => {
     return apiClient.delete(`/reviews/${id}`);
   },
 };
 
 /**
- * Payment API
+ * Payment API (unchanged)
  */
 export const paymentApi = {
-  /**
-   * Create Razorpay order
-   */
   createRazorpayOrder: async (orderId: string): Promise<any> => {
     return apiClient.post('/payment/razorpay/create-order', { orderId });
   },
 
-  /**
-   * Verify Razorpay payment
-   */
   verifyRazorpayPayment: async (data: any): Promise<void> => {
     return apiClient.post('/payment/razorpay/verify', data);
   },
 };
 
 /**
- * Shipping API
+ * Shipping API (unchanged)
  */
 export const shippingApi = {
-  /**
-   * Get shipping rates
-   */
   getRates: async (pincode: string, weight: number): Promise<any[]> => {
     return apiClient.get('/shipping/rates', { pincode, weight });
   },
 
-  /**
-   * Create shipment
-   */
   createShipment: async (orderId: string, courierId: number): Promise<any> => {
     return apiClient.post('/shipping/create', { orderId, courierId });
   },
 
-  /**
-   * Track shipment
-   */
   trackShipment: async (trackingNumber: string): Promise<any> => {
     return apiClient.get(`/shipping/track/${trackingNumber}`);
   },

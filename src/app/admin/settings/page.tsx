@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ThemeSettings from "@/components/ui/ThemeSettings";
 
 import {
   CogIcon,
@@ -9,6 +10,7 @@ import {
   DocumentTextIcon,
   GlobeAltIcon,
   ShieldCheckIcon,
+  PaintBrushIcon,
   PlusIcon,
   TrashIcon,
   PencilIcon,
@@ -128,9 +130,8 @@ export default function SettingsManagement() {
 
   const tabs = [
     { id: "general", name: "General", icon: CogIcon },
+    { id: "theme", name: "Theme", icon: PaintBrushIcon },
     { id: "payments", name: "Payments", icon: CreditCardIcon },
-    { id: "homepage", name: "Home Page", icon: PhotoIcon },
-    { id: "policies", name: "Policies", icon: DocumentTextIcon },
     { id: "firebase", name: "Firebase", icon: ShieldCheckIcon },
   ];
 
@@ -148,23 +149,23 @@ export default function SettingsManagement() {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
-          <p className="text-gray-500">Failed to load settings</p>
+          <p className="text-muted">Failed to load settings</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Site Settings
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted">
                 Configure your website settings and preferences
               </p>
             </div>
@@ -211,17 +212,17 @@ export default function SettingsManagement() {
 
           {/* Content Area */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="admin-card p-6">
               {/* General Settings */}
               {activeTab === "general" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-primary">
                     General Settings
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Site Name
                       </label>
                       <input
@@ -230,12 +231,12 @@ export default function SettingsManagement() {
                         onChange={(e) =>
                           updateSettings("siteName", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Contact Email
                       </label>
                       <input
@@ -244,12 +245,12 @@ export default function SettingsManagement() {
                         onChange={(e) =>
                           updateSettings("contactEmail", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Phone Number
                       </label>
                       <input
@@ -258,12 +259,12 @@ export default function SettingsManagement() {
                         onChange={(e) =>
                           updateSettings("phoneNumber", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Currency
                       </label>
                       <select
@@ -271,7 +272,7 @@ export default function SettingsManagement() {
                         onChange={(e) =>
                           updateSettings("currency", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       >
                         <option value="USD">USD ($)</option>
                         <option value="EUR">EUR (€)</option>
@@ -282,7 +283,7 @@ export default function SettingsManagement() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-secondary mb-2">
                       Site Description
                     </label>
                     <textarea
@@ -291,12 +292,12 @@ export default function SettingsManagement() {
                         updateSettings("siteDescription", e.target.value)
                       }
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-secondary mb-2">
                       Address
                     </label>
                     <textarea
@@ -305,17 +306,17 @@ export default function SettingsManagement() {
                         updateSettings("address", e.target.value)
                       }
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
 
                   <div className="border-t pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">
+                        <h4 className="text-sm font-medium text-primary">
                           Site Status
                         </h4>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted">
                           Control whether your site is live or in maintenance
                           mode
                         </p>
@@ -338,7 +339,7 @@ export default function SettingsManagement() {
 
                     {!settings.isLive && (
                       <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2">
                           Maintenance Message
                         </label>
                         <textarea
@@ -347,7 +348,7 @@ export default function SettingsManagement() {
                             updateSettings("maintenanceMessage", e.target.value)
                           }
                           rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                           placeholder="We're currently performing scheduled maintenance. Please check back soon!"
                         />
                       </div>
@@ -356,10 +357,24 @@ export default function SettingsManagement() {
                 </div>
               )}
 
+              {/* Theme Settings */}
+              {activeTab === "theme" && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-primary">
+                    Theme & Appearance
+                  </h3>
+                  <p className="text-secondary">
+                    Customize the appearance of your admin panel with theme
+                    options, font sizing, and accessibility preferences.
+                  </p>
+                  <ThemeSettings />
+                </div>
+              )}
+
               {/* Payment Settings */}
               {activeTab === "payments" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-primary">
                     Payment Settings
                   </h3>
 
@@ -368,8 +383,8 @@ export default function SettingsManagement() {
                       <div className="flex items-center space-x-3">
                         <CreditCardIcon className="h-6 w-6 text-blue-600" />
                         <div>
-                          <h4 className="font-medium text-gray-900">Stripe</h4>
-                          <p className="text-sm text-gray-500">
+                          <h4 className="font-medium text-primary">Stripe</h4>
+                          <p className="text-sm text-muted">
                             Credit card payments
                           </p>
                         </div>
@@ -399,7 +414,7 @@ export default function SettingsManagement() {
 
                     {settings.paymentSettings.stripeEnabled && (
                       <div className="ml-9">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2">
                           Stripe Public Key
                         </label>
                         <input
@@ -411,7 +426,7 @@ export default function SettingsManagement() {
                               e.target.value
                             )
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                           placeholder="pk_..."
                         />
                       </div>
@@ -421,8 +436,8 @@ export default function SettingsManagement() {
                       <div className="flex items-center space-x-3">
                         <CreditCardIcon className="h-6 w-6 text-yellow-600" />
                         <div>
-                          <h4 className="font-medium text-gray-900">PayPal</h4>
-                          <p className="text-sm text-gray-500">
+                          <h4 className="font-medium text-primary">PayPal</h4>
+                          <p className="text-sm text-muted">
                             PayPal payments
                           </p>
                         </div>
@@ -454,10 +469,10 @@ export default function SettingsManagement() {
                       <div className="flex items-center space-x-3">
                         <CreditCardIcon className="h-6 w-6 text-green-600" />
                         <div>
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-primary">
                             Cash on Delivery
                           </h4>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted">
                             Pay when product is delivered
                           </p>
                         </div>
@@ -488,7 +503,7 @@ export default function SettingsManagement() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Tax Rate (%)
                       </label>
                       <input
@@ -501,12 +516,12 @@ export default function SettingsManagement() {
                             parseFloat(e.target.value) || 0
                           )
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-secondary mb-2">
                         Default Shipping Cost
                       </label>
                       <input
@@ -519,418 +534,19 @@ export default function SettingsManagement() {
                             parseFloat(e.target.value) || 0
                           )
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Homepage Settings */}
-              {activeTab === "homepage" && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Home Page Sections
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-6">
-                    Configure which sections appear on your homepage and their
-                    order
-                  </p>
-
-                  {settings.homePageSections && (
-                    <div className="space-y-4">
-                      {settings.homePageSections
-                        .sort((a, b) => a.order - b.order)
-                        .map((section, index) => (
-                          <div
-                            key={section.id}
-                            className="bg-gray-50 rounded-lg p-4 border"
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center space-x-3">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-sm font-medium text-gray-500">
-                                    #{section.order}
-                                  </span>
-                                  <h4 className="font-medium text-gray-900">
-                                    {section.title}
-                                  </h4>
-                                </div>
-                                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                                  {section.type}
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-3">
-                                <button
-                                  onClick={() => {
-                                    const newSections = [
-                                      ...settings.homePageSections,
-                                    ];
-                                    newSections[
-                                      newSections.findIndex(
-                                        (s) => s.id === section.id
-                                      )
-                                    ].enabled = !section.enabled;
-                                    updateSettings(
-                                      "homePageSections",
-                                      newSections
-                                    );
-                                  }}
-                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    section.enabled
-                                      ? "bg-green-600"
-                                      : "bg-gray-200"
-                                  }`}
-                                >
-                                  <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                      section.enabled
-                                        ? "translate-x-6"
-                                        : "translate-x-1"
-                                    }`}
-                                  />
-                                </button>
-                                <div className="flex space-x-1">
-                                  <button
-                                    onClick={() => {
-                                      if (index === 0) return;
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const currentIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      const prevIndex = currentIndex - 1;
-                                      [
-                                        newSections[currentIndex].order,
-                                        newSections[prevIndex].order,
-                                      ] = [
-                                        newSections[prevIndex].order,
-                                        newSections[currentIndex].order,
-                                      ];
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    disabled={index === 0}
-                                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                                  >
-                                    ↑
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      if (
-                                        index ===
-                                        settings.homePageSections.length - 1
-                                      )
-                                        return;
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const currentIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      const nextIndex = currentIndex + 1;
-                                      [
-                                        newSections[currentIndex].order,
-                                        newSections[nextIndex].order,
-                                      ] = [
-                                        newSections[nextIndex].order,
-                                        newSections[currentIndex].order,
-                                      ];
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    disabled={
-                                      index ===
-                                      settings.homePageSections.length - 1
-                                    }
-                                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                                  >
-                                    ↓
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Section-specific settings */}
-                            {section.type === "hero" && section.content && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Main Banner Title
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={
-                                      section.content.mainBanner?.title || ""
-                                    }
-                                    onChange={(e) => {
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const sectionIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      if (
-                                        !newSections[sectionIndex].content
-                                          .mainBanner
-                                      ) {
-                                        newSections[
-                                          sectionIndex
-                                        ].content.mainBanner = {};
-                                      }
-                                      newSections[
-                                        sectionIndex
-                                      ].content.mainBanner.title =
-                                        e.target.value;
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Side Banner Title
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={
-                                      section.content.sideBanner?.title || ""
-                                    }
-                                    onChange={(e) => {
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const sectionIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      if (
-                                        !newSections[sectionIndex].content
-                                          .sideBanner
-                                      ) {
-                                        newSections[
-                                          sectionIndex
-                                        ].content.sideBanner = {};
-                                      }
-                                      newSections[
-                                        sectionIndex
-                                      ].content.sideBanner.title =
-                                        e.target.value;
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                  />
-                                </div>
-                              </div>
-                            )}
-
-                            {section.type === "featured-products" &&
-                              section.content && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                      Display Type
-                                    </label>
-                                    <select
-                                      value={
-                                        section.content.type || "most-visited"
-                                      }
-                                      onChange={(e) => {
-                                        const newSections = [
-                                          ...settings.homePageSections,
-                                        ];
-                                        const sectionIndex =
-                                          newSections.findIndex(
-                                            (s) => s.id === section.id
-                                          );
-                                        newSections[sectionIndex].content.type =
-                                          e.target.value;
-                                        updateSettings(
-                                          "homePageSections",
-                                          newSections
-                                        );
-                                      }}
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                    >
-                                      <option value="most-visited">
-                                        Most Visited
-                                      </option>
-                                      <option value="wishlisted">
-                                        Most Wishlisted
-                                      </option>
-                                      <option value="newest">
-                                        Newest Products
-                                      </option>
-                                    </select>
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                      Number of Products
-                                    </label>
-                                    <input
-                                      type="number"
-                                      min="4"
-                                      max="12"
-                                      value={section.content.limit || 8}
-                                      onChange={(e) => {
-                                        const newSections = [
-                                          ...settings.homePageSections,
-                                        ];
-                                        const sectionIndex =
-                                          newSections.findIndex(
-                                            (s) => s.id === section.id
-                                          );
-                                        newSections[
-                                          sectionIndex
-                                        ].content.limit = parseInt(
-                                          e.target.value
-                                        );
-                                        updateSettings(
-                                          "homePageSections",
-                                          newSections
-                                        );
-                                      }}
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              )}
-
-                            {section.type === "auctions" && section.content && (
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                <div className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    id={`show-live-${section.id}`}
-                                    checked={section.content.showLive !== false}
-                                    onChange={(e) => {
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const sectionIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      newSections[
-                                        sectionIndex
-                                      ].content.showLive = e.target.checked;
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    className="mr-2"
-                                  />
-                                  <label
-                                    htmlFor={`show-live-${section.id}`}
-                                    className="text-sm text-gray-700"
-                                  >
-                                    Show Live Auctions
-                                  </label>
-                                </div>
-                                <div className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    id={`show-closed-${section.id}`}
-                                    checked={
-                                      section.content.showClosed !== false
-                                    }
-                                    onChange={(e) => {
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const sectionIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      newSections[
-                                        sectionIndex
-                                      ].content.showClosed = e.target.checked;
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    className="mr-2"
-                                  />
-                                  <label
-                                    htmlFor={`show-closed-${section.id}`}
-                                    className="text-sm text-gray-700"
-                                  >
-                                    Show Closed Auctions
-                                  </label>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Max Auctions
-                                  </label>
-                                  <input
-                                    type="number"
-                                    min="1"
-                                    max="6"
-                                    value={section.content.limit || 3}
-                                    onChange={(e) => {
-                                      const newSections = [
-                                        ...settings.homePageSections,
-                                      ];
-                                      const sectionIndex =
-                                        newSections.findIndex(
-                                          (s) => s.id === section.id
-                                        );
-                                      newSections[sectionIndex].content.limit =
-                                        parseInt(e.target.value);
-                                      updateSettings(
-                                        "homePageSections",
-                                        newSections
-                                      );
-                                    }}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "policies" && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Legal Policies
-                  </h3>
-                  <div className="text-center py-12 text-gray-500">
-                    <DocumentTextIcon className="h-12 w-12 mx-auto mb-4" />
-                    <p>Policy management coming soon...</p>
-                    <p className="text-sm">
-                      Manage privacy policy, terms of service, and return policy
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {activeTab === "firebase" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-primary">
                     Firebase Configuration
                   </h3>
-                  <div className="text-center py-12 text-gray-500">
+                  <div className="text-center py-12 text-muted">
                     <ShieldCheckIcon className="h-12 w-12 mx-auto mb-4" />
                     <p>Firebase settings coming soon...</p>
                     <p className="text-sm">

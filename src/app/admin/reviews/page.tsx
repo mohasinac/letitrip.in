@@ -121,27 +121,27 @@ export default function ReviewsManagement() {
             }`}
           />
         ))}
-        <span className="ml-1 text-sm text-gray-600">({rating})</span>
+        <span className="ml-1 text-sm text-secondary">({rating})</span>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Reviews Management
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted">
                 Approve, reject, and manage product reviews
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-secondary">
                 {reviews.filter((r) => r.status === "pending").length} pending
                 reviews
               </span>
@@ -154,19 +154,19 @@ export default function ReviewsManagement() {
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted" />
             <input
               type="text"
               placeholder="Search reviews..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="pl-10 pr-4 py-2 w-full border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -176,74 +176,74 @@ export default function ReviewsManagement() {
         </div>
 
         {/* Reviews Table */}
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-background shadow-sm rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-surface">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Review
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Product
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Rating
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-border">
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-                      <p className="mt-2 text-gray-500">Loading reviews...</p>
+                      <p className="mt-2 text-muted">Loading reviews...</p>
                     </td>
                   </tr>
                 ) : filteredReviews.length === 0 ? (
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-6 py-12 text-center text-gray-500"
+                      className="px-6 py-12 text-center text-muted"
                     >
                       No reviews found matching your criteria
                     </td>
                   </tr>
                 ) : (
                   filteredReviews.map((review) => (
-                    <tr key={review.id} className="hover:bg-gray-50">
+                    <tr key={review.id} className="hover: bg-surface">
                       <td className="px-6 py-4">
                         <div className="max-w-xs">
-                          <div className="font-medium text-gray-900 text-sm mb-1">
+                          <div className="font-medium text-primary text-sm mb-1">
                             {review.title}
                           </div>
-                          <div className="text-sm text-gray-600 line-clamp-2">
+                          <div className="text-sm text-secondary line-clamp-2">
                             {review.comment}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-primary">
                           {review.productName}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-primary">
                           {review.userName}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted">
                           {review.userEmail}
                         </div>
                       </td>
@@ -256,7 +256,7 @@ export default function ReviewsManagement() {
                             review.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                         {review.createdAt}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -307,9 +307,9 @@ export default function ReviewsManagement() {
       {/* Review Details Modal */}
       {showModal && selectedReview && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-primary">
                 Review Details
               </h3>
               <button
@@ -317,7 +317,7 @@ export default function ReviewsManagement() {
                   setShowModal(false);
                   setSelectedReview(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted hover: text-secondary"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -326,30 +326,30 @@ export default function ReviewsManagement() {
             <div className="space-y-6">
               {/* Product Info */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-sm font-medium text-secondary mb-2">
                   Product
                 </h4>
-                <p className="text-sm text-gray-900">
+                <p className="text-sm text-primary">
                   {selectedReview.productName}
                 </p>
               </div>
 
               {/* User Info */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-sm font-medium text-secondary mb-2">
                   Reviewer
                 </h4>
-                <p className="text-sm text-gray-900">
+                <p className="text-sm text-primary">
                   {selectedReview.userName}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted">
                   {selectedReview.userEmail}
                 </p>
               </div>
 
               {/* Rating */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-sm font-medium text-secondary mb-2">
                   Rating
                 </h4>
                 {renderStars(selectedReview.rating)}
@@ -357,13 +357,13 @@ export default function ReviewsManagement() {
 
               {/* Review Content */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-sm font-medium text-secondary mb-2">
                   Review
                 </h4>
-                <h5 className="font-medium text-gray-900 mb-2">
+                <h5 className="font-medium text-primary mb-2">
                   {selectedReview.title}
                 </h5>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                <p className="text-sm text-secondary whitespace-pre-wrap">
                   {selectedReview.comment}
                 </p>
               </div>
@@ -371,7 +371,7 @@ export default function ReviewsManagement() {
               {/* Images */}
               {selectedReview.images && selectedReview.images.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  <h4 className="text-sm font-medium text-secondary mb-2">
                     Images
                   </h4>
                   <div className="grid grid-cols-2 gap-4">

@@ -123,10 +123,7 @@ export default function StatsCards() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-white rounded-xl shadow-sm border p-6 animate-pulse"
-          >
+          <div key={i} className="admin-card p-6 animate-pulse">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
@@ -152,7 +149,7 @@ export default function StatsCards() {
         return (
           <div
             key={card.name}
-            className="bg-white rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow"
+            className="admin-card p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -164,10 +161,10 @@ export default function StatsCards() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">
                     {card.name}
                   </dt>
-                  <dd className="text-2xl font-bold text-gray-900">
+                  <dd className="text-2xl font-bold text-foreground">
                     {card.value}
                   </dd>
                   <dd className="flex items-center text-sm">
@@ -183,7 +180,9 @@ export default function StatsCards() {
                     >
                       {Math.abs(card.change)}%
                     </span>
-                    <span className="text-gray-500 ml-1">vs last month</span>
+                    <span className="text-muted-foreground ml-1">
+                      vs last month
+                    </span>
                   </dd>
                 </dl>
               </div>

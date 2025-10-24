@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 // Force dynamic rendering to prevent static generation
 export const dynamic = "force-dynamic";
@@ -43,8 +41,6 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
-
         <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-md w-full space-y-8">
             <div className="text-center">
@@ -86,16 +82,12 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
         </main>
-
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
@@ -154,8 +146,6 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

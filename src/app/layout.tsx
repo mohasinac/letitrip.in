@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../theme/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
@@ -8,7 +9,24 @@ import UserDebug from "@/components/debug/UserDebug";
 import CookieConsentBanner from "@/components/auth/CookieConsentBanner";
 import AppLayout from "@/components/layout/AppLayout";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  fallback: [
+    "ui-sans-serif",
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "Noto Sans",
+    "sans-serif",
+  ],
+});
 
 export const metadata: Metadata = {
   title: "JustForView - Premium Hobby Store",
@@ -22,8 +40,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        />
+      </head>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
+        style={{
+          fontFamily:
+            "Inter, var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
+          fontSize: "16px",
+          fontWeight: "400",
+          lineHeight: "1.6",
+          color: "hsl(var(--foreground))",
+          backgroundColor: "hsl(var(--background))",
+        }}
+      >
         <AuthProvider>
           <CartProvider>
             <CategoriesProvider>

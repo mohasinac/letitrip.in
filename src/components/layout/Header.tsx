@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b header-bg backdrop-blur transition-colors duration-200">
       <nav className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
@@ -43,31 +44,31 @@ export default function Header() {
         <div className="hidden md:flex md:items-center md:space-x-6">
           <Link
             href="/products"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
             Products
           </Link>
           <Link
             href="/auctions"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
             Auctions
           </Link>
           <Link
             href="/stores"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
             Stores
           </Link>
           <Link
             href="/reviews"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
             Reviews
           </Link>
           <Link
             href="/about"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
             About
           </Link>
@@ -76,9 +77,9 @@ export default function Header() {
         {/* Right side actions */}
         <div className="flex items-center space-x-4">
           {/* Search Icon */}
-          <button className="hidden md:flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent">
+          <button className="hidden md:flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent transition-colors">
             <svg
-              className="h-5 w-5"
+              className="h-4 w-4 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -95,10 +96,10 @@ export default function Header() {
           {/* Cart */}
           <Link
             href="/cart"
-            className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent relative"
+            className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent relative transition-colors"
           >
             <svg
-              className="h-5 w-5"
+              className="h-5 w-5 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -111,11 +112,16 @@ export default function Header() {
               />
             </svg>
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-xs text-white flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
                 {totalItems > 99 ? "99+" : totalItems}
               </span>
             )}
           </Link>
+
+          {/* Theme Toggle */}
+          <div className="flex items-center">
+            <ThemeToggle size="sm" />
+          </div>
 
           {/* Admin/Seller Navigation Buttons */}
           {user && (user.role === "admin" || user.role === "seller") && (
@@ -208,20 +214,20 @@ export default function Header() {
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-2 text-sm text-gray-500 border-b">
+                <div className="absolute right-0 mt-2 w-48 bg-popover text-popover-foreground rounded-md shadow-lg border border-border py-1 z-50">
+                  <div className="px-4 py-2 text-sm text-muted-foreground border-b border-border">
                     {user.email || "No email"}
                   </div>
                   <Link
                     href="/account"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                     onClick={() => setUserMenuOpen(false)}
                   >
                     My Account
                   </Link>
                   <Link
                     href="/orders"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                     onClick={() => setUserMenuOpen(false)}
                   >
                     My Orders
@@ -233,19 +239,19 @@ export default function Header() {
                           ? "/admin/dashboard"
                           : "/seller/dashboard"
                       }
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
                   )}
-                  <hr className="my-1" />
+                  <hr className="my-1 border-border" />
                   <button
                     onClick={() => {
                       setUserMenuOpen(false);
                       logout();
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+                    className="block w-full text-left px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground text-destructive transition-colors"
                   >
                     Sign Out
                   </button>
@@ -340,7 +346,7 @@ export default function Header() {
                     <div className="font-medium">
                       {user.name || user.email || "User"}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {user.email || "No email"}
                     </div>
                   </div>
@@ -369,7 +375,6 @@ export default function Header() {
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                           />
                         </svg>
-                        <span>Admin Dashboard</span>
                       </Link>
                     )}
                     {/* Seller button - shows for both admin and seller users (hierarchical access) */}

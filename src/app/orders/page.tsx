@@ -34,169 +34,33 @@ interface Order {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
   useEffect(() => {
-    // TODO: Replace with Firebase integration
-    const mockOrders: Order[] = [
-      {
-        id: "1",
-        orderNumber: "ORD-2024-001",
-        status: "delivered",
-        paymentStatus: "paid",
-        total: 109.97,
-        items: [
-          {
-            id: "1",
-            name: "Beyblade Burst Pro Series - Dragon Storm",
-            quantity: 2,
-            price: 29.99,
-            image: "/images/beyblade-1.jpg",
-          },
-          {
-            id: "2",
-            name: "Beyblade Stadium - Thunder Dome",
-            quantity: 1,
-            price: 49.99,
-            image: "/images/stadium-1.jpg",
-          },
-        ],
-        createdAt: "2024-01-20T10:30:00Z",
-        updatedAt: "2024-01-22T16:45:00Z",
-        shippingAddress: {
-          street: "123 Main St",
-          city: "New York",
-          state: "NY",
-          zipCode: "10001",
-          country: "USA",
-        },
-        trackingNumber: "1Z999AA1234567890",
-      },
-      {
-        id: "2",
-        orderNumber: "ORD-2024-002",
-        status: "shipped",
-        paymentStatus: "paid",
-        total: 24.99,
-        items: [
-          {
-            id: "3",
-            name: "Metal Fight Beyblade - Lightning L-Drago",
-            quantity: 1,
-            price: 24.99,
-            image: "/images/beyblade-2.jpg",
-          },
-        ],
-        createdAt: "2024-01-18T16:15:00Z",
-        updatedAt: "2024-01-19T09:30:00Z",
-        shippingAddress: {
-          street: "456 Oak Ave",
-          city: "Los Angeles",
-          state: "CA",
-          zipCode: "90210",
-          country: "USA",
-        },
-        trackingNumber: "1Z999AA1234567891",
-      },
-      {
-        id: "3",
-        orderNumber: "ORD-2024-003",
-        status: "processing",
-        paymentStatus: "paid",
-        total: 89.98,
-        items: [
-          {
-            id: "4",
-            name: "Beyblade X - Xcalibur Sword",
-            quantity: 2,
-            price: 34.99,
-            image: "/images/beyblade-3.jpg",
-          },
-          {
-            id: "5",
-            name: "Launcher Set - Power Grip Pro",
-            quantity: 1,
-            price: 19.99,
-            image: "/images/launcher-1.jpg",
-          },
-        ],
-        createdAt: "2024-01-15T14:22:00Z",
-        updatedAt: "2024-01-16T11:15:00Z",
-        shippingAddress: {
-          street: "789 Pine St",
-          city: "Chicago",
-          state: "IL",
-          zipCode: "60601",
-          country: "USA",
-        },
-      },
-      {
-        id: "4",
-        orderNumber: "ORD-2024-004",
-        status: "pending",
-        paymentStatus: "pending",
-        total: 49.99,
-        items: [
-          {
-            id: "6",
-            name: "Beyblade Stadium - Battle Arena",
-            quantity: 1,
-            price: 49.99,
-            image: "/images/stadium-2.jpg",
-          },
-        ],
-        createdAt: "2024-01-12T08:45:00Z",
-        updatedAt: "2024-01-12T08:45:00Z",
-        shippingAddress: {
-          street: "321 Elm St",
-          city: "Miami",
-          state: "FL",
-          zipCode: "33101",
-          country: "USA",
-        },
-      },
-      {
-        id: "5",
-        orderNumber: "ORD-2024-005",
-        status: "cancelled",
-        paymentStatus: "refunded",
-        total: 74.98,
-        items: [
-          {
-            id: "7",
-            name: "Beyblade Burst Launcher Set",
-            quantity: 2,
-            price: 29.99,
-            image: "/images/launcher-2.jpg",
-          },
-          {
-            id: "8",
-            name: "Beyblade Parts Kit",
-            quantity: 1,
-            price: 14.99,
-            image: "/images/parts-1.jpg",
-          },
-        ],
-        createdAt: "2024-01-10T12:30:00Z",
-        updatedAt: "2024-01-11T14:20:00Z",
-        shippingAddress: {
-          street: "654 Maple Ave",
-          city: "Seattle",
-          state: "WA",
-          zipCode: "98101",
-          country: "USA",
-        },
-      },
-    ];
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch("/api/orders");
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data.orders || []);
+        } else {
+          setOrders([]);
+          setError("Failed to fetch orders");
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        setError("Error loading orders");
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Simulate API call
-    setTimeout(() => {
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 1000);
+    fetchOrders();
   }, []);
 
   // Filter orders

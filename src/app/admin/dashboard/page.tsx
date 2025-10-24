@@ -1,44 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-
-// Dashboard Components
-import StatsCards from "@/components/admin/StatsCards";
-import RecentOrders from "@/components/admin/RecentOrders";
-import TopProducts from "@/components/admin/TopProducts";
-import SalesChart from "@/components/admin/SalesChart";
-import UserActivityChart from "@/components/admin/UserActivityChart";
-import QuickActions from "@/components/admin/QuickActions";
-import RecentReviews from "@/components/admin/RecentReviews";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Admin Dashboard
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Welcome back! Here's what's happening with your store today.
+              <p className="mt-1 text-sm text-muted">
+                Welcome back, {user?.name || user?.displayName}! Here's your
+                store overview.
               </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/seller/dashboard"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Seller Dashboard
-              </Link>
-              <Link
-                href="/admin/orders"
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                View All Orders
-              </Link>
             </div>
           </div>
         </div>
@@ -47,26 +30,15 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
-          {/* Stats Cards */}
-          <StatsCards />
-
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <SalesChart />
-            <UserActivityChart />
+          <div className="admin-card p-12 text-center">
+            <h2 className="text-xl font-semibold text-primary mb-4">
+              Dashboard Under Maintenance
+            </h2>
+            <p className="text-secondary">
+              We're updating the dashboard with enhanced features. This page
+              will be restored shortly.
+            </p>
           </div>
-
-          {/* Quick Actions */}
-          <QuickActions />
-
-          {/* Tables Row */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <RecentOrders />
-            <TopProducts />
-          </div>
-
-          {/* Recent Reviews */}
-          <RecentReviews />
         </div>
       </div>
     </div>

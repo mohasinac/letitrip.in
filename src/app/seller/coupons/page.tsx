@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SellerLayout from "@/components/seller/SellerLayout";
 import { Coupon } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
@@ -31,115 +30,143 @@ export default function SellerCoupons() {
   const loadCoupons = async () => {
     try {
       setLoading(true);
-      // Mock data for now - in production, fetch from API
-      const mockCoupons: Coupon[] = [
-        {
-          id: "1",
-          code: "SAVE20",
-          name: "Save 20%",
-          description: "Get 20% off on all products",
-          type: "percentage",
-          value: 20,
-          minimumAmount: 100,
-          maximumAmount: 500,
-          maxUses: 100,
-          maxUsesPerUser: 1,
-          usedCount: 25,
-          startDate: new Date().toISOString(),
-          endDate: new Date(
-            Date.now() + 30 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          status: "active",
-          combinable: false,
-          priority: 1,
-          createdBy: user?.id || "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          code: "FLAT50",
-          name: "Flat ₹50 Off",
-          description: "Get flat ₹50 off on orders above ₹200",
-          type: "fixed",
-          value: 50,
-          minimumAmount: 200,
-          maxUses: 50,
-          maxUsesPerUser: 2,
-          usedCount: 18,
-          startDate: new Date().toISOString(),
-          endDate: new Date(
-            Date.now() + 15 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          status: "active",
-          combinable: true,
-          priority: 2,
-          createdBy: user?.id || "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "3",
-          code: "FREESHIP",
-          name: "Free Shipping",
-          description: "Free shipping on all orders",
-          type: "free_shipping",
-          value: 0,
-          minimumAmount: 50,
-          maxUses: 200,
-          maxUsesPerUser: 5,
-          usedCount: 78,
-          startDate: new Date(
-            Date.now() - 10 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          endDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          status: "expired",
-          combinable: true,
-          priority: 3,
-          createdBy: user?.id || "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
 
-      const filteredCoupons =
-        filter === "all"
-          ? mockCoupons
-          : mockCoupons.filter((coupon) => {
-              if (filter === "expired") {
-                return new Date(coupon.endDate) < new Date();
-              }
-              return coupon.status === filter;
-            });
+      if (!user) {
+        console.error("No user found");
+        return;
+      }
 
-      setCoupons(filteredCoupons);
+      // Get Firebase ID token for authentication
+      const auth = (await import("firebase/auth")).getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error("No authenticated user found");
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+
+      const params = new URLSearchParams();
+      if (filter !== "all") params.append("status", filter);
+
+      const response = await fetch(`/api/coupons?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch coupons");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCoupons(data.data.coupons || []);
+      } else {
+        throw new Error(data.error || "Failed to fetch coupons");
+      }
     } catch (error) {
       console.error("Error loading coupons:", error);
+      setCoupons([]); // Set empty array instead of mock data
     } finally {
       setLoading(false);
     }
   };
 
   const deleteCoupon = async (couponId: string) => {
-    if (confirm("Are you sure you want to delete this coupon?")) {
-      setCoupons(coupons.filter((c) => c.id !== couponId));
+    if (!confirm("Are you sure you want to delete this coupon?")) {
+      return;
+    }
+
+    try {
+      if (!user) {
+        console.error("No user found");
+        return;
+      }
+
+      // Get Firebase ID token
+      const auth = (await import("firebase/auth")).getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error("No authenticated user found");
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch(`/api/coupons/${couponId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete coupon");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCoupons(coupons.filter((c) => c.id !== couponId));
+      } else {
+        throw new Error(data.error || "Failed to delete coupon");
+      }
+    } catch (error) {
+      console.error("Error deleting coupon:", error);
+      // Don't update UI on error to maintain data integrity
     }
   };
 
   const toggleCouponStatus = async (couponId: string) => {
-    setCoupons(
-      coupons.map((c) =>
-        c.id === couponId
-          ? {
-              ...c,
-              status:
-                c.status === "active"
-                  ? "inactive"
-                  : ("active" as "active" | "inactive"),
-            }
-          : c
-      )
-    );
+    try {
+      const coupon = coupons.find((c) => c.id === couponId);
+      if (!coupon || !user) return;
+
+      // Get Firebase ID token
+      const auth = (await import("firebase/auth")).getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error("No authenticated user found");
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+      const newStatus = coupon.status === "active" ? "inactive" : "active";
+
+      const response = await fetch(`/api/coupons/${couponId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update coupon status");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCoupons(
+          coupons.map((c) =>
+            c.id === couponId
+              ? { ...c, status: newStatus as "active" | "inactive" }
+              : c
+          )
+        );
+      } else {
+        throw new Error(data.error || "Failed to update coupon status");
+      }
+    } catch (error) {
+      console.error("Error updating coupon status:", error);
+      // Don't update UI on error to maintain data integrity
+    }
   };
 
   const copyToClipboard = (code: string) => {
@@ -180,22 +207,22 @@ export default function SellerCoupons() {
   };
 
   return (
-    <SellerLayout>
+    <div>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Coupons & Promotions
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted">
                 Create and manage discount codes for your customers
               </p>
             </div>
             <Link
               href="/seller/coupons/new"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center"
+              className="btn btn-primary transition-colors inline-flex items-center"
             >
               <PlusIcon className="h-5 w-5 mr-2" />
               Create Coupon
@@ -234,12 +261,12 @@ export default function SellerCoupons() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-500">Loading coupons...</p>
+            <p className="mt-2 text-muted">Loading coupons...</p>
           </div>
         ) : coupons.length === 0 ? (
           <div className="text-center py-12">
-            <TagIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">No coupons found.</p>
+            <TagIcon className="h-12 w-12 text-muted mx-auto mb-4" />
+            <p className="text-muted mb-4">No coupons found.</p>
             <Link
               href="/seller/coupons/new"
               className="text-blue-600 hover:text-blue-500"
@@ -252,7 +279,7 @@ export default function SellerCoupons() {
             {coupons.map((coupon) => (
               <div
                 key={coupon.id}
-                className="bg-white shadow rounded-lg border"
+                className="bg-background shadow rounded-lg border"
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -261,16 +288,16 @@ export default function SellerCoupons() {
                         <TagIcon className="h-6 w-6 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-primary">
                           {coupon.name}
                         </h3>
                         <div className="flex items-center mt-1">
-                          <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                          <span className="font-mono text-sm bg-surface px-2 py-1 rounded">
                             {coupon.code}
                           </span>
                           <button
                             onClick={() => copyToClipboard(coupon.code)}
-                            className="ml-2 text-gray-400 hover:text-gray-600"
+                            className="ml-2 text-muted hover: text-secondary"
                           >
                             <ClipboardDocumentIcon className="h-4 w-4" />
                           </button>
@@ -286,13 +313,13 @@ export default function SellerCoupons() {
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-secondary mb-4">
                     {coupon.description}
                   </p>
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-xs text-gray-500">Discount</p>
+                      <p className="text-xs text-muted">Discount</p>
                       <p className="font-semibold">
                         {coupon.type === "percentage"
                           ? `${coupon.value}%`
@@ -304,7 +331,7 @@ export default function SellerCoupons() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Usage</p>
+                      <p className="text-xs text-muted">Usage</p>
                       <p className="font-semibold">
                         {coupon.usedCount}/{coupon.maxUses || "∞"}
                       </p>
@@ -312,7 +339,7 @@ export default function SellerCoupons() {
                   </div>
 
                   <div className="mb-4">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <div className="flex justify-between text-xs text-muted mb-1">
                       <span>Usage Progress</span>
                       <span>
                         {Math.round(
@@ -334,7 +361,7 @@ export default function SellerCoupons() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-xs text-muted mb-4">
                     <span>
                       Valid until{" "}
                       {new Date(coupon.endDate).toLocaleDateString()}
@@ -356,7 +383,7 @@ export default function SellerCoupons() {
                       </button>
                     </div>
                     <div className="flex space-x-1">
-                      <button className="text-gray-400 hover:text-gray-600 p-1">
+                      <button className="text-muted hover: text-secondary p-1">
                         <EyeIcon className="h-4 w-4" />
                       </button>
                       <button className="text-blue-400 hover:text-blue-600 p-1">
@@ -376,6 +403,6 @@ export default function SellerCoupons() {
           </div>
         )}
       </div>
-    </SellerLayout>
+    </div>
   );
 }

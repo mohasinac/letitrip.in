@@ -5,12 +5,16 @@ import { Timestamp } from 'firebase-admin/firestore';
 interface DashboardStats {
   totalRevenue: number;
   totalOrders: number;
+  totalProducts: number;
   totalCustomers: number;
-  averageOrderValue: number;
+  pendingOrders: number;
+  lowStockProducts: number;
+  averageOrderValue?: number;
   revenueChange: number;
   ordersChange: number;
   customersChange: number;
-  aovChange: number;
+  productsSold: number;
+  aovChange?: number;
 }
 
 export async function GET(request: NextRequest) {
@@ -62,6 +66,36 @@ export async function GET(request: NextRequest) {
       .get();
     const lastMonthCustomers = lastMonthUsersSnapshot.size;
 
+    // Get total products
+    const productsSnapshot = await db.collection('products').get();
+    const totalProducts = productsSnapshot.size;
+
+    // Get pending orders
+    const pendingOrdersSnapshot = await db.collection('orders')
+      .where('status', '==', 'pending')
+      .get();
+    const pendingOrders = pendingOrdersSnapshot.size;
+
+    // Get low stock products (assuming threshold of 10)
+    const lowStockSnapshot = await db.collection('products')
+      .where('quantity', '<=', 10)
+      .where('status', '==', 'active')
+      .get();
+    const lowStockProducts = lowStockSnapshot.size;
+
+    // Calculate total products sold from all orders
+    let productsSold = 0;
+    const allOrdersSnapshot = await db.collection('orders')
+      .where('status', 'in', ['confirmed', 'processing', 'shipped', 'delivered'])
+      .get();
+    
+    allOrdersSnapshot.forEach((doc: any) => {
+      const order = doc.data();
+      if (order.items && Array.isArray(order.items)) {
+        productsSold += order.items.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
+      }
+    });
+
     // Calculate metrics
     const currentAOV = currentOrders > 0 ? currentRevenue / currentOrders : 0;
     const lastAOV = lastOrders > 0 ? lastRevenue / lastOrders : 0;
@@ -75,7 +109,11 @@ export async function GET(request: NextRequest) {
     const stats: DashboardStats = {
       totalRevenue: currentRevenue,
       totalOrders: currentOrders,
+      totalProducts,
       totalCustomers,
+      pendingOrders,
+      lowStockProducts,
+      productsSold,
       averageOrderValue: currentAOV,
       revenueChange: Math.round(revenueChange * 10) / 10,
       ordersChange: Math.round(ordersChange * 10) / 10,
@@ -83,11 +121,17 @@ export async function GET(request: NextRequest) {
       aovChange: Math.round(aovChange * 10) / 10,
     };
 
-    return NextResponse.json(stats);
+    return NextResponse.json({
+      success: true,
+      data: stats,
+    });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch dashboard stats' },
+      { 
+        success: false,
+        error: 'Failed to fetch dashboard stats' 
+      },
       { status: 500 }
     );
   }

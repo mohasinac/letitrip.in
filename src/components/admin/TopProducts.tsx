@@ -89,9 +89,9 @@ export default function TopProducts() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Top Products</h3>
+      <div className="admin-card">
+        <div className="px-6 py-4 border-b border-border">
+          <h3 className="admin-card-title">Top Products</h3>
         </div>
         <div className="p-6">
           <div className="animate-pulse space-y-4">
@@ -112,68 +112,52 @@ export default function TopProducts() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border">
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">Top Products</h3>
-        <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+    <div className="admin-card rounded-xl shadow-sm">
+      <div className="px-6 py-4 border-b border-border flex justify-between items-center">
+        <h3 className="admin-card-title">Top Products</h3>
+        <button className="text-primary hover:text-primary/80 text-sm font-medium">
           View All
         </button>
       </div>
       <div className="p-6">
         <div className="space-y-4">
           {products.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">
-              No product data available
+            <div className="text-center text-muted-foreground py-8">
+              No top products found.
             </div>
           ) : (
             products.map((product, index) => (
               <div
                 key={product.id}
-                className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center justify-between gap-x-4 rounded-lg p-4 admin-card shadow-sm"
               >
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <span className="text-lg font-semibold text-gray-600">
-                      #{index + 1}
+                <div className="flex items-center gap-x-4">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-12 h-12 rounded-lg object-cover border border-border"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {product.name}
+                    </p>
+                    <span className="text-sm text-muted-foreground">
+                      {product.sales} sales
                     </span>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {product.name}
-                  </p>
-                  <div className="flex items-center space-x-4 mt-1">
-                    <span className="text-sm text-gray-500">
-                      {product.sales} sold
-                    </span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {formatCurrency(product.revenue)}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-shrink-0">
-                  <div
-                    className={`flex items-center ${
+                <div className="flex flex-col items-end">
+                  <span className="text-lg font-semibold text-foreground">
+                    ${product.revenue.toLocaleString()}
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${
                       product.growth >= 0 ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    <svg
-                      className={`w-4 h-4 mr-1 ${
-                        product.growth >= 0 ? "rotate-0" : "rotate-180"
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-sm font-medium">
-                      {Math.abs(product.growth)}%
-                    </span>
-                  </div>
+                    {product.growth >= 0 ? "+" : "-"}
+                    {Math.abs(product.growth)}% growth
+                  </span>
                 </div>
               </div>
             ))

@@ -160,16 +160,16 @@ export default function AdminAuctionsPage() {
 
   return (
     <RoleGuard requiredRole="admin">
-      <div className="min-h-screen bg-gray-50">
+      <div className="admin-layout">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-primary">
                   Auction Management
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-secondary mt-1">
                   Manage all auctions across the platform
                 </p>
               </div>
@@ -185,18 +185,18 @@ export default function AdminAuctionsPage() {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="admin-card p-6 mb-6">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1">
                 <div className="relative">
-                  <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" />
                   <input
                     type="text"
                     placeholder="Search auctions, sellers..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function AdminAuctionsPage() {
               {/* Filter Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex items-center px-4 py-2 border border-border rounded-lg hover: bg-surface"
               >
                 <FunnelIcon className="w-5 h-5 mr-2" />
                 Filters
@@ -213,12 +213,12 @@ export default function AdminAuctionsPage() {
 
             {/* Filters */}
             {showFilters && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4 border-t border-border">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    className="input"
                   >
                     <option value="">All Categories</option>
                     {filters.categories.map((cat) => (
@@ -231,7 +231,7 @@ export default function AdminAuctionsPage() {
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    className="input"
                   >
                     <option value="">All Statuses</option>
                     {filters.statuses.map((stat) => (
@@ -244,7 +244,7 @@ export default function AdminAuctionsPage() {
                   <select
                     value={sort}
                     onChange={(e) => setSort(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    className="input"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -262,7 +262,7 @@ export default function AdminAuctionsPage() {
                     </button>
                     <button
                       onClick={clearFilters}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-4 py-2 border border-border rounded-lg hover: bg-surface"
                     >
                       Clear
                     </button>
@@ -274,60 +274,60 @@ export default function AdminAuctionsPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="admin-card p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <ClockIcon className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-secondary">
                     Total Auctions
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-primary">
                     {auctions.length}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="admin-card p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-green-100 rounded-lg">
                   <CheckCircleIcon className="h-6 w-6 text-green-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-secondary">
                     Live Auctions
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-primary">
                     {auctions.filter((a) => a.status === "live").length}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="admin-card p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-yellow-100 rounded-lg">
                   <ClockIcon className="h-6 w-6 text-yellow-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-secondary">Upcoming</p>
+                  <p className="text-2xl font-bold text-primary">
                     {auctions.filter((a) => a.status === "upcoming").length}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="admin-card p-6">
               <div className="flex items-center">
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <XCircleIcon className="h-6 w-6 text-gray-600" />
+                <div className="p-2 bg-surface rounded-lg">
+                  <XCircleIcon className="h-6 w-6 text-secondary" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Ended</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-secondary">Ended</p>
+                  <p className="text-2xl font-bold text-primary">
                     {auctions.filter((a) => a.status === "ended").length}
                   </p>
                 </div>
@@ -336,50 +336,50 @@ export default function AdminAuctionsPage() {
           </div>
 
           {/* Auctions Table */}
-          <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="admin-card overflow-hidden">
             {loading ? (
               <div className="p-8 text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-500">Loading auctions...</p>
+                <p className="mt-2 text-muted">Loading auctions...</p>
               </div>
             ) : auctions.length === 0 ? (
               <div className="p-8 text-center">
-                <p className="text-gray-500">No auctions found</p>
+                <p className="text-muted">No auctions found</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-surface">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Auction
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Seller
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Category
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Current Bid
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Bids
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Time Left
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-background divide-y divide-border">
                     {auctions.map((auction) => (
-                      <tr key={auction.id} className="hover:bg-gray-50">
+                      <tr key={auction.id} className="hover: bg-surface">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <img
@@ -390,10 +390,10 @@ export default function AdminAuctionsPage() {
                               className="w-12 h-12 object-cover rounded-lg mr-4"
                             />
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-primary">
                                 {auction.title}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-muted">
                                 ID: {auction.id}
                               </div>
                             </div>
@@ -402,10 +402,10 @@ export default function AdminAuctionsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-primary">
                                 {auction.seller?.name}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-muted">
                                 {auction.seller?.email}
                               </div>
                             </div>
@@ -414,16 +414,16 @@ export default function AdminAuctionsPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                           {auction.category}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                           ₹{auction.currentBid?.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                           {auction.bidCount}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                           {formatTimeRemaining(auction.endTime)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -438,7 +438,10 @@ export default function AdminAuctionsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
                             <Link
-                              href={`/auctions/${auction.id}`}
+                              href={`/auctions/${auction.title
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")
+                                .replace(/[^a-z0-9-]/g, "")}`}
                               className="text-blue-600 hover:text-blue-900"
                             >
                               <EyeIcon className="w-4 h-4" />
@@ -473,21 +476,21 @@ export default function AdminAuctionsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="px-6 py-4 border-t border-border flex items-center justify-between">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-secondary">
                   Page {page} of {totalPages}
                 </span>
                 <button
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

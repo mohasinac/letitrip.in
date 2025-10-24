@@ -1,7 +1,5 @@
 "use client";
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import Image from "next/image";
@@ -26,14 +24,12 @@ export default function CartPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading your cart...</p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -41,8 +37,6 @@ export default function CartPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
-
         <main className="flex-1 flex items-center justify-center py-12">
           <div className="text-center">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -69,16 +63,12 @@ export default function CartPage() {
             </a>
           </div>
         </main>
-
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1 bg-gray-50">
         {/* Page Header */}
         <div className="bg-white border-b">
@@ -308,8 +298,6 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

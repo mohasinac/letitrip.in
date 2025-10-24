@@ -3,14 +3,19 @@ import { getAdminDb } from '@/lib/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
 interface SellerStats {
-  totalOrders: number;
   totalRevenue: number;
-  totalViews: number;
+  totalOrders: number;
+  totalProducts: number;
+  activeProducts: number;
   pendingOrders: number;
+  completedOrders: number;
+  averageRating: number;
+  totalReviews: number;
   revenueChange: number;
   ordersChange: number;
-  viewsChange: number;
   conversionRate: number;
+  monthlyGoal: number;
+  goalProgress: number;
 }
 
 export async function GET(request: NextRequest) {
@@ -41,16 +46,24 @@ export async function GET(request: NextRequest) {
     if (productIds.length === 0) {
       // No products, return empty stats
       const emptyStats: SellerStats = {
-        totalOrders: 0,
         totalRevenue: 0,
-        totalViews: 0,
+        totalOrders: 0,
+        totalProducts: 0,
+        activeProducts: 0,
         pendingOrders: 0,
+        completedOrders: 0,
+        averageRating: 0,
+        totalReviews: 0,
         revenueChange: 0,
         ordersChange: 0,
-        viewsChange: 0,
         conversionRate: 0,
+        monthlyGoal: 50000, // Default goal
+        goalProgress: 0,
       };
-      return NextResponse.json(emptyStats);
+      return NextResponse.json({
+        success: true,
+        data: emptyStats,
+      });
     }
 
     // Get current month orders for seller's products
@@ -103,33 +116,55 @@ export async function GET(request: NextRequest) {
       lastRevenue += sellerRevenue;
     });
 
-    // Calculate views (mock for now - you'd implement product view tracking)
-    const totalViews = sellerProductsSnapshot.docs.reduce((sum, doc) => {
-      const product = doc.data();
-      return sum + (product.viewCount || 0);
-    }, 0);
+    // Calculate product stats
+    const totalProducts = sellerProductsSnapshot.size;
+    const activeProducts = sellerProductsSnapshot.docs.filter(doc => doc.data().status === 'active').length;
+    
+    // Calculate completed orders
+    const completedOrders = currentMonthOrders.filter(order => 
+      ['delivered', 'completed'].includes(order.status)
+    ).length;
+
+    // Calculate ratings (mock for now - you'd implement review aggregation)
+    const averageRating = 4.5; // Mock average rating
+    const totalReviews = Math.floor(completedOrders * 0.3); // Mock review count
 
     // Calculate changes
     const revenueChange = lastRevenue > 0 ? ((currentRevenue - lastRevenue) / lastRevenue) * 100 : 0;
     const ordersChange = lastMonthOrders.length > 0 ? ((currentMonthOrders.length - lastMonthOrders.length) / lastMonthOrders.length) * 100 : 0;
-    const conversionRate = totalViews > 0 ? (currentMonthOrders.length / totalViews) * 100 : 0;
+    const conversionRate = 3.2; // Mock conversion rate
+
+    // Calculate goal progress
+    const monthlyGoal = 50000; // Default monthly goal
+    const goalProgress = monthlyGoal > 0 ? (currentRevenue / monthlyGoal) * 100 : 0;
 
     const stats: SellerStats = {
-      totalOrders: currentMonthOrders.length,
       totalRevenue: currentRevenue,
-      totalViews,
+      totalOrders: currentMonthOrders.length,
+      totalProducts,
+      activeProducts,
       pendingOrders,
+      completedOrders,
+      averageRating,
+      totalReviews,
       revenueChange: Math.round(revenueChange * 10) / 10,
       ordersChange: Math.round(ordersChange * 10) / 10,
-      viewsChange: 0, // Would need historical view data
       conversionRate: Math.round(conversionRate * 100) / 100,
+      monthlyGoal,
+      goalProgress: Math.round(goalProgress * 10) / 10,
     };
 
-    return NextResponse.json(stats);
+    return NextResponse.json({
+      success: true,
+      data: stats,
+    });
   } catch (error) {
     console.error('Error fetching seller stats:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch seller stats' },
+      { 
+        success: false,
+        error: 'Failed to fetch seller stats' 
+      },
       { status: 500 }
     );
   }

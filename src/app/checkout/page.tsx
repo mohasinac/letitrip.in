@@ -9,8 +9,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import toast from "react-hot-toast";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import {
   CreditCardIcon,
   TruckIcon,
@@ -60,6 +58,19 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { items: cart, clearCart } = useCart();
+
+  // Helper function to safely get auth token
+  const getAuthToken = async (): Promise<string | null> => {
+    if (!user?.getIdToken) {
+      return null;
+    }
+    try {
+      return await user.getIdToken();
+    } catch (error) {
+      console.error("Failed to get auth token:", error);
+      return null;
+    }
+  };
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -123,7 +134,12 @@ export default function CheckoutPage() {
 
   const loadAddresses = async () => {
     try {
-      const token = await user?.getIdToken();
+      if (!user?.getIdToken) {
+        toast.error("Authentication required");
+        return;
+      }
+
+      const token = await user.getIdToken();
       const response = await fetch("/api/user/addresses", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,7 +171,12 @@ export default function CheckoutPage() {
 
     setIsLoadingShipping(true);
     try {
-      const token = await user?.getIdToken();
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error("Authentication required");
+        return;
+      }
+
       const response = await fetch("/api/shipping/shiprocket/rates", {
         method: "POST",
         headers: {
@@ -198,7 +219,11 @@ export default function CheckoutPage() {
 
     setIsValidatingCoupon(true);
     try {
-      const token = await user?.getIdToken();
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error("Authentication required");
+        return;
+      }
       const response = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: {
@@ -236,7 +261,11 @@ export default function CheckoutPage() {
 
   const createRazorpayOrder = async () => {
     try {
-      const token = await user?.getIdToken();
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error("Authentication required");
+        return;
+      }
       const response = await fetch("/api/payment/razorpay/create-order", {
         method: "POST",
         headers: {
@@ -286,7 +315,11 @@ export default function CheckoutPage() {
         handler: async (response: any) => {
           try {
             // Verify payment
-            const token = await user?.getIdToken();
+            const token = await getAuthToken();
+            if (!token) {
+              toast.error("Authentication required");
+              return;
+            }
             const verifyResponse = await fetch("/api/payment/razorpay/verify", {
               method: "POST",
               headers: {
@@ -323,7 +356,11 @@ export default function CheckoutPage() {
 
   const createOrder = async (paymentData?: any) => {
     try {
-      const token = await user?.getIdToken();
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error("Authentication required");
+        return;
+      }
       const orderPayload = {
         items: cart,
         shippingAddress: selectedAddress,
@@ -411,19 +448,15 @@ export default function CheckoutPage() {
   if (!user || cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1 bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
@@ -743,8 +776,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

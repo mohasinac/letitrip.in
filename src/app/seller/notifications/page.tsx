@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SellerLayout from "@/components/seller/SellerLayout";
 import { SellerNotification } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -121,7 +120,7 @@ export default function SellerNotifications() {
       case "payment":
         return <CurrencyRupeeIcon className="h-6 w-6 text-purple-600" />;
       default:
-        return <BellIcon className="h-6 w-6 text-gray-600" />;
+        return <BellIcon className="h-6 w-6 text-secondary" />;
     }
   };
 
@@ -143,18 +142,18 @@ export default function SellerNotifications() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <SellerLayout>
+    <div>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <BellIcon className="h-8 w-8 text-gray-600 mr-3" />
+              <BellIcon className="h-8 w-8 text-secondary mr-3" />
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-primary">
                   Notifications
                 </h1>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-muted">
                   Stay updated with order notifications
                   {unreadCount > 0 && (
                     <span className="ml-2 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
@@ -208,19 +207,19 @@ export default function SellerNotifications() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-500">Loading notifications...</p>
+            <p className="mt-2 text-muted">Loading notifications...</p>
           </div>
         ) : notifications.length === 0 ? (
           <div className="text-center py-12">
-            <BellIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">No notifications found</p>
-            <p className="text-sm text-gray-400">
+            <BellIcon className="h-12 w-12 text-muted mx-auto mb-4" />
+            <p className="text-muted mb-2">No notifications found</p>
+            <p className="text-sm text-muted">
               We'll notify you when there are new orders or updates
             </p>
           </div>
         ) : (
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
+          <div className="bg-background shadow overflow-hidden sm:rounded-md">
+            <ul className="divide-y divide-border">
               {notifications.map((notification) => (
                 <li key={notification.id}>
                   <div
@@ -248,10 +247,10 @@ export default function SellerNotifications() {
                               <div className="ml-2 w-2 h-2 bg-blue-600 rounded-full"></div>
                             )}
                           </div>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-muted mt-1">
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-400 mt-2">
+                          <p className="text-xs text-muted mt-2">
                             {getTimeAgo(notification.createdAt)}
                           </p>
                         </div>
@@ -282,6 +281,6 @@ export default function SellerNotifications() {
           </div>
         )}
       </div>
-    </SellerLayout>
+    </div>
   );
 }

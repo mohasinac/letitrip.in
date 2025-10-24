@@ -20,15 +20,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mock order validation - replace with database query
-    const order = {
-      id: orderId,
-      userId,
-      status: "delivered",
-      deliveredAt: "2024-01-18T14:30:00Z",
-      total: 2890,
-      canReturn: true
-    };
+    // Fetch order from database
+    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const db = getAdminDb();
+
+    // Fetch order from database
+    const orderDoc = await db.collection('orders').doc(orderId).get();
+    
+    if (!orderDoc.exists) {
+      return NextResponse.json(
+        { error: "Order not found" },
+        { status: 404 }
+      );
+    }
+
+    const order = orderDoc.data() as any;
 
     // Check if order belongs to user
     if (order.userId !== userId) {
@@ -38,15 +44,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if order can be returned (within return window)
-    if (!order.canReturn || order.status !== "delivered") {
+    // Check if order can be returned (must be delivered)
+    if (order.status !== "delivered") {
       return NextResponse.json(
         { error: "This order cannot be returned" },
         { status: 400 }
       );
     }
 
-    // Check return window (e.g., 7 days)
+    // Check return window (e.g., 7 days from delivery)
     const deliveredDate = new Date(order.deliveredAt);
     const returnDeadline = new Date(deliveredDate.getTime() + 7 * 24 * 60 * 60 * 1000);
     if (new Date() > returnDeadline) {
@@ -56,23 +62,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create return request - replace with database insert
+    // Create return request in database
+    const returnRequestId = db.collection('returns').doc().id;
     const returnRequest = {
-      id: `return_${Date.now()}`,
       orderId,
       userId,
       reason,
-      items: items || [], // Specific items to return (empty means all items)
+      items: items || [],
       status: "pending",
       refundAmount: order.total,
-      requestedAt: new Date().toISOString(),
+      requestedAt: new Date(),
       expectedProcessing: "3-5 business days"
     };
+
+    await db.collection('returns').doc(returnRequestId).set(returnRequest);
 
     return NextResponse.json({
       success: true,
       message: "Return request submitted successfully",
-      data: returnRequest
+      data: {
+        id: returnRequestId,
+        ...returnRequest,
+        requestedAt: returnRequest.requestedAt.toISOString(),
+      }
     }, { status: 201 });
 
   } catch (error) {

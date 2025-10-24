@@ -3,8 +3,6 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { getRoleDisplayName, getRoleBadgeClasses } from "@/lib/auth/roles";
 
@@ -450,7 +448,6 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <Suspense
         fallback={
           <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -467,7 +464,6 @@ export default function RegisterPage() {
       >
         <RegisterForm />
       </Suspense>
-      <Footer />
     </div>
   );
 }

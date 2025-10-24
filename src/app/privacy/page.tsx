@@ -5,8 +5,6 @@ import Link from "next/link";
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1">
         <div className="container py-12 max-w-4xl">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
@@ -365,8 +363,6 @@ export default function PrivacyPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -75,6 +75,22 @@ class CategoriesService {
     }
   }
 
+  async toggleCategoryStatus(id: string): Promise<Category> {
+    const response = await fetch(`${this.baseUrl}?id=${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to toggle category status');
+    }
+
+    const result: ApiResponse<{ category: Category }> = await response.json();
+    return result.data!.category;
+  }
 
 }
 

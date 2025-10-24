@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
 
@@ -27,8 +25,6 @@ export default function TestNavigationPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1 bg-gray-50">
         <div className="container py-8">
           <div className="max-w-2xl mx-auto">
@@ -131,8 +127,6 @@ export default function TestNavigationPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

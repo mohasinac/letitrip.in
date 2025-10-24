@@ -17,15 +17,16 @@ import { User } from "@/types";
 // Extend the base User type with authentication-specific claims
 interface AuthUser {
   id: string;
-  uid: string;
+  uid?: string;
   email: string | null;
-  displayName: string | null;
+  displayName?: string | null;
   name?: string;
+  phone?: string;
   role: "admin" | "seller" | "user";
   addresses?: any[];
-  createdAt?: Date;
-  updatedAt?: Date;
-  getIdToken: () => Promise<string>;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  getIdToken?: () => Promise<string>;
   claims?: {
     permissions: string[];
     lastLogin?: string;
@@ -269,9 +270,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const result = await response.json();
         console.log("Auth check result:", result);
-        if (result.success && result.data) {
+
+        // Handle both wrapped and unwrapped responses
+        const userData = result.data || result;
+
+        if (
+          (result.success || !result.error) &&
+          userData &&
+          typeof userData === "object"
+        ) {
           // Enhance user data with claims if not present
-          const userData = result.data;
           if (!userData.claims) {
             userData.claims = {
               permissions: getRolePermissions(userData.role),
@@ -317,25 +325,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+        throw new Error(data.error || data.message || "Login failed");
+      }
+
+      // Handle both response formats
+      const userData = data.data?.user || data.user;
+
+      if (!userData) {
+        throw new Error("Invalid response format - no user data");
       }
 
       // Server returns user data, enhance it with claims
-      if (data.success && data.data?.user) {
-        const userData = data.data.user;
-        const userWithClaims = {
-          ...userData,
-          claims: {
-            permissions: getRolePermissions(userData.role),
-            lastLogin: new Date().toISOString(),
-            sessionId: generateSessionId(),
-          },
-        };
+      const userWithClaims = {
+        ...userData,
+        claims: {
+          permissions: getRolePermissions(userData.role),
+          lastLogin: new Date().toISOString(),
+          sessionId: generateSessionId(),
+        },
+      };
 
-        dispatch({ type: "SET_USER", payload: userWithClaims });
-      } else {
-        throw new Error("Invalid response format");
-      }
+      dispatch({ type: "SET_USER", payload: userWithClaims });
 
       // Get the intended destination with enhanced storage fallback
       let intendedPath: string | null = null;
@@ -365,19 +375,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         // Role-based default redirects
-        const role = data.data?.user?.role;
+        const role = userData?.role;
         redirectPath = getDefaultRedirectForRole(role);
       }
 
       // Store successful login info if storage is available
       if (setStorageItem("last_successful_login", new Date().toISOString())) {
-        setStorageItem("last_login_role", data.data.user.role);
+        setStorageItem("last_login_role", userData.role);
       }
 
       router.push(redirectPath);
       router.refresh();
     } catch (error: any) {
-      dispatch({ type: "SET_ERROR", payload: error.message });
+      const errorMessage = error.message || "Login failed";
+      dispatch({ type: "SET_ERROR", payload: errorMessage });
       throw error;
     }
   };
@@ -404,25 +415,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
+        throw new Error(data.error || data.message || "Registration failed");
+      }
+
+      // Handle both response formats
+      const userData = data.data?.user || data.user;
+
+      if (!userData) {
+        throw new Error("Invalid response format - no user data");
       }
 
       // Server returns user data, enhance it with claims
-      if (data.success && data.data?.user) {
-        const userData = data.data.user;
-        const userWithClaims = {
-          ...userData,
-          claims: {
-            permissions: getRolePermissions(userData.role),
-            lastLogin: new Date().toISOString(),
-            sessionId: generateSessionId(),
-          },
-        };
+      const userWithClaims = {
+        ...userData,
+        claims: {
+          permissions: getRolePermissions(userData.role),
+          lastLogin: new Date().toISOString(),
+          sessionId: generateSessionId(),
+        },
+      };
 
-        dispatch({ type: "SET_USER", payload: userWithClaims });
-      } else {
-        throw new Error("Invalid response format");
-      }
+      dispatch({ type: "SET_USER", payload: userWithClaims });
 
       // Enhanced redirect logic similar to login
       let intendedPath: string | null = null;
@@ -444,7 +457,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirectPath = intendedPath;
       } else {
         // For new registrations, show role-specific onboarding or dashboard
-        const userRole = data.data?.user?.role;
+        const userRole = userData?.role;
         switch (userRole) {
           case "admin":
             redirectPath = "/admin/initialize"; // Admin setup flow
@@ -461,13 +474,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Store registration info if storage is available
       if (setStorageItem("registration_complete", new Date().toISOString())) {
-        setStorageItem("registered_role", data.data.user.role);
+        setStorageItem("registered_role", userData.role);
       }
 
       router.push(redirectPath);
       router.refresh();
     } catch (error: any) {
-      dispatch({ type: "SET_ERROR", payload: error.message });
+      const errorMessage = error.message || "Registration failed";
+      dispatch({ type: "SET_ERROR", payload: errorMessage });
       throw error;
     }
   };

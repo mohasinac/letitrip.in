@@ -33,19 +33,62 @@ const publicSettings = {
     {
       id: "features",
       type: "features",
-      title: "Features Section",
+      title: "Why Choose Us",
       enabled: true,
       order: 2,
       content: {}
+    },
+    {
+      id: "sale-carousel",
+      type: "sale-carousel",
+      title: "Special Offers",
+      enabled: true,
+      order: 3,
+      content: {
+        items: [
+          {
+            id: "sale-1",
+            title: "Flash Sale",
+            subtitle: "Up to 70% off on selected items",
+            image: "/images/sale-1.jpg",
+            button: { text: "Shop Sale", link: "/products?filter=sale" },
+            sortOrder: "price_asc"
+          },
+          {
+            id: "new-2",
+            title: "New Arrivals",
+            subtitle: "Latest Beyblade releases this week",
+            image: "/images/new-arrivals.jpg",
+            button: { text: "Shop New", link: "/products?filter=newest" },
+            sortOrder: "newest"
+          },
+          {
+            id: "popular-3",
+            title: "Most Popular",
+            subtitle: "Bestselling items loved by customers",
+            image: "/images/popular.jpg",
+            button: { text: "Shop Popular", link: "/products?filter=popular" },
+            sortOrder: "popularity"
+          }
+        ]
+      }
     },
     {
       id: "categories",
       type: "categories",
       title: "Shop by Category",
       enabled: true,
-      order: 3,
+      order: 4,
       content: {
-        showOnHomepage: ["beyblades", "launchers", "stadiums", "accessories"]
+        showOnHomepage: ["beyblades", "launchers", "stadiums", "accessories", "limited-edition", "tournament"],
+        categoryIcons: {
+          "beyblades": "⚡",
+          "launchers": "🎯",
+          "stadiums": "🏟️",
+          "accessories": "🔧",
+          "limited-edition": "💎",
+          "tournament": "🏆"
+        }
       }
     },
     {
@@ -53,10 +96,12 @@ const publicSettings = {
       type: "featured-products",
       title: "Featured Products",
       enabled: true,
-      order: 4,
+      order: 5,
       content: {
-        type: "most-visited", // "most-visited", "wishlisted", "newest"
-        limit: 8
+        type: "most-visited", // "most-visited", "wishlisted", "newest", "admin-selected"
+        limit: 6,
+        displayCount: 3, // Show 3 at a time in carousel
+        adminSelected: [] // Array of product IDs when type is "admin-selected"
       }
     },
     {
@@ -64,20 +109,48 @@ const publicSettings = {
       type: "auctions",
       title: "Live Auctions",
       enabled: true,
-      order: 5,
+      order: 6,
       content: {
         showLive: true,
         showClosed: true,
-        limit: 3
+        limit: 6,
+        displayCount: 3, // Show 3 at a time
+        featuredAuctions: [] // Admin selected featured auction IDs
       }
     },
     {
-      id: "newsletter",
-      type: "newsletter",
-      title: "Newsletter Subscription",
+      id: "newsletter-reviews",
+      type: "newsletter-reviews",
+      title: "Stay Updated & Reviews",
       enabled: true,
-      order: 6,
-      content: {}
+      order: 7,
+      content: {
+        showReviews: true,
+        showNewsletter: true,
+        reviews: [
+          {
+            id: "1",
+            name: "Arjun Patel",
+            text: "Amazing quality Beyblades! Fast delivery and authentic products.",
+            rating: 5,
+            avatar: "/images/avatar-1.jpg"
+          },
+          {
+            id: "2", 
+            name: "Priya Sharma",
+            text: "Great customer service and competitive prices. Highly recommended!",
+            rating: 5,
+            avatar: "/images/avatar-2.jpg"
+          },
+          {
+            id: "3",
+            name: "Rohan Kumar",
+            text: "Best place for Beyblade enthusiasts. Genuine products guaranteed!",
+            rating: 5,
+            avatar: "/images/avatar-3.jpg"
+          }
+        ]
+      }
     }
   ]
 };

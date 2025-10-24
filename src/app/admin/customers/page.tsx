@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -10,45 +9,56 @@ import {
   EyeIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: "customer" | "seller" | "admin";
-  verified: boolean;
-  joinDate: string;
-  lastActive: string;
+  role: "user" | "seller" | "admin";
+  verified?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string;
   ordersCount: number;
   totalSpent: number;
 }
 
 export default function CustomerManagement() {
+  const { user } = useEnhancedAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
+
       const response = await fetch("/api/admin/users");
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
       }
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
+
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch users");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchUsers();
+    }
+  }, [user]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -58,15 +68,13 @@ export default function CustomerManagement() {
         body: JSON.stringify({ role: newRole }),
       });
 
-      if (response.ok) {
-        setUsers(
-          users.map((user) =>
-            user.id === userId ? { ...user, role: newRole as any } : user
-          )
-        );
-        setShowModal(false);
-        setSelectedUser(null);
+      if (!response.ok) {
+        throw new Error("Failed to update user role");
       }
+
+      setShowModal(false);
+      setSelectedUser(null);
+      fetchUsers(); // Refresh the data after update
     } catch (error) {
       console.error("Failed to update user role:", error);
     }
@@ -84,11 +92,7 @@ export default function CustomerManagement() {
       });
 
       if (response.ok) {
-        setUsers(
-          users.map((user) =>
-            user.id === userId ? { ...user, verified } : user
-          )
-        );
+        fetchUsers(); // Refresh the data after update
       }
     } catch (error) {
       console.error("Failed to update verification:", error);
@@ -116,21 +120,73 @@ export default function CustomerManagement() {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return "Unknown";
+    }
+  };
+
+  const getTimeAgo = (dateString?: string) => {
+    if (!dateString) return "Never";
+    try {
+      const diff = Date.now() - new Date(dateString).getTime();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      if (days === 0) return "Today";
+      if (days === 1) return "Yesterday";
+      return `${days} days ago`;
+    } catch {
+      return "Unknown";
+    }
+  };
+
   return (
-    <AdminLayout>
+    <div className="admin-layout">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="admin-header">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Customer Management
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage users, roles, and verification badges
+              <div className="flex items-center space-x-3">
+                <h1 className="text-3xl font-bold text-foreground">
+                  Customer Management
+                </h1>
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      loading ? "bg-yellow-400 animate-pulse" : "bg-green-400"
+                    }`}
+                  ></div>
+                  <span className="text-sm text-gray-600">
+                    {loading
+                      ? "Updating..."
+                      : `Updated ${new Date().toLocaleTimeString()}`}
+                  </span>
+                </div>
+              </div>
+              <p className="mt-1 text-sm text-gray-600">
+                Manage users, roles, and verification badges • {users.length}{" "}
+                total users
               </p>
             </div>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={fetchUsers}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200 disabled:opacity-50"
+              >
+                {loading ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
           </div>
+          {error && (
+            <div className="px-4 sm:px-6 lg:px-8 pb-4">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">Error: {error}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -138,19 +194,19 @@ export default function CustomerManagement() {
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             <input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="pl-10 pr-4 py-2 w-full border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             />
           </div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
           >
             <option value="all">All Roles</option>
             <option value="customer">Customers</option>
@@ -160,51 +216,51 @@ export default function CustomerManagement() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-background shadow-sm rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-surface">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Activity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Stats
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-border">
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-                      <p className="mt-2 text-gray-500">Loading users...</p>
+                      <p className="mt-2 text-gray-600">Loading users...</p>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
-                      className="px-6 py-12 text-center text-gray-500"
+                      className="px-6 py-12 text-center text-gray-600"
                     >
                       No users found matching your criteria
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover: bg-surface">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -216,7 +272,7 @@ export default function CustomerManagement() {
                             <div className="text-sm font-medium text-gray-900">
                               {user.name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-600">
                               {user.email}
                             </div>
                           </div>
@@ -236,18 +292,18 @@ export default function CustomerManagement() {
                               <span className="text-sm">Verified</span>
                             </div>
                           ) : (
-                            <div className="flex items-center text-gray-500">
+                            <div className="flex items-center text-gray-600">
                               <UserIcon className="h-4 w-4 mr-1" />
                               <span className="text-sm">Unverified</span>
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div>Joined {user.joinDate}</div>
-                        <div>Last active {user.lastActive}</div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <div>Joined {formatDate(user.createdAt)}</div>
+                        <div>Last active {getTimeAgo(user.lastLoginAt)}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         <div>{user.ordersCount} orders</div>
                         <div>${user.totalSpent.toFixed(2)} spent</div>
                       </td>
@@ -298,23 +354,27 @@ export default function CustomerManagement() {
       {/* Role Change Modal */}
       {showModal && selectedUser && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               Change Role for {selectedUser.name}
             </h3>
             <div className="space-y-4">
-              {["customer", "seller", "admin"].map((role) => (
+              {["user", "seller", "admin"].map((role) => (
                 <label key={role} className="flex items-center">
                   <input
                     type="radio"
                     name="role"
                     value={role}
                     checked={selectedUser.role === role}
-                    className="mr-3 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+                    className="mr-3 h-4 w-4 text-red-600 focus:ring-red-500 border-border"
                   />
-                  <span className="capitalize">{role}</span>
+                  <span className="capitalize">
+                    {role === "user" ? "Customer" : role}
+                  </span>
                   <span className={`ml-2 ${getRoleBadge(role)}`}>
-                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                    {role === "user"
+                      ? "Customer"
+                      : role.charAt(0).toUpperCase() + role.slice(1)}
                   </span>
                 </label>
               ))}
@@ -325,7 +385,7 @@ export default function CustomerManagement() {
                   setShowModal(false);
                   setSelectedUser(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200"
               >
                 Cancel
               </button>
@@ -351,6 +411,6 @@ export default function CustomerManagement() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }

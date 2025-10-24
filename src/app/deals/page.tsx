@@ -37,6 +37,7 @@ export default function DealsPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("discount");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -63,140 +64,29 @@ export default function DealsPage() {
   }, []);
 
   useEffect(() => {
-    // Mock deals and flash sales data
-    const mockFlashSales: FlashSale[] = [
-      {
-        id: "flash1",
-        title: "24-Hour Flash Sale",
-        description: "Limited time offers on electronics",
-        endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        deals: [],
-      },
-    ];
+    const fetchDeals = async () => {
+      try {
+        const response = await fetch("/api/deals");
+        if (response.ok) {
+          const data = await response.json();
+          setDeals(data.deals || []);
+          setFlashSales(data.flashSales || []);
+        } else {
+          setDeals([]);
+          setFlashSales([]);
+          setError("Failed to fetch deals");
+        }
+      } catch (err) {
+        console.error("Error fetching deals:", err);
+        setError("Error loading deals");
+        setDeals([]);
+        setFlashSales([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const mockDeals: Deal[] = [
-      {
-        id: "deal1",
-        title: "iPhone 15 Pro Max",
-        description: "Latest iPhone with titanium design and A17 Pro chip",
-        image: "/api/placeholder/300/300",
-        originalPrice: 1199,
-        salePrice: 999,
-        discountPercent: 17,
-        category: "Electronics",
-        brand: "Apple",
-        validUntil: new Date(
-          Date.now() + 7 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: true,
-        isFeatured: true,
-        stock: 50,
-        sold: 23,
-        tags: ["Limited Time", "Flagship"],
-      },
-      {
-        id: "deal2",
-        title: 'Samsung 65" QLED TV',
-        description: "4K Ultra HD Smart TV with Quantum Dot technology",
-        image: "/api/placeholder/300/300",
-        originalPrice: 1499,
-        salePrice: 1199,
-        discountPercent: 20,
-        category: "Electronics",
-        brand: "Samsung",
-        validUntil: new Date(
-          Date.now() + 5 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: false,
-        isFeatured: true,
-        stock: 30,
-        sold: 12,
-        tags: ["Big Screen", "Smart TV"],
-      },
-      {
-        id: "deal3",
-        title: "Nike Air Max 270",
-        description: "Comfortable running shoes with Max Air technology",
-        image: "/api/placeholder/300/300",
-        originalPrice: 149,
-        salePrice: 89,
-        discountPercent: 40,
-        category: "Sports & Outdoors",
-        brand: "Nike",
-        validUntil: new Date(
-          Date.now() + 3 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: true,
-        isFeatured: false,
-        stock: 100,
-        sold: 67,
-        tags: ["Comfort", "Running"],
-      },
-      {
-        id: "deal4",
-        title: "Sony WH-1000XM5",
-        description: "Industry-leading noise canceling headphones",
-        image: "/api/placeholder/300/300",
-        originalPrice: 399,
-        salePrice: 299,
-        discountPercent: 25,
-        category: "Electronics",
-        brand: "Sony",
-        validUntil: new Date(
-          Date.now() + 10 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: false,
-        isFeatured: true,
-        stock: 75,
-        sold: 34,
-        tags: ["Wireless", "Noise Canceling"],
-      },
-      {
-        id: "deal5",
-        title: "Levi's 501 Original Jeans",
-        description: "Classic straight fit jeans in authentic blue denim",
-        image: "/api/placeholder/300/300",
-        originalPrice: 89,
-        salePrice: 59,
-        discountPercent: 34,
-        category: "Fashion & Apparel",
-        brand: "Levi's",
-        validUntil: new Date(
-          Date.now() + 14 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: false,
-        isFeatured: false,
-        stock: 200,
-        sold: 89,
-        tags: ["Classic", "Denim"],
-      },
-      {
-        id: "deal6",
-        title: "MacBook Air M3",
-        description: "Thin, light, and powerful laptop with M3 chip",
-        image: "/api/placeholder/300/300",
-        originalPrice: 1299,
-        salePrice: 1099,
-        discountPercent: 15,
-        category: "Electronics",
-        brand: "Apple",
-        validUntil: new Date(
-          Date.now() + 12 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        isFlashDeal: false,
-        isFeatured: true,
-        stock: 25,
-        sold: 8,
-        tags: ["Laptop", "Performance"],
-      },
-    ];
-
-    // Simulate API call
-    setTimeout(() => {
-      setDeals(mockDeals);
-      setFlashSales(mockFlashSales);
-      setLoading(false);
-    }, 1000);
+    fetchDeals();
   }, []);
 
   const getTimeRemaining = (endDate: string) => {

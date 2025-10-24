@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-
+import { AdminService } from "@/lib/services/admin.service";
+import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 interface Order {
   id: string;
   orderNumber: string;
@@ -33,176 +34,26 @@ interface Order {
 }
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useEnhancedAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Mock data for demonstration
-  useEffect(() => {
-    const mockOrders: Order[] = [
-      {
-        id: "1",
-        orderNumber: "ORD-2024-001",
-        customer: {
-          name: "John Doe",
-          email: "john@example.com",
-          id: "user-1",
-        },
-        items: [
-          {
-            id: "1",
-            name: "Beyblade Burst Pro Series - Dragon Storm",
-            quantity: 2,
-            price: 29.99,
-          },
-          {
-            id: "2",
-            name: "Beyblade Stadium - Thunder Dome",
-            quantity: 1,
-            price: 49.99,
-          },
-        ],
-        total: 109.97,
-        status: "processing",
-        paymentStatus: "paid",
-        createdAt: "2024-01-25T10:30:00Z",
-        updatedAt: "2024-01-25T14:20:00Z",
-        shippingAddress: {
-          street: "123 Main St",
-          city: "New York",
-          state: "NY",
-          zipCode: "10001",
-          country: "USA",
-        },
-      },
-      {
-        id: "2",
-        orderNumber: "ORD-2024-002",
-        customer: {
-          name: "Sarah Wilson",
-          email: "sarah@example.com",
-          id: "user-2",
-        },
-        items: [
-          {
-            id: "3",
-            name: "Metal Fight Beyblade - Lightning L-Drago",
-            quantity: 1,
-            price: 24.99,
-          },
-        ],
-        total: 24.99,
-        status: "shipped",
-        paymentStatus: "paid",
-        createdAt: "2024-01-24T16:15:00Z",
-        updatedAt: "2024-01-25T09:45:00Z",
-        shippingAddress: {
-          street: "456 Oak Ave",
-          city: "Los Angeles",
-          state: "CA",
-          zipCode: "90210",
-          country: "USA",
-        },
-      },
-      {
-        id: "3",
-        orderNumber: "ORD-2024-003",
-        customer: {
-          name: "Mike Johnson",
-          email: "mike@example.com",
-          id: "user-3",
-        },
-        items: [
-          {
-            id: "4",
-            name: "Beyblade X - Xcalibur Sword",
-            quantity: 3,
-            price: 34.99,
-          },
-        ],
-        total: 104.97,
-        status: "pending",
-        paymentStatus: "pending",
-        createdAt: "2024-01-25T18:22:00Z",
-        updatedAt: "2024-01-25T18:22:00Z",
-        shippingAddress: {
-          street: "789 Pine St",
-          city: "Chicago",
-          state: "IL",
-          zipCode: "60601",
-          country: "USA",
-        },
-      },
-      {
-        id: "4",
-        orderNumber: "ORD-2024-004",
-        customer: {
-          name: "Emily Davis",
-          email: "emily@example.com",
-          id: "user-4",
-        },
-        items: [
-          {
-            id: "5",
-            name: "Launcher Set - Power Grip Pro",
-            quantity: 2,
-            price: 19.99,
-          },
-        ],
-        total: 39.98,
-        status: "delivered",
-        paymentStatus: "paid",
-        createdAt: "2024-01-23T12:10:00Z",
-        updatedAt: "2024-01-24T16:30:00Z",
-        shippingAddress: {
-          street: "321 Elm St",
-          city: "Miami",
-          state: "FL",
-          zipCode: "33101",
-          country: "USA",
-        },
-      },
-      {
-        id: "5",
-        orderNumber: "ORD-2024-005",
-        customer: {
-          name: "Alex Brown",
-          email: "alex@example.com",
-          id: "user-5",
-        },
-        items: [
-          {
-            id: "1",
-            name: "Beyblade Burst Pro Series - Dragon Storm",
-            quantity: 1,
-            price: 29.99,
-          },
-        ],
-        total: 29.99,
-        status: "cancelled",
-        paymentStatus: "refunded",
-        createdAt: "2024-01-22T08:45:00Z",
-        updatedAt: "2024-01-23T10:15:00Z",
-        shippingAddress: {
-          street: "654 Maple Ave",
-          city: "Seattle",
-          state: "WA",
-          zipCode: "98101",
-          country: "USA",
-        },
-      },
-    ];
+  // Real-time orders data
+  const {
+    data: ordersData,
+    loading,
+    error,
+    refresh,
+    lastUpdated,
+  } = useRealTimeData(AdminService.getOrders, {
+    interval: 30000, // 30 seconds
+    enabled: !!user,
+  });
 
-    // Simulate API call
-    setTimeout(() => {
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const orders = (ordersData?.orders || []) as unknown as Order[];
 
   // Filter orders
   const filteredOrders = orders.filter((order) => {
@@ -276,45 +127,65 @@ export default function AdminOrdersPage() {
   ];
   const paymentStatuses = ["all", "pending", "paid", "failed", "refunded"];
 
-  const handleStatusUpdate = (orderId: string, newStatus: string) => {
-    setOrders(
-      orders.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: newStatus as Order["status"],
-              updatedAt: new Date().toISOString(),
-            }
-          : order
-      )
-    );
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      await AdminService.updateOrderStatus(
+        orderId,
+        newStatus as Order["status"]
+      );
+      refresh(); // Refresh the data after update
+    } catch (error) {
+      console.error("Failed to update order status:", error);
+    }
   };
 
   if (loading) {
     return (
-      
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   return (
-    
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Order Management
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Track and manage customer orders
+              <div className="flex items-center space-x-3">
+                <h1 className="text-3xl font-bold text-primary">
+                  Order Management
+                </h1>
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      loading ? "bg-yellow-400 animate-pulse" : "bg-green-400"
+                    }`}
+                  ></div>
+                  <span className="text-sm text-muted">
+                    {loading
+                      ? "Updating..."
+                      : `Updated ${
+                          lastUpdated
+                            ? new Date(lastUpdated).toLocaleTimeString()
+                            : "now"
+                        }`}
+                  </span>
+                </div>
+              </div>
+              <p className="text-secondary mt-1">
+                Track and manage customer orders • {orders.length} total orders
               </p>
             </div>
             <div className="flex items-center space-x-3">
+              <button
+                onClick={refresh}
+                disabled={loading}
+                className="btn btn-outline"
+              >
+                {loading ? "Refreshing..." : "Refresh"}
+              </button>
               <button className="btn btn-outline">Export Orders</button>
               <Link
                 href="/admin/orders/bulk-update"
@@ -324,14 +195,19 @@ export default function AdminOrdersPage() {
               </Link>
             </div>
           </div>
+          {error && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">Error: {error}</p>
+            </div>
+          )}
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div className="admin-card p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Search
               </label>
               <input
@@ -345,7 +221,7 @@ export default function AdminOrdersPage() {
 
             {/* Order Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Order Status
               </label>
               <select
@@ -363,7 +239,7 @@ export default function AdminOrdersPage() {
 
             {/* Payment Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Payment Status
               </label>
               <select
@@ -400,41 +276,41 @@ export default function AdminOrdersPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="admin-card p-6">
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-secondary">Total Orders</p>
+              <p className="text-2xl font-bold text-primary">
                 {orders.length}
               </p>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="admin-card p-6">
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-sm font-medium text-secondary">Pending</p>
               <p className="text-2xl font-bold text-yellow-600">
                 {orders.filter((o) => o.status === "pending").length}
               </p>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="admin-card p-6">
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Processing</p>
+              <p className="text-sm font-medium text-secondary">Processing</p>
               <p className="text-2xl font-bold text-blue-600">
                 {orders.filter((o) => o.status === "processing").length}
               </p>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="admin-card p-6">
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Shipped</p>
+              <p className="text-sm font-medium text-secondary">Shipped</p>
               <p className="text-2xl font-bold text-purple-600">
                 {orders.filter((o) => o.status === "shipped").length}
               </p>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="admin-card p-6">
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Delivered</p>
+              <p className="text-sm font-medium text-secondary">Delivered</p>
               <p className="text-2xl font-bold text-green-600">
                 {orders.filter((o) => o.status === "delivered").length}
               </p>
@@ -443,66 +319,66 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-surface">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Order
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Items
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Payment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-border">
                 {paginatedOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
+                  <tr key={order.id} className="hover: bg-surface">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-primary">
                           {order.orderNumber}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted">
                           ID: {order.id}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-primary">
                           {order.customer.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted">
                           {order.customer.email}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-primary">
                         {order.items.length} item
                         {order.items.length > 1 ? "s" : ""}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted">
                         {order.items.reduce(
                           (sum, item) => sum + item.quantity,
                           0
@@ -510,7 +386,7 @@ export default function AdminOrdersPage() {
                         units
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">
                       ${order.total.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -534,7 +410,7 @@ export default function AdminOrdersPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getPaymentStatusBadge(order.paymentStatus)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -564,12 +440,12 @@ export default function AdminOrdersPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="bg-background px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-secondary bg-background hover: bg-surface disabled:opacity-50"
                 >
                   Previous
                 </button>
@@ -578,14 +454,14 @@ export default function AdminOrdersPage() {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-secondary bg-background hover: bg-surface disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-secondary">
                     Showing{" "}
                     <span className="font-medium">{startIndex + 1}</span> to{" "}
                     <span className="font-medium">
@@ -623,6 +499,5 @@ export default function AdminOrdersPage() {
           )}
         </div>
       </div>
-    
   );
 }

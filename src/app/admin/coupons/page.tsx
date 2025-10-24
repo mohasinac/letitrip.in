@@ -179,16 +179,16 @@ export default function AdminCouponsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="admin-layout py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-primary">
                 Coupon Management
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-secondary mt-2">
                 Create and manage discount coupons
               </p>
             </div>
@@ -203,7 +203,7 @@ export default function AdminCouponsPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-background rounded-lg shadow-sm p-6 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -211,14 +211,14 @@ export default function AdminCouponsPage() {
                 placeholder="Search coupons..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-2 border border-border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -244,14 +244,14 @@ export default function AdminCouponsPage() {
         </div>
 
         {/* Coupons Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-background rounded-lg shadow-sm overflow-hidden">
           {filteredCoupons.length === 0 ? (
             <div className="text-center py-12">
-              <TagIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <TagIcon className="h-12 w-12 text-muted mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-primary mb-2">
                 No coupons found
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-secondary mb-4">
                 Create your first coupon to get started
               </p>
               <button
@@ -263,10 +263,10 @@ export default function AdminCouponsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-surface">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       <input
                         type="checkbox"
                         checked={
@@ -284,32 +284,32 @@ export default function AdminCouponsPage() {
                         className="h-4 w-4 text-blue-600 rounded"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Code
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Usage
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Valid Until
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-background divide-y divide-border">
                   {filteredCoupons.map((coupon) => (
-                    <tr key={coupon.id} className="hover:bg-gray-50">
+                    <tr key={coupon.id} className="hover: bg-surface">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
@@ -331,12 +331,12 @@ export default function AdminCouponsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-sm font-medium text-primary">
                             {coupon.code}
                           </span>
                           <button
                             onClick={() => copyToClipboard(coupon.code)}
-                            className="ml-2 text-gray-400 hover:text-gray-600"
+                            className="ml-2 text-muted hover: text-secondary"
                             title="Copy code"
                           >
                             <DocumentDuplicateIcon className="h-4 w-4" />
@@ -344,22 +344,22 @@ export default function AdminCouponsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-primary">
                           {coupon.name}
                         </div>
                         {coupon.description && (
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
+                          <div className="text-sm text-muted truncate max-w-xs">
                             {coupon.description}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm text-primary">
                           {getTypeDisplay(coupon.type, coupon.value)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-primary">
                           {coupon.usedCount} / {coupon.maxUses || "∞"}
                         </div>
                       </td>
@@ -372,7 +372,7 @@ export default function AdminCouponsPage() {
                           {coupon.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                         {new Date(coupon.endDate).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -418,11 +418,11 @@ export default function AdminCouponsPage() {
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-medium text-primary mb-4">
                 Delete Coupon
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-secondary mb-6">
                 Are you sure you want to delete this coupon? This action cannot
                 be undone.
               </p>
@@ -432,7 +432,7 @@ export default function AdminCouponsPage() {
                     setShowDeleteModal(false);
                     setCouponToDelete(null);
                   }}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-secondary border border-border rounded-md hover: bg-surface"
                 >
                   Cancel
                 </button>

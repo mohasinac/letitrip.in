@@ -31,49 +31,54 @@ export default function UserDashboardPage() {
     wishlistItems: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Mock data for demonstration
-    const mockOrders: Order[] = [
-      {
-        id: "1",
-        orderNumber: "ORD-2024-001",
-        status: "delivered",
-        total: 109.97,
-        items: 3,
-        createdAt: "2024-01-20T10:30:00Z",
-      },
-      {
-        id: "2",
-        orderNumber: "ORD-2024-002",
-        status: "shipped",
-        total: 24.99,
-        items: 1,
-        createdAt: "2024-01-18T16:15:00Z",
-      },
-      {
-        id: "3",
-        orderNumber: "ORD-2024-003",
-        status: "processing",
-        total: 89.98,
-        items: 2,
-        createdAt: "2024-01-15T14:22:00Z",
-      },
-    ];
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch orders
+        const ordersResponse = await fetch("/api/orders?limit=3");
+        if (ordersResponse.ok) {
+          const ordersData = await ordersResponse.json();
+          setRecentOrders(ordersData.orders || []);
+        } else {
+          setRecentOrders([]);
+        }
 
-    const mockStats: UserStats = {
-      totalOrders: 12,
-      totalSpent: 1249.87,
-      activeOrders: 2,
-      wishlistItems: 8,
+        // Fetch stats
+        const statsResponse = await fetch("/api/user/dashboard/stats");
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData.stats || {
+            totalOrders: 0,
+            totalSpent: 0,
+            activeOrders: 0,
+            wishlistItems: 0,
+          });
+        } else {
+          setStats({
+            totalOrders: 0,
+            totalSpent: 0,
+            activeOrders: 0,
+            wishlistItems: 0,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError("Failed to load dashboard data");
+        setRecentOrders([]);
+        setStats({
+          totalOrders: 0,
+          totalSpent: 0,
+          activeOrders: 0,
+          wishlistItems: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Simulate API call
-    setTimeout(() => {
-      setRecentOrders(mockOrders);
-      setStats(mockStats);
-      setLoading(false);
-    }, 1000);
+    fetchDashboardData();
   }, []);
 
   const getStatusBadge = (status: string) => {

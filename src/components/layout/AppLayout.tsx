@@ -2,11 +2,11 @@
 
 import { ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import Header from "./Header";
 import Footer from "./Footer";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import SellerSidebar from "@/components/seller/SellerSidebar";
-import CategorySidebar from "./CategorySidebar";
 import RoleGuard from "@/components/auth/RoleGuard";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
@@ -17,6 +17,7 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { user } = useEnhancedAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Routes that should NOT have the layout (auth pages, etc.)
   const noLayoutRoutes = [
@@ -25,15 +26,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
     "/forgot-password",
     "/reset-password",
     "/verify-email",
-  ];
-
-  // Routes that should have category sidebar
-  const categorySidebarRoutes = [
-    "/products",
-    "/categories",
-    "/search",
-    "/brands",
-    "/deals",
   ];
 
   // Check if current route should skip layout
@@ -48,76 +40,93 @@ export default function AppLayout({ children }: AppLayoutProps) {
   // Determine layout type based on pathname
   const isAdminRoute = pathname.startsWith("/admin");
   const isSellerRoute = pathname.startsWith("/seller");
-  const isDashboardRoute = isAdminRoute || isSellerRoute;
-  const shouldShowCategorySidebar = categorySidebarRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const needsSidebar = isAdminRoute || isSellerRoute;
 
-  // Dashboard routes (admin/seller) with sidebar
-  if (isDashboardRoute) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-
-        <div className="flex flex-1">
-          {isAdminRoute && (
-            <RoleGuard requiredRole="admin">
-              <AdminSidebar />
-            </RoleGuard>
-          )}
-
-          {isSellerRoute && (
-            <RoleGuard requiredRole="seller">
-              <SellerSidebar />
-            </RoleGuard>
-          )}
-
-          {/* Main content with sidebar offset */}
-          <div className={`flex-1 ${isDashboardRoute ? "lg:pl-72" : ""}`}>
-            <main className="min-h-screen">
-              {isAdminRoute ? (
-                <RoleGuard requiredRole="admin">{children}</RoleGuard>
-              ) : isSellerRoute ? (
-                <RoleGuard requiredRole="seller">{children}</RoleGuard>
-              ) : (
-                children
-              )}
-            </main>
-          </div>
-        </div>
-
-        <Footer />
-      </div>
-    );
-  }
-
-  // Regular pages with optional category sidebar
-  if (shouldShowCategorySidebar) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-
-        <div className="flex flex-1">
-          <CategorySidebar />
-
-          {/* Main content with sidebar offset */}
-          <div className="flex-1 lg:pl-72">
-            <main className="min-h-screen">{children}</main>
-          </div>
-        </div>
-
-        <Footer />
-      </div>
-    );
-  }
-
-  // Default layout for all other pages (stores, dashboard, profile, etc.)
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-200">
+      {/* Header - Always visible */}
       <Header />
 
-      <main className="flex-1">{children}</main>
+      <div className="flex flex-1">
+        {/* Conditional Sidebar */}
+        {needsSidebar && (
+          <>
+            {/* Mobile sidebar overlay */}
+            {sidebarOpen && (
+              <div className="fixed inset-0 z-50 lg:hidden">
+                <div
+                  className="fixed inset-0 bg-black/50 dark:bg-black/70 transition-colors"
+                  onClick={() => setSidebarOpen(false)}
+                />
+                <div className="fixed inset-y-0 left-0 flex w-full max-w-xs">
+                  {isAdminRoute && (
+                    <RoleGuard requiredRole="admin">
+                      <AdminSidebar onClose={() => setSidebarOpen(false)} />
+                    </RoleGuard>
+                  )}
+                  {isSellerRoute && (
+                    <RoleGuard requiredRole="seller">
+                      <SellerSidebar onClose={() => setSidebarOpen(false)} />
+                    </RoleGuard>
+                  )}
+                </div>
+              </div>
+            )}
 
+            {/* Desktop sidebar */}
+            {isAdminRoute && (
+              <RoleGuard requiredRole="admin">
+                <AdminSidebar />
+              </RoleGuard>
+            )}
+            {isSellerRoute && (
+              <RoleGuard requiredRole="seller">
+                <SellerSidebar />
+              </RoleGuard>
+            )}
+          </>
+        )}
+
+        {/* Main content wrapper */}
+        <div
+          className={`flex-1 flex flex-col transition-colors duration-200 ${
+            needsSidebar ? "lg:pl-72" : ""
+          }`}
+        >
+          {/* Mobile header for admin/seller routes */}
+          {needsSidebar && (
+            <div
+              className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:hidden transition-colors duration-200"
+              style={{ borderColor: "hsl(var(--header-border))" }}
+            >
+              <button
+                type="button"
+                className="-m-2.5 p-2.5 text-foreground hover:bg-accent rounded-md transition-colors lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <span className="sr-only">Open sidebar</span>
+                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+              </button>
+              <div className="flex-1 text-sm font-semibold leading-6 text-foreground">
+                {isAdminRoute ? "Admin Panel" : "Seller Panel"}
+              </div>
+            </div>
+          )}
+
+          {/* Main content */}
+          <main className="flex-1">
+            {isAdminRoute ? (
+              <RoleGuard requiredRole="admin">{children}</RoleGuard>
+            ) : isSellerRoute ? (
+              <RoleGuard requiredRole="seller">{children}</RoleGuard>
+            ) : (
+              children
+            )}
+          </main>
+        </div>
+      </div>
+
+      {/* Footer - Always visible */}
       <Footer />
     </div>
   );

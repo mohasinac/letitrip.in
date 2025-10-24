@@ -1,116 +1,138 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const mockApprovedReviews = [
-  {
-    id: "1",
-    productId: "beyblade-1",
-    productName: "Dragon Storm Beyblade",
-    productImage: "/images/beyblade-1.jpg",
-    userId: "user-1",
-    userName: "John Doe",
-    rating: 5,
-    title: "Amazing Beyblade!",
-    comment: "This Beyblade is incredible. My son loves it and it performs great in battles. Highly recommended!",
-    createdAt: "2024-01-25",
-    verified: true,
-    helpful: 12,
-    images: [],
-  },
-  {
-    id: "2",
-    productId: "beyblade-2", 
-    productName: "Lightning L-Drago",
-    productImage: "/images/beyblade-2.jpg",
-    userId: "user-2",
-    userName: "Sarah Wilson",
-    rating: 4,
-    title: "Good quality Beyblade",
-    comment: "Well made beyblade with good spinning power. The metal construction feels premium and durable.",
-    createdAt: "2024-01-24",
-    verified: true,
-    helpful: 8,
-    images: [],
-  },
-  {
-    id: "3",
-    productId: "stadium-1",
-    productName: "Thunder Dome Stadium", 
-    productImage: "/images/stadium-1.jpg",
-    userId: "user-3",
-    userName: "Mike Johnson",
-    rating: 5,
-    title: "Perfect stadium for battles",
-    comment: "This stadium is exactly what we needed. Great size, high walls, and sturdy construction.",
-    createdAt: "2024-01-23",
-    verified: true,
-    helpful: 15,
-    images: [],
-  },
-  {
-    id: "4",
-    productId: "launcher-1",
-    productName: "Power Grip Pro Launcher",
-    productImage: "/images/launcher-1.jpg", 
-    userId: "user-4",
-    userName: "Emily Davis",
-    rating: 3,
-    title: "Decent launcher",
-    comment: "The launcher works fine and gives good power. Could be more comfortable though.",
-    createdAt: "2024-01-22",
-    verified: true,
-    helpful: 4,
-    images: [],
-  },
-  {
-    id: "5",
-    productId: "beyblade-3",
-    productName: "Xcalibur Sword Beyblade X",
-    productImage: "/images/beyblade-3.jpg",
-    userId: "user-5", 
-    userName: "Ryan Martinez",
-    rating: 5,
-    title: "Next-level Beyblade!",
-    comment: "The Beyblade X series is incredible! Amazing attack power and the X-Rail system is revolutionary.",
-    createdAt: "2024-01-21",
-    verified: true,
-    helpful: 9,
-    images: [],
-  },
-];
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
+    const productId = searchParams.get("productId");
+    const status = searchParams.get("status") || "approved";
     const sort = searchParams.get("sort") || "newest";
-    
-    let reviews = [...mockApprovedReviews];
-    
-    // Filter by status (only approved reviews for public API)
-    if (status === "approved" || !status) {
-      reviews = reviews; // All mock reviews are already approved
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const rating = searchParams.get("rating");
+    const category = searchParams.get("category");
+    const sellerRating = searchParams.get("sellerRating");
+    const verified = searchParams.get("verified");
+    const search = searchParams.get("search");
+
+    // Get database
+    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const db = getAdminDb();
+
+    // Build query
+    let query: any = db.collection('reviews').where('approved', '==', true);
+
+    // Filter by product if specified
+    if (productId) {
+      query = query.where('productId', '==', productId);
     }
-    
-    // Sort reviews
-    switch (sort) {
-      case "oldest":
-        reviews.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        break;
-      case "highest":
-        reviews.sort((a, b) => b.rating - a.rating);
-        break;
-      case "lowest":
-        reviews.sort((a, b) => a.rating - b.rating);
-        break;
-      case "helpful":
-        reviews.sort((a, b) => b.helpful - a.helpful);
-        break;
-      default: // newest
-        reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
+
+    // Filter by rating if specified
+    if (rating) {
+      query = query.where('rating', '==', parseInt(rating));
     }
-    
-    return NextResponse.json(reviews);
+
+    // Filter by category if specified
+    if (category && category !== 'all') {
+      query = query.where('category', '==', category);
+    }
+
+    // Filter by verified purchase if specified
+    if (verified === 'true') {
+      query = query.where('verified', '==', true);
+    }
+
+    // Determine sort order
+    let orderField = 'createdAt';
+    let direction: any = 'desc';
+
+    if (sort === 'oldest') {
+      direction = 'asc';
+    } else if (sort === 'highest' || sort === 'rating-high') {
+      orderField = 'rating';
+      direction = 'desc';
+    } else if (sort === 'lowest' || sort === 'rating-low') {
+      orderField = 'rating';
+      direction = 'asc';
+    } else if (sort === 'helpful') {
+      orderField = 'helpful';
+      direction = 'desc';
+    }
+
+    // Execute query
+    const snapshot = await query.orderBy(orderField, direction).get();
+
+    const reviews = snapshot.docs.map((doc: any) => ({
+      id: doc.id,
+      productName: doc.data().productName,
+      productImage: doc.data().productImage,
+      userName: doc.data().userName,
+      rating: doc.data().rating,
+      title: doc.data().title,
+      comment: doc.data().content || doc.data().comment,
+      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
+      verified: doc.data().verified || false,
+      helpful: doc.data().helpful || 0,
+      images: doc.data().images || [],
+      ...doc.data(),
+    }));
+
+    // Calculate statistics if not filtered by product
+    let stats = null;
+    let filters = null;
+
+    if (!productId) {
+      const allReviewsSnapshot = await db.collection('reviews')
+        .where('approved', '==', true)
+        .get();
+
+      const allReviews = allReviewsSnapshot.docs.map((doc: any) => doc.data());
+      const totalReviews = allReviews.length;
+      const averageRating = totalReviews > 0
+        ? allReviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / totalReviews
+        : 0;
+
+      const ratingDistribution = {
+        5: allReviews.filter((r: any) => r.rating === 5).length,
+        4: allReviews.filter((r: any) => r.rating === 4).length,
+        3: allReviews.filter((r: any) => r.rating === 3).length,
+        2: allReviews.filter((r: any) => r.rating === 2).length,
+        1: allReviews.filter((r: any) => r.rating === 1).length,
+      };
+
+      // Calculate available filter options
+      const categories = [...new Set(allReviews.map((r: any) => r.category).filter(Boolean))];
+      const verifiedCount = allReviews.filter((r: any) => r.verified).length;
+      const sellerRatings = [...new Set(allReviews.map((r: any) => r.sellerRating).filter(Boolean))].sort((a, b) => b - a);
+
+      stats = {
+        totalReviews,
+        averageRating: parseFloat(averageRating.toFixed(1)),
+        ratingDistribution,
+      };
+
+      filters = {
+        categories,
+        verifiedCount,
+        sellerRatings: sellerRatings.slice(0, 5), // Top 5 seller ratings
+        totalReviews,
+      };
+    }
+
+    // Apply pagination
+    const offset = (page - 1) * limit;
+    const paginatedReviews = reviews.slice(offset, offset + limit);
+
+    return NextResponse.json({
+      reviews: paginatedReviews,
+      stats,
+      filters,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(reviews.length / limit),
+        totalReviews: reviews.length,
+        hasMore: offset + limit < reviews.length
+      }
+    });
   } catch (error) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

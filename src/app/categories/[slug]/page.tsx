@@ -1,116 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { useProducts } from "@/hooks/useProducts";
+import { useGlobalCategories } from "@/contexts/CategoriesContext";
 import ProductCard from "@/components/products/ProductCard";
-
-const categories = {
-  beyblades: {
-    name: "Beyblades",
-    description: "Authentic spinning tops for epic battles",
-    icon: "⚡",
-    subcategories: [
-      "Metal Fusion",
-      "Burst Series",
-      "Classic Series",
-      "Limited Edition",
-    ],
-  },
-  launchers: {
-    name: "Launchers",
-    description: "Power-packed launchers for maximum performance",
-    icon: "🚀",
-    subcategories: [
-      "String Launchers",
-      "Ripcord Launchers",
-      "Digital Launchers",
-      "Launcher Grips",
-    ],
-  },
-  stadiums: {
-    name: "Stadiums",
-    description: "Battle arenas for intense competitions",
-    icon: "🏟️",
-    subcategories: [
-      "Standard Stadiums",
-      "Wide Attack",
-      "Stamina Type",
-      "Tournament Grade",
-    ],
-  },
-  accessories: {
-    name: "Accessories",
-    description: "Essential add-ons and collectibles",
-    icon: "🎯",
-    subcategories: [
-      "Launcher Accessories",
-      "Storage Cases",
-      "Maintenance Tools",
-      "Collectibles",
-    ],
-  },
-};
+import { Category, Product } from "@/types";
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
   const [selectedSubcategory, setSelectedSubcategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
-  const categoryData = categories[params.slug as keyof typeof categories];
+  const { categories, loading: categoriesLoading } = useGlobalCategories();
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+  } = useProducts();
 
-  // Mock products for the category
-  const products = [
-    {
-      id: "1",
-      name: "Metal Fusion Pegasus",
-      slug: "metal-fusion-pegasus",
-      price: 1299,
-      compareAtPrice: 1599,
-      image: "/images/product-1.jpg",
-      subcategory: "Metal Fusion",
-      rating: 4.8,
-      reviews: 156,
-    },
-    {
-      id: "2",
-      name: "Burst Victory Valkyrie",
-      slug: "burst-victory-valkyrie",
-      price: 899,
-      image: "/images/product-2.jpg",
-      subcategory: "Burst Series",
-      rating: 4.6,
-      reviews: 89,
-    },
-    {
-      id: "3",
-      name: "Classic Dragoon Storm",
-      slug: "classic-dragoon-storm",
-      price: 799,
-      compareAtPrice: 999,
-      image: "/images/product-3.jpg",
-      subcategory: "Classic Series",
-      rating: 4.9,
-      reviews: 203,
-    },
-    {
-      id: "4",
-      name: "Limited Gold Edition Set",
-      slug: "limited-gold-edition",
-      price: 2499,
-      image: "/images/product-4.jpg",
-      subcategory: "Limited Edition",
-      rating: 5.0,
-      reviews: 45,
-      isLimited: true,
-    },
-  ];
+  // Find the current category
+  const category = categories.find((cat) => cat.slug === params.slug);
 
-  if (!categoryData) {
+  // Get subcategories for this category
+  const subcategories = categories.filter(
+    (cat) => cat.parentId === category?.id
+  );
+
+  // Filter products for this category
+  const categoryProducts = products.filter(
+    (product) =>
+      product.category === params.slug ||
+      subcategories.some((sub) => sub.slug === product.category)
+  );
+
+  // Apply filters
+  const filteredProducts = categoryProducts.filter((product) => {
+    const matchesSubcategory =
+      selectedSubcategory === "all" || product.category === selectedSubcategory;
+    const matchesPrice =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+    return matchesSubcategory && matchesPrice;
+  });
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case "price-asc":
+        return a.price - b.price;
+      case "price-desc":
+        return b.price - a.price;
+      case "rating":
+        return (b.rating || 0) - (a.rating || 0);
+      case "newest":
+      default:
+        return (
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime()
+        );
+    }
+  });
+
+  const loading = categoriesLoading || productsLoading;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!category) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Category Not Found</h1>
@@ -119,33 +82,24 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
-  const filteredProducts = products.filter(
-    (product) =>
-      selectedSubcategory === "all" ||
-      product.subcategory === selectedSubcategory
-  );
-
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-1">
         {/* Category Hero */}
         <section className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
           <div className="container py-16">
             <div className="flex items-center gap-4 mb-6">
-              <div className="text-6xl">{categoryData.icon}</div>
+              <div className="text-6xl">{category.icon || "📦"}</div>
               <div>
                 <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                  {categoryData.name}
+                  {category.name}
                 </h1>
                 <p className="text-lg text-purple-100">
-                  {categoryData.description}
+                  {category.description}
                 </p>
               </div>
             </div>
@@ -153,7 +107,9 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-8 mt-8">
               <div className="text-center">
-                <div className="text-2xl font-bold">{products.length}+</div>
+                <div className="text-2xl font-bold">
+                  {categoryProducts.length}+
+                </div>
                 <div className="text-sm text-purple-200">Products</div>
               </div>
               <div className="text-center">
@@ -180,7 +136,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 Products
               </Link>
               <span>/</span>
-              <span className="text-foreground">{categoryData.name}</span>
+              <span className="text-foreground">{category.name}</span>
             </div>
           </div>
         </div>
@@ -202,19 +158,19 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                           : "hover:bg-gray-100"
                       }`}
                     >
-                      All {categoryData.name}
+                      All {category.name}
                     </button>
-                    {categoryData.subcategories.map((subcategory) => (
+                    {subcategories.map((subcategory: Category) => (
                       <button
-                        key={subcategory}
-                        onClick={() => setSelectedSubcategory(subcategory)}
+                        key={subcategory.id}
+                        onClick={() => setSelectedSubcategory(subcategory.slug)}
                         className={`block w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                          selectedSubcategory === subcategory
+                          selectedSubcategory === subcategory.slug
                             ? "bg-primary text-white"
                             : "hover:bg-gray-100"
                         }`}
                       >
-                        {subcategory}
+                        {subcategory.name}
                       </button>
                     ))}
                   </div>
@@ -324,9 +280,13 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               {/* Toolbar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <p className="text-sm text-muted-foreground">
-                  Showing {filteredProducts.length} products
+                  Showing {sortedProducts.length} products
                   {selectedSubcategory !== "all" &&
-                    ` in ${selectedSubcategory}`}
+                    ` in ${
+                      subcategories.find(
+                        (sub) => sub.slug === selectedSubcategory
+                      )?.name || selectedSubcategory
+                    }`}
                 </p>
                 <select
                   className="input w-full sm:w-auto"
@@ -347,7 +307,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-xl font-bold mb-2">
-                        🔥 Hot Deals on {categoryData.name}
+                        🔥 Hot Deals on {category.name}
                       </h3>
                       <p className="text-orange-100">
                         Get up to 40% off on selected items this week!
@@ -364,12 +324,24 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               )}
 
               {/* Products Grid */}
-              {filteredProducts.length > 0 ? (
+              {sortedProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
+                  {sortedProducts.map((product: Product) => (
                     <div key={product.id} className="relative">
-                      <ProductCard {...product} />
-                      {product.isLimited && (
+                      <ProductCard
+                        id={product.id}
+                        name={product.name}
+                        slug={product.slug}
+                        price={product.price}
+                        compareAtPrice={product.compareAtPrice}
+                        image={
+                          (typeof product.images?.[0] === "string"
+                            ? product.images[0]
+                            : product.images?.[0]?.url) ||
+                          "/images/products/default.jpg"
+                        }
+                      />
+                      {product.tags?.includes("limited") && (
                         <div className="absolute top-2 left-2 z-10">
                           <span className="px-2 py-1 bg-red-600 text-white text-xs font-bold rounded">
                             LIMITED
@@ -383,7 +355,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 <div className="text-center py-12">
                   <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-4xl text-gray-400">
-                      {categoryData.icon}
+                      {category.icon || "📦"}
                     </span>
                   </div>
                   <h3 className="text-xl font-semibold mb-2">
@@ -405,7 +377,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               )}
 
               {/* Load More */}
-              {filteredProducts.length > 0 && (
+              {sortedProducts.length > 0 && (
                 <div className="text-center mt-12">
                   <button className="btn btn-outline">
                     Load More Products
@@ -422,7 +394,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold mb-6">
-                  Why Choose Our {categoryData.name}?
+                  Why Choose Our {category.name}?
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
@@ -501,7 +473,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl overflow-hidden">
                   <img
                     src="/images/category-info.jpg"
-                    alt={categoryData.name}
+                    alt={category.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -510,8 +482,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

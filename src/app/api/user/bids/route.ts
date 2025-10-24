@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
+import { getAdminDb } from '@/lib/firebase/admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,55 +17,54 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const userId = user.userId;
+    const db = getAdminDb();
 
-    // Mock user bids - replace with database query
-    let userBids = [
-      {
-        id: "bid_1",
-        auctionId: "auction_1",
-        amount: 2500,
-        timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        isWinning: true,
-        auction: {
-          id: "auction_1",
-          title: "Rare Vintage Beyblade Metal Series",
-          image: "/images/auction-1.jpg",
-          currentBid: 2500,
-          endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-          status: "live"
-        }
-      },
-      {
-        id: "bid_2",
-        auctionId: "auction_2",
-        amount: 1800,
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        isWinning: false,
-        auction: {
-          id: "auction_2",
-          title: "Limited Edition Pokemon Card Set",
-          image: "/images/auction-2.jpg",
-          currentBid: 2100,
-          endTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          status: "ended"
-        }
-      },
-      {
-        id: "bid_3",
-        auctionId: "auction_3",
-        amount: 3200,
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        isWinning: true,
-        auction: {
-          id: "auction_3",
-          title: "Vintage Action Figure Collection",
-          image: "/images/auction-3.jpg",
-          currentBid: 3200,
-          endTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          status: "ended"
+    // Get user bids from Firebase
+    const bidsSnapshot = await db.collection('bids')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .offset(offset)
+      .get();
+
+    let userBids = [];
+    
+    for (const doc of bidsSnapshot.docs) {
+      const bidData = doc.data();
+      
+      // Get auction details
+      let auction = null;
+      if (bidData.auctionId) {
+        try {
+          const auctionDoc = await db.collection('auctions').doc(bidData.auctionId).get();
+          if (auctionDoc.exists) {
+            const auctionData = auctionDoc.data();
+            auction = {
+              id: auctionDoc.id,
+              title: auctionData?.title || 'Untitled Auction',
+              image: auctionData?.images?.[0]?.url || '/images/placeholder-auction.jpg',
+              currentBid: auctionData?.currentBid || 0,
+              endTime: auctionData?.endTime?.toDate?.()?.toISOString() || new Date().toISOString(),
+              status: auctionData?.status || 'upcoming'
+            };
+          }
+        } catch (error) {
+          console.error('Error fetching auction:', error);
         }
       }
-    ];
+
+      if (auction) {
+        const isWinning = bidData.amount === auction.currentBid;
+        userBids.push({
+          id: doc.id,
+          auctionId: bidData.auctionId,
+          amount: bidData.amount,
+          timestamp: bidData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          isWinning,
+          auction
+        });
+      }
+    }
 
     // Filter by status
     if (status !== "all") {
