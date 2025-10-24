@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import {
   CogIcon,
   CreditCardIcon,
@@ -50,7 +50,13 @@ interface SiteSettings {
 
 interface HomePageSection {
   id: string;
-  type: "hero" | "featured" | "categories" | "testimonials" | "newsletter";
+  type:
+    | "hero"
+    | "features"
+    | "categories"
+    | "featured-products"
+    | "auctions"
+    | "newsletter";
   title: string;
   enabled: boolean;
   order: number;
@@ -130,30 +136,30 @@ export default function SettingsManagement() {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <UnifiedLayout>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
           </div>
         </div>
-      </AdminLayout>
+      </UnifiedLayout>
     );
   }
 
   if (!settings) {
     return (
-      <AdminLayout>
+      <UnifiedLayout>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <p className="text-gray-500">Failed to load settings</p>
           </div>
         </div>
-      </AdminLayout>
+      </UnifiedLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <UnifiedLayout>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -524,19 +530,387 @@ export default function SettingsManagement() {
                 </div>
               )}
 
-              {/* Add more tab content here for homepage, policies, and firebase settings */}
+              {/* Homepage Settings */}
               {activeTab === "homepage" && (
                 <div className="space-y-6">
                   <h3 className="text-lg font-medium text-gray-900">
-                    Home Page Settings
+                    Home Page Sections
                   </h3>
-                  <div className="text-center py-12 text-gray-500">
-                    <PhotoIcon className="h-12 w-12 mx-auto mb-4" />
-                    <p>Home page section management coming soon...</p>
-                    <p className="text-sm">
-                      Configure hero images, featured sections, and layout
-                    </p>
-                  </div>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Configure which sections appear on your homepage and their
+                    order
+                  </p>
+
+                  {settings.homePageSections && (
+                    <div className="space-y-4">
+                      {settings.homePageSections
+                        .sort((a, b) => a.order - b.order)
+                        .map((section, index) => (
+                          <div
+                            key={section.id}
+                            className="bg-gray-50 rounded-lg p-4 border"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm font-medium text-gray-500">
+                                    #{section.order}
+                                  </span>
+                                  <h4 className="font-medium text-gray-900">
+                                    {section.title}
+                                  </h4>
+                                </div>
+                                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                                  {section.type}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <button
+                                  onClick={() => {
+                                    const newSections = [
+                                      ...settings.homePageSections,
+                                    ];
+                                    newSections[
+                                      newSections.findIndex(
+                                        (s) => s.id === section.id
+                                      )
+                                    ].enabled = !section.enabled;
+                                    updateSettings(
+                                      "homePageSections",
+                                      newSections
+                                    );
+                                  }}
+                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                    section.enabled
+                                      ? "bg-green-600"
+                                      : "bg-gray-200"
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                      section.enabled
+                                        ? "translate-x-6"
+                                        : "translate-x-1"
+                                    }`}
+                                  />
+                                </button>
+                                <div className="flex space-x-1">
+                                  <button
+                                    onClick={() => {
+                                      if (index === 0) return;
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const currentIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      const prevIndex = currentIndex - 1;
+                                      [
+                                        newSections[currentIndex].order,
+                                        newSections[prevIndex].order,
+                                      ] = [
+                                        newSections[prevIndex].order,
+                                        newSections[currentIndex].order,
+                                      ];
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    disabled={index === 0}
+                                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                                  >
+                                    ↑
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (
+                                        index ===
+                                        settings.homePageSections.length - 1
+                                      )
+                                        return;
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const currentIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      const nextIndex = currentIndex + 1;
+                                      [
+                                        newSections[currentIndex].order,
+                                        newSections[nextIndex].order,
+                                      ] = [
+                                        newSections[nextIndex].order,
+                                        newSections[currentIndex].order,
+                                      ];
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    disabled={
+                                      index ===
+                                      settings.homePageSections.length - 1
+                                    }
+                                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                                  >
+                                    ↓
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Section-specific settings */}
+                            {section.type === "hero" && section.content && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Main Banner Title
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={
+                                      section.content.mainBanner?.title || ""
+                                    }
+                                    onChange={(e) => {
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const sectionIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      if (
+                                        !newSections[sectionIndex].content
+                                          .mainBanner
+                                      ) {
+                                        newSections[
+                                          sectionIndex
+                                        ].content.mainBanner = {};
+                                      }
+                                      newSections[
+                                        sectionIndex
+                                      ].content.mainBanner.title =
+                                        e.target.value;
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Side Banner Title
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={
+                                      section.content.sideBanner?.title || ""
+                                    }
+                                    onChange={(e) => {
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const sectionIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      if (
+                                        !newSections[sectionIndex].content
+                                          .sideBanner
+                                      ) {
+                                        newSections[
+                                          sectionIndex
+                                        ].content.sideBanner = {};
+                                      }
+                                      newSections[
+                                        sectionIndex
+                                      ].content.sideBanner.title =
+                                        e.target.value;
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {section.type === "featured-products" &&
+                              section.content && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                      Display Type
+                                    </label>
+                                    <select
+                                      value={
+                                        section.content.type || "most-visited"
+                                      }
+                                      onChange={(e) => {
+                                        const newSections = [
+                                          ...settings.homePageSections,
+                                        ];
+                                        const sectionIndex =
+                                          newSections.findIndex(
+                                            (s) => s.id === section.id
+                                          );
+                                        newSections[sectionIndex].content.type =
+                                          e.target.value;
+                                        updateSettings(
+                                          "homePageSections",
+                                          newSections
+                                        );
+                                      }}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                    >
+                                      <option value="most-visited">
+                                        Most Visited
+                                      </option>
+                                      <option value="wishlisted">
+                                        Most Wishlisted
+                                      </option>
+                                      <option value="newest">
+                                        Newest Products
+                                      </option>
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                      Number of Products
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min="4"
+                                      max="12"
+                                      value={section.content.limit || 8}
+                                      onChange={(e) => {
+                                        const newSections = [
+                                          ...settings.homePageSections,
+                                        ];
+                                        const sectionIndex =
+                                          newSections.findIndex(
+                                            (s) => s.id === section.id
+                                          );
+                                        newSections[
+                                          sectionIndex
+                                        ].content.limit = parseInt(
+                                          e.target.value
+                                        );
+                                        updateSettings(
+                                          "homePageSections",
+                                          newSections
+                                        );
+                                      }}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+
+                            {section.type === "auctions" && section.content && (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <div className="flex items-center">
+                                  <input
+                                    type="checkbox"
+                                    id={`show-live-${section.id}`}
+                                    checked={section.content.showLive !== false}
+                                    onChange={(e) => {
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const sectionIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      newSections[
+                                        sectionIndex
+                                      ].content.showLive = e.target.checked;
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    className="mr-2"
+                                  />
+                                  <label
+                                    htmlFor={`show-live-${section.id}`}
+                                    className="text-sm text-gray-700"
+                                  >
+                                    Show Live Auctions
+                                  </label>
+                                </div>
+                                <div className="flex items-center">
+                                  <input
+                                    type="checkbox"
+                                    id={`show-closed-${section.id}`}
+                                    checked={
+                                      section.content.showClosed !== false
+                                    }
+                                    onChange={(e) => {
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const sectionIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      newSections[
+                                        sectionIndex
+                                      ].content.showClosed = e.target.checked;
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    className="mr-2"
+                                  />
+                                  <label
+                                    htmlFor={`show-closed-${section.id}`}
+                                    className="text-sm text-gray-700"
+                                  >
+                                    Show Closed Auctions
+                                  </label>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Max Auctions
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    max="6"
+                                    value={section.content.limit || 3}
+                                    onChange={(e) => {
+                                      const newSections = [
+                                        ...settings.homePageSections,
+                                      ];
+                                      const sectionIndex =
+                                        newSections.findIndex(
+                                          (s) => s.id === section.id
+                                        );
+                                      newSections[sectionIndex].content.limit =
+                                        parseInt(e.target.value);
+                                      updateSettings(
+                                        "homePageSections",
+                                        newSections
+                                      );
+                                    }}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -573,6 +947,6 @@ export default function SettingsManagement() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </UnifiedLayout>
   );
 }

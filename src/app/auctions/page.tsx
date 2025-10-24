@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import { useAuctions } from "@/hooks/useFirebase";
 
 type AuctionStatus = "live" | "upcoming" | "ended";
@@ -108,9 +107,7 @@ export default function AuctionsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <UnifiedLayout>
       <main className="flex-1 bg-gray-50">
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -370,8 +367,6 @@ export default function AuctionsPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </div>
+    </UnifiedLayout>
   );
 }

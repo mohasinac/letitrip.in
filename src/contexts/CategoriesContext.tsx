@@ -117,13 +117,10 @@ export function CategoriesProvider({
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Use mock data for now, but this will work with real API later
-      const mockCategories = categoriesService.getMockCategories();
+      // Get categories from Firebase
+      const categoriesData = await categoriesService.getCategories();
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      dispatch({ type: "SET_CATEGORIES", payload: mockCategories });
+      dispatch({ type: "SET_CATEGORIES", payload: categoriesData.categories });
     } catch (error) {
       dispatch({
         type: "SET_ERROR",

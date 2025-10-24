@@ -1,46 +1,74 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/auth/middleware";
+import { FirebaseService } from "@/lib/firebase/services";
 
 async function getHandler(request: NextRequest) {
   try {
     const user = (request as any).user;
+    const firebaseService = FirebaseService.getInstance();
 
-    // Mock cart data - replace with database query
-    const mockCart = {
-      id: `cart_${user.id}`,
-      userId: user.id,
-      items: [
-        {
-          id: "1",
-          productId: "prod_1",
-          quantity: 1,
-          price: 2999,
-          name: "Premium Beyblade Stadium",
-          image: "/images/product-1.jpg",
-          slug: "premium-stadium"
-        },
-        {
-          id: "2", 
-          productId: "prod_2",
-          quantity: 2,
-          price: 1499,
-          name: "Metal Fusion Set",
-          image: "/images/product-2.jpg",
-          slug: "metal-fusion-set"
-        }
-      ],
-      subtotal: 5997,
-      shipping: 0,
-      tax: 1079,
-      total: 7076,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    try {
+      // Get cart items from Firebase
+      const cartItems = await firebaseService.getCartItems(user.userId);
+      
+      // Enrich cart items with product details
+      const cartWithProducts = await Promise.all(
+        cartItems.map(async (item) => {
+          const product = await firebaseService.getProductById(item.productId);
+          return {
+            id: item.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: product?.price || 0,
+            name: product?.name || "Unknown Product",
+            image: product?.images?.[0]?.url || "/images/placeholder.jpg",
+            slug: product?.slug || ""
+          };
+        })
+      );
 
-    return NextResponse.json({
-      success: true,
-      data: mockCart
-    });
+      const subtotal = cartWithProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const shipping = subtotal > 5000 ? 0 : 500; // Free shipping over 5000
+      const tax = Math.round(subtotal * 0.18); // 18% tax
+      const total = subtotal + shipping + tax;
+
+      const cart = {
+        id: `cart_${user.userId}`,
+        userId: user.userId,
+        items: cartWithProducts,
+        subtotal,
+        shipping,
+        tax,
+        total,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: cart
+      });
+    } catch (firebaseError) {
+      console.error("Firebase cart error:", firebaseError);
+      
+      // Return empty cart on error
+      const emptyCart = {
+        id: `cart_${user.userId}`,
+        userId: user.userId,
+        items: [],
+        subtotal: 0,
+        shipping: 0,
+        tax: 0,
+        total: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: emptyCart
+      });
+    }
 
   } catch (error) {
     console.error("Get cart error:", error);
@@ -64,31 +92,52 @@ async function putHandler(request: NextRequest) {
     }
 
     const user = (request as any).user;
+    const firebaseService = FirebaseService.getInstance();
 
-    // Mock update logic - replace with database operations
-    const updatedCart = {
-      id: `cart_${user.id}`,
-      userId: user.id,
-      items: [
-        {
-          id: itemId,
-          productId: "prod_1",
-          quantity,
-          price: 2999,
-          name: "Premium Beyblade Stadium",
-          image: "/images/product-1.jpg"
-        }
-      ],
-      subtotal: 2999 * quantity,
-      total: 2999 * quantity,
-      updatedAt: new Date().toISOString()
-    };
+    try {
+      // Update cart item quantity
+      await firebaseService.updateCartItem(itemId, quantity);
+      
+      // Get updated cart
+      const cartItems = await firebaseService.getCartItems(user.userId);
+      
+      // Enrich with product details
+      const cartWithProducts = await Promise.all(
+        cartItems.map(async (item) => {
+          const product = await firebaseService.getProductById(item.productId);
+          return {
+            id: item.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: product?.price || 0,
+            name: product?.name || "Unknown Product",
+            image: product?.images?.[0]?.url || "/images/placeholder.jpg"
+          };
+        })
+      );
 
-    return NextResponse.json({
-      success: true,
-      data: updatedCart,
-      message: "Cart updated successfully"
-    });
+      const subtotal = cartWithProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const cart = {
+        id: `cart_${user.userId}`,
+        userId: user.userId,
+        items: cartWithProducts,
+        subtotal,
+        total: subtotal,
+        updatedAt: new Date().toISOString()
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: cart,
+        message: "Cart updated successfully"
+      });
+    } catch (firebaseError) {
+      console.error("Firebase update cart error:", firebaseError);
+      return NextResponse.json(
+        { error: "Failed to update cart" },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error("Update cart error:", error);
@@ -102,22 +151,33 @@ async function putHandler(request: NextRequest) {
 async function deleteHandler(request: NextRequest) {
   try {
     const user = (request as any).user;
+    const firebaseService = FirebaseService.getInstance();
     
-    // Mock clear cart logic - replace with database operations
-    const emptyCart = {
-      id: `cart_${user.id}`,
-      userId: user.id,
-      items: [],
-      subtotal: 0,
-      total: 0,
-      updatedAt: new Date().toISOString()
-    };
+    try {
+      // Clear cart in Firebase
+      await firebaseService.clearCart(user.userId);
+      
+      const emptyCart = {
+        id: `cart_${user.userId}`,
+        userId: user.userId,
+        items: [],
+        subtotal: 0,
+        total: 0,
+        updatedAt: new Date().toISOString()
+      };
 
-    return NextResponse.json({
-      success: true,
-      data: emptyCart,
-      message: "Cart cleared successfully"
-    });
+      return NextResponse.json({
+        success: true,
+        data: emptyCart,
+        message: "Cart cleared successfully"
+      });
+    } catch (firebaseError) {
+      console.error("Firebase clear cart error:", firebaseError);
+      return NextResponse.json(
+        { error: "Failed to clear cart" },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error("Clear cart error:", error);
@@ -141,23 +201,55 @@ async function postHandler(request: NextRequest) {
     }
 
     const user = (request as any).user;
+    const firebaseService = FirebaseService.getInstance();
 
-    // Mock add to cart logic - replace with database operations
-    const cartItem = {
-      id: `item_${productId}_${Date.now()}`,
-      productId,
-      quantity,
-      price: 1499, // This would come from product lookup
-      name: "Product Name", // This would come from product lookup
-      image: "/images/product-placeholder.jpg",
-      addedAt: new Date().toISOString()
-    };
+    try {
+      // Validate product exists and has stock
+      const product = await firebaseService.getProductById(productId);
+      
+      if (!product) {
+        return NextResponse.json(
+          { error: "Product not found" },
+          { status: 404 }
+        );
+      }
 
-    return NextResponse.json({
-      success: true,
-      data: cartItem,
-      message: "Item added to cart successfully"
-    });
+      if (product.quantity < quantity) {
+        return NextResponse.json(
+          { error: "Insufficient stock" },
+          { status: 400 }
+        );
+      }
+
+      // Add to cart using Firebase
+      const cartItem = await firebaseService.addToCart(user.userId, productId, quantity);
+      
+      if (!cartItem) {
+        throw new Error("Failed to add to cart");
+      }
+
+      const enrichedCartItem = {
+        id: cartItem.id,
+        productId,
+        quantity,
+        price: product.price,
+        name: product.name,
+        image: product.images?.[0]?.url || "/images/placeholder.jpg",
+        addedAt: cartItem.addedAt.toISOString()
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: enrichedCartItem,
+        message: "Item added to cart successfully"
+      });
+    } catch (firebaseError) {
+      console.error("Firebase add to cart error:", firebaseError);
+      return NextResponse.json(
+        { error: "Failed to add item to cart" },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error("Add to cart error:", error);

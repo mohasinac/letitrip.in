@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -39,8 +38,7 @@ export default function ContactPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
+      <UnifiedLayout>
         <main className="flex-1 flex items-center justify-center py-12">
           <div className="text-center max-w-md">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -68,15 +66,12 @@ export default function ContactPage() {
             </button>
           </div>
         </main>
-        <Footer />
-      </div>
+      </UnifiedLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <UnifiedLayout>
       <main className="flex-1">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -428,8 +423,6 @@ export default function ContactPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </div>
+    </UnifiedLayout>
   );
 }

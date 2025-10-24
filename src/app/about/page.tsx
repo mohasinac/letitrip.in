@@ -1,12 +1,9 @@
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <UnifiedLayout>
       <main className="flex-1">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -294,8 +291,6 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </div>
+    </UnifiedLayout>
   );
 }

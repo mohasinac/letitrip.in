@@ -13,8 +13,82 @@ const mockSettings = {
   currency: "USD",
   taxRate: 8.5,
   shippingCost: 9.99,
-  homePageSections: [],
-  heroImages: [],
+  homePageSections: [
+    {
+      id: "hero",
+      type: "hero",
+      title: "Hero Section",
+      enabled: true,
+      order: 1,
+      content: {
+        mainBanner: {
+          title: "Discover Premium Hobby Products",
+          subtitle: "Your one-stop shop for authentic Beyblades, collectibles, and premium hobby items",
+          shopButton: { text: "Shop Now", link: "/products" },
+          auctionButton: { text: "View Auctions", link: "/auctions" }
+        },
+        sideBanner: {
+          title: "Special Sales & Events",
+          subtitle: "Don't miss out on exclusive deals",
+          button: { text: "View Sale Items", link: "/deals" },
+          carousel: true
+        }
+      }
+    },
+    {
+      id: "features",
+      type: "features",
+      title: "Features Section",
+      enabled: true,
+      order: 2,
+      content: {}
+    },
+    {
+      id: "categories",
+      type: "categories",
+      title: "Shop by Category",
+      enabled: true,
+      order: 3,
+      content: {
+        showOnHomepage: ["beyblades", "launchers", "stadiums", "accessories"]
+      }
+    },
+    {
+      id: "featured-products",
+      type: "featured-products",
+      title: "Featured Products",
+      enabled: true,
+      order: 4,
+      content: {
+        type: "most-visited", // "most-visited", "wishlisted", "newest"
+        limit: 8
+      }
+    },
+    {
+      id: "auctions",
+      type: "auctions",
+      title: "Live Auctions",
+      enabled: true,
+      order: 5,
+      content: {
+        showLive: true,
+        showClosed: true,
+        limit: 3
+      }
+    },
+    {
+      id: "newsletter",
+      type: "newsletter",
+      title: "Newsletter Subscription",
+      enabled: true,
+      order: 6,
+      content: {}
+    }
+  ],
+  heroImages: [
+    "/images/hero-banner-1.jpg",
+    "/images/hero-banner-2.jpg"
+  ],
   policies: {
     privacy: "Privacy policy content...",
     terms: "Terms of service content...",

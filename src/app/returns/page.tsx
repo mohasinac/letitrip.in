@@ -34,77 +34,25 @@ export default function ReturnsPage() {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    // Mock returns data
-    const mockReturns: ReturnRequest[] = [
-      {
-        id: "RET001",
-        orderId: "ORD001",
-        orderDate: "2024-10-15",
-        products: [
-          {
-            id: "1",
-            name: "Wireless Bluetooth Headphones",
-            image: "/api/placeholder/200/200",
-            price: 79.99,
-            quantity: 1,
-            reason: "Defective item",
-          },
-        ],
-        reason: "Defective item",
-        description: "The left speaker stopped working after 2 days of use.",
-        status: "approved",
-        requestDate: "2024-10-18",
-        expectedRefund: 79.99,
-        trackingNumber: "RET12345678",
-      },
-      {
-        id: "RET002",
-        orderId: "ORD002",
-        orderDate: "2024-10-10",
-        products: [
-          {
-            id: "2",
-            name: "Smart Fitness Watch",
-            image: "/api/placeholder/200/200",
-            price: 199.99,
-            quantity: 1,
-            reason: "Not as described",
-          },
-        ],
-        reason: "Not as described",
-        description:
-          "The watch doesn't have the features mentioned in the description.",
-        status: "processing",
-        requestDate: "2024-10-20",
-        expectedRefund: 199.99,
-      },
-      {
-        id: "RET003",
-        orderId: "ORD003",
-        orderDate: "2024-10-05",
-        products: [
-          {
-            id: "3",
-            name: "Portable Phone Charger",
-            image: "/api/placeholder/200/200",
-            price: 29.99,
-            quantity: 2,
-            reason: "Changed mind",
-          },
-        ],
-        reason: "Changed mind",
-        description: "I found a better alternative and no longer need these.",
-        status: "pending",
-        requestDate: "2024-10-22",
-        expectedRefund: 59.98,
-      },
-    ];
+    const fetchReturns = async () => {
+      try {
+        const response = await fetch("/api/user/returns");
+        if (response.ok) {
+          const data = await response.json();
+          setReturns(data);
+        } else {
+          // Fallback to empty array if API is not available
+          setReturns([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch returns:", error);
+        setReturns([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Simulate API call
-    setTimeout(() => {
-      setReturns(mockReturns);
-      setLoading(false);
-    }, 1000);
+    fetchReturns();
   }, []);
 
   const getStatusColor = (status: string) => {

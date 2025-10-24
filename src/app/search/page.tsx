@@ -2,8 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import ProductCard from "@/components/products/ProductCard";
 import Link from "next/link";
 
@@ -51,25 +50,38 @@ function SearchContent() {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    const timer = setTimeout(() => {
-      if (query) {
-        // Filter results based on query
-        const filtered = mockResults.filter(
-          (product) =>
-            product.name.toLowerCase().includes(query.toLowerCase()) ||
-            product.category.toLowerCase().includes(query.toLowerCase())
-        );
-        setResults(filtered);
-      } else {
+    const searchProducts = async () => {
+      if (!query) {
         setResults([]);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    }, 500);
 
-    return () => clearTimeout(timer);
-  }, [query]);
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/search?q=${encodeURIComponent(query)}&sort=${sortBy}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setResults(data.products || []);
+        } else {
+          setResults([]);
+        }
+      } catch (error) {
+        console.error("Search failed:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(() => {
+      searchProducts();
+    }, 300); // Debounce search requests
+
+    return () => clearTimeout(debounceTimer);
+  }, [query, sortBy]);
 
   const sortedResults = [...results].sort((a, b) => {
     switch (sortBy) {
@@ -88,9 +100,7 @@ function SearchContent() {
   const categories = [...new Set(results.map((r) => r.category))];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <UnifiedLayout>
       <main className="flex-1 bg-gray-50">
         {/* Search Header */}
         <div className="bg-white border-b">
@@ -314,9 +324,7 @@ function SearchContent() {
           </section>
         )}
       </main>
-
-      <Footer />
-    </div>
+    </UnifiedLayout>
   );
 }
 
@@ -324,16 +332,14 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex flex-col">
-          <Header />
+        <UnifiedLayout>
           <main className="flex-1 bg-gray-50 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">Loading search...</p>
             </div>
           </main>
-          <Footer />
-        </div>
+        </UnifiedLayout>
       }
     >
       <SearchContent />

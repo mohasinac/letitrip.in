@@ -8,17 +8,21 @@ This script automatically reads environment variables from `vercel.json` and syn
 - 🔄 **Update existing**: Automatically updates variables that have changed
 - ➕ **Add new**: Adds new environment variables that don't exist
 - ⏭️ **Skip unchanged**: Skips variables that are already up to date
+- 📊 **Progress tracking**: Real-time progress bar with ETA and status
 - 🎨 **Colorful output**: Beautiful terminal output with status indicators
+- ⚡ **Loading spinners**: Visual feedback for long-running operations
 - 🛡️ **Error handling**: Graceful error handling and detailed reporting
 
 ## Prerequisites
 
 1. **Vercel CLI**: Make sure you have the Vercel CLI installed
+
    ```bash
    npm install -g vercel
    ```
 
 2. **Authentication**: You must be logged in to Vercel
+
    ```bash
    vercel login
    ```
@@ -31,16 +35,19 @@ This script automatically reads environment variables from `vercel.json` and syn
 ## Usage
 
 ### Method 1: Using npm script (Recommended)
+
 ```bash
 npm run vercel:env-sync
 ```
 
 ### Method 2: Direct execution
+
 ```bash
 node scripts/sync-vercel-env.js
 ```
 
 ### Method 3: Full deployment with env sync
+
 ```bash
 npm run vercel:setup
 ```
@@ -50,7 +57,7 @@ npm run vercel:setup
 1. **Validation**: Checks if Vercel CLI is installed and user is authenticated
 2. **Reading**: Reads environment variables from `vercel.json`
 3. **Comparison**: Fetches existing environment variables from Vercel
-4. **Synchronization**: 
+4. **Synchronization**:
    - Adds new variables that don't exist
    - Updates variables that have changed values
    - Skips variables that are already up to date
@@ -82,19 +89,15 @@ The script reads environment variables from the `env` section of your `vercel.js
 🔐 Checking Vercel authentication...
 ✅ Authenticated as: your-email@example.com
 
-📖 Reading vercel.json configuration...
+⠋ Reading vercel.json configuration...
 ✅ Found 15 environment variables in vercel.json
 
-📋 Fetching existing environment variables...
+⠙ Fetching existing environment variables...
 ✅ Found 12 existing environment variables
 
 🚀 Syncing 15 environment variables...
 ──────────────────────────────────────────────────
-➕ Adding NEW_VARIABLE...
-✅ NEW_VARIABLE added successfully
-🔄 Updating CHANGED_VARIABLE...
-🔄 CHANGED_VARIABLE updated successfully
-⏭️  Skipping UNCHANGED_VARIABLE (no changes)
+[██████████████████████████████] 100% (15/15) 12.3s ETA: 0s ⚡ All variables processed
 
 ──────────────────────────────────────────────────
 📊 Sync Results:
@@ -138,12 +141,15 @@ Currently, the script syncs variables to the **production** environment. You can
 ### Common Issues
 
 1. **"Vercel CLI not found"**
+
    - Install the CLI: `npm install -g vercel`
 
 2. **"Not authenticated"**
+
    - Login to Vercel: `vercel login`
 
 3. **"No vercel.json found"**
+
    - Make sure you're running the script from the root directory
    - Ensure `vercel.json` exists in your project root
 

@@ -79,32 +79,10 @@ async function handler(request: NextRequest) {
 
     } catch (firebaseError) {
       console.error("Firebase cart error:", firebaseError);
-      
-      // Fallback to mock implementation
-      const mockCart = {
-        id: `cart_${user.userId}`,
-        userId: user.userId,
-        items: [
-          {
-            id: "1",
-            productId,
-            quantity,
-            price: 2999,
-            name: "Premium Beyblade Stadium",
-            image: "/images/product-1.jpg"
-          }
-        ],
-        subtotal: 2999 * quantity,
-        total: 2999 * quantity,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      return NextResponse.json({
-        success: true,
-        data: mockCart,
-        message: "Item added to cart successfully (mock)"
-      });
+      return NextResponse.json(
+        { error: "Failed to add item to cart" },
+        { status: 500 }
+      );
     }
 
   } catch (error) {

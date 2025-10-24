@@ -47,49 +47,97 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("general");
 
   useEffect(() => {
-    // Mock settings data
-    const mockSettings: AppSettings = {
-      general: {
-        language: "en",
-        timezone: "America/New_York",
-        currency: "USD",
-        theme: "light",
-      },
-      display: {
-        itemsPerPage: 24,
-        gridView: true,
-        showPrices: true,
-        showDiscounts: true,
-        compactMode: false,
-      },
-      shopping: {
-        autoAddToWishlist: false,
-        saveForLater: true,
-        quickBuy: false,
-        guestCheckout: true,
-        rememberPayment: false,
-      },
-      auctions: {
-        autoWatch: true,
-        bidReminders: true,
-        outbidAlerts: true,
-        auctionEndAlerts: true,
-        maxAutoBid: 100,
-      },
-      privacy: {
-        shareActivity: false,
-        showOnlineStatus: true,
-        allowMessages: true,
-        publicWishlist: false,
-        dataCollection: true,
-      },
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/user/settings");
+        if (response.ok) {
+          const data = await response.json();
+          setSettings(data);
+        } else {
+          // Fallback to default settings
+          const defaultSettings: AppSettings = {
+            general: {
+              language: "en",
+              timezone: "America/New_York",
+              currency: "USD",
+              theme: "light",
+            },
+            display: {
+              itemsPerPage: 24,
+              gridView: true,
+              showPrices: true,
+              showDiscounts: true,
+              compactMode: false,
+            },
+            shopping: {
+              autoAddToWishlist: false,
+              saveForLater: true,
+              quickBuy: false,
+              guestCheckout: true,
+              rememberPayment: false,
+            },
+            auctions: {
+              autoWatch: true,
+              bidReminders: true,
+              outbidAlerts: true,
+              auctionEndAlerts: true,
+              maxAutoBid: 100,
+            },
+            privacy: {
+              shareActivity: false,
+              showOnlineStatus: true,
+              allowMessages: true,
+              publicWishlist: false,
+              dataCollection: true,
+            },
+          };
+          setSettings(defaultSettings);
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+        // Use default settings on error
+        setSettings({
+          general: {
+            language: "en",
+            timezone: "America/New_York",
+            currency: "USD",
+            theme: "light",
+          },
+          display: {
+            itemsPerPage: 24,
+            gridView: true,
+            showPrices: true,
+            showDiscounts: true,
+            compactMode: false,
+          },
+          shopping: {
+            autoAddToWishlist: false,
+            saveForLater: true,
+            quickBuy: false,
+            guestCheckout: true,
+            rememberPayment: false,
+          },
+          auctions: {
+            autoWatch: true,
+            bidReminders: true,
+            outbidAlerts: true,
+            auctionEndAlerts: true,
+            maxAutoBid: 100,
+          },
+          privacy: {
+            shareActivity: false,
+            showOnlineStatus: true,
+            allowMessages: true,
+            publicWishlist: false,
+            dataCollection: true,
+          },
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Simulate API call
-    setTimeout(() => {
-      setSettings(mockSettings);
-      setLoading(false);
-    }, 1000);
+    fetchSettings();
   }, []);
 
   const handleSettingsUpdate = async (
@@ -100,15 +148,37 @@ export default function SettingsPage() {
 
     setSaving(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      const newSettings = {
+        ...settings,
+        [section]: { ...settings[section], ...updatedSettings },
+      };
 
-    setSettings({
-      ...settings,
-      [section]: { ...settings[section], ...updatedSettings },
-    });
+      const response = await fetch("/api/user/settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSettings),
+      });
 
-    setSaving(false);
+      if (response.ok) {
+        setSettings(newSettings);
+      } else {
+        console.error("Failed to save settings");
+        // Still update locally for now
+        setSettings(newSettings);
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      // Still update locally
+      setSettings({
+        ...settings,
+        [section]: { ...settings[section], ...updatedSettings },
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const resetToDefaults = () => {

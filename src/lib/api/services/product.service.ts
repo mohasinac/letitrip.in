@@ -7,34 +7,7 @@ import { getAdminDb } from '../../firebase/admin';
 import { Product, ProductFilters, PaginatedResponse } from '@/types';
 import { FirebaseService } from '../../firebase/services';
 
-// Mock data generator
-function generateMockProducts(): Product[] {
-  return [
-    {
-      id: 'mock-1',
-      name: 'Sample Product',
-      slug: 'sample-product',
-      description: 'This is a sample product',
-      price: 99.99,
-      sku: 'SAMPLE-001',
-      quantity: 10,
-      lowStockThreshold: 5,
-      images: [{
-        url: '/api/placeholder/300/300',
-        alt: 'Sample Product',
-        order: 0
-      }],
-      category: 'Electronics',
-      tags: ['sample', 'mock'],
-      status: 'active' as const,
-      isFeatured: false,
-      rating: 4.5,
-      reviewCount: 10,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-  ];
-}
+// Firebase service integration - no mock data needed
 
 export class ProductService {
   /**
@@ -149,7 +122,7 @@ export class ProductService {
       const paginatedProducts = filteredProducts.slice(startIndex, startIndex + pageSize);
 
       return {
-        items: paginatedProducts,
+        items: paginatedProducts as Product[],
         total: actualTotal,
         page,
         pageSize,
@@ -158,38 +131,13 @@ export class ProductService {
     } catch (error) {
       console.error('Firebase getProducts error:', error);
       
-      // Fallback to mock data
-      const mockProducts = generateMockProducts();
-      let filteredProducts = mockProducts;
-
-      // Apply filters to mock data
-      if (filters.category) {
-        filteredProducts = filteredProducts.filter(p => p.category === filters.category);
-      }
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filteredProducts = filteredProducts.filter(p => 
-          p.name.toLowerCase().includes(searchLower) ||
-          p.description.toLowerCase().includes(searchLower)
-        );
-      }
-      if (filters.minPrice) {
-        filteredProducts = filteredProducts.filter(p => p.price >= filters.minPrice!);
-      }
-      if (filters.maxPrice) {
-        filteredProducts = filteredProducts.filter(p => p.price <= filters.maxPrice!);
-      }
-
-      const total = filteredProducts.length;
-      const startIndex = ((filters.page || 1) - 1) * (filters.pageSize || 20);
-      const paginatedProducts = filteredProducts.slice(startIndex, startIndex + (filters.pageSize || 20));
-
+      // Return empty result on error
       return {
-        items: paginatedProducts,
-        total,
+        items: [],
+        total: 0,
         page: filters.page || 1,
         pageSize: filters.pageSize || 20,
-        totalPages: Math.ceil(total / (filters.pageSize || 20)),
+        totalPages: 0,
       };
     }
   }

@@ -26,77 +26,62 @@ export default function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Mock data for demonstration
-  useEffect(() => {
-    const mockProducts: Product[] = [
-      {
-        id: "1",
-        name: "Beyblade Burst Pro Series - Dragon Storm",
-        sku: "BBP-DS-001",
-        category: "Beyblade Burst",
-        price: 29.99,
-        stock: 45,
-        status: "active",
-        image: "/images/beyblade-1.jpg",
-        createdAt: "2024-01-15",
-        updatedAt: "2024-01-20",
-      },
-      {
-        id: "2",
-        name: "Metal Fight Beyblade - Lightning L-Drago",
-        sku: "MFB-LD-002",
-        category: "Metal Fight",
-        price: 24.99,
-        stock: 0,
-        status: "out_of_stock",
-        image: "/images/beyblade-2.jpg",
-        createdAt: "2024-01-10",
-        updatedAt: "2024-01-25",
-      },
-      {
-        id: "3",
-        name: "Beyblade X - Xcalibur Sword",
-        sku: "BBX-XS-003",
-        category: "Beyblade X",
-        price: 34.99,
-        stock: 23,
-        status: "active",
-        image: "/images/beyblade-3.jpg",
-        createdAt: "2024-01-12",
-        updatedAt: "2024-01-22",
-      },
-      {
-        id: "4",
-        name: "Beyblade Stadium - Thunder Dome",
-        sku: "BS-TD-004",
-        category: "Stadiums",
-        price: 49.99,
-        stock: 15,
-        status: "active",
-        image: "/images/stadium-1.jpg",
-        createdAt: "2024-01-08",
-        updatedAt: "2024-01-18",
-      },
-      {
-        id: "5",
-        name: "Launcher Set - Power Grip Pro",
-        sku: "LS-PGP-005",
-        category: "Launchers",
-        price: 19.99,
-        stock: 32,
-        status: "active",
-        image: "/images/launcher-1.jpg",
-        createdAt: "2024-01-05",
-        updatedAt: "2024-01-15",
-      },
-    ];
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+        search: searchTerm,
+        category: selectedCategory === "all" ? "" : selectedCategory,
+        status: selectedStatus === "all" ? "" : selectedStatus,
+        sort: "newest",
+      });
 
-    // Simulate API call
-    setTimeout(() => {
-      setProducts(mockProducts);
+      const response = await fetch(`/api/admin/products?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(
+          data.products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            sku: p.sku || `SKU-${p.id}`,
+            category: p.category,
+            price: p.price,
+            stock: p.quantity,
+            status:
+              p.status === "active"
+                ? "active"
+                : p.quantity === 0
+                ? "out_of_stock"
+                : "inactive",
+            image: p.images?.[0]?.url || "/images/placeholder.jpg",
+            createdAt:
+              p.createdAt?.split("T")[0] ||
+              new Date().toISOString().split("T")[0],
+            updatedAt:
+              p.updatedAt?.split("T")[0] ||
+              new Date().toISOString().split("T")[0],
+          }))
+        );
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setProducts([]);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchProducts();
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, selectedCategory, selectedStatus, currentPage]);
 
   // Filter products
   const filteredProducts = products.filter((product) => {

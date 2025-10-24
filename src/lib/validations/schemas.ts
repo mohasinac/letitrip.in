@@ -11,6 +11,9 @@ export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   phone: z.string().optional(),
   role: z.enum(['admin', 'seller', 'user']).default('user'),
+  isOver18: z.boolean().refine((val) => val === true, {
+    message: 'You must be 18 or older to create an account',
+  }),
 });
 
 export const loginSchema = z.object({
@@ -50,7 +53,8 @@ export const createProductSchema = z.object({
   barcode: z.string().optional(),
   quantity: z.number().int().nonnegative('Quantity must be non-negative'),
   lowStockThreshold: z.number().int().nonnegative().default(10),
-  weight: z.number().positive().optional(),
+  weight: z.number().positive('Weight is required for shipping calculations'),
+  weightUnit: z.enum(['kg', 'g', 'lb', 'oz']).default('kg'),
   dimensions: z.object({
     length: z.number().positive(),
     width: z.number().positive(),

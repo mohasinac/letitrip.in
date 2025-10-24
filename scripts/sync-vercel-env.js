@@ -30,6 +30,55 @@ function log(message, color = 'reset') {
   console.log(colorize(message, color));
 }
 
+class ProgressBar {
+  constructor(total, width = 30) {
+    this.total = total;
+    this.current = 0;
+    this.width = width;
+    this.startTime = Date.now();
+    this.lastMessage = '';
+  }
+
+  update(current, message = '', status = '') {
+    this.current = current;
+    const percentage = Math.round((current / this.total) * 100);
+    const filled = Math.round((current / this.total) * this.width);
+    const empty = this.width - filled;
+    
+    const bar = '█'.repeat(filled) + '░'.repeat(empty);
+    const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
+    
+    // Estimate time remaining
+    const rate = current / (Date.now() - this.startTime) * 1000;
+    const remaining = rate > 0 ? Math.round((this.total - current) / rate) : 0;
+    const eta = remaining > 0 ? ` ETA: ${remaining}s` : '';
+    
+    // Status emoji based on action
+    let statusEmoji = '⚡';
+    if (message.includes('Adding')) statusEmoji = '➕';
+    else if (message.includes('Updating')) statusEmoji = '🔄';
+    else if (message.includes('Skipping')) statusEmoji = '⏭️';
+    
+    // Clear the line and write the progress bar
+    process.stdout.write('\r');
+    process.stdout.write('\x1b[K'); // Clear to end of line
+    
+    const progressText = colorize(`[${bar}] ${percentage}% (${current}/${this.total})`, 'cyan');
+    const timeText = colorize(`${elapsed}s${eta}`, 'yellow');
+    const statusText = message ? colorize(`${statusEmoji} ${message}`, 'blue') : '';
+    
+    process.stdout.write(`${progressText} ${timeText} ${statusText}`);
+    
+    if (current === this.total) {
+      process.stdout.write('\n');
+    }
+  }
+
+  finish(message = 'Complete') {
+    this.update(this.total, message);
+  }
+}
+
 function readVercelConfig() {
   const configPath = path.join(process.cwd(), 'vercel.json');
   
@@ -91,21 +140,52 @@ function checkVercelAuth() {
   process.exit(1);
 }
 
+class Spinner {
+  constructor(message = 'Loading...') {
+    this.message = message;
+    this.frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    this.current = 0;
+    this.interval = null;
+  }
+
+  start() {
+    this.interval = setInterval(() => {
+      process.stdout.write('\r');
+      process.stdout.write('\x1b[K'); // Clear line
+      process.stdout.write(colorize(`${this.frames[this.current]} ${this.message}`, 'cyan'));
+      this.current = (this.current + 1) % this.frames.length;
+    }, 80);
+  }
+
+  stop(finalMessage = '') {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    process.stdout.write('\r');
+    process.stdout.write('\x1b[K'); // Clear line
+    if (finalMessage) {
+      console.log(finalMessage);
+    }
+  }
+}
+
 function getExistingEnvVars() {
-  log('📋 Fetching existing environment variables...', 'blue');
+  const spinner = new Spinner('Fetching existing environment variables...');
+  spinner.start();
   
   try {
     const result = executeCommand('vercel env ls production --json', { silent: true });
     if (result) {
       const envVars = JSON.parse(result);
-      log(`✅ Found ${envVars.length} existing environment variables`, 'green');
+      spinner.stop(colorize(`✅ Found ${envVars.length} existing environment variables`, 'green'));
       return envVars.reduce((acc, env) => {
         acc[env.key] = env;
         return acc;
       }, {});
     }
   } catch (error) {
-    log('⚠️  Could not fetch existing environment variables', 'yellow');
+    spinner.stop(colorize('⚠️  Could not fetch existing environment variables', 'yellow'));
     log('This might be the first deployment or a permission issue', 'yellow');
   }
   
@@ -113,11 +193,6 @@ function getExistingEnvVars() {
 }
 
 function setEnvironmentVariable(key, value, isUpdate = false) {
-  const action = isUpdate ? 'Updating' : 'Adding';
-  const actionEmoji = isUpdate ? '🔄' : '➕';
-  
-  log(`${actionEmoji} ${action} ${key}...`, 'blue');
-  
   try {
     if (isUpdate) {
       // For updates, we need to remove first, then add
@@ -131,13 +206,9 @@ function setEnvironmentVariable(key, value, isUpdate = false) {
       : `echo "${value}" | vercel env add ${key} production`;
     
     executeCommand(command, { silent: true });
-    
-    const symbol = isUpdate ? '🔄' : '✅';
-    log(`${symbol} ${key} ${isUpdate ? 'updated' : 'added'} successfully`, 'green');
     return true;
   } catch (error) {
-    log(`❌ Failed to ${isUpdate ? 'update' : 'add'} ${key}`, 'red');
-    log(`Error: ${error.message}`, 'red');
+    // Error will be handled by the progress bar display
     return false;
   }
 }
@@ -153,11 +224,17 @@ function syncEnvironmentVariables(envVars, existingVars) {
   const keys = Object.keys(envVars);
   log(`\n🚀 Syncing ${keys.length} environment variables...`, 'bright');
   log('─'.repeat(50), 'cyan');
+  
+  // Initialize progress bar
+  const progressBar = new ProgressBar(keys.length);
+  let processedCount = 0;
 
   for (const [key, value] of Object.entries(envVars)) {
+    processedCount++;
+    
     // Skip if value is undefined or null
     if (value === undefined || value === null) {
-      log(`⏭️  Skipping ${key} (undefined value)`, 'yellow');
+      progressBar.update(processedCount, `Skipping ${key} (undefined)`);
       results.skipped++;
       continue;
     }
@@ -168,12 +245,13 @@ function syncEnvironmentVariables(envVars, existingVars) {
     if (exists) {
       // Check if value has changed
       if (exists.value === stringValue) {
-        log(`⏭️  Skipping ${key} (no changes)`, 'yellow');
+        progressBar.update(processedCount, `Skipping ${key} (no changes)`);
         results.skipped++;
         continue;
       }
       
       // Update existing variable
+      progressBar.update(processedCount, `Updating ${key}`);
       if (setEnvironmentVariable(key, stringValue, true)) {
         results.updated++;
       } else {
@@ -181,6 +259,7 @@ function syncEnvironmentVariables(envVars, existingVars) {
       }
     } else {
       // Add new variable
+      progressBar.update(processedCount, `Adding ${key}`);
       if (setEnvironmentVariable(key, stringValue, false)) {
         results.added++;
       } else {
@@ -189,6 +268,12 @@ function syncEnvironmentVariables(envVars, existingVars) {
     }
   }
 
+  // Finish the progress bar
+  progressBar.finish('All variables processed');
+  
+  // Add a small delay for better visual flow
+  console.log('');
+  
   return results;
 }
 
@@ -223,15 +308,17 @@ function main() {
     checkVercelAuth();
     
     // Read vercel.json configuration
-    log('\n📖 Reading vercel.json configuration...', 'blue');
+    const spinner = new Spinner('Reading vercel.json configuration...');
+    spinner.start();
+    
     const config = readVercelConfig();
     
     if (!config.env || Object.keys(config.env).length === 0) {
-      log('⚠️  No environment variables found in vercel.json', 'yellow');
+      spinner.stop(colorize('⚠️  No environment variables found in vercel.json', 'yellow'));
       process.exit(0);
     }
     
-    log(`✅ Found ${Object.keys(config.env).length} environment variables in vercel.json`, 'green');
+    spinner.stop(colorize(`✅ Found ${Object.keys(config.env).length} environment variables in vercel.json`, 'green'));
     
     // Get existing environment variables
     const existingVars = getExistingEnvVars();

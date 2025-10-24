@@ -55,41 +55,25 @@ export default function SellerSalesChart() {
           const data = await response.json();
           setSalesData(data);
         } else {
-          // Mock data for development
-          const mockData: SellerSalesData = {
-            labels: [
-              "Oct 17",
-              "Oct 18",
-              "Oct 19",
-              "Oct 20",
-              "Oct 21",
-              "Oct 22",
-              "Oct 23",
-            ],
-            revenue: [8000, 12000, 9500, 15000, 11000, 18000, 14500],
-            orders: [12, 18, 14, 25, 16, 28, 22],
-            visitors: [245, 312, 289, 445, 367, 523, 412],
+          // Set empty data when no API endpoint available
+          const emptyData: SellerSalesData = {
+            labels: [],
+            revenue: [],
+            orders: [],
+            visitors: [],
           };
-          setSalesData(mockData);
+          setSalesData(emptyData);
         }
       } catch (error) {
         console.error("Failed to fetch seller sales data:", error);
-        // Mock data fallback
-        const mockData: SellerSalesData = {
-          labels: [
-            "Oct 17",
-            "Oct 18",
-            "Oct 19",
-            "Oct 20",
-            "Oct 21",
-            "Oct 22",
-            "Oct 23",
-          ],
-          revenue: [8000, 12000, 9500, 15000, 11000, 18000, 14500],
-          orders: [12, 18, 14, 25, 16, 28, 22],
-          visitors: [245, 312, 289, 445, 367, 523, 412],
+        // Set empty data on error
+        const emptyData: SellerSalesData = {
+          labels: [],
+          revenue: [],
+          orders: [],
+          visitors: [],
         };
-        setSalesData(mockData);
+        setSalesData(emptyData);
       } finally {
         setIsLoading(false);
       }

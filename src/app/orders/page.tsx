@@ -40,7 +40,7 @@ export default function OrdersPage() {
   const [itemsPerPage] = useState(5);
 
   useEffect(() => {
-    // Mock data for demonstration
+    // TODO: Replace with Firebase integration
     const mockOrders: Order[] = [
       {
         id: "1",

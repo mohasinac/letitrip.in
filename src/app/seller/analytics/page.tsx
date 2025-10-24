@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import RoleGuard from "@/components/auth/RoleGuard";
+import SellerLayout from "@/components/seller/SellerLayout";
 
 interface AnalyticsData {
   overview: {
@@ -171,17 +171,17 @@ export default function SellerAnalyticsPage() {
 
   if (loading) {
     return (
-      <RoleGuard requiredRole="seller">
+      <SellerLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </RoleGuard>
+      </SellerLayout>
     );
   }
 
   if (!analytics) {
     return (
-      <RoleGuard requiredRole="seller">
+      <SellerLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -190,13 +190,13 @@ export default function SellerAnalyticsPage() {
             <p className="text-gray-600">Unable to load analytics data.</p>
           </div>
         </div>
-      </RoleGuard>
+      </SellerLayout>
     );
   }
 
   return (
-    <RoleGuard requiredRole="seller">
-      <div className="min-h-screen bg-gray-50">
+    <SellerLayout>
+      <div className="bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
@@ -570,6 +570,6 @@ export default function SellerAnalyticsPage() {
           </div>
         </div>
       </div>
-    </RoleGuard>
+    </SellerLayout>
   );
 }

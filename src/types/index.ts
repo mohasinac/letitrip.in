@@ -11,6 +11,7 @@ export interface User {
   role: 'admin' | 'user' | 'seller';
   avatar?: string;
   addresses: Address[];
+  isOver18?: boolean; // Age verification flag
   createdAt: string;
   updatedAt: string;
 }
@@ -42,7 +43,8 @@ export interface Product {
   barcode?: string;
   quantity: number;
   lowStockThreshold: number;
-  weight?: number;
+  weight: number; // Required for shipping calculations
+  weightUnit: 'kg' | 'g' | 'lb' | 'oz'; // Weight unit
   dimensions?: {
     length: number;
     width: number;
@@ -50,12 +52,14 @@ export interface Product {
     unit: 'cm' | 'in';
   };
   images: ProductImage[];
+  videos?: ProductVideo[]; // Support for product videos
   category: string;
   tags: string[];
   status: 'active' | 'draft' | 'archived';
   isFeatured: boolean;
   rating?: number;
   reviewCount?: number;
+  sellerId?: string; // Reference to seller
   seo?: {
     title: string;
     description: string;
@@ -68,6 +72,14 @@ export interface Product {
 export interface ProductImage {
   url: string;
   alt: string;
+  order: number;
+}
+
+export interface ProductVideo {
+  url: string;
+  title: string;
+  thumbnail?: string;
+  duration?: number; // in seconds
   order: number;
 }
 
@@ -464,4 +476,59 @@ export interface ShiprocketRateCalculation {
   other_charges: number;
   total_charge: number;
   etd: string;
+}
+
+// Seller Types
+export interface SellerProfile {
+  id: string;
+  userId: string;
+  businessName?: string;
+  businessType?: 'individual' | 'company' | 'partnership';
+  gstNumber?: string;
+  panNumber?: string;
+  businessAddress?: Address;
+  bankDetails?: {
+    accountNumber: string;
+    ifscCode: string;
+    accountHolderName: string;
+    bankName: string;
+  };
+  isActive: boolean;
+  isVerified: boolean;
+  awayMode: boolean; // For temporarily stopping sales
+  awayMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SellerAnalytics {
+  totalRevenue: number;
+  totalOrders: number;
+  totalCustomers: number;
+  averageOrderValue: number;
+  topSellingProducts: Array<{
+    productId: string;
+    name: string;
+    sales: number;
+    revenue: number;
+  }>;
+  monthlyStats: Array<{
+    month: string;
+    revenue: number;
+    orders: number;
+  }>;
+  recentOrders: Order[];
+}
+
+export interface SellerNotification {
+  id: string;
+  sellerId: string;
+  type: 'order' | 'product' | 'review' | 'payment' | 'system';
+  title: string;
+  message: string;
+  orderId?: string;
+  productId?: string;
+  data?: any;
+  isRead: boolean;
+  createdAt: string;
 }

@@ -21,6 +21,7 @@ function RegisterForm() {
     confirmPassword: "",
     role: "user" as "admin" | "seller" | "user",
     acceptTerms: false,
+    isOver18: false,
   });
   const [redirectInfo, setRedirectInfo] = useState<string | null>(null);
 
@@ -62,12 +63,18 @@ function RegisterForm() {
       return;
     }
 
+    if (!formData.isOver18) {
+      alert("You must be 18 or older to create an account");
+      return;
+    }
+
     try {
       await register(
         formData.name,
         formData.email,
         formData.password,
-        formData.role
+        formData.role,
+        formData.isOver18
       );
       // Redirect is handled by the register function in AuthContext
     } catch (err) {
@@ -324,31 +331,55 @@ function RegisterForm() {
                 />
               </div>
 
-              <div className="flex items-start">
-                <input
-                  id="acceptTerms"
-                  name="acceptTerms"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 mt-1"
-                  checked={formData.acceptTerms}
-                  onChange={handleChange}
-                />
-                <label
-                  htmlFor="acceptTerms"
-                  className="ml-2 block text-sm text-muted-foreground"
-                >
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:underline"
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <input
+                    id="isOver18"
+                    name="isOver18"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 mt-1"
+                    checked={formData.isOver18}
+                    onChange={handleChange}
+                  />
+                  <label
+                    htmlFor="isOver18"
+                    className="ml-2 block text-sm text-muted-foreground"
                   >
-                    Privacy Policy
-                  </Link>
-                </label>
+                    I confirm that I am 18 years or older
+                    <span className="text-red-500 ml-1">*</span>
+                  </label>
+                </div>
+
+                <div className="flex items-start">
+                  <input
+                    id="acceptTerms"
+                    name="acceptTerms"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 mt-1"
+                    checked={formData.acceptTerms}
+                    onChange={handleChange}
+                  />
+                  <label
+                    htmlFor="acceptTerms"
+                    className="ml-2 block text-sm text-muted-foreground"
+                  >
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
+                      className="text-primary hover:underline"
+                    >
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-primary hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
+                    <span className="text-red-500 ml-1">*</span>
+                  </label>
+                </div>
               </div>
 
               <button

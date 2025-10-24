@@ -37,35 +37,39 @@ export default function SellerStatsCards() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/seller/dashboard/stats");
+        // Get current user ID (you'd implement this based on your auth system)
+        const sellerId = "current-seller-id"; // Replace with actual seller ID from auth context
+        const response = await fetch(
+          `/api/seller/dashboard/stats?sellerId=${sellerId}`
+        );
         if (response.ok) {
           const data = await response.json();
           setStats(data);
         } else {
-          // Mock data for development
+          // Set empty stats when no API endpoint available
           setStats({
-            totalOrders: 248,
-            totalRevenue: 84250,
-            totalViews: 12650,
-            pendingOrders: 18,
-            revenueChange: 15.8,
-            ordersChange: 12.3,
-            viewsChange: 8.7,
-            conversionRate: 3.2,
+            totalOrders: 0,
+            totalRevenue: 0,
+            totalViews: 0,
+            pendingOrders: 0,
+            revenueChange: 0,
+            ordersChange: 0,
+            viewsChange: 0,
+            conversionRate: 0,
           });
         }
       } catch (error) {
         console.error("Failed to fetch seller stats:", error);
-        // Mock data fallback
+        // Set empty stats on error
         setStats({
-          totalOrders: 248,
-          totalRevenue: 84250,
-          totalViews: 12650,
-          pendingOrders: 18,
-          revenueChange: 15.8,
-          ordersChange: 12.3,
-          viewsChange: 8.7,
-          conversionRate: 3.2,
+          totalOrders: 0,
+          totalRevenue: 0,
+          totalViews: 0,
+          pendingOrders: 0,
+          revenueChange: 0,
+          ordersChange: 0,
+          viewsChange: 0,
+          conversionRate: 0,
         });
       } finally {
         setIsLoading(false);

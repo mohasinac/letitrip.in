@@ -100,45 +100,42 @@ export async function GET(request: NextRequest) {
 
     const userId = user.userId;
 
-    // Mock return requests - replace with database query
-    let returnRequests = [
-      {
-        id: "return_001",
-        orderId: "order_001",
-        userId,
-        orderNumber: "JV2024001",
-        reason: "Product damaged during shipping",
-        status: "completed",
-        refundAmount: 2890,
-        refundMethod: "Original payment method",
-        items: [],
-        requestedAt: "2024-01-20T10:00:00Z",
-        processedAt: "2024-01-22T14:30:00Z",
-        completedAt: "2024-01-24T09:15:00Z",
-        adminNotes: "Refund processed successfully"
-      },
-      {
-        id: "return_002", 
-        orderId: "order_004",
-        userId,
-        orderNumber: "JV2024004",
-        reason: "Item not as described",
-        status: "pending",
-        refundAmount: 1599,
-        refundMethod: null,
-        items: [
-          {
-            productId: "prod_5",
-            name: "Collectible Figure",
-            quantity: 1,
-            reason: "Different from product photos"
+    // Get return requests from Firebase
+    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const db = getAdminDb();
+    
+    const returnsSnapshot = await db.collection('returns')
+      .where('userId', '==', userId)
+      .orderBy('requestedAt', 'desc')
+      .get();
+
+    let returnRequests: any[] = [];
+    
+    for (const doc of returnsSnapshot.docs) {
+      const returnData = doc.data();
+      
+      // Get order details
+      let orderDetails = null;
+      if (returnData.orderId) {
+        try {
+          const orderDoc = await db.collection('orders').doc(returnData.orderId).get();
+          if (orderDoc.exists) {
+            orderDetails = orderDoc.data();
           }
-        ],
-        requestedAt: "2024-01-23T16:20:00Z",
-        expectedProcessing: "3-5 business days",
-        adminNotes: null
+        } catch (error) {
+          console.error('Error fetching order details:', error);
+        }
       }
-    ];
+
+      returnRequests.push({
+        id: doc.id,
+        ...returnData,
+        orderNumber: orderDetails?.orderNumber || `JV${returnData.orderId}`,
+        requestedAt: returnData.requestedAt?.toDate?.()?.toISOString() || returnData.requestedAt,
+        processedAt: returnData.processedAt?.toDate?.()?.toISOString() || returnData.processedAt,
+        completedAt: returnData.completedAt?.toDate?.()?.toISOString() || returnData.completedAt,
+      });
+    }
 
     // Filter by status
     if (status !== "all") {

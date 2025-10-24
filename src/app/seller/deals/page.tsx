@@ -28,31 +28,24 @@ export default function SellerDealsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock deals data
-    const mockDeals: Deal[] = [
-      {
-        id: "deal1",
-        title: "Flash Sale - Premium Headphones",
-        description: "50% off on all premium wireless headphones",
-        productId: "prod1",
-        originalPrice: 299,
-        salePrice: 149,
-        discountPercent: 50,
-        startDate: "2024-01-20",
-        endDate: "2024-01-25",
-        status: "active",
-        maxQuantity: 100,
-        currentSales: 23,
-        image: "/api/placeholder/300/200",
-        isFlashDeal: true,
-        isFeatured: true,
-      },
-    ];
+    const fetchDeals = async () => {
+      try {
+        const response = await fetch("/api/seller/deals");
+        if (response.ok) {
+          const data = await response.json();
+          setDeals(data);
+        } else {
+          setDeals([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch deals:", error);
+        setDeals([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setTimeout(() => {
-      setDeals(mockDeals);
-      setLoading(false);
-    }, 1000);
+    fetchDeals();
   }, []);
 
   if (loading) {

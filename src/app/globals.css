@@ -88,4 +88,21 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Dual sidebar layout utilities */
+  .pl-144 {
+    padding-left: 36rem; /* 576px - for dual sidebars (72 + 72) */
+  }
+  
+  @media (max-width: 1279px) {
+    .xl\:pl-144 {
+      padding-left: 0;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .xl\:pl-144 {
+      padding-left: 36rem;
+    }
+  }
 }

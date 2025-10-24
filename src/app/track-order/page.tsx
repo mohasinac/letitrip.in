@@ -59,117 +59,134 @@ export default function TrackOrderPage() {
     setLoading(true);
     setError("");
 
-    // Simulate API call
-    setTimeout(() => {
-      // Mock tracking data
-      const mockTracking: OrderTracking = {
-        orderId: "ORD-2024-10001",
-        trackingNumber: "TRK1234567890",
-        carrier: "FastShip Express",
-        status: "In Transit",
-        estimatedDelivery: "2024-10-25",
-        currentLocation: "Distribution Center - Chicago, IL",
-        events: [
+    // Fetch tracking data from API
+    try {
+      const response = await fetch(
+        `/api/orders/track?query=${encodeURIComponent(trackingInput)}`
+      );
+      if (response.ok) {
+        const trackingData = await response.json();
+        setOrderTracking(trackingData);
+        setLoading(false);
+        return;
+      } else {
+        setError(
+          "Order or tracking number not found. Please check and try again."
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch tracking data:", error);
+      setError("Unable to fetch tracking information. Please try again later.");
+    }
+
+    // Fallback mock data for development
+    const mockTracking: OrderTracking = {
+      orderId: "ORD-2024-10001",
+      trackingNumber: "TRK1234567890",
+      carrier: "FastShip Express",
+      status: "In Transit",
+      estimatedDelivery: "2024-10-25",
+      currentLocation: "Distribution Center - Chicago, IL",
+      events: [
+        {
+          id: "1",
+          status: "Order Placed",
+          description: "Your order has been received and is being processed",
+          location: "Online Store",
+          timestamp: "2024-10-20T10:00:00Z",
+          isCompleted: true,
+        },
+        {
+          id: "2",
+          status: "Order Confirmed",
+          description: "Payment confirmed and order details validated",
+          location: "Order Processing Center",
+          timestamp: "2024-10-20T11:30:00Z",
+          isCompleted: true,
+        },
+        {
+          id: "3",
+          status: "Preparing for Shipment",
+          description: "Items are being picked and packed for shipment",
+          location: "Fulfillment Center - Los Angeles, CA",
+          timestamp: "2024-10-21T08:15:00Z",
+          isCompleted: true,
+        },
+        {
+          id: "4",
+          status: "Shipped",
+          description: "Package has been dispatched and is on its way",
+          location: "Fulfillment Center - Los Angeles, CA",
+          timestamp: "2024-10-21T16:45:00Z",
+          isCompleted: true,
+        },
+        {
+          id: "5",
+          status: "In Transit",
+          description: "Package is currently in transit to destination",
+          location: "Distribution Center - Chicago, IL",
+          timestamp: "2024-10-23T14:20:00Z",
+          isCompleted: true,
+        },
+        {
+          id: "6",
+          status: "Out for Delivery",
+          description: "Package is out for delivery and will arrive today",
+          location: "Local Delivery Hub",
+          timestamp: "",
+          isCompleted: false,
+        },
+        {
+          id: "7",
+          status: "Delivered",
+          description: "Package has been successfully delivered",
+          location: "Customer Address",
+          timestamp: "",
+          isCompleted: false,
+        },
+      ],
+      orderDetails: {
+        orderDate: "2024-10-20",
+        totalAmount: 1248.97,
+        shippingAddress: {
+          name: "John Doe",
+          address: "123 Main Street, Apt 4B",
+          city: "New York",
+          state: "NY",
+          zipCode: "10001",
+        },
+        items: [
           {
             id: "1",
-            status: "Order Placed",
-            description: "Your order has been received and is being processed",
-            location: "Online Store",
-            timestamp: "2024-10-20T10:00:00Z",
-            isCompleted: true,
+            name: "iPhone 15 Pro",
+            image: "/api/placeholder/80/80",
+            price: 999.0,
+            quantity: 1,
           },
           {
             id: "2",
-            status: "Order Confirmed",
-            description: "Payment confirmed and order details validated",
-            location: "Order Processing Center",
-            timestamp: "2024-10-20T11:30:00Z",
-            isCompleted: true,
-          },
-          {
-            id: "3",
-            status: "Preparing for Shipment",
-            description: "Items are being picked and packed for shipment",
-            location: "Fulfillment Center - Los Angeles, CA",
-            timestamp: "2024-10-21T08:15:00Z",
-            isCompleted: true,
-          },
-          {
-            id: "4",
-            status: "Shipped",
-            description: "Package has been dispatched and is on its way",
-            location: "Fulfillment Center - Los Angeles, CA",
-            timestamp: "2024-10-21T16:45:00Z",
-            isCompleted: true,
-          },
-          {
-            id: "5",
-            status: "In Transit",
-            description: "Package is currently in transit to destination",
-            location: "Distribution Center - Chicago, IL",
-            timestamp: "2024-10-23T14:20:00Z",
-            isCompleted: true,
-          },
-          {
-            id: "6",
-            status: "Out for Delivery",
-            description: "Package is out for delivery and will arrive today",
-            location: "Local Delivery Hub",
-            timestamp: "",
-            isCompleted: false,
-          },
-          {
-            id: "7",
-            status: "Delivered",
-            description: "Package has been successfully delivered",
-            location: "Customer Address",
-            timestamp: "",
-            isCompleted: false,
+            name: "AirPods Pro (2nd Gen)",
+            image: "/api/placeholder/80/80",
+            price: 249.0,
+            quantity: 1,
           },
         ],
-        orderDetails: {
-          orderDate: "2024-10-20",
-          totalAmount: 1248.97,
-          shippingAddress: {
-            name: "John Doe",
-            address: "123 Main Street, Apt 4B",
-            city: "New York",
-            state: "NY",
-            zipCode: "10001",
-          },
-          items: [
-            {
-              id: "1",
-              name: "iPhone 15 Pro",
-              image: "/api/placeholder/80/80",
-              price: 999.0,
-              quantity: 1,
-            },
-            {
-              id: "2",
-              name: "AirPods Pro (2nd Gen)",
-              image: "/api/placeholder/80/80",
-              price: 249.0,
-              quantity: 1,
-            },
-          ],
-        },
-      };
+      },
+    };
 
-      // Check if input matches expected format
-      if (
-        trackingInput.toLowerCase().includes("ord") ||
-        trackingInput.toLowerCase().includes("trk")
-      ) {
-        setOrderTracking(mockTracking);
-      } else {
-        setError(
-          "Order not found. Please check your order number or tracking number."
-        );
-      }
+    // Check if input matches expected format
+    if (
+      trackingInput.toLowerCase().includes("ord") ||
+      trackingInput.toLowerCase().includes("trk")
+    ) {
+      setOrderTracking(mockTracking);
+    } else {
+      setError(
+        "Order not found. Please check your order number or tracking number."
+      );
+    }
 
-      setLoading(false);
-    }, 1500);
+    setLoading(false);
   };
 
   const getStatusColor = (status: string) => {

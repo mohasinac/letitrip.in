@@ -43,7 +43,8 @@ interface AuthContextType extends AuthState {
     name: string,
     email: string,
     password: string,
-    role?: "admin" | "seller" | "user"
+    role?: "admin" | "seller" | "user",
+    isOver18?: boolean
   ) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -376,7 +377,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name: string,
     email: string,
     password: string,
-    role: "admin" | "seller" | "user" = "user"
+    role: "admin" | "seller" | "user" = "user",
+    isOver18: boolean = true
   ) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
@@ -386,7 +388,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role, isOver18 }),
       });
 
       const data = await response.json();

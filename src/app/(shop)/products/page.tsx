@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import ProductCard from "@/components/products/ProductCard";
 import { useProducts } from "@/hooks/useFirebase";
 
@@ -74,10 +73,8 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-1 bg-gray-50">
+    <UnifiedLayout showCategorySidebar showBothSidebars>
+      <div className="min-h-screen bg-gray-50">
         {/* Page Header */}
         <div className="bg-white border-b">
           <div className="container py-8">
@@ -251,9 +248,7 @@ export default function ProductsPage() {
             </div>
           </div>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </UnifiedLayout>
   );
 }
