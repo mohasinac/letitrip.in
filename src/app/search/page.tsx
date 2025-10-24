@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 import ProductCard from "@/components/products/ProductCard";
 import Link from "next/link";
 
@@ -100,7 +100,7 @@ function SearchContent() {
   const categories = [...new Set(results.map((r) => r.category))];
 
   return (
-    <UnifiedLayout>
+    
       <main className="flex-1 bg-gray-50">
         {/* Search Header */}
         <div className="bg-white border-b">
@@ -324,7 +324,7 @@ function SearchContent() {
           </section>
         )}
       </main>
-    </UnifiedLayout>
+    
   );
 }
 
@@ -332,14 +332,14 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <UnifiedLayout>
+        
           <main className="flex-1 bg-gray-50 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">Loading search...</p>
             </div>
           </main>
-        </UnifiedLayout>
+        
       }
     >
       <SearchContent />

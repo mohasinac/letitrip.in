@@ -10,11 +10,10 @@ import SellerAuctions from "@/components/seller/SellerAuctions";
 import SellerSalesChart from "@/components/seller/SellerSalesChart";
 import SellerQuickActions from "@/components/seller/SellerQuickActions";
 import SellerNotifications from "@/components/seller/SellerNotifications";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
 
 export default function SellerDashboard() {
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -78,6 +77,6 @@ export default function SellerDashboard() {
           <SellerNotifications />
         </div>
       </div>
-    </UnifiedLayout>
+    </div>
   );
 }

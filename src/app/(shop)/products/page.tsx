@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 import ProductCard from "@/components/products/ProductCard";
 import { useProducts } from "@/hooks/useFirebase";
 
@@ -73,7 +73,7 @@ export default function ProductsPage() {
   ];
 
   return (
-    <UnifiedLayout showCategorySidebar showBothSidebars>
+    
       <div className="min-h-screen bg-gray-50">
         {/* Page Header */}
         <div className="bg-white border-b">
@@ -249,6 +249,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
-    </UnifiedLayout>
+    
   );
 }

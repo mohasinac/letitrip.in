@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 
 // Force dynamic rendering to prevent static generation
 export const dynamic = "force-dynamic";
@@ -214,16 +214,16 @@ function CompareContent() {
 
   if (loading) {
     return (
-      <UnifiedLayout>
+      
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </UnifiedLayout>
+      
     );
   }
 
   return (
-    <UnifiedLayout>
+    
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
@@ -558,7 +558,7 @@ function CompareContent() {
           </div>
         </div>
       </div>
-    </UnifiedLayout>
+    
   );
 }
 
@@ -566,14 +566,14 @@ export default function ComparisonPage() {
   return (
     <Suspense
       fallback={
-        <UnifiedLayout>
+        
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">Loading comparison...</p>
             </div>
           </div>
-        </UnifiedLayout>
+        
       }
     >
       <CompareContent />

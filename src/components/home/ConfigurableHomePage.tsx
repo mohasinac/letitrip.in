@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
 import ProductCard from "@/components/products/ProductCard";
 import BannerCarousel from "@/components/ui/BannerCarousel";
 
@@ -528,11 +527,9 @@ export default function ConfigurableHomePage() {
 
   if (!settings) {
     return (
-      <UnifiedLayout>
-        <main className="flex-1 flex items-center justify-center">
-          <p>Failed to load page settings</p>
-        </main>
-      </UnifiedLayout>
+      <main className="flex-1 flex items-center justify-center">
+        <p>Failed to load page settings</p>
+      </main>
     );
   }
 
@@ -543,9 +540,5 @@ export default function ConfigurableHomePage() {
     return a.order - b.order;
   });
 
-  return (
-    <UnifiedLayout>
-      <main className="flex-1">{sortedSections.map(renderSection)}</main>
-    </UnifiedLayout>
-  );
+  return <main className="flex-1">{sortedSections.map(renderSection)}</main>;
 }

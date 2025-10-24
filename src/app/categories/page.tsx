@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useGlobalCategories } from "@/contexts/CategoriesContext";
 import { CategoryCard } from "@/components/categories/CategoryCard";
 import { CategoryFilters } from "@/components/categories/CategoryFilters";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 
 export default function CategoriesPage() {
   const { categories, loading, error } = useGlobalCategories();
@@ -21,17 +21,17 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <UnifiedLayout showCategorySidebar showBothSidebars>
+      
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </UnifiedLayout>
+      
     );
   }
 
   if (error) {
     return (
-      <UnifiedLayout showCategorySidebar showBothSidebars>
+      
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">⚠️</div>
@@ -41,12 +41,12 @@ export default function CategoriesPage() {
             <p className="text-gray-600">{error}</p>
           </div>
         </div>
-      </UnifiedLayout>
+      
     );
   }
 
   return (
-    <UnifiedLayout showCategorySidebar showBothSidebars>
+    
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-12">
@@ -161,6 +161,6 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-    </UnifiedLayout>
+    
   );
 }

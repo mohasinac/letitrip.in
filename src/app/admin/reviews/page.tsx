@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 import {
   StarIcon,
   CheckIcon,
@@ -127,7 +127,7 @@ export default function ReviewsManagement() {
   };
 
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -412,6 +412,6 @@ export default function ReviewsManagement() {
           </div>
         </div>
       )}
-    </UnifiedLayout>
+    </div>
   );
 }

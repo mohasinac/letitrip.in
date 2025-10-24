@@ -1,23 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
 
 export default function SellerSettings() {
   const [loading, setLoading] = useState(false);
 
   if (loading) {
     return (
-      <UnifiedLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      </UnifiedLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
@@ -41,6 +38,6 @@ export default function SellerSettings() {
           </p>
         </div>
       </div>
-    </UnifiedLayout>
+    </div>
   );
 }

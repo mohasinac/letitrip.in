@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 import Link from "next/link";
@@ -155,9 +154,7 @@ export default function AccountPage() {
 
   return (
     <ProtectedRoute requireRole="user">
-      <div className="min-h-screen flex flex-col">
-        <Header />
-
+      
         <main className="flex-1 bg-gray-50">
           <div className="container py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -611,9 +608,7 @@ export default function AccountPage() {
             </div>
           </div>
         </main>
-
-        <Footer />
-      </div>
+      
     </ProtectedRoute>
   );
 }

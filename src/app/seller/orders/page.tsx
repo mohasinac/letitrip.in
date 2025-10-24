@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 import { Order, OrderStatus } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -93,7 +93,7 @@ export default function SellerOrders() {
   };
 
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -260,6 +260,6 @@ export default function SellerOrders() {
           </div>
         )}
       </div>
-    </UnifiedLayout>
+    </div>
   );
 }

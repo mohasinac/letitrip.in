@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 import {
   CogIcon,
   CreditCardIcon,
@@ -136,30 +136,26 @@ export default function SettingsManagement() {
 
   if (loading) {
     return (
-      <UnifiedLayout>
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-          </div>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
         </div>
-      </UnifiedLayout>
+      </div>
     );
   }
 
   if (!settings) {
     return (
-      <UnifiedLayout>
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-500">Failed to load settings</p>
-          </div>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <p className="text-gray-500">Failed to load settings</p>
         </div>
-      </UnifiedLayout>
+      </div>
     );
   }
 
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -947,6 +943,6 @@ export default function SettingsManagement() {
           </div>
         </div>
       </div>
-    </UnifiedLayout>
+    </div>
   );
 }

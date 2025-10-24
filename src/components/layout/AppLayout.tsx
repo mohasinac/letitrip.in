@@ -10,37 +10,50 @@ import CategorySidebar from "./CategorySidebar";
 import RoleGuard from "@/components/auth/RoleGuard";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
-interface UnifiedLayoutProps {
+interface AppLayoutProps {
   children: ReactNode;
-  showCategorySidebar?: boolean;
-  showBothSidebars?: boolean;
 }
 
-export default function UnifiedLayout({
-  children,
-  showCategorySidebar = false,
-  showBothSidebars = false,
-}: UnifiedLayoutProps) {
+export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { user } = useEnhancedAuth();
-  const [categorySidebarOpen, setCategorySidebarOpen] = useState(false);
 
-  // Determine which layout to use based on pathname
+  // Routes that should NOT have the layout (auth pages, etc.)
+  const noLayoutRoutes = [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-email",
+  ];
+
+  // Routes that should have category sidebar
+  const categorySidebarRoutes = [
+    "/products",
+    "/categories",
+    "/search",
+    "/brands",
+    "/deals",
+  ];
+
+  // Check if current route should skip layout
+  const shouldSkipLayout = noLayoutRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (shouldSkipLayout) {
+    return <>{children}</>;
+  }
+
+  // Determine layout type based on pathname
   const isAdminRoute = pathname.startsWith("/admin");
   const isSellerRoute = pathname.startsWith("/seller");
   const isDashboardRoute = isAdminRoute || isSellerRoute;
+  const shouldShowCategorySidebar = categorySidebarRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  // Check if user has dashboard access
-  const hasAdminAccess = user?.role === "admin";
-  const hasSellerAccess = user?.role === "admin" || user?.role === "seller";
-
-  // Only show sidebars on dashboard routes (admin/seller routes)
-  // Regular user routes should NOT have sidebars unless explicitly requested
-  const shouldShowCategorySidebar = isDashboardRoute
-    ? false
-    : showCategorySidebar;
-
-  // For dashboard routes, we need role protection and sidebar
+  // Dashboard routes (admin/seller) with sidebar
   if (isDashboardRoute) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -60,11 +73,7 @@ export default function UnifiedLayout({
           )}
 
           {/* Main content with sidebar offset */}
-          <div
-            className={`flex-1 bg-gray-50 ${
-              isDashboardRoute ? "lg:pl-72" : ""
-            }`}
-          >
+          <div className={`flex-1 ${isDashboardRoute ? "lg:pl-72" : ""}`}>
             <main className="min-h-screen">
               {isAdminRoute ? (
                 <RoleGuard requiredRole="admin">{children}</RoleGuard>
@@ -82,9 +91,27 @@ export default function UnifiedLayout({
     );
   }
 
-  // This section is no longer needed since we're simplifying the logic
+  // Regular pages with optional category sidebar
+  if (shouldShowCategorySidebar) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
 
-  // For regular user pages - NO sidebars by default (clean header/footer layout)
+        <div className="flex flex-1">
+          <CategorySidebar />
+
+          {/* Main content with sidebar offset */}
+          <div className="flex-1 lg:pl-72">
+            <main className="min-h-screen">{children}</main>
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    );
+  }
+
+  // Default layout for all other pages (stores, dashboard, profile, etc.)
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

@@ -10,11 +10,10 @@ import SalesChart from "@/components/admin/SalesChart";
 import UserActivityChart from "@/components/admin/UserActivityChart";
 import QuickActions from "@/components/admin/QuickActions";
 import RecentReviews from "@/components/admin/RecentReviews";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
 
 export default function AdminDashboard() {
   return (
-    <UnifiedLayout>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -70,6 +69,6 @@ export default function AdminDashboard() {
           <RecentReviews />
         </div>
       </div>
-    </UnifiedLayout>
+    </div>
   );
 }

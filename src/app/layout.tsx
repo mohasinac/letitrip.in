@@ -6,6 +6,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import UserDebug from "@/components/debug/UserDebug";
 import CookieConsentBanner from "@/components/auth/CookieConsentBanner";
+import AppLayout from "@/components/layout/AppLayout";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -26,7 +27,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <CategoriesProvider>
-              {children}
+              <AppLayout>{children}</AppLayout>
               <UserDebug />
               <CookieConsentBanner />
             </CategoriesProvider>

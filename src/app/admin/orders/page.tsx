@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 
 interface Order {
   id: string;
@@ -292,16 +292,16 @@ export default function AdminOrdersPage() {
 
   if (loading) {
     return (
-      <UnifiedLayout>
+      
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </UnifiedLayout>
+      
     );
   }
 
   return (
-    <UnifiedLayout>
+    
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -623,6 +623,6 @@ export default function AdminOrdersPage() {
           )}
         </div>
       </div>
-    </UnifiedLayout>
+    
   );
 }

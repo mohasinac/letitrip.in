@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import UnifiedLayout from "@/components/layout/UnifiedLayout";
+
 
 interface WishlistItem {
   id: string;
@@ -131,18 +131,18 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <UnifiedLayout>
+        
           <div className="min-h-screen flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
-        </UnifiedLayout>
+        
       </ProtectedRoute>
     );
   }
 
   return (
     <ProtectedRoute>
-      <UnifiedLayout>
+      
         <div className="min-h-screen bg-gray-50">
           <div className="container mx-auto px-4 py-8">
             {/* Header */}
@@ -425,7 +425,7 @@ export default function WishlistPage() {
             )}
           </div>
         </div>
-      </UnifiedLayout>
+      
     </ProtectedRoute>
   );
 }
