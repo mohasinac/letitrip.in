@@ -12,12 +12,12 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
     const userData = await AuthService.getUserById(user.userId);
 
     if (!userData) {
-      return ApiResponse.error('User not found', 404);
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return ApiResponse.success(userData);
+    return NextResponse.json({ success: true, data: userData });
   } catch (error: any) {
     console.error('Get user error:', error);
-    return ApiResponse.error('Failed to get user data', 500);
+    return NextResponse.json({ error: 'Failed to get user data' }, { status: 500 });
   }
 });

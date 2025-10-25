@@ -116,14 +116,13 @@ export const PUT = createAdminHandler(async (
     }
 
     const now = new Date().toISOString();
-    const updateData = {
+    const updateData: any = {
       name: data.name,
       slug: data.slug,
       description: data.description || "",
       image: data.image,
       icon: data.icon,
       seo: data.seo || {},
-      parentId: data.parentId || undefined,
       parentIds,
       level,
       isActive: data.isActive,
@@ -132,6 +131,14 @@ export const PUT = createAdminHandler(async (
       updatedAt: now,
       updatedBy: user.userId
     };
+
+    // Only add parentId if it exists and is not empty
+    if (data.parentId && data.parentId.trim() !== '') {
+      updateData.parentId = data.parentId;
+    } else {
+      // If parentId is empty or undefined, remove it from the document
+      updateData.parentId = null;
+    }
 
     await db.collection("categories").doc(params.id).update(updateData);
 

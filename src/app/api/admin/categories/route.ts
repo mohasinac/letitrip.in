@@ -196,14 +196,13 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
     }
 
     const now = new Date().toISOString();
-    const categoryData: Omit<Category, "id"> = {
+    const categoryData: any = {
       name: data.name,
       slug: data.slug,
       description: data.description || "",
       image: data.image,
       icon: data.icon,
       seo: data.seo || {},
-      parentId: data.parentId || undefined,
       parentIds,
       level,
       isActive: data.isActive,
@@ -219,13 +218,29 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
       updatedBy: user.userId
     };
 
+    // Only add parentId if it exists and is not empty
+    if (data.parentId && data.parentId.trim() !== '') {
+      categoryData.parentId = data.parentId;
+    }
+
+    // Debug log the data before saving
+    console.log('Category data before saving:', JSON.stringify(categoryData, null, 2));
+
+    // Remove any undefined values from the categoryData object
+    const cleanedCategoryData = Object.keys(categoryData).reduce((acc: any, key) => {
+      if (categoryData[key] !== undefined) {
+        acc[key] = categoryData[key];
+      }
+      return acc;
+    }, {});
+
     const docRef = await db
       .collection("categories")
-      .add(categoryData);
+      .add(cleanedCategoryData);
 
     const newCategory = {
       id: docRef.id,
-      ...categoryData
+      ...cleanedCategoryData
     };
 
     return NextResponse.json({
