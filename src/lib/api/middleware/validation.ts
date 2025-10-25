@@ -1,11 +1,12 @@
 /**
  * Request Validation Middleware
- * Centralized validation using Zod schemas with consistent error handling
+ * Enhanced with comprehensive schema support and utilities
  */
 
 import { NextRequest } from 'next/server';
 import { ZodSchema, ZodError, z } from 'zod';
 import { throwApiError } from './error-handler';
+import * as schemas from '../../validations';
 
 /**
  * Validate request body with Zod schema
@@ -117,7 +118,47 @@ export function validatePathParams<T>(
 }
 
 /**
- * Common validation schemas
+ * Enhanced validation class with comprehensive schema support
+ */
+export class ValidationHandler {
+  /**
+   * Validation helper methods
+   */
+  static async validateField<T>(schema: ZodSchema<T>, value: T) {
+    try {
+      return { isValid: true, data: await schema.parseAsync(value), error: null };
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return { 
+          isValid: false, 
+          data: null, 
+          error: error.errors[0]?.message || 'Validation failed' 
+        };
+      }
+      return { isValid: false, data: null, error: 'Validation failed' };
+    }
+  }
+
+  static async validateForm<T>(schema: ZodSchema<T>, data: unknown) {
+    try {
+      const validData = await schema.parseAsync(data);
+      return { isValid: true, data: validData, errors: null };
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          const path = err.path.join('.');
+          fieldErrors[path] = err.message;
+        });
+        return { isValid: false, data: null, errors: fieldErrors };
+      }
+      return { isValid: false, data: null, errors: { general: 'Validation failed' } };
+    }
+  }
+}
+
+/**
+ * Common validation schemas (enhanced)
  */
 export const CommonSchemas = {
   pagination: {
@@ -200,33 +241,6 @@ export function withRequestValidation<
       return handler(request, validated, ...args);
     };
   };
-}
-
-/**
- * Helper to create pagination query schema
- */
-export function createPaginationSchema(options: {
-  defaultPage?: number;
-  defaultLimit?: number;
-  maxLimit?: number;
-} = {}) {
-  const { defaultPage = 1, defaultLimit = 50, maxLimit = 100 } = options;
-  
-  return z.object({
-    page: z.coerce.number().int().min(1).default(defaultPage),
-    limit: z.coerce.number().int().min(1).max(maxLimit).default(defaultLimit),
-    offset: z.coerce.number().int().min(0).optional(),
-  });
-}
-
-/**
- * Helper to create search and filter schema
- */
-export function createSearchSchema(additionalFilters: Record<string, ZodSchema<any>> = {}) {
-  return z.object({
-    search: z.string().optional(),
-    ...additionalFilters,
-  });
 }
 
 /**

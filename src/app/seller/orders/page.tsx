@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SELLER_ROUTES } from "@/constants/routes";
 
-export default function SellerSettings() {
+export default function SellerOrders() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to general settings by default
-    router.replace(SELLER_ROUTES.SETTINGS_GENERAL);
+    // Redirect to pending orders by default
+    router.replace(SELLER_ROUTES.ORDERS_PENDING);
   }, [router]);
 
   return (

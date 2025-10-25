@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SELLER_ROUTES } from "@/constants/routes";
 
-export default function SellerSettings() {
+export default function SellerProducts() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to general settings by default
-    router.replace(SELLER_ROUTES.SETTINGS_GENERAL);
+    // Redirect to all products by default
+    router.replace(SELLER_ROUTES.PRODUCTS_ALL);
   }, [router]);
 
   return (

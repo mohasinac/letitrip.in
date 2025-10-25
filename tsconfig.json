@@ -40,6 +40,15 @@
       ],
       "@/utils/*": [
         "./src/utils/*"
+      ],
+      "@/constants/*": [
+        "./src/constants/*"
+      ],
+      "@/docs/*": [
+        "./docs/*"
+      ],
+      "@/scripts/*": [
+        "./scripts/*"
       ]
     },
     "forceConsistentCasingInFileNames": true

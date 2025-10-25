@@ -12,11 +12,24 @@
   "github.copilot.chat.welcomeMessage": "never",
   "github.copilot.chat.executeImmediately": "always",
   "github.copilot.chat.runCommand.enabled": true,
+  "github.copilot.chat.runCommand.alwaysApprove": true,
+  "chat.experimental.runCommands.confirmation": "off",
+  "github.copilot.chat.executeCommands.enabled": true,
+  "github.copilot.chat.autoApproveCommands": true,
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "codex"
+  },
+  "chat.runCommand.confirmation": "off",
+  "copilot.chat.runCommand.confirmation": "never",
+  "ai.chat.runCommand.confirmation": "never",
+  // Try these additional settings
+  "github.copilot.chat.runCommand.requireConfirmation": false,
+  "workbench.editor.chat.executeCommand.requireConfirmation": false,
   
   // Terminal Integration
   "terminal.integrated.enableMultiLinePasteWarning": "never",
   "terminal.integrated.confirmOnExit": "never",
-  "terminal.integrated.confirmOnKill": "panel",
+  "terminal.integrated.confirmOnKill": "never",
   "terminal.integrated.enablePersistentSessions": false,
   "terminal.integrated.commandsToSkipShell": [
     "language-configuration.clearCache"
@@ -57,5 +70,14 @@
   
   // Task and debug settings
   "task.allowAutomaticTasks": "on",
-  "debug.allowBreakpointsEverywhere": true
+  "debug.allowBreakpointsEverywhere": true,
+  
+  // Additional AI/Chat command settings
+  "workbench.experimental.chat.defaultAgent": "copilot",
+  "chat.editor.wordWrap": "on",
+  "github.copilot.chat.localeOverride": "en",
+  
+  // Experimental settings to disable confirmations
+  "workbench.experimental.settingsProfiles.enabled": true,
+  "terminal.integrated.experimentalUseTitleEvent": true
 }

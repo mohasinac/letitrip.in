@@ -1,140 +1,47 @@
 /**
  * Zod Validation Schemas for API Requests
+ * @deprecated Use comprehensive-schemas.ts for new schemas
+ * This file is kept for backward compatibility
  */
 
 import { z } from 'zod';
 
-// Auth Schemas
-export const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().optional(),
-  role: z.enum(['admin', 'seller', 'user']).default('user'),
-  isOver18: z.boolean().refine((val) => val === true, {
-    message: 'You must be 18 or older to create an account',
-  }),
-});
+// Re-export from comprehensive schemas for backward compatibility
+export {
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+  addressSchema,
+  createProductSchema,
+  updateProductSchema,
+  createCategorySchema,
+  updateCategorySchema,
+  categorySEOSchema,
+  createOrderSchema,
+  updateOrderStatusSchema,
+  addToCartSchema,
+  updateCartItemSchema,
+  createAuctionSchema,
+  placeBidSchema,
+  createReviewSchema,
+  updateReviewSchema,
+  verifyPaymentSchema,
+  getShippingRatesSchema,
+  createShipmentSchema,
+  paginationSchema,
+  productFilterSchema,
+  orderFilterSchema,
+  // Type exports
+  type RegisterInput,
+  type LoginInput,
+  type CreateProductInput,
+  type UpdateProductInput,
+  type CreateOrderInput,
+  type PlaceBidInput,
+} from './comprehensive-schemas';
 
-export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-export const updateProfileSchema = z.object({
-  name: z.string().min(2).optional(),
-  phone: z.string().optional(),
-  avatar: z.string().url().optional(),
-});
-
-// Address Schema
-export const addressSchema = z.object({
-  name: z.string().min(2, 'Name is required'),
-  phone: z.string().min(10, 'Valid phone number is required'),
-  addressLine1: z.string().min(5, 'Address is required'),
-  addressLine2: z.string().optional(),
-  city: z.string().min(2, 'City is required'),
-  state: z.string().min(2, 'State is required'),
-  pincode: z.string().regex(/^\d{6}$/, 'Valid 6-digit pincode is required'),
-  country: z.string().default('India'),
-  isDefault: z.boolean().default(false),
-});
-
-// Product Schemas
-export const createProductSchema = z.object({
-  name: z.string().min(2, 'Product name is required'),
-  slug: z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format'),
-  description: z.string().min(10, 'Description is required'),
-  shortDescription: z.string().optional(),
-  price: z.number().positive('Price must be positive'),
-  compareAtPrice: z.number().positive().optional(),
-  cost: z.number().positive().optional(),
-  sku: z.string().min(1, 'SKU is required'),
-  barcode: z.string().optional(),
-  quantity: z.number().int().nonnegative('Quantity must be non-negative'),
-  lowStockThreshold: z.number().int().nonnegative().default(10),
-  weight: z.number().positive('Weight is required for shipping calculations'),
-  weightUnit: z.enum(['kg', 'g', 'lb', 'oz']).default('kg'),
-  dimensions: z.object({
-    length: z.number().positive(),
-    width: z.number().positive(),
-    height: z.number().positive(),
-    unit: z.enum(['cm', 'in']),
-  }).optional(),
-  images: z.array(z.object({
-    url: z.string().url(),
-    alt: z.string(),
-    order: z.number().int(),
-  })).min(1, 'At least one image is required'),
-  category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).default([]),
-  status: z.enum(['active', 'draft', 'archived']).default('draft'),
-  isFeatured: z.boolean().default(false),
-  seo: z.object({
-    title: z.string().max(60),
-    description: z.string().max(160),
-    keywords: z.array(z.string()),
-  }),
-});
-
-export const updateProductSchema = createProductSchema.partial();
-
-// Category Schemas
-export const categorySEOSchema = z.object({
-  metaTitle: z.string().max(60, 'Meta title should be under 60 characters').optional(),
-  metaDescription: z.string().max(160, 'Meta description should be under 160 characters').optional(),
-  altText: z.string().max(125, 'Alt text should be under 125 characters').optional(),
-  keywords: z.array(z.string()).max(10, 'Maximum 10 keywords allowed').optional(),
-});
-
-export const createCategorySchema = z.object({
-  name: z.string().min(2, 'Category name must be at least 2 characters').max(100, 'Category name too long'),
-  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
-  description: z.string().max(500, 'Description too long').optional(),
-  image: z.string().url('Invalid image URL').optional(),
-  icon: z.string().url('Invalid icon URL').optional(),
-  parentId: z.string().optional(),
-  isActive: z.boolean().default(true),
-  featured: z.boolean().default(false),
-  sortOrder: z.number().int().nonnegative().default(0),
-  seo: categorySEOSchema.optional(),
-});
-
-export const updateCategorySchema = createCategorySchema.partial().extend({
-  id: z.string().min(1, 'Category ID is required'),
-});
-
-// Order Schemas
-export const createOrderSchema = z.object({
-  items: z.array(z.object({
-    productId: z.string(),
-    quantity: z.number().int().positive(),
-  })).min(1, 'Order must have at least one item'),
-  shippingAddressId: z.string(),
-  billingAddressId: z.string(),
-  paymentMethod: z.enum(['razorpay', 'cod']),
-  couponCode: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-export const updateOrderStatusSchema = z.object({
-  status: z.enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']),
-  trackingNumber: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-// Cart Schemas
-export const addToCartSchema = z.object({
-  productId: z.string(),
-  quantity: z.number().int().positive().default(1),
-});
-
-export const updateCartItemSchema = z.object({
-  quantity: z.number().int().nonnegative(),
-});
-
-// Auction Schemas
-export const createAuctionSchema = z.object({
+// Legacy schemas that are still used (keep these for now)
+export const createAuctionSchema_legacy = z.object({
   productId: z.string(),
   startingPrice: z.number().positive('Starting price must be positive'),
   reservePrice: z.number().positive().optional(),
@@ -143,48 +50,16 @@ export const createAuctionSchema = z.object({
   endTime: z.string().datetime(),
 });
 
-export const placeBidSchema = z.object({
+export const placeBidSchema_legacy = z.object({
   amount: z.number().positive('Bid amount must be positive'),
   isAutoBid: z.boolean().default(false),
   maxAutoBid: z.number().positive().optional(),
 });
 
-// Review Schemas
-export const createReviewSchema = z.object({
-  productId: z.string(),
-  rating: z.number().int().min(1).max(5),
-  title: z.string().min(2, 'Review title is required'),
-  comment: z.string().min(10, 'Review comment must be at least 10 characters'),
-  images: z.array(z.string().url()).optional(),
-});
-
-export const updateReviewSchema = createReviewSchema.partial().omit({ productId: true });
-
-// Payment Schemas
-export const verifyPaymentSchema = z.object({
-  orderId: z.string(),
-  paymentId: z.string(),
-  signature: z.string(),
-});
-
-// Shipping Schemas
-export const getShippingRatesSchema = z.object({
-  pincode: z.string().regex(/^\d{6}$/, 'Valid 6-digit pincode is required'),
-  weight: z.number().positive('Weight must be positive'),
-});
-
-export const createShipmentSchema = z.object({
-  orderId: z.string(),
-  courierId: z.number().int().positive(),
-});
-
-// Query Schemas
-export const paginationSchema = z.object({
+// Legacy filter schemas
+export const productFilterSchema_legacy = z.object({
   page: z.number().int().positive().default(1),
   pageSize: z.number().int().positive().max(100).default(20),
-});
-
-export const productFilterSchema = paginationSchema.extend({
   category: z.string().optional(),
   minPrice: z.number().nonnegative().optional(),
   maxPrice: z.number().positive().optional(),
@@ -193,7 +68,9 @@ export const productFilterSchema = paginationSchema.extend({
   sort: z.enum(['price-asc', 'price-desc', 'newest', 'popular']).optional(),
 });
 
-export const orderFilterSchema = paginationSchema.extend({
+export const orderFilterSchema_legacy = z.object({
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().max(100).default(20),
   status: z.enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']).optional(),
   paymentStatus: z.enum(['pending', 'paid', 'failed', 'refunded']).optional(),
   startDate: z.string().datetime().optional(),
@@ -201,10 +78,21 @@ export const orderFilterSchema = paginationSchema.extend({
   search: z.string().optional(),
 });
 
-// Type exports
-export type RegisterInput = z.infer<typeof registerSchema>;
-export type LoginInput = z.infer<typeof loginSchema>;
-export type CreateProductInput = z.infer<typeof createProductSchema>;
-export type UpdateProductInput = z.infer<typeof updateProductSchema>;
-export type CreateOrderInput = z.infer<typeof createOrderSchema>;
-export type PlaceBidInput = z.infer<typeof placeBidSchema>;
+// Quick validation functions for common use cases
+export const validateEmail = (email: string) => {
+  return z.string().email().safeParse(email);
+};
+
+export const validatePhone = (phone: string) => {
+  return z.string().regex(/^[+]?[\d\s\-\(\)]{10,15}$/).safeParse(phone);
+};
+
+export const validatePincode = (pincode: string) => {
+  return z.string().regex(/^\d{6}$/).safeParse(pincode);
+};
+
+export const validatePassword = (password: string) => {
+  return z.string().min(8).regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/
+  ).safeParse(password);
+};
