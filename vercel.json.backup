@@ -1,0 +1,48 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["bom1"],
+  "env": {
+    "FIREBASE_ADMIN_PROJECT_ID": "justforview1",
+    "FIREBASE_ADMIN_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@justforview1.iam.gserviceaccount.com",
+    "FIREBASE_ADMIN_PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDU9qJen6CqUxks\nk87imcmEHQ3Ckpf1krhqCcLtkCSCgYVE03ZkDAvYLt0+Yi05U6UXcaoGMxMGG1Px\nkwZIaVTBOSJTb3zY9uPAFNcQKJ6URk99gXbx6tox3NUIt4BebP56w4KSBJT+xfxh\nGa0pFdI6W7O0LaIOd/r72OvyIW7S03XwXYgAcPLEo98px+XggaMco/02T9AVa2mr\nZYHgR/rK/mz8I9U4gIY+MtuLh0EJ4K1vE7nvdh9kX7y/5W9Jr+oih4sDdNYVoAQX\nPts3ilRjrFOPPXqy6OD//+cfgs3A2yBXeebFVXm3gVWOLNSIFlph14EOwGCd50VH\nFL2+qBznAgMBAAECggEAOUs3KKzaXShpE+iaFrWYFO56Frg4oK095u1EX4RRhjjR\nQVCAv+7Luvf0tsVT9GHP/wwp2WwhOJnejhXncVDBKBC2busGFBrr7+/LYkIDU9HM\nre/IL9JmrFaEi8lOhFjfZ+i0dpM8AIUEXp05TF3eBqxIHvfN6wWVZO8ZnzUmaxpS\nNEjW7gTIBnnS9kVqCwlcZ3TaTJTr7oXPNfS4h6exmDSlUe3RX/HtiTZhnWNFysAF\nTVhy5FhgifGZwyYD1GwU2YCDJffAfMzui5ICdErHQyqepOb/dEV+jyy+cG2mJ04M\ngRrWxne/CTAstTRQYHALp9XC+syrQrnmfVhZb+C9ZQKBgQDp8sg7wUMC9wX1ChQe\n7gkO68z6t2wu8KWg3q0DEsN9i1Psh8kXh27VPUNnicapvW/4pd6nSNBy8dCjQv3m\nLClr9A/ms3l3SzQ91ouuJGlpv1ECGBqVwnoUHLNx1zXAQIfnicNbzcr42S41w3Gj\nZrKv8EMfWVTNZNKI1GYnug/M/QKBgQDpCXs0B8cAFUISkt1+iDJ49HT6VFRUUmsV\nyuZEpZmrZnkbLh1RuJmuWDSxFhpcvcKaPTMfsUOlqYjwuIvf4JiAFvDIaHpK+IsS\nyOnbJO0S8uijkpkKkdqPHMMnM5SWxrhEAMt5cdwnUDZc1WGEvLSH1pe+4RP+JzKs\nEQMIzjloswKBgBtmsEUvcaXbQPteXtTwlGcG/08uRKGK1htteV4uyG7f7sh5bvgu\niLC5KDfsTzR6V68L3nRBdwi/gexdYFehPIjEYUhoJQXv7QKBKoMPCLm2Csrv/80i\npiHM6seeqVEHPePEovkRtYBID72EUr8MvEkXHwWA9QnJkU8tcXmdtVQRAoGAE6Y/\nAzYcq38fYR2NG5w0VUqXinwN2EZSzTWckPE9sdwkHgyXYEqmerLpTn1En8lIXWUH\nqIZz48YVy+ZjtO7lLPfCOcPFfAjVATJ7tYS5kL12rEQyL1f5C9QrCGUrBEOhSeqf\nPZBCNfZnfxBm9qBKwKFxjiDAZM+9UBDnJpjs8k0CgYEAtbB93d3RIP5baMr1+brv\ngCbmbhOE7ENl04PhXurrJtcY+vH6ihFHKcNRjEsYN6vQA8wIvibTvHWfmb19dwzt\nWKdsIx1Bd0u77N7epZznZA+6sxVSEqK/2wZpL8AkXC9FpNBORWXSesUoaSAyx21a\n/odp4vsBpyxIAzhRq+wIlo4=\n-----END PRIVATE KEY-----\n",
+    "NEXT_PUBLIC_FIREBASE_API_KEY": "AIzaSyCL2eA6_wFSMcyel9pxntnVOm7SFh2iWTM",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "justforview1.firebaseapp.com",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "justforview1",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET": "justforview1.firebasestorage.app",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "995821948299",
+    "NEXT_PUBLIC_FIREBASE_APP_ID": "1:995821948299:web:38d1decb11eca69c7d738e",
+    "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID": "G-4BLN02DGVX",
+    "JWT_SECRET": "jfv_prod_2025_a8f92b4e6c1d7f3a9e2b5c8d0f1a4e7b9c2d5f8a1e4b7c0d3f6a9e2b5c8d1f4a7b0c3f6e9",
+    "JWT_EXPIRES_IN": "7d",
+    "NEXT_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_demo_key_id",
+    "RAZORPAY_KEY_ID": "rzp_test_demo_key_id",
+    "RAZORPAY_KEY_SECRET": "demo_key_secret_for_testing",
+    "RAZORPAY_WEBHOOK_SECRET": "demo_webhook_secret_for_testing",
+    "SHIPROCKET_EMAIL": "demo@example.com",
+    "SHIPROCKET_PASSWORD": "demo_password",
+    "SHIPROCKET_CHANNEL_ID": "demo_channel_id",
+    "SHIPROCKET_BASE_URL": "https://apiv2.shiprocket.in/v1",
+    "NEXT_PUBLIC_API_URL": "https://justforview-lso27xgmb-mohasin-ahamed-chinnapattans-projects.vercel.app/api",
+    "API_RATE_LIMIT": "100",
+    "API_RATE_WINDOW": "900000",
+    "NEXT_PUBLIC_SITE_URL": "https://justforview-lso27xgmb-mohasin-ahamed-chinnapattans-projects.vercel.app",
+    "NEXT_PUBLIC_SITE_NAME": "JustForView Store",
+    "NEXTAUTH_SECRET": "jfv_nextauth_2025_secure_secret_key_minimum_32_chars",
+    "NEXTAUTH_URL": "https://justforview-lso27xgmb-mohasin-ahamed-chinnapattans-projects.vercel.app",
+    "NODE_ENV": "production",
+    "USE_FIREBASE_EMULATOR": "false",
+    "RATE_LIMIT_WINDOW_MS": "900000",
+    "RATE_LIMIT_MAX_REQUESTS": "100",
+    "MAX_FILE_SIZE": "10485760",
+    "ALLOWED_FILE_TYPES": "image/jpeg,image/png,image/webp",
+    "COUPON_CODE_LENGTH": "8",
+    "COUPON_CODE_PREFIX": "JFV"
+  }
+}
