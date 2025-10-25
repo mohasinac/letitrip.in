@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRealTimeNotifications } from "@/hooks/useRealTimeData";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useRealTimeNotifications } from "@/hooks/data/useRealTimeData";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 import {
   BellIcon,
   CheckIcon,

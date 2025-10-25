@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
+import { apiClient } from "@/lib/api/client";
 
 export interface CartItem {
   id: string;
@@ -144,16 +145,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (user) {
         // Load cart from API for authenticated users
-        const response = await fetch("/api/cart", {
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const cartData = await response.json();
-          dispatch({ type: "SET_ITEMS", payload: cartData.items || [] });
-        } else {
-          dispatch({ type: "SET_ITEMS", payload: [] });
-        }
+        const cartData = (await apiClient.get("/cart")) as any;
+        dispatch({ type: "SET_ITEMS", payload: cartData.data?.items || [] });
       } else {
         // Load cart from cookies for guest users
         const guestCart = cookieStorage.getCartData<CartItem[]>();
@@ -184,6 +177,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Save cart to cookies (for guest users)
   const saveGuestCart = (items: CartItem[]) => {
     cookieStorage.setCartData(items);
+
+    // Also save to guest session for persistence
+    const guestSession =
+      cookieStorage.getGuestSession<{
+        cart?: CartItem[];
+        lastVisitedPage?: string;
+        browsing_history?: string[];
+      }>() || {};
+
+    cookieStorage.setGuestSession({
+      ...guestSession,
+      cart: items,
+    });
   };
 
   // Sync guest cart to user cart when user logs in
@@ -191,27 +197,48 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
 
     try {
+      // Get guest cart from cookies
       const guestCart = cookieStorage.getCartData<CartItem[]>();
+
+      // Get guest session data (includes last visited page)
+      const guestSession = cookieStorage.getGuestSession<{
+        cart?: CartItem[];
+        lastVisitedPage?: string;
+        browsing_history?: string[];
+      }>();
+
       if (guestCart && guestCart.length > 0) {
-        // Add guest cart items to user cart
+        // Add guest cart items to user cart via API
         for (const item of guestCart) {
-          await fetch("/api/cart", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
+          try {
+            await apiClient.post("/cart", {
               productId: item.productId,
               quantity: item.quantity,
-            }),
-          });
+            });
+          } catch (error) {
+            console.error("Error syncing cart item:", error);
+          }
         }
 
-        // Clear guest cart
+        // Clear guest cart from cookies
         cookieStorage.removeCartData();
-
-        // Reload cart from API
-        loadCart();
       }
+
+      // Sync guest session to database if available
+      if (guestSession) {
+        try {
+          await apiClient.post("/user/sync-session", {
+            sessionData: guestSession,
+          });
+          // Clear guest session after syncing
+          cookieStorage.removeGuestSession();
+        } catch (error) {
+          console.error("Error syncing session:", error);
+        }
+      }
+
+      // Reload cart from API
+      loadCart();
     } catch (error) {
       console.error("Error syncing cart:", error);
     }
@@ -228,21 +255,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (user) {
         // Add to user cart via API
-        const response = await fetch("/api/cart", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            productId: item.productId,
-            quantity: item.quantity,
-          }),
+        await apiClient.post("/cart", {
+          productId: item.productId,
+          quantity: item.quantity,
         });
-
-        if (response.ok) {
-          dispatch({ type: "ADD_ITEM", payload: cartItem });
-        } else {
-          throw new Error("Failed to add item to cart");
-        }
+        dispatch({ type: "ADD_ITEM", payload: cartItem });
       } else {
         // Add to guest cart in localStorage
         dispatch({ type: "ADD_ITEM", payload: cartItem });
@@ -264,21 +281,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (user) {
         // Update via API
-        const response = await fetch("/api/cart", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            itemId,
-            quantity,
-          }),
+        await apiClient.put("/cart", {
+          itemId,
+          quantity,
         });
-
-        if (response.ok) {
-          dispatch({ type: "UPDATE_ITEM", payload: { id: itemId, quantity } });
-        } else {
-          throw new Error("Failed to update cart item");
-        }
+        dispatch({ type: "UPDATE_ITEM", payload: { id: itemId, quantity } });
       } else {
         // Update guest cart
         dispatch({ type: "UPDATE_ITEM", payload: { id: itemId, quantity } });
@@ -298,18 +305,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       if (user) {
         // Remove via API
-        const response = await fetch("/api/cart", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ itemId }),
+        await apiClient.delete("/cart", {
+          data: { itemId },
         });
-
-        if (response.ok) {
-          dispatch({ type: "REMOVE_ITEM", payload: itemId });
-        } else {
-          throw new Error("Failed to remove cart item");
-        }
+        dispatch({ type: "REMOVE_ITEM", payload: itemId });
       } else {
         // Remove from guest cart
         dispatch({ type: "REMOVE_ITEM", payload: itemId });
@@ -327,16 +326,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       if (user) {
         // Clear via API
-        const response = await fetch("/api/cart", {
-          method: "DELETE",
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          dispatch({ type: "CLEAR_CART" });
-        } else {
-          throw new Error("Failed to clear cart");
-        }
+        await apiClient.delete("/cart");
+        dispatch({ type: "CLEAR_CART" });
       } else {
         // Clear guest cart
         dispatch({ type: "CLEAR_CART" });

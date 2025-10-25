@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateBody } from "@/lib/auth/middleware";
+import { validateRequestBody } from "@/lib/api/middleware";
 import { updateProfileSchema } from "@/lib/validations/schemas";
 import { AuthService } from "@/lib/api/services/auth.service";
 import { createUserHandler } from "@/lib/auth/api-middleware";
@@ -83,13 +83,8 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
 export const PUT = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Validate request body
-    const validation = await validateBody(request, updateProfileSchema);
-    if (validation.error) {
-      return validation.error;
-    }
-
+    const updateData = await validateRequestBody(request, updateProfileSchema);
     const userId = user.userId;
-    const updateData = validation.data;
 
     // Update profile in database
     const updatedProfile = await AuthService.updateProfile(userId, updateData);

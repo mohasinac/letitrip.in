@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
-import RoleGuard from "@/components/auth/RoleGuard";
+import RoleGuard from "@/components/features/auth/RoleGuard";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface AdminLayoutProps {

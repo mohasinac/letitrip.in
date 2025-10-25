@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/database/admin";
 import { createStoreStatusNotification } from "@/lib/services/notifications";
 
 export async function PATCH(

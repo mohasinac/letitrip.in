@@ -4,8 +4,9 @@
  */
 
 import { NextRequest } from 'next/server';
+import { createAdminHandler } from '@/lib/auth/api-middleware';
 import { ApiResponse } from '@/lib/auth/middleware';
-import { initializeFirebaseData } from '@/lib/firebase/initialize';
+import { initializeFirebaseData } from '@/lib/database/initialize';
 
 /**
  * Initialize Firebase with sample data

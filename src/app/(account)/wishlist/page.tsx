@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 
 interface WishlistItem {
   id: string;

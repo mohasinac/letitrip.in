@@ -13,7 +13,7 @@ import {
   StorageReference,
   UploadTask,
 } from 'firebase/storage';
-import { storage } from '@/lib/firebase/config';
+import { storage } from '@/lib/database/config';
 
 export interface UploadProgress {
   bytesTransferred: number;

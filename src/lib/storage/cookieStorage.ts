@@ -138,6 +138,57 @@ class CookieStorage {
     this.remove('cart_data');
   }
 
+  // Last visited page methods
+  setLastVisitedPage(url: string): void {
+    // Don't save auth pages or API routes
+    if (
+      url.includes('/login') ||
+      url.includes('/register') ||
+      url.includes('/api/') ||
+      url.includes('/_next/')
+    ) {
+      return;
+    }
+    this.set('last_visited_page', url, {
+      expires: 1, // 1 day
+      secure: true,
+      sameSite: 'lax'
+    });
+  }
+
+  getLastVisitedPage(): string | null {
+    return this.get('last_visited_page') || null;
+  }
+
+  removeLastVisitedPage(): void {
+    this.remove('last_visited_page');
+  }
+
+  // Guest session data (for non-logged-in users)
+  setGuestSession(data: {
+    cart?: any[];
+    lastVisitedPage?: string;
+    browsing_history?: string[];
+    timestamp?: string;
+  }): void {
+    this.setJson('guest_session', {
+      ...data,
+      timestamp: new Date().toISOString()
+    }, {
+      expires: 30, // 30 days
+      secure: true,
+      sameSite: 'lax'
+    });
+  }
+
+  getGuestSession<T>(): T | null {
+    return this.getJson<T>('guest_session');
+  }
+
+  removeGuestSession(): void {
+    this.remove('guest_session');
+  }
+
   // Preferences methods
   setPreference(key: string, value: any): void {
     this.setJson(`pref_${key}`, value, {

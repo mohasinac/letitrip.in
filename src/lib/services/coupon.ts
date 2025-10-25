@@ -2,7 +2,7 @@
  * Coupon Management Service
  */
 
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 import { 
   Coupon, 
   CouponUsage, 

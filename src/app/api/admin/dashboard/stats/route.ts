@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
+import { createAdminHandler } from '@/lib/auth/api-middleware';
 import { Timestamp } from 'firebase-admin/firestore';
 
 interface DashboardStats {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminHandler } from "@/lib/auth/api-middleware";
-import { db } from "@/lib/firebase/config";
+import { db } from "@/lib/database/config";
 import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
 
 export const GET = createAdminHandler(async (request: NextRequest, user) => {

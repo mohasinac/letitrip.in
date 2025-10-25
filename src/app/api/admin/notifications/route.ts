@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminHandler } from "@/lib/auth/api-middleware";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/database/admin";
 import { API_RESPONSES, HTTP_STATUS, PAGINATION_DEFAULTS, NOTIFICATION_CONSTANTS } from "@/lib/api/constants";
 
 export const GET = createAdminHandler(async (request: NextRequest, user) => {

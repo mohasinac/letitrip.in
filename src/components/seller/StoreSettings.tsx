@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api/client";
 import {
   BuildingStorefrontIcon,
   GlobeAltIcon,
@@ -34,28 +35,20 @@ export default function StoreSettings() {
   }, [user?.id]);
 
   const loadStoreSettings = async () => {
-    if (!user?.id || !user.getIdToken) return;
+    if (!user?.id) return;
 
     setLoading(true);
     try {
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/seller/store-settings`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const data = await apiClient.get<StoreSettings>("/seller/store-settings");
+      setSettings({
+        storeName: data.storeName || "",
+        storeStatus: data.storeStatus || "offline",
+        storeDescription: data.storeDescription || "",
+        businessName: data.businessName || "",
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSettings({
-          storeName: data.storeName || "",
-          storeStatus: data.storeStatus || "offline", // Default to offline
-          storeDescription: data.storeDescription || "",
-          businessName: data.businessName || "",
-        });
-      }
     } catch (error) {
       console.error("Failed to load store settings:", error);
+      toast.error("Failed to load store settings");
     } finally {
       setLoading(false);
     }
@@ -64,13 +57,7 @@ export default function StoreSettings() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Debug logging
-    console.log("Save button clicked");
-    console.log("User:", user);
-    console.log("Settings:", settings);
-
-    if (!user?.id || !user.getIdToken) {
-      console.error("User not authenticated or getIdToken not available");
+    if (!user?.id) {
       toast.error("Please log in to save settings");
       return;
     }
@@ -82,28 +69,8 @@ export default function StoreSettings() {
 
     setSaving(true);
     try {
-      const token = await user.getIdToken();
-      console.log("Got token, making API request...");
-
-      const response = await fetch(`/api/seller/store-settings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(settings),
-      });
-
-      console.log("API Response status:", response.status);
-      const responseData = await response.json();
-      console.log("API Response data:", responseData);
-
-      if (response.ok) {
-        toast.success("Store settings updated successfully!");
-      } else {
-        toast.error(responseData.error || "Failed to update settings");
-        throw new Error(responseData.error || "Failed to update settings");
-      }
+      await apiClient.put("/seller/store-settings", settings);
+      toast.success("Store settings updated successfully!");
     } catch (error) {
       console.error("Failed to save store settings:", error);
       toast.error("Failed to update store settings. Please try again.");

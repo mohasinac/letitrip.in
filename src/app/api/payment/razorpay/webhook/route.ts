@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { razorpayService } from '@/lib/services/razorpay';
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 import { HTTP_STATUS } from '@/lib/config/api';
 
 // POST: Handle Razorpay webhooks

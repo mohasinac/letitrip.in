@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/contexts/CartContext";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import Image from "next/image";
 import Link from "next/link";
 

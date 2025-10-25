@@ -15,7 +15,7 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 
 interface User {
   id: string;

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { ApiResponse, validateBody } from "@/lib/auth/middleware";
+import { validateRequestBody } from "@/lib/api/middleware";
 import { addressSchema } from "@/lib/validations/schemas";
-import { db } from "@/lib/firebase/config";
+import { db } from "@/lib/database/config";
 import { collection, getDocs, query, where, orderBy, addDoc, updateDoc, doc } from "firebase/firestore";
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
@@ -41,15 +41,9 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
 
 export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
-
     // Validate request body
-    const validation = await validateBody(request, addressSchema);
-    if (validation.error) {
-      return validation.error;
-    }
-
+    const addressData = await validateRequestBody(request, addressSchema);
     const userId = user.userId;
-    const addressData = validation.data;
 
     // If this is set as default, unset other defaults
     if (addressData.isDefault) {

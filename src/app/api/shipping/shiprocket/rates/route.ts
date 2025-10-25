@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { shiprocketService } from '@/lib/services/shiprocket';
-import { getAdminAuth } from '@/lib/firebase/admin';
+import { getAdminAuth } from '@/lib/database/admin';
 import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/config/api';
 
 // POST: Calculate shipping rates

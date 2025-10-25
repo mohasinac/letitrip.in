@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 
 interface TopProduct {
   id: string;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api/client";
 import {
   BuildingStorefrontIcon,
   CheckCircleIcon,
@@ -32,21 +33,12 @@ export default function SellerDisplay({ className = "" }: SellerDisplayProps) {
   }, [user?.id]);
 
   const loadSellerInfo = async () => {
-    if (!user?.id || !user.getIdToken) return;
+    if (!user?.id) return;
 
     setLoading(true);
     try {
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/seller/info`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSellerInfo(data);
-      }
+      const data = (await apiClient.get("/seller/info")) as SellerInfo;
+      setSellerInfo(data);
     } catch (error) {
       console.error("Failed to load seller info:", error);
     } finally {

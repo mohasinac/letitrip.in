@@ -8,10 +8,13 @@ import React, {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/database/config";
 import {
   StorageManager,
   CookieConsentSettings,
 } from "@/lib/storage/cookieConsent";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 import { User } from "@/types";
 
 // Extend the base User type with authentication-specific claims
@@ -230,165 +233,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     StorageManager.removeItem(key);
   };
 
-  // Check authentication status with enhanced claims validation
-  const checkAuth = async () => {
-    try {
-      dispatch({ type: "SET_LOADING", payload: true });
-
-      // Check for test user first (for testing purposes in development)
-      if (typeof window !== "undefined") {
-        const testUser = getStorageItem("test_user");
-        if (testUser) {
-          try {
-            const parsedTestUser = JSON.parse(testUser);
-            // Add enhanced claims for test users
-            const userWithClaims = {
-              ...parsedTestUser,
-              claims: {
-                permissions: getRolePermissions(parsedTestUser.role),
-                lastLogin: new Date().toISOString(),
-                sessionId: generateSessionId(),
-              },
-            };
-            dispatch({ type: "SET_USER", payload: userWithClaims });
-            return;
-          } catch (e) {
-            removeStorageItem("test_user");
-          }
-        }
-      }
-
-      // Check server-side authentication
-      const response = await fetch("/api/auth/me", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store", // Ensure fresh data
-      });
-
-      console.log("Auth check response:", response.status);
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Auth check result:", result);
-
-        // Handle both wrapped and unwrapped responses
-        const userData = result.data || result;
-
-        if (
-          (result.success || !result.error) &&
-          userData &&
-          typeof userData === "object"
-        ) {
-          // Enhance user data with claims if not present
-          if (!userData.claims) {
-            userData.claims = {
-              permissions: getRolePermissions(userData.role),
-              lastLogin: new Date().toISOString(),
-              sessionId: generateSessionId(),
-            };
-          }
-          console.log("Setting authenticated user:", userData);
-          dispatch({ type: "SET_USER", payload: userData });
-        } else {
-          console.log("Auth check failed: no user data");
-          dispatch({ type: "SET_USER", payload: null });
-        }
-      } else if (response.status === 401) {
-        // Unauthorized - clear any stale auth state
-        console.log("Auth check failed: unauthorized");
-        dispatch({ type: "SET_USER", payload: null });
-      } else {
-        // Other errors - might be network issues, don't clear auth state
-        console.log("Auth check failed: network error", response.status);
-        dispatch({ type: "SET_LOADING", payload: false });
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      // Network errors shouldn't clear auth state, just stop loading
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
-  };
-
-  // Enhanced login function with better claims and redirect handling
+  // Enhanced login function using Firebase Authentication
   const login = async (email: string, password: string) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
+      // Import Firebase auth functions dynamically
+      const { signInWithEmailAndPassword } = await import("firebase/auth");
 
-      const data = await response.json();
+      // Sign in with Firebase
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const firebaseUser = userCredential.user;
 
-      if (!response.ok) {
-        throw new Error(data.error || data.message || "Login failed");
-      }
-
-      // Handle both response formats
-      const userData = data.data?.user || data.user;
-
-      if (!userData) {
-        throw new Error("Invalid response format - no user data");
-      }
-
-      // Server returns user data, enhance it with claims
-      const userWithClaims = {
-        ...userData,
-        claims: {
-          permissions: getRolePermissions(userData.role),
-          lastLogin: new Date().toISOString(),
-          sessionId: generateSessionId(),
-        },
-      };
-
-      dispatch({ type: "SET_USER", payload: userWithClaims });
-
-      // Get the intended destination with enhanced storage fallback
-      let intendedPath: string | null = null;
-
+      // Save redirect path from URL params or last visited page
       if (typeof window !== "undefined") {
-        // Try multiple sources for redirect path
-        intendedPath =
-          getStorageItem("auth_redirect_after_login") ||
-          new URLSearchParams(window.location.search).get("redirect") ||
-          (document.referrer &&
-          !document.referrer.includes("/login") &&
-          !document.referrer.includes("/register")
-            ? new URL(document.referrer).pathname
-            : null);
-      }
+        const redirectParam = new URLSearchParams(window.location.search).get(
+          "redirect"
+        );
 
-      // Clear the stored path
-      removeStorageItem("auth_redirect_after_login");
+        // Priority: URL param > last visited page from cookies
+        const redirectPath =
+          redirectParam || cookieStorage.getLastVisitedPage();
 
-      // Determine final redirect path
-      let redirectPath = "/";
-
-      if (intendedPath) {
-        // Validate redirect path for security
-        if (isValidRedirectPath(intendedPath)) {
-          redirectPath = intendedPath;
+        if (redirectPath && isValidRedirectPath(redirectPath)) {
+          setStorageItem("auth_redirect_after_login", redirectPath);
         }
-      } else {
-        // Role-based default redirects
-        const role = userData?.role;
-        redirectPath = getDefaultRedirectForRole(role);
       }
 
-      // Store successful login info if storage is available
-      if (setStorageItem("last_successful_login", new Date().toISOString())) {
-        setStorageItem("last_login_role", userData.role);
-      }
+      console.log("Firebase login successful:", firebaseUser.email);
 
-      router.push(redirectPath);
-      router.refresh();
+      // Note: The onAuthStateChanged listener will fetch user data and update state
+      // We'll redirect after user state is set in the listener
     } catch (error: any) {
       const errorMessage = error.message || "Login failed";
       dispatch({ type: "SET_ERROR", payload: errorMessage });
+      dispatch({ type: "SET_LOADING", payload: false });
       throw error;
     }
   };
@@ -486,16 +370,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Enhanced logout function with better storage cleanup
+  // Enhanced logout function using Firebase Authentication
   const logout = async () => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
 
-      // Call server logout endpoint to clear cookies
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      // Import Firebase auth function dynamically
+      const { signOut } = await import("firebase/auth");
+
+      // Sign out from Firebase
+      await signOut(auth);
 
       dispatch({ type: "LOGOUT" });
 
@@ -508,11 +392,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       removeStorageItem("registration_complete");
       removeStorageItem("registered_role");
 
+      // Clear guest session and last visited page
+      cookieStorage.removeGuestSession();
+      cookieStorage.removeLastVisitedPage();
+
+      console.log("Firebase logout successful");
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if server logout fails, clear client state
+      // Even if Firebase logout fails, clear client state
       dispatch({ type: "LOGOUT" });
 
       // Clear storage even on error
@@ -523,6 +412,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       removeStorageItem("last_login_role");
       removeStorageItem("registration_complete");
       removeStorageItem("registered_role");
+
+      // Clear guest session and last visited page
+      cookieStorage.removeGuestSession();
+      cookieStorage.removeLastVisitedPage();
 
       router.push("/");
     }
@@ -561,35 +454,144 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Check auth on mount and set up periodic refresh
+  // Check auth on mount and set up Firebase listener
   useEffect(() => {
-    checkAuth();
+    let isInitialLoad = true;
 
-    // Set up periodic auth refresh (every 5 minutes) to ensure token validity
-    const refreshInterval = setInterval(() => {
-      if (state.user && !state.loading) {
-        checkAuth();
+    // Set up Firebase authentication state listener
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          // Get Firebase ID token
+          const token = await firebaseUser.getIdToken();
+
+          // Get user data from API with role information
+          const response = await fetch("/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            const userData = result.data || result;
+
+            if (userData && typeof userData === "object") {
+              // Enhance user data with Firebase methods and claims
+              const userWithFirebase = {
+                ...userData,
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: firebaseUser.displayName || userData.name,
+                getIdToken: () => firebaseUser.getIdToken(),
+                claims: userData.claims || {
+                  permissions: getRolePermissions(userData.role),
+                  lastLogin: new Date().toISOString(),
+                  sessionId: generateSessionId(),
+                },
+              };
+
+              console.log(
+                "Firebase auth state: user authenticated",
+                userWithFirebase.role
+              );
+              dispatch({ type: "SET_USER", payload: userWithFirebase });
+
+              // Handle redirect after authentication (only after login, not on initial load)
+              if (!isInitialLoad && typeof window !== "undefined") {
+                const redirectPath = getStorageItem(
+                  "auth_redirect_after_login"
+                );
+                if (redirectPath && isValidRedirectPath(redirectPath)) {
+                  removeStorageItem("auth_redirect_after_login");
+                  router.push(redirectPath);
+                } else {
+                  // Role-based redirect
+                  const defaultPath = getDefaultRedirectForRole(
+                    userWithFirebase.role
+                  );
+                  if (
+                    window.location.pathname === "/login" ||
+                    window.location.pathname === "/register"
+                  ) {
+                    router.push(defaultPath);
+                  }
+                }
+              }
+            } else {
+              console.warn("No user data from API, logging out");
+              dispatch({ type: "SET_USER", payload: null });
+            }
+          } else {
+            console.warn(
+              "Failed to fetch user data from API:",
+              response.status
+            );
+            // If API fails but Firebase is authenticated, create basic user object
+            const basicUser = {
+              id: firebaseUser.uid,
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              name:
+                firebaseUser.displayName || firebaseUser.email?.split("@")[0],
+              role: "user" as const, // Default role
+              getIdToken: () => firebaseUser.getIdToken(),
+              claims: {
+                permissions: getRolePermissions("user"),
+                lastLogin: new Date().toISOString(),
+                sessionId: generateSessionId(),
+              },
+            };
+            console.log("Using basic Firebase user data");
+            dispatch({ type: "SET_USER", payload: basicUser });
+          }
+        } catch (error) {
+          console.error("Error processing Firebase auth state:", error);
+          dispatch({ type: "SET_USER", payload: null });
+        }
+      } else {
+        // No Firebase user - check for test user
+        if (typeof window !== "undefined") {
+          const testUser = getStorageItem("test_user");
+          if (testUser) {
+            try {
+              const parsedTestUser = JSON.parse(testUser);
+              const userWithClaims = {
+                ...parsedTestUser,
+                claims: {
+                  permissions: getRolePermissions(parsedTestUser.role),
+                  lastLogin: new Date().toISOString(),
+                  sessionId: generateSessionId(),
+                },
+              };
+              console.log("Using test user:", userWithClaims.role);
+              dispatch({ type: "SET_USER", payload: userWithClaims });
+              return;
+            } catch (e) {
+              removeStorageItem("test_user");
+            }
+          }
+        }
+
+        console.log("Firebase auth state: no user");
+        dispatch({ type: "SET_USER", payload: null });
       }
-    }, 5 * 60 * 1000); // 5 minutes
 
-    // Listen for storage changes (for test user updates across tabs)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "test_user") {
-        checkAuth();
-      }
-    };
+      isInitialLoad = false;
+    });
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("storage", handleStorageChange);
-    }
-
-    return () => {
-      clearInterval(refreshInterval);
-      if (typeof window !== "undefined") {
-        window.removeEventListener("storage", handleStorageChange);
-      }
-    };
+    // Cleanup subscription
+    return () => unsubscribe();
   }, []);
+
+  // Legacy checkAuth for backward compatibility
+  const checkAuth = async () => {
+    // This is now handled by Firebase onAuthStateChanged above
+    // Keeping for backward compatibility with existing code
+    console.log("checkAuth called - handled by Firebase listener");
+  };
 
   const value: AuthContextType = {
     ...state,

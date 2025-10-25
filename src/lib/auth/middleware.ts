@@ -1,15 +1,11 @@
 /**
- * API Middleware
- * Server-side authentication and request validation middleware
+ * Legacy API Response helper
+ * Used by a few remaining API routes - consider migrating to @/lib/api/middleware
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, JWTPayload } from './jwt';
 import { ZodSchema } from 'zod';
-
-export interface AuthenticatedRequest extends NextRequest {
-  user?: JWTPayload;
-}
 
 /**
  * API Response helper
@@ -54,6 +50,61 @@ export class ApiResponse {
 }
 
 /**
+ * Simple rate limiting middleware (in-memory)
+ * Note: Use Redis/Upstash for production
+ */
+class RateLimiter {
+  private requests: Map<string, number[]> = new Map();
+  private limit: number;
+  private window: number;
+
+  constructor(limit = 5000, windowMs = 15 * 60 * 1000) {
+    this.limit = limit;
+    this.window = windowMs;
+  }
+
+  check(identifier: string): boolean {
+    const now = Date.now();
+    const userRequests = this.requests.get(identifier) || [];
+    const validRequests = userRequests.filter((timestamp) => now - timestamp < this.window);
+
+    if (validRequests.length >= this.limit) {
+      return false;
+    }
+
+    validRequests.push(now);
+    this.requests.set(identifier, validRequests);
+    return true;
+  }
+}
+
+const rateLimiter = new RateLimiter();
+
+/**
+ * Rate limiting middleware wrapper
+ */
+export function withRateLimit(
+  handler: (request: NextRequest) => Promise<NextResponse>
+) {
+  return async (request: NextRequest) => {
+    // Skip rate limiting in development
+    if (process.env.NODE_ENV === 'development') {
+      return handler(request);
+    }
+
+    const identifier = request.headers.get('x-forwarded-for') || 
+                      request.headers.get('x-real-ip') || 
+                      'unknown';
+
+    if (!rateLimiter.check(identifier)) {
+      return ApiResponse.error('Too many requests. Please try again later.', 429);
+    }
+
+    return handler(request);
+  };
+}
+
+/**
  * Authenticate user from JWT token in cookies or Authorization header
  */
 export async function authenticateUser(request: NextRequest): Promise<JWTPayload | null> {
@@ -76,54 +127,6 @@ export async function authenticateUser(request: NextRequest): Promise<JWTPayload
 }
 
 /**
- * Middleware to protect routes - requires authentication
- */
-export function withAuth(
-  handler: (request: NextRequest, user: JWTPayload) => Promise<NextResponse>
-) {
-  return async (request: NextRequest) => {
-    try {
-      const user = await authenticateUser(request);
-
-      if (!user) {
-        return ApiResponse.unauthorized('Authentication required');
-      }
-
-      return handler(request, user);
-    } catch (error) {
-      console.error('Auth middleware error:', error);
-      return ApiResponse.serverError();
-    }
-  };
-}
-
-/**
- * Middleware to protect admin routes
- */
-export function withAdmin(
-  handler: (request: NextRequest, user: JWTPayload) => Promise<NextResponse>
-) {
-  return async (request: NextRequest) => {
-    try {
-      const user = await authenticateUser(request);
-
-      if (!user) {
-        return ApiResponse.unauthorized('Authentication required');
-      }
-
-      if (user.role !== 'admin') {
-        return ApiResponse.forbidden('Admin access required');
-      }
-
-      return handler(request, user);
-    } catch (error) {
-      console.error('Admin middleware error:', error);
-      return ApiResponse.serverError();
-    }
-  };
-}
-
-/**
  * Validate request body with Zod schema
  */
 export async function validateBody<T>(
@@ -142,67 +145,3 @@ export async function validateBody<T>(
   }
 }
 
-/**
- * Rate limiting helper (simple in-memory implementation)
- * For production, use Redis or similar
- */
-class RateLimiter {
-  private requests: Map<string, number[]> = new Map();
-  private limit: number;
-  private window: number;
-
-  constructor(limit = 5000, windowMs = 15 * 60 * 1000) {
-    this.limit = limit;
-    this.window = windowMs;
-  }
-
-  check(identifier: string): boolean {
-    const now = Date.now();
-    const userRequests = this.requests.get(identifier) || [];
-
-    // Remove old requests outside the window
-    const validRequests = userRequests.filter((timestamp) => now - timestamp < this.window);
-
-    if (validRequests.length >= this.limit) {
-      console.warn(`Rate limit exceeded for ${identifier}: ${validRequests.length}/${this.limit} requests`);
-      return false;
-    }
-
-    validRequests.push(now);
-    this.requests.set(identifier, validRequests);
-    return true;
-  }
-}
-
-const rateLimiter = new RateLimiter();
-
-/**
- * Rate limiting middleware
- */
-export function withRateLimit(
-  handler: (request: NextRequest) => Promise<NextResponse>
-) {
-  return async (request: NextRequest) => {
-    try {
-      // Skip rate limiting in development
-      if (process.env.NODE_ENV === 'development') {
-        return handler(request);
-      }
-
-      const identifier = request.headers.get('x-forwarded-for') || 
-                        request.headers.get('x-real-ip') || 
-                        'unknown';
-
-      if (!rateLimiter.check(identifier)) {
-        console.warn(`Rate limit exceeded for ${identifier} on ${request.method} ${request.url}`);
-        return ApiResponse.error('Too many requests. Please try again later.', 429);
-      }
-
-      return handler(request);
-    } catch (error) {
-      console.error('Rate limiting error:', error);
-      // If rate limiting fails, allow the request to proceed
-      return handler(request);
-    }
-  };
-}

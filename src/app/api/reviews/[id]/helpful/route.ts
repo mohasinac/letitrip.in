@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser } from "@/lib/auth/middleware";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
-export async function POST(
+export const POST = createUserHandler(async (
   request: NextRequest,
+  user,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
     const userId = user.userId;
     const { helpful } = await request.json();
@@ -21,7 +16,7 @@ export async function POST(
     }
 
     // Get database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     // Check if review exists
@@ -55,4 +50,4 @@ export async function POST(
     console.error("Error marking review as helpful:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

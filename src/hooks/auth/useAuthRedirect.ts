@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
+import { useEnhancedAuth } from '@/hooks/auth/useEnhancedAuth';
 import { useEffect } from 'react';
 
 export const useAuthRedirect = () => {

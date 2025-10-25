@@ -1,6 +1,6 @@
 /**
  * API Middleware Index
- * Centralized exports for all middleware components
+ * Centralized exports for middleware components
  */
 
 // Error handling
@@ -28,38 +28,23 @@ export {
   validateQueryParams,
   validatePathParams,
   withRequestValidation,
-  createPaginationSchema,
-  createSearchSchema,
   createSortSchema,
   CommonSchemas,
+  ValidationHandler,
 } from './validation';
 
-// Enhanced middleware
-export {
-  createEnhancedHandler,
-  createAuthHandler,
-  createAdminHandler,
-  createSellerHandler,
-  createPublicHandler,
-  invalidateCache,
-  getCacheStats,
-  type EnhancedMiddlewareOptions,
-  type ValidatedRequest,
-} from './enhanced';
-
-// Legacy compatibility - re-export from original middleware
+// Auth middleware handlers
 export {
   createUserHandler,
-  createAdminHandler as createLegacyAdminHandler,
-  createSellerHandler as createLegacySellerHandler,
+  createAdminHandler,
+  createSellerHandler,
   withAuth,
   type AuthMiddlewareOptions,
 } from '@/lib/auth/api-middleware';
 
+// Legacy API Response helper
 export {
   ApiResponse as LegacyApiResponse,
-  withAuth as legacyWithAuth,
-  withAdmin,
-  validateBody,
   withRateLimit,
 } from '@/lib/auth/middleware';
+

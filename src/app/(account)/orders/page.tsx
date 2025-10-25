@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 
 interface OrderItem {
   id: string;

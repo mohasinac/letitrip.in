@@ -20,7 +20,7 @@ import {
   DocumentSnapshot,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/database/config';
 import { Product, ProductFilters, PaginatedResponse } from '@/types';
 
 export class ProductsService {

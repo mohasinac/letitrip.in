@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 
 interface Order {
   id: string;
@@ -49,12 +49,14 @@ export default function UserDashboardPage() {
         const statsResponse = await fetch("/api/user/dashboard/stats");
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
-          setStats(statsData.stats || {
-            totalOrders: 0,
-            totalSpent: 0,
-            activeOrders: 0,
-            wishlistItems: 0,
-          });
+          setStats(
+            statsData.stats || {
+              totalOrders: 0,
+              totalSpent: 0,
+              activeOrders: 0,
+              wishlistItems: 0,
+            }
+          );
         } else {
           setStats({
             totalOrders: 0,

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import Link from "next/link";
 
 export default function AccountPage() {

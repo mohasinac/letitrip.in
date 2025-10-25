@@ -1,6 +1,6 @@
 "use client";
 
-import ThemeSettings from "@/components/ui/ThemeSettings";
+import ThemeSettings from "@/components/shared/ui/ThemeSettings";
 
 export default function AdminThemeSettingsPage() {
   return (

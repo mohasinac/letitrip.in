@@ -1,6 +1,6 @@
 "use client";
 
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import { useEffect, useState } from "react";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
 

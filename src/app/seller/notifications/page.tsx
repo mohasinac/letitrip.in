@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { SellerNotification } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRealTimeNotifications } from "@/hooks/useRealTimeData";
+import { useRealTimeNotifications } from "@/hooks/data/useRealTimeData";
 import {
   BellIcon,
   CheckIcon,

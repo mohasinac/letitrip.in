@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 
 interface UserProfile {
   id: string;

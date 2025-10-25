@@ -6,7 +6,7 @@ export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
 
     // Fetch settings from database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     const settingsDoc = await db.collection('settings').doc('site-config').get();
@@ -66,7 +66,7 @@ export const PUT = createAdminHandler(async (request: NextRequest, user) => {
     const settings = await request.json();
     
     // Save settings to database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     await db.collection('settings').doc('site-config').set({

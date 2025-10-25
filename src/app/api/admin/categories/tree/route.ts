@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/database/admin";
 import { Category, CategoryTreeNode } from "@/types";
 
 export async function GET(request: NextRequest) {

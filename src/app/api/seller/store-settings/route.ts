@@ -1,28 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase/admin';
-import { getAuth } from 'firebase-admin/auth';
+import { getAdminDb } from '@/lib/database/admin';
+import { verifySellerOrAdmin } from '@/lib/auth/firebase-api-auth';
 
-export const GET = createSellerHandler(async (request: NextRequest, user) => {
+export async function GET(request: NextRequest) {
   try {
-    const db = getAdminDb();
+    const user = await verifySellerOrAdmin(request);
     
-    // Get seller ID from authorization header
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Seller or Admin access required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.substring(7);
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const sellerId = decodedToken.uid;
+    const db = getAdminDb();
+    const sellerId = user.uid;
 
-    // Get user info to create default store name
-    const userDoc = await db.collection('users').doc(sellerId).get();
-    const userData = userDoc.exists ? userDoc.data() : null;
-    const defaultStoreName = userData?.name ? `${userData.name}'s Store` : 'My Store';
+    // Get default store name from user data
+    const defaultStoreName = user.userData?.name ? `${user.userData.name}'s Store` : 'My Store';
 
     // Get seller profile/store settings
     const sellerDoc = await db.collection('sellers').doc(sellerId).get();
@@ -49,7 +44,7 @@ export const GET = createSellerHandler(async (request: NextRequest, user) => {
         storeStatus: 'offline',
         storeDescription: '',
         businessName: ''
-      });
+      }      );
     }
 
     const sellerData = sellerDoc.data();
@@ -68,27 +63,31 @@ export const GET = createSellerHandler(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
-export const PUT = createSellerHandler(async (request: NextRequest, user) => {
+export async function PUT(request: NextRequest) {
   try {
-    const db = getAdminDb();
+    const user = await verifySellerOrAdmin(request);
     
-    // Get seller ID from authorization header
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Seller or Admin access required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.substring(7);
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const sellerId = decodedToken.uid;
+    const db = getAdminDb();
+    const sellerId = user.uid;
 
     // Parse request body
     const { storeName, storeStatus, storeDescription, businessName } = await request.json();
+
+    console.log('Store settings update request:', {
+      sellerId,
+      userRole: user.role,
+      storeName,
+      storeStatus
+    });
 
     // Validate required fields
     if (!storeName || !storeName.trim()) {
@@ -125,7 +124,11 @@ export const PUT = createSellerHandler(async (request: NextRequest, user) => {
       updatedAt: new Date()
     };
 
+    console.log('Updating seller document:', updateData);
+
     await db.collection('sellers').doc(sellerId).set(updateData, { merge: true });
+
+    console.log('Store settings updated successfully');
 
     return NextResponse.json({ 
       message: 'Store settings updated successfully',
@@ -135,8 +138,8 @@ export const PUT = createSellerHandler(async (request: NextRequest, user) => {
   } catch (error) {
     console.error('Error updating store settings:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
-});
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {

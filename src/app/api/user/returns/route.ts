@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
 
 export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     const { orderId, reason, items } = await request.json();
     const userId = user.userId;
 
@@ -22,7 +15,7 @@ export const POST = createUserHandler(async (request: NextRequest, user) => {
     }
 
     // Fetch order from database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     // Fetch order from database
@@ -99,12 +92,6 @@ export const POST = createUserHandler(async (request: NextRequest, user) => {
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");  
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -114,7 +101,7 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
     const userId = user.userId;
 
     // Get return requests from Firebase
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
     
     const returnsSnapshot = await db.collection('returns')

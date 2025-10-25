@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminHandler } from "@/lib/auth/api-middleware";
-import { cleanupSeededData, cleanupAllData } from "@/lib/firebase/cleanup";
+import { cleanupSeededData, cleanupAllData } from "@/lib/database/cleanup";
 
 export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {

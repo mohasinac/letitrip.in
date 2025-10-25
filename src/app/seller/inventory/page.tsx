@@ -5,10 +5,10 @@ import { Product } from "@/types";
 import { ProductsService } from "@/lib/services/products.service";
 import { SellerService } from "@/lib/services/seller.service";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
-import RealTimeIndicator from "@/components/ui/RealTimeIndicator";
+import RealTimeIndicator from "@/components/shared/ui/RealTimeIndicator";
 import {
   PencilIcon,
   TrashIcon,

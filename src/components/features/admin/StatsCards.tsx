@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRealTimeStats } from "@/hooks/useRealTimeData";
+import { useRealTimeStats } from "@/hooks/data/useRealTimeData";
 import {
   ShoppingBagIcon,
   UsersIcon,

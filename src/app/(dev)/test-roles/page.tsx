@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import {
   hasRoleAccess,
   getAvailableDashboards,

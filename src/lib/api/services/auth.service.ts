@@ -4,10 +4,10 @@
  */
 
 import bcrypt from 'bcryptjs';
-import { getAdminAuth, getAdminDb } from '../../firebase/admin';
+import { getAdminAuth, getAdminDb } from '../../database/admin';
 import { generateToken, JWTPayload } from '../../auth/jwt';
 import { User } from '@/types';
-import { FirebaseService } from '../../firebase/services';
+import { FirebaseService } from '../../database/services';
 
 export class AuthService {
   /**
@@ -69,10 +69,9 @@ export class AuthService {
         await db.collection('sellers').doc(userRecord.uid).set(storeData);
       }
 
-      // Generate JWT token
+      // Generate JWT token with minimal payload
       const token = generateToken({
         userId: userRecord.uid,
-        email,
         role: role,
       });
 
@@ -113,10 +112,9 @@ export class AuthService {
       throw new Error('Invalid email or password');
     }
 
-    // Generate JWT token
+    // Generate JWT token with minimal payload
     const token = generateToken({
       userId: userDoc.id,
-      email: userData.email,
       role: userData.role,
     });
 

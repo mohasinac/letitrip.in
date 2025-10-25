@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import { getRoleDisplayName, getRoleBadgeClasses } from "@/lib/auth/roles";
 
 // Force dynamic rendering to prevent static generation

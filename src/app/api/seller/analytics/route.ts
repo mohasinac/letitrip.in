@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { createUserHandler } from "@/lib/auth/api-middleware";
 

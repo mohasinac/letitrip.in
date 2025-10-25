@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { authenticateUser } from "@/lib/auth/middleware";
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const userId = user.userId;
 
     // Get database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     // Fetch user statistics from Firestore

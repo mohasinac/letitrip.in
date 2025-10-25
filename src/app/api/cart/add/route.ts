@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { FirebaseService } from "@/lib/firebase/services";
+import { FirebaseService } from "@/lib/database/services";
 
 async function handler(request: NextRequest) {
   try {

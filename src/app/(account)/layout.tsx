@@ -3,8 +3,8 @@
 import { ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import AccountSidebar from "@/components/layout/AccountSidebar";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
+import AccountSidebar from "@/components/shared/layout/AccountSidebar";
 
 interface AccountLayoutProps {
   children: ReactNode;

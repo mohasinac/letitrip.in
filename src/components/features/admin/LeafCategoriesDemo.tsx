@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api/client";
 
 interface LeafCategory {
   id: string;
@@ -22,23 +23,12 @@ export default function LeafCategoriesDemo() {
 
   const fetchLeafCategories = async () => {
     try {
-      if (!user?.getIdToken) return;
+      if (!user) return;
 
-      const token = await user.getIdToken();
-      const response = await fetch(
-        "/api/admin/categories/leaf?includeInactive=true",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setLeafCategories(data.data || []);
-      }
+      const data = (await apiClient.get(
+        "/admin/categories/leaf?includeInactive=true"
+      )) as any;
+      setLeafCategories(data.data || []);
     } catch (error) {
       console.error("Error fetching leaf categories:", error);
     } finally {

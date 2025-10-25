@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { apiClient } from "@/lib/api/client";
 import toast from "react-hot-toast";
 import {
   CreditCardIcon,
@@ -58,19 +59,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { items: cart, clearCart } = useCart();
-
-  // Helper function to safely get auth token
-  const getAuthToken = async (): Promise<string | null> => {
-    if (!user?.getIdToken) {
-      return null;
-    }
-    try {
-      return await user.getIdToken();
-    } catch (error) {
-      console.error("Failed to get auth token:", error);
-      return null;
-    }
-  };
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -134,31 +122,20 @@ export default function CheckoutPage() {
 
   const loadAddresses = async () => {
     try {
-      if (!user?.getIdToken) {
+      if (!user) {
         toast.error("Authentication required");
         return;
       }
 
-      const token = await user.getIdToken();
-      const response = await fetch("/api/user/addresses", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const data = (await apiClient.get("/user/addresses")) as any;
+      setAddresses(data.data || []);
 
-      if (response.ok) {
-        const data = await response.json();
-        setAddresses(data.data || []);
-
-        // Select default address
-        const defaultAddress = data.data?.find(
-          (addr: Address) => addr.isDefault
-        );
-        if (defaultAddress) {
-          setSelectedAddress(defaultAddress);
-        } else if (data.data?.length > 0) {
-          setSelectedAddress(data.data[0]);
-        }
+      // Select default address
+      const defaultAddress = data.data?.find((addr: Address) => addr.isDefault);
+      if (defaultAddress) {
+        setSelectedAddress(defaultAddress);
+      } else if (data.data?.length > 0) {
+        setSelectedAddress(data.data[0]);
       }
     } catch (error) {
       console.error("Load addresses error:", error);
@@ -171,37 +148,26 @@ export default function CheckoutPage() {
 
     setIsLoadingShipping(true);
     try {
-      const token = await getAuthToken();
-      if (!token) {
+      if (!user) {
         toast.error("Authentication required");
         return;
       }
 
-      const response = await fetch("/api/shipping/shiprocket/rates", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          pickup_postcode: "110001", // Your pickup location pincode
-          delivery_postcode: selectedAddress.pincode,
-          weight: 0.5, // Calculate based on cart items
-          cod: paymentMethod === "cod" ? 1 : 0,
-          declared_value: subtotal,
-        }),
-      });
+      const data = (await apiClient.post("/shipping/shiprocket/rates", {
+        pickup_postcode: "110001", // Your pickup location pincode
+        delivery_postcode: selectedAddress.pincode,
+        weight: 0.5, // Calculate based on cart items
+        cod: paymentMethod === "cod" ? 1 : 0,
+        declared_value: subtotal,
+      })) as any;
 
-      if (response.ok) {
-        const data = await response.json();
-        setShippingRates(data.data || []);
+      setShippingRates(data.data || []);
 
-        // Select the first available shipping option
-        if (data.data?.length > 0) {
-          setSelectedShipping(data.data[0]);
-        }
+      // Select the first available shipping option
+      if (data.data?.length > 0) {
+        setSelectedShipping(data.data[0]);
       } else {
-        toast.error("Failed to load shipping rates");
+        toast.error("No shipping rates available");
       }
     } catch (error) {
       console.error("Load shipping rates error:", error);
@@ -219,25 +185,17 @@ export default function CheckoutPage() {
 
     setIsValidatingCoupon(true);
     try {
-      const token = await getAuthToken();
-      if (!token) {
+      if (!user) {
         toast.error("Authentication required");
         return;
       }
-      const response = await fetch("/api/coupons/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          code: couponCode,
-          cartItems: cart,
-          subtotal,
-        }),
-      });
 
-      const data = await response.json();
+      const data = (await apiClient.post("/coupons/validate", {
+        code: couponCode,
+        cartItems: cart,
+        subtotal,
+      })) as any;
+
       if (data.success && data.data.valid) {
         setAppliedCoupon(data.data);
         toast.success(`Coupon applied! You saved ₹${data.data.discountAmount}`);
@@ -261,34 +219,22 @@ export default function CheckoutPage() {
 
   const createRazorpayOrder = async () => {
     try {
-      const token = await getAuthToken();
-      if (!token) {
+      if (!user) {
         toast.error("Authentication required");
         return;
       }
-      const response = await fetch("/api/payment/razorpay/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          amount: total,
-          currency: "INR",
-          receipt: `order_${Date.now()}`,
-          notes: {
-            cartItems: JSON.stringify(cart),
-            couponCode: appliedCoupon?.coupon?.code,
-          },
-        }),
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        return data.data;
-      } else {
-        throw new Error("Failed to create payment order");
-      }
+      const data = (await apiClient.post("/payment/razorpay/create-order", {
+        amount: total,
+        currency: "INR",
+        receipt: `order_${Date.now()}`,
+        notes: {
+          cartItems: JSON.stringify(cart),
+          couponCode: appliedCoupon?.coupon?.code,
+        },
+      })) as any;
+
+      return data.data;
     } catch (error) {
       console.error("Create Razorpay order error:", error);
       throw error;
@@ -315,25 +261,22 @@ export default function CheckoutPage() {
         handler: async (response: any) => {
           try {
             // Verify payment
-            const token = await getAuthToken();
-            if (!token) {
+            if (!user) {
               toast.error("Authentication required");
+              reject(new Error("Authentication required"));
               return;
             }
-            const verifyResponse = await fetch("/api/payment/razorpay/verify", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
+
+            const verifyData = (await apiClient.post(
+              "/payment/razorpay/verify",
+              {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-              }),
-            });
+              }
+            )) as any;
 
-            if (verifyResponse.ok) {
+            if (verifyData.success) {
               resolve(response);
             } else {
               reject(new Error("Payment verification failed"));
@@ -356,11 +299,11 @@ export default function CheckoutPage() {
 
   const createOrder = async (paymentData?: any) => {
     try {
-      const token = await getAuthToken();
-      if (!token) {
+      if (!user) {
         toast.error("Authentication required");
         return;
       }
+
       const orderPayload = {
         items: cart,
         shippingAddress: selectedAddress,
@@ -376,21 +319,8 @@ export default function CheckoutPage() {
         estimatedDelivery: selectedShipping?.etd,
       };
 
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orderPayload),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.data;
-      } else {
-        throw new Error("Failed to create order");
-      }
+      const data = (await apiClient.post("/orders", orderPayload)) as any;
+      return data.data;
     } catch (error) {
       console.error("Create order error:", error);
       throw error;

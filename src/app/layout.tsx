@@ -5,8 +5,8 @@ import "../theme/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import UserDebug from "@/components/debug/UserDebug";
-import CookieConsentBanner from "@/components/auth/CookieConsentBanner";
-import AppLayout from "@/components/layout/AppLayout";
+import CookieConsentBanner from "@/components/features/auth/CookieConsentBanner";
+import AppLayout from "@/components/shared/layout/AppLayout";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({

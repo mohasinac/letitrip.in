@@ -17,7 +17,7 @@ import {
   BuildingStorefrontIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import ThemeToggle from "@/components/shared/ui/ThemeToggle";
 
 const sellerNavItems = [
   {

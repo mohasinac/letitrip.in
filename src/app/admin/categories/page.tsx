@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Category, CategoryTreeNode } from "@/types";
 import { CategoryService } from "@/lib/services/category.service";
-import CategoryTree from "@/components/admin/categories/CategoryTree";
-import CategoryForm from "@/components/admin/categories/CategoryForm";
-import CategoryBulkActions from "@/components/admin/categories/CategoryBulkActions";
-import CategorySearch from "@/components/admin/categories/CategorySearch";
-import CategoryStats from "@/components/admin/categories/CategoryStats";
+import { apiClient } from "@/lib/api/client";
+import CategoryTree from "@/components/features/admin/CategoryTree";
+import CategoryForm from "@/components/features/admin/CategoryForm";
+import CategoryBulkActions from "@/components/features/admin/CategoryBulkActions";
+import CategorySearch from "@/components/features/admin/CategorySearch";
+import CategoryStats from "@/components/features/admin/CategoryStats";
 
 export default function AdminCategoriesPage() {
   const { user } = useAuth();
@@ -29,27 +30,16 @@ export default function AdminCategoriesPage() {
   const loadCategories = async () => {
     setLoading(true);
     try {
-      // Get auth token
-      const token = user?.getIdToken ? await user.getIdToken() : "";
-
-      const response = await fetch(
-        "/api/admin/categories/tree?" +
+      const result = (await apiClient.get(
+        "/admin/categories/tree?" +
           new URLSearchParams({
             includeInactive: filters.includeInactive.toString(),
             withProductCounts: "true",
-          }),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+          })
+      )) as any;
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setCategories(result.data.categories);
-        }
+      if (result.success && result.data) {
+        setCategories(result.data.categories);
       }
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -79,16 +69,10 @@ export default function AdminCategoriesPage() {
     }
 
     try {
-      const token = user?.getIdToken ? await user.getIdToken() : "";
+      const result = (await apiClient.delete(
+        `/admin/categories/${categoryId}`
+      )) as any;
 
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await response.json();
       if (result.success) {
         await loadCategories();
       } else {
@@ -113,22 +97,12 @@ export default function AdminCategoriesPage() {
     }
 
     try {
-      const token = user?.getIdToken ? await user.getIdToken() : "";
+      const result = (await apiClient.post("/admin/categories/bulk", {
+        operation: action,
+        categoryIds: selectedCategories,
+        data,
+      })) as any;
 
-      const response = await fetch("/api/admin/categories/bulk", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          operation: action,
-          categoryIds: selectedCategories,
-          data,
-        }),
-      });
-
-      const result = await response.json();
       if (result.success) {
         setSelectedCategories([]);
         await loadCategories();

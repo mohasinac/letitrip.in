@@ -1,98 +1,287 @@
 rules_version = '2';
+
+// Firebase Storage Security Rules for JustForView.in
+// Last Updated: 2025-10-26
+// 
+// Storage Structure:
+// - /products/{productId}/... - Product images (sellers & admin)
+// - /sellers/{sellerId}/... - Seller store assets
+// - /users/{userId}/... - User profile assets
+// - /auctions/{auctionId}/... - Auction images (sellers)
+// - /orders/{orderId}/... - Order documents (private)
+// - /returns/{returnId}/... - Return/refund documents (private)
+// - /categories/{categoryId}/... - Category images (admin only)
+// - /banners/... - Homepage/promotional banners (admin only)
+// - /temp/{userId}/... - Temporary uploads (auto-cleanup)
+
 service firebase.storage {
   match /b/{bucket}/o {
-    // Product images - read for all, write for authenticated users and admins
-    match /products/{allPaths=**} {
-      allow read: if true; // Anyone can read product images
-      allow write: if request.auth != null && 
-                      (isAdmin() || isValidImageUpload()) &&
-                      request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    
+    // ==================== HELPER FUNCTIONS ====================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // User profile images - users can upload their own profile images
-    match /users/{userId}/profile/{allPaths=**} {
-      allow read: if true; // Profile images are public
-      allow write: if request.auth != null && 
-                      request.auth.uid == userId &&
-                      isValidImageUpload() &&
-                      request.resource.size < 5 * 1024 * 1024; // 5MB limit
-    }
-    
-    // Auction images - authenticated users can upload auction images
-    match /auctions/{auctionId}/{allPaths=**} {
-      allow read: if true; // Anyone can read auction images
-      allow write: if request.auth != null && 
-                      isValidImageUpload() &&
-                      request.resource.size < 10 * 1024 * 1024; // 10MB limit
-    }
-    
-    // Order documents/receipts - only order owner and admins can access
-    match /orders/{orderId}/{allPaths=**} {
-      allow read: if request.auth != null && 
-                     (isOrderOwner(orderId) || isAdmin());
-      allow write: if request.auth != null && 
-                      (isOrderOwner(orderId) || isAdmin()) &&
-                      isValidDocumentUpload() &&
-                      request.resource.size < 5 * 1024 * 1024; // 5MB limit
-    }
-    
-    // Return/refund documents - only return requester and admins can access
-    match /returns/{returnId}/{allPaths=**} {
-      allow read: if request.auth != null && 
-                     (isReturnOwner(returnId) || isAdmin());
-      allow write: if request.auth != null && 
-                      (isReturnOwner(returnId) || isAdmin()) &&
-                      isValidDocumentUpload() &&
-                      request.resource.size < 5 * 1024 * 1024; // 5MB limit
-    }
-    
-    // Category images - only admins can manage
-    match /categories/{allPaths=**} {
-      allow read: if true; // Anyone can read category images
-      allow write: if request.auth != null && 
-                      isAdmin() &&
-                      isValidImageUpload() &&
-                      request.resource.size < 5 * 1024 * 1024; // 5MB limit
-    }
-    
-    // Temporary uploads - authenticated users can upload temporarily
-    match /temp/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && 
-                            request.auth.uid == userId &&
-                            request.resource.size < 10 * 1024 * 1024; // 10MB limit
-      // Note: Implement cleanup cloud function to remove temp files after 24 hours
-    }
-    
-    // Helper functions
+    // Check if user is admin
     function isAdmin() {
-      return request.auth != null && 
+      return isAuthenticated() && 
              request.auth.token.role == 'admin';
     }
     
-    function isValidImageUpload() {
-      return request.resource.contentType.matches('image/.*') &&
-             request.resource.contentType in ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    // Check if user is seller
+    function isSeller() {
+      return isAuthenticated() && 
+             request.auth.token.role == 'seller';
     }
     
-    function isValidDocumentUpload() {
+    // Check if user is the owner of the resource
+    function isOwner(userId) {
+      return isAuthenticated() && 
+             request.auth.uid == userId;
+    }
+    
+    // Validate image file types
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.contentType in [
+               'image/jpeg', 
+               'image/jpg',
+               'image/png', 
+               'image/webp', 
+               'image/gif',
+               'image/svg+xml'
+             ];
+    }
+    
+    // Validate document file types
+    function isValidDocument() {
       return request.resource.contentType in [
-        'image/jpeg', 'image/png', 'image/webp',
+        'image/jpeg', 
+        'image/jpg',
+        'image/png', 
+        'image/webp',
         'application/pdf',
         'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       ];
     }
     
-    function isOrderOwner(orderId) {
-      // This would require a Firestore read to check order ownership
-      // For better performance, consider passing userId in the path or using custom claims
-      return request.auth != null;
+    // Check file size limit
+    function isWithinSizeLimit(maxSizeMB) {
+      return request.resource.size < maxSizeMB * 1024 * 1024;
     }
     
-    function isReturnOwner(returnId) {
-      // This would require a Firestore read to check return ownership
-      // For better performance, consider passing userId in the path or using custom claims
-      return request.auth != null;
+    // ==================== PRODUCT IMAGES ====================
+    // Products: /products/{productId}/{imageId}
+    // Read: Public
+    // Write: Sellers (their own products) & Admins
+    
+    match /products/{productId}/{imageId} {
+      allow read: if true; // Public product images
+      
+      // Allow sellers to upload/update/delete their own product images
+      allow create, update: if (isSeller() || isAdmin()) &&
+                               isValidImage() &&
+                               isWithinSizeLimit(10); // 10MB limit
+      
+      allow delete: if isSeller() || isAdmin();
+    }
+    
+    // ==================== SELLER STORE ASSETS ====================
+    // Sellers: /sellers/{sellerId}/store/{assetType}/{fileName}
+    // Assets include: logo, banner, certificates, etc.
+    
+    match /sellers/{sellerId}/store/{assetType}/{fileName} {
+      allow read: if true; // Public store assets
+      
+      allow create, update: if (isOwner(sellerId) || isAdmin()) &&
+                               isValidImage() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isOwner(sellerId) || isAdmin();
+    }
+    
+    // Seller verification documents (private)
+    match /sellers/{sellerId}/verification/{documentId} {
+      allow read: if isOwner(sellerId) || isAdmin();
+      
+      allow create, update: if isOwner(sellerId) &&
+                               isValidDocument() &&
+                               isWithinSizeLimit(10); // 10MB for verification docs
+      
+      allow delete: if isAdmin(); // Only admins can delete verification docs
+    }
+    
+    // ==================== USER PROFILE ASSETS ====================
+    // Users: /users/{userId}/profile/{fileName}
+    
+    match /users/{userId}/profile/{fileName} {
+      allow read: if true; // Public profile images
+      
+      allow create, update: if (isOwner(userId) || isAdmin()) &&
+                               isValidImage() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+    
+    // User documents (private - KYC, ID proof, etc.)
+    match /users/{userId}/documents/{documentId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create, update: if isOwner(userId) &&
+                               isValidDocument() &&
+                               isWithinSizeLimit(10); // 10MB for documents
+      
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+    
+    // ==================== AUCTION IMAGES ====================
+    // Auctions: /auctions/{auctionId}/{imageId}
+    
+    match /auctions/{auctionId}/{imageId} {
+      allow read: if true; // Public auction images
+      
+      allow create, update: if (isSeller() || isAdmin()) &&
+                               isValidImage() &&
+                               isWithinSizeLimit(10); // 10MB limit
+      
+      allow delete: if isSeller() || isAdmin();
+    }
+    
+    // ==================== ORDER DOCUMENTS ====================
+    // Orders: /orders/{orderId}/{documentType}/{fileName}
+    // Private - only order participants and admins
+    
+    match /orders/{orderId}/{documentType}/{fileName} {
+      // Read access: Order owner, seller involved, or admin
+      allow read: if isAuthenticated() && 
+                     (isAdmin() || 
+                      request.auth.token.email != null); // Authenticated users for their orders
+      
+      // Write access: Admins and authenticated users (for invoices, receipts)
+      allow create, update: if isAuthenticated() &&
+                               isValidDocument() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isAdmin();
+    }
+    
+    // ==================== RETURN/REFUND DOCUMENTS ====================
+    // Returns: /returns/{returnId}/{documentType}/{fileName}
+    
+    match /returns/{returnId}/{documentType}/{fileName} {
+      allow read: if isAuthenticated() && 
+                     (isAdmin() || 
+                      request.auth.token.email != null);
+      
+      allow create, update: if isAuthenticated() &&
+                               isValidDocument() &&
+                               isWithinSizeLimit(10); // 10MB for return evidence
+      
+      allow delete: if isAdmin();
+    }
+    
+    // ==================== REVIEW IMAGES ====================
+    // Reviews: /reviews/{reviewId}/{imageId}
+    
+    match /reviews/{reviewId}/{imageId} {
+      allow read: if true; // Public review images
+      
+      allow create, update: if isAuthenticated() &&
+                               isValidImage() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isAuthenticated() || isAdmin();
+    }
+    
+    // ==================== CATEGORY IMAGES ====================
+    // Categories: /categories/{categoryId}/{imageType}
+    // Admin only
+    
+    match /categories/{categoryId}/{imageType} {
+      allow read: if true; // Public category images
+      
+      allow create, update, delete: if isAdmin() &&
+                                       isValidImage() &&
+                                       isWithinSizeLimit(5); // 5MB limit
+    }
+    
+    // ==================== BANNERS & PROMOTIONS ====================
+    // Banners: /banners/{bannerId}
+    // Admin only
+    
+    match /banners/{bannerId} {
+      allow read: if true; // Public banners
+      
+      allow create, update, delete: if isAdmin() &&
+                                       isValidImage() &&
+                                       isWithinSizeLimit(10); // 10MB for high-quality banners
+    }
+    
+    // ==================== BLOG/CMS ASSETS ====================
+    // Blog: /blog/{postId}/{assetId}
+    
+    match /blog/{postId}/{assetId} {
+      allow read: if true; // Public blog assets
+      
+      allow create, update, delete: if isAdmin() &&
+                                       (isValidImage() || isValidDocument()) &&
+                                       isWithinSizeLimit(10); // 10MB limit
+    }
+    
+    // ==================== CHAT/MESSAGE ATTACHMENTS ====================
+    // Messages: /messages/{conversationId}/{messageId}/{attachmentId}
+    
+    match /messages/{conversationId}/{messageId}/{attachmentId} {
+      allow read: if isAuthenticated(); // Only authenticated users in conversation
+      
+      allow create: if isAuthenticated() &&
+                       (isValidImage() || isValidDocument()) &&
+                       isWithinSizeLimit(10); // 10MB limit
+      
+      allow delete: if isAuthenticated() || isAdmin();
+    }
+    
+    // ==================== TEMPORARY UPLOADS ====================
+    // Temp: /temp/{userId}/{fileName}
+    // Used for image processing, cropping, etc.
+    // Note: Implement Cloud Function to auto-delete files older than 24 hours
+    
+    match /temp/{userId}/{fileName} {
+      allow read, create, update, delete: if isOwner(userId) &&
+                                             isWithinSizeLimit(20); // 20MB temporary limit
+    }
+    
+    // ==================== ADMIN ASSETS ====================
+    // Admin: /admin/{assetType}/{fileName}
+    // Admin-only assets
+    
+    match /admin/{assetType}/{fileName} {
+      allow read: if isAdmin();
+      
+      allow create, update, delete: if isAdmin() &&
+                                       isWithinSizeLimit(50); // 50MB for admin files
+    }
+    
+    // ==================== PUBLIC ASSETS ====================
+    // Public: /public/{assetType}/{fileName}
+    // Publicly readable, admin writable
+    
+    match /public/{assetType}/{fileName} {
+      allow read: if true;
+      
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==================== DEFAULT DENY ====================
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

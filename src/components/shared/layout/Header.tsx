@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
-import { useAuthRedirect } from "@/hooks/useAuthRedirect";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import { useAuthRedirect } from "@/hooks/auth/useAuthRedirect";
+import ThemeToggle from "@/components/shared/ui/ThemeToggle";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import { useCart } from "@/contexts/CartContext";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
 

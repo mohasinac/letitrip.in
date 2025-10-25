@@ -1,6 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/features/auth/ProtectedRoute";
 
 export default function TestAuthPage() {
   return (

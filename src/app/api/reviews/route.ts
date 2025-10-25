@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Get database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
 
     // Build query

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 import { Category } from "@/types";
 import { createAdminHandler } from "@/lib/auth/api-middleware";
 

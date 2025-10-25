@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { razorpayService } from '@/lib/services/razorpay';
-import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin';
+import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/config/api';
 
 // POST: Verify Razorpay payment

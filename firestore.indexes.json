@@ -111,6 +111,28 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isActive",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "level",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

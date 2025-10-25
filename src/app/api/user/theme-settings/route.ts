@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { createUserHandler } from '@/lib/auth/api-middleware';
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
@@ -18,7 +19,7 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
     }
 
     // Fetch from database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
     
     const userDoc = await db.collection('users').doc(userIdCookie).get();
@@ -92,7 +93,7 @@ export const POST = createUserHandler(async (request: NextRequest, user) => {
     };
 
     // Save to database
-    const { getAdminDb } = await import('@/lib/firebase/admin');
+    const { getAdminDb } = await import('@/lib/database/admin');
     const db = getAdminDb();
     
     await db.collection('users').doc(userIdCookie).set({

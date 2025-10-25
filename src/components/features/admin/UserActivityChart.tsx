@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

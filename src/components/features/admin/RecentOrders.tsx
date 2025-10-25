@@ -1,7 +1,7 @@
 "use client";
 
 import { Order } from "@/types";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 
 interface RecentOrdersData {
   orders: Order[];

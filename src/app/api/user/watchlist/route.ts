@@ -1,16 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserHandler } from "@/lib/auth/api-middleware";
-import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 
 export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -97,12 +90,6 @@ export const GET = createUserHandler(async (request: NextRequest, user) => {
 
 export const DELETE = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     const { auctionIds } = await request.json();
     const userId = user.userId;
 

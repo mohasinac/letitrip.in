@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 import ProductCard from "@/components/products/ProductCard";
 import Link from "next/link";
 

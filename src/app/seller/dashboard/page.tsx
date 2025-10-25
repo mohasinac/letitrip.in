@@ -4,18 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { SellerService } from "@/lib/services/seller.service";
+import { apiClient } from "@/lib/api/client";
 import {
   useRealTimeData,
   useRealTimeNotifications,
   useMultipleRealTimeData,
-} from "@/hooks/useRealTimeData";
+} from "@/hooks/data/useRealTimeData";
 // Enhanced Seller Dashboard Components
 import EnhancedSellerStatsCards from "@/components/seller/EnhancedSellerStatsCards";
 import EnhancedSellerSalesChart from "@/components/seller/EnhancedSellerSalesChart";
-import EnhancedSellerQuickActions from "@/components/seller/EnhancedSellerQuickActions";
+import EnhancedSellerQuickActions from "@/components/seller/SellerQuickActions";
 import SellerNotificationCenter from "@/components/seller/SellerNotificationCenter";
 import SellerPerformanceMetrics from "@/components/seller/SellerPerformanceMetrics";
-import RealTimeIndicator from "@/components/ui/RealTimeIndicator";
+import RealTimeIndicator from "@/components/shared/ui/RealTimeIndicator";
 
 // Fallback components
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
@@ -38,30 +39,21 @@ export default function SellerDashboard() {
   // Load store information
   useEffect(() => {
     const loadStoreInfo = async () => {
-      if (!user?.id || !user.getIdToken) return;
+      if (!user?.id) return;
 
       try {
-        const token = await user.getIdToken();
-        const response = await fetch("/api/seller/store-settings", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const data = (await apiClient.get("/seller/store-settings")) as any;
+        setStoreInfo({
+          storeName: data.storeName,
+          storeStatus: data.storeStatus,
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setStoreInfo({
-            storeName: data.storeName,
-            storeStatus: data.storeStatus,
-          });
-
-          // Show setup alert if store is not properly configured
-          setShowStoreSetupAlert(
-            !data.storeName ||
-              data.storeStatus === "offline" ||
-              data.storeName.includes("'s Store") // Default generated name
-          );
-        }
+        // Show setup alert if store is not properly configured
+        setShowStoreSetupAlert(
+          !data.storeName ||
+            data.storeStatus === "offline" ||
+            data.storeName.includes("'s Store") // Default generated name
+        );
       } catch (error) {
         console.error("Failed to load store info:", error);
       }
@@ -94,10 +86,7 @@ export default function SellerDashboard() {
     notifications.refresh();
   };
 
-  // Auto-refresh on period change
-  useEffect(() => {
-    dashboardData.refreshAll();
-  }, [selectedPeriod]);
+  // Note: Auto-refresh on period change is handled by useMultipleRealTimeData's dependencies option
 
   // Check for important alerts
   useEffect(() => {

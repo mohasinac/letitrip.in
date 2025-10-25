@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import SellerSidebar from "./SellerSidebar";
-import RoleGuard from "@/components/auth/RoleGuard";
+import RoleGuard from "@/components/features/auth/RoleGuard";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 interface SellerLayoutProps {

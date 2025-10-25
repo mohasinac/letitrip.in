@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Category, CategoryFormData, CategorySEO } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api/client";
 
 interface CategoryFormProps {
   category?: Category | null;
@@ -172,7 +173,6 @@ export default function CategoryForm({
 
     try {
       setLoading(true);
-      const token = user?.getIdToken ? await user.getIdToken() : "";
 
       const uploadFormData = new FormData();
       uploadFormData.append("file", file);
@@ -181,6 +181,8 @@ export default function CategoryForm({
         uploadFormData.append("categoryId", category.id);
       }
 
+      // Note: apiClient doesn't support FormData yet, use fetch
+      const token = user?.getIdToken ? await user.getIdToken() : "";
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
@@ -231,35 +233,23 @@ export default function CategoryForm({
 
     setLoading(true);
     try {
-      const token = user?.getIdToken ? await user.getIdToken() : "";
-
       if (category) {
-        const response = await fetch(`/api/admin/categories/${category.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        });
+        const result = (await apiClient.put(
+          `/admin/categories/${category.id}`,
+          formData
+        )) as any;
 
-        const result = await response.json();
         if (result.success) {
           onSubmit();
         } else {
           alert(result.error || "Failed to update category");
         }
       } else {
-        const response = await fetch("/api/admin/categories", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        });
+        const result = (await apiClient.post(
+          "/admin/categories",
+          formData
+        )) as any;
 
-        const result = await response.json();
         if (result.success) {
           onSubmit();
         } else {

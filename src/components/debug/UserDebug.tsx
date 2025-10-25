@@ -1,6 +1,6 @@
 "use client";
 
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 
 export default function UserDebug() {
   const { user, loading } = useEnhancedAuth();

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 import { createAdminHandler } from "@/lib/auth/api-middleware";
 
 export const POST = createAdminHandler(async (request: NextRequest, user) => {

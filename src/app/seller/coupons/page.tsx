@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Coupon } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { apiClient } from "@/lib/api/client";
 import {
   TagIcon,
   PlusIcon,
@@ -36,31 +37,10 @@ export default function SellerCoupons() {
         return;
       }
 
-      // Get Firebase ID token for authentication
-      const auth = (await import("firebase/auth")).getAuth();
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        console.error("No authenticated user found");
-        return;
-      }
-
-      const token = await currentUser.getIdToken();
-
       const params = new URLSearchParams();
       if (filter !== "all") params.append("status", filter);
 
-      const response = await fetch(`/api/coupons?${params}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch coupons");
-      }
-
-      const data = await response.json();
+      const data = (await apiClient.get(`/coupons?${params}`)) as any;
 
       if (data.success) {
         setCoupons(data.data.coupons || []);
@@ -86,29 +66,7 @@ export default function SellerCoupons() {
         return;
       }
 
-      // Get Firebase ID token
-      const auth = (await import("firebase/auth")).getAuth();
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        console.error("No authenticated user found");
-        return;
-      }
-
-      const token = await currentUser.getIdToken();
-
-      const response = await fetch(`/api/coupons/${couponId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete coupon");
-      }
-
-      const data = await response.json();
+      const data = (await apiClient.delete(`/coupons/${couponId}`)) as any;
 
       if (data.success) {
         setCoupons(coupons.filter((c) => c.id !== couponId));
@@ -126,31 +84,11 @@ export default function SellerCoupons() {
       const coupon = coupons.find((c) => c.id === couponId);
       if (!coupon || !user) return;
 
-      // Get Firebase ID token
-      const auth = (await import("firebase/auth")).getAuth();
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        console.error("No authenticated user found");
-        return;
-      }
-
-      const token = await currentUser.getIdToken();
       const newStatus = coupon.status === "active" ? "inactive" : "active";
 
-      const response = await fetch(`/api/coupons/${couponId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update coupon status");
-      }
-
-      const data = await response.json();
+      const data = (await apiClient.put(`/coupons/${couponId}`, {
+        status: newStatus,
+      })) as any;
 
       if (data.success) {
         setCoupons(

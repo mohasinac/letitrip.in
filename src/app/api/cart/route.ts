@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { FirebaseService } from "@/lib/firebase/services";
-import { createUserHandler } from "@/lib/auth/api-middleware";
+import { FirebaseService } from "@/lib/database/services";
+import { createFirebaseUserHandler } from "@/lib/auth/firebase-api-auth";
 
-const getHandler = createUserHandler(async (request: NextRequest, user) => {
+const getHandler = createFirebaseUserHandler(async (request: NextRequest, user) => {
   try {
     const firebaseService = FirebaseService.getInstance();
 
     try {
       // Get cart items from Firebase
-      const cartItems = await firebaseService.getCartItems(user.userId);
+      const cartItems = await firebaseService.getCartItems(user.uid);
       
       // Enrich cart items with product details
       const cartWithProducts = await Promise.all(
@@ -32,8 +32,8 @@ const getHandler = createUserHandler(async (request: NextRequest, user) => {
       const total = subtotal + shipping + tax;
 
       const cart = {
-        id: `cart_${user.userId}`,
-        userId: user.userId,
+        id: `cart_${user.uid}`,
+        userId: user.uid,
         items: cartWithProducts,
         subtotal,
         shipping,
@@ -52,8 +52,8 @@ const getHandler = createUserHandler(async (request: NextRequest, user) => {
       
       // Return empty cart on error
       const emptyCart = {
-        id: `cart_${user.userId}`,
-        userId: user.userId,
+        id: `cart_${user.uid}`,
+        userId: user.uid,
         items: [],
         subtotal: 0,
         shipping: 0,
@@ -78,7 +78,7 @@ const getHandler = createUserHandler(async (request: NextRequest, user) => {
   }
 });
 
-const putHandler = createUserHandler(async (request: NextRequest, user) => {
+const putHandler = createFirebaseUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { itemId, quantity } = body;
@@ -97,7 +97,7 @@ const putHandler = createUserHandler(async (request: NextRequest, user) => {
       await firebaseService.updateCartItem(itemId, quantity);
       
       // Get updated cart
-      const cartItems = await firebaseService.getCartItems(user.userId);
+      const cartItems = await firebaseService.getCartItems(user.uid);
       
       // Enrich with product details
       const cartWithProducts = await Promise.all(
@@ -116,8 +116,8 @@ const putHandler = createUserHandler(async (request: NextRequest, user) => {
 
       const subtotal = cartWithProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const cart = {
-        id: `cart_${user.userId}`,
-        userId: user.userId,
+        id: `cart_${user.uid}`,
+        userId: user.uid,
         items: cartWithProducts,
         subtotal,
         total: subtotal,
@@ -146,17 +146,17 @@ const putHandler = createUserHandler(async (request: NextRequest, user) => {
   }
 });
 
-const deleteHandler = createUserHandler(async (request: NextRequest, user) => {
+const deleteHandler = createFirebaseUserHandler(async (request: NextRequest, user) => {
   try {
     const firebaseService = FirebaseService.getInstance();
     
     try {
       // Clear cart in Firebase
-      await firebaseService.clearCart(user.userId);
+      await firebaseService.clearCart(user.uid);
       
       const emptyCart = {
-        id: `cart_${user.userId}`,
-        userId: user.userId,
+        id: `cart_${user.uid}`,
+        userId: user.uid,
         items: [],
         subtotal: 0,
         total: 0,
@@ -185,7 +185,7 @@ const deleteHandler = createUserHandler(async (request: NextRequest, user) => {
   }
 });
 
-const postHandler = createUserHandler(async (request: NextRequest, user) => {
+const postHandler = createFirebaseUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { productId, quantity = 1 } = body;
@@ -218,7 +218,7 @@ const postHandler = createUserHandler(async (request: NextRequest, user) => {
       }
 
       // Add to cart using Firebase
-      const cartItem = await firebaseService.addToCart(user.userId, productId, quantity);
+      const cartItem = await firebaseService.addToCart(user.uid, productId, quantity);
       
       if (!cartItem) {
         throw new Error("Failed to add to cart");

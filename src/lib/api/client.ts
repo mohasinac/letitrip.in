@@ -1,16 +1,15 @@
 /**
  * API Client for frontend
- * This provides a type-safe interface to call the backend API
- * Can be used from both web and mobile clients
+ * Centralized service for making authenticated API requests
+ * Uses Firebase ID tokens for authentication
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { ApiResponse } from '@/types';
-import { cookieStorage } from '@/lib/storage/cookieStorage';
+import { auth } from '@/lib/database/config';
 
 class ApiClient {
   private client: AxiosInstance;
-  private token: string | null = null;
 
   constructor(baseURL?: string) {
     this.client = axios.create({
@@ -18,14 +17,20 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
-      withCredentials: true, // Important for cookies
     });
 
-    // Request interceptor to add auth token
+    // Request interceptor to add Firebase auth token
     this.client.interceptors.request.use(
-      (config) => {
-        if (this.token) {
-          config.headers.Authorization = `Bearer ${this.token}`;
+      async (config) => {
+        try {
+          // Get Firebase ID token from current user
+          const currentUser = auth.currentUser;
+          if (currentUser) {
+            const token = await currentUser.getIdToken();
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+        } catch (error) {
+          console.error('Error getting Firebase token:', error);
         }
         return config;
       },
@@ -38,8 +43,10 @@ class ApiClient {
       (error: AxiosError<ApiResponse>) => {
         if (error.response?.status === 401) {
           // Handle unauthorized access
-          this.clearToken();
+          console.warn('Unauthorized access - redirecting to login');
           if (typeof window !== 'undefined') {
+            // Store current path to redirect back after login
+            sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
             window.location.href = '/login';
           }
         }
@@ -49,86 +56,80 @@ class ApiClient {
   }
 
   /**
-   * Set authentication token
-   */
-  setToken(token: string) {
-    this.token = token;
-    if (typeof window !== 'undefined') {
-      cookieStorage.setAuthToken(token);
-    }
-  }
-
-  /**
-   * Clear authentication token
-   */
-  clearToken() {
-    this.token = null;
-    if (typeof window !== 'undefined') {
-      cookieStorage.removeAuthToken();
-      cookieStorage.removeUserData();
-    }
-  }
-
-  /**
-   * Get authentication token
-   */
-  getToken(): string | null {
-    if (!this.token && typeof window !== 'undefined') {
-      this.token = cookieStorage.getAuthToken() || null;
-    }
-    return this.token;
-  }
-
-  /**
    * Generic GET request
    */
-  async get<T>(url: string, params?: any): Promise<T> {
-    const response = await this.client.get<ApiResponse<T>>(url, { params });
+  async get<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.get<ApiResponse<T>>(url, { params, ...config });
     return response.data.data as T;
   }
 
   /**
    * Generic POST request
    */
-  async post<T>(url: string, data?: any): Promise<T> {
-    const response = await this.client.post<ApiResponse<T>>(url, data);
+  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.post<ApiResponse<T>>(url, data, config);
     return response.data.data as T;
   }
 
   /**
    * Generic PUT request
    */
-  async put<T>(url: string, data?: any): Promise<T> {
-    const response = await this.client.put<ApiResponse<T>>(url, data);
+  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.put<ApiResponse<T>>(url, data, config);
     return response.data.data as T;
   }
 
   /**
    * Generic PATCH request
    */
-  async patch<T>(url: string, data?: any): Promise<T> {
-    const response = await this.client.patch<ApiResponse<T>>(url, data);
+  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.patch<ApiResponse<T>>(url, data, config);
     return response.data.data as T;
   }
 
   /**
    * Generic DELETE request
    */
-  async delete<T>(url: string): Promise<T> {
-    const response = await this.client.delete<ApiResponse<T>>(url);
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.delete<ApiResponse<T>>(url, config);
     return response.data.data as T;
   }
-}
 
-// Create singleton instance
-const apiClient = new ApiClient();
+  /**
+   * Upload files
+   */
+  async upload<T>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.post<ApiResponse<T>>(url, formData, {
+      ...config,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...config?.headers,
+      },
+    });
+    return response.data.data as T;
+  }
 
-// Initialize token from cookies if available
-if (typeof window !== 'undefined') {
-  const token = cookieStorage.getAuthToken();
-  if (token) {
-    apiClient.setToken(token);
+  /**
+   * Make a request without authentication (for public endpoints)
+   */
+  async publicGet<T>(url: string, params?: any): Promise<T> {
+    const response = await axios.get<ApiResponse<T>>(url, { 
+      params,
+      baseURL: this.client.defaults.baseURL 
+    });
+    return response.data.data as T;
+  }
+
+  /**
+   * Get the underlying axios instance for advanced use cases
+   */
+  getAxiosInstance(): AxiosInstance {
+    return this.client;
   }
 }
 
-export default apiClient;
+// Create and export singleton instance
+export const apiClient = new ApiClient();
+
+// Export class for testing or custom instances
+export default ApiClient;

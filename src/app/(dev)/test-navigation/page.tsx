@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
+import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 export default function TestNavigationPage() {

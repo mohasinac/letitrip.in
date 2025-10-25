@@ -1,6 +1,6 @@
 "use client";
 
-import RoleGuard from "@/components/auth/RoleGuard";
+import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useState, useEffect } from "react";
 import {
   UserRole,

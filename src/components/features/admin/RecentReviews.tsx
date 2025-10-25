@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import { useRealTimeData } from "@/hooks/data/useRealTimeData";
 
 interface Review {
   id: string;

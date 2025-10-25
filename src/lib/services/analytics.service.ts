@@ -3,7 +3,7 @@
  * Handles complex analytics calculations and data aggregation from Firebase
  */
 
-import { getAdminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/database/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export interface AnalyticsData {
