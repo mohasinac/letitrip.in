@@ -73,6 +73,57 @@ export async function GET(request: NextRequest) {
 
         const stats = await getUserStats(doc.id);
         
+        // Get store information for sellers and admins
+        let storeInfo = {};
+        if (userData.role === 'seller' || userData.role === 'admin') {
+          try {
+            // Get seller information
+            const storeDoc = await db.collection('sellers').doc(doc.id).get();
+            if (storeDoc.exists) {
+              const storeData = storeDoc.data();
+              storeInfo = {
+                storeName: storeData?.storeName,
+                storeStatus: storeData?.storeStatus || "offline",
+                isFeatured: storeData?.isFeatured || false,
+                businessName: storeData?.businessName,
+                storeDescription: storeData?.description,
+                storeAddress: storeData?.address,
+                storePhone: storeData?.phone,
+                storeWebsite: storeData?.website,
+                storeRegistrationDate: storeData?.createdAt?.toDate?.()?.toISOString(),
+              };
+            }
+
+            // Get additional store stats from stores collection
+            const storeSnapshot = await db.collection('stores').where('ownerId', '==', doc.id).limit(1).get();
+            if (!storeSnapshot.empty) {
+              const storeDoc = storeSnapshot.docs[0];
+              const storeData = storeDoc.data();
+              
+              // Get products count
+              const productsSnapshot = await db.collection('products').where('sellerId', '==', doc.id).get();
+              
+              // Get reviews for this store
+              const reviewsSnapshot = await db.collection('reviews').where('storeId', '==', storeDoc.id).get();
+              let totalRating = 0;
+              reviewsSnapshot.docs.forEach(review => {
+                const reviewData = review.data();
+                totalRating += reviewData.rating || 0;
+              });
+              
+              storeInfo = {
+                ...storeInfo,
+                totalProducts: productsSnapshot.size,
+                totalRevenue: storeData.totalRevenue || 0,
+                averageRating: reviewsSnapshot.size > 0 ? totalRating / reviewsSnapshot.size : 0,
+                reviewCount: reviewsSnapshot.size,
+              };
+            }
+          } catch (error) {
+            console.error(`Error fetching store info for user ${doc.id}:`, error);
+          }
+        }
+        
         return {
           id: doc.id,
           name: userData.name || userData.displayName || 'Unknown',
@@ -83,6 +134,7 @@ export async function GET(request: NextRequest) {
           updatedAt: userData.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
           lastLoginAt: userData.lastLoginAt?.toDate?.()?.toISOString(),
           ...stats,
+          ...storeInfo,
         };
       })
     );

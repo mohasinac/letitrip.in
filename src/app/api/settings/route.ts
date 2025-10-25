@@ -24,8 +24,8 @@ const publicSettings = {
         },
         sideBanner: {
           title: "Special Sales & Events",
-          subtitle: "Don't miss out on exclusive deals",
-          button: { text: "View Sale Items", link: "/deals" },
+          subtitle: "Don't miss out on exclusive offers",
+          button: { text: "View Sale Items", link: "/products" },
           carousel: true
         }
       }

@@ -36,7 +36,12 @@ export default function SellerNotifications() {
           setNotifications(data);
         } else {
           setNotifications([]);
-          console.error("Failed to fetch notifications:", response.status);
+          const errorText = await response.text();
+          console.error(
+            "Failed to fetch notifications:",
+            response.status,
+            errorText
+          );
         }
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -96,12 +101,39 @@ export default function SellerNotifications() {
     }
   };
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
+    // Update UI immediately for better UX
     setNotifications((prev) =>
       prev.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification
       )
     );
+
+    // Update on server (only if it's not a default notification)
+    if (!["welcome", "setup-store", "verification"].includes(id)) {
+      try {
+        await fetch("/api/seller/notifications", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            notificationId: id,
+            read: true,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+        // Revert the UI change if the API call failed
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === id
+              ? { ...notification, read: false }
+              : notification
+          )
+        );
+      }
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;

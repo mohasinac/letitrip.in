@@ -32,6 +32,10 @@ service cloud.firestore {
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if request.auth != null && isAdmin();
+      
+      // Validate category data on write
+      allow create: if request.auth != null && isAdmin() && validateCategory();
+      allow update: if request.auth != null && isAdmin() && validateCategory();
     }
     
     // Orders collection - users can read their own orders, admins can read all
@@ -183,6 +187,24 @@ service cloud.firestore {
       return data.keys().hasAll(['orderId', 'reason', 'userId']) &&
              data.reason is string &&
              data.reason.size() <= 1000;
+    }
+    
+    function validateCategory() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'slug', 'isActive', 'level']) &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() <= 100 &&
+             data.slug is string &&
+             data.slug.size() > 0 &&
+             data.slug.size() <= 100 &&
+             data.slug.matches('^[a-z0-9-]+$') &&
+             data.isActive is bool &&
+             data.level is int &&
+             data.level >= 0 &&
+             data.level <= 10 &&
+             (data.sortOrder is int || !data.keys().hasAny(['sortOrder'])) &&
+             (data.description is string || !data.keys().hasAny(['description']));
     }
   }
 }

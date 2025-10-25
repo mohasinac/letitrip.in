@@ -29,24 +29,24 @@ interface Category {
     description?: string;
     keywords?: string[];
   };
-  
+
   // Hierarchy
   parentId?: string;
-  parentIds: string[];  // Array of all ancestor IDs
-  level: number;        // 0 = root, 1 = first level, etc.
-  
+  parentIds: string[]; // Array of all ancestor IDs
+  level: number; // 0 = root, 1 = first level, etc.
+
   // Status
   isActive: boolean;
   featured: boolean;
   sortOrder: number;
-  
+
   // Stock Tracking (Auto-calculated)
   productCount: number;
   inStockCount: number;
   outOfStockCount: number;
   lowStockCount: number;
-  isLeaf: boolean;      // Auto-determined: true if no children
-  
+  isLeaf: boolean; // Auto-determined: true if no children
+
   // Metadata
   createdAt: string;
   updatedAt: string;
@@ -58,9 +58,11 @@ interface Category {
 ## API Endpoints
 
 ### GET /api/admin/categories
+
 Retrieve categories with filtering and search options.
 
 **Query Parameters:**
+
 - `parentId` - Filter by parent category
 - `level` - Filter by hierarchy level
 - `featured` - Filter by featured status
@@ -70,6 +72,7 @@ Retrieve categories with filtering and search options.
 - `rootOnly` - Get only root-level categories
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -90,9 +93,11 @@ Retrieve categories with filtering and search options.
 ```
 
 ### POST /api/admin/categories
+
 Create a new category.
 
 **Request Body:**
+
 ```json
 {
   "name": "Smartphones",
@@ -111,25 +116,31 @@ Create a new category.
 ```
 
 ### GET /api/admin/categories/tree
+
 Get the complete category hierarchy as a tree structure.
 
 **Query Parameters:**
+
 - `includeInactive` - Include inactive categories
 - `withProductCounts` - Include stock calculations
 - `maxDepth` - Limit tree depth
 
 ### GET /api/admin/categories/leaf
+
 Get only leaf categories (categories that can have products).
 
 **Response includes:**
+
 - All categories without children
 - Product counts and stock information
 - Hierarchy information for breadcrumbs
 
 ### PUT /api/admin/categories/update-counts
+
 Recalculate stock counts for all categories.
 
 **Use Cases:**
+
 - After bulk product updates
 - Data consistency checks
 - Migration scripts
@@ -139,6 +150,7 @@ Recalculate stock counts for all categories.
 ### 1. Hierarchical Management
 
 **Unlimited Nesting:**
+
 ```
 Electronics
 ├── Computers
@@ -152,6 +164,7 @@ Electronics
 ```
 
 **Automatic Level Calculation:**
+
 - Root categories: `level = 0`
 - Child categories: `level = parent.level + 1`
 - `parentIds` array maintains full ancestry path
@@ -159,45 +172,52 @@ Electronics
 ### 2. Leaf Category System
 
 **Product Assignment Rules:**
+
 - Only leaf categories can have products assigned
 - Parent categories cannot have direct products
 - Products automatically inherit hierarchy from their leaf category
 
 **Visual Indicators:**
+
 - 🍃 Leaf Category badge - can have products
 - 📁 Parent Category badge - aggregated data only
 
 ### 3. Stock Tracking
 
 **Real-time Calculations:**
+
 - `inStockCount`: Products with quantity > 0
 - `outOfStockCount`: Products with quantity = 0
 - `lowStockCount`: Products with quantity ≤ lowStockThreshold
 - `productCount`: Total products in category
 
 **Aggregation Logic:**
+
 ```typescript
 // For leaf categories: direct product count
-const products = await db.collection('products')
-  .where('category', '==', categoryId)
-  .where('status', '==', 'active')
+const products = await db
+  .collection("products")
+  .where("category", "==", categoryId)
+  .where("status", "==", "active")
   .get();
 
 // For parent categories: sum of all descendant leaf categories
-const descendants = categories.filter(cat => 
-  cat.parentIds.includes(categoryId) && cat.isLeaf
+const descendants = categories.filter(
+  (cat) => cat.parentIds.includes(categoryId) && cat.isLeaf
 );
 ```
 
 ### 4. SEO Optimization
 
 **Features:**
+
 - Custom slugs with automatic generation
 - Meta titles and descriptions
 - Keyword arrays for better search
 - Slug validation and uniqueness checking
 
 **Slug Generation:**
+
 ```typescript
 // Auto-generated from name
 "Gaming Laptops" → "gaming-laptops"
@@ -206,13 +226,74 @@ const descendants = categories.filter(cat =>
 await CategoryService.validateSlug("custom-slug");
 ```
 
+### 5. Search Functionality
+
+**Comprehensive Search Features:**
+
+- Search across category names, descriptions, slugs, and SEO data
+- Hierarchical search includes parent category names
+- Relevance scoring with exact, prefix, and partial matches
+- Leaf-only search for product assignment
+- Real-time search with debouncing
+
+**Search Types:**
+```typescript
+// Search all categories
+const allResults = await CategoryService.searchCategories("laptop", {
+  limit: 20,
+  withProductCounts: true
+});
+
+// Search only leaf categories (for product assignment)
+const leafResults = await CategoryService.searchLeafCategories("gaming", {
+  limit: 10,
+  withProductCounts: true
+});
+
+// Get all leaf categories with search filter
+const leafCategories = await CategoryService.getLeafCategories({
+  search: "computer",
+  withProductCounts: true,
+  limit: 50
+});
+```
+
+**Search Response Structure:**
+
+```typescript
+interface SearchResponse {
+  categories: Category[];
+  query: string;
+  total: number;
+  totalFound: number;
+  filters: {
+    leafOnly: boolean;
+    includeInactive: boolean;
+    withProductCounts: boolean;
+    limit: number;
+  };
+}
+```
+
+**Enhanced Category Properties:**
+
+```typescript
+interface SearchResult extends Category {
+  fullPath: string;        // "Electronics > Computers > Laptops"
+  isLeaf: boolean;         // Can have products assigned
+  matchType: string;       // "exact", "prefix", "partial"
+  relevanceScore?: number; // Search relevance (higher = better match)
+}
+```
+
 ## Frontend Components
 
 ### CategoryStats Component
+
 Displays category statistics with visual indicators.
 
 ```tsx
-<CategoryStats 
+<CategoryStats
   categories={categories}
   showLeafBadges={true}
   showStockCounts={true}
@@ -220,16 +301,18 @@ Displays category statistics with visual indicators.
 ```
 
 **Features:**
+
 - Leaf/Parent category badges
 - Stock count displays
 - Interactive filtering
 - Real-time updates
 
 ### CategoryTreeItem Component
+
 Renders individual categories in tree view.
 
 ```tsx
-<CategoryTreeItem 
+<CategoryTreeItem
   category={category}
   level={0}
   showProducts={true}
@@ -239,6 +322,7 @@ Renders individual categories in tree view.
 ```
 
 **Features:**
+
 - Hierarchical indentation
 - Expand/collapse functionality
 - Action buttons (edit, delete)
@@ -256,7 +340,7 @@ const electronics = await CategoryService.createCategory({
   description: "Electronic devices and accessories",
   isActive: true,
   featured: true,
-  sortOrder: 1
+  sortOrder: 1,
 });
 
 // 2. Create child category
@@ -265,7 +349,7 @@ const laptops = await CategoryService.createCategory({
   slug: "laptops",
   parentId: electronics.id,
   isActive: true,
-  sortOrder: 1
+  sortOrder: 1,
 });
 
 // 3. Create leaf category for products
@@ -274,7 +358,7 @@ const gamingLaptops = await CategoryService.createCategory({
   slug: "gaming-laptops",
   parentId: laptops.id,
   isActive: true,
-  sortOrder: 1
+  sortOrder: 1,
 });
 ```
 
@@ -284,20 +368,20 @@ const gamingLaptops = await CategoryService.createCategory({
 // Get all root categories
 const rootCategories = await CategoryService.getCategories({
   rootOnly: true,
-  withProductCounts: true
+  withProductCounts: true,
 });
 
 // Get category tree
 const tree = await CategoryService.getCategoryTree({
   includeInactive: false,
   withProductCounts: true,
-  maxDepth: 3
+  maxDepth: 3,
 });
 
 // Search categories
 const results = await CategoryService.searchCategories("laptop", {
   limit: 10,
-  includeInactive: false
+  includeInactive: false,
 });
 ```
 
@@ -305,14 +389,56 @@ const results = await CategoryService.searchCategories("laptop", {
 
 ```typescript
 // Only assign products to leaf categories
-const leafCategories = await fetch('/api/admin/categories/leaf').json();
+const leafCategories = await fetch("/api/admin/categories/leaf").json();
 
 // Assign product to leaf category
 await ProductService.createProduct({
   name: "Gaming Laptop XYZ",
-  category: leafCategories.find(cat => cat.slug === 'gaming-laptops').id,
+  category: leafCategories.find((cat) => cat.slug === "gaming-laptops").id,
   // ... other product data
 });
+```
+
+### 4. Searching Categories
+
+```typescript
+// Search all categories
+const searchResults = await CategoryService.searchCategories("electronics", {
+  limit: 20,
+  withProductCounts: true
+});
+
+// Search only leaf categories (for product assignment)
+const leafSearchResults = await CategoryService.searchLeafCategories("laptop", {
+  limit: 10,
+  withProductCounts: true
+});
+
+// Get leaf categories with filter
+const leafCategories = await CategoryService.getLeafCategories({
+  search: "gaming",
+  withProductCounts: true,
+  includeInactive: false
+});
+```
+
+### 5. Product Assignment with Search
+
+```typescript
+// Find the right leaf category for a product
+const searchResults = await CategoryService.searchLeafCategories("gaming laptop");
+
+// Assign product to the selected leaf category
+if (searchResults.success && searchResults.data.categories.length > 0) {
+  const leafCategory = searchResults.data.categories[0]; // Best match
+  
+  await ProductService.createProduct({
+    name: "Gaming Laptop XYZ",
+    category: leafCategory.id, // Must be leaf category
+    price: 1299.99,
+    quantity: 10
+  });
+}
 ```
 
 ## Database Indices
@@ -325,8 +451,8 @@ Essential Firestore indices for optimal performance:
     {
       "collectionGroup": "categories",
       "fields": [
-        {"fieldPath": "parentIds", "arrayConfig": "CONTAINS"},
-        {"fieldPath": "isActive", "order": "ASCENDING"}
+        { "fieldPath": "parentIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "isActive", "order": "ASCENDING" }
       ]
     }
   ],
@@ -334,22 +460,22 @@ Essential Firestore indices for optimal performance:
     {
       "collectionGroup": "categories",
       "fieldPath": "isLeaf",
-      "indexes": [{"order": "ASCENDING", "queryScope": "COLLECTION"}]
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
     },
     {
       "collectionGroup": "categories",
       "fieldPath": "inStockCount",
-      "indexes": [{"order": "ASCENDING", "queryScope": "COLLECTION"}]
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
     },
     {
       "collectionGroup": "categories",
-      "fieldPath": "outOfStockCount", 
-      "indexes": [{"order": "ASCENDING", "queryScope": "COLLECTION"}]
+      "fieldPath": "outOfStockCount",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
     },
     {
       "collectionGroup": "categories",
       "fieldPath": "lowStockCount",
-      "indexes": [{"order": "ASCENDING", "queryScope": "COLLECTION"}]
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
     }
   ]
 }
@@ -365,20 +491,20 @@ service cloud.firestore {
     match /categories/{categoryId} {
       // Read: Public for active categories
       allow read: if resource.data.isActive == true;
-      
+
       // Read: Admin can read all
-      allow read: if request.auth != null && 
+      allow read: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      
+
       // Write: Admin only
-      allow create, update, delete: if request.auth != null && 
+      allow create, update, delete: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      
+
       // Validate hierarchy constraints
       allow write: if validateCategoryHierarchy(request.resource.data);
     }
   }
-  
+
   function validateCategoryHierarchy(data) {
     // Prevent circular references
     return data.parentId != resource.id &&
@@ -393,24 +519,28 @@ service cloud.firestore {
 ## Best Practices
 
 ### 1. Category Structure Design
+
 - **Plan hierarchy depth**: Keep under 5 levels for better UX
 - **Use descriptive names**: Clear, searchable category names
 - **Consistent sorting**: Use sortOrder for logical arrangement
 - **SEO optimization**: Include relevant keywords in slugs
 
 ### 2. Performance Optimization
+
 - **Lazy loading**: Load categories on demand in deep hierarchies
 - **Caching**: Cache frequently accessed category trees
 - **Indexing**: Ensure proper Firestore indices are deployed
 - **Batch operations**: Use bulk operations for mass updates
 
 ### 3. Data Integrity
+
 - **Validation**: Always validate parent-child relationships
 - **Consistency**: Regular stock count recalculation
 - **Backup**: Regular category structure backups
 - **Migration**: Test hierarchy changes in staging first
 
 ### 4. User Experience
+
 - **Visual indicators**: Clear leaf/parent category badges
 - **Breadcrumbs**: Show full category path in product views
 - **Search**: Implement category search and filtering
@@ -421,16 +551,19 @@ service cloud.firestore {
 ### Common Issues
 
 1. **Stock counts not updating**
+
    - Run `/api/admin/categories/update-counts`
    - Check Firestore indices are deployed
    - Verify product category assignments
 
 2. **Authentication errors**
+
    - Ensure JWT cookies are being sent (`credentials: 'include'`)
    - Check user role permissions
    - Verify admin authentication middleware
 
 3. **Hierarchy issues**
+
    - Validate parentIds array consistency
    - Check for circular references
    - Verify level calculations
@@ -471,8 +604,8 @@ curl -X POST "http://localhost:3000/api/admin/categories" \
 
 ```typescript
 async function migrateCategories() {
-  const categories = await db.collection('categories').get();
-  
+  const categories = await db.collection("categories").get();
+
   for (const doc of categories.docs) {
     await doc.ref.update({
       level: 0,
@@ -481,18 +614,19 @@ async function migrateCategories() {
       inStockCount: 0,
       outOfStockCount: 0,
       lowStockCount: 0,
-      productCount: 0
+      productCount: 0,
     });
   }
-  
+
   // Recalculate counts
-  await fetch('/api/admin/categories/update-counts', {method: 'PUT'});
+  await fetch("/api/admin/categories/update-counts", { method: "PUT" });
 }
 ```
 
 ## Changelog
 
 ### v2.0.0 - Hierarchical Categories
+
 - ✅ Added unlimited hierarchy support
 - ✅ Implemented leaf category system
 - ✅ Real-time stock tracking
@@ -500,11 +634,12 @@ async function migrateCategories() {
 - ✅ Admin interface with visual indicators
 
 ### v1.0.0 - Basic Categories
+
 - ✅ Simple category CRUD operations
 - ✅ Basic product assignment
 - ✅ Admin management interface
 
 ---
 
-*Last updated: October 2025*
-*Version: 2.0.0*
+_Last updated: October 2025_
+_Version: 2.0.0_

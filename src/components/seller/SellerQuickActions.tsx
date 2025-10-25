@@ -59,13 +59,6 @@ export default function SellerQuickActions() {
       color: "bg-pink-500 hover:bg-pink-600",
     },
     {
-      name: "Deals & Offers",
-      description: "Manage special deals",
-      href: "/seller/deals",
-      icon: TagIcon,
-      color: "bg-red-500 hover:bg-red-600",
-    },
-    {
       name: "Promotions",
       description: "Create campaigns",
       href: "/seller/promotions",

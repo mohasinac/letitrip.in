@@ -50,6 +50,25 @@ export class AuthService {
 
       await db.collection('users').doc(userRecord.uid).set(userData);
 
+      // If user is a seller or admin, create their store in sellers collection
+      if (role === 'seller' || role === 'admin') {
+        const defaultStoreName = `${name}'s Store`;
+        const storeData = {
+          userId: userRecord.uid,
+          storeName: defaultStoreName,
+          storeStatus: 'offline', // Default to offline until they set it up
+          storeDescription: '',
+          businessName: '',
+          isActive: false, // Store needs to be activated
+          isVerified: false,
+          awayMode: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        await db.collection('sellers').doc(userRecord.uid).set(storeData);
+      }
+
       // Generate JWT token
       const token = generateToken({
         userId: userRecord.uid,

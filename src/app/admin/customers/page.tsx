@@ -8,6 +8,12 @@ import {
   PencilIcon,
   EyeIcon,
   MagnifyingGlassIcon,
+  BuildingStorefrontIcon,
+  SparklesIcon,
+  XMarkIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { useEnhancedAuth } from "@/hooks/useEnhancedAuth";
 
@@ -22,6 +28,20 @@ interface User {
   lastLoginAt?: string;
   ordersCount: number;
   totalSpent: number;
+  // Store information for sellers/admins
+  storeName?: string;
+  storeStatus?: "live" | "maintenance" | "offline";
+  isFeatured?: boolean;
+  businessName?: string;
+  storeDescription?: string;
+  storeAddress?: string;
+  storePhone?: string;
+  storeWebsite?: string;
+  storeRegistrationDate?: string;
+  totalProducts?: number;
+  totalRevenue?: number;
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export default function CustomerManagement() {
@@ -31,8 +51,20 @@ export default function CustomerManagement() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [storeStatusFilter, setStoreStatusFilter] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [showStoreModal, setShowStoreModal] = useState(false);
+  const [showStoreStatusModal, setShowStoreStatusModal] = useState(false);
+  const [storeStatusAction, setStoreStatusAction] = useState<{
+    userId: string;
+    newStatus: "live" | "maintenance" | "offline";
+  } | null>(null);
+  const [featureAction, setFeatureAction] = useState<{
+    userId: string;
+    isFeatured: boolean;
+  } | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -74,9 +106,33 @@ export default function CustomerManagement() {
 
       setShowModal(false);
       setSelectedUser(null);
+      setSelectedRole("");
       fetchUsers(); // Refresh the data after update
     } catch (error) {
       console.error("Failed to update user role:", error);
+    }
+  };
+
+  const handleFeatureStore = async (userId: string, isFeatured: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/featured`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isFeatured }),
+      });
+
+      if (response.ok) {
+        // Refresh the users list
+        await fetchUsers();
+        setFeatureAction(null);
+      } else {
+        throw new Error("Failed to update featured status");
+      }
+    } catch (error) {
+      console.error("Error updating featured status:", error);
+      setError("Failed to update featured status");
     }
   };
 
@@ -99,12 +155,52 @@ export default function CustomerManagement() {
     }
   };
 
+  const handleStoreStatusChange = async (
+    userId: string,
+    newStatus: "live" | "maintenance" | "offline"
+  ) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/store-status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ storeStatus: newStatus }),
+      });
+
+      if (response.ok) {
+        fetchUsers();
+        setShowStoreStatusModal(false);
+        setStoreStatusAction(null);
+      } else {
+        throw new Error("Failed to update store status");
+      }
+    } catch (error) {
+      console.error("Failed to update store status:", error);
+      setError("Failed to update store status");
+    }
+  };
+
+  const viewStoreDetails = (user: User) => {
+    setSelectedUser(user);
+    setShowStoreModal(true);
+  };
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    return matchesSearch && matchesRole;
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.storeName &&
+        user.storeName.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    // Handle role filter mapping
+    let targetRole = roleFilter;
+    if (roleFilter === "customer") targetRole = "user";
+    const matchesRole = roleFilter === "all" || user.role === targetRole;
+    const matchesStoreStatus =
+      storeStatusFilter === "all" ||
+      (user.storeStatus && user.storeStatus === storeStatusFilter) ||
+      (storeStatusFilter === "no-store" && !user.storeName);
+
+    return matchesSearch && matchesRole && matchesStoreStatus;
   });
 
   const getRoleBadge = (role: string) => {
@@ -138,6 +234,34 @@ export default function CustomerManagement() {
       return `${days} days ago`;
     } catch {
       return "Unknown";
+    }
+  };
+
+  const getStoreStatusBadge = (status?: string) => {
+    const baseClasses =
+      "inline-flex px-2 py-1 text-xs font-medium rounded-full";
+    switch (status) {
+      case "live":
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case "maintenance":
+        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      case "offline":
+        return `${baseClasses} bg-red-100 text-red-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  };
+
+  const getStoreStatusIcon = (status?: string) => {
+    switch (status) {
+      case "live":
+        return <CheckCircleIcon className="h-4 w-4 text-green-600" />;
+      case "maintenance":
+        return <ClockIcon className="h-4 w-4 text-yellow-600" />;
+      case "offline":
+        return <ExclamationTriangleIcon className="h-4 w-4 text-red-600" />;
+      default:
+        return <BuildingStorefrontIcon className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -197,7 +321,7 @@ export default function CustomerManagement() {
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search users, emails, or store names..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
@@ -213,6 +337,17 @@ export default function CustomerManagement() {
             <option value="seller">Sellers</option>
             <option value="admin">Admins</option>
           </select>
+          <select
+            value={storeStatusFilter}
+            onChange={(e) => setStoreStatusFilter(e.target.value)}
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+          >
+            <option value="all">All Stores</option>
+            <option value="live">Live Stores</option>
+            <option value="maintenance">Under Maintenance</option>
+            <option value="offline">Offline Stores</option>
+            <option value="no-store">No Store</option>
+          </select>
         </div>
 
         {/* Users Table */}
@@ -226,6 +361,9 @@ export default function CustomerManagement() {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Store
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Status
@@ -244,7 +382,7 @@ export default function CustomerManagement() {
               <tbody className="bg-background divide-y divide-border">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
                       <p className="mt-2 text-gray-600">Loading users...</p>
                     </td>
@@ -252,7 +390,7 @@ export default function CustomerManagement() {
                 ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-6 py-12 text-center text-gray-600"
                     >
                       No users found matching your criteria
@@ -269,8 +407,13 @@ export default function CustomerManagement() {
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {user.name}
+                            <div className="flex items-center space-x-2">
+                              <div className="text-sm font-medium text-gray-900">
+                                {user.name}
+                              </div>
+                              {user.isFeatured && (
+                                <SparklesIcon className="h-4 w-4 text-yellow-500" />
+                              )}
                             </div>
                             <div className="text-sm text-gray-600">
                               {user.email}
@@ -283,6 +426,40 @@ export default function CustomerManagement() {
                           {user.role.charAt(0).toUpperCase() +
                             user.role.slice(1)}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.role === "seller" || user.role === "admin" ? (
+                          user.storeName ? (
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm font-medium text-gray-900">
+                                <BuildingStorefrontIcon className="h-4 w-4 mr-2 text-blue-600" />
+                                <span>{user.storeName}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                {getStoreStatusIcon(user.storeStatus)}
+                                <span
+                                  className={getStoreStatusBadge(
+                                    user.storeStatus
+                                  )}
+                                >
+                                  {user.storeStatus || "Unknown"}
+                                </span>
+                              </div>
+                              {user.businessName && (
+                                <div className="text-xs text-gray-500">
+                                  {user.businessName}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center text-sm text-gray-500">
+                              <BuildingStorefrontIcon className="h-4 w-4 mr-2" />
+                              <span>No store setup</span>
+                            </div>
+                          )
+                        ) : (
+                          <span className="text-sm text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
@@ -309,6 +486,66 @@ export default function CustomerManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
+                          {(user.role === "seller" || user.role === "admin") &&
+                            user.storeName && (
+                              <>
+                                <button
+                                  onClick={() => viewStoreDetails(user)}
+                                  className="p-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors"
+                                  title="View store details"
+                                >
+                                  <EyeIcon className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setStoreStatusAction({
+                                      userId: user.id,
+                                      newStatus:
+                                        user.storeStatus === "live"
+                                          ? "maintenance"
+                                          : "live",
+                                    });
+                                    setShowStoreStatusModal(true);
+                                  }}
+                                  className={`p-2 rounded-lg transition-colors ${
+                                    user.storeStatus === "live"
+                                      ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                                  }`}
+                                  title={
+                                    user.storeStatus === "live"
+                                      ? "Set to maintenance"
+                                      : "Set to live"
+                                  }
+                                >
+                                  {getStoreStatusIcon(
+                                    user.storeStatus === "live"
+                                      ? "maintenance"
+                                      : "live"
+                                  )}
+                                </button>
+                              </>
+                            )}
+                          {(user.role === "seller" ||
+                            user.role === "admin") && (
+                            <button
+                              onClick={() =>
+                                handleFeatureStore(user.id, !user.isFeatured)
+                              }
+                              className={`p-2 rounded-lg transition-colors ${
+                                user.isFeatured
+                                  ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              }`}
+                              title={
+                                user.isFeatured
+                                  ? "Remove from featured stores"
+                                  : "Make featured store"
+                              }
+                            >
+                              <SparklesIcon className="h-4 w-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() =>
                               handleVerificationToggle(user.id, !user.verified)
@@ -333,6 +570,7 @@ export default function CustomerManagement() {
                           <button
                             onClick={() => {
                               setSelectedUser(user);
+                              setSelectedRole(user.role);
                               setShowModal(true);
                             }}
                             className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
@@ -365,7 +603,8 @@ export default function CustomerManagement() {
                     type="radio"
                     name="role"
                     value={role}
-                    checked={selectedUser.role === role}
+                    checked={selectedRole === role}
+                    onChange={(e) => setSelectedRole(e.target.value)}
                     className="mr-3 h-4 w-4 text-red-600 focus:ring-red-500 border-border"
                   />
                   <span className="capitalize">
@@ -384,6 +623,7 @@ export default function CustomerManagement() {
                 onClick={() => {
                   setShowModal(false);
                   setSelectedUser(null);
+                  setSelectedRole("");
                 }}
                 className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200"
               >
@@ -391,21 +631,237 @@ export default function CustomerManagement() {
               </button>
               <button
                 onClick={() => {
-                  const newRole = (
-                    document.querySelector(
-                      'input[name="role"]:checked'
-                    ) as HTMLInputElement
-                  )?.value;
-                  if (newRole && newRole !== selectedUser.role) {
-                    handleRoleChange(selectedUser.id, newRole);
+                  if (selectedRole && selectedRole !== selectedUser?.role) {
+                    handleRoleChange(selectedUser!.id, selectedRole);
                   } else {
                     setShowModal(false);
                     setSelectedUser(null);
+                    setSelectedRole("");
                   }
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
               >
                 Update Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Store Details Modal */}
+      {showStoreModal && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-3">
+                <BuildingStorefrontIcon className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-medium text-gray-900">
+                  Store Details - {selectedUser.storeName || "No Store Name"}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowStoreModal(false);
+                  setSelectedUser(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Store Info */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">
+                  Store Information
+                </h4>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Store Name
+                  </label>
+                  <p className="text-sm text-gray-900">
+                    {selectedUser.storeName || "Not set"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Business Name
+                  </label>
+                  <p className="text-sm text-gray-900">
+                    {selectedUser.businessName || "Not set"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Status
+                  </label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {getStoreStatusIcon(selectedUser.storeStatus)}
+                    <span
+                      className={getStoreStatusBadge(selectedUser.storeStatus)}
+                    >
+                      {selectedUser.storeStatus || "Unknown"}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Featured Store
+                  </label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {selectedUser.isFeatured ? (
+                      <SparklesIcon className="h-4 w-4 text-yellow-500" />
+                    ) : (
+                      <div className="h-4 w-4 bg-gray-300 rounded-full"></div>
+                    )}
+                    <span className="text-sm text-gray-900">
+                      {selectedUser.isFeatured ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Owner Info */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">
+                  Owner Information
+                </h4>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Owner Name
+                  </label>
+                  <p className="text-sm text-gray-900">{selectedUser.name}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Email
+                  </label>
+                  <p className="text-sm text-gray-900">{selectedUser.email}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Role
+                  </label>
+                  <span className={getRoleBadge(selectedUser.role)}>
+                    {selectedUser.role.charAt(0).toUpperCase() +
+                      selectedUser.role.slice(1)}
+                  </span>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Verified
+                  </label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {selectedUser.verified ? (
+                      <ShieldCheckIcon className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <UserIcon className="h-4 w-4 text-gray-600" />
+                    )}
+                    <span className="text-sm text-gray-900">
+                      {selectedUser.verified ? "Verified" : "Unverified"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="md:col-span-2 space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">
+                  Statistics
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-xs font-medium text-blue-600 uppercase">
+                      Orders
+                    </div>
+                    <div className="text-lg font-semibold text-blue-900">
+                      {selectedUser.ordersCount}
+                    </div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="text-xs font-medium text-green-600 uppercase">
+                      Revenue
+                    </div>
+                    <div className="text-lg font-semibold text-green-900">
+                      ${selectedUser.totalSpent.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg">
+                    <div className="text-xs font-medium text-purple-600 uppercase">
+                      Products
+                    </div>
+                    <div className="text-lg font-semibold text-purple-900">
+                      {selectedUser.totalProducts || 0}
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 p-3 rounded-lg">
+                    <div className="text-xs font-medium text-yellow-600 uppercase">
+                      Rating
+                    </div>
+                    <div className="text-lg font-semibold text-yellow-900">
+                      {selectedUser.averageRating
+                        ? selectedUser.averageRating.toFixed(1)
+                        : "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowStoreModal(false);
+                  setSelectedUser(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Store Status Change Modal */}
+      {showStoreStatusModal && storeStatusAction && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Change Store Status
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to change the store status to{" "}
+              <span
+                className={getStoreStatusBadge(storeStatusAction.newStatus)}
+              >
+                {storeStatusAction.newStatus}
+              </span>
+              ?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowStoreStatusModal(false);
+                  setStoreStatusAction(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-secondary bg-surface rounded-md hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (storeStatusAction) {
+                    handleStoreStatusChange(
+                      storeStatusAction.userId,
+                      storeStatusAction.newStatus
+                    );
+                  }
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+              >
+                Change Status
               </button>
             </div>
           </div>

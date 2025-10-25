@@ -151,7 +151,7 @@ class RateLimiter {
   private limit: number;
   private window: number;
 
-  constructor(limit = 100, windowMs = 15 * 60 * 1000) {
+  constructor(limit = 5000, windowMs = 15 * 60 * 1000) {
     this.limit = limit;
     this.window = windowMs;
   }
@@ -164,6 +164,7 @@ class RateLimiter {
     const validRequests = userRequests.filter((timestamp) => now - timestamp < this.window);
 
     if (validRequests.length >= this.limit) {
+      console.warn(`Rate limit exceeded for ${identifier}: ${validRequests.length}/${this.limit} requests`);
       return false;
     }
 
@@ -182,14 +183,26 @@ export function withRateLimit(
   handler: (request: NextRequest) => Promise<NextResponse>
 ) {
   return async (request: NextRequest) => {
-    const identifier = request.headers.get('x-forwarded-for') || 
-                      request.headers.get('x-real-ip') || 
-                      'unknown';
+    try {
+      // Skip rate limiting in development
+      if (process.env.NODE_ENV === 'development') {
+        return handler(request);
+      }
 
-    if (!rateLimiter.check(identifier)) {
-      return ApiResponse.error('Too many requests', 429);
+      const identifier = request.headers.get('x-forwarded-for') || 
+                        request.headers.get('x-real-ip') || 
+                        'unknown';
+
+      if (!rateLimiter.check(identifier)) {
+        console.warn(`Rate limit exceeded for ${identifier} on ${request.method} ${request.url}`);
+        return ApiResponse.error('Too many requests. Please try again later.', 429);
+      }
+
+      return handler(request);
+    } catch (error) {
+      console.error('Rate limiting error:', error);
+      // If rate limiting fails, allow the request to proceed
+      return handler(request);
     }
-
-    return handler(request);
   };
 }

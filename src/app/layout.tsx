@@ -4,10 +4,10 @@ import "./globals.css";
 import "../theme/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import UserDebug from "@/components/debug/UserDebug";
 import CookieConsentBanner from "@/components/auth/CookieConsentBanner";
 import AppLayout from "@/components/layout/AppLayout";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -67,11 +67,33 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
-            <CategoriesProvider>
-              <AppLayout>{children}</AppLayout>
-              <UserDebug />
-              <CookieConsentBanner />
-            </CategoriesProvider>
+            <AppLayout>{children}</AppLayout>
+            <UserDebug />
+            <CookieConsentBanner />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "#363636",
+                  color: "#fff",
+                },
+                success: {
+                  duration: 3000,
+                  style: {
+                    background: "#10b981",
+                    color: "#fff",
+                  },
+                },
+                error: {
+                  duration: 5000,
+                  style: {
+                    background: "#ef4444",
+                    color: "#fff",
+                  },
+                },
+              }}
+            />
           </CartProvider>
         </AuthProvider>
       </body>

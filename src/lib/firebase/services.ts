@@ -305,20 +305,24 @@ export class FirebaseService {
     try {
       let q = query(collection(db, 'products'));
       
-      // Apply filters
+      // Always filter for active products first
+      q = query(q, where('status', '==', 'active'));
+      
+      // Apply other filters
       if (filters.category) {
         q = query(q, where('category', '==', filters.category));
       }
       if (filters.featured !== undefined) {
         q = query(q, where('isFeatured', '==', filters.featured));
       }
-      if (filters.minPrice) {
+      if (filters.minPrice !== undefined) {
         q = query(q, where('price', '>=', filters.minPrice));
       }
-      if (filters.maxPrice) {
+      if (filters.maxPrice !== undefined) {
         q = query(q, where('price', '<=', filters.maxPrice));
       }
 
+      // Order by createdAt for consistent results
       q = query(q, orderBy('createdAt', 'desc'));
 
       if (filters.limit) {
@@ -343,7 +347,7 @@ export class FirebaseService {
         filteredProducts = products.filter(product =>
           product.name.toLowerCase().includes(searchLower) ||
           product.description.toLowerCase().includes(searchLower) ||
-          product.tags.some(tag => tag.toLowerCase().includes(searchLower))
+          product.tags?.some(tag => tag.toLowerCase().includes(searchLower))
         );
       }
 

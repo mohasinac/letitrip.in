@@ -1,311 +1,345 @@
 "use client";
 
-import { useState } from "react";
-import RoleGuard from "@/components/auth/RoleGuard";
-import { Category, CategoryFormData } from "@/types";
-import { useGlobalCategories } from "@/contexts/CategoriesContext";
-import { CategoryForm } from "@/components/categories/CategoryForm";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Category, CategoryTreeNode } from "@/types";
+import { CategoryService } from "@/lib/services/category.service";
+import CategoryTree from "@/components/admin/categories/CategoryTree";
+import CategoryForm from "@/components/admin/categories/CategoryForm";
+import CategoryBulkActions from "@/components/admin/categories/CategoryBulkActions";
+import CategorySearch from "@/components/admin/categories/CategorySearch";
+import CategoryStats from "@/components/admin/categories/CategoryStats";
 
 export default function AdminCategoriesPage() {
-  const {
-    categories,
-    loading,
-    error,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    toggleCategoryStatus,
-  } = useGlobalCategories();
-
+  const { user } = useAuth();
+  const [categories, setCategories] = useState<CategoryTreeNode[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | "active" | "inactive"
-  >("all");
+  const [view, setView] = useState<"tree" | "list">("tree");
+  const [filters, setFilters] = useState({
+    includeInactive: false,
+    showFeaturedOnly: false,
+    level: null as number | null,
+  });
 
-  const handleSubmit = async (data: CategoryFormData) => {
+  // Load categories
+  const loadCategories = async () => {
+    setLoading(true);
     try {
-      if (editingCategory) {
-        await updateCategory(editingCategory.id, data);
-      } else {
-        await createCategory(data);
+      // Get auth token
+      const token = user?.getIdToken ? await user.getIdToken() : "";
+
+      const response = await fetch(
+        "/api/admin/categories/tree?" +
+          new URLSearchParams({
+            includeInactive: filters.includeInactive.toString(),
+            withProductCounts: "true",
+          }),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          setCategories(result.data.categories);
+        }
       }
-      setShowForm(false);
-      setEditingCategory(null);
     } catch (error) {
-      console.error("Error saving category:", error);
+      console.error("Failed to load categories:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleEdit = (category: Category) => {
+  useEffect(() => {
+    loadCategories();
+  }, [filters]);
+
+  // Handle category operations
+  const handleCreateCategory = () => {
+    setEditingCategory(null);
+    setShowForm(true);
+  };
+
+  const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
     setShowForm(true);
   };
 
-  const handleDelete = async (categoryId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this category? This action cannot be undone."
-      )
-    ) {
+  const handleDeleteCategory = async (categoryId: string) => {
+    if (!confirm("Are you sure you want to delete this category?")) {
       return;
     }
 
     try {
-      await deleteCategory(categoryId);
+      const token = user?.getIdToken ? await user.getIdToken() : "";
+
+      const response = await fetch(`/api/admin/categories/${categoryId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        await loadCategories();
+      } else {
+        alert(result.error || "Failed to delete category");
+      }
     } catch (error) {
-      console.error("Error deleting category:", error);
+      console.error("Failed to delete category:", error);
+      alert("Failed to delete category");
     }
   };
 
-  const handleToggleStatus = async (categoryId: string) => {
-    const category = categories.find((cat) => cat.id === categoryId);
-    if (!category) return;
+  const handleFormSubmit = async () => {
+    setShowForm(false);
+    setEditingCategory(null);
+    await loadCategories();
+  };
+
+  const handleBulkAction = async (action: string, data?: any) => {
+    if (selectedCategories.length === 0) {
+      alert("Please select categories first");
+      return;
+    }
 
     try {
-      await toggleCategoryStatus(categoryId, category.isActive || false);
+      const token = user?.getIdToken ? await user.getIdToken() : "";
+
+      const response = await fetch("/api/admin/categories/bulk", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          operation: action,
+          categoryIds: selectedCategories,
+          data,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setSelectedCategories([]);
+        await loadCategories();
+      } else {
+        alert(result.error || "Bulk operation failed");
+      }
     } catch (error) {
-      console.error("Error toggling category status:", error);
+      console.error("Bulk operation failed:", error);
+      alert("Bulk operation failed");
     }
   };
 
-  const filteredCategories = categories.filter((category) => {
-    const matchesSearch =
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "active" && category.isActive) ||
-      (statusFilter === "inactive" && !category.isActive);
-    return matchesSearch && matchesStatus;
-  });
-
-  const parentCategories = categories.filter((cat) => !cat.parentId);
-
-  if (loading && categories.length === 0) {
+  // Check admin access
+  if (!user || (user as any).role !== "admin") {
     return (
-      <RoleGuard requiredRole="admin">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600">
+            You need admin privileges to access this page.
+          </p>
         </div>
-      </RoleGuard>
-    );
-  }
-
-  if (error) {
-    return (
-      <RoleGuard requiredRole="admin">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-primary mb-2">
-              Error Loading Categories
-            </h2>
-            <p className="text-secondary">{error}</p>
-          </div>
-        </div>
-      </RoleGuard>
+      </div>
     );
   }
 
   return (
-    <RoleGuard requiredRole="admin">
-      <div className="admin-layout">
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-primary">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Category Management
               </h1>
-              <p className="text-secondary mt-1">
-                Manage product categories and subcategories
+              <p className="mt-1 text-sm text-gray-500">
+                Manage product categories and their hierarchy
               </p>
             </div>
-            <button
-              onClick={() => setShowForm(true)}
-              disabled={loading}
-              className="bg-primary text-white px-4 py-2 rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50"
-            >
-              Add New Category
-            </button>
-          </div>
-
-          {/* Filters */}
-          <div className="admin-card p-6 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-              <div className="flex-1 max-w-md">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search categories..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <svg
-                      className="h-5 w-5 text-muted"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <select
-                  value={statusFilter}
-                  onChange={(e) =>
-                    setStatusFilter(
-                      e.target.value as "all" | "active" | "inactive"
-                    )
-                  }
-                  className="px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            <div className="flex items-center space-x-4">
+              {/* View Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setView("tree")}
+                  className={`px-3 py-1 rounded text-sm font-medium ${
+                    view === "tree"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
                 >
-                  <option value="all">All Categories</option>
-                  <option value="active">Active Only</option>
-                  <option value="inactive">Inactive Only</option>
-                </select>
+                  Tree View
+                </button>
+                <button
+                  onClick={() => setView("list")}
+                  className={`px-3 py-1 rounded text-sm font-medium ${
+                    view === "list"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  List View
+                </button>
               </div>
-            </div>
 
-            <div className="mt-4 text-sm text-secondary">
-              Showing {filteredCategories.length} of {categories.length}{" "}
-              categories
-            </div>
-          </div>
-
-          {/* Categories Table */}
-          <div className="admin-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-surface">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Category
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Parent
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Products
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Updated
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-background divide-y divide-border">
-                  {filteredCategories.map((category) => (
-                    <tr key={category.id} className="hover: bg-surface">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <img
-                            src={category.image}
-                            alt={category.name}
-                            className="w-10 h-10 object-cover rounded-lg mr-3"
-                          />
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-lg">{category.icon}</span>
-                              <div className="text-sm font-medium text-primary">
-                                {category.name}
-                              </div>
-                              {category.featured && (
-                                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                                  Featured
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-sm text-muted">
-                              /{category.slug}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                        {category.parentId
-                          ? categories.find((c) => c.id === category.parentId)
-                              ?.name || "Unknown"
-                          : "Root Category"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                        {category.productCount.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => handleToggleStatus(category.id)}
-                          disabled={loading}
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors disabled:opacity-50 ${
-                            category.isActive
-                              ? "bg-green-100 text-green-800 hover:bg-green-200"
-                              : "bg-red-100 text-red-800 hover:bg-red-200"
-                          }`}
-                        >
-                          {category.isActive ? "Active" : "Inactive"}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                        {category.updatedAt
-                          ? new Date(category.updatedAt).toLocaleDateString()
-                          : "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleEdit(category)}
-                            disabled={loading}
-                            className="text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(category.id)}
-                            disabled={loading}
-                            className="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <button
+                onClick={handleCreateCategory}
+                className="btn btn-primary"
+              >
+                Add Category
+              </button>
             </div>
           </div>
-
-          {/* Category Form Modal */}
-          {showForm && (
-            <CategoryForm
-              category={editingCategory}
-              parentCategories={parentCategories}
-              onSubmit={handleSubmit}
-              onCancel={() => {
-                setShowForm(false);
-                setEditingCategory(null);
-              }}
-              loading={loading}
-            />
-          )}
         </div>
       </div>
-    </RoleGuard>
+
+      {/* Main Content */}
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Stats */}
+            <CategoryStats categories={categories} />
+
+            {/* Filters */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Filters
+              </h3>
+
+              <div className="space-y-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={filters.includeInactive}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        includeInactive: e.target.checked,
+                      }))
+                    }
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    Include inactive
+                  </span>
+                </label>
+
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={filters.showFeaturedOnly}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        showFeaturedOnly: e.target.checked,
+                      }))
+                    }
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    Featured only
+                  </span>
+                </label>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Level Filter
+                  </label>
+                  <select
+                    value={filters.level || ""}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        level: e.target.value ? parseInt(e.target.value) : null,
+                      }))
+                    }
+                    className="input"
+                  >
+                    <option value="">All levels</option>
+                    <option value="0">Root categories</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Bulk Actions */}
+            {selectedCategories.length > 0 && (
+              <CategoryBulkActions
+                selectedCount={selectedCategories.length}
+                onAction={handleBulkAction}
+                onClearSelection={() => setSelectedCategories([])}
+              />
+            )}
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {/* Search */}
+            <div className="mb-6">
+              <CategorySearch
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onResults={(results: Category[]) => {
+                  // Handle search results if needed
+                }}
+              />
+            </div>
+
+            {/* Categories */}
+            <div className="bg-white rounded-lg shadow">
+              {loading ? (
+                <div className="p-8 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-gray-500">Loading categories...</p>
+                </div>
+              ) : (
+                <CategoryTree
+                  categories={categories}
+                  searchQuery={searchQuery}
+                  filters={filters}
+                  selectedCategories={selectedCategories}
+                  onSelectionChange={setSelectedCategories}
+                  onEdit={handleEditCategory}
+                  onDelete={handleDeleteCategory}
+                  view={view}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Category Form Modal */}
+      {showForm && (
+        <CategoryForm
+          category={editingCategory}
+          allCategories={categories.flat()} // Flatten tree for parent selection
+          onSubmit={handleFormSubmit}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingCategory(null);
+          }}
+        />
+      )}
+    </div>
   );
 }

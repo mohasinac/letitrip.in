@@ -92,7 +92,32 @@ export default function PoliciesManagementPage() {
       const response = await fetch("/api/admin/settings");
       if (response.ok) {
         const data = await response.json();
-        const policies = data.policies || defaultPolicies;
+
+        // Check if policies is an array or object and convert accordingly
+        let policies;
+        if (data.policies) {
+          if (Array.isArray(data.policies)) {
+            policies = data.policies;
+          } else {
+            // Convert object format to array format
+            policies = defaultPolicies.map((defaultPolicy) => {
+              const existingContent =
+                data.policies[defaultPolicy.id] ||
+                data.policies[defaultPolicy.slug] ||
+                "";
+              return {
+                ...defaultPolicy,
+                content: existingContent,
+                lastModified: existingContent
+                  ? new Date().toISOString()
+                  : defaultPolicy.lastModified,
+              };
+            });
+          }
+        } else {
+          policies = defaultPolicies;
+        }
+
         setSettings({ policies });
       } else {
         // If no policies exist, initialize with defaults
@@ -107,6 +132,12 @@ export default function PoliciesManagementPage() {
   };
 
   const handlePolicyToggle = (policyId: string) => {
+    // Ensure policies is an array before mapping
+    if (!Array.isArray(settings.policies)) {
+      console.error("settings.policies is not an array:", settings.policies);
+      return;
+    }
+
     const updatedPolicies = settings.policies.map((policy) =>
       policy.id === policyId
         ? {
@@ -148,6 +179,12 @@ export default function PoliciesManagementPage() {
 
   const handleSavePolicy = async () => {
     if (!editingPolicy) return;
+
+    // Ensure policies is an array before mapping
+    if (!Array.isArray(settings.policies)) {
+      console.error("settings.policies is not an array:", settings.policies);
+      return;
+    }
 
     const updatedPolicies = settings.policies.map((policy) =>
       policy.id === editingPolicy.id
@@ -217,9 +254,7 @@ export default function PoliciesManagementPage() {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              {saving && (
-                <span className="text-sm text-muted">Saving...</span>
-              )}
+              {saving && <span className="text-sm text-muted">Saving...</span>}
               <span className="text-sm text-muted">Auto-save enabled</span>
             </div>
           </div>
@@ -237,81 +272,94 @@ export default function PoliciesManagementPage() {
               </div>
 
               <div className="divide-y divide-border">
-                {settings.policies.map((policy) => (
-                  <div key={policy.id} className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <h3 className="text-lg font-medium text-primary">
-                            {policy.title}
-                          </h3>
-                          {getStatusBadge(policy.isActive)}
-                          <span className="text-xs text-muted">
-                            v{policy.version}
-                          </span>
+                {Array.isArray(settings.policies) ? (
+                  settings.policies.map((policy) => (
+                    <div key={policy.id} className="px-6 py-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3">
+                            <h3 className="text-lg font-medium text-primary">
+                              {policy.title}
+                            </h3>
+                            {getStatusBadge(policy.isActive)}
+                            <span className="text-xs text-muted">
+                              v{policy.version}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center space-x-4 text-sm text-muted">
+                            <span>Slug: /{policy.slug}</span>
+                            <span>•</span>
+                            <span>
+                              Last modified: {formatDate(policy.lastModified)}
+                            </span>
+                            <span>•</span>
+                            <span>
+                              Content:{" "}
+                              {policy.content
+                                ? `${
+                                    Math.round(policy.content.length / 100) *
+                                    100
+                                  }+ chars`
+                                : "Empty"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="mt-1 flex items-center space-x-4 text-sm text-muted">
-                          <span>Slug: /{policy.slug}</span>
-                          <span>•</span>
-                          <span>
-                            Last modified: {formatDate(policy.lastModified)}
-                          </span>
-                          <span>•</span>
-                          <span>
-                            Content:{" "}
+
+                        <div className="flex items-center space-x-2">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={policy.isActive}
+                              onChange={() => handlePolicyToggle(policy.id)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after: bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                          </label>
+
+                          <button
+                            onClick={() =>
+                              window.open(`/${policy.slug}`, "_blank")
+                            }
+                            className="p-2 text-muted hover: text-secondary"
+                            title="Preview policy"
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </button>
+
+                          <button
+                            onClick={() => handleEditPolicy(policy)}
+                            className="p-2 text-blue-600 hover:text-blue-800"
+                            title="Edit policy"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Content Preview */}
+                      {policy.content && (
+                        <div className="mt-3 bg-surface rounded p-3">
+                          <p className="text-sm text-secondary line-clamp-2">
                             {policy.content
-                              ? `${
-                                  Math.round(policy.content.length / 100) * 100
-                                }+ chars`
-                              : "Empty"}
-                          </span>
+                              .replace(/<[^>]*>/g, "")
+                              .substring(0, 200)}
+                            ...
+                          </p>
                         </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={policy.isActive}
-                            onChange={() => handlePolicyToggle(policy.id)}
-                            className="sr-only peer"
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after: bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-
-                        <button
-                          onClick={() =>
-                            window.open(`/${policy.slug}`, "_blank")
-                          }
-                          className="p-2 text-muted hover: text-secondary"
-                          title="Preview policy"
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                        </button>
-
-                        <button
-                          onClick={() => handleEditPolicy(policy)}
-                          className="p-2 text-blue-600 hover:text-blue-800"
-                          title="Edit policy"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                      </div>
+                      )}
                     </div>
-
-                    {/* Content Preview */}
-                    {policy.content && (
-                      <div className="mt-3 bg-surface rounded p-3">
-                        <p className="text-sm text-secondary line-clamp-2">
-                          {policy.content
-                            .replace(/<[^>]*>/g, "")
-                            .substring(0, 200)}
-                          ...
-                        </p>
-                      </div>
-                    )}
+                  ))
+                ) : (
+                  <div className="px-6 py-8 text-center text-muted">
+                    <p>No policies found or invalid data format.</p>
+                    <button
+                      onClick={() => setSettings({ policies: defaultPolicies })}
+                      className="mt-2 text-primary hover:text-primary-dark font-medium"
+                    >
+                      Initialize with default policies
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

@@ -215,11 +215,23 @@ export class SellerService {
       });
       
       if (!response.ok) {
-        throw new Error("Failed to fetch analytics");
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error("Analytics API Error:", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData.error || 'Failed to fetch analytics'
+        });
+        throw new Error(errorData.error || "Failed to fetch analytics");
       }
       
       const data = await response.json();
-      return data.data || { salesData: { labels: [], datasets: [] }, topProducts: [], recentOrders: [], metrics: {} };
+      return data.data || { 
+        salesData: { labels: [], datasets: [] }, 
+        topProducts: [], 
+        recentOrders: [], 
+        productPerformance: [],
+        customerInsights: { newCustomers: 0, returningCustomers: 0, topLocations: [], ageGroups: [] }
+      };
     } catch (error) {
       console.error("Error fetching analytics:", error);
       return { 

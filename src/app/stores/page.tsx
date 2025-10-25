@@ -12,12 +12,18 @@ import {
   FunnelIcon,
   MapPinIcon,
   CalendarDaysIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 
 interface Seller {
   id: string;
   name: string;
-  businessName: string;
+  businessName?: string;
+  storeName?: string;
+  displayName: string;
+  storeStatus: "live" | "maintenance" | "offline";
+  storeDescription?: string;
+  isFeatured: boolean;
   email: string;
   verified: boolean;
   rating: number;
@@ -37,6 +43,7 @@ export default function StoresPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [storeStatus, setStoreStatus] = useState("");
   const [sort, setSort] = useState("rating");
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
@@ -60,6 +67,7 @@ export default function StoresPage() {
         limit: "12",
         search,
         category: category === "All" ? "" : category,
+        storeStatus,
         sort,
       });
 
@@ -87,7 +95,7 @@ export default function StoresPage() {
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [search, category, sort, page]);
+  }, [search, category, storeStatus, sort, page]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -163,7 +171,7 @@ export default function StoresPage() {
           {/* Filters */}
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -174,6 +182,17 @@ export default function StoresPage() {
                       {cat}
                     </option>
                   ))}
+                </select>
+
+                <select
+                  value={storeStatus}
+                  onChange={(e) => setStoreStatus(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="">All Stores</option>
+                  <option value="live">Live Stores</option>
+                  <option value="maintenance">Under Maintenance</option>
+                  <option value="offline">Offline Stores</option>
                 </select>
 
                 <select
@@ -212,8 +231,18 @@ export default function StoresPage() {
                 return (
                   <div
                     key={seller.id}
-                    className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
+                    className={`bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow ${
+                      seller.isFeatured
+                        ? "ring-2 ring-yellow-400 ring-opacity-50"
+                        : ""
+                    }`}
                   >
+                    {seller.isFeatured && (
+                      <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-medium px-3 py-1 flex items-center">
+                        <SparklesIcon className="w-3 h-3 mr-1" />
+                        Featured Store
+                      </div>
+                    )}
                     <div className="p-6">
                       {/* Seller Header */}
                       <div className="flex items-start space-x-4 mb-4">
@@ -221,26 +250,53 @@ export default function StoresPage() {
                           {seller.avatar ? (
                             <Image
                               src={seller.avatar}
-                              alt={seller.name}
+                              alt={seller.displayName}
                               width={64}
                               height={64}
                               className="rounded-full"
                             />
                           ) : (
                             <span className="text-xl font-bold text-gray-600">
-                              {seller.businessName.charAt(0)}
+                              {seller.displayName.charAt(0).toUpperCase()}
                             </span>
                           )}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-1">
+                            {seller.isFeatured && (
+                              <SparklesIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                            )}
                             <h3 className="font-semibold text-gray-900 truncate">
-                              {seller.businessName}
+                              {seller.displayName}
                             </h3>
                             {seller.verified && (
                               <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
                             )}
+                          </div>
+
+                          {/* Store status and name info */}
+                          <div className="flex items-center space-x-2 mb-2">
+                            {seller.storeName && (
+                              <span className="text-xs text-blue-600 font-medium">
+                                {seller.storeName}
+                              </span>
+                            )}
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                seller.storeStatus === "live"
+                                  ? "bg-green-100 text-green-800"
+                                  : seller.storeStatus === "maintenance"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {seller.storeStatus === "live"
+                                ? "🟢 Live"
+                                : seller.storeStatus === "maintenance"
+                                ? "🟡 Maintenance"
+                                : "🔴 Offline"}
+                            </span>
                           </div>
 
                           <div className="flex items-center space-x-1 mb-2">
@@ -265,7 +321,7 @@ export default function StoresPage() {
 
                       {/* Description */}
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {seller.description}
+                        {seller.storeDescription || seller.description}
                       </p>
 
                       {/* Stats */}

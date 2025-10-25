@@ -11,8 +11,6 @@ import {
 } from "@/hooks/useRealTimeData";
 // Enhanced Seller Dashboard Components
 import EnhancedSellerStatsCards from "@/components/seller/EnhancedSellerStatsCards";
-import EnhancedSellerOrders from "@/components/seller/EnhancedSellerOrders";
-import EnhancedSellerProducts from "@/components/seller/EnhancedSellerProducts";
 import EnhancedSellerSalesChart from "@/components/seller/EnhancedSellerSalesChart";
 import EnhancedSellerQuickActions from "@/components/seller/EnhancedSellerQuickActions";
 import SellerNotificationCenter from "@/components/seller/SellerNotificationCenter";
@@ -21,9 +19,6 @@ import RealTimeIndicator from "@/components/ui/RealTimeIndicator";
 
 // Fallback components
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
-import SellerOrders from "@/components/seller/SellerOrders";
-import SellerProducts from "@/components/seller/SellerProducts";
-import SellerAuctions from "@/components/seller/SellerAuctions";
 import SellerSalesChart from "@/components/seller/SellerSalesChart";
 import SellerQuickActions from "@/components/seller/SellerQuickActions";
 import SellerNotifications from "@/components/seller/SellerNotifications";
@@ -34,6 +29,46 @@ export default function SellerDashboard() {
     "7d" | "30d" | "90d" | "1y"
   >("30d");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [storeInfo, setStoreInfo] = useState<{
+    storeName?: string;
+    storeStatus?: string;
+  }>({});
+  const [showStoreSetupAlert, setShowStoreSetupAlert] = useState(false);
+
+  // Load store information
+  useEffect(() => {
+    const loadStoreInfo = async () => {
+      if (!user?.id || !user.getIdToken) return;
+
+      try {
+        const token = await user.getIdToken();
+        const response = await fetch("/api/seller/store-settings", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStoreInfo({
+            storeName: data.storeName,
+            storeStatus: data.storeStatus,
+          });
+
+          // Show setup alert if store is not properly configured
+          setShowStoreSetupAlert(
+            !data.storeName ||
+              data.storeStatus === "offline" ||
+              data.storeName.includes("'s Store") // Default generated name
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load store info:", error);
+      }
+    };
+
+    loadStoreInfo();
+  }, [user?.id]);
 
   // Real-time data hooks
   const dashboardData = useMultipleRealTimeData({
@@ -111,16 +146,18 @@ export default function SellerDashboard() {
             <div className="flex items-center space-x-4">
               <div>
                 <h1 className="text-3xl font-bold text-primary">
-                  Seller Dashboard
+                  {storeInfo.storeName || "Seller Dashboard"}
                 </h1>
-                <p className="mt-1 text-sm text-secondary flex items-center">
-                  Welcome back, {user?.name || user?.displayName}! Here's your
-                  store overview.
+                <div className="mt-1 text-sm text-secondary flex items-center">
+                  Welcome back, {user?.name || user?.displayName}!
+                  {storeInfo.storeName
+                    ? " Here's your store overview."
+                    : " Please set up your store in Settings."}
                   <RealTimeIndicator
                     isConnected={dashboardData.allConnected}
                     className="ml-2"
                   />
-                </p>
+                </div>
               </div>
             </div>
 
@@ -257,6 +294,45 @@ export default function SellerDashboard() {
         </div>
       )}
 
+      {/* Store Setup Alert */}
+      {showStoreSetupAlert && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-yellow-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                <strong>Complete your store setup:</strong> Your store is
+                currently offline and using a default name.
+                {!storeInfo.storeName && " Set your store name,"}
+                {storeInfo.storeStatus === "offline" &&
+                  " change status to 'Live' to start selling,"}
+                {storeInfo.storeName?.includes("'s Store") &&
+                  " customize your store name,"}
+                {" and configure your store settings."}
+                <Link
+                  href="/seller/settings?tab=store"
+                  className="font-medium text-yellow-800 hover:underline ml-2"
+                >
+                  Complete Setup →
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
@@ -302,25 +378,29 @@ export default function SellerDashboard() {
 
           {/* Orders, Products, and Performance Row */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            {dashboardData.analytics.data ? (
-              <>
-                <EnhancedSellerOrders
-                  orders={dashboardData.analytics.data.recentOrders}
-                  loading={dashboardData.analytics.loading}
-                  onRefresh={() => dashboardData.refreshAll()}
-                />
-                <EnhancedSellerProducts
-                  products={dashboardData.analytics.data.topProducts}
-                  loading={dashboardData.analytics.loading}
-                />
-              </>
-            ) : (
-              <>
-                <SellerOrders />
-                <SellerProducts />
-              </>
-            )}
-            <SellerAuctions />
+            {/* Orders Placeholder */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Recent Orders
+              </h3>
+              <p className="text-gray-500">Orders management coming soon...</p>
+            </div>
+
+            {/* Products Placeholder */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Top Products
+              </h3>
+              <p className="text-gray-500">Product analytics coming soon...</p>
+            </div>
+
+            {/* Auctions Placeholder */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Active Auctions
+              </h3>
+              <p className="text-gray-500">Auction management coming soon...</p>
+            </div>
           </div>
 
           {/* Notifications */}

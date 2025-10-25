@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { initializeFirebaseData } from "@/lib/firebase/initialize";
 
 export default function AdminInitializePage() {
   const [loading, setLoading] = useState(false);
@@ -9,6 +8,8 @@ export default function AdminInitializePage() {
     success: boolean;
     message?: string;
     error?: string;
+    categoriesAdded?: number;
+    productsAdded?: number;
   } | null>(null);
 
   const handleInitialize = async () => {
@@ -16,8 +17,28 @@ export default function AdminInitializePage() {
     setResult(null);
 
     try {
-      const result = await initializeFirebaseData();
-      setResult(result);
+      const response = await fetch("/api/admin/initialize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult({
+          success: true,
+          message: `Successfully initialized! Added ${data.categoriesAdded} categories and ${data.productsAdded} products.`,
+          categoriesAdded: data.categoriesAdded,
+          productsAdded: data.productsAdded,
+        });
+      } else {
+        setResult({
+          success: false,
+          error: data.error || "Failed to initialize data",
+        });
+      }
     } catch (error) {
       setResult({
         success: false,

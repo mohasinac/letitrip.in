@@ -80,17 +80,29 @@ export const createProductSchema = z.object({
 export const updateProductSchema = createProductSchema.partial();
 
 // Category Schemas
-export const createCategorySchema = z.object({
-  name: z.string().min(2, 'Category name is required'),
-  slug: z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format'),
-  description: z.string().optional(),
-  image: z.string().url().optional(),
-  parentId: z.string().optional(),
-  order: z.number().int().nonnegative().default(0),
-  status: z.enum(['active', 'inactive']).default('active'),
+export const categorySEOSchema = z.object({
+  metaTitle: z.string().max(60, 'Meta title should be under 60 characters').optional(),
+  metaDescription: z.string().max(160, 'Meta description should be under 160 characters').optional(),
+  altText: z.string().max(125, 'Alt text should be under 125 characters').optional(),
+  keywords: z.array(z.string()).max(10, 'Maximum 10 keywords allowed').optional(),
 });
 
-export const updateCategorySchema = createCategorySchema.partial();
+export const createCategorySchema = z.object({
+  name: z.string().min(2, 'Category name must be at least 2 characters').max(100, 'Category name too long'),
+  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
+  description: z.string().max(500, 'Description too long').optional(),
+  image: z.string().url('Invalid image URL').optional(),
+  icon: z.string().url('Invalid icon URL').optional(),
+  parentId: z.string().optional(),
+  isActive: z.boolean().default(true),
+  featured: z.boolean().default(false),
+  sortOrder: z.number().int().nonnegative().default(0),
+  seo: categorySEOSchema.optional(),
+});
+
+export const updateCategorySchema = createCategorySchema.partial().extend({
+  id: z.string().min(1, 'Category ID is required'),
+});
 
 // Order Schemas
 export const createOrderSchema = z.object({

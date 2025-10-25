@@ -59,7 +59,15 @@ export interface Product {
   isFeatured: boolean;
   rating?: number;
   reviewCount?: number;
-  sellerId?: string; // Reference to seller
+  sellerId: string; // Reference to seller (required)
+  seller?: {
+    id: string;
+    name?: string;
+    storeName?: string;
+    businessName?: string;
+    storeStatus?: 'live' | 'maintenance' | 'offline';
+    isVerified?: boolean;
+  };
   seo?: {
     title: string;
     description: string;
@@ -84,41 +92,63 @@ export interface ProductVideo {
 }
 
 // Category Types
-export interface SubCategory {
-  id: string;
-  name: string;
-  slug: string;
-  productCount: number;
+export interface CategorySEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  altText?: string;
+  keywords?: string[];
 }
 
 export interface Category {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  image: string;
+  description?: string;
+  
+  // SEO and Images
+  image?: string;
   icon?: string;
-  productCount: number;
+  seo?: CategorySEO;
+  
+  // Hierarchy
   parentId?: string;
-  subcategories?: SubCategory[];
+  parentIds?: string[]; // Full hierarchy path for efficient querying
+  level: number; // 0 for root categories
+  children?: Category[];
+  
+  // Status and Organization
+  isActive: boolean;
   featured: boolean;
-  sortOrder?: number;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  order: number;
+  sortOrder: number;
+  
+  // Metadata
+  productCount?: number;
+  inStockCount?: number;
+  outOfStockCount?: number;
+  lowStockCount?: number;
+  isLeaf?: boolean; // Indicates if this is a leaf category (no children)
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string; // Admin user ID
+  updatedBy: string; // Admin user ID
 }
 
 export interface CategoryFormData {
   name: string;
   slug: string;
-  description: string;
-  image: string;
-  icon: string;
-  parentId: string;
+  description?: string;
+  image?: string;
+  icon?: string;
+  parentId?: string;
+  isActive: boolean;
   featured: boolean;
   sortOrder: number;
-  isActive: boolean;
+  seo?: CategorySEO;
+}
+
+export interface CategoryTreeNode extends Category {
+  children: CategoryTreeNode[];
+  hasChildren: boolean;
 }
 
 // Order Types
@@ -126,6 +156,7 @@ export interface Order {
   id: string;
   orderNumber: string;
   userId: string;
+  customerName?: string; // Added for seller order views
   items: OrderItem[];
   subtotal: number;
   shipping: number;
@@ -169,9 +200,19 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 // Cart Types
 export interface CartItem {
+  id: string;
   productId: string;
   quantity: number;
   price: number;
+  name: string;
+  image?: string;
+  sku?: string;
+  seller?: {
+    id: string;
+    name: string;
+    storeName?: string;
+  };
+  addedAt: Date;
 }
 
 export interface Cart {
@@ -485,6 +526,9 @@ export interface SellerProfile {
   id: string;
   userId: string;
   businessName?: string;
+  storeName?: string; // Custom store name for display
+  storeStatus: 'live' | 'maintenance' | 'offline'; // Store operational status
+  storeDescription?: string;
   businessType?: 'individual' | 'company' | 'partnership';
   gstNumber?: string;
   panNumber?: string;

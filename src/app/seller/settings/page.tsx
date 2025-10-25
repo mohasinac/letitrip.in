@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   CogIcon,
   PaintBrushIcon,
@@ -10,10 +11,30 @@ import {
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import ThemeSettings from "@/components/ui/ThemeSettings";
+import StoreSettings from "@/components/seller/StoreSettings";
 
 export default function SellerSettings() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
+
+  // Set active tab from URL parameter
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (
+      tab &&
+      [
+        "general",
+        "theme",
+        "profile",
+        "notifications",
+        "store",
+        "analytics",
+      ].includes(tab)
+    ) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const tabs = [
     { id: "general", name: "General", icon: CogIcon },
@@ -146,12 +167,9 @@ export default function SellerSettings() {
                     Store Settings
                   </h3>
                   <p className="text-secondary">
-                    Configure your store settings and preferences.
+                    Configure your store name, status, and display preferences.
                   </p>
-                  <div className="text-center py-12 text-muted">
-                    <ShoppingBagIcon className="h-12 w-12 mx-auto mb-4" />
-                    <p>Store settings coming soon...</p>
-                  </div>
+                  <StoreSettings />
                 </div>
               )}
 

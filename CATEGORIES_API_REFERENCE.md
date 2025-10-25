@@ -1,30 +1,35 @@
 # Categories API Reference
 
 ## Base URL
+
 ```
 /api/admin/categories
 ```
 
 ## Authentication
+
 All endpoints require admin authentication via JWT cookies. Ensure requests include `credentials: 'include'`.
 
 ## Endpoints
 
 ### 1. GET /api/admin/categories
+
 Retrieve categories with filtering options.
 
 #### Query Parameters
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `parentId` | string | - | Filter by parent category ID |
-| `level` | number | - | Filter by hierarchy level (0=root) |
-| `featured` | boolean | - | Filter by featured status |
-| `includeInactive` | boolean | false | Include inactive categories |
-| `search` | string | - | Text search (name, description, slug) |
-| `withProductCounts` | boolean | false | Include stock calculations |
-| `rootOnly` | boolean | false | Get only root-level categories |
+
+| Parameter           | Type    | Default | Description                           |
+| ------------------- | ------- | ------- | ------------------------------------- |
+| `parentId`          | string  | -       | Filter by parent category ID          |
+| `level`             | number  | -       | Filter by hierarchy level (0=root)    |
+| `featured`          | boolean | -       | Filter by featured status             |
+| `includeInactive`   | boolean | false   | Include inactive categories           |
+| `search`            | string  | -       | Text search (name, description, slug) |
+| `withProductCounts` | boolean | false   | Include stock calculations            |
+| `rootOnly`          | boolean | false   | Get only root-level categories        |
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -62,27 +67,36 @@ Retrieve categories with filtering options.
 ```
 
 #### Examples
+
 ```javascript
 // Get all root categories with counts
-const response = await fetch('/api/admin/categories?rootOnly=true&withProductCounts=true', {
-  credentials: 'include'
-});
+const response = await fetch(
+  "/api/admin/categories?rootOnly=true&withProductCounts=true",
+  {
+    credentials: "include",
+  }
+);
 
 // Get children of specific category
-const response = await fetch('/api/admin/categories?parentId=cat_123', {
-  credentials: 'include'
+const response = await fetch("/api/admin/categories?parentId=cat_123", {
+  credentials: "include",
 });
 
 // Search categories
-const response = await fetch('/api/admin/categories?search=laptop&includeInactive=true', {
-  credentials: 'include'
-});
+const response = await fetch(
+  "/api/admin/categories?search=laptop&includeInactive=true",
+  {
+    credentials: "include",
+  }
+);
 ```
 
 ### 2. POST /api/admin/categories
+
 Create a new category.
 
 #### Request Body
+
 ```json
 {
   "name": "Smartphones",
@@ -103,10 +117,12 @@ Create a new category.
 ```
 
 #### Required Fields
+
 - `name` (string): Category name
 - `slug` (string): URL-friendly identifier
 
 #### Optional Fields
+
 - `description` (string): Category description
 - `image` (string): Category image URL
 - `icon` (string): Category icon/emoji
@@ -117,6 +133,7 @@ Create a new category.
 - `sortOrder` (number): Display order (default: 0)
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -139,6 +156,7 @@ Create a new category.
 ```
 
 #### Error Responses
+
 ```json
 // Validation Error
 {
@@ -170,16 +188,19 @@ Create a new category.
 ```
 
 ### 3. GET /api/admin/categories/tree
+
 Get complete category hierarchy as tree structure.
 
 #### Query Parameters
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includeInactive` | boolean | false | Include inactive categories |
-| `withProductCounts` | boolean | false | Include stock calculations |
-| `maxDepth` | number | - | Limit tree depth |
+
+| Parameter           | Type    | Default | Description                 |
+| ------------------- | ------- | ------- | --------------------------- |
+| `includeInactive`   | boolean | false   | Include inactive categories |
+| `withProductCounts` | boolean | false   | Include stock calculations  |
+| `maxDepth`          | number  | -       | Limit tree depth            |
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -214,81 +235,117 @@ Get complete category hierarchy as tree structure.
 ```
 
 ### 4. GET /api/admin/categories/leaf
-Get only leaf categories (can have products assigned).
 
-#### Query Parameters
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includeInactive` | boolean | false | Include inactive categories |
-| `withCounts` | boolean | true | Include product counts |
+Get only leaf categories (categories that can have products assigned).
 
-#### Response
+**Query Parameters:**
+
+- `includeInactive` - Include inactive categories (default: false)
+- `search` - Search query to filter leaf categories
+- `withProductCounts` - Include product count calculations (default: false)
+- `limit` - Maximum number of results to return
+
+**Response:**
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": "gaming-laptops",
-      "name": "Gaming Laptops", 
+      "id": "cat456",
+      "name": "Gaming Laptops",
       "slug": "gaming-laptops",
-      "level": 3,
+      "level": 2,
       "isLeaf": true,
-      "parentIds": ["electronics", "computers", "laptops"],
+      "fullPath": "Electronics > Computers > Gaming Laptops",
       "productCount": 15,
       "inStockCount": 12,
       "outOfStockCount": 3,
       "lowStockCount": 2
     }
-  ]
+  ],
+  "meta": {
+    "total": 25,
+    "totalLeafCategories": 45,
+    "search": "laptop",
+    "limit": 20,
+    "withProductCounts": true
+  }
 }
 ```
 
 ### 5. GET /api/admin/categories/search
-Search categories with advanced filtering.
 
-#### Query Parameters
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `q` | string | ✅ | Search query |
-| `limit` | number | - | Result limit (default: 20) |
-| `includeInactive` | boolean | - | Include inactive categories |
+Advanced search across all categories with relevance scoring.
 
-#### Response
+**Query Parameters:**
+
+- `q` or `query` - Search query (minimum 2 characters)
+- `limit` - Maximum results (default: 50)
+- `includeInactive` - Include inactive categories
+- `leafOnly` - Search only leaf categories
+- `withProductCounts` - Include product counts
+
+**Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "categories": [...],
-    "total": 5,
-    "query": "laptop"
+    "categories": [
+      {
+        "id": "cat789",
+        "name": "Laptops",
+        "fullPath": "Electronics > Computers > Laptops",
+        "isLeaf": true,
+        "matchType": "exact",
+        "relevanceScore": 20,
+        "productCount": 25
+      }
+    ],
+    "query": "laptops",
+    "total": 3,
+    "totalFound": 8,
+    "filters": {
+      "leafOnly": true,
+      "includeInactive": false,
+      "withProductCounts": true,
+      "limit": 50
+    }
   }
 }
 ```
 
 ### 6. GET /api/admin/categories/:id
+
 Get single category by ID.
 
 #### Response
+
 ```json
 {
   "success": true,
   "data": {
     "id": "cat_123",
-    "name": "Electronics",
+    "name": "Electronics"
     // ... full category object
   }
 }
 ```
 
 ### 7. PUT /api/admin/categories/:id
+
 Update existing category.
 
 #### Request Body
+
 Same as POST request, all fields optional except constraints:
+
 - Cannot change `parentId` to create circular references
 - Cannot change `slug` to duplicate existing slug
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -299,9 +356,11 @@ Same as POST request, all fields optional except constraints:
 ```
 
 ### 8. DELETE /api/admin/categories/:id
+
 Delete category (only if no children and no products).
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -312,6 +371,7 @@ Delete category (only if no children and no products).
 ```
 
 #### Error Response
+
 ```json
 {
   "success": false,
@@ -321,16 +381,19 @@ Delete category (only if no children and no products).
 ```
 
 ### 9. PUT /api/admin/categories/update-counts
+
 Recalculate stock counts for all categories.
 
 #### Request Body
+
 ```json
 {
-  "force": true  // Optional: force recalculation even if recent
+  "force": true // Optional: force recalculation even if recent
 }
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -345,45 +408,52 @@ Recalculate stock counts for all categories.
 ```
 
 ### 10. POST /api/admin/categories/validate-slug
+
 Validate or generate category slug.
 
 #### Request Body
+
 ```json
 {
   "slug": "custom-slug",
-  "excludeId": "cat_123"  // Optional: exclude from uniqueness check
+  "excludeId": "cat_123" // Optional: exclude from uniqueness check
 }
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
   "data": {
     "slug": "custom-slug",
     "available": true,
-    "suggestions": []  // If not available
+    "suggestions": [] // If not available
   }
 }
 ```
 
 ### 11. POST /api/admin/categories/bulk
+
 Perform bulk operations on multiple categories.
 
 #### Request Body
+
 ```json
 {
   "operation": "activate|deactivate|delete|setFeatured|updateSortOrder|moveToParent",
   "categoryIds": ["cat_1", "cat_2", "cat_3"],
-  "data": {  // Operation-specific data
-    "featured": true,     // For setFeatured
+  "data": {
+    // Operation-specific data
+    "featured": true, // For setFeatured
     "parentId": "new_parent", // For moveToParent
-    "sortOrder": 10       // For updateSortOrder
+    "sortOrder": 10 // For updateSortOrder
   }
 }
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -391,9 +461,9 @@ Perform bulk operations on multiple categories.
     "operation": "activate",
     "processedCount": 3,
     "results": [
-      {"id": "cat_1", "success": true},
-      {"id": "cat_2", "success": true},
-      {"id": "cat_3", "success": false, "error": "Not found"}
+      { "id": "cat_1", "success": true },
+      { "id": "cat_2", "success": true },
+      { "id": "cat_3", "success": false, "error": "Not found" }
     ]
   }
 }
@@ -406,48 +476,49 @@ Perform bulk operations on multiple categories.
 ```typescript
 // Get categories
 const categories = await CategoryService.getCategories({
-  parentId: 'electronics',
-  withProductCounts: true
+  parentId: "electronics",
+  withProductCounts: true,
 });
 
 // Create category
 const newCategory = await CategoryService.createCategory({
-  name: 'New Category',
-  slug: 'new-category',
-  parentId: 'parent-id'
+  name: "New Category",
+  slug: "new-category",
+  parentId: "parent-id",
 });
 
 // Update category
-const updated = await CategoryService.updateCategory('cat-id', {
-  name: 'Updated Name'
+const updated = await CategoryService.updateCategory("cat-id", {
+  name: "Updated Name",
 });
 
 // Delete category
-await CategoryService.deleteCategory('cat-id');
+await CategoryService.deleteCategory("cat-id");
 
 // Get tree structure
 const tree = await CategoryService.getCategoryTree({
   withProductCounts: true,
-  maxDepth: 3
+  maxDepth: 3,
 });
 
 // Search categories
-const results = await CategoryService.searchCategories('laptop');
+const results = await CategoryService.searchCategories("laptop");
 
 // Validate slug
-const validation = await CategoryService.validateSlug('my-slug');
+const validation = await CategoryService.validateSlug("my-slug");
 
 // Generate slug from name
-const slug = CategoryService.generateSlugFromName('My Category Name');
+const slug = CategoryService.generateSlugFromName("My Category Name");
 // Returns: "my-category-name"
 
 // Bulk operations
-await CategoryService.bulkOperation('activate', ['cat1', 'cat2']);
+await CategoryService.bulkOperation("activate", ["cat1", "cat2"]);
 ```
 
 ## Error Handling
 
 ### Common Error Codes
+
 - `400` - Bad Request (validation, duplicate slug, etc.)
 - `401` - Unauthorized (no authentication)
 - `403` - Forbidden (not admin)
@@ -455,6 +526,7 @@ await CategoryService.bulkOperation('activate', ['cat1', 'cat2']);
 - `500` - Internal Server Error
 
 ### Error Response Format
+
 ```json
 {
   "success": false,
@@ -467,6 +539,7 @@ await CategoryService.bulkOperation('activate', ['cat1', 'cat2']);
 ```
 
 ## Rate Limiting
+
 - Development: No rate limiting
 - Production: 100 requests per minute per IP
 - Admin endpoints: 200 requests per minute per user
@@ -474,22 +547,25 @@ await CategoryService.bulkOperation('activate', ['cat1', 'cat2']);
 ## Performance Notes
 
 ### Caching
+
 - Category tree is cached for 5 minutes
 - Individual categories cached for 10 minutes
 - Product counts recalculated on demand
 
 ### Optimization Tips
+
 - Use `withProductCounts=false` when counts not needed
 - Implement client-side caching for category trees
 - Use pagination for large category lists
 - Batch multiple operations when possible
 
 ### Database Queries
+
 - Hierarchy queries use `parentIds` array index
 - Stock count aggregation can be expensive for deep hierarchies
 - Consider denormalizing data for frequently accessed patterns
 
 ---
 
-*API Version: 2.0.0*
-*Last Updated: October 2025*
+_API Version: 2.0.0_
+_Last Updated: October 2025_

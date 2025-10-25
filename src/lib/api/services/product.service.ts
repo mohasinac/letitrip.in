@@ -68,7 +68,7 @@ export class ProductService {
    * Get products with filters and pagination
    */
   static async getProducts(filters: ProductFilters = {}): Promise<PaginatedResponse<Product>> {
-    const firebaseService = FirebaseService.getInstance();
+    const db = getAdminDb();
     
     try {
       const {
@@ -82,54 +82,126 @@ export class ProductService {
         pageSize = 20,
       } = filters;
 
-      // Use FirebaseService with filters
-      const { products, total } = await firebaseService.getProducts({
-        category,
-        minPrice,
-        maxPrice,
-        search,
-        featured: undefined,
-        limit: pageSize,
-        page
-      });
-
-      // Apply tag filtering on client side if needed
-      let filteredProducts = products;
-      if (tags && tags.length > 0) {
-        filteredProducts = products.filter(product => 
-          product.tags.some(tag => tags.includes(tag))
-        );
+      // Build the query using Admin SDK
+      let query = db.collection('products').where('status', '==', 'active');
+      
+      // Apply filters
+      if (category) {
+        query = query.where('category', '==', category);
+      }
+      
+      // For price filtering, we need to be careful about compound queries
+      if (minPrice !== undefined && maxPrice !== undefined) {
+        query = query.where('price', '>=', minPrice).where('price', '<=', maxPrice);
+      } else if (minPrice !== undefined) {
+        query = query.where('price', '>=', minPrice);
+      } else if (maxPrice !== undefined) {
+        query = query.where('price', '<=', maxPrice);
       }
 
       // Apply sorting
       switch (sort) {
         case 'price-asc':
-          filteredProducts.sort((a, b) => a.price - b.price);
+          query = query.orderBy('price', 'asc');
           break;
         case 'price-desc':
-          filteredProducts.sort((a, b) => b.price - a.price);
+          query = query.orderBy('price', 'desc');
           break;
         case 'newest':
-          filteredProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          query = query.orderBy('createdAt', 'desc');
           break;
         case 'popular':
-          filteredProducts.sort((a, b) => b.reviewCount - a.reviewCount);
+          query = query.orderBy('reviewCount', 'desc');
           break;
+        default:
+          query = query.orderBy('createdAt', 'desc');
       }
 
-      const actualTotal = filteredProducts.length;
+      // Execute the query
+      const snapshot = await query.get();
+      
+      let products: Product[] = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        } as Product;
+      });
+
+      // Apply search filter on server side
+      if (search) {
+        const searchLower = search.toLowerCase();
+        products = products.filter(product =>
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+        );
+      }
+
+      // Apply tag filtering
+      if (tags && tags.length > 0) {
+        products = products.filter(product => 
+          product.tags?.some(tag => tags.includes(tag))
+        );
+      }
+
+      // Enhance products with seller information (batch this for better performance)
+      const enhancedProducts = await Promise.all(
+        products.map(async (product) => {
+          try {
+            // Get seller info
+            const [userDoc, sellerDoc] = await Promise.all([
+              db.collection('users').doc(product.sellerId).get(),
+              db.collection('sellers').doc(product.sellerId).get()
+            ]);
+            
+            const userData = userDoc.exists ? userDoc.data() : {};
+            const sellerData = sellerDoc.exists ? sellerDoc.data() : {};
+            
+            const sellerInfo = {
+              id: product.sellerId,
+              name: userData?.name || userData?.displayName || 'Unknown Seller',
+              storeName: sellerData?.storeName,
+              businessName: sellerData?.businessName,
+              storeStatus: sellerData?.storeStatus || 'live',
+              isVerified: sellerData?.isVerified || false
+            };
+
+            return {
+              ...product,
+              seller: sellerInfo
+            };
+          } catch (error) {
+            console.error(`Error fetching seller info for product ${product.id}:`, error);
+            return {
+              ...product,
+              seller: {
+                id: product.sellerId,
+                name: 'Unknown Seller',
+                storeStatus: 'live',
+                isVerified: false
+              }
+            };
+          }
+        })
+      );
+
+      // Apply pagination
+      const total = enhancedProducts.length;
       const startIndex = (page - 1) * pageSize;
-      const paginatedProducts = filteredProducts.slice(startIndex, startIndex + pageSize);
+      const paginatedProducts = enhancedProducts.slice(startIndex, startIndex + pageSize);
 
       return {
         items: paginatedProducts as Product[],
-        total: actualTotal,
+        total,
         page,
         pageSize,
-        totalPages: Math.ceil(actualTotal / pageSize),
+        totalPages: Math.ceil(total / pageSize),
       };
     } catch (error) {
-      console.error('Firebase getProducts error:', error);
+      console.error('ProductService getProducts error:', error);
       
       // Return empty result on error
       return {

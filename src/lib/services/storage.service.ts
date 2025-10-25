@@ -120,7 +120,7 @@ export class StorageService {
   }
 
   /**
-   * Upload product videos
+   * Upload multiple product videos
    */
   static async uploadProductVideos(
     files: File[],

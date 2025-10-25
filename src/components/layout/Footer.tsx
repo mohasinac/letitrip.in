@@ -73,10 +73,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/deals"
+                  href="/auctions"
                   className="text-muted-foreground hover:text-primary"
                 >
-                  Special Deals
+                  Auctions
                 </Link>
               </li>
             </ul>

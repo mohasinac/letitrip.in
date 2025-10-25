@@ -235,7 +235,15 @@ export function useRealTimeNotifications() {
     }
 
     const data = await response.json();
-    return data.data || [];
+    
+    // Handle different response structures based on role
+    if (user.role === "admin") {
+      // Admin API returns { data: { notifications: [...] } }
+      return data.data?.notifications || [];
+    } else {
+      // Seller API returns notifications array directly
+      return Array.isArray(data) ? data : [];
+    }
   }, [user]);
 
   const { data, loading, error, refresh } = useRealTimeData(
@@ -247,29 +255,55 @@ export function useRealTimeNotifications() {
   );
 
   useEffect(() => {
-    if (data) {
+    if (data && Array.isArray(data)) {
       setNotifications(data);
-      setUnreadCount(data.filter((n: any) => !n.isRead).length);
+      // Handle different property names for read status (isRead vs read)
+      setUnreadCount(data.filter((n: any) => !n.isRead && !n.read).length);
+    } else if (data) {
+      // If data is not an array, reset to empty array
+      console.warn("Received non-array data for notifications:", data);
+      setNotifications([]);
+      setUnreadCount(0);
     }
   }, [data]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
     if (!user) return;
 
-    const endpoint = user.role === "admin" 
-      ? `/api/admin/notifications/${notificationId}/read`
-      : `/api/seller/notifications/${notificationId}/read`;
-
     try {
-      await fetch(endpoint, {
-        method: "PUT",
-        credentials: "include",
-      });
+      if (user.role === "admin") {
+        // Admin uses PUT to specific notification endpoint
+        const endpoint = `/api/admin/notifications/${notificationId}`;
+        await fetch(endpoint, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ isRead: true }),
+        });
+      } else {
+        // Seller uses PATCH to base notifications endpoint
+        const endpoint = "/api/seller/notifications";
+        await fetch(endpoint, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ 
+            notificationId, 
+            read: true 
+          }),
+        });
+      }
 
-      // Update local state
+      // Update local state - handle both isRead and read properties
       setNotifications(prev => 
         prev.map(n => 
-          n.id === notificationId ? { ...n, isRead: true } : n
+          n.id === notificationId 
+            ? { ...n, isRead: true, read: true } 
+            : n
         )
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
