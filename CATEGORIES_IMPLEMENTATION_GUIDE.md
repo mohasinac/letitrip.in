@@ -247,13 +247,13 @@ export function CategoryManager() {
 
 ```tsx
 // components/admin/ProductCategorySelector.tsx
-import { useState } from 'react';
-import { CategorySearch } from '@/components/admin/CategorySearch';
-import { Category } from '@/types';
+import { useState } from "react";
+import { CategorySearch } from "@/components/admin/CategorySearch";
+import { Category } from "@/types";
 
-export function ProductCategorySelector({ 
-  onCategorySelect, 
-  selectedCategory 
+export function ProductCategorySelector({
+  onCategorySelect,
+  selectedCategory,
 }: {
   onCategorySelect: (category: Category) => void;
   selectedCategory?: Category | null;
@@ -271,7 +271,7 @@ export function ProductCategorySelector({
         showProductCounts={true}
         className="w-full"
       />
-      
+
       {selectedCategory && (
         <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center justify-between">
@@ -298,12 +298,12 @@ export function ProductCategorySelector({
 
 ```tsx
 // components/admin/CategorySearchInterface.tsx
-import { useState, useEffect } from 'react';
-import { CategoryService } from '@/lib/services/category.service';
-import { CategorySearch } from '@/components/admin/CategorySearch';
+import { useState, useEffect } from "react";
+import { CategoryService } from "@/lib/services/category.service";
+import { CategorySearch } from "@/components/admin/CategorySearch";
 
 export function CategorySearchInterface() {
-  const [searchMode, setSearchMode] = useState<'all' | 'leaf'>('all');
+  const [searchMode, setSearchMode] = useState<"all" | "leaf">("all");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
 
@@ -311,21 +311,22 @@ export function CategorySearchInterface() {
     if (query.length < 2) return;
 
     try {
-      const result = searchMode === 'leaf' 
-        ? await CategoryService.searchLeafCategories(query, {
-            limit: 20,
-            withProductCounts: true
-          })
-        : await CategoryService.searchCategories(query, {
-            limit: 20,
-            withProductCounts: true
-          });
+      const result =
+        searchMode === "leaf"
+          ? await CategoryService.searchLeafCategories(query, {
+              limit: 20,
+              withProductCounts: true,
+            })
+          : await CategoryService.searchCategories(query, {
+              limit: 20,
+              withProductCounts: true,
+            });
 
       if (result.success) {
         setSearchResults(result.data.categories);
       }
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error("Search failed:", error);
     }
   };
 
@@ -334,21 +335,21 @@ export function CategorySearchInterface() {
       {/* Search Mode Toggle */}
       <div className="flex space-x-2">
         <button
-          onClick={() => setSearchMode('all')}
+          onClick={() => setSearchMode("all")}
           className={`px-4 py-2 rounded ${
-            searchMode === 'all' 
-              ? 'bg-blue-500 text-white' 
-              : 'bg-gray-200 text-gray-700'
+            searchMode === "all"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
         >
           All Categories
         </button>
         <button
-          onClick={() => setSearchMode('leaf')}
+          onClick={() => setSearchMode("leaf")}
           className={`px-4 py-2 rounded ${
-            searchMode === 'leaf' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-gray-200 text-gray-700'
+            searchMode === "leaf"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
         >
           🍃 Leaf Only
@@ -358,10 +359,10 @@ export function CategorySearchInterface() {
       {/* Search Component */}
       <CategorySearch
         onSelect={setSelectedCategory}
-        leafOnly={searchMode === 'leaf'}
+        leafOnly={searchMode === "leaf"}
         placeholder={
-          searchMode === 'leaf' 
-            ? "Search leaf categories for products..." 
+          searchMode === "leaf"
+            ? "Search leaf categories for products..."
             : "Search all categories..."
         }
         showProductCounts={true}
@@ -370,30 +371,31 @@ export function CategorySearchInterface() {
       {/* Selected Category Display */}
       {selectedCategory && (
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-medium text-blue-900 mb-2">
-            Selected Category
-          </h3>
+          <h3 className="font-medium text-blue-900 mb-2">Selected Category</h3>
           <div className="space-y-2">
             <div>
               <span className="font-medium">Name:</span> {selectedCategory.name}
             </div>
             <div>
-              <span className="font-medium">Path:</span> {selectedCategory.fullPath}
+              <span className="font-medium">Path:</span>{" "}
+              {selectedCategory.fullPath}
             </div>
             <div>
-              <span className="font-medium">Type:</span>{' '}
-              <span className={`px-2 py-1 rounded text-xs ${
-                selectedCategory.isLeaf 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-blue-100 text-blue-800'
-              }`}>
-                {selectedCategory.isLeaf ? '🍃 Leaf' : '📁 Parent'}
+              <span className="font-medium">Type:</span>{" "}
+              <span
+                className={`px-2 py-1 rounded text-xs ${
+                  selectedCategory.isLeaf
+                    ? "bg-green-100 text-green-800"
+                    : "bg-blue-100 text-blue-800"
+                }`}
+              >
+                {selectedCategory.isLeaf ? "🍃 Leaf" : "📁 Parent"}
               </span>
             </div>
             {selectedCategory.productCount !== undefined && (
               <div>
-                <span className="font-medium">Products:</span>{' '}
-                {selectedCategory.productCount} total,{' '}
+                <span className="font-medium">Products:</span>{" "}
+                {selectedCategory.productCount} total,{" "}
                 {selectedCategory.inStockCount} in stock
               </div>
             )}

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Loader2, Package, ChevronRight } from 'lucide-react';
-import { Category } from '@/types';
-import { CategoryService } from '@/lib/services/category.service';
+import React, { useState, useEffect, useMemo } from "react";
+import { Search, Loader2, Package, ChevronRight } from "lucide-react";
+import { Category } from "@/types";
+import { CategoryService } from "@/lib/services/category.service";
 
 interface CategorySearchProps {
   onSelect?: (category: Category) => void;
@@ -16,7 +16,7 @@ interface CategorySearchProps {
 interface SearchResult extends Category {
   fullPath: string;
   isLeaf: boolean;
-  matchType: 'exact' | 'prefix' | 'partial';
+  matchType: "exact" | "prefix" | "partial";
   productCount?: number;
   inStockCount?: number;
 }
@@ -28,9 +28,9 @@ export default function CategorySearch({
   showProductCounts = false,
   className = "",
   value,
-  disabled = false
+  disabled = false,
 }: CategorySearchProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function CategorySearch({
           limit: 20,
           leafOnly,
           withProductCounts: showProductCounts,
-          includeInactive: false
+          includeInactive: false,
         });
 
         if (result.success && result.data) {
@@ -62,7 +62,7 @@ export default function CategorySearch({
           setSearchResults([]);
         }
       } catch (error) {
-        console.error('Error searching categories:', error);
+        console.error("Error searching categories:", error);
         setSearchResults([]);
       } finally {
         setIsLoading(false);
@@ -77,25 +77,25 @@ export default function CategorySearch({
     if (!isOpen || searchResults.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex((prev) =>
           prev < searchResults.length - 1 ? prev + 1 : 0
         );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex((prev) =>
           prev > 0 ? prev - 1 : searchResults.length - 1
         );
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
           handleSelect(searchResults[selectedIndex]);
         }
         break;
-      case 'Escape':
+      case "Escape":
         setIsOpen(false);
         setSelectedIndex(-1);
         break;
@@ -111,16 +111,21 @@ export default function CategorySearch({
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text;
-    
-    const regex = new RegExp(`(${query})`, 'gi');
+
+    const regex = new RegExp(`(${query})`, "gi");
     const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
+
+    return parts.map((part, index) =>
       regex.test(part) ? (
-        <mark key={index} className="bg-yellow-200 text-yellow-900 px-1 rounded">
+        <mark
+          key={index}
+          className="bg-yellow-200 text-yellow-900 px-1 rounded"
+        >
           {part}
         </mark>
-      ) : part
+      ) : (
+        part
+      )
     );
   };
 
@@ -160,16 +165,22 @@ export default function CategorySearch({
               key={category.id}
               onClick={() => handleSelect(category)}
               className={`px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
-                index === selectedIndex ? 'bg-blue-50 border-blue-200' : ''
+                index === selectedIndex ? "bg-blue-50 border-blue-200" : ""
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   {/* Category Path */}
                   <div className="flex items-center text-sm text-gray-600 mb-1">
-                    {category.fullPath.split(' > ').map((part, idx, arr) => (
+                    {category.fullPath.split(" > ").map((part, idx, arr) => (
                       <React.Fragment key={idx}>
-                        <span className={idx === arr.length - 1 ? 'font-medium text-gray-900' : ''}>
+                        <span
+                          className={
+                            idx === arr.length - 1
+                              ? "font-medium text-gray-900"
+                              : ""
+                          }
+                        >
                           {highlightMatch(part, searchQuery)}
                         </span>
                         {idx < arr.length - 1 && (
@@ -189,22 +200,31 @@ export default function CategorySearch({
                   {/* Category Info */}
                   <div className="flex items-center gap-2 mt-2">
                     {/* Leaf/Parent Badge */}
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      category.isLeaf 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {category.isLeaf ? '🍃 Leaf' : '📁 Parent'}
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        category.isLeaf
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {category.isLeaf ? "🍃 Leaf" : "📁 Parent"}
                     </span>
 
                     {/* Match Type */}
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                      category.matchType === 'exact' ? 'bg-green-100 text-green-800' :
-                      category.matchType === 'prefix' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {category.matchType === 'exact' ? 'Exact' :
-                       category.matchType === 'prefix' ? 'Starts with' : 'Contains'}
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                        category.matchType === "exact"
+                          ? "bg-green-100 text-green-800"
+                          : category.matchType === "prefix"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {category.matchType === "exact"
+                        ? "Exact"
+                        : category.matchType === "prefix"
+                        ? "Starts with"
+                        : "Contains"}
                     </span>
 
                     {/* Featured Badge */}
@@ -221,7 +241,9 @@ export default function CategorySearch({
                   <div className="ml-3 flex flex-col items-end">
                     <div className="flex items-center text-sm text-gray-600">
                       <Package className="h-4 w-4 mr-1" />
-                      <span className="font-medium">{category.productCount || 0}</span>
+                      <span className="font-medium">
+                        {category.productCount || 0}
+                      </span>
                     </div>
                     {category.inStockCount !== undefined && (
                       <div className="text-xs text-green-600">
@@ -237,18 +259,23 @@ export default function CategorySearch({
       )}
 
       {/* No Results */}
-      {isOpen && searchQuery.length >= 2 && searchResults.length === 0 && !isLoading && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-          <div className="px-4 py-3 text-center text-gray-500">
-            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-            <div className="font-medium">No categories found</div>
-            <div className="text-sm">
-              Try a different search term or{' '}
-              {leafOnly ? 'broaden your search to include parent categories' : 'check your spelling'}
+      {isOpen &&
+        searchQuery.length >= 2 &&
+        searchResults.length === 0 &&
+        !isLoading && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+            <div className="px-4 py-3 text-center text-gray-500">
+              <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+              <div className="font-medium">No categories found</div>
+              <div className="text-sm">
+                Try a different search term or{" "}
+                {leafOnly
+                  ? "broaden your search to include parent categories"
+                  : "check your spelling"}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Search Help */}
       {searchQuery.length > 0 && searchQuery.length < 2 && (
@@ -263,7 +290,11 @@ export default function CategorySearch({
 }
 
 // Example usage components
-export function LeafCategorySelector({ onSelect, value, className }: {
+export function LeafCategorySelector({
+  onSelect,
+  value,
+  className,
+}: {
   onSelect: (category: Category) => void;
   value?: Category | null;
   className?: string;
@@ -280,7 +311,11 @@ export function LeafCategorySelector({ onSelect, value, className }: {
   );
 }
 
-export function CategorySelector({ onSelect, value, className }: {
+export function CategorySelector({
+  onSelect,
+  value,
+  className,
+}: {
   onSelect: (category: Category) => void;
   value?: Category | null;
   className?: string;

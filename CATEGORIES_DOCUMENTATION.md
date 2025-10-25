@@ -237,24 +237,25 @@ await CategoryService.validateSlug("custom-slug");
 - Real-time search with debouncing
 
 **Search Types:**
+
 ```typescript
 // Search all categories
 const allResults = await CategoryService.searchCategories("laptop", {
   limit: 20,
-  withProductCounts: true
+  withProductCounts: true,
 });
 
 // Search only leaf categories (for product assignment)
 const leafResults = await CategoryService.searchLeafCategories("gaming", {
   limit: 10,
-  withProductCounts: true
+  withProductCounts: true,
 });
 
 // Get all leaf categories with search filter
 const leafCategories = await CategoryService.getLeafCategories({
   search: "computer",
   withProductCounts: true,
-  limit: 50
+  limit: 50,
 });
 ```
 
@@ -279,9 +280,9 @@ interface SearchResponse {
 
 ```typescript
 interface SearchResult extends Category {
-  fullPath: string;        // "Electronics > Computers > Laptops"
-  isLeaf: boolean;         // Can have products assigned
-  matchType: string;       // "exact", "prefix", "partial"
+  fullPath: string; // "Electronics > Computers > Laptops"
+  isLeaf: boolean; // Can have products assigned
+  matchType: string; // "exact", "prefix", "partial"
   relevanceScore?: number; // Search relevance (higher = better match)
 }
 ```
@@ -405,20 +406,20 @@ await ProductService.createProduct({
 // Search all categories
 const searchResults = await CategoryService.searchCategories("electronics", {
   limit: 20,
-  withProductCounts: true
+  withProductCounts: true,
 });
 
 // Search only leaf categories (for product assignment)
 const leafSearchResults = await CategoryService.searchLeafCategories("laptop", {
   limit: 10,
-  withProductCounts: true
+  withProductCounts: true,
 });
 
 // Get leaf categories with filter
 const leafCategories = await CategoryService.getLeafCategories({
   search: "gaming",
   withProductCounts: true,
-  includeInactive: false
+  includeInactive: false,
 });
 ```
 
@@ -426,17 +427,19 @@ const leafCategories = await CategoryService.getLeafCategories({
 
 ```typescript
 // Find the right leaf category for a product
-const searchResults = await CategoryService.searchLeafCategories("gaming laptop");
+const searchResults = await CategoryService.searchLeafCategories(
+  "gaming laptop"
+);
 
 // Assign product to the selected leaf category
 if (searchResults.success && searchResults.data.categories.length > 0) {
   const leafCategory = searchResults.data.categories[0]; // Best match
-  
+
   await ProductService.createProduct({
     name: "Gaming Laptop XYZ",
     category: leafCategory.id, // Must be leaf category
     price: 1299.99,
-    quantity: 10
+    quantity: 10,
   });
 }
 ```
