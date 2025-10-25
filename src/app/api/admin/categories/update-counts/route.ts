@@ -1,35 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { Category } from "@/types";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify admin authorization
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    // Use JWT authentication instead of Firebase auth
+    const user = await getCurrentUser();
+    
+    if (!user) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
+        { success: false, error: "Authentication required" },
         { status: 401 }
       );
     }
 
-    const token = authHeader.substring(7);
-    const auth = getAdminAuth();
-    const db = getAdminDb();
-    const decodedToken = await auth.verifyIdToken(token);
-    
-    // Check if user is admin
-    const userDoc = await db
-      .collection("users")
-      .doc(decodedToken.uid)
-      .get();
-    
-    if (!userDoc.exists || userDoc.data()?.role !== "admin") {
+    if (user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Admin access required" },
         { status: 403 }
       );
     }
+
+    const db = getAdminDb();
 
     console.log("Starting category product count update...");
 
