@@ -1,27 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { Category } from "@/types";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    // Use JWT authentication instead of Firebase auth
-    const user = await getCurrentUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get("includeInactive") === "true";
     const search = searchParams.get("search");
@@ -154,4 +137,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

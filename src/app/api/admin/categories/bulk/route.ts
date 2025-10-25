@@ -1,26 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 
-export async function POST(request: NextRequest) {
+export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    // Use JWT authentication instead of Firebase auth
-    const user = await getCurrentUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
     const db = getAdminDb();
 
     const { operation, categoryIds, data } = await request.json();
@@ -234,4 +217,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

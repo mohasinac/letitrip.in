@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { Category, CategoryFormData } from "@/types";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 
 export async function GET(
   request: NextRequest,
@@ -36,28 +36,12 @@ export async function GET(
   }
 }
 
-export async function PUT(
+export const PUT = createAdminHandler(async (
   request: NextRequest,
+  user,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    // Use JWT authentication instead of Firebase auth
-    const user = await getCurrentUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
     const db = getAdminDb();
     const data: CategoryFormData = await request.json();
 
@@ -173,30 +157,14 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = createAdminHandler(async (
   request: NextRequest,
+  user,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    // Use JWT authentication instead of Firebase auth
-    const user = await getCurrentUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
     const db = getAdminDb();
 
     // Check if category exists
@@ -249,7 +217,7 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});
 
 // Helper function to update descendant categories when hierarchy changes
 async function updateDescendantHierarchy(
