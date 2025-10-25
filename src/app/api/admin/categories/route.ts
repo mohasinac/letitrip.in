@@ -176,8 +176,9 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
     // Calculate level and parentIds
     let level = 0;
     let parentIds: string[] = [];
+    let parentId: string | null = null;
     
-    if (data.parentId) {
+    if (data.parentId && typeof data.parentId === 'string' && data.parentId.trim() !== '') {
       const parentDoc = await db
         .collection("categories")
         .doc(data.parentId)
@@ -193,6 +194,7 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
       const parentData = parentDoc.data() as Category;
       level = parentData.level + 1;
       parentIds = [...(parentData.parentIds || []), data.parentId];
+      parentId = data.parentId;
     }
 
     const now = new Date().toISOString();
@@ -200,14 +202,12 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
       name: data.name,
       slug: data.slug,
       description: data.description || "",
-      image: data.image,
-      icon: data.icon,
-      seo: data.seo || {},
+      parentId: parentId, // Use the processed parentId (null for root categories)
       parentIds,
       level,
-      isActive: data.isActive,
-      featured: data.featured,
-      sortOrder: data.sortOrder,
+      isActive: data.isActive !== undefined ? data.isActive : true,
+      featured: data.featured !== undefined ? data.featured : false,
+      sortOrder: data.sortOrder !== undefined ? data.sortOrder : 0,
       productCount: 0,
       inStockCount: 0,
       outOfStockCount: 0,
@@ -218,29 +218,29 @@ export const POST = createAdminHandler(async (request: NextRequest, user) => {
       updatedBy: user.userId
     };
 
-    // Only add parentId if it exists and is not empty
-    if (data.parentId && data.parentId.trim() !== '') {
-      categoryData.parentId = data.parentId;
+    // Only add optional fields if they have actual values
+    if (data.image && typeof data.image === 'string' && data.image.trim() !== '') {
+      categoryData.image = data.image;
+    }
+    
+    if (data.icon && typeof data.icon === 'string' && data.icon.trim() !== '') {
+      categoryData.icon = data.icon;
+    }
+    
+    if (data.seo && typeof data.seo === 'object') {
+      categoryData.seo = data.seo;
     }
 
     // Debug log the data before saving
     console.log('Category data before saving:', JSON.stringify(categoryData, null, 2));
 
-    // Remove any undefined values from the categoryData object
-    const cleanedCategoryData = Object.keys(categoryData).reduce((acc: any, key) => {
-      if (categoryData[key] !== undefined) {
-        acc[key] = categoryData[key];
-      }
-      return acc;
-    }, {});
-
     const docRef = await db
       .collection("categories")
-      .add(cleanedCategoryData);
+      .add(categoryData);
 
     const newCategory = {
       id: docRef.id,
-      ...cleanedCategoryData
+      ...categoryData
     };
 
     return NextResponse.json({
