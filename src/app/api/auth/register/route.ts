@@ -6,8 +6,8 @@
  * GET /api/auth/me - Get current user
  */
 
-import { NextRequest } from 'next/server';
-import { ApiResponse, withAuth } from '@/lib/auth/middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { AuthService } from '@/lib/api/services/auth.service';
 import { registerSchema, loginSchema } from '@/lib/validations/schemas';
 import { setAuthCookie, clearAuthCookie } from '@/lib/auth/jwt';
@@ -16,7 +16,7 @@ import { setAuthCookie, clearAuthCookie } from '@/lib/auth/jwt';
  * Register new user
  * POST /api/auth/register
  */
-export async function POST(request: NextRequest) {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     
@@ -46,4 +46,4 @@ export async function POST(request: NextRequest) {
     console.error('Register error:', error);
     return ApiResponse.error(error.message || 'Failed to register user', 400);
   }
-}
+});

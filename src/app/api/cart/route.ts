@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "@/lib/auth/middleware";
 import { FirebaseService } from "@/lib/firebase/services";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
-async function getHandler(request: NextRequest, user: any) {
+const getHandler = createUserHandler(async (request: NextRequest, user) => {
   try {
     const firebaseService = FirebaseService.getInstance();
 
@@ -76,9 +76,9 @@ async function getHandler(request: NextRequest, user: any) {
       { status: 500 }
     );
   }
-}
+});
 
-async function putHandler(request: NextRequest, user: any) {
+const putHandler = createUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { itemId, quantity } = body;
@@ -144,9 +144,9 @@ async function putHandler(request: NextRequest, user: any) {
       { status: 500 }
     );
   }
-}
+});
 
-async function deleteHandler(request: NextRequest, user: any) {
+const deleteHandler = createUserHandler(async (request: NextRequest, user) => {
   try {
     const firebaseService = FirebaseService.getInstance();
     
@@ -183,9 +183,9 @@ async function deleteHandler(request: NextRequest, user: any) {
       { status: 500 }
     );
   }
-}
+});
 
-async function postHandler(request: NextRequest, user: any) {
+const postHandler = createUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { productId, quantity = 1 } = body;
@@ -254,9 +254,9 @@ async function postHandler(request: NextRequest, user: any) {
       { status: 500 }
     );
   }
-}
+});
 
-export const GET = withAuth(getHandler);
-export const POST = withAuth(postHandler);
-export const PUT = withAuth(putHandler);
-export const DELETE = withAuth(deleteHandler);
+export const GET = getHandler;
+export const POST = postHandler;
+export const PUT = putHandler;
+export const DELETE = deleteHandler;

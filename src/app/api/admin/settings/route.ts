@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 import { API_RESPONSES, HTTP_STATUS } from "@/lib/api/constants";
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json(
-        API_RESPONSES.UNAUTHORIZED("Admin access required"), 
-        { status: HTTP_STATUS.UNAUTHORIZED }
-      );
-    }
 
     // Fetch settings from database
     const { getAdminDb } = await import('@/lib/firebase/admin');
@@ -66,18 +58,10 @@ export async function GET(request: NextRequest) {
       { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json(
-        API_RESPONSES.UNAUTHORIZED("Admin access required"), 
-        { status: HTTP_STATUS.UNAUTHORIZED }
-      );
-    }
 
     const settings = await request.json();
     
@@ -101,4 +85,4 @@ export async function PUT(request: NextRequest) {
       { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
-}
+});

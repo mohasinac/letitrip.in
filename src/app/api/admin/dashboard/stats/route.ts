@@ -17,7 +17,7 @@ interface DashboardStats {
   aovChange?: number;
 }
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     const now = new Date();
@@ -135,4 +135,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

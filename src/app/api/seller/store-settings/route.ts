@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 
-export async function GET(request: NextRequest) {
+export const GET = createSellerHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     
@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = createSellerHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     
@@ -139,4 +139,4 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

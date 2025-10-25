@@ -11,7 +11,7 @@ import { initializeFirebaseData } from '@/lib/firebase/initialize';
  * Initialize Firebase with sample data
  * POST /api/admin/initialize
  */
-export async function POST(request: NextRequest) {
+export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {
     console.log('Starting Firebase data initialization...');
     
@@ -26,4 +26,4 @@ export async function POST(request: NextRequest) {
     console.error('Initialize data error:', error);
     return ApiResponse.error(error.message || 'Failed to initialize Firebase data', 500);
   }
-}
+});

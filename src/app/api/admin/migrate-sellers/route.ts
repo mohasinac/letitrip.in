@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
-import { getCurrentUser } from '@/lib/auth/jwt';
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 
-export async function POST(request: NextRequest) {
+export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    // Only admin can run migrations
-    if (!user || user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
 
     const db = getAdminDb();
     let migratedCount = 0;
@@ -80,4 +71,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

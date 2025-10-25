@@ -131,6 +131,32 @@ export function createSellerHandler<T extends any[]>(
 }
 
 /**
+ * Wrapper specifically for user handlers (authenticated users)
+ */
+export function createUserHandler<T extends any[]>(
+  handler: (request: NextRequest, user: JWTPayload, ...args: T) => Promise<NextResponse>
+) {
+  return createAuthenticatedHandler(handler, { allowedRoles: ['user', 'seller', 'admin'] });
+}
+
+/**
+ * Wrapper for public endpoints that optionally accept authentication
+ */
+export function createOptionalAuthHandler<T extends any[]>(
+  handler: (request: NextRequest, user: JWTPayload | null, ...args: T) => Promise<NextResponse>
+) {
+  return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
+    try {
+      const user = await getCurrentUser();
+      return handler(request, user, ...args);
+    } catch (error) {
+      // For optional auth, continue with null user if auth fails
+      return handler(request, null, ...args);
+    }
+  };
+}
+
+/**
  * Helper to check if user has specific permissions
  */
 export function hasPermission(user: JWTPayload, permission: string): boolean {

@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { getAdminDb } from '@/lib/firebase/admin';
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
-    }
+    const userId = user.userId;
 
     // Get user's wishlist items
     const wishlistSnapshot = await db.collection('wishlist')
@@ -70,17 +63,18 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     const body = await request.json();
-    const { userId, productId } = body;
+    const { productId } = body;
+    const userId = user.userId;
 
-    if (!userId || !productId) {
+    if (!productId) {
       return NextResponse.json(
-        { error: 'User ID and Product ID are required' },
+        { error: 'Product ID is required' },
         { status: 400 }
       );
     }
@@ -119,18 +113,18 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = createUserHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
     const productId = searchParams.get('productId');
+    const userId = user.userId;
 
-    if (!userId || !productId) {
+    if (!productId) {
       return NextResponse.json(
-        { error: 'User ID and Product ID are required' },
+        { error: 'Product ID is required' },
         { status: 400 }
       );
     }
@@ -161,4 +155,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

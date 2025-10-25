@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
+import { validateBody } from "@/lib/auth/middleware";
 import { updateProfileSchema } from "@/lib/validations/schemas";
 import { AuthService } from "@/lib/api/services/auth.service";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     const userId = user.userId;
 
     // Get user profile from database
@@ -83,16 +78,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
-
     // Validate request body
     const validation = await validateBody(request, updateProfileSchema);
     if (validation.error) {
@@ -118,4 +107,4 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

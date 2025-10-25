@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { API_RESPONSES, HTTP_STATUS, PAGINATION_DEFAULTS, NOTIFICATION_CONSTANTS } from "@/lib/api/constants";
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json(
-        API_RESPONSES.UNAUTHORIZED("Admin access required"), 
-        { status: HTTP_STATUS.UNAUTHORIZED }
-      );
-    }
 
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
@@ -69,15 +61,10 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const data = await request.json();
     const { title, message, type, targetAudience, isActive = true } = data;
@@ -113,4 +100,4 @@ export async function POST(request: NextRequest) {
     console.error("Error creating notification:", error);
     return NextResponse.json({ error: "Failed to create notification" }, { status: 500 });
   }
-}
+});

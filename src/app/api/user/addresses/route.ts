@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
+import { createUserHandler } from "@/lib/auth/api-middleware";
+import { ApiResponse, validateBody } from "@/lib/auth/middleware";
 import { addressSchema } from "@/lib/validations/schemas";
 import { db } from "@/lib/firebase/config";
 import { collection, getDocs, query, where, orderBy, addDoc, updateDoc, doc } from "firebase/firestore";
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
 
     const userId = user.userId;
 
@@ -41,15 +37,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
-    // Check authentication
-    const user = await authenticateUser(request);
-    if (!user) {
-      return ApiResponse.unauthorized("Authentication required");
-    }
 
     // Validate request body
     const validation = await validateBody(request, addressSchema);
@@ -105,4 +96,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

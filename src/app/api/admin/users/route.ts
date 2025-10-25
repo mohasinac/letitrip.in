@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 
 interface UserStats {
   ordersCount: number;
@@ -34,14 +34,8 @@ async function getUserStats(userId: string): Promise<UserStats> {
   }
 }
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -163,4 +157,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

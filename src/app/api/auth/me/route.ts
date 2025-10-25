@@ -3,11 +3,11 @@
  * GET /api/auth/me
  */
 
-import { NextRequest } from 'next/server';
-import { ApiResponse, withAuth } from '@/lib/auth/middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { AuthService } from '@/lib/api/services/auth.service';
 
-export const GET = withAuth(async (request: NextRequest, user) => {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     const userData = await AuthService.getUserById(user.userId);
 

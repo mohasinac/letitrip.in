@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
 export async function PUT(
   request: NextRequest,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Get user token from cookies
     const cookieStore = await cookies();
@@ -46,9 +46,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Get user token from cookies
     const cookieStore = await cookies();
@@ -112,4 +112,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 import { db } from "@/lib/firebase/config";
 import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status"); // pending, approved, rejected
@@ -54,4 +49,4 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

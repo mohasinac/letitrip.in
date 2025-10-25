@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
 import { getAdminDb } from '@/lib/firebase/admin';
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -92,9 +93,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -148,4 +149,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

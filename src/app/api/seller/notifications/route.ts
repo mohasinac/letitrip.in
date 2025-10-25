@@ -1,133 +1,99 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
-import { getCurrentUser } from '@/lib/auth/jwt';
+import { createSellerHandler } from "@/lib/auth/api-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = createSellerHandler(async (request: NextRequest, user) => {
   try {
-    // Get the current user from the token
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is a seller or admin
-    if (currentUser.role !== 'seller' && currentUser.role !== 'admin') {
+    if (user.role !== 'seller' && user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Access denied. Seller role required.' },
         { status: 403 }
       );
     }
 
-    const db = getAdminDb();
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const sellerId = currentUser.userId;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50);
+    const sellerId = user.userId;
 
-    // Get notifications for the seller
+    const db = getAdminDb();
+    
+    // Get seller notifications
     const notificationsSnapshot = await db.collection('notifications')
-      .where('userId', '==', sellerId)
+      .where('targetAudience', 'in', ['all', 'sellers'])
+      .where('isActive', '==', true)
       .orderBy('createdAt', 'desc')
       .limit(limit)
+      .offset((page - 1) * limit)
       .get();
 
-    const notifications = notificationsSnapshot.docs.map((doc: any) => {
+    const notifications = notificationsSnapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
-        type: data.type || 'info',
-        title: data.title || 'Notification',
-        message: data.message || '',
-        timestamp: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-        read: data.read || false,
-        actionRequired: data.actionRequired || false,
-        action: data.action || null,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
       };
     });
 
-    // If no notifications found, return some default ones for new sellers
-    if (notifications.length === 0) {
-      const defaultNotifications = [
-        {
-          id: 'welcome',
-          type: 'success',
-          title: 'Welcome to Seller Dashboard!',
-          message: 'Your seller account has been activated. Start adding products to your store.',
-          timestamp: new Date().toISOString(),
-          read: false,
-          actionRequired: true,
-          action: {
-            label: 'Add Products',
-            href: '/seller/products'
-          }
-        },
-        {
-          id: 'setup-store',
-          type: 'info',
-          title: 'Complete Your Store Setup',
-          message: 'Add store information, payment details, and shipping settings to start selling.',
-          timestamp: new Date(Date.now() - 60000).toISOString(), // 1 minute ago
-          read: false,
-          actionRequired: true,
-          action: {
-            label: 'Setup Store',
-            href: '/seller/settings'
-          }
-        },
-        {
-          id: 'verification',
-          type: 'warning',
-          title: 'Account Verification Pending',
-          message: 'Please verify your business documents to unlock all selling features.',
-          timestamp: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-          read: false,
-          actionRequired: true,
-          action: {
-            label: 'Verify Account',
-            href: '/seller/verification'
-          }
-        }
-      ];
+    // Get user's read status for these notifications
+    const readStatusPromises = notifications.map(async (notification) => {
+      const readDoc = await db.collection('notification_reads')
+        .where('userId', '==', sellerId)
+        .where('notificationId', '==', notification.id)
+        .get();
+      
+      return {
+        ...notification,
+        read: !readDoc.empty
+      };
+    });
 
-      return NextResponse.json(defaultNotifications);
+    const notificationsWithReadStatus = await Promise.all(readStatusPromises);
+
+    // Get unread count
+    const allNotificationsSnapshot = await db.collection('notifications')
+      .where('targetAudience', 'in', ['all', 'sellers'])
+      .where('isActive', '==', true)
+      .get();
+
+    let unreadCount = 0;
+    for (const doc of allNotificationsSnapshot.docs) {
+      const readDoc = await db.collection('notification_reads')
+        .where('userId', '==', sellerId)
+        .where('notificationId', '==', doc.id)
+        .get();
+      
+      if (readDoc.empty) {
+        unreadCount++;
+      }
     }
 
-    return NextResponse.json(notifications);
+    return NextResponse.json({
+      notifications: notificationsWithReadStatus,
+      pagination: {
+        page,
+        limit,
+        total: allNotificationsSnapshot.size,
+        totalPages: Math.ceil(allNotificationsSnapshot.size / limit)
+      },
+      unreadCount
+    });
+
   } catch (error) {
     console.error('Error fetching seller notifications:', error);
-    
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch notifications',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
-      },
+      { error: 'Failed to fetch notifications', details: errorMessage },
       { status: 500 }
     );
   }
-}
+});
 
 // Mark notification as read
-export async function PATCH(request: NextRequest) {
+export const PATCH = createSellerHandler(async (request: NextRequest, user) => {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    if (currentUser.role !== 'seller' && currentUser.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Access denied. Seller role required.' },
-        { status: 403 }
-      );
-    }
-
     const { notificationId, read } = await request.json();
     
     if (!notificationId) {
@@ -138,19 +104,36 @@ export async function PATCH(request: NextRequest) {
     }
 
     const db = getAdminDb();
-    
-    // Update notification read status
-    await db.collection('notifications').doc(notificationId).update({
-      read: read || true,
-      updatedAt: new Date(),
+    const userId = user.userId;
+
+    if (read) {
+      // Mark as read by creating a read record
+      await db.collection('notification_reads').add({
+        userId,
+        notificationId,
+        readAt: new Date()
+      });
+    } else {
+      // Mark as unread by removing the read record
+      const readDocsSnapshot = await db.collection('notification_reads')
+        .where('userId', '==', userId)
+        .where('notificationId', '==', notificationId)
+        .get();
+
+      const deletePromises = readDocsSnapshot.docs.map(doc => doc.ref.delete());
+      await Promise.all(deletePromises);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Notification marked as ${read ? 'read' : 'unread'}`
     });
 
-    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating notification:', error);
+    console.error('Error updating notification read status:', error);
     return NextResponse.json(
-      { error: 'Failed to update notification' },
+      { error: 'Failed to update notification status' },
       { status: 500 }
     );
   }
-}
+});

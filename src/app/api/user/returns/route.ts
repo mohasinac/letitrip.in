@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
 
-export async function POST(request: NextRequest) {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -94,9 +95,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function GET(request: NextRequest) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -184,4 +185,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

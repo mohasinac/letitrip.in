@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/jwt";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 import { getAdminDb } from '@/lib/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
-export async function GET(request: NextRequest) {
+export const GET = createAdminHandler(async (request: NextRequest, user) => {
   try {
-    const user = await getCurrentUser();
-    
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const period = searchParams.get("period") || "30d";
@@ -156,4 +151,4 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching analytics:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

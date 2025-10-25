@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ApiResponse, withAuth } from '@/lib/auth/middleware';
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
-export const GET = withAuth(async (request: NextRequest, user) => {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Get shipping options/information
     const shippingOptions = {
@@ -58,7 +58,7 @@ export const GET = withAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const POST = withAuth(async (request: NextRequest, user) => {
+export const POST = createUserHandler(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { action, ...data } = body;

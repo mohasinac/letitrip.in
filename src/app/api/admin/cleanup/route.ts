@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createAdminHandler } from "@/lib/auth/api-middleware";
 import { cleanupSeededData, cleanupAllData } from "@/lib/firebase/cleanup";
 
-export async function POST(request: NextRequest) {
+export const POST = createAdminHandler(async (request: NextRequest, user) => {
   try {
     // TODO: Add admin authentication check
     // const user = await verifyAdminAuth(request);
@@ -39,4 +40,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

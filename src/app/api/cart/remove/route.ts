@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "@/lib/auth/middleware";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { FirebaseService } from "@/lib/firebase/services";
 
 async function handler(request: NextRequest) {
@@ -79,4 +79,4 @@ async function handler(request: NextRequest) {
   }
 }
 
-export const DELETE = withAuth(handler);
+export const DELETE = createUserHandler(handler);

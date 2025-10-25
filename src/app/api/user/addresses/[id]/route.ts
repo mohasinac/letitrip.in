@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createUserHandler } from "@/lib/auth/api-middleware";
 import { authenticateUser, ApiResponse, validateBody } from "@/lib/auth/middleware";
 import { addressSchema } from "@/lib/validations/schemas";
 import { db } from "@/lib/firebase/config";
 import { doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -55,12 +53,9 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PUT = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -133,12 +128,9 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = createUserHandler(async (request: NextRequest, user) => {
   try {
     // Check authentication
     const user = await authenticateUser(request);
@@ -192,4 +184,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

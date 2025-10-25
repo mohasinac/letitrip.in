@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { withAuth } from '@/lib/auth/middleware';
+import { createUserHandler } from "@/lib/auth/api-middleware";
 
 interface SellerAnalytics {
   salesData: {
@@ -48,7 +48,7 @@ interface SellerAnalytics {
   };
 }
 
-export const GET = withAuth(async (request: NextRequest, user) => {
+export const GET = createUserHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);

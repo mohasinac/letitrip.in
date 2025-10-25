@@ -19,7 +19,7 @@ interface SellerStats {
   goalProgress: number;
 }
 
-export async function GET(request: NextRequest) {
+export const GET = createSellerHandler(async (request: NextRequest, user) => {
   try {
     const db = getAdminDb();
     const { searchParams } = new URL(request.url);
@@ -185,4 +185,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
