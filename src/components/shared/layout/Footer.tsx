@@ -3,13 +3,24 @@ import { FOOTER_NAVIGATION, SOCIAL_LINKS } from "@/constants/navigation";
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-gray-50">
+    <footer
+      className="border-t transition-colors duration-300"
+      style={{
+        backgroundColor: "var(--theme-background)",
+        borderColor: "var(--theme-primary)",
+      }}
+    >
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-primary">JustForView</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3
+              className="text-lg font-bold"
+              style={{ color: "var(--theme-primary)" }}
+            >
+              JustForView
+            </h3>
+            <p className="text-sm" style={{ color: "var(--theme-muted)" }}>
               Your trusted marketplace for authentic products, live auctions,
               and global connections with verified sellers worldwide.
             </p>
@@ -18,7 +29,14 @@ export default function Footer() {
                 <a
                   key={index}
                   href={social.url}
-                  className="text-muted-foreground hover:text-primary"
+                  className="transition-colors duration-200"
+                  style={{ color: "var(--theme-muted)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--theme-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "var(--theme-muted)";
+                  }}
                   title={social.platform}
                 >
                   <svg
@@ -36,13 +54,25 @@ export default function Footer() {
           {/* Footer Navigation Sections */}
           {Object.entries(FOOTER_NAVIGATION).map(([sectionKey, section]) => (
             <div key={sectionKey}>
-              <h4 className="font-semibold mb-4">{section.title}</h4>
+              <h4
+                className="font-semibold mb-4"
+                style={{ color: "var(--theme-text)" }}
+              >
+                {section.title}
+              </h4>
               <ul className="space-y-2 text-sm">
                 {section.links.map((link, index) => (
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-muted-foreground hover:text-primary"
+                      className="transition-colors duration-200"
+                      style={{ color: "var(--theme-muted)" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = "var(--theme-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = "var(--theme-muted)";
+                      }}
                     >
                       {link.label}
                     </Link>
@@ -54,16 +84,52 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+        <div
+          className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center text-sm"
+          style={{
+            borderColor: "var(--theme-primary)",
+            color: "var(--theme-muted)",
+          }}
+        >
           <p>© 2024 JustForView. All rights reserved.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-primary">
+            <Link
+              href="/privacy"
+              className="transition-colors duration-200"
+              style={{ color: "var(--theme-muted)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--theme-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--theme-muted)";
+              }}
+            >
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-primary">
+            <Link
+              href="/terms"
+              className="transition-colors duration-200"
+              style={{ color: "var(--theme-muted)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--theme-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--theme-muted)";
+              }}
+            >
               Terms of Service
             </Link>
-            <Link href="/cookies" className="hover:text-primary">
+            <Link
+              href="/cookies"
+              className="transition-colors duration-200"
+              style={{ color: "var(--theme-muted)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--theme-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--theme-muted)";
+              }}
+            >
               Cookie Policy
             </Link>
           </div>

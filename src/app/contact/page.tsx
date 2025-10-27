@@ -53,11 +53,11 @@ export default function ContactPage() {
 
   if (sent) {
     return (
-      <main className="flex-1 flex items-center justify-center py-12">
+      <main className="flex-1 flex items-center justify-center py-12 bg-theme-background">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-4 hover-glow-theme">
             <svg
-              className="w-8 h-8 text-green-600"
+              className="w-8 h-8 text-theme-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -70,11 +70,16 @@ export default function ContactPage() {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold mb-2">Message Sent!</h2>
-          <p className="text-muted-foreground mb-6">
+          <h2 className="text-2xl font-bold mb-2 text-theme-text">
+            Message Sent!
+          </h2>
+          <p className="text-theme-muted mb-6">
             Thank you for contacting us. We'll get back to you within 24 hours.
           </p>
-          <button onClick={() => setSent(false)} className="btn btn-primary">
+          <button
+            onClick={() => setSent(false)}
+            className="inline-flex items-center justify-center px-8 py-4 bg-theme-primary text-white rounded-xl font-bold hover:bg-theme-secondary transition-all duration-300 shadow-xl border-4 border-theme-primary"
+          >
             Send Another Message
           </button>
         </div>
@@ -85,45 +90,47 @@ export default function ContactPage() {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className="bg-theme-primary text-white">
         <div className="container py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message and
             we'll respond as soon as possible.
           </p>
         </div>
       </section>
 
-      <div className="container py-16">
+      <div className="container py-16 bg-theme-background">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <div>
-            <h2 className="text-3xl font-bold mb-8">Send us a Message</h2>
+            <h2 className="text-3xl font-bold mb-8 text-theme-text">
+              Send us a Message
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-theme-text">
                     Full Name *
                   </label>
                   <input
                     type="text"
                     name="name"
                     required
-                    className="input w-full"
+                    className="input w-full bg-theme-background text-theme-text border-theme-primary"
                     value={formData.name}
                     onChange={handleChange}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-theme-text">
                     Email *
                   </label>
                   <input
                     type="email"
                     name="email"
                     required
-                    className="input w-full"
+                    className="input w-full bg-theme-background text-theme-text border-theme-primary"
                     value={formData.email}
                     onChange={handleChange}
                   />
@@ -131,13 +138,13 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-theme-text">
                   Subject *
                 </label>
                 <select
                   name="subject"
                   required
-                  className="input w-full"
+                  className="input w-full bg-theme-background text-theme-text border-theme-primary"
                   value={formData.subject}
                   onChange={handleChange}
                 >
@@ -152,14 +159,14 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-theme-text">
                   Message *
                 </label>
                 <textarea
                   name="message"
                   required
                   rows={6}
-                  className="input w-full"
+                  className="input w-full bg-theme-background text-theme-text border-theme-primary"
                   placeholder="Tell us how we can help you..."
                   value={formData.message}
                   onChange={handleChange}
@@ -169,7 +176,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full py-3 text-lg disabled:opacity-50"
+                className="inline-flex items-center justify-center px-8 py-4 bg-theme-primary text-white rounded-xl font-bold hover:bg-theme-secondary transition-all duration-300 shadow-xl border-4 border-theme-primary w-full text-lg disabled:opacity-50"
               >
                 {loading ? "Sending..." : "Send Message"}
               </button>
@@ -178,14 +185,16 @@ export default function ContactPage() {
 
           {/* Contact Information */}
           <div>
-            <h2 className="text-3xl font-bold mb-8">Contact Information</h2>
+            <h2 className="text-3xl font-bold mb-8 text-theme-text">
+              Contact Information
+            </h2>
 
             <div className="space-y-8">
               {/* Address */}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-theme-accent rounded-lg flex items-center justify-center flex-shrink-0 hover-glow-theme">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6 text-theme-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -205,8 +214,10 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Our Office</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="font-semibold mb-2 text-theme-text">
+                    Our Office
+                  </h3>
+                  <p className="text-theme-muted">
                     123 Business Park, 2nd Floor
                     <br />
                     Andheri East, Mumbai - 400069
@@ -218,9 +229,9 @@ export default function ContactPage() {
 
               {/* Phone */}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-theme-accent rounded-lg flex items-center justify-center flex-shrink-0 hover-glow-theme">
                   <svg
-                    className="w-6 h-6 text-green-600"
+                    className="w-6 h-6 text-theme-secondary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -234,9 +245,14 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Phone Support</h3>
-                  <p className="text-muted-foreground">
-                    <a href="tel:+919876543210" className="hover:text-primary">
+                  <h3 className="font-semibold mb-2 text-theme-text">
+                    Phone Support
+                  </h3>
+                  <p className="text-theme-muted">
+                    <a
+                      href="tel:+919876543210"
+                      className="hover:text-theme-primary"
+                    >
                       +91 98765 43210
                     </a>
                     <br />
@@ -247,9 +263,9 @@ export default function ContactPage() {
 
               {/* Email */}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-theme-accent rounded-lg flex items-center justify-center flex-shrink-0 hover-glow-theme">
                   <svg
-                    className="w-6 h-6 text-purple-600"
+                    className="w-6 h-6 text-theme-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -263,18 +279,20 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Email Us</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="font-semibold mb-2 text-theme-text">
+                    Email Us
+                  </h3>
+                  <p className="text-theme-muted">
                     <a
                       href="mailto:support@justforview.in"
-                      className="hover:text-primary"
+                      className="hover:text-theme-primary"
                     >
                       support@justforview.in
                     </a>
                     <br />
                     <a
                       href="mailto:hello@justforview.in"
-                      className="hover:text-primary"
+                      className="hover:text-theme-primary"
                     >
                       hello@justforview.in
                     </a>
@@ -284,9 +302,9 @@ export default function ContactPage() {
 
               {/* Social Media */}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-theme-accent rounded-lg flex items-center justify-center flex-shrink-0 hover-glow-theme">
                   <svg
-                    className="w-6 h-6 text-orange-600"
+                    className="w-6 h-6 text-theme-secondary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -300,11 +318,13 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Follow Us</h3>
+                  <h3 className="font-semibold mb-2 text-theme-text">
+                    Follow Us
+                  </h3>
                   <div className="flex gap-3">
                     <a
                       href="#"
-                      className="text-muted-foreground hover:text-primary"
+                      className="text-theme-muted hover:text-theme-primary"
                     >
                       <svg
                         className="w-5 h-5"
@@ -359,9 +379,9 @@ export default function ContactPage() {
       </div>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-theme-accent">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12 text-theme-text">
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-6">
@@ -392,9 +412,14 @@ export default function ContactPage() {
                   "Once your order ships, you'll receive a tracking number via email and SMS. You can also check your order status in your account dashboard.",
               },
             ].map((faq, index) => (
-              <div key={index} className="card p-6">
-                <h3 className="font-semibold mb-2">{faq.question}</h3>
-                <p className="text-muted-foreground">{faq.answer}</p>
+              <div
+                key={index}
+                className="card bg-theme-background p-6 border border-theme-primary hover-glow-theme"
+              >
+                <h3 className="font-semibold mb-2 text-theme-text">
+                  {faq.question}
+                </h3>
+                <p className="text-theme-muted">{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -402,26 +427,34 @@ export default function ContactPage() {
       </section>
 
       {/* Business Hours */}
-      <section className="py-16">
+      <section className="py-16 bg-theme-background">
         <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-8">Business Hours</h2>
+          <h2 className="text-3xl font-bold mb-8 text-theme-text">
+            Business Hours
+          </h2>
           <div className="max-w-md mx-auto">
-            <div className="card p-6">
+            <div className="card bg-theme-background p-6 border border-theme-primary hover-glow-theme">
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span>Monday - Friday</span>
-                  <span className="font-medium">9:00 AM - 6:00 PM</span>
+                  <span className="text-theme-muted">Monday - Friday</span>
+                  <span className="font-medium text-theme-text">
+                    9:00 AM - 6:00 PM
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Saturday</span>
-                  <span className="font-medium">10:00 AM - 4:00 PM</span>
+                  <span className="text-theme-muted">Saturday</span>
+                  <span className="font-medium text-theme-text">
+                    10:00 AM - 4:00 PM
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Sunday</span>
-                  <span className="font-medium text-red-600">Closed</span>
+                  <span className="text-theme-muted">Sunday</span>
+                  <span className="font-medium text-theme-secondary">
+                    Closed
+                  </span>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mt-4">
+              <p className="text-sm text-theme-muted mt-4">
                 All times are in Indian Standard Time (IST)
               </p>
             </div>

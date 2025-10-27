@@ -7,7 +7,7 @@ export interface BeybladePhysics {
   position: Vector2D;
   velocity: Vector2D;
   rotation: number;
-  spin: number; // 0-1000, represents spin strength
+  spin: number; // 0-2000, represents spin strength
   maxSpin: number;
   spinDecayRate: number; // how fast spin decreases per frame
   mass: number;
@@ -17,10 +17,18 @@ export interface BeybladePhysics {
   chargeLevel: number; // 0-100, for powerful attacks
   isOutOfBounds: boolean;
   isDead: boolean; // when spin reaches 0
+  justRespawned?: boolean; // Flag to prevent immediate death after wall respawn
   blueCircleLoopStartTime?: number; // Track when beyblade started blue circle loop
   isInBlueLoop: boolean; // Track if beyblade is locked in blue circle loop
   blueLoopAngle: number; // Track current angle in blue loop
   blueLoopCooldownEnd?: number; // Track when blue loop cooldown ends (3 seconds after last loop)
+  isChargingToPoint: boolean; // Track if beyblade is charging to a wall center point
+  chargePoint: Vector2D | null; // Target charge point position
+  isChargeDashing: boolean; // Track if beyblade is in enhanced charge dash mode
+  chargeDashEndTime?: number; // When charge dash enhanced acceleration ends (2 seconds)
+  currentMaxAcceleration: number; // Current max acceleration cap (gradually decays from 20 to 10)
+  accelerationDecayStartTime?: number; // When the gradual decay started
+  selectedChargePointAngle?: number; // The randomly selected charge point angle for the current loop
 }
 
 export interface GameBeyblade extends BeybladePhysics {
@@ -50,6 +58,8 @@ export interface GameState {
   isPlaying: boolean;
   winner: GameBeyblade | null;
   gameTime: number;
+  countdownActive: boolean;
+  countdownValue: number;
 }
 
 export interface CollisionResult {

@@ -7,6 +7,7 @@ import {
   BEYBLADE_NAMES,
   type BeybladeConfig,
 } from "@/constants/beyblades";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface SpinningBeybladeProps {
   /** Name of the beyblade to display */
@@ -33,6 +34,7 @@ const SpinningBeyblade: React.FC<SpinningBeybladeProps> = ({
 }) => {
   const [config, setConfig] = useState<BeybladeConfig | null>(null);
   const [imageError, setImageError] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const beybladeConfig = getBeybladeConfig(name);
@@ -87,6 +89,7 @@ const SpinningBeyblade: React.FC<SpinningBeybladeProps> = ({
           animationDuration: isSpinning ? animationDuration : undefined,
           animationIterationCount: isSpinning ? "infinite" : undefined,
           animationTimingFunction: "linear",
+          filter: `drop-shadow(0 0 20px ${theme.colors.primary}40)`,
         }}
       >
         <Image
@@ -94,7 +97,12 @@ const SpinningBeyblade: React.FC<SpinningBeybladeProps> = ({
           alt={config.name}
           width={size}
           height={size}
-          className="w-full h-full object-contain drop-shadow-lg"
+          className="w-full h-full object-contain"
+          style={{
+            filter: `hue-rotate(${getHueRotation(
+              theme.colors.primary
+            )}deg) saturate(1.2)`,
+          }}
           onError={() => setImageError(true)}
           priority
           unoptimized // Disable Next.js optimization for SVGs
@@ -103,5 +111,22 @@ const SpinningBeyblade: React.FC<SpinningBeybladeProps> = ({
     </div>
   );
 };
+
+// Helper function to calculate hue rotation based on theme color
+function getHueRotation(color: string): number {
+  // Extract color values and calculate hue rotation based on actual SVG colors
+  const colorMap: Record<string, number> = {
+    "#A39691": 30, // Dragoon GT - brown/beige
+    "#149EE3": 200, // Dran Buster - blue
+    "#C12514": 5, // Dranzer GT - red
+    "#4C4D4C": 0, // Hell's Hammer - dark gray (no hue shift)
+    "#9B9798": 0, // Meteo - silver (no hue shift)
+    "#415FAD": 220, // Pegasus - blue
+    "#B49331": 45, // Spriggan - gold
+    "#31AED8": 190, // Valkyrie - cyan
+  };
+
+  return colorMap[color] || 0;
+}
 
 export default SpinningBeyblade;

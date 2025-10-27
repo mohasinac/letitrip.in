@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "../theme/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import CookieConsentBanner from "@/components/features/auth/CookieConsentBanner";
 import AppLayout from "@/components/shared/layout/AppLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
@@ -53,46 +54,55 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col transition-colors duration-300`}
         style={{
           fontFamily:
             "Inter, var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
           fontSize: "16px",
           fontWeight: "400",
           lineHeight: "1.6",
-          color: "hsl(var(--foreground))",
-          backgroundColor: "hsl(var(--background))",
+          color: "var(--theme-text)",
+          backgroundColor: "var(--theme-background)",
         }}
       >
         <AuthProvider>
-          <ErrorBoundary>
-            <AppLayout>{children}</AppLayout>
-          </ErrorBoundary>
-          <CookieConsentBanner />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: "#363636",
-                color: "#fff",
-              },
-              success: {
-                duration: 3000,
+          <ThemeProvider>
+            <ErrorBoundary>
+              <AppLayout>{children}</AppLayout>
+            </ErrorBoundary>
+            <CookieConsentBanner />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
                 style: {
-                  background: "#10b981",
-                  color: "#fff",
+                  background: "var(--theme-background)",
+                  color: "var(--theme-text)",
+                  border: "2px solid var(--theme-primary)",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
                 },
-              },
-              error: {
-                duration: 5000,
-                style: {
-                  background: "#ef4444",
-                  color: "#fff",
+                success: {
+                  duration: 3000,
+                  style: {
+                    background: "var(--theme-primary)",
+                    color: "var(--theme-background)",
+                    border: "2px solid var(--theme-secondary)",
+                  },
                 },
-              },
-            }}
-          />
+                error: {
+                  duration: 5000,
+                  style: {
+                    background: "#ef4444",
+                    color: "#ffffff",
+                    border: "2px solid #dc2626",
+                  },
+                },
+              }}
+            />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

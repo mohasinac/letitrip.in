@@ -7,6 +7,7 @@ import {
   BEYBLADE_NAMES,
   type BeybladeConfig,
 } from "@/constants/beyblades";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type AnimationType = "spin" | "battle" | "pulse" | "wobble";
 
@@ -44,6 +45,7 @@ const AdvancedSpinningBeyblade: React.FC<AdvancedSpinningBeybladeProps> = ({
 }) => {
   const [config, setConfig] = useState<BeybladeConfig | null>(null);
   const [imageError, setImageError] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const beybladeConfig = getBeybladeConfig(name);
@@ -126,9 +128,7 @@ const AdvancedSpinningBeyblade: React.FC<AdvancedSpinningBeybladeProps> = ({
           style={{
             width: size * 1.2,
             height: size * 1.2,
-            background: `radial-gradient(circle, ${
-              config.direction === "left" ? "#8b5cf6" : "#06b6d4"
-            } 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${theme.colors.primary} 0%, ${theme.colors.secondary}40 50%, transparent 70%)`,
             left: "50%",
             top: "50%",
             transform: "translate(-50%, -50%)",
@@ -146,6 +146,9 @@ const AdvancedSpinningBeyblade: React.FC<AdvancedSpinningBeybladeProps> = ({
             animationType === "battle"
               ? "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
               : "linear",
+          filter: `drop-shadow(0 0 ${battleIntensity > 1.5 ? "25px" : "15px"} ${
+            theme.colors.accent
+          }60)`,
         }}
       >
         <Image
@@ -154,6 +157,11 @@ const AdvancedSpinningBeyblade: React.FC<AdvancedSpinningBeybladeProps> = ({
           width={size}
           height={size}
           className="w-full h-full object-contain"
+          style={{
+            filter: `saturate(${1 + battleIntensity * 0.2}) brightness(${
+              1 + battleIntensity * 0.1
+            })`,
+          }}
           onError={() => setImageError(true)}
           priority
           unoptimized // Disable Next.js optimization for SVGs

@@ -3,21 +3,39 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MAIN_NAVIGATION } from "@/constants/navigation";
+import ThemeSelector from "@/components/shared/ThemeSelector";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className="sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors duration-300"
+      style={{
+        backgroundColor: "var(--theme-background)",
+        borderColor: "var(--theme-primary)",
+      }}
+    >
       <div className="container flex h-16 items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">
+          <div
+            className="h-8 w-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: "var(--theme-primary)" }}
+          >
+            <span
+              className="font-bold text-sm"
+              style={{ color: "var(--theme-background)" }}
+            >
               JFV
             </span>
           </div>
-          <span className="font-bold text-xl">JustForView</span>
+          <span
+            className="font-bold text-xl"
+            style={{ color: "var(--theme-text)" }}
+          >
+            JustForView
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -26,7 +44,16 @@ export default function Header() {
             <Link
               key={index}
               href={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium transition-colors hover:font-semibold"
+              style={{
+                color: "var(--theme-muted)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--theme-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--theme-muted)";
+              }}
             >
               {item.label}
             </Link>
@@ -35,9 +62,25 @@ export default function Header() {
 
         {/* Right Side */}
         <div className="ml-auto flex items-center space-x-4">
+          {/* Theme Selector */}
+          <ThemeSelector />
+
           {/* Search Button */}
           <button
-            className="hidden sm:flex items-center justify-center h-9 w-9 rounded-md border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
+            className="hidden sm:flex items-center justify-center h-9 w-9 rounded-md border transition-colors"
+            style={{
+              borderColor: "var(--theme-primary)",
+              backgroundColor: "transparent",
+              color: "var(--theme-text)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--theme-primary)";
+              e.currentTarget.style.color = "var(--theme-background)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--theme-text)";
+            }}
             aria-label="Search"
           >
             <svg
@@ -59,13 +102,37 @@ export default function Header() {
           <div className="hidden sm:flex items-center space-x-2">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 border shadow-sm h-9 px-4 py-2"
+              style={{
+                borderColor: "var(--theme-primary)",
+                backgroundColor: "transparent",
+                color: "var(--theme-text)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--theme-accent)";
+                e.currentTarget.style.color = "var(--theme-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--theme-text)";
+              }}
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 shadow h-9 px-4 py-2"
+              style={{
+                backgroundColor: "var(--theme-primary)",
+                color: "var(--theme-background)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor =
+                  "var(--theme-secondary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--theme-primary)";
+              }}
             >
               Sign Up
             </Link>
@@ -73,7 +140,20 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="flex md:hidden items-center justify-center h-9 w-9 rounded-md border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
+            className="flex md:hidden items-center justify-center h-9 w-9 rounded-md border transition-colors"
+            style={{
+              borderColor: "var(--theme-primary)",
+              backgroundColor: "transparent",
+              color: "var(--theme-text)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--theme-primary)";
+              e.currentTarget.style.color = "var(--theme-background)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--theme-text)";
+            }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -105,7 +185,13 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t bg-background">
+        <div
+          className="md:hidden border-t transition-colors duration-300"
+          style={{
+            backgroundColor: "var(--theme-background)",
+            borderColor: "var(--theme-primary)",
+          }}
+        >
           <div className="container py-4 space-y-4">
             {/* Navigation Links */}
             <nav className="space-y-2">
@@ -113,7 +199,17 @@ export default function Header() {
                 <Link
                   key={index}
                   href={item.href}
-                  className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  className="block px-3 py-2 text-sm font-medium transition-colors rounded-md"
+                  style={{ color: "var(--theme-muted)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--theme-primary)";
+                    e.currentTarget.style.color = "var(--theme-background)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--theme-muted)";
+                  }}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
@@ -122,17 +218,45 @@ export default function Header() {
             </nav>
 
             {/* Mobile Auth Buttons */}
-            <div className="flex flex-col space-y-2 pt-4 border-t">
+            <div
+              className="flex flex-col space-y-2 pt-4 border-t"
+              style={{ borderColor: "var(--theme-primary)" }}
+            >
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 border shadow-sm h-9 px-4 py-2"
+                style={{
+                  borderColor: "var(--theme-primary)",
+                  backgroundColor: "transparent",
+                  color: "var(--theme-text)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--theme-accent)";
+                  e.currentTarget.style.color = "var(--theme-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--theme-text)";
+                }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign In
               </Link>
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 shadow h-9 px-4 py-2"
+                style={{
+                  backgroundColor: "var(--theme-primary)",
+                  color: "var(--theme-background)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    "var(--theme-secondary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    "var(--theme-primary)";
+                }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign Up

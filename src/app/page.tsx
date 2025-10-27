@@ -9,7 +9,7 @@ import ContactSection from "@/components/home/ContactSection";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-theme-background">
       <HeroBanner />
       <WhyChooseUs />
       <FeaturedCategories />

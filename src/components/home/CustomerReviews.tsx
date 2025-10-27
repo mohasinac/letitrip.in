@@ -28,50 +28,53 @@ export default function CustomerReviews() {
   }, []);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-gradient-to-br from-theme-background to-theme-accent/30 shadow-inner">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl lg:text-5xl font-black text-theme-text mb-6 drop-shadow-lg">
             What Our Customers Say
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-2xl text-theme-muted font-bold max-w-2xl mx-auto drop-shadow-md">
             Real reviews from real customers who love our products
           </p>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-gray-50 rounded-xl p-6 animate-pulse">
-                <div className="flex mb-4">
+              <div
+                key={i}
+                className="bg-white rounded-2xl p-8 animate-pulse border-4 border-theme-primary/30 shadow-lg"
+              >
+                <div className="flex mb-6">
                   {[...Array(5)].map((_, j) => (
                     <div
                       key={j}
-                      className="w-4 h-4 bg-gray-200 rounded mr-1"
+                      className="w-5 h-5 bg-theme-muted rounded mr-2"
                     ></div>
                   ))}
                 </div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded mb-4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-5 bg-theme-muted rounded mb-3"></div>
+                <div className="h-4 bg-theme-muted rounded mb-6"></div>
+                <div className="h-4 bg-theme-muted rounded w-2/3"></div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {reviews.slice(0, 6).map((review, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors"
+                className="bg-white rounded-2xl p-8 border-4 border-theme-primary hover:border-theme-secondary hover-glow-theme-strong transition-all duration-500 transform hover:-translate-y-2 shadow-xl"
               >
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-6">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-4 h-4 ${
+                        className={`w-6 h-6 ${
                           i < review.rating
-                            ? "text-yellow-400"
+                            ? "text-theme-primary"
                             : "text-gray-300"
                         }`}
                         fill="currentColor"
@@ -81,23 +84,29 @@ export default function CustomerReviews() {
                       </svg>
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">
+                  <span className="ml-3 text-lg font-bold text-theme-muted">
                     {review.rating}/5
                   </span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-theme-text mb-3 text-xl drop-shadow-sm">
                   {review.title}
                 </h3>
-                <p className="text-gray-600 mb-4 text-sm italic">
+                <p className="text-theme-muted mb-6 text-lg italic font-medium leading-relaxed">
                   "{review.content}"
                 </p>
-                <div className="text-sm">
-                  <p className="font-medium text-gray-900">{review.author}</p>
+                <div className="text-base">
+                  <p className="font-bold text-theme-text text-lg">
+                    {review.author}
+                  </p>
                   {review.role && (
-                    <p className="text-gray-500">{review.role}</p>
+                    <p className="text-theme-muted font-semibold">
+                      {review.role}
+                    </p>
                   )}
                   {review.date && (
-                    <p className="text-gray-400 text-xs mt-1">{review.date}</p>
+                    <p className="text-theme-muted text-sm mt-2 font-medium">
+                      {review.date}
+                    </p>
                   )}
                 </div>
               </div>
@@ -106,22 +115,38 @@ export default function CustomerReviews() {
         )}
 
         {/* Trust Badges */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div className="text-3xl font-bold text-blue-600">50K+</div>
-            <div className="text-gray-600">Happy Customers</div>
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
+          <div className="bg-white rounded-2xl p-6 border-4 border-theme-primary shadow-xl">
+            <div className="text-5xl font-black text-theme-primary mb-2 drop-shadow-md">
+              50K+
+            </div>
+            <div className="text-theme-muted font-bold text-lg">
+              Happy Customers
+            </div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-600">99%</div>
-            <div className="text-gray-600">Satisfaction Rate</div>
+          <div className="bg-white rounded-2xl p-6 border-4 border-theme-primary shadow-xl">
+            <div className="text-5xl font-black text-theme-primary mb-2 drop-shadow-md">
+              99%
+            </div>
+            <div className="text-theme-muted font-bold text-lg">
+              Satisfaction Rate
+            </div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-600">24/7</div>
-            <div className="text-gray-600">Customer Support</div>
+          <div className="bg-white rounded-2xl p-6 border-4 border-theme-primary shadow-xl">
+            <div className="text-5xl font-black text-theme-primary mb-2 drop-shadow-md">
+              24/7
+            </div>
+            <div className="text-theme-muted font-bold text-lg">
+              Customer Support
+            </div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-600">100%</div>
-            <div className="text-gray-600">Authentic Products</div>
+          <div className="bg-white rounded-2xl p-6 border-4 border-theme-primary shadow-xl">
+            <div className="text-5xl font-black text-theme-primary mb-2 drop-shadow-md">
+              100%
+            </div>
+            <div className="text-theme-muted font-bold text-lg">
+              Authentic Products
+            </div>
           </div>
         </div>
       </div>

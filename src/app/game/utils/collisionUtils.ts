@@ -1,0 +1,101 @@
+import { GameBeyblade, Vector2D } from '../types/game';
+import { vectorDistance, vectorNormalize, vectorSubtract, vectorAdd, vectorMultiply } from './vectorUtils';
+
+/**
+ * Collision detection and response utilities
+ */
+
+export const checkCollision = (bey1: GameBeyblade, bey2: GameBeyblade): boolean => {
+  const distance = vectorDistance(bey1.position, bey2.position);
+  return distance < (bey1.radius + bey2.radius);
+};
+
+export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameBeyblade): void => {
+  const distance = vectorDistance(bey1.position, bey2.position);
+  const normal = vectorNormalize(vectorSubtract(bey2.position, bey1.position));
+  
+  // Check spin directions
+  const bey1SpinDirection = bey1.config.direction === "left" ? -1 : 1;
+  const bey2SpinDirection = bey2.config.direction === "left" ? -1 : 1;
+  const isOppositeSpins = bey1SpinDirection !== bey2SpinDirection;
+  
+  // Check if either beyblade is in charge dash mode for enhanced knockback
+  const bey1ChargeDash = bey1.isChargeDashing || false;
+  const bey2ChargeDash = bey2.isChargeDashing || false;
+  const chargeKnockbackMultiplier = (bey1ChargeDash || bey2ChargeDash) ? 4.0 : 2.0; // 4x for charge dash, 2x for normal (doubled)
+  
+  let damage1 = 0;
+  let damage2 = 0;
+  
+  if (isOppositeSpins) {
+    // Opposite spin collision: Both get average spin + their acceleration
+    const avgSpin = (bey1.spin + bey2.spin) / 2;
+    const newSpin1 = avgSpin + bey1.acceleration;
+    const newSpin2 = avgSpin + bey2.acceleration;
+    
+    // Calculate damage: average of accelerations plus the other's acceleration
+    const avgAcceleration = Math.floor((bey1.acceleration + bey2.acceleration) / 2);
+    damage1 = avgAcceleration + bey2.acceleration;
+    damage2 = avgAcceleration + bey1.acceleration;
+    
+    // Apply new spins and damage
+    bey1.spin = Math.max(0, newSpin1 - damage1);
+    bey2.spin = Math.max(0, newSpin2 - damage2);
+  } else {
+    // Same spin collision: Damage = difference of accelerations + opposite bey's acceleration
+    const accelerationDiff = Math.abs(bey1.acceleration - bey2.acceleration);
+    damage1 = accelerationDiff + bey2.acceleration;
+    damage2 = accelerationDiff + bey1.acceleration;
+    
+    // Apply damage
+    bey1.spin = Math.max(0, bey1.spin - damage1);
+    bey2.spin = Math.max(0, bey2.spin - damage2);
+  }
+  
+  // Enhanced collision knockback with charge dash multiplier
+  const knockback1 = vectorMultiply(normal, -damage1 * chargeKnockbackMultiplier);
+  const knockback2 = vectorMultiply(normal, damage2 * chargeKnockbackMultiplier);
+  
+  // Apply knockback to positions
+  bey1.position = vectorAdd(bey1.position, knockback1);
+  bey2.position = vectorAdd(bey2.position, knockback2);
+  
+  // Apply velocity changes for collision response (doubled and further enhanced during charge dash)
+  const velocityTransfer = 80 * chargeKnockbackMultiplier; // Doubled from 40 to 80
+  const velocityKnockback1 = vectorMultiply(knockback1, velocityTransfer * 0.01);
+  const velocityKnockback2 = vectorMultiply(knockback2, velocityTransfer * 0.01);
+  
+  bey1.velocity = vectorAdd(bey1.velocity, velocityKnockback1);
+  bey2.velocity = vectorAdd(bey2.velocity, velocityKnockback2);
+  
+  // Separate beyblades to prevent overlap
+  const overlap = (bey1.radius + bey2.radius) - distance;
+  if (overlap > 0) {
+    const separation = vectorMultiply(normal, overlap / 2 + 1);
+    bey1.position = vectorSubtract(bey1.position, separation);
+    bey2.position = vectorAdd(bey2.position, separation);
+  }
+};
+
+export const calculateSpinExchange = (bey1: GameBeyblade, bey2: GameBeyblade, force: number): number => {
+  const spinDiff = Math.abs(bey1.spin - bey2.spin);
+  const avgSpin = (bey1.spin + bey2.spin) / 2;
+  
+  // Base exchange rate
+  const baseExchange = force * 0.1;
+  
+  // If spins are in opposite directions (one left, one right), equalize more
+  const oppositeFactor = (bey1.config.direction !== bey2.config.direction) ? 1.5 : 1.0;
+  
+  return Math.min(baseExchange * oppositeFactor, spinDiff * 0.3);
+};
+
+export const applySpinExchange = (bey1: GameBeyblade, bey2: GameBeyblade, exchange: number): void => {
+  if (bey1.spin > bey2.spin) {
+    bey1.spin = Math.max(0, bey1.spin - exchange);
+    bey2.spin = Math.min(bey2.maxSpin, bey2.spin + exchange * 0.7); // Receiver gets less
+  } else {
+    bey2.spin = Math.max(0, bey2.spin - exchange);
+    bey1.spin = Math.min(bey1.maxSpin, bey1.spin + exchange * 0.7);
+  }
+};

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { getBeybladeConfig, type BeybladeConfig } from "@/constants/beyblades";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface FallbackSpinningBeybladeProps {
   /** Name of the beyblade to display */
@@ -25,6 +26,7 @@ const FallbackSpinningBeyblade: React.FC<FallbackSpinningBeybladeProps> = ({
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string>("");
   const [attemptCount, setAttemptCount] = useState(0);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const beybladeConfig = getBeybladeConfig(name);
@@ -97,6 +99,7 @@ const FallbackSpinningBeyblade: React.FC<FallbackSpinningBeybladeProps> = ({
           animationDuration: isSpinning ? animationDuration : undefined,
           animationIterationCount: isSpinning ? "infinite" : undefined,
           animationTimingFunction: "linear",
+          filter: `drop-shadow(0 0 15px ${theme.colors.primary}40)`,
         }}
       >
         <Image
@@ -104,13 +107,19 @@ const FallbackSpinningBeyblade: React.FC<FallbackSpinningBeybladeProps> = ({
           alt={config.name}
           width={size}
           height={size}
-          className="w-full h-full object-contain drop-shadow-lg"
+          className="w-full h-full object-contain"
+          style={{
+            filter: `saturate(1.2) brightness(1.1)`,
+          }}
           onError={handleImageError}
           priority
           unoptimized // Disable Next.js optimization for SVGs
         />
       </div>
-      <div className="text-xs text-gray-400 text-center mt-1">
+      <div
+        className="text-xs text-center mt-1"
+        style={{ color: theme.colors.muted }}
+      >
         Source:{" "}
         {attemptCount === 0 ? "API" : attemptCount === 1 ? "Public" : "Direct"}
       </div>

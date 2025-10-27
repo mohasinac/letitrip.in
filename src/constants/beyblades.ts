@@ -8,9 +8,9 @@ export interface BeybladeConfig {
 }
 
 export const BEYBLADE_CONFIGS: Record<string, BeybladeConfig> = {
-  'dg-gt': {
-    name: 'DG GT',
-    fileName: 'dg gt.svg',
+  'dragoon-gt': {
+    name: 'Dragoon GT',
+    fileName: 'dragoon GT.svg',
     direction: 'left',
     speed: 1.5,
   },
@@ -21,9 +21,9 @@ export const BEYBLADE_CONFIGS: Record<string, BeybladeConfig> = {
     direction: 'right',
     speed: 1,
   },
-  'dz-gt': {
-    name: 'DZ GT',
-    fileName: 'dz gt.svg',
+  'dranzer-gt': {
+    name: 'Dranzer GT',
+    fileName: 'dranzer GT.svg',
     direction: 'right',
     speed: 1,
   },

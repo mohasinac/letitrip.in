@@ -28,12 +28,12 @@ export default async function AboutPage() {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className="bg-theme-primary text-white">
         <div className="container py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             {company.metadata?.title || "About JustForView"}
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
             {company.metadata?.description ||
               "Your trusted destination for authentic hobby products, rare collectibles, and premium gaming accessories since 2020."}
           </p>
@@ -41,12 +41,14 @@ export default async function AboutPage() {
       </section>
 
       {/* Our Story */}
-      <section className="py-16">
+      <section className="py-16 bg-theme-background">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-              <div className="prose text-muted-foreground space-y-4">
+              <h2 className="text-3xl font-bold mb-6 text-theme-text">
+                Our Story
+              </h2>
+              <div className="prose text-theme-muted space-y-4">
                 {company.content ? (
                   <div
                     dangerouslySetInnerHTML={{
@@ -77,7 +79,7 @@ export default async function AboutPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-theme-accent to-theme-secondary rounded-2xl overflow-hidden">
                 <img
                   src={company.metadata?.image || "/images/about-story.jpg"}
                   alt="Our Story"
@@ -90,13 +92,13 @@ export default async function AboutPage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-theme-accent">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="card p-8 text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="card bg-theme-background p-8 text-center border border-theme-primary hover-glow-theme">
+              <div className="w-16 h-16 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
-                  className="w-8 h-8 text-blue-600"
+                  className="w-8 h-8 text-theme-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -109,17 +111,19 @@ export default async function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-2xl font-bold mb-4 text-theme-text">
+                Our Mission
+              </h3>
+              <p className="text-theme-muted">
                 To provide authentic, high-quality hobby products while building
                 a passionate community of collectors and enthusiasts across
                 India.
               </p>
             </div>
-            <div className="card p-8 text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="card bg-theme-background p-8 text-center border border-theme-secondary hover-glow-theme">
+              <div className="w-16 h-16 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
-                  className="w-8 h-8 text-purple-600"
+                  className="w-8 h-8 text-theme-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -138,8 +142,10 @@ export default async function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-2xl font-bold mb-4 text-theme-text">
+                Our Vision
+              </h3>
+              <p className="text-theme-muted">
                 To become the most trusted and comprehensive platform for hobby
                 enthusiasts, expanding globally while maintaining our commitment
                 to authenticity.
@@ -150,14 +156,16 @@ export default async function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-16">
+      <section className="py-16 bg-theme-background">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-theme-text">
+            Our Values
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
                 <svg
-                  className="w-10 h-10 text-green-600"
+                  className="w-10 h-10 text-theme-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -170,16 +178,18 @@ export default async function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Authenticity</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-bold mb-4 text-theme-text">
+                Authenticity
+              </h3>
+              <p className="text-theme-muted">
                 Every product is 100% genuine and verified. We work directly
                 with authorized distributors and brands to ensure authenticity.
               </p>
             </div>
             <div className="text-center">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
                 <svg
-                  className="w-10 h-10 text-orange-600"
+                  className="w-10 h-10 text-theme-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -192,17 +202,19 @@ export default async function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Community</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-bold mb-4 text-theme-text">
+                Community
+              </h3>
+              <p className="text-theme-muted">
                 We're more than a store - we're a community. We connect
                 enthusiasts, share knowledge, and celebrate the passion for
                 collecting.
               </p>
             </div>
             <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
                 <svg
-                  className="w-10 h-10 text-blue-600"
+                  className="w-10 h-10 text-theme-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -215,8 +227,10 @@ export default async function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Excellence</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-bold mb-4 text-theme-text">
+                Excellence
+              </h3>
+              <p className="text-theme-muted">
                 From product quality to customer service, we strive for
                 excellence in everything we do. Your satisfaction is our
                 priority.
@@ -227,9 +241,9 @@ export default async function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-theme-accent">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12 text-theme-text">
             Meet Our Team
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -253,17 +267,24 @@ export default async function AboutPage() {
                 bio: "Connecting enthusiasts and building our vibrant community",
               },
             ].map((member, index) => (
-              <div key={index} className="card p-6 text-center">
-                <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
+              <div
+                key={index}
+                className="card bg-theme-background p-6 text-center border border-theme-primary hover-glow-theme"
+              >
+                <div className="w-24 h-24 rounded-full bg-theme-muted mx-auto mb-4 overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h3 className="font-bold mb-1">{member.name}</h3>
-                <p className="text-primary font-medium mb-2">{member.role}</p>
-                <p className="text-sm text-muted-foreground">{member.bio}</p>
+                <h3 className="font-bold mb-1 text-theme-text">
+                  {member.name}
+                </h3>
+                <p className="text-theme-primary font-medium mb-2">
+                  {member.role}
+                </p>
+                <p className="text-sm text-theme-muted">{member.bio}</p>
               </div>
             ))}
           </div>
@@ -271,47 +292,55 @@ export default async function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-16">
+      <section className="py-16 bg-theme-background">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-primary mb-2">50K+</div>
-              <div className="text-muted-foreground">Happy Customers</div>
+              <div className="text-4xl font-bold text-theme-primary mb-2">
+                50K+
+              </div>
+              <div className="text-theme-muted">Happy Customers</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-muted-foreground">Products Sold</div>
+              <div className="text-4xl font-bold text-theme-primary mb-2">
+                10K+
+              </div>
+              <div className="text-theme-muted">Products Sold</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary mb-2">500+</div>
-              <div className="text-muted-foreground">Live Auctions</div>
+              <div className="text-4xl font-bold text-theme-primary mb-2">
+                500+
+              </div>
+              <div className="text-theme-muted">Live Auctions</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary mb-2">99%</div>
-              <div className="text-muted-foreground">Satisfaction Rate</div>
+              <div className="text-4xl font-bold text-theme-primary mb-2">
+                99%
+              </div>
+              <div className="text-theme-muted">Satisfaction Rate</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+      <section className="py-16 bg-gray-900 text-white">
         <div className="container text-center">
           <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
-          <p className="text-lg text-purple-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
             Ready to discover authentic products and connect with fellow
             enthusiasts?
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/products"
-              className="btn bg-white text-purple-600 hover:bg-gray-100"
+              className="inline-flex items-center justify-center px-8 py-4 bg-theme-primary text-white rounded-xl font-bold hover:bg-theme-secondary transition-all duration-300 shadow-xl border-4 border-theme-primary"
             >
               Shop Now
             </Link>
             <Link
               href="/contact"
-              className="btn bg-transparent border-2 border-white hover:bg-white/10"
+              className="inline-flex items-center justify-center px-8 py-4 bg-white text-theme-primary rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-xl border-4 border-white"
             >
               Contact Us
             </Link>
