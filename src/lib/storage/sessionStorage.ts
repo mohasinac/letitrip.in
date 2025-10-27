@@ -153,7 +153,7 @@ export const sessionStorage = {
         }),
       });
     } catch (error) {
-      console.error('Failed to sync session to database:', error);
+      // Fail silently - session sync is not critical
     }
   },
 
@@ -175,7 +175,7 @@ export const sessionStorage = {
         }
       }
     } catch (error) {
-      console.error('Failed to restore session from database:', error);
+      // Fail silently - session restore is not critical
     }
   },
 };

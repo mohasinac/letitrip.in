@@ -42,7 +42,7 @@ export function setCookie(
   
   // Only set non-essential cookies if user has consented
   if (!options.essential && !hasCookieConsent()) {
-    console.warn(`Skipping non-essential cookie "${name}" - no consent`);
+    // Silently skip non-essential cookies without consent
     return;
   }
 

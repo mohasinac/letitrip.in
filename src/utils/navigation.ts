@@ -41,6 +41,11 @@ export const getMainNavigation = (): NavigationItem[] => [
     ],
   },
   {
+    label: "Game",
+    href: "/game",
+    description: "Play Beyblade games and demos",
+  },
+  {
     label: "Stores",
     href: SHOP_ROUTES.STORES,
     children: [

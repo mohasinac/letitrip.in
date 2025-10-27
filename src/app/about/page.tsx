@@ -1,17 +1,41 @@
 import Link from "next/link";
+import { parseMarkdownFile } from "@/lib/utils/markdown";
 
-export default function AboutPage() {
+interface AboutPageProps {}
+
+// This function runs at build time (SSG)
+async function getAboutContent() {
+  try {
+    const companyData = await parseMarkdownFile("about/company.md");
+    const teamData = await parseMarkdownFile("about/team.md");
+
+    return {
+      company: companyData,
+      team: teamData,
+    };
+  } catch (error) {
+    console.error("Error loading about content:", error);
+    return {
+      company: { content: "", metadata: {} },
+      team: { content: "", metadata: {} },
+    };
+  }
+}
+
+export default async function AboutPage() {
+  const { company, team } = await getAboutContent();
+
   return (
     <main className="flex-1">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            About JustForView
+            {company.metadata?.title || "About JustForView"}
           </h1>
           <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
-            Your trusted destination for authentic hobby products, rare
-            collectibles, and premium gaming accessories since 2020.
+            {company.metadata?.description ||
+              "Your trusted destination for authentic hobby products, rare collectibles, and premium gaming accessories since 2020."}
           </p>
         </div>
       </section>
@@ -23,30 +47,39 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="prose text-muted-foreground space-y-4">
-                <p>
-                  JustForView was born from a passion for authentic hobby
-                  products and the frustration of finding genuine items in the
-                  market. What started as a small collection grew into India's
-                  premier destination for Beyblades, collectibles, and gaming
-                  accessories.
-                </p>
-                <p>
-                  We understand the excitement of unboxing a new product, the
-                  thrill of finding that rare item you've been searching for,
-                  and the importance of authenticity in collectibles. That's why
-                  we've built our entire business around these core values.
-                </p>
-                <p>
-                  Today, we serve thousands of customers across India, offering
-                  not just products, but a complete community experience with
-                  live auctions, expert reviews, and dedicated customer support.
-                </p>
+                {company.content ? (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: company.content
+                        .replace(/\n/g, "</p><p>")
+                        .replace(/^/, "<p>")
+                        .replace(/$/, "</p>"),
+                    }}
+                  />
+                ) : (
+                  <>
+                    <p>
+                      JustForView was born from a passion for authentic hobby
+                      products and the frustration of finding genuine items in
+                      the market. What started as a small collection grew into
+                      India's premier destination for Beyblades, collectibles,
+                      and gaming accessories.
+                    </p>
+                    <p>
+                      We understand the excitement of unboxing a new product,
+                      the thrill of finding that rare item you've been searching
+                      for, and the importance of authenticity in collectibles.
+                      That's why we've built our entire business around these
+                      core values.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <div className="relative">
               <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl overflow-hidden">
                 <img
-                  src="/images/about-story.jpg"
+                  src={company.metadata?.image || "/images/about-story.jpg"}
                   alt="Our Story"
                   className="w-full h-full object-cover"
                 />

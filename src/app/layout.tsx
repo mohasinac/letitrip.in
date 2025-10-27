@@ -3,10 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "../theme/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { CartProvider } from "@/contexts/CartContext";
-import UserDebug from "@/components/debug/UserDebug";
 import CookieConsentBanner from "@/components/features/auth/CookieConsentBanner";
 import AppLayout from "@/components/shared/layout/AppLayout";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -54,7 +53,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
         style={{
           fontFamily:
             "Inter, var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
@@ -66,35 +65,34 @@ export default function RootLayout({
         }}
       >
         <AuthProvider>
-          <CartProvider>
+          <ErrorBoundary>
             <AppLayout>{children}</AppLayout>
-            <UserDebug />
-            <CookieConsentBanner />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
+          </ErrorBoundary>
+          <CookieConsentBanner />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#363636",
+                color: "#fff",
+              },
+              success: {
+                duration: 3000,
                 style: {
-                  background: "#363636",
+                  background: "#10b981",
                   color: "#fff",
                 },
-                success: {
-                  duration: 3000,
-                  style: {
-                    background: "#10b981",
-                    color: "#fff",
-                  },
+              },
+              error: {
+                duration: 5000,
+                style: {
+                  background: "#ef4444",
+                  color: "#fff",
                 },
-                error: {
-                  duration: 5000,
-                  style: {
-                    background: "#ef4444",
-                    color: "#fff",
-                  },
-                },
-              }}
-            />
-          </CartProvider>
+              },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

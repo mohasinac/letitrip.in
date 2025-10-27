@@ -1,224 +1,61 @@
 "use client";
 
-import { useState } from "react";
-
-interface FAQItem {
-  id: string;
-  category: string;
-  question: string;
-  answer: string;
-}
+import { useState, useEffect } from "react";
+import {
+  fetchMarkdownContent,
+  parseFAQMarkdown,
+} from "@/lib/utils/markdown-client";
+import type { FAQItem } from "@/lib/utils/markdown-client";
 
 export default function FAQPage() {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [faqData, setFAQData] = useState<FAQItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const faqData: FAQItem[] = [
-    // Shipping & Delivery
-    {
-      id: "1",
-      category: "shipping",
-      question: "How long does shipping take?",
-      answer:
-        "Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 business days. International shipping may take 7-14 business days depending on the destination.",
-    },
-    {
-      id: "2",
-      category: "shipping",
-      question: "Do you ship internationally?",
-      answer:
-        "Yes, we ship to over 50 countries worldwide. Shipping costs and delivery times vary by destination. Please check our shipping calculator at checkout for specific rates.",
-    },
-    {
-      id: "3",
-      category: "shipping",
-      question: "Can I track my order?",
-      answer:
-        "Absolutely! Once your order ships, you'll receive a tracking number via email. You can also track your orders by logging into your account and visiting the 'Order History' section.",
-    },
-    {
-      id: "4",
-      category: "shipping",
-      question: "What if my package is damaged or lost?",
-      answer:
-        "If your package arrives damaged or gets lost in transit, please contact us within 48 hours of the expected delivery date. We'll work with the shipping carrier to resolve the issue and ensure you receive your items.",
-    },
+  useEffect(() => {
+    async function loadFAQData() {
+      try {
+        const { content } = await fetchMarkdownContent("faq.md");
+        const faqs = parseFAQMarkdown(content);
+        setFAQData(faqs);
+      } catch (error) {
+        console.error("Error loading FAQ data:", error);
+        // Fallback to default FAQ data
+        setFAQData([
+          {
+            question: "How can I contact customer support?",
+            answer:
+              "You can reach us through our contact form, email us at support@justforview.in, or call us during business hours.",
+            category: "Support",
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    // Orders & Returns
-    {
-      id: "5",
-      category: "orders",
-      question: "How can I cancel or modify my order?",
-      answer:
-        "You can cancel or modify your order within 1 hour of placing it by contacting our customer service team. After that, your order may have already been processed and shipped.",
-    },
-    {
-      id: "6",
-      category: "orders",
-      question: "What is your return policy?",
-      answer:
-        "We offer a 30-day return policy for unused items in original packaging. Items must be returned in the same condition they were received. Custom or personalized items are not eligible for return.",
-    },
-    {
-      id: "7",
-      category: "orders",
-      question: "How do I return an item?",
-      answer:
-        "To return an item, log into your account, go to 'Order History', and click 'Return Item' next to the product. Follow the instructions to print a return label and ship the item back to us.",
-    },
-    {
-      id: "8",
-      category: "orders",
-      question: "When will I receive my refund?",
-      answer:
-        "Refunds are processed within 3-5 business days after we receive your returned item. The refund will be credited to your original payment method and may take an additional 2-3 business days to appear in your account.",
-    },
+    loadFAQData();
+  }, []);
 
-    // Products
-    {
-      id: "9",
-      category: "products",
-      question: "Are your Beyblades authentic?",
-      answer:
-        "Yes, all our Beyblades are 100% authentic and sourced directly from official manufacturers like Takara Tomy and Hasbro. We guarantee the authenticity of every product we sell.",
-    },
-    {
-      id: "10",
-      category: "products",
-      question: "Do you sell spare parts for Beyblades?",
-      answer:
-        "Yes, we offer a wide selection of Beyblade parts including performance tips, energy layers, forge discs, and more. Check our 'Parts & Accessories' section for available components.",
-    },
-    {
-      id: "11",
-      category: "products",
-      question: "What's the difference between Beyblade Burst and Metal Fight?",
-      answer:
-        "Beyblade Burst features a burst mechanism where Beyblades can 'burst' apart during battle, while Metal Fight (Metal Fusion) uses heavier metal wheels for more intense battles. Both are official Beyblade series but have different gameplay mechanics.",
-    },
-    {
-      id: "12",
-      category: "products",
-      question: "Are Beyblade stadiums necessary?",
-      answer:
-        "While not absolutely necessary, official Beyblade stadiums provide the best battling experience and are designed to contain the Beyblades safely during battles. We recommend using official stadiums for competitive play.",
-    },
-
-    // Account & Payment
-    {
-      id: "13",
-      category: "account",
-      question: "Do I need an account to place an order?",
-      answer:
-        "You can place orders as a guest, but creating an account allows you to track orders, save addresses, maintain a wishlist, and access exclusive member benefits.",
-    },
-    {
-      id: "14",
-      category: "account",
-      question: "How do I reset my password?",
-      answer:
-        "Click 'Forgot Password' on the login page and enter your email address. We'll send you a secure link to reset your password. If you don't receive the email, check your spam folder.",
-    },
-    {
-      id: "15",
-      category: "account",
-      question: "What payment methods do you accept?",
-      answer:
-        "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and bank transfers. All payments are processed securely through encrypted connections.",
-    },
-    {
-      id: "16",
-      category: "account",
-      question: "Is my payment information secure?",
-      answer:
-        "Yes, we use industry-standard SSL encryption to protect your payment information. We never store your full credit card details on our servers and comply with PCI DSS security standards.",
-    },
-
-    // Auctions
-    {
-      id: "17",
-      category: "auctions",
-      question: "How do Beyblade auctions work?",
-      answer:
-        "Our auctions feature rare and limited edition Beyblades. Place bids during the auction period, and the highest bidder wins when the auction ends. All auction winners must complete payment within 24 hours.",
-    },
-    {
-      id: "18",
-      category: "auctions",
-      question: "Can I retract a bid?",
-      answer:
-        "Bids are binding and generally cannot be retracted. However, in exceptional circumstances (such as entering the wrong amount), contact us immediately and we'll review your request on a case-by-case basis.",
-    },
-    {
-      id: "19",
-      category: "auctions",
-      question: "What happens if I win an auction but don't pay?",
-      answer:
-        "Failure to pay for won auctions may result in account restrictions or suspension. We may also offer the item to the second-highest bidder at their bid price.",
-    },
-
-    // Technical Support
-    {
-      id: "20",
-      category: "support",
-      question: "The website isn't working properly. What should I do?",
-      answer:
-        "Try clearing your browser cache and cookies, or try using a different browser. If problems persist, contact our technical support team with details about your browser and the issue you're experiencing.",
-    },
-    {
-      id: "21",
-      category: "support",
-      question: "How can I contact customer support?",
-      answer:
-        "You can reach us through our contact form, email us at support@justforview.in, or call us at 1-800-BEYBLADE during business hours (9 AM - 6 PM EST, Monday-Friday).",
-    },
-    {
-      id: "22",
-      category: "support",
-      question: "Do you offer live chat support?",
-      answer:
-        "Yes, live chat is available during business hours (9 AM - 6 PM EST, Monday-Friday). Look for the chat icon in the bottom right corner of your screen.",
-    },
-  ];
-
+  // Get unique categories from FAQ data
   const categories = [
     { id: "all", name: "All Categories", count: faqData.length },
-    {
-      id: "shipping",
-      name: "Shipping & Delivery",
-      count: faqData.filter((item) => item.category === "shipping").length,
-    },
-    {
-      id: "orders",
-      name: "Orders & Returns",
-      count: faqData.filter((item) => item.category === "orders").length,
-    },
-    {
-      id: "products",
-      name: "Products",
-      count: faqData.filter((item) => item.category === "products").length,
-    },
-    {
-      id: "account",
-      name: "Account & Payment",
-      count: faqData.filter((item) => item.category === "account").length,
-    },
-    {
-      id: "auctions",
-      name: "Auctions",
-      count: faqData.filter((item) => item.category === "auctions").length,
-    },
-    {
-      id: "support",
-      name: "Technical Support",
-      count: faqData.filter((item) => item.category === "support").length,
-    },
+    ...Array.from(
+      new Set(faqData.map((item) => item.category || "General"))
+    ).map((category) => ({
+      id: category.toLowerCase(),
+      name: category,
+      count: faqData.filter((item) => (item.category || "General") === category)
+        .length,
+    })),
   ];
 
   const filteredFAQs = faqData.filter((item) => {
+    const itemCategory = (item.category || "General").toLowerCase();
     const matchesCategory =
-      selectedCategory === "all" || item.category === selectedCategory;
+      selectedCategory === "all" || itemCategory === selectedCategory;
     const matchesSearch =
       searchQuery === "" ||
       item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -226,9 +63,20 @@ export default function FAQPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const toggleItem = (itemId: string) => {
-    setOpenItem(openItem === itemId ? null : itemId);
+  const toggleItem = (question: string) => {
+    setOpenItem(openItem === question ? null : question);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading FAQ...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -307,13 +155,13 @@ export default function FAQPage() {
           <div className="lg:w-3/4">
             {filteredFAQs.length > 0 ? (
               <div className="space-y-4">
-                {filteredFAQs.map((item) => (
+                {filteredFAQs.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={`${item.question}-${index}`}
                     className="bg-white rounded-lg shadow-sm border overflow-hidden"
                   >
                     <button
-                      onClick={() => toggleItem(item.id)}
+                      onClick={() => toggleItem(item.question)}
                       className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
                     >
                       <h3 className="text-lg font-medium text-gray-900 pr-4">
@@ -321,7 +169,9 @@ export default function FAQPage() {
                       </h3>
                       <svg
                         className={`h-5 w-5 text-gray-500 transition-transform ${
-                          openItem === item.id ? "transform rotate-180" : ""
+                          openItem === item.question
+                            ? "transform rotate-180"
+                            : ""
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -335,7 +185,7 @@ export default function FAQPage() {
                         />
                       </svg>
                     </button>
-                    {openItem === item.id && (
+                    {openItem === item.question && (
                       <div className="px-6 pb-4">
                         <div className="border-t border-gray-200 pt-4">
                           <p className="text-gray-600 leading-relaxed">

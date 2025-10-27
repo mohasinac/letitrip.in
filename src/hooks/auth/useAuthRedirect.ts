@@ -59,7 +59,8 @@ export const useAuthRedirect = () => {
   // Auto-redirect for protected routes
   useEffect(() => {
     if (!loading && !user) {
-      const protectedRoutes = ['/account', '/orders', '/admin', '/seller', '/checkout'];
+      // No protected routes remaining
+      const protectedRoutes: string[] = [];
       const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
       
       if (isProtectedRoute) {
