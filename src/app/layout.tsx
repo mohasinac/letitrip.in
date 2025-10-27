@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import "../theme/globals.css";
+import "./modern-globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import CookieConsentBanner from "@/components/features/auth/CookieConsentBanner";
-import AppLayout from "@/components/shared/layout/AppLayout";
+import { ModernThemeProvider } from "@/contexts/ModernThemeContext";
+import ModernLayout from "@/components/layout/ModernLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
@@ -15,23 +13,20 @@ const inter = Inter({
   display: "swap",
   preload: true,
   fallback: [
-    "ui-sans-serif",
-    "system-ui",
     "-apple-system",
     "BlinkMacSystemFont",
     "Segoe UI",
     "Roboto",
     "Helvetica Neue",
     "Arial",
-    "Noto Sans",
     "sans-serif",
   ],
 });
 
 export const metadata: Metadata = {
-  title: "JustForView - Premium Hobby Store",
+  title: "JustForView - Premium Beyblade Store",
   description:
-    "Your one-stop shop for premium hobby products, collectibles, and more",
+    "Your premium destination for authentic Beyblades, collectibles, and accessories",
 };
 
 export default function RootLayout({
@@ -48,61 +43,49 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col transition-colors duration-300`}
+        className={`${inter.variable} font-sans antialiased`}
         style={{
           fontFamily:
-            "Inter, var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
-          fontSize: "16px",
-          fontWeight: "400",
-          lineHeight: "1.6",
-          color: "var(--theme-text)",
-          backgroundColor: "var(--theme-background)",
+            "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}
       >
         <AuthProvider>
-          <ThemeProvider>
+          <ModernThemeProvider>
             <ErrorBoundary>
-              <AppLayout>{children}</AppLayout>
+              <ModernLayout>{children}</ModernLayout>
             </ErrorBoundary>
-            <CookieConsentBanner />
             <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: "var(--theme-background)",
-                  color: "var(--theme-text)",
-                  border: "2px solid var(--theme-primary)",
+                  background: "#1a1a1a",
+                  color: "#ffffff",
+                  border: "1px solid #333333",
                   borderRadius: "8px",
                   fontSize: "14px",
                   fontWeight: "500",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                 },
                 success: {
                   duration: 3000,
                   style: {
-                    background: "var(--theme-primary)",
-                    color: "var(--theme-background)",
-                    border: "2px solid var(--theme-secondary)",
+                    background: "#2ed573",
+                    color: "white",
                   },
                 },
                 error: {
                   duration: 5000,
                   style: {
-                    background: "#ef4444",
-                    color: "#ffffff",
-                    border: "2px solid #dc2626",
+                    background: "#ff4757",
+                    color: "white",
                   },
                 },
               }}
             />
-          </ThemeProvider>
+          </ModernThemeProvider>
         </AuthProvider>
       </body>
     </html>

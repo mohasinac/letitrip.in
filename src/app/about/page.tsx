@@ -1,352 +1,497 @@
+"use client";
+
 import Link from "next/link";
-import { parseMarkdownFile } from "@/lib/utils/markdown";
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Chip,
+  useTheme,
+} from "@mui/material";
+import {
+  CheckCircle,
+  People,
+  TrendingUp,
+  Email,
+  Phone,
+  LocationOn,
+  Verified,
+  Star,
+} from "@mui/icons-material";
 
-interface AboutPageProps {}
-
-// This function runs at build time (SSG)
-async function getAboutContent() {
-  try {
-    const companyData = await parseMarkdownFile("about/company.md");
-    const teamData = await parseMarkdownFile("about/team.md");
-
-    return {
-      company: companyData,
-      team: teamData,
-    };
-  } catch (error) {
-    console.error("Error loading about content:", error);
-    return {
-      company: { content: "", metadata: {} },
-      team: { content: "", metadata: {} },
-    };
-  }
-}
-
-export default async function AboutPage() {
-  const { company, team } = await getAboutContent();
+export default function AboutPage() {
+  const theme = useTheme();
 
   return (
-    <main className="flex-1">
+    <Box>
       {/* Hero Section */}
-      <section className="bg-theme-primary text-white">
-        <div className="container py-20 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {company.metadata?.title || "About JustForView"}
-          </h1>
-          <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
-            {company.metadata?.description ||
-              "Your trusted destination for authentic hobby products, rare collectibles, and premium gaming accessories since 2020."}
-          </p>
-        </div>
-      </section>
+      <Box
+        sx={{
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          py: { xs: 8, md: 12 },
+          color: "white",
+        }}
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontWeight: 700,
+                mb: 3,
+                color: "white",
+              }}
+            >
+              About JustForView
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                maxWidth: 600,
+                mx: "auto",
+                color: "white",
+                opacity: 0.9,
+              }}
+            >
+              Your trusted destination for authentic hobby products, rare
+              collectibles, and premium gaming accessories since 2020.
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Our Story */}
-      <section className="py-16 bg-theme-background">
-        <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold mb-6 text-theme-text">
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="xl">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gap: 6,
+              alignItems: "center",
+            }}
+          >
+            <Box>
+              <Typography variant="h2" sx={{ fontWeight: 700, mb: 3 }}>
                 Our Story
-              </h2>
-              <div className="prose text-theme-muted space-y-4">
-                {company.content ? (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: company.content
-                        .replace(/\n/g, "</p><p>")
-                        .replace(/^/, "<p>")
-                        .replace(/$/, "</p>"),
-                    }}
-                  />
-                ) : (
-                  <>
-                    <p>
-                      JustForView was born from a passion for authentic hobby
-                      products and the frustration of finding genuine items in
-                      the market. What started as a small collection grew into
-                      India's premier destination for Beyblades, collectibles,
-                      and gaming accessories.
-                    </p>
-                    <p>
-                      We understand the excitement of unboxing a new product,
-                      the thrill of finding that rare item you've been searching
-                      for, and the importance of authenticity in collectibles.
-                      That's why we've built our entire business around these
-                      core values.
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-theme-accent to-theme-secondary rounded-2xl overflow-hidden">
-                <img
-                  src={company.metadata?.image || "/images/about-story.jpg"}
-                  alt="Our Story"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              </Typography>
+              <Box sx={{ space: 4 }}>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mb: 2 }}
+                >
+                  JustForView was born from a passion for authentic hobby
+                  products and the frustration of finding genuine items in the
+                  market. What started as a small collection grew into India's
+                  premier destination for Beyblades, collectibles, and gaming
+                  accessories.
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  We understand the excitement of unboxing a new product, the
+                  thrill of finding that rare item you've been searching for,
+                  and the importance of authenticity in collectibles. That's why
+                  we've built our entire business around these core values.
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ position: "relative" }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  transition: "transform 0.3s ease",
+                  "&:hover": { transform: "translateY(-8px)" },
+                }}
+              >
+                <Box
+                  sx={{
+                    height: 300,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}20 0%, ${theme.palette.primary.main}10 100%)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography variant="h4" color="primary" fontWeight={600}>
+                    Our Journey
+                  </Typography>
+                </Box>
+              </Card>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Mission & Vision */}
-      <section className="py-16 bg-theme-accent">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="card bg-theme-background p-8 text-center border border-theme-primary hover-glow-theme">
-              <div className="w-16 h-16 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-8 h-8 text-theme-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-theme-text">
+      <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
+        <Container maxWidth="xl">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+              gap: 4,
+            }}
+          >
+            <Card
+              sx={{
+                p: 4,
+                textAlign: "center",
+                borderRadius: 3,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-8px)",
+                  boxShadow: theme.shadows[8],
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  backgroundColor: "primary.main",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mx: "auto",
+                  mb: 3,
+                }}
+              >
+                <TrendingUp sx={{ fontSize: 32, color: "white" }} />
+              </Box>
+              <Typography variant="h4" fontWeight={600} gutterBottom>
                 Our Mission
-              </h3>
-              <p className="text-theme-muted">
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
                 To provide authentic, high-quality hobby products while building
                 a passionate community of collectors and enthusiasts across
                 India.
-              </p>
-            </div>
-            <div className="card bg-theme-background p-8 text-center border border-theme-secondary hover-glow-theme">
-              <div className="w-16 h-16 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-8 h-8 text-theme-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-theme-text">
+              </Typography>
+            </Card>
+
+            <Card
+              sx={{
+                p: 4,
+                textAlign: "center",
+                borderRadius: 3,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-8px)",
+                  boxShadow: theme.shadows[8],
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  backgroundColor: "primary.main",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mx: "auto",
+                  mb: 3,
+                }}
+              >
+                <People sx={{ fontSize: 32, color: "white" }} />
+              </Box>
+              <Typography variant="h4" fontWeight={600} gutterBottom>
                 Our Vision
-              </h3>
-              <p className="text-theme-muted">
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
                 To become the most trusted and comprehensive platform for hobby
                 enthusiasts, expanding globally while maintaining our commitment
                 to authenticity.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+              </Typography>
+            </Card>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Values */}
-      <section className="py-16 bg-theme-background">
-        <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12 text-theme-text">
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="xl">
+          <Typography
+            variant="h2"
+            sx={{ textAlign: "center", mb: 6, fontWeight: 700 }}
+          >
             Our Values
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
-                <svg
-                  className="w-10 h-10 text-theme-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+              gap: 4,
+            }}
+          >
+            {[
+              {
+                icon: <Verified sx={{ fontSize: 40 }} />,
+                title: "Authenticity",
+                description:
+                  "Every product is 100% genuine and verified. We work directly with authorized distributors and brands to ensure authenticity.",
+                color: "#00c851",
+              },
+              {
+                icon: <People sx={{ fontSize: 40 }} />,
+                title: "Community",
+                description:
+                  "We're more than a store - we're a community. We connect enthusiasts, share knowledge, and celebrate the passion for collecting.",
+                color: "#0095f6",
+              },
+              {
+                icon: <Star sx={{ fontSize: 40 }} />,
+                title: "Excellence",
+                description:
+                  "From product quality to customer service, we strive for excellence in everything we do. Your satisfaction is our priority.",
+                color: "#ff6900",
+              },
+            ].map((value, index) => (
+              <Card
+                key={index}
+                sx={{
+                  p: 4,
+                  textAlign: "center",
+                  borderRadius: 3,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: theme.shadows[8],
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: "50%",
+                    backgroundColor: `${value.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mx: "auto",
+                    mb: 3,
+                    color: value.color,
+                  }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-theme-text">
-                Authenticity
-              </h3>
-              <p className="text-theme-muted">
-                Every product is 100% genuine and verified. We work directly
-                with authorized distributors and brands to ensure authenticity.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
-                <svg
-                  className="w-10 h-10 text-theme-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-theme-text">
-                Community
-              </h3>
-              <p className="text-theme-muted">
-                We're more than a store - we're a community. We connect
-                enthusiasts, share knowledge, and celebrate the passion for
-                collecting.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-theme-accent rounded-full flex items-center justify-center mx-auto mb-6 hover-glow-theme">
-                <svg
-                  className="w-10 h-10 text-theme-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-theme-text">
-                Excellence
-              </h3>
-              <p className="text-theme-muted">
-                From product quality to customer service, we strive for
-                excellence in everything we do. Your satisfaction is our
-                priority.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                  {value.icon}
+                </Box>
+                <Typography variant="h5" fontWeight={600} gutterBottom>
+                  {value.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {value.description}
+                </Typography>
+              </Card>
+            ))}
+          </Box>
+        </Container>
+      </Box>
 
       {/* Team Section */}
-      <section className="py-16 bg-theme-accent">
-        <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12 text-theme-text">
+      <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
+        <Container maxWidth="xl">
+          <Typography
+            variant="h2"
+            sx={{ textAlign: "center", mb: 6, fontWeight: 700 }}
+          >
             Meet Our Team
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+              gap: 4,
+            }}
+          >
             {[
               {
                 name: "Arjun Sharma",
                 role: "Founder & CEO",
-                image: "/team/founder.jpg",
                 bio: "Passionate collector with 15+ years in the hobby industry",
               },
               {
                 name: "Priya Patel",
                 role: "Head of Operations",
-                image: "/team/operations.jpg",
                 bio: "Expert in supply chain and ensuring product authenticity",
               },
               {
                 name: "Rahul Kumar",
                 role: "Community Manager",
-                image: "/team/community.jpg",
                 bio: "Connecting enthusiasts and building our vibrant community",
               },
             ].map((member, index) => (
-              <div
+              <Card
                 key={index}
-                className="card bg-theme-background p-6 text-center border border-theme-primary hover-glow-theme"
+                sx={{
+                  p: 3,
+                  textAlign: "center",
+                  borderRadius: 3,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: theme.shadows[8],
+                  },
+                }}
               >
-                <div className="w-24 h-24 rounded-full bg-theme-muted mx-auto mb-4 overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="font-bold mb-1 text-theme-text">
+                <Box
+                  sx={{
+                    width: 96,
+                    height: 96,
+                    borderRadius: "50%",
+                    backgroundColor: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mx: "auto",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="white" fontWeight={600}>
+                    {member.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </Typography>
+                </Box>
+                <Typography variant="h6" fontWeight={600} gutterBottom>
                   {member.name}
-                </h3>
-                <p className="text-theme-primary font-medium mb-2">
+                </Typography>
+                <Typography variant="body2" color="primary" sx={{ mb: 2 }}>
                   {member.role}
-                </p>
-                <p className="text-sm text-theme-muted">{member.bio}</p>
-              </div>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {member.bio}
+                </Typography>
+              </Card>
             ))}
-          </div>
-        </div>
-      </section>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Stats */}
-      <section className="py-16 bg-theme-background">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-theme-primary mb-2">
-                50K+
-              </div>
-              <div className="text-theme-muted">Happy Customers</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-theme-primary mb-2">
-                10K+
-              </div>
-              <div className="text-theme-muted">Products Sold</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-theme-primary mb-2">
-                500+
-              </div>
-              <div className="text-theme-muted">Live Auctions</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-theme-primary mb-2">
-                99%
-              </div>
-              <div className="text-theme-muted">Satisfaction Rate</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="xl">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(2, 1fr)",
+                md: "repeat(4, 1fr)",
+              },
+              gap: 4,
+              textAlign: "center",
+            }}
+          >
+            {[
+              { number: "50K+", label: "Happy Customers" },
+              { number: "10K+", label: "Products Sold" },
+              { number: "500+", label: "Live Auctions" },
+              { number: "99%", label: "Satisfaction Rate" },
+            ].map((stat, index) => (
+              <Box key={index}>
+                <Typography
+                  variant="h3"
+                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+                >
+                  {stat.number}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  fontWeight={500}
+                >
+                  {stat.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-900 text-white">
-        <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Ready to discover authentic products and connect with fellow
-            enthusiasts?
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center px-8 py-4 bg-theme-primary text-white rounded-xl font-bold hover:bg-theme-secondary transition-all duration-300 shadow-xl border-4 border-theme-primary"
+      <Box
+        sx={{
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          py: 8,
+          color: "white",
+        }}
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h2"
+              sx={{ fontWeight: 700, mb: 2, color: "white" }}
             >
-              Shop Now
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-theme-primary rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-xl border-4 border-white"
+              Join Our Community
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 4,
+                maxWidth: 600,
+                mx: "auto",
+                color: "white",
+                opacity: 0.9,
+              }}
             >
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
+              Ready to discover authentic products and connect with fellow
+              enthusiasts?
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "center",
+                flexDirection: { xs: "column", sm: "row" },
+                maxWidth: 400,
+                mx: "auto",
+              }}
+            >
+              <Button
+                component={Link}
+                href="/products"
+                variant="contained"
+                size="large"
+                sx={{
+                  backgroundColor: "white",
+                  color: "primary.main",
+                  fontWeight: 600,
+                  px: 4,
+                  "&:hover": {
+                    backgroundColor: "grey.100",
+                  },
+                }}
+              >
+                Shop Now
+              </Button>
+              <Button
+                component={Link}
+                href="/contact"
+                variant="outlined"
+                size="large"
+                sx={{
+                  color: "white",
+                  borderColor: "white",
+                  fontWeight: 600,
+                  px: 4,
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                Contact Us
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </Box>
   );
 }

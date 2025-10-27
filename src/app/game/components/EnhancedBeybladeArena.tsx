@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
+import { Box, Typography, Card, CardContent, useTheme } from "@mui/material";
 import { BEYBLADE_CONFIGS } from "@/constants/beyblades";
-import { useTheme } from "@/contexts/ThemeContext";
 import { useGameState } from "../hooks/useGameState";
 import GameArena from "./GameArena";
 import GameControls from "./GameControls";
@@ -17,7 +17,7 @@ interface EnhancedBeybladeArenaProps {
 const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   onGameEnd,
 }) => {
-  const { theme } = useTheme();
+  const theme = useTheme();
   const {
     gameState,
     selectedBeyblade,
@@ -33,7 +33,17 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   } = useGameState({ onGameEnd });
 
   return (
-    <div className="flex flex-col items-center space-y-8 w-full max-w-6xl mx-auto">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4,
+        width: "100%",
+        maxWidth: "1200px",
+        mx: "auto",
+      }}
+    >
       {/* Game Controls */}
       <GameControls
         isPlaying={gameState.isPlaying}
@@ -47,7 +57,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       />
 
       {/* Game Arena */}
-      <div className="relative">
+      <Box sx={{ position: "relative" }}>
         <GameArena
           gameState={gameState}
           onMouseMove={handleMouseMove}
@@ -58,13 +68,20 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         />
 
         {/* Mobile Virtual D-Pad positioned on stadium bottom-right */}
-        <div className="md:hidden absolute bottom-4 right-4">
+        <Box
+          sx={{
+            display: { xs: "block", md: "none" },
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+          }}
+        >
           <VirtualDPad
             onDirectionChange={handleVirtualDPad}
             className="w-24 h-24 opacity-80 bg-black/20 backdrop-blur-sm rounded-full border-2 border-white/30"
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Game Instructions - Only show during gameplay */}
       <GameInstructions
@@ -77,117 +94,145 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
       {/* Game Status */}
       {!gameState.isPlaying && gameState.winner && (
-        <div
-          className="text-center p-8 rounded-xl shadow-lg"
-          style={{
-            backgroundColor: `${theme.colors.background}f0`,
-            borderColor: theme.colors.primary,
-            borderWidth: "2px",
+        <Card
+          sx={{
+            textAlign: "center",
+            p: 4,
+            borderRadius: 3,
+            backgroundColor: theme.palette.background.paper,
+            border: `2px solid ${theme.palette.primary.main}`,
+            maxWidth: 500,
           }}
         >
-          <h2
-            className="text-4xl font-bold mb-4"
-            style={{ color: theme.colors.primary }}
-          >
-            🏆 {gameState.winner.config.name} Wins!
-          </h2>
-          <p className="text-xl mb-6" style={{ color: theme.colors.text }}>
-            {gameState.winner.isPlayer ? "🎉 Victory!" : "💥 Defeat!"}
-          </p>
-          <p className="text-lg" style={{ color: theme.colors.muted }}>
-            Game Duration: {gameState.gameTime.toFixed(1)} seconds
-          </p>
-        </div>
+          <CardContent>
+            <Typography
+              variant="h3"
+              color="primary.main"
+              fontWeight={700}
+              gutterBottom
+            >
+              🏆 {gameState.winner.config.name} Wins!
+            </Typography>
+            <Typography variant="h5" color="text.primary" sx={{ mb: 3 }}>
+              {gameState.winner.isPlayer ? "🎉 Victory!" : "💥 Defeat!"}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Game Duration: {gameState.gameTime.toFixed(1)} seconds
+            </Typography>
+          </CardContent>
+        </Card>
       )}
 
       {/* Battle Statistics */}
       {gameState.isPlaying && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gap: 3,
+            width: "100%",
+            maxWidth: 600,
+          }}
+        >
           {gameState.beyblades.map((beyblade, index) => (
-            <div
+            <Card
               key={beyblade.id}
-              className="p-4 rounded-lg shadow-md"
-              style={{
+              sx={{
+                p: 2,
+                borderRadius: 2,
                 backgroundColor: beyblade.isPlayer
-                  ? `${theme.colors.primary}20`
-                  : `${theme.colors.secondary}20`,
-                borderColor: beyblade.isPlayer
-                  ? theme.colors.primary
-                  : theme.colors.secondary,
-                borderWidth: "2px",
+                  ? `${theme.palette.primary.main}20`
+                  : `${theme.palette.secondary.main}20`,
+                border: `2px solid ${
+                  beyblade.isPlayer
+                    ? theme.palette.primary.main
+                    : theme.palette.secondary.main
+                }`,
               }}
             >
-              <h3
-                className="text-lg font-bold mb-3"
-                style={{
-                  color: beyblade.isPlayer
-                    ? theme.colors.primary
-                    : theme.colors.secondary,
-                }}
-              >
-                {beyblade.isPlayer ? "🎮 Player" : "🤖 AI"}:{" "}
-                {beyblade.config.name}
-              </h3>
+              <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  gutterBottom
+                  color={beyblade.isPlayer ? "primary.main" : "secondary.main"}
+                >
+                  {beyblade.isPlayer ? "🎮 Player" : "🤖 AI"}:{" "}
+                  {beyblade.config.name}
+                </Typography>
 
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span style={{ color: theme.colors.text }}>Spin:</span>
-                  <span
-                    className="font-mono font-bold"
-                    style={{
-                      color:
-                        beyblade.spin > 500
-                          ? "#22C55E"
-                          : beyblade.spin > 200
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Spin:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      fontFamily="monospace"
+                      sx={{
+                        color:
+                          beyblade.spin > 500
+                            ? "#22C55E"
+                            : beyblade.spin > 200
+                            ? "#F59E0B"
+                            : "#EF4444",
+                      }}
+                    >
+                      {Math.floor(beyblade.spin)}/2000
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Acceleration:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      fontFamily="monospace"
+                      color="text.secondary"
+                    >
+                      {beyblade.acceleration}/10
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Status:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: beyblade.isDead
+                          ? "#EF4444"
+                          : beyblade.isOutOfBounds
                           ? "#F59E0B"
-                          : "#EF4444",
-                    }}
-                  >
-                    {Math.floor(beyblade.spin)}/2000
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span style={{ color: theme.colors.text }}>
-                    Acceleration:
-                  </span>
-                  <span
-                    className="font-mono font-bold"
-                    style={{ color: theme.colors.accent }}
-                  >
-                    {beyblade.acceleration}/10
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span style={{ color: theme.colors.text }}>Status:</span>
-                  <span
-                    className="font-semibold"
-                    style={{
-                      color: beyblade.isDead
-                        ? "#EF4444"
+                          : beyblade.isInBlueLoop
+                          ? "#3B82F6"
+                          : "#22C55E",
+                      }}
+                    >
+                      {beyblade.isDead
+                        ? "💀 Eliminated"
                         : beyblade.isOutOfBounds
-                        ? "#F59E0B"
+                        ? "🚫 Out of Bounds"
                         : beyblade.isInBlueLoop
-                        ? "#3B82F6"
-                        : "#22C55E",
-                    }}
-                  >
-                    {beyblade.isDead
-                      ? "💀 Eliminated"
-                      : beyblade.isOutOfBounds
-                      ? "🚫 Out of Bounds"
-                      : beyblade.isInBlueLoop
-                      ? "🔄 Speed Loop"
-                      : "⚡ Active"}
-                  </span>
-                </div>
-              </div>
-            </div>
+                        ? "🔄 Speed Loop"
+                        : "⚡ Active"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

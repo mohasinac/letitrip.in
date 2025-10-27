@@ -87,7 +87,7 @@ class ErrorBoundary extends Component<Props, State> {
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-theme-text mb-2">
                 Something went wrong
               </h1>
               <p className="text-lg text-gray-600 mb-8">
@@ -99,18 +99,18 @@ class ErrorBoundary extends Component<Props, State> {
           </div>
 
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="bg-theme-background py-8 px-4 shadow sm:rounded-lg sm:px-10">
               <div className="space-y-4">
                 <button
                   onClick={this.handleReset}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
+                  className="w-full bg-theme-primary hover:bg-theme-secondary text-theme-background py-2 px-4 rounded-md font-medium transition-colors"
                 >
                   Try Again
                 </button>
 
                 <button
                   onClick={this.handleReload}
-                  className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-md font-medium transition-colors"
+                  className="w-full border border-theme-primary hover:bg-theme-accent text-theme-text py-2 px-4 rounded-md font-medium transition-colors"
                 >
                   Reload Page
                 </button>
@@ -118,7 +118,7 @@ class ErrorBoundary extends Component<Props, State> {
                 {showDetails && this.state.error && (
                   <div className="mt-8">
                     <details className="cursor-pointer">
-                      <summary className="text-sm font-medium text-gray-700 mb-2">
+                      <summary className="text-sm font-medium text-theme-muted mb-2">
                         Error Details (Development)
                       </summary>
                       <div className="bg-red-50 border border-red-200 rounded-md p-4">

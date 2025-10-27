@@ -40,7 +40,7 @@ export const createBeyblade = (
     chargePoint: null, // Target charge point
     isChargeDashing: false, // Track charge dash mode
     chargeDashEndTime: undefined, // Track charge dash timing
-    currentMaxAcceleration: 20, // Start with enhanced acceleration cap (normal max: 20, charge dash max: 40)
+    currentMaxAcceleration: 15, // Start with enhanced acceleration cap (normal max: 20, charge dash max: 40)
     accelerationDecayStartTime: undefined, // Track gradual decay timing
     selectedChargePointAngle: undefined, // Randomly selected charge point for current loop
   };

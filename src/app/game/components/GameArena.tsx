@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
 import { GameState, GameBeyblade, Vector2D } from "../types/game";
-import { useTheme } from "@/contexts/ThemeContext";
-
 interface GameArenaProps {
   gameState: GameState;
   onMouseMove?: (position: Vector2D) => void;
@@ -26,7 +25,7 @@ const GameArena: React.FC<GameArenaProps> = ({
   const beybladeImagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const stadiumImageRef = useRef<HTMLImageElement | null>(null);
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   // Load game assets
   useEffect(() => {
@@ -175,15 +174,15 @@ const GameArena: React.FC<GameArenaProps> = ({
         stadium.center.y,
         stadium.outerRadius
       );
-      gradient.addColorStop(0, theme.colors.background);
-      gradient.addColorStop(0.7, theme.colors.accent);
-      gradient.addColorStop(1, theme.colors.primary);
+      gradient.addColorStop(0, theme.palette.background.default);
+      gradient.addColorStop(0.7, theme.palette.secondary.main);
+      gradient.addColorStop(1, theme.palette.primary.main);
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     // Draw game zones with theme colors
-    drawGameZones(ctx, stadium, theme.colors, gameState);
+    drawGameZones(ctx, stadium, theme.palette, gameState);
 
     // Draw beyblades
     gameState.beyblades.forEach((beyblade) => {
@@ -192,13 +191,13 @@ const GameArena: React.FC<GameArenaProps> = ({
         beyblade,
         imagesLoaded,
         beybladeImagesRef.current,
-        theme.colors
+        theme.palette
       );
     });
 
     // Draw UI elements
-    drawGameUI(ctx, gameState, theme.colors, beybladeImagesRef.current);
-  }, [gameState, imagesLoaded, theme.colors]);
+    drawGameUI(ctx, gameState, theme.palette, beybladeImagesRef.current);
+  }, [gameState, imagesLoaded, theme.palette]);
 
   // Animation loop
   useEffect(() => {
@@ -228,8 +227,8 @@ const GameArena: React.FC<GameArenaProps> = ({
       } ${className}`}
       style={{
         touchAction: "none",
-        borderColor: theme.colors.primary,
-        boxShadow: `0 0 30px ${theme.colors.primary}40`,
+        borderColor: theme.palette.primary.main,
+        boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
         aspectRatio: "4/3", // Maintain 4:3 aspect ratio for mobile scaling
         maxHeight: "80vh", // Prevent canvas from being too tall on mobile
       }}
@@ -250,7 +249,7 @@ const drawGameZones = (
   gameState: GameState
 ) => {
   // Draw main arena (inner circle)
-  ctx.fillStyle = `${colors.background}20`;
+  ctx.fillStyle = `${colors.background.default}20`;
   ctx.beginPath();
   ctx.arc(
     stadium.center.x,
@@ -335,13 +334,15 @@ const drawGameZones = (
       : 10 + 3 * Math.sin(time * 4); // Normal pulse for other points
 
     // Outer glow - brighter for selected point
-    ctx.fillStyle = isSelected ? `${colors.primary}80` : `${colors.primary}40`;
+    ctx.fillStyle = isSelected
+      ? `${colors.primary.main}80`
+      : `${colors.primary.main}40`;
     ctx.beginPath();
     ctx.arc(chargePointX, chargePointY, pulseSize * 1.5, 0, Math.PI * 2);
     ctx.fill();
 
     // Main charge point - different color for selected
-    ctx.fillStyle = isSelected ? "#FF4500" : colors.primary;
+    ctx.fillStyle = isSelected ? "#FF4500" : colors.primary.main;
     ctx.beginPath();
     ctx.arc(chargePointX, chargePointY, pulseSize, 0, Math.PI * 2);
     ctx.fill();
@@ -405,7 +406,9 @@ const drawBeyblade = (
     ctx.globalAlpha = 1.0;
   } else {
     // Fallback circle with theme colors
-    ctx.fillStyle = beyblade.isPlayer ? colors.primary : colors.secondary;
+    ctx.fillStyle = beyblade.isPlayer
+      ? colors.primary.main
+      : colors.secondary.main;
     ctx.beginPath();
     ctx.arc(0, 0, beyblade.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -504,15 +507,15 @@ const drawGameUI = (
       0,
       bannerY + bannerHeight
     );
-    gradient.addColorStop(0, `${colors.primary}90`);
-    gradient.addColorStop(0.5, `${colors.accent}80`);
-    gradient.addColorStop(1, `${colors.secondary}70`);
+    gradient.addColorStop(0, `${colors.primary.main}90`);
+    gradient.addColorStop(0.5, `${colors.secondary.main}80`);
+    gradient.addColorStop(1, `${colors.secondary.main}70`);
 
     ctx.fillStyle = gradient;
     ctx.fillRect(100, bannerY, 600, bannerHeight);
 
     // Draw banner border
-    ctx.strokeStyle = colors.primary;
+    ctx.strokeStyle = colors.primary.main;
     ctx.lineWidth = 4;
     ctx.strokeRect(100, bannerY, 600, bannerHeight);
 
@@ -622,13 +625,13 @@ const drawCornerStats = (
   ctx.fillRect(x, y, width, height);
 
   // Border
-  ctx.strokeStyle = isPlayer ? colors.primary : colors.secondary;
+  ctx.strokeStyle = isPlayer ? colors.primary.main : colors.secondary.main;
   ctx.lineWidth = 2;
   ctx.strokeRect(x, y, width, height);
 
   // Label
   ctx.font = "bold 12px Inter";
-  ctx.fillStyle = isPlayer ? colors.primary : colors.secondary;
+  ctx.fillStyle = isPlayer ? colors.primary.main : colors.secondary.main;
   ctx.textAlign = "center";
   ctx.fillText(label, x + width / 2, y + 15);
 
@@ -673,7 +676,7 @@ const drawCornerStats = (
 
   const maxAccel = beyblade.currentMaxAcceleration;
   const accelFillWidth = (beyblade.acceleration / maxAccel) * (width - 10);
-  ctx.fillStyle = beyblade.isChargeDashing ? "#FF4500" : colors.accent;
+  ctx.fillStyle = beyblade.isChargeDashing ? "#FF4500" : colors.secondary.main;
   ctx.fillRect(x + 5, accelBarY, accelFillWidth, 8);
 
   // Text values

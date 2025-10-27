@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 interface GameInstructionsProps {
   isPlaying: boolean;
@@ -12,7 +12,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
   isPlaying,
   className = "",
 }) => {
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   const instructions = [
     {
@@ -53,14 +53,15 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
     <div
       className={`rounded-xl p-6 shadow-lg backdrop-blur-sm ${className}`}
       style={{
-        backgroundColor: `${theme.colors.background}e6`,
-        borderColor: theme.colors.accent,
-        borderWidth: "1px",
+        backgroundColor: "#1a1a1a",
+        borderColor: theme.palette.secondary.main,
+        borderWidth: "2px",
+        borderStyle: "solid",
       }}
     >
       <h3
         className="text-lg font-bold mb-4 text-center"
-        style={{ color: theme.colors.text }}
+        style={{ color: "#ffffff" }}
       >
         Game Instructions
       </h3>
@@ -71,20 +72,20 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
             key={index}
             className="flex items-start space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: `${theme.colors.accent}40`,
+              backgroundColor: `rgba(0, 149, 246, 0.15)`,
             }}
           >
             <span className="text-xl flex-shrink-0">{instruction.icon}</span>
             <div>
               <h4
                 className="font-semibold text-sm mb-1"
-                style={{ color: theme.colors.text }}
+                style={{ color: "#ffffff" }}
               >
                 {instruction.title}
               </h4>
               <p
                 className="text-xs leading-relaxed"
-                style={{ color: theme.colors.muted }}
+                style={{ color: "#cccccc" }}
               >
                 {instruction.text}
               </p>

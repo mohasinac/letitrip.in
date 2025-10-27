@@ -1,7 +1,16 @@
 "use client";
 
 import React from "react";
-import { useTheme } from "@/contexts/ThemeContext";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 interface GameControlsProps {
   isPlaying: boolean;
@@ -24,91 +33,125 @@ const GameControls: React.FC<GameControlsProps> = ({
   availableBeyblades,
   className = "",
 }) => {
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   return (
-    <div
-      className={`flex flex-col sm:flex-row items-center justify-center gap-6 ${className}`}
+    <Box
+      className={className}
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 3,
+      }}
     >
       {/* Player Beyblade Selection */}
-      <div className="flex flex-col items-center">
-        <label
-          className="text-sm font-medium mb-2 transition-colors"
-          style={{ color: theme.colors.text }}
-        >
-          Your Beyblade
-        </label>
-        <select
-          value={playerBeyblade}
-          onChange={(e) => onPlayerBeybladeChange(e.target.value)}
-          disabled={isPlaying}
-          className="px-4 py-2 rounded-lg shadow-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-w-[150px]"
-          style={{
-            backgroundColor: theme.colors.background,
-            borderColor: theme.colors.primary,
-            color: theme.colors.text,
-            borderWidth: "2px",
-          }}
-        >
-          {Object.entries(availableBeyblades).map(([key, config]) => (
-            <option key={key} value={key}>
-              {config.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          minWidth: 200,
+        }}
+      >
+        <FormControl fullWidth disabled={isPlaying}>
+          <InputLabel>Your Beyblade</InputLabel>
+          <Select
+            value={playerBeyblade}
+            onChange={(e) => onPlayerBeybladeChange(e.target.value)}
+            label="Your Beyblade"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderWidth: 2,
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "primary.main",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "primary.main",
+                },
+              },
+            }}
+          >
+            {Object.entries(availableBeyblades).map(([key, config]) => (
+              <MenuItem key={key} value={key}>
+                {config.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
       {/* Restart Button */}
-      <div className="flex flex-col items-center">
-        <div className="h-6 mb-2"></div> {/* Spacer to align with selects */}
-        <button
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          minWidth: 200,
+        }}
+      >
+        <Button
           onClick={onRestart}
-          className="px-8 py-3 rounded-lg font-bold text-white shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-105 active:scale-95 min-w-[150px]"
-          style={{
-            backgroundColor: theme.colors.primary,
-            boxShadow: `0 4px 15px ${theme.colors.primary}40`,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = theme.colors.secondary;
-            e.currentTarget.style.boxShadow = `0 6px 20px ${theme.colors.secondary}60`;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = theme.colors.primary;
-            e.currentTarget.style.boxShadow = `0 4px 15px ${theme.colors.primary}40`;
+          variant="contained"
+          size="large"
+          sx={{
+            px: 4,
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: 600,
+            minWidth: 180,
+            boxShadow: `0 4px 15px ${theme.palette.primary.main}40`,
+            transition: "all 0.2s ease",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow: `0 6px 20px ${theme.palette.primary.main}60`,
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
           }}
         >
           {isPlaying ? "Restart Battle" : "New Battle"}
-        </button>
-      </div>
+        </Button>
+      </Box>
 
       {/* AI Beyblade Selection */}
-      <div className="flex flex-col items-center">
-        <label
-          className="text-sm font-medium mb-2 transition-colors"
-          style={{ color: theme.colors.text }}
-        >
-          AI Opponent
-        </label>
-        <select
-          value={aiBeyblade}
-          onChange={(e) => onAIBeybladeChange(e.target.value)}
-          disabled={isPlaying}
-          className="px-4 py-2 rounded-lg shadow-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-w-[150px]"
-          style={{
-            backgroundColor: theme.colors.background,
-            borderColor: theme.colors.secondary,
-            color: theme.colors.text,
-            borderWidth: "2px",
-          }}
-        >
-          {Object.entries(availableBeyblades).map(([key, config]) => (
-            <option key={key} value={key}>
-              {config.name}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          minWidth: 200,
+        }}
+      >
+        <FormControl fullWidth disabled={isPlaying}>
+          <InputLabel>AI Opponent</InputLabel>
+          <Select
+            value={aiBeyblade}
+            onChange={(e) => onAIBeybladeChange(e.target.value)}
+            label="AI Opponent"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderWidth: 2,
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "secondary.main",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "secondary.main",
+                },
+              },
+            }}
+          >
+            {Object.entries(availableBeyblades).map(([key, config]) => (
+              <MenuItem key={key} value={key}>
+                {config.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+    </Box>
   );
 };
 

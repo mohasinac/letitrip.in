@@ -172,8 +172,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         const direction = getMovementDirection();
         
         if (direction.x !== 0 || direction.y !== 0) {
-          const maxSpeed = 200; // Increased from 150 for faster movement
-          const acceleration = 400; // Increased from 300 for quicker response
+          const maxSpeed = 250; // Increased from 200 for faster movement
+          const acceleration = 500; // Increased from 400 for quicker response
           const targetVelocity = {
             x: direction.x * maxSpeed,
             y: direction.y * maxSpeed,
@@ -201,8 +201,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         const randomY = Math.sin(randomAngle) * randomFactor;
 
         if (targetDistance > 60) {
-          const maxSpeed = 170; // Increased from 130 for faster AI
-          const acceleration = 350; // Increased from 250 for quicker AI response
+          const maxSpeed = 220; // Increased from 170 for faster AI
+          const acceleration = 450; // Increased from 350 for quicker AI response
           const normalizedDirection = {
             x: targetDirection.x / targetDistance + randomX,
             y: targetDirection.y / targetDistance + randomY,
@@ -221,6 +221,18 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       // Update all beyblades
       newState.beyblades.forEach((beyblade) => {
         updateBeybladeLogic(beyblade, deltaTime, newState);
+        
+        // Apply velocity cap for controllability
+        const maxVelocity = beyblade.isChargeDashing ? 400 : 300; // Higher cap during charge dash
+        const currentSpeed = vectorLength(beyblade.velocity);
+        
+        if (currentSpeed > maxVelocity) {
+          const scale = maxVelocity / currentSpeed;
+          beyblade.velocity = {
+            x: beyblade.velocity.x * scale,
+            y: beyblade.velocity.y * scale,
+          };
+        }
       });
 
       // Check collisions
@@ -283,7 +295,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
     const playerBey = createBeyblade("player", selectedBeyblade, { x: 320, y: 250 }, true);
     playerBey.spin = 2000;
-    playerBey.currentMaxAcceleration = 20; // Start with normal max acceleration
+    playerBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     playerBey.accelerationDecayStartTime = 0; // Start decay immediately
 
     const randomAngle = Math.random() * Math.PI * 2;
@@ -293,7 +305,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
     const aiBey = createBeyblade("ai", selectedAIBeyblade, { x: aiX, y: aiY }, false);
     aiBey.spin = 2000;
-    aiBey.currentMaxAcceleration = 20; // Start with normal max acceleration
+    aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     aiBey.accelerationDecayStartTime = 0; // Start decay immediately
 
     // Start countdown instead of immediately playing
@@ -359,31 +371,31 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
   );
   
   // Handle gradual acceleration decay and gain from velocity
-  if (beyblade.currentMaxAcceleration > 20) {
+  if (beyblade.currentMaxAcceleration > 15) {
     if (beyblade.accelerationDecayStartTime !== undefined && gameState.gameTime >= beyblade.accelerationDecayStartTime) {
       // Different decay rates based on context
       let decayRate;
       if (beyblade.isChargeDashing) {
         decayRate = 6; // Faster decay during charge dash
       } else if (gameState.gameTime < 5.0) {
-        decayRate = 0; // No decay for first 5 seconds
+        decayRate = 2; // No decay for first 5 seconds
       } else {
-        decayRate = 1.5; // Slightly faster normal decay
+        decayRate = 4; // Slightly faster normal decay
       }
       
       // Calculate velocity-based gain (2 per velocity magnitude)
-      const velocityGain = velocityMagnitude * 0.02; // 2 per 100 velocity units
+      const velocityGain = velocityMagnitude * 0.01; // 2 per 100 velocity units
       
       // Apply decay and gain
       const netChange = velocityGain - (decayRate * deltaTime);
       const newMaxAccel = beyblade.currentMaxAcceleration + netChange;
       
-      // Set caps: normal max 20, charge dash max 40
-      const maxCap = beyblade.isChargeDashing ? 40 : 20;
-      beyblade.currentMaxAcceleration = Math.max(20, Math.min(maxCap, newMaxAccel));
+      // Set caps: normal max 15, charge dash max 25
+      const maxCap = beyblade.isChargeDashing ? 25 : 15;
+      beyblade.currentMaxAcceleration = Math.max(15, Math.min(maxCap, newMaxAccel));
       
       // Clean up decay tracking when we reach normal level and no movement
-      if (beyblade.currentMaxAcceleration <= 20 && velocityMagnitude < 5) {
+      if (beyblade.currentMaxAcceleration <= 15 && velocityMagnitude < 5) {
         beyblade.accelerationDecayStartTime = undefined;
       }
     }
@@ -460,8 +472,8 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
       
       // Start charge dash mode
       beyblade.isChargeDashing = true;
-      beyblade.chargeDashEndTime = gameState.gameTime + 2.0; // 2 seconds of enhanced acceleration
-      beyblade.currentMaxAcceleration = 40; // Set enhanced acceleration cap to 40 for charge dash
+      beyblade.chargeDashEndTime = gameState.gameTime + 3.0; // Increased to 3 seconds for extended strategic play
+      beyblade.currentMaxAcceleration = 25; // Set enhanced acceleration cap to 25 for charge dash
       
       // Dash towards center with enhanced speed
       const directionToCenter = vectorSubtract(gameState.stadium.center, beyblade.position);
@@ -470,13 +482,13 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
         y: directionToCenter.y / vectorLength(directionToCenter),
       };
       
-      const chargeDashSpeed = 450; // Much faster than normal (increased from 350)
+      const chargeDashSpeed = 350; // Reduced from 550 to prevent stadium exits
       beyblade.velocity = {
         x: normalizedDirection.x * chargeDashSpeed,
         y: normalizedDirection.y * chargeDashSpeed,
       };
       
-      beyblade.acceleration = 40; // Maximum acceleration during charge dash
+      beyblade.acceleration = 25; // Maximum acceleration during charge dash
     } else {
       // Continue normal blue loop movement
       beyblade.position = {
@@ -493,11 +505,34 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
         y: tangentY * circularSpeed * accelerationMultiplier,
       };
 
-      beyblade.acceleration = Math.min(20, beyblade.acceleration * accelerationMultiplier); // Cap at normal max of 20
+      beyblade.acceleration = Math.min(15, beyblade.acceleration * accelerationMultiplier); // Cap at normal max of 15
     }
   } else if (!beyblade.isInBlueLoop) {
     updateBeyblade(beyblade, deltaTime, gameState.stadium);
     handleStadiumBounds(beyblade, gameState);
+    
+    // Additional stadium boundary checking for charge dash - allow strategic exits but provide control
+    if (beyblade.isChargeDashing) {
+      const distanceFromCenter = vectorLength(
+        vectorSubtract(beyblade.position, gameState.stadium.center)
+      );
+      
+      // Only redirect if beyblade is very close to exit (allow strategic positioning)
+      if (distanceFromCenter > gameState.stadium.outerRadius - 20) {
+        const directionToCenter = vectorSubtract(gameState.stadium.center, beyblade.position);
+        const normalizedDirection = {
+          x: directionToCenter.x / vectorLength(directionToCenter),
+          y: directionToCenter.y / vectorLength(directionToCenter),
+        };
+        
+        // Gentle redirect toward safe zone with moderate speed
+        const redirectSpeed = 250; // Reduced from 300 for better control
+        beyblade.velocity = {
+          x: normalizedDirection.x * redirectSpeed,
+          y: normalizedDirection.y * redirectSpeed,
+        };
+      }
+    }
   }
 
   // Handle spin decay and death
@@ -587,7 +622,7 @@ function handleStadiumBounds(beyblade: GameBeyblade, gameState: GameState) {
         y: gameState.stadium.center.y + normalizedDirection.y * -respawnDistance,
       };
 
-      const inwardSpeed = 60 + Math.random() * 40;
+      const inwardSpeed = 60 + Math.random() * 30;
       beyblade.velocity = {
         x: normalizedDirection.x * inwardSpeed,
         y: normalizedDirection.y * inwardSpeed,

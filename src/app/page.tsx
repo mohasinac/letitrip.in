@@ -1,23 +1,16 @@
-import HeroBanner from "@/components/home/HeroBanner";
-import WhyChooseUs from "@/components/home/WhyChooseUs";
-import FeaturedCategories from "@/components/home/FeaturedCategories";
-import CustomerReviews from "@/components/home/CustomerReviews";
-import SpecialCollections from "@/components/home/SpecialCollections";
-import SpecialOffers from "@/components/home/SpecialOffers";
-import Newsletter from "@/components/home/Newsletter";
-import ContactSection from "@/components/home/ContactSection";
+import ModernHeroBanner from "@/components/home/ModernHeroBanner";
+import ModernFeaturedCategories from "@/components/home/ModernFeaturedCategories";
+import ModernWhyChooseUs from "@/components/home/ModernWhyChooseUs";
+import ModernCustomerReviews from "@/components/home/ModernCustomerReviews";
+import { Box } from "@mui/material";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-theme-background">
-      <HeroBanner />
-      <WhyChooseUs />
-      <FeaturedCategories />
-      <CustomerReviews />
-      <SpecialCollections />
-      <SpecialOffers />
-      <Newsletter />
-      <ContactSection />
-    </div>
+    <Box>
+      <ModernHeroBanner />
+      <ModernFeaturedCategories />
+      <ModernWhyChooseUs />
+      <ModernCustomerReviews />
+    </Box>
   );
 }

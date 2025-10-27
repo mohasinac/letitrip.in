@@ -22,7 +22,7 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
   // Check if either beyblade is in charge dash mode for enhanced knockback
   const bey1ChargeDash = bey1.isChargeDashing || false;
   const bey2ChargeDash = bey2.isChargeDashing || false;
-  const chargeKnockbackMultiplier = (bey1ChargeDash || bey2ChargeDash) ? 4.0 : 2.0; // 4x for charge dash, 2x for normal (doubled)
+  const chargeKnockbackMultiplier = (bey1ChargeDash || bey2ChargeDash) ? 1.25 : 1.0; // 1.25x for charge dash, 1x for normal
   
   let damage1 = 0;
   let damage2 = 0;
@@ -56,14 +56,60 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
   const knockback1 = vectorMultiply(normal, -damage1 * chargeKnockbackMultiplier);
   const knockback2 = vectorMultiply(normal, damage2 * chargeKnockbackMultiplier);
   
-  // Apply knockback to positions
-  bey1.position = vectorAdd(bey1.position, knockback1);
-  bey2.position = vectorAdd(bey2.position, knockback2);
+  // Apply knockback to positions - allow strategic exits but limit excessive knockback
+  const newPos1 = vectorAdd(bey1.position, knockback1);
+  const newPos2 = vectorAdd(bey2.position, knockback2);
   
-  // Apply velocity changes for collision response (doubled and further enhanced during charge dash)
-  const velocityTransfer = 80 * chargeKnockbackMultiplier; // Doubled from 40 to 80
-  const velocityKnockback1 = vectorMultiply(knockback1, velocityTransfer * 0.01);
-  const velocityKnockback2 = vectorMultiply(knockback2, velocityTransfer * 0.01);
+  // Stadium bounds for strategic gameplay
+  const stadiumCenter = { x: 400, y: 300 };
+  const stadiumRadius = 290; // Full outer radius - allow exits but limit excessive knockback
+  const maxKnockbackDistance = 80; // Maximum knockback distance per collision
+  
+  const dist1 = vectorDistance(newPos1, stadiumCenter);
+  const dist2 = vectorDistance(newPos2, stadiumCenter);
+  
+  // Apply position changes with limited knockback distance
+  const knockback1Length = vectorDistance(bey1.position, newPos1);
+  const knockback2Length = vectorDistance(bey2.position, newPos2);
+  
+  if (knockback1Length <= maxKnockbackDistance) {
+    bey1.position = newPos1;
+  } else {
+    // Limit knockback distance while preserving direction
+    const knockbackDirection = vectorNormalize(knockback1);
+    const limitedKnockback = vectorMultiply(knockbackDirection, maxKnockbackDistance);
+    bey1.position = vectorAdd(bey1.position, limitedKnockback);
+  }
+  
+  if (knockback2Length <= maxKnockbackDistance) {
+    bey2.position = newPos2;
+  } else {
+    // Limit knockback distance while preserving direction
+    const knockbackDirection = vectorNormalize(knockback2);
+    const limitedKnockback = vectorMultiply(knockbackDirection, maxKnockbackDistance);
+    bey2.position = vectorAdd(bey2.position, limitedKnockback);
+  }
+  
+  // Apply velocity changes for collision response (controlled for strategic gameplay)
+  const velocityTransfer = 35 * chargeKnockbackMultiplier; // Slightly reduced for better control
+  const maxVelocityAddition = 150; // Cap velocity addition to maintain control
+  
+  let velocityKnockback1 = vectorMultiply(knockback1, velocityTransfer * 0.01);
+  let velocityKnockback2 = vectorMultiply(knockback2, velocityTransfer * 0.01);
+  
+  // Limit velocity addition for better control
+  const velocity1Magnitude = vectorDistance({ x: 0, y: 0 }, velocityKnockback1);
+  const velocity2Magnitude = vectorDistance({ x: 0, y: 0 }, velocityKnockback2);
+  
+  if (velocity1Magnitude > maxVelocityAddition) {
+    const scale = maxVelocityAddition / velocity1Magnitude;
+    velocityKnockback1 = vectorMultiply(velocityKnockback1, scale);
+  }
+  
+  if (velocity2Magnitude > maxVelocityAddition) {
+    const scale = maxVelocityAddition / velocity2Magnitude;
+    velocityKnockback2 = vectorMultiply(velocityKnockback2, scale);
+  }
   
   bey1.velocity = vectorAdd(bey1.velocity, velocityKnockback1);
   bey2.velocity = vectorAdd(bey2.velocity, velocityKnockback2);

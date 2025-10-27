@@ -1,33 +1,62 @@
 "use client";
 
-import BeybladeSpinner from "@/components/shared/BeybladeSpinner";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-theme-background flex flex-col justify-center items-center">
-      <div className="text-center">
-        <BeybladeSpinner
-          size="lg"
-          text="Loading your adventure..."
-          className="mb-8"
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "background.default",
+      }}
+    >
+      <Box sx={{ textAlign: "center" }}>
+        <CircularProgress
+          size={60}
+          thickness={4}
+          sx={{ mb: 4, color: "primary.main" }}
         />
 
-        {/* Progress dots animation with theme colors */}
-        <div className="mt-4 flex justify-center space-x-1">
-          <div
-            className="w-2 h-2 bg-theme-primary rounded-full animate-bounce"
-            style={{ animationDelay: "0ms" }}
-          ></div>
-          <div
-            className="w-2 h-2 bg-theme-secondary rounded-full animate-bounce"
-            style={{ animationDelay: "150ms" }}
-          ></div>
-          <div
-            className="w-2 h-2 bg-theme-accent rounded-full animate-bounce"
-            style={{ animationDelay: "300ms" }}
-          ></div>
-        </div>
-      </div>
-    </div>
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+          Loading your adventure...
+        </Typography>
+
+        {/* Progress dots animation */}
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+          {[0, 150, 300].map((delay, index) => (
+            <Box
+              key={index}
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor:
+                  index === 0
+                    ? "primary.main"
+                    : index === 1
+                    ? "secondary.main"
+                    : "success.main",
+                animation: "bounce 1s infinite",
+                animationDelay: `${delay}ms`,
+                "@keyframes bounce": {
+                  "0%, 80%, 100%": {
+                    transform: "scale(0)",
+                    opacity: 0.5,
+                  },
+                  "40%": {
+                    transform: "scale(1)",
+                    opacity: 1,
+                  },
+                },
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+    </Box>
   );
 }

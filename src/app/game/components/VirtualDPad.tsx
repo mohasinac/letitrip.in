@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 interface VirtualDPadProps {
   onDirectionChange: (direction: { x: number; y: number }) => void;
@@ -12,7 +12,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
   onDirectionChange,
   className = "",
 }) => {
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   const handleDirectionPress = (direction: string) => {
     const directions: Record<string, { x: number; y: number }> = {
@@ -39,7 +39,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
         <button
           className="absolute top-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all duration-150 active:scale-95 select-none"
           style={{
-            backgroundColor: `${theme.colors.primary}CC`,
+            backgroundColor: `${theme.palette.primary.main}CC`,
           }}
           onTouchStart={(e) => {
             e.preventDefault();
@@ -60,7 +60,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
         <button
           className="absolute left-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all duration-150 active:scale-95 select-none"
           style={{
-            backgroundColor: `${theme.colors.primary}CC`,
+            backgroundColor: `${theme.palette.primary.main}CC`,
           }}
           onTouchStart={(e) => {
             e.preventDefault();
@@ -80,7 +80,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
         <button
           className="absolute right-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all duration-150 active:scale-95 select-none"
           style={{
-            backgroundColor: `${theme.colors.primary}CC`,
+            backgroundColor: `${theme.palette.primary.main}CC`,
           }}
           onTouchStart={(e) => {
             e.preventDefault();
@@ -101,7 +101,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
         <button
           className="absolute bottom-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all duration-150 active:scale-95 select-none"
           style={{
-            backgroundColor: `${theme.colors.primary}CC`,
+            backgroundColor: `${theme.palette.primary.main}CC`,
           }}
           onTouchStart={(e) => {
             e.preventDefault();
@@ -121,7 +121,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
         {/* Center indicator */}
         <div
           className="w-3 h-3 rounded-full opacity-50"
-          style={{ backgroundColor: theme.colors.accent }}
+          style={{ backgroundColor: theme.palette.secondary.main }}
         ></div>
       </div>
     </div>
