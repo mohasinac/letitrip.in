@@ -58,14 +58,15 @@ export function ModernThemeProvider({
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Mark as hydrated
+    // Mark as hydrated first
     setIsHydrated(true);
 
+    // Then check for saved theme or system preference
     const savedTheme = localStorage.getItem("theme-mode");
     if (savedTheme === "dark" || savedTheme === "light") {
       setMode(savedTheme);
     } else {
-      // Detect system preference
+      // Detect system preference only on client side
       const prefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;
@@ -74,6 +75,7 @@ export function ModernThemeProvider({
   }, []);
 
   useEffect(() => {
+    // Only update DOM and localStorage after hydration
     if (!isHydrated) return;
 
     localStorage.setItem("theme-mode", mode);

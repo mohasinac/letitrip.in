@@ -13,8 +13,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import {
   Menu,
@@ -27,6 +25,7 @@ import {
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 import { useState } from "react";
 import Link from "next/link";
+import ClientOnly from "@/components/shared/ClientOnly";
 
 interface ModernLayoutProps {
   children: React.ReactNode;
@@ -43,15 +42,7 @@ const navigation = [
 
 export default function ModernLayout({ children }: ModernLayoutProps) {
   const { mode, toggleTheme } = useModernTheme();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Handle hydration
-  React.useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   const handleDrawerToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -83,8 +74,14 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
       >
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
-            {/* Mobile menu button */}
-            {isHydrated && isMobile && (
+            {/* Mobile menu button - only show on mobile */}
+            <Box
+              sx={{
+                display: { xs: "flex", md: "none" },
+                width: 48,
+                justifyContent: "flex-start",
+              }}
+            >
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -94,7 +91,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               >
                 <Menu />
               </IconButton>
-            )}
+            </Box>
 
             {/* Logo */}
             <Typography
@@ -106,33 +103,33 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 color: "text.primary",
                 textDecoration: "none",
                 fontSize: { xs: "1.2rem", md: "1.5rem" },
+                flexGrow: { xs: 1, md: 0 },
+                textAlign: { xs: "center", md: "left" },
               }}
             >
               JustForView
             </Typography>
 
             {/* Desktop Navigation */}
-            {isHydrated && !isMobile && (
-              <Box sx={{ display: "flex", gap: 2 }}>
-                {navigation.map((item) => (
-                  <Button
-                    key={item.name}
-                    href={item.href}
-                    sx={{
-                      color: "text.primary",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      fontSize: "0.95rem",
-                      "&:hover": {
-                        backgroundColor: "action.hover",
-                      },
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-              </Box>
-            )}
+            <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+              {navigation.map((item) => (
+                <Button
+                  key={item.name}
+                  href={item.href}
+                  sx={{
+                    color: "text.primary",
+                    fontWeight: 500,
+                    textTransform: "none",
+                    fontSize: "0.95rem",
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                  }}
+                >
+                  {item.name}
+                </Button>
+              ))}
+            </Box>
 
             {/* Right side icons */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
