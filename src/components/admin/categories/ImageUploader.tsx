@@ -79,7 +79,7 @@ export default function ImageUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const cropperRef = useRef<ImageCropperRef>(null);
-  
+
   // New state for local preview with cropper
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -92,7 +92,7 @@ export default function ImageUploader({
   // Cleanup preview URL on unmount
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -193,10 +193,11 @@ export default function ImageUploader({
   // Method to get cropped image file for form submission
   const getCroppedImageFile = async (): Promise<File | null> => {
     if (!cropperRef.current || !originalFile) return null;
-    
+
     try {
       const croppedBlob = await cropperRef.current.getCroppedImage();
-      const fileName = originalFile.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg";
+      const fileName =
+        originalFile.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg";
       return new File([croppedBlob], fileName, { type: "image/jpeg" });
     } catch (error) {
       console.error("Failed to get cropped image:", error);
@@ -258,14 +259,14 @@ export default function ImageUploader({
       if (response.url) {
         onChange(response.url);
         setUploadProgress(100);
-        
+
         // Clear preview after successful upload
-        if (previewUrl && previewUrl.startsWith('blob:')) {
+        if (previewUrl && previewUrl.startsWith("blob:")) {
           URL.revokeObjectURL(previewUrl);
         }
         setPreviewUrl(null);
         setOriginalFile(null);
-        
+
         setTimeout(() => setUploadProgress(0), 1500);
       } else {
         handleError("Failed to get image URL from server");
@@ -526,8 +527,13 @@ export default function ImageUploader({
                 targetWidth={targetWidth}
                 targetHeight={targetHeight}
               />
-              <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: "block", textAlign: "center" }}>
-                Adjust the image above. It will be uploaded when you save the form.
+              <Typography
+                variant="caption"
+                color="primary.main"
+                sx={{ mt: 1, display: "block", textAlign: "center" }}
+              >
+                Adjust the image above. It will be uploaded when you save the
+                form.
               </Typography>
             </Box>
           )}

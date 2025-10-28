@@ -37,16 +37,18 @@ export default function MediaUpload({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  
+
   // New state for local preview
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [previewType, setPreviewType] = useState<'image' | 'video' | null>(null);
+  const [previewType, setPreviewType] = useState<"image" | "video" | null>(
+    null
+  );
 
   // Cleanup preview URL on unmount
   React.useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -72,10 +74,10 @@ export default function MediaUpload({
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
     setPendingFile(file);
-    
+
     // Determine media type
     const isVideo = fileType.includes(".mp4") || fileType.includes(".webm");
-    setPreviewType(isVideo ? 'video' : 'image');
+    setPreviewType(isVideo ? "video" : "image");
   };
 
   // Save/Upload the pending file
@@ -104,14 +106,14 @@ export default function MediaUpload({
       const fileUrl = data.url;
 
       // Call appropriate callback
-      if (previewType === 'video') {
+      if (previewType === "video") {
         onVideoSelected?.(fileUrl);
       } else {
         onImageSelected(fileUrl);
       }
 
       // Clear preview after successful upload
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
       setPreviewUrl(null);
@@ -126,7 +128,7 @@ export default function MediaUpload({
 
   // Cancel the pending upload
   const handleCancelPreview = () => {
-    if (previewUrl && previewUrl.startsWith('blob:')) {
+    if (previewUrl && previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
     setPreviewUrl(null);
@@ -235,7 +237,7 @@ export default function MediaUpload({
               boxShadow: 3,
             }}
           >
-            {previewType === 'image' ? (
+            {previewType === "image" ? (
               <Box
                 sx={{
                   width: "100%",
@@ -265,7 +267,9 @@ export default function MediaUpload({
               disabled={loading}
               fullWidth
             >
-              {loading ? "Saving..." : `Save ${previewType === 'image' ? 'Image' : 'Video'}`}
+              {loading
+                ? "Saving..."
+                : `Save ${previewType === "image" ? "Image" : "Video"}`}
             </Button>
             <Button
               variant="outlined"

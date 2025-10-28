@@ -176,7 +176,7 @@ export default function CategoryForm({
     try {
       setIsSubmitting(true);
       setSubmitError(null);
-      
+
       // Check if there's a cropped image waiting to be uploaded
       if ((window as any).__uploadCroppedImage) {
         try {
@@ -189,7 +189,7 @@ export default function CategoryForm({
           throw new Error("Failed to upload image. Please try again.");
         }
       }
-      
+
       await onSubmit(data);
       reset();
     } catch (error) {
