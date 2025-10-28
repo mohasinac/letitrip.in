@@ -14,6 +14,7 @@ import {
   Paper,
   Tooltip,
   Badge,
+  TableRow as MuiTableRow,
 } from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -61,9 +62,9 @@ function CategoryNode({
       <TableRow
         sx={{
           backgroundColor:
-            level % 2 === 0 ? "transparent" : "rgba(0, 0, 0, 0.02)",
+            level % 2 === 0 ? "background.paper" : "action.hover",
           "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
+            backgroundColor: "action.selected",
           },
         }}
       >
@@ -187,7 +188,7 @@ interface TableRowProps {
 }
 
 function TableRow({ children, sx }: TableRowProps) {
-  return <tr style={sx}>{children}</tr>;
+  return <MuiTableRow sx={sx}>{children}</MuiTableRow>;
 }
 
 export default function CategoryTreeView({
@@ -204,13 +205,28 @@ export default function CategoryTreeView({
   );
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer
+      component={Paper}
+      sx={{
+        backgroundColor: "background.paper",
+        "& thead tr": {
+          backgroundColor: "action.hover",
+        },
+        "& th": {
+          color: "text.primary",
+          fontWeight: 600,
+        },
+        "& td": {
+          color: "text.primary",
+          borderColor: "divider",
+        },
+      }}
+    >
       <table style={{ width: "100%" }}>
         <thead>
           <tr
             style={{
-              backgroundColor: "#f5f5f5",
-              borderBottom: "1px solid #e0e0e0",
+              borderBottom: "1px solid var(--palette-divider, #e0e0e0)",
             }}
           >
             <th

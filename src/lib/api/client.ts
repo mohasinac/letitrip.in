@@ -19,6 +19,7 @@ class ApiClient {
   private client: AxiosInstance;
   private maxRetries: number = 3;
   private retryDelay: number = 1000;
+  private tokenPromise: Promise<string | null> | null = null;
 
   constructor(config?: ApiClientConfig) {
     const baseURL = config?.baseURL || process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -38,24 +39,7 @@ class ApiClient {
     this.client.interceptors.request.use(
       async (config) => {
         try {
-          // Try to get token from Firebase first
-          let token: string | null = null;
-          
-          try {
-            const currentUser = auth.currentUser;
-            if (currentUser) {
-              token = await currentUser.getIdToken();
-              // Store token for future use
-              if (token) {
-                setAuthToken(token);
-              }
-            }
-          } catch (firebaseError) {
-            console.debug('Firebase auth not available, trying localStorage');
-            // Fall back to localStorage token
-            token = await getAuthToken();
-          }
-
+          const token = await this.getTokenWithRetry();
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
           }
@@ -318,6 +302,54 @@ class ApiClient {
    */
   clearAuth(): void {
     clearAuthToken();
+  }
+
+  /**
+   * Get authentication token with retry logic
+   * Waits for Firebase to be ready and user to be authenticated
+   */
+  private async getTokenWithRetry(maxAttempts: number = 5): Promise<string | null> {
+    let lastError: any = null;
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        // Try to get token from Firebase first
+        if (typeof window !== 'undefined' && auth && auth.currentUser) {
+          try {
+            // Get fresh Firebase ID token
+            const token = await auth.currentUser.getIdToken(true);
+            if (token) {
+              setAuthToken(token);
+              return token;
+            }
+          } catch (getTokenError) {
+            console.debug(`Attempt ${attempt + 1}/${maxAttempts}: Failed to get token from Firebase`, getTokenError);
+            lastError = getTokenError;
+          }
+        }
+        
+        // Fall back to localStorage token
+        const storedToken = await getAuthToken();
+        if (storedToken) {
+          return storedToken;
+        }
+        
+        // If not the last attempt, wait before retrying
+        if (attempt < maxAttempts - 1) {
+          const delay = 100 * (attempt + 1); // 100ms, 200ms, 300ms, etc
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      } catch (error) {
+        console.debug(`Attempt ${attempt + 1}/${maxAttempts}: Error getting token`, error);
+        lastError = error;
+      }
+    }
+    
+    // No token found after retries
+    if (lastError) {
+      console.debug('Failed to get token after retries:', lastError);
+    }
+    return null;
   }
 }
 

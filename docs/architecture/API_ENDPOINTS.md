@@ -1,7 +1,8 @@
 # API Endpoints Documentation
 
-> **Last Updated:** October 28, 2025  
-> **Purpose:** This document serves as the single source of truth for all API endpoints, request/response schemas, and integration patterns.
+> **Last Updated:** October 29, 2025  
+> **Status:** ✅ Refactored - Service layer implemented  
+> **Purpose:** Single source of truth for API architecture, endpoints, and service patterns
 
 ## 🌐 API Overview
 
@@ -27,6 +28,65 @@ interface APIResponse<T = any> {
   error?: string;
   message?: string;
 }
+```
+
+---
+
+## 🏗️ Service Layer Architecture
+
+### Overview
+
+All API operations use centralized service layer for consistency, caching, and error handling.
+
+### Service Structure
+
+```
+src/lib/api/
+├── client.ts           (Axios instance with interceptors)
+├── services/
+│   ├── base.service.ts         (Abstract base with common functionality)
+│   ├── category.service.ts     (Category CRUD + utilities)
+│   ├── storage.service.ts      (File uploads & retrieval)
+│   └── index.ts                (Export index)
+└── auth-fetch.ts       (Token management)
+```
+
+### BaseService Features
+
+- ✅ Response caching with expiration
+- ✅ Automatic error handling & formatting
+- ✅ Request validation
+- ✅ Response transformation
+- ✅ Retry logic (3 attempts, exponential backoff)
+
+### Usage Examples
+
+**CategoryService:**
+
+```typescript
+// Get all categories
+const categories = await CategoryService.getCategories("list", 1, 10);
+
+// Create category
+const newCat = await CategoryService.createCategory(formData);
+
+// Validate slug
+const isValid = await CategoryService.validateSlug("buy-beyblades");
+```
+
+**StorageService:**
+
+```typescript
+// Upload image with progress
+const result = await StorageService.uploadImage({
+  file,
+  folder: "categories",
+  slug: "buy-beyblades",
+  onProgress: (progress) => console.log(progress),
+});
+
+// Get cached image URL
+const url = StorageService.getImageUrl("categories/buy-beyblades.jpg", 24);
 ```
 
 ---
@@ -576,7 +636,118 @@ interface DeleteCategoryResponse {
 
 ---
 
-## 🔒 Authentication & Authorization
+### � Storage API
+
+**Endpoint:** `/api/storage`
+
+#### **POST** `/api/storage/upload` - Upload Image
+
+**Purpose:** Upload images to Firebase Storage with slug-based naming for categories
+
+**Request Body:**
+
+```typescript
+interface ImageUploadRequest {
+  file: File; // Required - Image file (image/* only)
+  folder: string; // Required - Storage folder (e.g., "categories")
+  slug?: string; // Optional - Slug for custom naming (image saved as "{slug}.{ext}")
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface ImageUploadResponse {
+  success: true;
+  data: {
+    url: string; // Firebase Storage public URL or storage path
+    filename: string; // Filename (with or without slug prefix)
+    filepath: string; // Full filepath in storage
+    size: number; // File size in bytes
+    type: string; // MIME type
+  };
+}
+```
+
+**Features:**
+
+- Slug-based naming: If slug provided, image saved as `{slug}.{extension}`
+- UUID fallback: If no slug, generates UUID-based filename
+- Size validation: Max 10MB server-side, 5MB client-side
+- Type validation: Only image files accepted
+- Auto-slug prefix: Category images auto-prefixed with 'buy-' in slug
+
+**Error Responses:**
+
+- `400` - Invalid file or missing required fields
+- `401` - Authentication required
+- `413` - File too large
+- `500` - Server error
+
+**Example Usage:**
+
+```typescript
+const formData = new FormData();
+formData.append("file", imageFile);
+formData.append("folder", "categories");
+formData.append("slug", "buy-electronics"); // Optional - for custom naming
+
+const response = await fetch("/api/storage/upload", {
+  method: "POST",
+  body: formData,
+});
+```
+
+#### **GET** `/api/storage/get` - Retrieve Image with Caching
+
+**Purpose:** Retrieve images from Firebase Storage with intelligent browser and CDN caching
+
+**Query Parameters:**
+
+```typescript
+interface ImageGetRequest {
+  path: string; // Required - File path in storage (e.g., "categories/buy-electronics.jpg")
+  cache?: number; // Optional - Cache duration in seconds (default: 86400)
+}
+```
+
+**Response (200 OK):**
+
+```
+Content-Type: image/jpeg (or appropriate image type)
+Cache-Control: public, max-age={cache_duration}, immutable
+ETag: {firebase_etag}
+Last-Modified: {date}
+[Binary image data]
+```
+
+**Features:**
+
+- Smart caching with configurable duration
+- ETag support for 304 Not Modified responses
+- CORS enabled for cross-origin requests
+- Directory traversal protection
+- Last-Modified header for cache validation
+
+**Error Responses:**
+
+- `400` - Invalid path parameter
+- `404` - Image not found
+- `500` - Server error
+
+**Example Usage:**
+
+```typescript
+import { getImageUrl } from "@/lib/utils/storage";
+
+// Use cached API endpoint (24-hour default cache)
+const cachedUrl = getImageUrl("categories/buy-electronics.jpg");
+
+// With custom cache duration (1 hour)
+const cachedUrl = getImageUrl("categories/buy-electronics.jpg", true, 3600);
+```
+
+---
 
 ### **JWT Token Structure**
 

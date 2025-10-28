@@ -27,6 +27,15 @@ import {
   generateSlugFromName,
 } from "@/lib/validations/category";
 import type { Category } from "@/types";
+import ImageUploader from "./ImageUploader";
+import {
+  IconPreview,
+  getMuiIcon,
+} from "@/components/shared/preview/IconPreview";
+import { ImagePreview } from "@/components/shared/preview/ImagePreview";
+import { FormSection } from "@/components/shared/form/FormSection";
+import { FormActions } from "@/components/shared/form/FormActions";
+import CategoryService from "@/lib/api/services/category.service";
 
 interface CategoryFormProps {
   open: boolean;
@@ -77,6 +86,8 @@ export default function CategoryForm({
   const nameValue = watch("name");
   const metaTitleValue = watch("seo.metaTitle");
   const metaDescriptionValue = watch("seo.metaDescription");
+  const iconValue = watch("icon");
+  const imageValue = watch("image");
 
   // Auto-generate slug from name
   useEffect(() => {
@@ -146,110 +157,113 @@ export default function CategoryForm({
 
         <Stack spacing={3}>
           {/* Basic Information */}
-          <Box>
-            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-              Basic Information
-            </Typography>
+          <FormSection title="Basic Information">
+            {/* Name */}
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Category Name"
+                  placeholder="e.g., Electronics"
+                  fullWidth
+                  size="small"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
+            />
 
-            <Stack spacing={2}>
-              {/* Name */}
-              <Controller
-                name="name"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Category Name"
-                    placeholder="e.g., Electronics"
-                    fullWidth
-                    size="small"
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
-                  />
-                )}
-              />
+            {/* Slug */}
+            <Controller
+              name="slug"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Slug"
+                  placeholder="e.g., electronics"
+                  fullWidth
+                  size="small"
+                  error={!!errors.slug}
+                  helperText={
+                    errors.slug?.message ||
+                    "URL-friendly identifier (auto-generated from name)"
+                  }
+                />
+              )}
+            />
 
-              {/* Slug */}
-              <Controller
-                name="slug"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Slug"
-                    placeholder="e.g., electronics"
-                    fullWidth
-                    size="small"
-                    error={!!errors.slug}
-                    helperText={
-                      errors.slug?.message ||
-                      "URL-friendly identifier (auto-generated from name)"
-                    }
-                  />
-                )}
-              />
+            {/* Description */}
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Description"
+                  placeholder="Category description"
+                  fullWidth
+                  multiline
+                  rows={3}
+                  size="small"
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                />
+              )}
+            />
 
-              {/* Description */}
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Description"
-                    placeholder="Category description"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    size="small"
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                  />
-                )}
-              />
+            {/* Image URL */}
+            <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name="image"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUploader
+                      value={field.value}
+                      onChange={field.onChange}
+                      slug={watch("slug")}
+                      onError={(error) => {
+                        console.error("Image upload error:", error);
+                      }}
+                    />
+                  )}
+                />
+              </Box>
+              <Box sx={{ pt: 1 }}>
+                <ImagePreview imageUrl={imageValue} />
+              </Box>
+            </Box>
 
-              {/* Image URL */}
-              <Controller
-                name="image"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Image URL"
-                    placeholder="https://example.com/image.jpg"
-                    fullWidth
-                    size="small"
-                    error={!!errors.image}
-                    helperText={errors.image?.message}
-                  />
-                )}
-              />
-
-              {/* Icon */}
-              <Controller
-                name="icon"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Icon"
-                    placeholder="Material UI icon name or emoji"
-                    fullWidth
-                    size="small"
-                    error={!!errors.icon}
-                    helperText={errors.icon?.message}
-                  />
-                )}
-              />
-            </Stack>
-          </Box>
+            {/* Icon */}
+            <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name="icon"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Icon"
+                      placeholder="Material UI icon name or emoji"
+                      fullWidth
+                      size="small"
+                      error={!!errors.icon}
+                      helperText={errors.icon?.message}
+                    />
+                  )}
+                />
+              </Box>
+              <Box sx={{ pt: 1 }}>
+                <IconPreview iconName={iconValue} />
+              </Box>
+            </Box>
+          </FormSection>
 
           {/* Hierarchy */}
-          <Box>
-            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-              Hierarchy
-            </Typography>
-
+          <FormSection title="Hierarchy">
             <Controller
               name="parentId"
               control={control}
@@ -267,144 +281,131 @@ export default function CategoryForm({
                 </FormControl>
               )}
             />
-          </Box>
+          </FormSection>
 
           {/* Status and Organization */}
-          <Box>
-            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-              Status & Organization
-            </Typography>
-
-            <Stack spacing={2}>
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Controller
-                  name="isActive"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      {...field}
-                      control={<Checkbox />}
-                      label="Active"
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="featured"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      {...field}
-                      control={<Checkbox />}
-                      label="Featured"
-                    />
-                  )}
-                />
-              </Box>
-
+          <FormSection title="Status & Organization">
+            <Box sx={{ display: "flex", gap: 2 }}>
               <Controller
-                name="sortOrder"
+                name="isActive"
                 control={control}
                 render={({ field }) => (
-                  <TextField
+                  <FormControlLabel
                     {...field}
-                    label="Sort Order"
-                    type="number"
-                    fullWidth
-                    size="small"
-                    error={!!errors.sortOrder}
-                    helperText={
-                      errors.sortOrder?.message || "Lower numbers appear first"
-                    }
-                    inputProps={{ min: 0 }}
+                    control={<Checkbox />}
+                    label="Active"
                   />
                 )}
               />
-            </Stack>
-          </Box>
+
+              <Controller
+                name="featured"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    {...field}
+                    control={<Checkbox />}
+                    label="Featured"
+                  />
+                )}
+              />
+            </Box>
+
+            <Controller
+              name="sortOrder"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Sort Order"
+                  type="number"
+                  fullWidth
+                  size="small"
+                  error={!!errors.sortOrder}
+                  helperText={
+                    errors.sortOrder?.message || "Lower numbers appear first"
+                  }
+                  inputProps={{ min: 0 }}
+                />
+              )}
+            />
+          </FormSection>
 
           {/* SEO Information */}
-          <Box>
-            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-              SEO Information
-            </Typography>
+          <FormSection title="SEO Information">
+            <Controller
+              name="seo.metaTitle"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Meta Title"
+                  placeholder="Page title for search engines"
+                  fullWidth
+                  size="small"
+                  error={!!errors.seo?.metaTitle}
+                  helperText={
+                    errors.seo?.metaTitle?.message ||
+                    `${(field.value || "").length}/60 characters`
+                  }
+                  inputProps={{ maxLength: 60 }}
+                />
+              )}
+            />
 
-            <Stack spacing={2}>
-              <Controller
-                name="seo.metaTitle"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Meta Title"
-                    placeholder="Page title for search engines"
-                    fullWidth
-                    size="small"
-                    error={!!errors.seo?.metaTitle}
-                    helperText={
-                      errors.seo?.metaTitle?.message ||
-                      `${(field.value || "").length}/60 characters`
-                    }
-                    inputProps={{ maxLength: 60 }}
-                  />
-                )}
-              />
+            <Controller
+              name="seo.metaDescription"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Meta Description"
+                  placeholder="Page description for search engines"
+                  fullWidth
+                  multiline
+                  rows={2}
+                  size="small"
+                  error={!!errors.seo?.metaDescription}
+                  helperText={
+                    errors.seo?.metaDescription?.message ||
+                    `${(field.value || "").length}/160 characters`
+                  }
+                  inputProps={{ maxLength: 160 }}
+                />
+              )}
+            />
 
-              <Controller
-                name="seo.metaDescription"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Meta Description"
-                    placeholder="Page description for search engines"
-                    fullWidth
-                    multiline
-                    rows={2}
-                    size="small"
-                    error={!!errors.seo?.metaDescription}
-                    helperText={
-                      errors.seo?.metaDescription?.message ||
-                      `${(field.value || "").length}/160 characters`
-                    }
-                    inputProps={{ maxLength: 160 }}
-                  />
-                )}
-              />
-
-              <Controller
-                name="seo.altText"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Image Alt Text"
-                    placeholder="Alternative text for category image"
-                    fullWidth
-                    size="small"
-                    error={!!errors.seo?.altText}
-                    helperText={
-                      errors.seo?.altText?.message ||
-                      `${(field.value || "").length}/125 characters`
-                    }
-                    inputProps={{ maxLength: 125 }}
-                  />
-                )}
-              />
-            </Stack>
-          </Box>
+            <Controller
+              name="seo.altText"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Image Alt Text"
+                  placeholder="Alternative text for category image"
+                  fullWidth
+                  size="small"
+                  error={!!errors.seo?.altText}
+                  helperText={
+                    errors.seo?.altText?.message ||
+                    `${(field.value || "").length}/125 characters`
+                  }
+                  inputProps={{ maxLength: 125 }}
+                />
+              )}
+            />
+          </FormSection>
         </Stack>
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit(handleFormSubmit)}
-          variant="contained"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Saving..." : category ? "Update" : "Create"}
-        </Button>
+        <FormActions
+          onCancel={handleClose}
+          onSubmit={() => handleSubmit(handleFormSubmit)()}
+          submitLabel={category ? "Update" : "Create"}
+          cancelLabel="Cancel"
+          isLoading={isSubmitting}
+        />
       </DialogActions>
     </Dialog>
   );

@@ -1,7 +1,54 @@
 # Theme System Documentation
 
-> **Last Updated:** October 28, 2025  
-> **Purpose:** This document serves as the single source of truth for the theme system, including light/dark modes, color palettes, component styling, and usage patterns.
+> **Last Updated:** October 29, 2025  
+> **Status:** ✅ Refactored - Centralized theme system implemented  
+> **Purpose:** Single source of truth for theming, colors, typography, and spacing
+
+## 📂 Centralized Theme System
+
+### New Theme Structure
+
+```
+src/styles/
+├── theme/
+│   ├── colors.ts       (Complete color palette)
+│   ├── typography.ts   (Font system - families, sizes, weights)
+│   ├── spacing.ts      (8px-based spacing scale)
+│   └── index.ts        (Export index for clean imports)
+```
+
+### Importing Theme
+
+```typescript
+import { colors, typography, spacing } from "@/styles/theme";
+
+// Usage
+const cardBackground = colors.neutral[50];
+const headingSize = typography.fontSize.xl;
+const gutter = spacing[8]; // 32px
+```
+
+### Color System
+
+- Primary, Secondary, Success, Warning, Error, Info colors
+- Neutral palette (50-900)
+- CSS variables for light/dark mode
+- Brand colors object
+
+### Typography System
+
+- Font families: Base (Inter/Roboto) & Mono (Monaco/Menlo)
+- Sizes: xs-5xl (12px to 48px)
+- Weights: thin-black (100-900)
+- Pre-defined styles: h1-h6, body1-2, label, caption, code
+
+### Spacing Scale
+
+- Values: 0-96 (0px-384px) in 8px increments
+- Named patterns: gutter (32px), section (64px), component (16px), element (8px)
+- Responsive variants: mobile/tablet/desktop
+
+---
 
 ## 🎨 Theme Architecture Overview
 

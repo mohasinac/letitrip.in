@@ -22,6 +22,7 @@ import {
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
@@ -51,6 +52,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 function AdminCategoriesContent() {
+  const { user, loading: authLoading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,8 +81,14 @@ function AdminCategoriesContent() {
   }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    // Only fetch when user is authenticated and auth loading is complete
+    if (!authLoading && user) {
+      fetchCategories();
+    } else if (!authLoading && !user) {
+      setError("Not authenticated");
+      setLoading(false);
+    }
+  }, [authLoading, user, fetchCategories]);
 
   const handleOpenDialog = (category?: Category) => {
     setSelectedCategory(category || null);

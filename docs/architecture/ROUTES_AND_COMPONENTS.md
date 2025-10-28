@@ -1,7 +1,8 @@
 # Routes and Components Documentation
 
-> **Last Updated:** October 28, 2025  
-> **Purpose:** This document serves as the single source of truth for all routes and components in the JustForView application.
+> **Last Updated:** October 29, 2025  
+> **Status:** ✅ Refactored - Shared components & services implemented  
+> **Purpose:** Single source of truth for routes, components, and architecture patterns
 
 ## 📁 Application Structure
 
@@ -119,12 +120,13 @@
 
 ### 🏢 Admin Components
 
-| Component          | File Path                                              | Purpose                       | Type         | Dependencies               |
-| ------------------ | ------------------------------------------------------ | ----------------------------- | ------------ | -------------------------- |
-| `CategoryForm`     | `src/components/admin/categories/CategoryForm.tsx`     | Category create/edit form     | Interactive  | React Hook Form, Zod, MUI  |
-| `CategoryTreeView` | `src/components/admin/categories/CategoryTreeView.tsx` | Hierarchical category display | Interactive  | MUI Tree, expand/collapse  |
-| `CategoryListView` | `src/components/admin/categories/CategoryListView.tsx` | Searchable paginated table    | Interactive  | MUI Table, search, filters |
-| `AdminSidebar`     | `src/components/layout/AdminSidebar.tsx`               | Admin navigation sidebar      | Presentation | MUI Sidebar, navigation    |
+| Component          | File Path                                              | Purpose                       | Type         | Dependencies                             |
+| ------------------ | ------------------------------------------------------ | ----------------------------- | ------------ | ---------------------------------------- |
+| `CategoryForm`     | `src/components/admin/categories/CategoryForm.tsx`     | Category create/edit form     | Interactive  | React Hook Form, Zod, MUI, ImageUploader |
+| `ImageUploader`    | `src/components/admin/categories/ImageUploader.tsx`    | Multi-method image upload     | Interactive  | Firebase Storage, MUI Tabs               |
+| `CategoryTreeView` | `src/components/admin/categories/CategoryTreeView.tsx` | Hierarchical category display | Interactive  | MUI Tree, expand/collapse                |
+| `CategoryListView` | `src/components/admin/categories/CategoryListView.tsx` | Searchable paginated table    | Interactive  | MUI Table, search, filters               |
+| `AdminSidebar`     | `src/components/layout/AdminSidebar.tsx`               | Admin navigation sidebar      | Presentation | MUI Sidebar, navigation                  |
 
 ---
 

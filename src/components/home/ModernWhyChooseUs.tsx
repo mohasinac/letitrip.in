@@ -26,25 +26,25 @@ const features = [
     icon: <Verified />,
     title: "100% Authentic",
     description: "All products are genuine and verified for authenticity",
-    color: "#00c851",
+    color: "#22c55e", // success.main
   },
   {
     icon: <LocalShipping />,
     title: "Fast Shipping",
     description: "Quick delivery across India with secure packaging",
-    color: "#0095f6",
+    color: "#4f46e5", // primary.main
   },
   {
     icon: <Security />,
     title: "Secure Payment",
     description: "Safe and secure payment methods with buyer protection",
-    color: "#8e44ad",
+    color: "#ec4899", // secondary.main
   },
   {
     icon: <SupportAgent />,
     title: "Expert Support",
     description: "Dedicated customer support for all your queries",
-    color: "#ed4956",
+    color: "#ef4444", // error.main
   },
 ];
 

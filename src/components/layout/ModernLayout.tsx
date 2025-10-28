@@ -96,6 +96,11 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
             <ListItem component={Link} href="/profile">
               <ListItemText primary="Profile" />
             </ListItem>
+            {user.role === "admin" && (
+              <ListItem component={Link} href="/admin">
+                <ListItemText primary="Admin Panel" />
+              </ListItem>
+            )}
             <ListItem component={Link} href="/auth-demo">
               <ListItemText primary="Auth Demo" />
             </ListItem>
@@ -259,7 +264,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                           elevation: 0,
                           sx: {
                             overflow: "visible",
-                            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
                             mt: 1.5,
                             "& .MuiAvatar-root": {
                               width: 32,
@@ -298,6 +303,12 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                           </Avatar>
                           Profile
                         </MenuItem>
+                        {user.role === "admin" && (
+                          <MenuItem component={Link} href="/admin">
+                            <AccountCircle sx={{ mr: 2 }} />
+                            Admin Panel
+                          </MenuItem>
+                        )}
                         <MenuItem component={Link} href="/auth-demo">
                           <AccountCircle sx={{ mr: 2 }} />
                           Auth Demo

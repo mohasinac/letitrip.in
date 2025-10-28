@@ -109,7 +109,7 @@ export default function AdminSidebar({
         "& .MuiDrawer-paper": {
           width: sidebarWidth,
           boxSizing: "border-box",
-          backgroundColor: isDark ? "#0a0a0a" : "#f8fafc",
+          backgroundColor: "background.paper",
           borderRight: 1,
           borderColor: "divider",
           overflowX: "hidden",
@@ -172,9 +172,7 @@ export default function AdminSidebar({
                         },
                       },
                       "&:hover": {
-                        backgroundColor: isDark
-                          ? "rgba(255, 255, 255, 0.08)"
-                          : "rgba(0, 0, 0, 0.04)",
+                        backgroundColor: "action.hover",
                       },
                       transition: "all 0.2s ease",
                     }}

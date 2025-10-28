@@ -19,7 +19,7 @@ const categories = [
     description: "Latest generation with burst mechanics",
     count: "150+ Products",
     image: "/api/placeholder/400/300",
-    color: "#0095f6",
+    color: "#4f46e5", // primary.main
     trending: true,
   },
   {
@@ -27,7 +27,7 @@ const categories = [
     description: "Classic metal performance system",
     count: "200+ Products",
     image: "/api/placeholder/400/300",
-    color: "#2ed573",
+    color: "#22c55e", // success.main
     trending: false,
   },
   {
@@ -35,7 +35,7 @@ const categories = [
     description: "Original generation plastic series",
     count: "100+ Products",
     image: "/api/placeholder/400/300",
-    color: "#ff6b35",
+    color: "#f59e0b", // warning.main
     trending: false,
   },
   {
@@ -43,7 +43,7 @@ const categories = [
     description: "Next evolution of Beyblade",
     count: "80+ Products",
     image: "/api/placeholder/400/300",
-    color: "#f39c12",
+    color: "#f59e0b", // warning.main (dark variant)
     trending: true,
   },
   {
@@ -51,7 +51,7 @@ const categories = [
     description: "Stadiums, launchers & more",
     count: "75+ Products",
     image: "/api/placeholder/400/300",
-    color: "#e74c3c",
+    color: "#ef4444", // error.main
     trending: false,
   },
   {
@@ -59,7 +59,7 @@ const categories = [
     description: "Custom designs & rare collections",
     count: "50+ Products",
     image: "/api/placeholder/400/300",
-    color: "#9b59b6",
+    color: "#ec4899", // secondary.main
     trending: false,
   },
 ];
@@ -84,7 +84,7 @@ export default function ModernFeaturedCategories() {
             sx={{
               fontWeight: 700,
               mb: 2,
-              background: "linear-gradient(135deg, #0095f6 0%, #00d4ff 100%)",
+              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",

@@ -15,7 +15,7 @@ export const categoryFormSchema = z.object({
     .string()
     .min(2, 'Slug must be at least 2 characters')
     .max(100, 'Slug cannot exceed 100 characters')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must contain only lowercase letters, numbers, and hyphens')
+    .regex(/^buy-[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must start with "buy-" followed by lowercase letters, numbers, and hyphens')
     .trim(),
   
   description: z
@@ -34,8 +34,8 @@ export const categoryFormSchema = z.object({
   featured: z.boolean().default(false),
   
   sortOrder: z
-    .number()
-    .int()
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().int().nonnegative('Sort order must be non-negative'))
     .default(0),
   
   image: z
@@ -82,13 +82,16 @@ export type CategoryFormSchema = z.infer<typeof categoryFormSchema>;
  */
 
 export function generateSlugFromName(name: string): string {
-  return name
+  const slug = name
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .substring(0, 100);
+  
+  // Auto-prepend 'buy-' prefix if not already present
+  return slug.startsWith('buy-') ? slug : `buy-${slug}`;
 }
 
 export function validateCategoryHierarchy(

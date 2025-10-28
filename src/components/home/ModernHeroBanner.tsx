@@ -22,8 +22,8 @@ export default function ModernHeroBanner() {
       sx={{
         background:
           theme.palette.mode === "dark"
-            ? "linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)"
-            : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)",
+            ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 50%, ${theme.palette.background.default} 100%)`
+            : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.action.hover} 50%, ${theme.palette.background.paper} 100%)`,
         py: { xs: 8, md: 12 },
         position: "relative",
         overflow: "hidden",
@@ -40,8 +40,8 @@ export default function ModernHeroBanner() {
           bottom: 0,
           backgroundImage:
             theme.palette.mode === "dark"
-              ? `radial-gradient(circle at 50% 50%, rgba(0, 149, 246, 0.1) 1px, transparent 1px)`
-              : `radial-gradient(circle at 50% 50%, rgba(0, 149, 246, 0.08) 1px, transparent 1px)`,
+              ? `radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.08) 1px, transparent 1px)`
+              : `radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.06) 1px, transparent 1px)`,
           backgroundSize: "50px 50px",
         }}
       />

@@ -117,10 +117,26 @@ export default function CategoryListView({
       </Box>
 
       {/* Table */}
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          backgroundColor: "background.paper",
+          "& .MuiTableCell-head": {
+            backgroundColor: "action.hover",
+            color: "text.primary",
+            fontWeight: 600,
+          },
+          "& .MuiTableRow-root": {
+            backgroundColor: "background.paper",
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
+          },
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow sx={{ backgroundColor: "action.hover" }}>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
                   Name
@@ -186,7 +202,8 @@ export default function CategoryListView({
                     variant="caption"
                     sx={{
                       fontFamily: "monospace",
-                      backgroundColor: "#f5f5f5",
+                      backgroundColor: "action.hover",
+                      color: "text.primary",
                       px: 1,
                       py: 0.5,
                       borderRadius: 0.5,
@@ -287,15 +304,26 @@ export default function CategoryListView({
       </TableContainer>
 
       {/* Pagination */}
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        component="div"
-        count={sortedCategories.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      <Box sx={{ backgroundColor: "background.paper", mt: 2 }}>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={sortedCategories.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            color: "text.primary",
+            "& .MuiTablePagination-toolbar": {
+              color: "text.primary",
+            },
+            "& .MuiSelect-icon": {
+              color: "text.primary",
+            },
+          }}
+        />
+      </Box>
     </Box>
   );
 }
