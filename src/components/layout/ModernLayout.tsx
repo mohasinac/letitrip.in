@@ -13,6 +13,10 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu as MuiMenu,
+  MenuItem,
+  Avatar,
+  Divider,
 } from "@mui/material";
 import {
   Menu,
@@ -21,8 +25,12 @@ import {
   Person,
   LightMode,
   DarkMode,
+  Login,
+  Logout,
+  AccountCircle,
 } from "@mui/icons-material";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
@@ -38,14 +46,35 @@ const navigation = [
   { name: "Contact", href: "/contact" },
   { name: "FAQ", href: "/faq" },
   { name: "Help", href: "/help" },
+  { name: "Auth Demo", href: "/auth-demo" },
 ];
 
 export default function ModernLayout({ children }: ModernLayoutProps) {
   const { mode, toggleTheme } = useModernTheme();
+  const { user, logout, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] =
+    useState<null | HTMLElement>(null);
 
   const handleDrawerToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      handleProfileMenuClose();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const drawer = (
@@ -56,6 +85,40 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
             <ListItemText primary={item.name} />
           </ListItem>
         ))}
+        <Divider sx={{ my: 1 }} />
+        {/* Mobile Auth Links */}
+        {user ? (
+          <>
+            <ListItem component={Link} href="/profile">
+              <ListItemText primary="Profile" />
+            </ListItem>
+            <ListItem component={Link} href="/auth-demo">
+              <ListItemText primary="Auth Demo" />
+            </ListItem>
+            <ListItem
+              component="button"
+              onClick={handleLogout}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { backgroundColor: "action.hover" },
+              }}
+            >
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </>
+        ) : (
+          <>
+            <ListItem component={Link} href="/login">
+              <ListItemText primary="Sign In" />
+            </ListItem>
+            <ListItem component={Link} href="/register">
+              <ListItemText primary="Register" />
+            </ListItem>
+            <ListItem component={Link} href="/auth-demo">
+              <ListItemText primary="Auth Demo" />
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
@@ -139,9 +202,118 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               <IconButton sx={{ color: "text.primary" }}>
                 <ShoppingCart />
               </IconButton>
-              <IconButton sx={{ color: "text.primary" }}>
-                <Person />
-              </IconButton>
+
+              {/* Authentication Section */}
+              <ClientOnly>
+                {user ? (
+                  <>
+                    <IconButton
+                      onClick={handleProfileMenuOpen}
+                      sx={{ color: "text.primary" }}
+                      aria-label="account menu"
+                    >
+                      {user.name ? (
+                        <Avatar
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            fontSize: "0.875rem",
+                            bgcolor: "primary.main",
+                          }}
+                        >
+                          {user.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                      ) : (
+                        <AccountCircle />
+                      )}
+                    </IconButton>
+                    <MuiMenu
+                      anchorEl={profileMenuAnchor}
+                      open={Boolean(profileMenuAnchor)}
+                      onClose={handleProfileMenuClose}
+                      onClick={handleProfileMenuClose}
+                      PaperProps={{
+                        elevation: 0,
+                        sx: {
+                          overflow: "visible",
+                          filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                          mt: 1.5,
+                          "& .MuiAvatar-root": {
+                            width: 32,
+                            height: 32,
+                            ml: -0.5,
+                            mr: 1,
+                          },
+                          "&:before": {
+                            content: '""',
+                            display: "block",
+                            position: "absolute",
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: "background.paper",
+                            transform: "translateY(-50%) rotate(45deg)",
+                            zIndex: 0,
+                          },
+                        },
+                      }}
+                      transformOrigin={{ horizontal: "right", vertical: "top" }}
+                      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                    >
+                      <MenuItem component={Link} href="/profile">
+                        <Avatar sx={{ mr: 2 }}>
+                          {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                        </Avatar>
+                        Profile
+                      </MenuItem>
+                      <MenuItem component={Link} href="/auth-demo">
+                        <AccountCircle sx={{ mr: 2 }} />
+                        Auth Demo
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleLogout}>
+                        <Logout sx={{ mr: 2 }} />
+                        Logout
+                      </MenuItem>
+                    </MuiMenu>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      component={Link}
+                      href="/login"
+                      variant="outlined"
+                      size="small"
+                      startIcon={<Login />}
+                      sx={{
+                        display: { xs: "none", sm: "flex" },
+                        textTransform: "none",
+                        borderColor: "primary.main",
+                        color: "primary.main",
+                        "&:hover": {
+                          borderColor: "primary.dark",
+                          backgroundColor: "primary.main",
+                          color: "primary.contrastText",
+                        },
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <IconButton
+                      component={Link}
+                      href="/login"
+                      sx={{
+                        color: "text.primary",
+                        display: { xs: "flex", sm: "none" },
+                      }}
+                    >
+                      <Person />
+                    </IconButton>
+                  </>
+                )}
+              </ClientOnly>
+
               <IconButton onClick={toggleTheme} sx={{ color: "text.primary" }}>
                 {mode === "dark" ? <LightMode /> : <DarkMode />}
               </IconButton>
