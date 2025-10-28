@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./modern-globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ModernThemeProvider } from "@/contexts/ModernThemeContext";
+import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 import ModernLayout from "@/components/layout/ModernLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import ThemeRegistry from "@/components/shared/ThemeRegistry";
@@ -56,9 +57,11 @@ export default function RootLayout({
         <ThemeRegistry>
           <AuthProvider>
             <ModernThemeProvider>
-              <ErrorBoundary>
-                <ModernLayout>{children}</ModernLayout>
-              </ErrorBoundary>
+              <BreadcrumbProvider>
+                <ErrorBoundary>
+                  <ModernLayout>{children}</ModernLayout>
+                </ErrorBoundary>
+              </BreadcrumbProvider>
               <Toaster
                 position="top-right"
                 toastOptions={{

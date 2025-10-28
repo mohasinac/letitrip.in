@@ -53,7 +53,7 @@ export default function GamePage() {
             sx={{
               textAlign: "center",
               borderRadius: 3,
-              backgroundColor: "#1a1a1a",
+              backgroundColor: "background.paper",
               border: `4px solid ${theme.palette.primary.main}`,
               textDecoration: "none",
               cursor: "pointer",
@@ -118,7 +118,7 @@ export default function GamePage() {
                     sx={{
                       p: 2,
                       borderRadius: 2,
-                      backgroundColor: "#0f0f0f",
+                      backgroundColor: "action.hover",
                       border: `2px solid ${theme.palette.primary.main}40`,
                     }}
                   >
@@ -127,7 +127,7 @@ export default function GamePage() {
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 600, color: "#ffffff" }}
+                      sx={{ fontWeight: 600, color: "text.primary" }}
                     >
                       {feature.text}
                     </Typography>
@@ -203,7 +203,7 @@ export default function GamePage() {
                   sx={{
                     borderRadius: 3,
                     opacity: 0.7,
-                    backgroundColor: "#1a1a1a",
+                    backgroundColor: "background.paper",
                     border: `2px dashed ${theme.palette.primary.main}40`,
                     textAlign: "center",
                   }}
@@ -216,13 +216,13 @@ export default function GamePage() {
                       variant="h6"
                       fontWeight={600}
                       gutterBottom
-                      sx={{ color: "#ffffff" }}
+                      sx={{ color: "text.primary" }}
                     >
                       {game.title}
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ mb: 2, color: "#cccccc" }}
+                      sx={{ mb: 2, color: "text.secondary" }}
                     >
                       {game.desc}
                     </Typography>

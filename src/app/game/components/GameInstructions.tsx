@@ -53,7 +53,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
     <div
       className={`rounded-xl p-6 shadow-lg backdrop-blur-sm ${className}`}
       style={{
-        backgroundColor: "#1a1a1a",
+        backgroundColor: theme.palette.background.paper,
         borderColor: theme.palette.secondary.main,
         borderWidth: "2px",
         borderStyle: "solid",
@@ -61,7 +61,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
     >
       <h3
         className="text-lg font-bold mb-4 text-center"
-        style={{ color: "#ffffff" }}
+        style={{ color: theme.palette.text.primary }}
       >
         Game Instructions
       </h3>
@@ -72,7 +72,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
             key={index}
             className="flex items-start space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: `rgba(0, 149, 246, 0.15)`,
+              backgroundColor: `${theme.palette.primary.main}15`,
             }}
           >
             <span className="text-xl flex-shrink-0">{instruction.icon}</span>

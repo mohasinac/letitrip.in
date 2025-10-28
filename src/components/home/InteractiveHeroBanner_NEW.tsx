@@ -13,6 +13,8 @@ import {
   Tabs,
   Tab,
   Tooltip,
+  useTheme,
+  useMediaQuery,
   CircularProgress,
 } from "@mui/material";
 import {
@@ -29,6 +31,10 @@ import { HeroBannerSlide } from "@/types/heroBanner";
 import { Product } from "@/app/api/admin/products/route";
 
 const InteractiveHeroBanner: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // State management
   const [slides, setSlides] = useState<HeroBannerSlide[]>([]);
   const [products, setProducts] = useState<Map<string, Product>>(new Map());
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -36,32 +42,35 @@ const InteractiveHeroBanner: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Cookie persistence
   const [autoPlayPref, setAutoPlayPref] = useCookie("hero-autoplay", "true");
   const [slidePref, setSlidePreference] = useCookie("hero-slide", "0");
 
+  // Load slides from database
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSlides = async () => {
       try {
-        const slidesRes = await fetch("/api/admin/hero-slides");
-        const slidesData = await slidesRes.json();
+        const response = await fetch("/api/admin/hero-slides");
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setSlides(data.data);
 
-        if (slidesData.success && Array.isArray(slidesData.data)) {
-          setSlides(slidesData.data);
-
+          // Fetch all products needed for these slides
           const allProductIds = new Set<string>();
-          slidesData.data.forEach((slide: HeroBannerSlide) => {
-            slide.featuredProductIds?.forEach((id) => allProductIds.add(id));
+          data.data.forEach((slide: HeroBannerSlide) => {
+            slide.featuredProductIds?.forEach((id) => {
+              allProductIds.add(id);
+            });
           });
 
           if (allProductIds.size > 0) {
-            const productsRes = await fetch(
+            const productResponse = await fetch(
               `/api/admin/products?ids=${Array.from(allProductIds).join(",")}`
             );
-            const productsData = await productsRes.json();
-
-            if (productsData.success && Array.isArray(productsData.data)) {
+            const productData = await productResponse.json();
+            if (productData.success && Array.isArray(productData.data)) {
               const productMap = new Map();
-              productsData.data.forEach((product: Product) => {
+              productData.data.forEach((product: Product) => {
                 productMap.set(product.id, product);
               });
               setProducts(productMap);
@@ -69,15 +78,16 @@ const InteractiveHeroBanner: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error("Failed to load hero data:", error);
+        console.error("Failed to fetch hero slides:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchSlides();
   }, []);
 
+  // Load preferences from cookies
   useEffect(() => {
     setIsAutoPlay(autoPlayPref === "true");
     const slideIndex = parseInt(slidePref);
@@ -86,6 +96,7 @@ const InteractiveHeroBanner: React.FC = () => {
     }
   }, [autoPlayPref, slidePref, slides.length]);
 
+  // Auto-rotation logic
   useEffect(() => {
     if (!isAutoPlay || isPaused || slides.length === 0) return;
 
@@ -96,6 +107,7 @@ const InteractiveHeroBanner: React.FC = () => {
     return () => clearInterval(interval);
   }, [isAutoPlay, isPaused, slides.length]);
 
+  // Event handlers
   const handleSlideChange = (event: React.SyntheticEvent, newValue: number) => {
     setCurrentSlideIndex(newValue);
     setSlidePreference(newValue.toString());
@@ -118,6 +130,10 @@ const InteractiveHeroBanner: React.FC = () => {
     const newAutoPlay = !isAutoPlay;
     setIsAutoPlay(newAutoPlay);
     setAutoPlayPref(newAutoPlay.toString());
+  };
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
   };
 
   // Loading state
@@ -535,7 +551,7 @@ const InteractiveHeroBanner: React.FC = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Tooltip title={isPaused ? "Resume" : "Pause"}>
                   <IconButton
-                    onClick={() => setIsPaused(!isPaused)}
+                    onClick={togglePause}
                     sx={{
                       color: slideTheme.textPrimary,
                       "&:hover": {

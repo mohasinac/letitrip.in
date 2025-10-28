@@ -69,9 +69,7 @@ class ApiClient {
             (config.url?.includes('/register') || config.url?.includes('/send-otp'));
 
           if (typeof window !== 'undefined' && !isAuthMeCall && !isInitialAuthSetup) {
-            // Store current path to redirect back after login
-            sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
-            // Only redirect if not already on login page
+            // Redirect to login if not already on login page
             if (!window.location.pathname.includes('/login')) {
               window.location.href = '/login';
             }

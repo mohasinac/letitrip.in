@@ -43,12 +43,9 @@ interface ModernLayoutProps {
 
 const navigation = [
   { name: "Home", href: "/" },
+  { name: "Categories", href: "/categories" },
   { name: "Game", href: "/game" },
-  { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
-  { name: "FAQ", href: "/faq" },
-  { name: "Help", href: "/help" },
-  { name: "Auth Demo", href: "/auth-demo" },
 ];
 
 export default function ModernLayout({ children }: ModernLayoutProps) {
@@ -101,9 +98,6 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 <ListItemText primary="Admin Panel" />
               </ListItem>
             )}
-            <ListItem component={Link} href="/auth-demo">
-              <ListItemText primary="Auth Demo" />
-            </ListItem>
             <ListItem
               component="button"
               onClick={handleLogout}
@@ -122,9 +116,6 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
             </ListItem>
             <ListItem component={Link} href="/register">
               <ListItemText primary="Register" />
-            </ListItem>
-            <ListItem component={Link} href="/auth-demo">
-              <ListItemText primary="Auth Demo" />
             </ListItem>
           </>
         )}
@@ -309,10 +300,6 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                             Admin Panel
                           </MenuItem>
                         )}
-                        <MenuItem component={Link} href="/auth-demo">
-                          <AccountCircle sx={{ mr: 2 }} />
-                          Auth Demo
-                        </MenuItem>
                         <Divider />
                         <MenuItem onClick={handleLogout}>
                           <Logout sx={{ mr: 2 }} />
@@ -431,7 +418,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                   Quick Links
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  {navigation.slice(0, 4).map((item) => (
+                  {navigation.slice(0, 5).map((item) => (
                     <Typography
                       key={item.name}
                       variant="body2"
@@ -485,10 +472,9 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                   {[
-                    { name: "FAQ", href: "/faq" },
-                    { name: "Help Center", href: "/help" },
                     { name: "Contact", href: "/contact" },
                     { name: "Terms", href: "/terms" },
+                    { name: "Privacy", href: "/privacy" },
                   ].map((item) => (
                     <Typography
                       key={item.name}

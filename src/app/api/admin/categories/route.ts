@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth/firebase-api-auth";
+import { getAdminDb } from "@/lib/database/admin";
 import {
   categoryFormSchema,
   validateCategoryHierarchy,
@@ -9,30 +10,25 @@ import {
 } from "@/lib/validations/category";
 import type { Category, CategoryFormData, ApiResponse } from "@/types";
 
-// Mock database - replace with actual Firebase operations
-const categories: Map<string, Category> = new Map();
-const categoryHierarchy: Map<string, string[]> = new Map(); // categoryId -> ancestors
+const CATEGORIES_COLLECTION = "categories";
 
 /**
  * GET /api/admin/categories
  * Fetch all categories with optional tree structure
+ * Public endpoint - no authentication required
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify admin access
-    const user = await verifyAdmin(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
+    const db = getAdminDb();
     const { searchParams } = request.nextUrl;
     const format = searchParams.get("format"); // 'tree' or 'list'
     const search = searchParams.get("search");
 
-    let allCategories = Array.from(categories.values());
+    const snapshot = await db.collection(CATEGORIES_COLLECTION).get();
+    let allCategories: Category[] = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    } as Category));
 
     // Filter by search
     if (search) {
@@ -81,6 +77,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const db = getAdminDb();
     const body = await request.json();
 
     // Validate form data
@@ -97,6 +94,18 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = validation.data;
+
+    // Get all categories to build hierarchy map
+    const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
+    const allCats = allCatsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    } as Category));
+
+    const categoryHierarchy = new Map<string, string[]>();
+    allCats.forEach((cat) => {
+      categoryHierarchy.set(cat.id, cat.parentIds || []);
+    });
 
     // Validate hierarchy
     const hierarchyValid = validateCategoryHierarchy(
@@ -124,9 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate slug
-    const slugExists = Array.from(categories.values()).some(
-      (cat) => cat.slug === formData.slug
-    );
+    const slugExists = allCats.some((cat) => cat.slug === formData.slug);
     if (slugExists) {
       return NextResponse.json(
         { success: false, error: "Category slug already exists" },
@@ -166,16 +173,18 @@ export async function POST(request: NextRequest) {
       updatedBy: user.uid,
     };
 
-    categories.set(categoryId, newCategory);
-    categoryHierarchy.set(categoryId, ancestors);
+    // Save to Firestore
+    await db.collection(CATEGORIES_COLLECTION).doc(categoryId).set(newCategory);
 
-    // Update parent's isLeaf status
+    // Update parent's isLeaf status if it has a parent
     if (formData.parentId) {
-      const parent = categories.get(formData.parentId);
+      const parent = allCats.find((c) => c.id === formData.parentId);
       if (parent) {
-        parent.isLeaf = false;
-        parent.updatedAt = new Date().toISOString();
-        parent.updatedBy = user.uid;
+        await db.collection(CATEGORIES_COLLECTION).doc(formData.parentId).update({
+          isLeaf: false,
+          updatedAt: new Date().toISOString(),
+          updatedBy: user.uid,
+        });
       }
     }
 
@@ -211,6 +220,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const db = getAdminDb();
     const { searchParams } = request.nextUrl;
     const categoryId = searchParams.get("id");
 
@@ -221,14 +231,15 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const category = categories.get(categoryId);
-    if (!category) {
+    const categoryDoc = await db.collection(CATEGORIES_COLLECTION).doc(categoryId).get();
+    if (!categoryDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
         { status: 404 }
       );
     }
 
+    const category = categoryDoc.data() as Category;
     const body = await request.json();
     const validation = categoryFormSchema.partial().safeParse(body);
 
@@ -244,6 +255,18 @@ export async function PATCH(request: NextRequest) {
     }
 
     const formData = validation.data;
+
+    // Get all categories for hierarchy validation
+    const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
+    const allCats = allCatsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    } as Category));
+
+    const categoryHierarchy = new Map<string, string[]>();
+    allCats.forEach((cat) => {
+      categoryHierarchy.set(cat.id, cat.parentIds || []);
+    });
 
     // Validate hierarchy if parent is being changed
     if (formData.parentId !== undefined) {
@@ -273,7 +296,7 @@ export async function PATCH(request: NextRequest) {
 
     // Check for duplicate slug (excluding current)
     if (formData.slug && formData.slug !== category.slug) {
-      const slugExists = Array.from(categories.values()).some(
+      const slugExists = allCats.some(
         (cat) => cat.id !== categoryId && cat.slug === formData.slug
       );
       if (slugExists) {
@@ -288,6 +311,7 @@ export async function PATCH(request: NextRequest) {
     const updatedCategory: Category = {
       ...category,
       ...formData,
+      id: categoryId,
       updatedAt: new Date().toISOString(),
       updatedBy: user.uid,
     };
@@ -300,7 +324,7 @@ export async function PATCH(request: NextRequest) {
       updatedCategory.level = ancestors.length;
     }
 
-    categories.set(categoryId, updatedCategory);
+    await db.collection(CATEGORIES_COLLECTION).doc(categoryId).set(updatedCategory);
 
     return NextResponse.json({
       success: true,
@@ -330,6 +354,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const db = getAdminDb();
     const { searchParams } = request.nextUrl;
     const categoryId = searchParams.get("id");
 
@@ -340,18 +365,25 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const category = categories.get(categoryId);
-    if (!category) {
+    const categoryDoc = await db.collection(CATEGORIES_COLLECTION).doc(categoryId).get();
+    if (!categoryDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
         { status: 404 }
       );
     }
 
+    const category = categoryDoc.data() as Category;
+
+    // Get all categories to check for children
+    const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
+    const allCats = allCatsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    } as Category));
+
     // Check if category has children
-    const hasChildren = Array.from(categories.values()).some(
-      (cat) => cat.parentId === categoryId
-    );
+    const hasChildren = allCats.some((cat) => cat.parentId === categoryId);
     if (hasChildren) {
       return NextResponse.json(
         {
@@ -373,20 +405,22 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    categories.delete(categoryId);
-    categoryHierarchy.delete(categoryId);
+    // Delete the category
+    await db.collection(CATEGORIES_COLLECTION).doc(categoryId).delete();
 
     // Update parent's isLeaf status if it now has no children
     if (category.parentId) {
-      const siblings = Array.from(categories.values()).filter(
+      const siblings = allCats.filter(
         (cat) => cat.parentId === category.parentId && cat.id !== categoryId
       );
       if (siblings.length === 0) {
-        const parent = categories.get(category.parentId);
+        const parent = allCats.find((c) => c.id === category.parentId);
         if (parent) {
-          parent.isLeaf = true;
-          parent.updatedAt = new Date().toISOString();
-          parent.updatedBy = user.uid;
+          await db.collection(CATEGORIES_COLLECTION).doc(category.parentId).update({
+            isLeaf: true,
+            updatedAt: new Date().toISOString(),
+            updatedBy: user.uid,
+          });
         }
       }
     }

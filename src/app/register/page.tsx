@@ -311,13 +311,7 @@ export default function RegisterPage() {
       try {
         await apiClient.post("/auth/register", userData);
         toast.success("Registration successful!");
-        // Clear the last visited page since registration is complete
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("lastVisitedPage");
-        }
-        // Let the auth context handle the redirect
-        // The Firebase auth state change will trigger the listener
-        // which will load user data and handle the redirect
+        // Session management is now handled via cookies
       } catch (err: any) {
         // User might already exist, that's okay
         if (
@@ -326,10 +320,7 @@ export default function RegisterPage() {
         ) {
           console.log("User already exists, proceeding with login");
           toast.success("Welcome back!");
-          // Clear the last visited page for existing user login
-          if (typeof window !== "undefined") {
-            localStorage.removeItem("lastVisitedPage");
-          }
+          // Session management is now handled via cookies
         } else {
           throw err;
         }

@@ -149,11 +149,11 @@ export default function ModernFeaturedCategories() {
                     top: 16,
                     right: 16,
                     zIndex: 2,
-                    backgroundColor: "#ff6b35",
-                    color: "white",
+                    backgroundColor: "warning.main",
+                    color: "common.white",
                     fontWeight: 600,
                     "&:hover": {
-                      backgroundColor: "#e55a2b",
+                      backgroundColor: "warning.dark",
                     },
                   }}
                 />

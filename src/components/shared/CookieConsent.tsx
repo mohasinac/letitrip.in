@@ -7,16 +7,37 @@ export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Check if user has already given consent
-    const consent = localStorage.getItem("cookieConsent");
-    if (!consent) {
+    // Check if user has given consent via cookie
+    const checkConsent = () => {
+      if (typeof window !== "undefined") {
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split("=");
+          if (name === "cookieConsent") {
+            return value !== undefined;
+          }
+        }
+      }
+      return false;
+    };
+
+    if (!checkConsent()) {
       setShowBanner(true);
     }
   }, []);
 
+  const setCookie = (name: string, value: string, days: number = 365) => {
+    if (typeof window !== "undefined") {
+      const expires = new Date();
+      expires.setDate(expires.getDate() + days);
+      document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+    }
+  };
+
   const handleAccept = () => {
-    localStorage.setItem("cookieConsent", "true");
-    localStorage.setItem("cookieConsentDate", new Date().toISOString());
+    setCookie("cookieConsent", "true", 365);
+    setCookie("cookieConsentDate", new Date().toISOString(), 365);
+    setCookie("analyticsStorage", "granted", 365);
     setShowBanner(false);
 
     // Optional: Send analytics event
@@ -28,8 +49,9 @@ export default function CookieConsent() {
   };
 
   const handleDecline = () => {
-    localStorage.setItem("cookieConsent", "false");
-    localStorage.setItem("cookieConsentDate", new Date().toISOString());
+    setCookie("cookieConsent", "false", 365);
+    setCookie("cookieConsentDate", new Date().toISOString(), 365);
+    setCookie("analyticsStorage", "denied", 365);
     setShowBanner(false);
 
     // Optional: Send analytics event

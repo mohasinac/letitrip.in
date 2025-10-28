@@ -15,19 +15,47 @@ export interface CookieOptions {
 
 /**
  * Check if user has given cookie consent
+ * Now fetches from database via API
  */
-export function hasCookieConsent(): boolean {
+export async function hasCookieConsent(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
-  return localStorage.getItem('cookieConsent') === 'true';
+  try {
+    const response = await fetch('/api/consent', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.data?.consentGiven === true;
+    }
+  } catch (error) {
+    console.error('Error checking consent:', error);
+  }
+  return false;
 }
 
 /**
  * Set cookie consent status
+ * Now saves to database via API
  */
-export function setCookieConsent(consent: boolean): void {
+export async function setCookieConsent(consent: boolean): Promise<void> {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('cookieConsent', String(consent));
-  localStorage.setItem('cookieConsentDate', new Date().toISOString());
+  try {
+    await fetch('/api/consent', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        consentGiven: consent,
+        analyticsStorage: consent ? 'granted' : 'denied',
+        consentDate: new Date().toISOString(),
+      }),
+    });
+  } catch (error) {
+    console.error('Error setting consent:', error);
+  }
 }
 
 /**
@@ -163,16 +191,17 @@ export const essential = {
 
 /**
  * Analytics opt-in management
+ * Now uses database API
  */
 export const analytics = {
-  isEnabled(): boolean {
-    if (!hasCookieConsent()) return false;
-    const setting = localStorage.getItem('analyticsEnabled');
-    return setting === null ? true : setting === 'true';
+  async isEnabled(): Promise<boolean> {
+    const consent = await hasCookieConsent();
+    if (!consent) return false;
+    return true; // Default to enabled if consent given
   },
   
-  setEnabled(enabled: boolean): void {
-    localStorage.setItem('analyticsEnabled', String(enabled));
+  async setEnabled(enabled: boolean): Promise<void> {
+    await setCookieConsent(enabled);
     
     // Update Google Analytics consent if available
     if (typeof window !== 'undefined' && (window as any).gtag) {

@@ -13,12 +13,8 @@ export function useThemeStyles() {
 
   const gradients = {
     primary: `linear-gradient(135deg, ${muiTheme.palette.primary.main} 0%, ${muiTheme.palette.primary.dark} 100%)`,
-    hero: isDark 
-      ? "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)"
-      : "linear-gradient(135deg, #0095f6 0%, #007acc 100%)",
-    card: isDark
-      ? "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)"
-      : "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
+    hero: `linear-gradient(135deg, ${muiTheme.palette.background.default} 0%, ${muiTheme.palette.background.paper} 100%)`,
+    card: `linear-gradient(135deg, ${muiTheme.palette.background.paper} 0%, ${muiTheme.palette.background.default} 100%)`,
   };
 
   const colors = {
@@ -31,12 +27,8 @@ export function useThemeStyles() {
   };
 
   const shadows = {
-    card: isDark 
-      ? "0 2px 8px rgba(255, 255, 255, 0.05)"
-      : "0 2px 8px rgba(0, 0, 0, 0.1)",
-    hover: isDark
-      ? "0 8px 25px rgba(255, 255, 255, 0.1)"
-      : "0 8px 25px rgba(0, 149, 246, 0.3)",
+    card: muiTheme.shadows[2],
+    hover: `0 8px 25px ${muiTheme.palette.primary.main}30`,
   };
 
   return {

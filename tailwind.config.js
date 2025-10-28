@@ -56,6 +56,15 @@ module.exports = {
         'md': '0 4px 6px rgba(0, 0, 0, 0.1)',
         'lg': '0 8px 16px rgba(0, 0, 0, 0.1)',
         'xl': '0 16px 24px rgba(0, 0, 0, 0.1)',
+      },
+      animation: {
+        'fadeIn': 'fadeIn 0.2s ease-in',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        }
       }
     },
   },

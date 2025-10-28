@@ -127,36 +127,21 @@ const generateSessionId = (): string => {
 // Helper function to validate redirect paths for security
 // Helper function to get the last visited non-auth page
 const getLastVisitedPage = (): string | null => {
-  try {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("lastVisitedPage");
-    }
-  } catch (error) {
-    console.debug("Error getting last visited page:", error);
-  }
+  // Now handled via session cookies - call API in component
   return null;
 };
 
 // Helper function to save current page if it's not an auth page
 const saveLastVisitedPageIfValid = (): void => {
-  try {
-    if (typeof window !== "undefined") {
-      const currentPath = window.location.pathname;
-      // Save only if it's not an auth page
-      if (isValidRedirectPath(currentPath)) {
-        localStorage.setItem("lastVisitedPage", currentPath);
-      }
-    }
-  } catch (error) {
-    console.debug("Error saving last visited page:", error);
-  }
+  // Now handled via session cookies - call API in component
 };
 
 // Helper function to clear the saved page
 const clearLastVisitedPage = (): void => {
+  // Now handled via session cookies - call API in component
   try {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("lastVisitedPage");
+      // Clear any legacy localStorage entries
     }
   } catch (error) {
     console.debug("Error clearing last visited page:", error);

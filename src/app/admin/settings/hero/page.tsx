@@ -1,10 +1,19 @@
 "use client";
 
-import { Box, Container, Typography, Tabs, Tab } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Breadcrumbs,
+  Link,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import { useState } from "react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
-import ThemeSettingsComponent from "@/components/admin/settings/ThemeSettings";
-import HeroSlideCustomizer from "@/components/admin/settings/hero/HeroSlideCustomizer";
+import HeroCarouselSettings from "@/components/admin/settings/hero/HeroCarouselSettings";
+import HeroProductSettings from "@/components/admin/settings/hero/HeroProductSettings";
+import NextLink from "next/link";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -17,15 +26,15 @@ function TabPanel({ children, value, index }: TabPanelProps) {
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`settings-tabpanel-${index}`}
-      aria-labelledby={`settings-tab-${index}`}
+      id={`hero-tabpanel-${index}`}
+      aria-labelledby={`hero-tab-${index}`}
     >
       {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
   );
 }
 
-function AdminSettingsContent() {
+function HeroSettingsContent() {
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -35,45 +44,54 @@ function AdminSettingsContent() {
   return (
     <Box sx={{ py: 4 }}>
       <Container maxWidth="lg">
+        {/* Breadcrumbs */}
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <Link component={NextLink} href="/admin" color="inherit">
+            Admin
+          </Link>
+          <Link component={NextLink} href="/admin/settings" color="inherit">
+            Settings
+          </Link>
+          <Typography color="text.primary">Hero Settings</Typography>
+        </Breadcrumbs>
+
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-          Admin Settings
+          Hero Section Settings
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-          Configure all aspects of your application in one place. Use the tabs
-          below to navigate between different settings.
+          Customize the hero carousel backgrounds, featured products, and
+          promotional content displayed on your homepage.
         </Typography>
 
-        {/* Settings Tabs */}
+        {/* Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
-            aria-label="admin settings tabs"
-            variant="scrollable"
-            scrollButtons="auto"
+            aria-label="hero settings tabs"
           >
-            <Tab label="Theme" id="settings-tab-0" />
-            <Tab label="Hero Slides" id="settings-tab-1" />
+            <Tab label="Carousel Backgrounds" id="hero-tab-0" />
+            <Tab label="Featured Products" id="hero-tab-1" />
           </Tabs>
         </Box>
 
         {/* Tab Panels */}
         <TabPanel value={tabValue} index={0}>
-          <ThemeSettingsComponent />
+          <HeroCarouselSettings />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <HeroSlideCustomizer />
+          <HeroProductSettings />
         </TabPanel>
       </Container>
     </Box>
   );
 }
 
-export default function AdminSettings() {
+export default function HeroSettings() {
   return (
     <RoleGuard requiredRole="admin">
-      <AdminSettingsContent />
+      <HeroSettingsContent />
     </RoleGuard>
   );
 }
