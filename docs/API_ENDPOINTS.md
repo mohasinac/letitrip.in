@@ -1,0 +1,544 @@
+# API Endpoints Documentation
+
+> **Last Updated:** October 28, 2025  
+> **Purpose:** This document serves as the single source of truth for all API endpoints, request/response schemas, and integration patterns.
+
+## 🌐 API Overview
+
+### **Base URL**
+
+- **Development:** `http://localhost:3000/api`
+- **Production:** `https://justforview.in/api`
+
+### **Authentication**
+
+- JWT tokens stored in HTTP-only cookies
+- Admin endpoints require `role: "admin"`
+- Public endpoints require no authentication
+
+### **Response Format**
+
+All API responses follow a consistent format:
+
+```typescript
+interface APIResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+```
+
+---
+
+## 📋 API Endpoints
+
+### 🗨️ Contact API
+
+**Endpoint:** `/api/contact`
+
+#### **POST** - Submit Contact Form
+
+**Purpose:** Handle contact form submissions from users
+
+**Request Body:**
+
+```typescript
+interface ContactRequest {
+  email: string; // Required - User's email
+  subject: string; // Required - Message subject
+  message: string; // Required - Message content
+  name?: string; // Optional - User's name (defaults to "Anonymous")
+  phone?: string; // Optional - User's phone number
+}
+```
+
+**Response (201 Created):**
+
+```typescript
+interface ContactResponse {
+  success: true;
+  message: "Your message has been sent successfully. We'll get back to you within 24 hours.";
+  data: {
+    id: string; // Firestore document ID
+    reference: string; // Reference number (e.g., "REF-A1B2C3D4")
+    estimatedResponse: string; // "Within 24 hours"
+  };
+}
+```
+
+**Error Responses:**
+
+- `400` - Invalid email format or missing required fields
+- `500` - Server error
+
+#### **GET** - Retrieve Contact Messages (Admin Only)
+
+**Purpose:** Allow admins to view and manage contact form submissions
+
+**Query Parameters:**
+
+```typescript
+interface ContactQuery {
+  page?: string; // Default: "1"
+  limit?: string; // Default: "20"
+  status?: string; // "all" | "new" | "in-progress" | "resolved"
+  priority?: string; // "all" | "low" | "normal" | "high"
+  category?: string; // "all" | "general" | "technical" | "billing" | "feedback"
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface ContactListResponse {
+  success: true;
+  data: {
+    messages: ContactMessage[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalMessages: number;
+      hasMore: boolean;
+    };
+    summary: {
+      totalMessages: number;
+      newMessages: number;
+      inProgressMessages: number;
+      resolvedMessages: number;
+      highPriorityMessages: number;
+    };
+  };
+}
+
+interface ContactMessage {
+  id: string;
+  email: string;
+  name: string;
+  phone: string | null;
+  subject: string;
+  message: string;
+  status: "new" | "in-progress" | "resolved";
+  priority: "low" | "normal" | "high";
+  category: "general" | "technical" | "billing" | "feedback";
+  source: "website";
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+```
+
+**Error Responses:**
+
+- `403` - Admin access required
+- `500` - Server error
+
+---
+
+### 📄 Content API
+
+**Endpoint:** `/api/content`
+
+#### **GET** - Retrieve Markdown Content
+
+**Purpose:** Serve parsed markdown content from the content directory
+
+**Query Parameters:**
+
+```typescript
+interface ContentQuery {
+  file: string; // Required - File path relative to content directory
+}
+```
+
+**Example Request:**
+
+```
+GET /api/content?file=faq.md
+GET /api/content?file=about/company.md
+```
+
+**Response (200 OK):**
+
+```typescript
+interface ContentResponse {
+  content: string; // Parsed markdown content as HTML
+  metadata?: {
+    // Optional frontmatter from markdown
+    title?: string;
+    description?: string;
+    lastUpdated?: string;
+    [key: string]: any;
+  };
+}
+```
+
+**Error Responses:**
+
+- `400` - File path is required
+- `404` - File not found
+- `500` - Server error
+
+**Usage Example:**
+
+```typescript
+const response = await fetch("/api/content?file=faq.md");
+const { content, metadata } = await response.json();
+```
+
+---
+
+### 🎯 Beyblades Assets API
+
+**Endpoint:** `/api/beyblades/[filename]`
+
+#### **GET** - Serve Beyblade SVG Assets
+
+**Purpose:** Serve SVG files from the beyblades assets directory with proper caching
+
+**Path Parameters:**
+
+```typescript
+interface BeybladeAssetParams {
+  filename: string; // SVG filename (must end with .svg)
+}
+```
+
+**Example Requests:**
+
+```
+GET /api/beyblades/burst-valkyrie.svg
+GET /api/beyblades/dragoon.svg
+```
+
+**Response (200 OK):**
+
+- **Content-Type:** `image/svg+xml`
+- **Cache-Control:** `public, max-age=31536000, immutable`
+- **Body:** SVG file content
+
+**Security Features:**
+
+- Path traversal protection (blocks `..`, `/`, `\`)
+- File extension validation (only `.svg` allowed)
+- CORS headers for cross-origin requests
+
+**Error Responses:**
+
+- `400` - Invalid filename or non-SVG file
+- `404` - File not found
+- `500` - Server error
+
+---
+
+### 🍪 Cookies API
+
+**Endpoint:** `/api/cookies`
+
+#### **GET** - Cookie Information
+
+**Purpose:** Provide public information about cookies used by the application
+
+**Response (200 OK):**
+
+```typescript
+interface CookieInfoResponse {
+  success: true;
+  data: {
+    consent: {
+      required: boolean; // GDPR compliance required
+      preferences: boolean; // User can manage preferences
+      analytics: boolean; // Analytics cookies enabled
+      marketing: boolean; // Marketing cookies enabled
+    };
+    security: {
+      httpOnly: boolean; // HTTP-only cookie flag
+      secure: boolean; // Secure flag (true in production)
+      sameSite: string; // SameSite policy
+    };
+    expiration: {
+      auth_token: string; // "30 days"
+      user_data: string; // "30 days"
+      cart_data: string; // "7 days"
+      preferences: string; // "1 year"
+    };
+    cookies: {
+      essential: string[]; // Essential cookie names
+      functional: string[]; // Functional cookie names
+      analytics: string[]; // Analytics cookie names
+      marketing: string[]; // Marketing cookie names
+    };
+  };
+}
+```
+
+#### **POST** - Cookie Operations
+
+**Purpose:** Handle cookie-related operations and consent management
+
+**Request Body:**
+
+```typescript
+interface CookieRequest {
+  action: "set" | "consent";
+  key?: string; // Required for "set" action
+  value?: any; // Required for "set" action
+  options?: {
+    // Optional cookie options
+    expires?: number;
+    secure?: boolean;
+    sameSite?: string;
+  };
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface CookieResponse {
+  success: true;
+  message: string; // Confirmation message
+}
+```
+
+**Error Responses:**
+
+- `400` - Invalid action or missing parameters
+- `500` - Server error
+
+---
+
+### 🐛 Error Logging API
+
+**Endpoint:** `/api/errors`
+
+#### **POST** - Log Client-Side Errors
+
+**Purpose:** Collect and process client-side errors for monitoring
+
+**Request Body:**
+
+```typescript
+interface ErrorLogEntry {
+  error: {
+    name: string; // Error name/type
+    message: string; // Error message
+    stack?: string; // Stack trace
+  };
+  timestamp: string; // ISO date string
+  url?: string; // URL where error occurred
+  userAgent?: string; // Browser user agent
+  userId?: string; // User ID if authenticated
+  metadata?: {
+    // Additional context
+    [key: string]: any;
+  };
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface ErrorResponse {
+  success: true;
+}
+```
+
+**Features:**
+
+- Critical error detection and alerting
+- Error categorization and prioritization
+- Integration with external monitoring services
+- Automatic error aggregation and reporting
+
+**Error Responses:**
+
+- `400` - Invalid error log entry
+- `500` - Failed to process error log
+
+---
+
+## 🔒 Authentication & Authorization
+
+### **JWT Token Structure**
+
+```typescript
+interface JWTPayload {
+  userId: string;
+  email: string;
+  role: "user" | "admin" | "seller";
+  iat: number; // Issued at
+  exp: number; // Expires at
+}
+```
+
+### **Protected Endpoints**
+
+| Endpoint           | Method | Required Role | Description           |
+| ------------------ | ------ | ------------- | --------------------- |
+| `GET /api/contact` | GET    | admin         | View contact messages |
+
+### **Authentication Flow**
+
+1. User logs in → JWT token stored in HTTP-only cookie
+2. Client makes API request → Token automatically sent
+3. Server validates token → Processes request or returns 401/403
+
+---
+
+## 📊 Error Handling Standards
+
+### **HTTP Status Codes**
+
+- `200` - OK (Successful GET, PUT, PATCH)
+- `201` - Created (Successful POST)
+- `400` - Bad Request (Invalid input data)
+- `401` - Unauthorized (Authentication required)
+- `403` - Forbidden (Insufficient permissions)
+- `404` - Not Found (Resource doesn't exist)
+- `422` - Unprocessable Entity (Validation errors)
+- `500` - Internal Server Error (Server-side error)
+
+### **Error Response Format**
+
+```typescript
+interface ErrorResponse {
+  success: false;
+  error: string; // Human-readable error message
+  code?: string; // Error code for programmatic handling
+  details?: any; // Additional error details
+}
+```
+
+### **Validation Error Format**
+
+```typescript
+interface ValidationErrorResponse {
+  success: false;
+  error: "Validation failed";
+  details: {
+    field: string; // Field name
+    message: string; // Validation error message
+  }[];
+}
+```
+
+---
+
+## 🚀 Performance & Caching
+
+### **Caching Strategy**
+
+| Endpoint           | Cache Duration | Cache Type    |
+| ------------------ | -------------- | ------------- |
+| `/api/beyblades/*` | 1 year         | Browser + CDN |
+| `/api/content`     | 1 hour         | Browser       |
+| `/api/cookies`     | 24 hours       | Browser       |
+| `/api/contact`     | No cache       | -             |
+| `/api/errors`      | No cache       | -             |
+
+### **Rate Limiting**
+
+- Contact form: 5 submissions per hour per IP
+- Error logging: 100 requests per minute per IP
+- Asset serving: No limits (cached)
+
+---
+
+## 🔧 Integration Examples
+
+### **Contact Form Integration**
+
+```typescript
+async function submitContactForm(formData: ContactRequest) {
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Show success message with reference number
+      alert(`Message sent! Reference: ${result.data.reference}`);
+    } else {
+      // Handle error
+      alert(result.error);
+    }
+  } catch (error) {
+    console.error("Contact form error:", error);
+  }
+}
+```
+
+### **Error Logging Integration**
+
+```typescript
+function logError(error: Error, context?: any) {
+  fetch("/api/errors", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      },
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      metadata: context,
+    }),
+  }).catch(console.error);
+}
+```
+
+### **Content Loading Integration**
+
+```typescript
+async function loadMarkdownContent(filePath: string) {
+  try {
+    const response = await fetch(
+      `/api/content?file=${encodeURIComponent(filePath)}`
+    );
+    const { content, metadata } = await response.json();
+    return { content, metadata };
+  } catch (error) {
+    console.error("Failed to load content:", error);
+    return null;
+  }
+}
+```
+
+---
+
+## 📝 Maintenance Guidelines
+
+### **When Adding New Endpoints:**
+
+1. Follow RESTful conventions
+2. Implement proper error handling
+3. Add TypeScript interfaces for request/response
+4. Update this documentation
+5. Add rate limiting if necessary
+6. Consider caching strategy
+
+### **Security Considerations:**
+
+- Always validate input data
+- Implement proper authentication/authorization
+- Use parameterized queries to prevent injection
+- Implement rate limiting for user-facing endpoints
+- Log security-related events
+
+### **Testing Requirements:**
+
+- Unit tests for business logic
+- Integration tests for database operations
+- API endpoint tests for request/response validation
+- Error handling tests for edge cases
+
+---
+
+_This documentation is automatically maintained and should be updated whenever API endpoints are added, modified, or removed._
