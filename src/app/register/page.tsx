@@ -31,31 +31,235 @@ export default function RegisterPage() {
   const [verificationId, setVerificationId] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  // Validation states
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phoneNumber: "",
+    terms: "",
+  });
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    phoneNumber: false,
+    terms: false,
+  });
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect");
   const { register } = useAuth();
 
+  // Validation functions
+  const validateName = (value: string): string => {
+    if (!value.trim()) return "Name is required";
+    if (value.trim().length < 2) return "Name must be at least 2 characters";
+    if (value.trim().length > 50) return "Name must be less than 50 characters";
+    if (!/^[a-zA-Z\s]+$/.test(value.trim()))
+      return "Name should only contain letters and spaces";
+    return "";
+  };
+
+  const validateEmail = (value: string): string => {
+    if (!value.trim()) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const validatePassword = (value: string): string => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    if (value.length > 128) return "Password must be less than 128 characters";
+    if (!/(?=.*[a-z])/.test(value))
+      return "Password must contain at least one lowercase letter";
+    if (!/(?=.*[A-Z])/.test(value))
+      return "Password must contain at least one uppercase letter";
+    if (!/(?=.*\d)/.test(value))
+      return "Password must contain at least one number";
+    return "";
+  };
+
+  const validateConfirmPassword = (
+    value: string,
+    originalPassword: string
+  ): string => {
+    if (!value) return "Please confirm your password";
+    if (value !== originalPassword) return "Passwords do not match";
+    return "";
+  };
+
+  const validatePhoneNumber = (value: string): string => {
+    if (!value.trim()) return "Phone number is required";
+    const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+    if (!phoneRegex.test(value.replace(/\s/g, "")))
+      return "Please enter a valid phone number";
+    return "";
+  };
+
+  const validateTerms = (value: boolean): string => {
+    if (!value) return "You must accept the terms and conditions";
+    return "";
+  };
+
+  // Real-time validation handlers
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (touched.name) {
+      setErrors((prev) => ({ ...prev, name: validateName(value) }));
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (touched.email) {
+      setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (touched.password) {
+      setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
+    }
+    if (touched.confirmPassword && confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: validateConfirmPassword(confirmPassword, value),
+      }));
+    }
+  };
+
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    if (touched.confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: validateConfirmPassword(value, password),
+      }));
+    }
+  };
+
+  const handlePhoneNumberChange = (value: string) => {
+    setPhoneNumber(value);
+    if (touched.phoneNumber) {
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: validatePhoneNumber(value),
+      }));
+    }
+  };
+
+  const handleTermsChange = (value: boolean) => {
+    setAcceptTerms(value);
+    if (touched.terms) {
+      setErrors((prev) => ({ ...prev, terms: validateTerms(value) }));
+    }
+  };
+
+  // Blur handlers to mark fields as touched
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    switch (field) {
+      case "name":
+        setErrors((prev) => ({ ...prev, name: validateName(name) }));
+        break;
+      case "email":
+        setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+        break;
+      case "password":
+        setErrors((prev) => ({
+          ...prev,
+          password: validatePassword(password),
+        }));
+        break;
+      case "confirmPassword":
+        setErrors((prev) => ({
+          ...prev,
+          confirmPassword: validateConfirmPassword(confirmPassword, password),
+        }));
+        break;
+      case "phoneNumber":
+        setErrors((prev) => ({
+          ...prev,
+          phoneNumber: validatePhoneNumber(phoneNumber),
+        }));
+        break;
+    }
+  };
+
+  // Form validation check
+  const isEmailFormValid = () => {
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(
+      confirmPassword,
+      password
+    );
+    const termsError = validateTerms(acceptTerms);
+
+    return (
+      !nameError &&
+      !emailError &&
+      !passwordError &&
+      !confirmPasswordError &&
+      !termsError
+    );
+  };
+
+  const isPhoneFormValid = () => {
+    const nameError = validateName(name);
+    const phoneError = validatePhoneNumber(phoneNumber);
+    const termsError = validateTerms(acceptTerms);
+
+    return !nameError && !phoneError && !termsError;
+  };
+
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !email || !password || !confirmPassword) {
-      toast.error("Please fill in all fields");
-      return;
-    }
+    // Validate all fields
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(
+      confirmPassword,
+      password
+    );
+    const termsError = validateTerms(acceptTerms);
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+    setErrors({
+      name: nameError,
+      email: emailError,
+      password: passwordError,
+      confirmPassword: confirmPasswordError,
+      phoneNumber: "",
+      terms: termsError,
+    });
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+      phoneNumber: false,
+      terms: true,
+    });
 
-    if (!acceptTerms) {
-      toast.error("You must accept the terms and conditions");
+    if (
+      nameError ||
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      termsError
+    ) {
+      toast.error("Please fix the errors before submitting");
       return;
     }
 
@@ -73,7 +277,12 @@ export default function RegisterPage() {
   };
 
   const handleGoogleRegister = async () => {
-    if (!acceptTerms) {
+    // Validate terms acceptance
+    const termsError = validateTerms(acceptTerms);
+
+    if (termsError) {
+      setErrors((prev) => ({ ...prev, terms: termsError }));
+      setTouched((prev) => ({ ...prev, terms: true }));
       toast.error("You must accept the terms and conditions");
       return;
     }
@@ -93,7 +302,6 @@ export default function RegisterPage() {
         email: user.email,
         phone: user.phoneNumber,
         role: "user",
-        isOver18: true,
       };
 
       const registerResponse = await fetch("/api/auth/register", {
@@ -125,13 +333,31 @@ export default function RegisterPage() {
   const handlePhoneRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !phoneNumber) {
-      toast.error("Please fill in all fields");
-      return;
-    }
+    // Validate all fields
+    const nameError = validateName(name);
+    const phoneError = validatePhoneNumber(phoneNumber);
+    const termsError = validateTerms(acceptTerms);
 
-    if (!acceptTerms) {
-      toast.error("You must accept the terms and conditions");
+    setErrors({
+      name: nameError,
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phoneNumber: phoneError,
+      terms: termsError,
+    });
+
+    setTouched({
+      name: true,
+      email: false,
+      password: false,
+      confirmPassword: false,
+      phoneNumber: true,
+      terms: true,
+    });
+
+    if (nameError || phoneError || termsError) {
+      toast.error("Please fix the errors before submitting");
       return;
     }
 
@@ -267,11 +493,19 @@ export default function RegisterPage() {
                   <input
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    onBlur={() => handleBlur("name")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.name && touched.name
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Enter your full name"
                     required
                   />
+                  {errors.name && touched.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -280,11 +514,19 @@ export default function RegisterPage() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={(e) => handleEmailChange(e.target.value)}
+                    onBlur={() => handleBlur("email")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.email && touched.email
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Enter your email"
                     required
                   />
+                  {errors.email && touched.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -294,8 +536,13 @@ export default function RegisterPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-10"
+                      onChange={(e) => handlePasswordChange(e.target.value)}
+                      onBlur={() => handleBlur("password")}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-10 ${
+                        errors.password && touched.password
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="Create a password"
                       required
                     />
@@ -311,6 +558,62 @@ export default function RegisterPage() {
                       )}
                     </button>
                   </div>
+                  {errors.password && touched.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.password}
+                    </p>
+                  )}
+                  {password && !errors.password && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center text-xs">
+                        <span
+                          className={`mr-2 ${
+                            password.length >= 6
+                              ? "text-green-600"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {password.length >= 6 ? "✓" : "○"} At least 6
+                          characters
+                        </span>
+                      </div>
+                      <div className="flex items-center text-xs">
+                        <span
+                          className={`mr-2 ${
+                            /(?=.*[a-z])/.test(password)
+                              ? "text-green-600"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {/(?=.*[a-z])/.test(password) ? "✓" : "○"} One
+                          lowercase letter
+                        </span>
+                      </div>
+                      <div className="flex items-center text-xs">
+                        <span
+                          className={`mr-2 ${
+                            /(?=.*[A-Z])/.test(password)
+                              ? "text-green-600"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {/(?=.*[A-Z])/.test(password) ? "✓" : "○"} One
+                          uppercase letter
+                        </span>
+                      </div>
+                      <div className="flex items-center text-xs">
+                        <span
+                          className={`mr-2 ${
+                            /(?=.*\d)/.test(password)
+                              ? "text-green-600"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {/(?=.*\d)/.test(password) ? "✓" : "○"} One number
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -319,11 +622,30 @@ export default function RegisterPage() {
                   <input
                     type={showPassword ? "text" : "password"}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={(e) =>
+                      handleConfirmPasswordChange(e.target.value)
+                    }
+                    onBlur={() => handleBlur("confirmPassword")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.confirmPassword && touched.confirmPassword
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Confirm your password"
                     required
                   />
+                  {errors.confirmPassword && touched.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
+                  {confirmPassword &&
+                    !errors.confirmPassword &&
+                    confirmPassword === password && (
+                      <p className="mt-1 text-sm text-green-600">
+                        ✓ Passwords match
+                      </p>
+                    )}
                 </div>
 
                 {/* Terms Agreement */}
@@ -332,8 +654,10 @@ export default function RegisterPage() {
                     type="checkbox"
                     id="terms-agreement"
                     checked={acceptTerms}
-                    onChange={(e) => setAcceptTerms(e.target.checked)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1"
+                    onChange={(e) => handleTermsChange(e.target.checked)}
+                    className={`h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1 ${
+                      errors.terms && touched.terms ? "border-red-500" : ""
+                    }`}
                   />
                   <label
                     htmlFor="terms-agreement"
@@ -357,10 +681,13 @@ export default function RegisterPage() {
                     </Link>
                   </label>
                 </div>
+                {errors.terms && touched.terms && (
+                  <p className="text-sm text-red-600">{errors.terms}</p>
+                )}
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !isEmailFormValid()}
                   className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? "Creating Account..." : "Create Account"}
@@ -378,11 +705,19 @@ export default function RegisterPage() {
                   <input
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    onBlur={() => handleBlur("name")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.name && touched.name
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Enter your full name"
                     required
                   />
+                  {errors.name && touched.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -391,11 +726,21 @@ export default function RegisterPage() {
                   <input
                     type="tel"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                    onBlur={() => handleBlur("phoneNumber")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.phoneNumber && touched.phoneNumber
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="+91 9876543210"
                     required
                   />
+                  {errors.phoneNumber && touched.phoneNumber && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.phoneNumber}
+                    </p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     Enter your phone number with country code
                   </p>
@@ -407,8 +752,10 @@ export default function RegisterPage() {
                     type="checkbox"
                     id="terms-agreement-phone"
                     checked={acceptTerms}
-                    onChange={(e) => setAcceptTerms(e.target.checked)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1"
+                    onChange={(e) => handleTermsChange(e.target.checked)}
+                    className={`h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1 ${
+                      errors.terms && touched.terms ? "border-red-500" : ""
+                    }`}
                   />
                   <label
                     htmlFor="terms-agreement-phone"
@@ -432,10 +779,13 @@ export default function RegisterPage() {
                     </Link>
                   </label>
                 </div>
+                {errors.terms && touched.terms && (
+                  <p className="text-sm text-red-600">{errors.terms}</p>
+                )}
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !isPhoneFormValid()}
                   className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? "Sending OTP..." : "Send OTP"}
@@ -462,8 +812,10 @@ export default function RegisterPage() {
                   type="checkbox"
                   id="terms-agreement-google"
                   checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1"
+                  onChange={(e) => handleTermsChange(e.target.checked)}
+                  className={`h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1 ${
+                    errors.terms && touched.terms ? "border-red-500" : ""
+                  }`}
                 />
                 <label
                   htmlFor="terms-agreement-google"
@@ -487,6 +839,9 @@ export default function RegisterPage() {
                   </Link>
                 </label>
               </div>
+              {errors.terms && touched.terms && (
+                <p className="text-sm text-red-600 mb-4">{errors.terms}</p>
+              )}
 
               <button
                 onClick={handleGoogleRegister}

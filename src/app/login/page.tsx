@@ -31,15 +31,113 @@ export default function LoginPage() {
   const [otp, setOtp] = useState("");
   const [verificationId, setVerificationId] = useState("");
 
+  // Validation states
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    phoneNumber: "",
+  });
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+    phoneNumber: false,
+  });
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect");
   const { login } = useAuth();
 
+  // Validation functions
+  const validateEmail = (value: string): string => {
+    if (!value.trim()) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const validatePassword = (value: string): string => {
+    if (!value) return "Password is required";
+    return "";
+  };
+
+  const validatePhoneNumber = (value: string): string => {
+    if (!value.trim()) return "Phone number is required";
+    const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+    if (!phoneRegex.test(value.replace(/\s/g, "")))
+      return "Please enter a valid phone number";
+    return "";
+  };
+
+  // Real-time validation handlers
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (touched.email) {
+      setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (touched.password) {
+      setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
+    }
+  };
+
+  const handlePhoneNumberChange = (value: string) => {
+    setPhoneNumber(value);
+    if (touched.phoneNumber) {
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: validatePhoneNumber(value),
+      }));
+    }
+  };
+
+  // Blur handlers
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    switch (field) {
+      case "email":
+        setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+        break;
+      case "password":
+        setErrors((prev) => ({
+          ...prev,
+          password: validatePassword(password),
+        }));
+        break;
+      case "phoneNumber":
+        setErrors((prev) => ({
+          ...prev,
+          phoneNumber: validatePhoneNumber(phoneNumber),
+        }));
+        break;
+    }
+  };
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please fill in all fields");
+
+    // Validate all fields
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    setErrors({
+      email: emailError,
+      password: passwordError,
+      phoneNumber: "",
+    });
+
+    setTouched({
+      email: true,
+      password: true,
+      phoneNumber: false,
+    });
+
+    if (emailError || passwordError) {
+      toast.error("Please fix the errors before submitting");
       return;
     }
 
@@ -108,8 +206,24 @@ export default function LoginPage() {
 
   const handlePhoneLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phoneNumber) {
-      toast.error("Please enter your phone number");
+
+    // Validate phone number
+    const phoneError = validatePhoneNumber(phoneNumber);
+
+    setErrors({
+      email: "",
+      password: "",
+      phoneNumber: phoneError,
+    });
+
+    setTouched({
+      email: false,
+      password: false,
+      phoneNumber: true,
+    });
+
+    if (phoneError) {
+      toast.error("Please fix the errors before submitting");
       return;
     }
 
@@ -245,11 +359,19 @@ export default function LoginPage() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => handleEmailChange(e.target.value)}
+                    onBlur={() => handleBlur("email")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.email && touched.email
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Enter your email"
                     required
                   />
+                  {errors.email && touched.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -259,8 +381,13 @@ export default function LoginPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                      onChange={(e) => handlePasswordChange(e.target.value)}
+                      onBlur={() => handleBlur("password")}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 ${
+                        errors.password && touched.password
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="Enter your password"
                       required
                     />
@@ -276,6 +403,11 @@ export default function LoginPage() {
                       )}
                     </button>
                   </div>
+                  {errors.password && touched.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
                 <button
                   type="submit"
@@ -297,11 +429,21 @@ export default function LoginPage() {
                   <input
                     type="tel"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                    onBlur={() => handleBlur("phoneNumber")}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.phoneNumber && touched.phoneNumber
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="+91 9876543210"
                     required
                   />
+                  {errors.phoneNumber && touched.phoneNumber && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.phoneNumber}
+                    </p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     Enter your phone number with country code
                   </p>
