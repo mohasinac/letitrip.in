@@ -61,7 +61,7 @@ function AdminCategoriesContent() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
 
   // Fetch categories
   const fetchCategories = useCallback(async () => {

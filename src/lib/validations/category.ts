@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { Category } from '@/types';
 
 /**
  * Category validation schemas
@@ -24,10 +25,10 @@ export const categoryFormSchema = z.object({
     .optional()
     .or(z.literal('')),
   
-  parentId: z
-    .string()
+  parentIds: z
+    .array(z.string())
     .optional()
-    .or(z.literal('')),
+    .default([]),
   
   isActive: z.boolean().default(true),
   
@@ -96,22 +97,39 @@ export function generateSlugFromName(name: string): string {
 
 export function validateCategoryHierarchy(
   categoryId: string,
-  newParentId: string | undefined,
-  existingHierarchy: Map<string, string[]>
+  newParentIds: string[] | undefined,
+  existingCategories: Map<string, Category>
 ): { valid: boolean; error?: string } {
-  if (!newParentId) {
+  if (!newParentIds || newParentIds.length === 0) {
     return { valid: true };
   }
 
   // Check if the category is trying to be its own parent
-  if (categoryId === newParentId) {
+  if (newParentIds.includes(categoryId)) {
     return { valid: false, error: 'A category cannot be its own parent' };
   }
 
-  // Check for circular references
-  const ancestors = existingHierarchy.get(newParentId) || [];
-  if (ancestors.includes(categoryId)) {
-    return { valid: false, error: 'This would create a circular reference in the category hierarchy' };
+  // Check for circular references by traversing all parent paths
+  const visited = new Set<string>();
+  const queue: string[] = [...newParentIds];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+    
+    if (currentId === categoryId) {
+      return { valid: false, error: 'This would create a circular reference in the category hierarchy' };
+    }
+
+    if (visited.has(currentId)) {
+      continue;
+    }
+
+    visited.add(currentId);
+    const currentCategory = existingCategories.get(currentId);
+    
+    if (currentCategory?.parentIds) {
+      queue.push(...currentCategory.parentIds);
+    }
   }
 
   return { valid: true };
@@ -122,18 +140,28 @@ export function validateCategoryHierarchy(
  * Prevents creating very deep hierarchies
  */
 export function validateCategoryDepth(
-  parentId: string | undefined,
-  existingHierarchy: Map<string, string[]>,
+  parentIds: string[] | undefined,
+  existingCategories: Map<string, Category>,
   maxDepth: number = 5
 ): { valid: boolean; error?: string } {
-  if (!parentId) {
+  if (!parentIds || parentIds.length === 0) {
     return { valid: true };
   }
 
-  const ancestors = existingHierarchy.get(parentId) || [];
-  const depth = ancestors.length + 1;
+  // Calculate the maximum depth from any parent
+  let maxParentDepth = 0;
+  
+  for (const parentId of parentIds) {
+    const parent = existingCategories.get(parentId);
+    if (parent) {
+      const parentDepth = parent.maxLevel || 0;
+      maxParentDepth = Math.max(maxParentDepth, parentDepth);
+    }
+  }
 
-  if (depth >= maxDepth) {
+  const newDepth = maxParentDepth + 1;
+
+  if (newDepth >= maxDepth) {
     return { valid: false, error: `Category hierarchy cannot exceed ${maxDepth} levels` };
   }
 

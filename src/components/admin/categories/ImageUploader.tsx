@@ -24,12 +24,16 @@ import {
   WarningAmber as WarningAmberIcon,
 } from "@mui/icons-material";
 import { apiClient } from "@/lib/api/client";
+import ImageCropper, { type ImageCropperRef } from "./ImageCropper";
 
 interface ImageUploaderProps {
   value: string | null | undefined;
   onChange: (url: string) => void;
   onError?: (error: string) => void;
   slug?: string | null | undefined;
+  targetWidth?: number;
+  targetHeight?: number;
+  onFileReady?: (file: File) => void; // Callback when file is ready to upload
 }
 
 interface TabPanelProps {
@@ -59,6 +63,9 @@ export default function ImageUploader({
   onChange,
   onError,
   slug,
+  targetWidth = 400,
+  targetHeight = 400,
+  onFileReady,
 }: ImageUploaderProps) {
   const [tabValue, setTabValue] = useState(0);
   const [urlInput, setUrlInput] = useState(value || "");
@@ -71,11 +78,25 @@ export default function ImageUploader({
   const [showPermissionDialog, setShowPermissionDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const cropperRef = useRef<ImageCropperRef>(null);
+  
+  // New state for local preview with cropper
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
 
   // Check camera permission on mount
   useEffect(() => {
     checkCameraPermission();
   }, []);
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const checkCameraPermission = async () => {
     try {
@@ -145,7 +166,7 @@ export default function ImageUploader({
     }
   };
 
-  // Handle file upload
+  // Handle file upload - Now creates preview instead of immediate upload
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
@@ -162,8 +183,55 @@ export default function ImageUploader({
       return;
     }
 
-    await uploadImageToFirebase(file);
+    // Create local preview URL
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setOriginalFile(file);
+    setError(null);
   };
+
+  // Method to get cropped image file for form submission
+  const getCroppedImageFile = async (): Promise<File | null> => {
+    if (!cropperRef.current || !originalFile) return null;
+    
+    try {
+      const croppedBlob = await cropperRef.current.getCroppedImage();
+      const fileName = originalFile.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg";
+      return new File([croppedBlob], fileName, { type: "image/jpeg" });
+    } catch (error) {
+      console.error("Failed to get cropped image:", error);
+      return null;
+    }
+  };
+
+  // Notify parent when file is ready (for form submission)
+  useEffect(() => {
+    if (previewUrl && originalFile && onFileReady) {
+      // When there's a preview, pass a callback to get the cropped file
+      const fileGetter = async () => {
+        return await getCroppedImageFile();
+      };
+      // Call parent callback with file getter function
+      onFileReady(fileGetter as any);
+    }
+  }, [previewUrl, originalFile, onFileReady]);
+
+  // Public method to upload the cropped image (can be called by parent)
+  const uploadCroppedImage = async (): Promise<string | null> => {
+    const croppedFile = await getCroppedImageFile();
+    if (croppedFile) {
+      await uploadImageToFirebase(croppedFile);
+      return value || null; // Return the uploaded URL
+    }
+    return null;
+  };
+
+  // Store uploadCroppedImage in a ref for parent access
+  React.useEffect(() => {
+    if (onFileReady && previewUrl) {
+      (window as any).__uploadCroppedImage = uploadCroppedImage;
+    }
+  }, [previewUrl, originalFile]);
 
   // Upload image to Firebase Storage via API
   const uploadImageToFirebase = async (file: File) => {
@@ -190,6 +258,14 @@ export default function ImageUploader({
       if (response.url) {
         onChange(response.url);
         setUploadProgress(100);
+        
+        // Clear preview after successful upload
+        if (previewUrl && previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(previewUrl);
+        }
+        setPreviewUrl(null);
+        setOriginalFile(null);
+        
         setTimeout(() => setUploadProgress(0), 1500);
       } else {
         handleError("Failed to get image URL from server");
@@ -441,8 +517,23 @@ export default function ImageUploader({
             </DialogActions>
           </Dialog>
 
-          {/* Current Image Display */}
-          {value && (
+          {/* Image Preview/Cropper */}
+          {previewUrl && (
+            <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
+              <ImageCropper
+                ref={cropperRef}
+                imageUrl={previewUrl}
+                targetWidth={targetWidth}
+                targetHeight={targetHeight}
+              />
+              <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: "block", textAlign: "center" }}>
+                Adjust the image above. It will be uploaded when you save the form.
+              </Typography>
+            </Box>
+          )}
+
+          {/* Current Saved Image Display */}
+          {value && !previewUrl && (
             <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
               <Typography
                 variant="caption"

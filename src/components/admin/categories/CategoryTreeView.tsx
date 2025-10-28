@@ -81,6 +81,19 @@ function CategoryNode({
             ) : (
               <Box sx={{ width: 32 }} />
             )}
+            {category.image && (
+              <Box
+                component="img"
+                src={category.image}
+                alt={category.name}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 1,
+                  objectFit: "cover",
+                }}
+              />
+            )}
             <Typography variant="body2" fontWeight={500}>
               {category.name}
             </Typography>

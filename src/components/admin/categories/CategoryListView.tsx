@@ -62,7 +62,9 @@ export default function CategoryListView({
   const sortedCategories = useMemo(
     () =>
       [...filteredCategories].sort((a, b) => {
-        if (a.level !== b.level) return a.level - b.level;
+        const aMinLevel = a.minLevel !== undefined ? a.minLevel : 0;
+        const bMinLevel = b.minLevel !== undefined ? b.minLevel : 0;
+        if (aMinLevel !== bMinLevel) return aMinLevel - bMinLevel;
         return a.sortOrder - b.sortOrder;
       }),
     [filteredCategories]
@@ -77,9 +79,23 @@ export default function CategoryListView({
     [sortedCategories, page, rowsPerPage]
   );
 
-  const getParentName = (parentId: string | undefined): string => {
-    if (!parentId) return "—";
-    return categoryMap.get(parentId)?.name || "Unknown";
+  const getParentInfo = (
+    category: Category
+  ): { names: string[]; slugs: string[] } => {
+    if (!category.parentIds || category.parentIds.length === 0) {
+      return { names: ["—"], slugs: [] };
+    }
+
+    const names = category.parentIds
+      .map((pid) => categoryMap.get(pid)?.name)
+      .filter(Boolean) as string[];
+
+    const slugs = category.parentSlugs || [];
+
+    return {
+      names: names.length > 0 ? names : ["Unknown"],
+      slugs,
+    };
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -214,15 +230,44 @@ export default function CategoryListView({
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2">
-                    {getParentName(category.parentId)}
-                  </Typography>
+                  <Box>
+                    {getParentInfo(category).names.map((name, idx) => (
+                      <Box
+                        key={idx}
+                        sx={{
+                          mb:
+                            idx < getParentInfo(category).names.length - 1
+                              ? 0.5
+                              : 0,
+                        }}
+                      >
+                        <Typography variant="body2">{name}</Typography>
+                        {getParentInfo(category).slugs[idx] && (
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontFamily: "monospace",
+                              color: "text.secondary",
+                              fontSize: "0.75rem",
+                            }}
+                          >
+                            {getParentInfo(category).slugs[idx]}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
                 </TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={category.level}
+                    label={`${category.minLevel || 0}-${
+                      category.maxLevel || 0
+                    }`}
                     size="small"
                     variant="outlined"
+                    title={`Min Level: ${category.minLevel || 0}, Max Level: ${
+                      category.maxLevel || 0
+                    }`}
                   />
                 </TableCell>
                 <TableCell align="center">

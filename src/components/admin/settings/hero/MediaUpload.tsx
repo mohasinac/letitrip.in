@@ -37,6 +37,20 @@ export default function MediaUpload({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  
+  // New state for local preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [previewType, setPreviewType] = useState<'image' | 'video' | null>(null);
+
+  // Cleanup preview URL on unmount
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleFileUpload = async (file: File) => {
     setError(null);
@@ -54,12 +68,26 @@ export default function MediaUpload({
       return;
     }
 
+    // Create local preview URL
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setPendingFile(file);
+    
+    // Determine media type
+    const isVideo = fileType.includes(".mp4") || fileType.includes(".webm");
+    setPreviewType(isVideo ? 'video' : 'image');
+  };
+
+  // Save/Upload the pending file
+  const handleSaveMedia = async () => {
+    if (!pendingFile || !previewType) return;
+
     setLoading(true);
 
     try {
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", pendingFile);
 
       // Upload to your API
       const response = await fetch("/api/upload", {
@@ -75,17 +103,36 @@ export default function MediaUpload({
       const data = await response.json();
       const fileUrl = data.url;
 
-      // Determine if it's image or video
-      if (fileType.includes(".mp4") || fileType.includes(".webm")) {
+      // Call appropriate callback
+      if (previewType === 'video') {
         onVideoSelected?.(fileUrl);
       } else {
         onImageSelected(fileUrl);
       }
+
+      // Clear preview after successful upload
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPreviewUrl(null);
+      setPendingFile(null);
+      setPreviewType(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Cancel the pending upload
+  const handleCancelPreview = () => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    setPendingFile(null);
+    setPreviewType(null);
+    setError(null);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,8 +218,70 @@ export default function MediaUpload({
         </Box>
       )}
 
+      {/* Preview (Not Saved Yet) */}
+      {previewUrl && previewType && (
+        <Box>
+          <Typography variant="subtitle2" sx={{ mb: 1 }} color="primary.main">
+            Preview (Not Saved Yet)
+          </Typography>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              borderRadius: 1,
+              border: "3px solid",
+              borderColor: "primary.main",
+              overflow: "hidden",
+              boxShadow: 3,
+            }}
+          >
+            {previewType === 'image' ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: 200,
+                  backgroundImage: `url(${previewUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+            ) : (
+              <video
+                src={previewUrl}
+                style={{
+                  width: "100%",
+                  height: 200,
+                  objectFit: "cover",
+                }}
+                controls
+              />
+            )}
+          </Box>
+          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveMedia}
+              disabled={loading}
+              fullWidth
+            >
+              {loading ? "Saving..." : `Save ${previewType === 'image' ? 'Image' : 'Video'}`}
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCancelPreview}
+              disabled={loading}
+              fullWidth
+            >
+              Cancel
+            </Button>
+          </Stack>
+        </Box>
+      )}
+
       {/* Current Image Preview */}
-      {currentImage && (
+      {currentImage && !previewUrl && (
         <Box>
           <Typography variant="subtitle2" sx={{ mb: 1 }}>
             Current Image
@@ -212,7 +321,7 @@ export default function MediaUpload({
       )}
 
       {/* Current Video Preview */}
-      {currentVideo && (
+      {currentVideo && !previewUrl && (
         <Box>
           <Typography variant="subtitle2" sx={{ mb: 1 }}>
             Current Video

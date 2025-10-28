@@ -8,6 +8,7 @@ import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { ApiResponse } from '@/types';
 import { auth } from '@/lib/database/config';
 import { getAuthToken, clearAuthToken, setAuthToken } from './auth-fetch';
+import { apiCache, CACHE_KEYS } from './cache';
 
 export interface ApiClientConfig {
   baseURL?: string;
@@ -111,19 +112,35 @@ class ApiClient {
   }
 
   /**
-   * Generic GET request
+   * Generic GET request with caching support
    */
   async get<T = any>(
     url: string,
     params?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig & { skipCache?: boolean }
   ): Promise<T> {
     try {
+      // Generate cache key based on URL and params
+      const cacheKey = `${url}?${JSON.stringify(params || {})}`;
+      
+      // Check cache first (unless skipCache is true)
+      if (!config?.skipCache && apiCache.has(cacheKey)) {
+        console.debug(`Cache HIT for ${url}`);
+        return apiCache.get<T>(cacheKey)!;
+      }
+      
+      console.debug(`Cache MISS for ${url}`);
       const response = await this.client.get<ApiResponse<T>>(url, {
         params,
         ...config,
       });
-      return response.data.data as T;
+      
+      const data = response.data.data as T;
+      
+      // Cache the response (with appropriate TTL based on endpoint)
+      apiCache.set(cacheKey, data);
+      
+      return data;
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -131,7 +148,7 @@ class ApiClient {
   }
 
   /**
-   * Generic POST request
+   * Generic POST request with cache invalidation
    */
   async post<T = any>(
     url: string,
@@ -140,6 +157,10 @@ class ApiClient {
   ): Promise<T> {
     try {
       const response = await this.client.post<ApiResponse<T>>(url, data, config);
+      
+      // Invalidate related caches after successful POST
+      this.invalidateCacheForUrl(url);
+      
       return response.data.data as T;
     } catch (error) {
       this.handleError(error);
@@ -165,7 +186,7 @@ class ApiClient {
   }
 
   /**
-   * Generic PATCH request
+   * Generic PATCH request with cache invalidation
    */
   async patch<T = any>(
     url: string,
@@ -174,6 +195,10 @@ class ApiClient {
   ): Promise<T> {
     try {
       const response = await this.client.patch<ApiResponse<T>>(url, data, config);
+      
+      // Invalidate related caches after successful PATCH
+      this.invalidateCacheForUrl(url);
+      
       return response.data.data as T;
     } catch (error) {
       this.handleError(error);
@@ -182,7 +207,7 @@ class ApiClient {
   }
 
   /**
-   * Generic DELETE request
+   * Generic DELETE request with cache invalidation
    */
   async delete<T = any>(
     url: string,
@@ -190,6 +215,10 @@ class ApiClient {
   ): Promise<T> {
     try {
       const response = await this.client.delete<ApiResponse<T>>(url, config);
+      
+      // Invalidate related caches after successful DELETE
+      this.invalidateCacheForUrl(url);
+      
       return response.data.data as T;
     } catch (error) {
       this.handleError(error);
@@ -258,6 +287,28 @@ class ApiClient {
     } catch (error) {
       this.handleError(error);
       throw error;
+    }
+  }
+
+  /**
+   * Invalidate cache entries based on URL pattern
+   * Clears caches for related endpoints after mutations
+   */
+  private invalidateCacheForUrl(url: string): void {
+    // For category endpoints, clear all category-related caches
+    if (url.includes('/admin/categories') || url.includes('/api/categories')) {
+      console.debug('Invalidating category caches after mutation');
+      apiCache.invalidatePattern(/categories/);
+    }
+    // For beyblade endpoints
+    else if (url.includes('/beyblades')) {
+      console.debug('Invalidating beyblade caches after mutation');
+      apiCache.invalidatePattern(/beyblades/);
+    }
+    // For other endpoints, invalidate based on the specific URL pattern
+    else {
+      console.debug(`Invalidating cache for ${url}`);
+      apiCache.invalidatePattern(new RegExp(url.replace(/\//g, '\\/')));
     }
   }
 

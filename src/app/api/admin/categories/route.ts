@@ -13,6 +13,56 @@ import type { Category, CategoryFormData, ApiResponse } from "@/types";
 const CATEGORIES_COLLECTION = "categories";
 
 /**
+ * Helper function to calculate all paths from root to a category
+ */
+function calculateCategoryPaths(
+  parentIds: string[],
+  categoryMap: Map<string, Category>
+): { paths: string[][]; minLevel: number; maxLevel: number } {
+  if (parentIds.length === 0) {
+    return { paths: [[]], minLevel: 0, maxLevel: 0 };
+  }
+
+  const allPaths: string[][] = [];
+
+  function traversePaths(currentId: string, currentPath: string[]): string[][] {
+    const paths: string[][] = [];
+    const category = categoryMap.get(currentId);
+    
+    if (!category) {
+      return [[...currentPath, currentId]];
+    }
+
+    const newPath = [...currentPath, currentId];
+
+    if (!category.parentIds || category.parentIds.length === 0) {
+      // Reached root
+      return [newPath];
+    }
+
+    // Traverse all parents
+    for (const parentId of category.parentIds) {
+      const parentPaths = traversePaths(parentId, newPath);
+      paths.push(...parentPaths);
+    }
+
+    return paths;
+  }
+
+  // Get all paths from each direct parent
+  for (const parentId of parentIds) {
+    const paths = traversePaths(parentId, []);
+    allPaths.push(...paths.map(p => p.reverse()));
+  }
+
+  const levels = allPaths.map(p => p.length);
+  const minLevel = Math.min(...levels);
+  const maxLevel = Math.max(...levels);
+
+  return { paths: allPaths, minLevel, maxLevel };
+}
+
+/**
  * GET /api/admin/categories
  * Fetch all categories with optional tree structure
  * Public endpoint - no authentication required
@@ -102,16 +152,16 @@ export async function POST(request: NextRequest) {
       ...doc.data(),
     } as Category));
 
-    const categoryHierarchy = new Map<string, string[]>();
+    const categoryMap = new Map<string, Category>();
     allCats.forEach((cat) => {
-      categoryHierarchy.set(cat.id, cat.parentIds || []);
+      categoryMap.set(cat.id, cat);
     });
 
     // Validate hierarchy
     const hierarchyValid = validateCategoryHierarchy(
       "",
-      formData.parentId,
-      categoryHierarchy
+      formData.parentIds,
+      categoryMap
     );
     if (!hierarchyValid.valid) {
       return NextResponse.json(
@@ -122,8 +172,8 @@ export async function POST(request: NextRequest) {
 
     // Validate depth
     const depthValid = validateCategoryDepth(
-      formData.parentId,
-      categoryHierarchy
+      formData.parentIds,
+      categoryMap
     );
     if (!depthValid.valid) {
       return NextResponse.json(
@@ -144,9 +194,15 @@ export async function POST(request: NextRequest) {
     // Create new category
     const categoryId = `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    const ancestors = formData.parentId 
-      ? [...(categoryHierarchy.get(formData.parentId) || []), formData.parentId]
-      : [];
+    const parentIds = formData.parentIds || [];
+    
+    // Get parent slugs if parents exist
+    const parentSlugs = parentIds
+      .map(pid => categoryMap.get(pid)?.slug)
+      .filter(Boolean) as string[];
+
+    // Calculate all paths and levels
+    const { paths, minLevel, maxLevel } = calculateCategoryPaths(parentIds, categoryMap);
 
     const newCategory: Category = {
       id: categoryId,
@@ -155,9 +211,11 @@ export async function POST(request: NextRequest) {
       description: formData.description,
       image: formData.image,
       icon: formData.icon,
-      parentId: formData.parentId,
-      parentIds: ancestors,
-      level: ancestors.length,
+      ...(parentIds.length > 0 && { parentIds }),
+      ...(parentSlugs.length > 0 && { parentSlugs }),
+      paths,
+      minLevel,
+      maxLevel,
       isActive: formData.isActive,
       featured: formData.featured,
       sortOrder: formData.sortOrder,
@@ -176,11 +234,13 @@ export async function POST(request: NextRequest) {
     // Save to Firestore
     await db.collection(CATEGORIES_COLLECTION).doc(categoryId).set(newCategory);
 
-    // Update parent's isLeaf status if it has a parent
-    if (formData.parentId) {
-      const parent = allCats.find((c) => c.id === formData.parentId);
+    // Update all parents' childIds
+    for (const parentId of parentIds) {
+      const parent = categoryMap.get(parentId);
       if (parent) {
-        await db.collection(CATEGORIES_COLLECTION).doc(formData.parentId).update({
+        const updatedChildIds = [...(parent.childIds || []), categoryId];
+        await db.collection(CATEGORIES_COLLECTION).doc(parentId).update({
+          childIds: updatedChildIds,
           isLeaf: false,
           updatedAt: new Date().toISOString(),
           updatedBy: user.uid,
@@ -263,17 +323,17 @@ export async function PATCH(request: NextRequest) {
       ...doc.data(),
     } as Category));
 
-    const categoryHierarchy = new Map<string, string[]>();
+    const categoryMap = new Map<string, Category>();
     allCats.forEach((cat) => {
-      categoryHierarchy.set(cat.id, cat.parentIds || []);
+      categoryMap.set(cat.id, cat);
     });
 
-    // Validate hierarchy if parent is being changed
-    if (formData.parentId !== undefined) {
+    // Validate hierarchy if parents are being changed
+    if (formData.parentIds !== undefined) {
       const hierarchyValid = validateCategoryHierarchy(
         categoryId,
-        formData.parentId,
-        categoryHierarchy
+        formData.parentIds,
+        categoryMap
       );
       if (!hierarchyValid.valid) {
         return NextResponse.json(
@@ -283,8 +343,8 @@ export async function PATCH(request: NextRequest) {
       }
 
       const depthValid = validateCategoryDepth(
-        formData.parentId,
-        categoryHierarchy
+        formData.parentIds,
+        categoryMap
       );
       if (!depthValid.valid) {
         return NextResponse.json(
@@ -316,12 +376,62 @@ export async function PATCH(request: NextRequest) {
       updatedBy: user.uid,
     };
 
-    if (formData.parentId !== undefined) {
-      const ancestors = formData.parentId
-        ? [...(categoryHierarchy.get(formData.parentId) || []), formData.parentId]
-        : [];
-      updatedCategory.parentIds = ancestors;
-      updatedCategory.level = ancestors.length;
+    // Handle parent changes
+    if (formData.parentIds !== undefined) {
+      const newParentIds = formData.parentIds || [];
+      const oldParentIds = category.parentIds || [];
+      
+      // Get parent slugs
+      const parentSlugs = newParentIds
+        .map(pid => categoryMap.get(pid)?.slug)
+        .filter(Boolean) as string[];
+      
+      // Calculate paths and levels
+      const { paths, minLevel, maxLevel } = calculateCategoryPaths(newParentIds, categoryMap);
+      
+      if (newParentIds.length > 0) {
+        updatedCategory.parentIds = newParentIds;
+        updatedCategory.parentSlugs = parentSlugs;
+      } else {
+        delete updatedCategory.parentIds;
+        delete updatedCategory.parentSlugs;
+      }
+      
+      updatedCategory.paths = paths;
+      updatedCategory.minLevel = minLevel;
+      updatedCategory.maxLevel = maxLevel;
+      
+      // Update old parents - remove this category from their childIds
+      for (const oldParentId of oldParentIds) {
+        if (!newParentIds.includes(oldParentId)) {
+          const oldParent = categoryMap.get(oldParentId);
+          if (oldParent) {
+            const updatedChildIds = (oldParent.childIds || []).filter(id => id !== categoryId);
+            await db.collection(CATEGORIES_COLLECTION).doc(oldParentId).update({
+              childIds: updatedChildIds,
+              isLeaf: updatedChildIds.length === 0,
+              updatedAt: new Date().toISOString(),
+              updatedBy: user.uid,
+            });
+          }
+        }
+      }
+      
+      // Update new parents - add this category to their childIds
+      for (const newParentId of newParentIds) {
+        if (!oldParentIds.includes(newParentId)) {
+          const newParent = categoryMap.get(newParentId);
+          if (newParent) {
+            const updatedChildIds = [...(newParent.childIds || []), categoryId];
+            await db.collection(CATEGORIES_COLLECTION).doc(newParentId).update({
+              childIds: updatedChildIds,
+              isLeaf: false,
+              updatedAt: new Date().toISOString(),
+              updatedBy: user.uid,
+            });
+          }
+        }
+      }
     }
 
     await db.collection(CATEGORIES_COLLECTION).doc(categoryId).set(updatedCategory);
@@ -383,7 +493,7 @@ export async function DELETE(request: NextRequest) {
     } as Category));
 
     // Check if category has children
-    const hasChildren = allCats.some((cat) => cat.parentId === categoryId);
+    const hasChildren = allCats.some((cat) => cat.parentIds?.includes(categoryId));
     if (hasChildren) {
       return NextResponse.json(
         {
@@ -408,16 +518,16 @@ export async function DELETE(request: NextRequest) {
     // Delete the category
     await db.collection(CATEGORIES_COLLECTION).doc(categoryId).delete();
 
-    // Update parent's isLeaf status if it now has no children
-    if (category.parentId) {
-      const siblings = allCats.filter(
-        (cat) => cat.parentId === category.parentId && cat.id !== categoryId
-      );
-      if (siblings.length === 0) {
-        const parent = allCats.find((c) => c.id === category.parentId);
-        if (parent) {
-          await db.collection(CATEGORIES_COLLECTION).doc(category.parentId).update({
-            isLeaf: true,
+    // Update all parents' childIds
+    if (category.parentIds && category.parentIds.length > 0) {
+      for (const parentId of category.parentIds) {
+        const parentDoc = await db.collection(CATEGORIES_COLLECTION).doc(parentId).get();
+        if (parentDoc.exists) {
+          const parent = parentDoc.data() as Category;
+          const updatedChildIds = (parent.childIds || []).filter(id => id !== categoryId);
+          await db.collection(CATEGORIES_COLLECTION).doc(parentId).update({
+            childIds: updatedChildIds,
+            isLeaf: updatedChildIds.length === 0,
             updatedAt: new Date().toISOString(),
             updatedBy: user.uid,
           });
@@ -440,6 +550,7 @@ export async function DELETE(request: NextRequest) {
 
 /**
  * Helper function to build category tree
+ * With many-to-many relationships, a category may appear in multiple places
  */
 function buildCategoryTree(categories: Category[]): (Category & { children?: any[] })[] {
   const categoryMap = new Map<string, Category & { children: (Category & { children?: any[] })[] }>();
@@ -451,12 +562,16 @@ function buildCategoryTree(categories: Category[]): (Category & { children?: any
   const roots: (Category & { children?: any[] })[] = [];
 
   for (const category of categoryMap.values()) {
-    if (category.parentId && categoryMap.has(category.parentId)) {
-      const parent = categoryMap.get(category.parentId);
-      if (parent) {
-        parent.children.push(category);
+    if (category.parentIds && category.parentIds.length > 0) {
+      // Add to all parents
+      for (const parentId of category.parentIds) {
+        const parent = categoryMap.get(parentId);
+        if (parent) {
+          parent.children.push(category);
+        }
       }
     } else {
+      // Root category
       roots.push(category);
     }
   }

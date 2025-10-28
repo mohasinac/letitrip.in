@@ -27,7 +27,7 @@ export function getAdminApp(): App {
       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
       privateKey: privateKey,
     }),
-    storageBucket: `${process.env.FIREBASE_ADMIN_PROJECT_ID}.appspot.com`,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'justforview1.firebasestorage.app',
   });
 
   return adminApp;

@@ -3,13 +3,9 @@ import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
 import { getAdminStorage, getAdminDb } from "@/lib/database/admin";
 import { v4 as uuidv4 } from "uuid";
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
-};
+// Next.js 13+ route configuration
+export const runtime = 'nodejs';
+export const maxDuration = 60; // Max execution time in seconds
 
 export async function POST(request: NextRequest) {
   try {
