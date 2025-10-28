@@ -1,13 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 export default function NotFound() {
+  const { mode } = useModernTheme();
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className={`min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 ${
+      mode === 'dark' 
+        ? 'bg-gray-900' 
+        : 'bg-gray-50'
+    }`}>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
+          <div className={`mx-auto h-24 w-24 mb-4 ${
+            mode === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          }`}>
             <svg
               fill="none"
               stroke="currentColor"
@@ -22,11 +30,17 @@ export default function NotFound() {
               />
             </svg>
           </div>
-          <h1 className="text-6xl font-bold text-gray-900 mb-2">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          <h1 className={`text-6xl font-bold mb-2 ${
+            mode === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>404</h1>
+          <h2 className={`text-2xl font-semibold mb-4 ${
+            mode === 'dark' ? 'text-gray-200' : 'text-gray-700'
+          }`}>
             Page Not Found
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className={`text-lg mb-8 ${
+            mode === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          }`}>
             Sorry, we couldn't find the page you're looking for. It might have
             been moved, deleted, or you entered the wrong URL.
           </p>
@@ -34,18 +48,26 @@ export default function NotFound() {
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className={`py-8 px-4 shadow sm:rounded-lg sm:px-10 ${
+          mode === 'dark' 
+            ? 'bg-gray-800 border border-gray-700' 
+            : 'bg-white'
+        }`}>
           <div className="space-y-4">
             <Link
               href="/"
-              className="w-full block text-center bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition-colors"
+              className="w-full block text-center bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors"
             >
               Go Home
             </Link>
 
             <button
               onClick={() => window.history.back()}
-              className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-md font-medium transition-colors"
+              className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
+                mode === 'dark'
+                  ? 'border border-gray-600 hover:bg-gray-700 text-gray-200'
+                  : 'border border-gray-300 hover:bg-gray-50 text-gray-700'
+              }`}
             >
               Go Back
             </button>
@@ -53,7 +75,7 @@ export default function NotFound() {
             <div className="text-center pt-4">
               <Link
                 href="/contact"
-                className="text-blue-600 hover:text-blue-700 text-sm transition-colors"
+                className="text-green-600 hover:text-green-700 text-sm transition-colors"
               >
                 Need help? Contact Support
               </Link>
@@ -64,13 +86,23 @@ export default function NotFound() {
 
       {/* Helpful suggestions */}
       <div className="sm:mx-auto sm:w-full sm:max-w-2xl mt-12">
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-4">
+        <div className={`border rounded-md p-6 ${
+          mode === 'dark'
+            ? 'bg-green-900 border-green-700'
+            : 'bg-green-50 border-green-200'
+        }`}>
+          <h3 className={`text-lg font-medium mb-4 ${
+            mode === 'dark' ? 'text-green-100' : 'text-green-900'
+          }`}>
             What you can do:
           </h3>
-          <ul className="space-y-2 text-blue-800">
+          <ul className={`space-y-2 ${
+            mode === 'dark' ? 'text-green-200' : 'text-green-800'
+          }`}>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5">
+              <span className={`flex-shrink-0 h-5 w-5 mt-0.5 ${
+                mode === 'dark' ? 'text-green-400' : 'text-green-500'
+              }`}>
                 <svg fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
@@ -82,7 +114,9 @@ export default function NotFound() {
               <span className="ml-2">Check the URL for typos</span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5">
+              <span className={`flex-shrink-0 h-5 w-5 mt-0.5 ${
+                mode === 'dark' ? 'text-green-400' : 'text-green-500'
+              }`}>
                 <svg fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
@@ -94,7 +128,9 @@ export default function NotFound() {
               <span className="ml-2">Visit our homepage to explore</span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5">
+              <span className={`flex-shrink-0 h-5 w-5 mt-0.5 ${
+                mode === 'dark' ? 'text-green-400' : 'text-green-500'
+              }`}>
                 <svg fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
