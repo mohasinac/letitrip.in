@@ -94,7 +94,9 @@ function CategoryNode({
         {/* Products */}
         <TableCell align="center">
           <Tooltip
-            title={`${category.inStockCount || 0} in stock, ${category.outOfStockCount || 0} out of stock`}
+            title={`${category.inStockCount || 0} in stock, ${
+              category.outOfStockCount || 0
+            } out of stock`}
           >
             <Badge
               badgeContent={category.productCount || 0}
@@ -185,11 +187,7 @@ interface TableRowProps {
 }
 
 function TableRow({ children, sx }: TableRowProps) {
-  return (
-    <tr style={sx}>
-      {children}
-    </tr>
-  );
+  return <tr style={sx}>{children}</tr>;
 }
 
 export default function CategoryTreeView({
@@ -215,7 +213,9 @@ export default function CategoryTreeView({
               borderBottom: "1px solid #e0e0e0",
             }}
           >
-            <th style={{ padding: "12px 16px", textAlign: "left", width: "40%" }}>
+            <th
+              style={{ padding: "12px 16px", textAlign: "left", width: "40%" }}
+            >
               <Typography variant="subtitle2" fontWeight={600}>
                 Category Name
               </Typography>

@@ -22,6 +22,7 @@ import {
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import { fetchWithAuth } from "@/lib/api/auth-fetch";
 import type { Category } from "@/types";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
 import CategoryTreeView from "@/components/admin/categories/CategoryTreeView";
@@ -55,7 +56,9 @@ function AdminCategoriesContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
   const [tabValue, setTabValue] = useState(0);
 
   // Fetch categories
@@ -63,7 +66,7 @@ function AdminCategoriesContent() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/admin/categories?format=list`);
+      const response = await fetchWithAuth(`/api/admin/categories?format=list`);
       const data = await response.json();
 
       if (data.success) {
@@ -101,7 +104,7 @@ function AdminCategoriesContent() {
         ? `/api/admin/categories?id=${selectedCategory.id}`
         : `/api/admin/categories`;
 
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -134,7 +137,7 @@ function AdminCategoriesContent() {
 
     try {
       setError(null);
-      const response = await fetch(`/api/admin/categories?id=${categoryId}`, {
+      const response = await fetchWithAuth(`/api/admin/categories?id=${categoryId}`, {
         method: "DELETE",
       });
 
@@ -188,7 +191,11 @@ function AdminCategoriesContent() {
           </Alert>
         )}
         {success && (
-          <Alert severity="success" onClose={() => setSuccess(null)} sx={{ mb: 2 }}>
+          <Alert
+            severity="success"
+            onClose={() => setSuccess(null)}
+            sx={{ mb: 2 }}
+          >
             {success}
           </Alert>
         )}

@@ -51,9 +51,10 @@ export default function CategoryListView({
 
   const filteredCategories = useMemo(
     () =>
-      categories.filter((cat) =>
-        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
+      categories.filter(
+        (cat) =>
+          cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
       ),
     [categories, searchTerm]
   );
@@ -69,7 +70,10 @@ export default function CategoryListView({
 
   const paginatedCategories = useMemo(
     () =>
-      sortedCategories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+      sortedCategories.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
     [sortedCategories, page, rowsPerPage]
   );
 
@@ -206,7 +210,9 @@ export default function CategoryListView({
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip
-                    title={`${category.inStockCount || 0} in stock, ${category.outOfStockCount || 0} out of stock`}
+                    title={`${category.inStockCount || 0} in stock, ${
+                      category.outOfStockCount || 0
+                    } out of stock`}
                   >
                     <Badge
                       badgeContent={category.productCount || 0}
@@ -218,7 +224,9 @@ export default function CategoryListView({
                   </Tooltip>
                 </TableCell>
                 <TableCell align="center">
-                  <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+                  <Box
+                    sx={{ display: "flex", gap: 1, justifyContent: "center" }}
+                  >
                     {category.featured && (
                       <Chip
                         label="Featured"
@@ -245,7 +253,13 @@ export default function CategoryListView({
                   </Box>
                 </TableCell>
                 <TableCell align="right">
-                  <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 0.5,
+                      justifyContent: "flex-end",
+                    }}
+                  >
                     <Tooltip title="Edit">
                       <IconButton
                         size="small"

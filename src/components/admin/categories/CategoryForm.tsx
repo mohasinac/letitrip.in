@@ -314,8 +314,7 @@ export default function CategoryForm({
                     size="small"
                     error={!!errors.sortOrder}
                     helperText={
-                      errors.sortOrder?.message ||
-                      "Lower numbers appear first"
+                      errors.sortOrder?.message || "Lower numbers appear first"
                     }
                     inputProps={{ min: 0 }}
                   />
