@@ -202,7 +202,55 @@ const components = {
 
 ## 🛠️ Usage Patterns
 
-### **1. Client Components with Theme Context**
+### **1. Interactive Components with Dynamic Theming**
+
+```tsx
+"use client";
+import { useState, useEffect } from "react";
+import { useCookie } from "@/hooks/useCookie";
+
+function InteractiveHeroBanner() {
+  const [currentGeneration, setCurrentGeneration] = useState(0);
+  const [generationPref, setGenerationPref] = useCookie("hero-generation", "0");
+
+  // Dynamic theme based on current generation
+  const currentGen = beybladeGenerations[currentGeneration];
+
+  // Component automatically adapts colors and styling
+  return (
+    <Box
+      sx={{
+        background: currentGen.theme.gradient,
+        backgroundImage: `url(${currentGen.backgroundImage})`,
+        transition: "all 0.8s ease-in-out",
+      }}
+    >
+      {/* Sale Banner with fixed styling */}
+      <Box sx={{ backgroundColor: "#ff4444", color: "#fff" }}>
+        🔥 Check out our items on sale - <a href="#">Shop Now</a>
+      </Box>
+
+      {/* Dynamic content that changes with generation */}
+      <Container>
+        <Typography sx={{ color: currentGen.theme.textPrimary }}>
+          {currentGen.description}
+        </Typography>
+
+        {/* Product cards with generation-specific styling */}
+        {currentGen.products.map((product) => (
+          <Card key={product.id}>
+            <Typography sx={{ color: currentGen.theme.primary }}>
+              {product.name}
+            </Typography>
+          </Card>
+        ))}
+      </Container>
+    </Box>
+  );
+}
+```
+
+### **2. Client Components with Theme Context**
 
 ```tsx
 "use client";
@@ -219,7 +267,7 @@ function ThemeToggleButton() {
 }
 ```
 
-### **2. Client Components with Theme Styles**
+### **3. Client Components with Theme Styles**
 
 ```tsx
 "use client";
@@ -243,7 +291,7 @@ function StyledCard() {
 }
 ```
 
-### **3. Server Components with Theme Wrappers**
+### **4. Server Components with Theme Wrappers**
 
 ```tsx
 import {
@@ -262,7 +310,32 @@ function ServerPage() {
 }
 ```
 
-### **4. Custom CSS with Theme Variables**
+### **5. Cookie-Based State Persistence**
+
+```tsx
+"use client";
+import { useCookie } from "@/hooks/useCookie";
+
+function PersistentComponent() {
+  const [autoPlayPref, setAutoPlayPref] = useCookie("hero-autoplay", "true");
+  const [generationPref, setGenerationPref] = useCookie("hero-generation", "0");
+
+  // State automatically persists across sessions
+  const toggleAutoPlay = () => {
+    setAutoPlayPref(autoPlayPref === "true" ? "false" : "true");
+  };
+
+  return (
+    <div>
+      <button onClick={toggleAutoPlay}>
+        Auto-play: {autoPlayPref === "true" ? "On" : "Off"}
+      </button>
+    </div>
+  );
+}
+```
+
+### **6. Custom CSS with Theme Variables**
 
 ```css
 .custom-component {
@@ -276,11 +349,81 @@ function ServerPage() {
   background-color: var(--color-surface-variant);
   box-shadow: 0 4px 12px rgba(0, 149, 246, 0.15);
 }
+
+/* Interactive Hero Banner specific styles */
+.hero-banner {
+  background: var(--hero-gradient);
+  transition: background 0.8s ease-in-out;
+}
+
+.generation-card {
+  background: var(--card-background);
+  border: 1px solid var(--generation-border);
+  color: var(--generation-primary);
+}
 ```
 
 ---
 
 ## 🎯 Theme-Aware Components
+
+### **InteractiveHeroBanner Component**
+
+```tsx
+<InteractiveHeroBanner />
+```
+
+**Features:**
+
+- **Dynamic Generation Theming** - Each Beyblade generation has unique color schemes
+- **Auto-rotation with Theme Persistence** - Cookie-based preference storage
+- **Sale Banner Integration** - Eye-catching promotional banner with theme awareness
+- **Media Controls Bar** - Theme-aware controls with generation selector
+- **Product Card Grid** - Clean, minimal styling that adapts to each generation's theme
+
+**Generation Themes:**
+
+```typescript
+// Bakuten Shoot Beyblade (Classic Plastic Generation)
+{
+  primary: "#4A90E2",
+  secondary: "#7BB3F0",
+  accent: "#2E5BBA",
+  gradient: "linear-gradient(135deg, #4A90E2 0%, #7BB3F0 100%)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#E3F2FD",
+}
+
+// Metal Fight Beyblade
+{
+  primary: "#757575",
+  secondary: "#BDBDBD",
+  accent: "#424242",
+  gradient: "linear-gradient(135deg, #757575 0%, #BDBDBD 100%)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#F5F5F5",
+}
+
+// Beyblade Burst
+{
+  primary: "#FF6B35",
+  secondary: "#FF8A65",
+  accent: "#E64A19",
+  gradient: "linear-gradient(135deg, #FF6B35 0%, #FF8A65 100%)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#FFF3E0",
+}
+
+// Beyblade X (Next-Gen X Series)
+{
+  primary: "#9C27B0",
+  secondary: "#BA68C8",
+  accent: "#7B1FA2",
+  gradient: "linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#F3E5F5",
+}
+```
 
 ### **HeroSection Component**
 
