@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
-import { serverTimestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
 const verifyOTPSchema = z.object({
@@ -43,8 +42,8 @@ export async function POST(request: NextRequest) {
       // User exists, update phone verification status
       await adminDb.collection('users').doc(userRecord.uid).update({
         isPhoneVerified: true,
-        lastLogin: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        lastLogin: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
 
       // Get updated user data
@@ -79,6 +78,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Create user document
+      const now = new Date().toISOString();
       const userData = {
         id: newUser.uid,
         name: phoneNumber.replace(/^\+\d+/, ''), // Use phone as temporary name
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
         isEmailVerified: false,
         isPhoneVerified: true,
         addresses: [],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
+        createdAt: now,
+        updatedAt: now,
+        lastLogin: now,
         profile: {
           avatar: null,
           bio: null,

@@ -22,6 +22,8 @@ import {
   Email,
   Schedule,
 } from "@mui/icons-material";
+import { apiClient } from "@/lib/api/client";
+import toast from "react-hot-toast";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -50,23 +52,14 @@ export default function ContactPage() {
 
     try {
       // Submit to contact API
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      await apiClient.post("/contact", formData);
 
-      if (response.ok) {
-        setSent(true);
-        setFormData({ name: "", email: "", subject: "", message: "" });
-      } else {
-        alert("Failed to send message. Please try again.");
-      }
-    } catch (error) {
+      setSent(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      toast.success("Message sent successfully!");
+    } catch (error: any) {
       console.error("Contact form error:", error);
-      alert("Failed to send message. Please try again.");
+      toast.error(error.message || "Failed to send message. Please try again.");
     }
 
     setLoading(false);

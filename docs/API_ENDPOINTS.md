@@ -357,6 +357,225 @@ interface ErrorResponse {
 
 ---
 
+### 🏷️ Category Management API
+
+**Endpoint:** `/api/admin/categories`
+
+#### **GET** - Retrieve Categories
+
+**Purpose:** Fetch categories with optional tree or list format
+
+**Query Parameters:**
+
+```typescript
+interface CategoriesQuery {
+  format?: "tree" | "list"; // Default: "list"
+  page?: number; // Default: 1 (for list format)
+  limit?: number; // Default: 10 (for list format)
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+// Tree format response
+interface CategoryTreeResponse {
+  success: true;
+  data: CategoryNode[];
+}
+
+interface CategoryNode {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  active: boolean;
+  featured: boolean;
+  productCount: {
+    inStock: number;
+    outOfStock: number;
+  };
+  children?: CategoryNode[];
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+    keywords: string[];
+    metaImage?: string;
+  };
+}
+
+// List format response
+interface CategoryListResponse {
+  success: true;
+  data: {
+    categories: Category[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      hasMore: boolean;
+    };
+  };
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  parentId?: string;
+  level: number;
+  active: boolean;
+  featured: boolean;
+  productCount: number;
+  createdAt: string;
+  updatedAt: string;
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+    keywords: string[];
+    metaImage?: string;
+    altText?: string;
+  };
+}
+```
+
+**Error Responses:**
+
+- `403` - Admin access required
+- `500` - Server error
+
+#### **POST** - Create Category
+
+**Purpose:** Create a new product category
+
+**Request Body:**
+
+```typescript
+interface CreateCategoryRequest {
+  name: string; // Required - Max 100 chars
+  slug?: string; // Optional - Auto-generated from name
+  description?: string; // Optional - Max 500 chars
+  image?: string; // Optional - Image URL
+  parentId?: string; // Optional - Parent category ID
+  active?: boolean; // Default: true
+  featured?: boolean; // Default: false
+  seo: {
+    metaTitle: string; // Required - Max 60 chars
+    metaDescription: string; // Required - Max 160 chars
+    keywords: string[]; // Optional - Array of keywords
+    metaImage?: string; // Optional - SEO image URL
+    altText?: string; // Optional - Max 125 chars
+  };
+}
+```
+
+**Response (201 Created):**
+
+```typescript
+interface CreateCategoryResponse {
+  success: true;
+  data: Category;
+}
+```
+
+**Error Responses:**
+
+- `400` - Validation failed (duplicate slug, invalid parent, etc.)
+- `403` - Admin access required
+- `500` - Server error
+
+**Validations:**
+
+- Name must be unique at same level
+- Slug must be unique globally
+- Max nesting depth: 5 levels
+- No circular references (parent cannot be a descendant)
+
+#### **PATCH** - Update Category
+
+**Purpose:** Update existing category
+
+**Request Body:**
+
+```typescript
+interface UpdateCategoryRequest {
+  name?: string; // Optional - Max 100 chars
+  slug?: string; // Optional - Max 100 chars
+  description?: string; // Optional - Max 500 chars
+  image?: string; // Optional - Image URL
+  parentId?: string | null; // Optional - Move to new parent
+  active?: boolean;
+  featured?: boolean;
+  seo?: {
+    metaTitle?: string; // Max 60 chars
+    metaDescription?: string; // Max 160 chars
+    keywords?: string[];
+    metaImage?: string;
+    altText?: string; // Max 125 chars
+  };
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface UpdateCategoryResponse {
+  success: true;
+  data: Category;
+}
+```
+
+**Error Responses:**
+
+- `400` - Validation failed
+- `403` - Admin access required
+- `404` - Category not found
+- `500` - Server error
+
+**Validations:**
+
+- Cannot move to circular parent
+- Cannot exceed max depth if moving
+- Slug must remain unique
+
+#### **DELETE** - Delete Category
+
+**Purpose:** Delete a category
+
+**Query Parameters:**
+
+```typescript
+interface DeleteCategoryQuery {
+  id: string; // Required - Category ID
+}
+```
+
+**Response (200 OK):**
+
+```typescript
+interface DeleteCategoryResponse {
+  success: true;
+  message: "Category deleted successfully";
+}
+```
+
+**Error Responses:**
+
+- `403` - Admin access required
+- `404` - Category not found
+- `409` - Cannot delete category with products/children
+- `500` - Server error
+
+**Validations:**
+
+- Category must have no child categories
+- Category must have no associated products
+
+---
+
 ## 🔒 Authentication & Authorization
 
 ### **JWT Token Structure**

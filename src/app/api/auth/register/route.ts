@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/database/config';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 import { z } from 'zod';
@@ -8,8 +8,8 @@ import { z } from 'zod';
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email format'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  phone: z.string().optional(),
+  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+  phone: z.string().nullable().optional(),
   role: z.enum(['admin', 'seller', 'user']).default('user'),
 });
 
@@ -39,14 +39,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user with Firebase Admin
-    const userRecord = await adminAuth.createUser({
+    const createUserParams: any = {
       email,
-      password,
       displayName: name,
       phoneNumber: phone || undefined,
-    });
+    };
+
+    // Only add password if provided (for email/password signup)
+    // For social logins, password is not required
+    if (password) {
+      createUserParams.password = password;
+    }
+
+    const userRecord = await adminAuth.createUser(createUserParams);
 
     // Create user document in Firestore
+    const now = new Date().toISOString();
     const userData = {
       id: userRecord.uid,
       name,
@@ -56,8 +64,8 @@ export async function POST(request: NextRequest) {
       isEmailVerified: false,
       isPhoneVerified: false,
       addresses: [],
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: now,
+      updatedAt: now,
       lastLogin: null,
       profile: {
         avatar: null,

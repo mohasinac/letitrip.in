@@ -10,6 +10,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/database/config";
+import { apiClient } from "@/lib/api/client";
 import {
   StorageManager,
   CookieConsentSettings,
@@ -124,6 +125,44 @@ const generateSessionId = (): string => {
 };
 
 // Helper function to validate redirect paths for security
+// Helper function to get the last visited non-auth page
+const getLastVisitedPage = (): string | null => {
+  try {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("lastVisitedPage");
+    }
+  } catch (error) {
+    console.debug("Error getting last visited page:", error);
+  }
+  return null;
+};
+
+// Helper function to save current page if it's not an auth page
+const saveLastVisitedPageIfValid = (): void => {
+  try {
+    if (typeof window !== "undefined") {
+      const currentPath = window.location.pathname;
+      // Save only if it's not an auth page
+      if (isValidRedirectPath(currentPath)) {
+        localStorage.setItem("lastVisitedPage", currentPath);
+      }
+    }
+  } catch (error) {
+    console.debug("Error saving last visited page:", error);
+  }
+};
+
+// Helper function to clear the saved page
+const clearLastVisitedPage = (): void => {
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("lastVisitedPage");
+    }
+  } catch (error) {
+    console.debug("Error clearing last visited page:", error);
+  }
+};
+
 const isValidRedirectPath = (path: string): boolean => {
   try {
     // Must be relative path (no external redirects)
@@ -204,6 +243,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     checkCookieConsent();
+
+    // Track last visited non-auth page
+    saveLastVisitedPageIfValid();
+  }, []);
+
+  // Track page changes to save last visited non-auth page
+  useEffect(() => {
+    const handleRouteChange = () => {
+      saveLastVisitedPageIfValid();
+    };
+
+    // Save on initial mount
+    saveLastVisitedPageIfValid();
+
+    // Note: Next.js router doesn't have a direct route change event like traditional routers
+    // We'll rely on the component tracking from the pages themselves
+    // But we save the page whenever the component updates
+    handleRouteChange();
   }, []);
 
   // Handle cookie consent given
@@ -251,15 +308,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
       const firebaseUser = userCredential.user;
 
-      // Save redirect path from URL params or last visited page
+      // Save redirect path from URL params or last visited non-auth page
       if (typeof window !== "undefined") {
         const redirectParam = new URLSearchParams(window.location.search).get(
           "redirect"
         );
 
-        // Priority: URL param > last visited page from cookies
-        const redirectPath =
-          redirectParam || cookieStorage.getLastVisitedPage();
+        // Priority: URL param > last visited non-auth page > default
+        const redirectPath = redirectParam || getLastVisitedPage();
 
         if (redirectPath && isValidRedirectPath(redirectPath)) {
           setStorageItem("auth_redirect_after_login", redirectPath);
@@ -289,18 +345,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name, email, password, role }),
+      const data = await apiClient.post("/auth/register", {
+        name,
+        email,
+        password,
+        role,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.message || "Registration failed");
-      }
 
       // Handle both response formats
       const userData = data.data?.user || data.user;
@@ -326,13 +376,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (typeof window !== "undefined") {
         // Try multiple sources for redirect path
+        // Priority: stored redirect > URL param > last visited non-auth page
         intendedPath =
           getStorageItem("auth_redirect_after_login") ||
-          new URLSearchParams(window.location.search).get("redirect");
+          new URLSearchParams(window.location.search).get("redirect") ||
+          getLastVisitedPage();
       }
 
       // Clear stored redirect paths
       removeStorageItem("auth_redirect_after_login");
+      clearLastVisitedPage();
 
       // Determine final redirect path
       let redirectPath = "/";
@@ -427,18 +480,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(updates),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Profile update failed");
-      }
+      const data = await apiClient.put("/user/profile", updates);
 
       // Update the user state with the new data
       if (state.user && data.success && data.data) {
@@ -458,6 +500,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isInitialLoad = true;
 
+    // Helper function to retry getting user data with backoff
+    const getUserDataWithRetry = async (
+      firebaseUser: any,
+      maxAttempts: number = 5
+    ): Promise<any | null> => {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const userData = await apiClient.get("/auth/me", {
+            timeout: 30000,
+          });
+
+          if (userData && typeof userData === "object") {
+            return userData;
+          }
+        } catch (error: any) {
+          console.log(
+            `Attempt ${attempt}/${maxAttempts} to fetch user data failed:`,
+            error.response?.status,
+            error.response?.data?.error
+          );
+
+          // If it's a 401 and not the last attempt, retry with backoff
+          if (error.response?.status === 401 && attempt < maxAttempts) {
+            // Exponential backoff: 500ms, 1s, 2s, 4s, 8s
+            const delay = 500 * Math.pow(2, attempt - 1);
+            console.log(`Retrying in ${delay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            continue;
+          }
+
+          // If it's the last attempt or a different error, throw
+          throw error;
+        }
+      }
+      return null;
+    };
+
     // Set up Firebase authentication state listener
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -465,17 +544,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Get Firebase ID token
           const token = await firebaseUser.getIdToken();
 
-          // Get user data from API with role information
-          const response = await fetch("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            cache: "no-store",
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            const userData = result.data || result;
+          // Get user data from API with retry logic for 401 errors
+          try {
+            const userData = await getUserDataWithRetry(firebaseUser, 5);
 
             if (userData && typeof userData === "object") {
               // Enhance user data with Firebase methods and claims
@@ -500,11 +571,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
               // Handle redirect after authentication (only after login, not on initial load)
               if (!isInitialLoad && typeof window !== "undefined") {
-                const redirectPath = getStorageItem(
-                  "auth_redirect_after_login"
-                );
+                // Priority: stored redirect > last visited non-auth page > default
+                const redirectPath =
+                  getStorageItem("auth_redirect_after_login") ||
+                  getLastVisitedPage();
+
                 if (redirectPath && isValidRedirectPath(redirectPath)) {
                   removeStorageItem("auth_redirect_after_login");
+                  clearLastVisitedPage();
                   router.push(redirectPath);
                 } else {
                   // Role-based redirect
@@ -515,6 +589,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     window.location.pathname === "/login" ||
                     window.location.pathname === "/register"
                   ) {
+                    clearLastVisitedPage();
                     router.push(defaultPath);
                   }
                 }
@@ -523,12 +598,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               console.warn("No user data from API, logging out");
               dispatch({ type: "SET_USER", payload: null });
             }
-          } else {
-            console.warn(
-              "Failed to fetch user data from API:",
-              response.status
+          } catch (apiError: any) {
+            // If API fails after all retries, use Firebase fallback
+            console.log(
+              "API error fetching user data after retries, using Firebase fallback:",
+              apiError.response?.status
             );
-            // If API fails but Firebase is authenticated, create basic user object
+
             const basicUser = {
               id: firebaseUser.uid,
               uid: firebaseUser.uid,
@@ -536,7 +612,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               displayName: firebaseUser.displayName,
               name:
                 firebaseUser.displayName || firebaseUser.email?.split("@")[0],
-              role: "user" as const, // Default role
+              role: "user" as const,
               getIdToken: () => firebaseUser.getIdToken(),
               claims: {
                 permissions: getRolePermissions("user"),
@@ -544,12 +620,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 sessionId: generateSessionId(),
               },
             };
-            console.log("Using basic Firebase user data");
+            console.log("Using basic Firebase user data as fallback");
             dispatch({ type: "SET_USER", payload: basicUser });
+
+            // Handle redirect even with fallback user
+            if (!isInitialLoad && typeof window !== "undefined") {
+              // Priority: stored redirect > last visited non-auth page > default
+              const redirectPath =
+                getStorageItem("auth_redirect_after_login") ||
+                getLastVisitedPage();
+
+              if (redirectPath && isValidRedirectPath(redirectPath)) {
+                removeStorageItem("auth_redirect_after_login");
+                clearLastVisitedPage();
+                router.push(redirectPath);
+              } else if (
+                window.location.pathname === "/login" ||
+                window.location.pathname === "/register"
+              ) {
+                clearLastVisitedPage();
+                router.push("/");
+              }
+            }
           }
         } catch (error) {
           console.error("Error processing Firebase auth state:", error);
-          dispatch({ type: "SET_USER", payload: null });
+          // If anything fails, create basic user object
+          const basicUser = {
+            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            name: firebaseUser.displayName || firebaseUser.email?.split("@")[0],
+            role: "user" as const,
+            getIdToken: () => firebaseUser.getIdToken(),
+            claims: {
+              permissions: getRolePermissions("user"),
+              lastLogin: new Date().toISOString(),
+              sessionId: generateSessionId(),
+            },
+          };
+          console.log("Using basic Firebase user data as fallback");
+          dispatch({ type: "SET_USER", payload: basicUser });
         }
       } else {
         // No Firebase user - check for test user

@@ -11,6 +11,7 @@ import {
   signInWithCustomToken,
 } from "firebase/auth";
 import { auth } from "@/lib/database/config";
+import { apiClient } from "@/lib/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Phone, Mail, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -164,33 +165,30 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user exists in our database
+      // Get Firebase ID token
       const token = await user.getIdToken();
-      const response = await fetch("/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (!response.ok) {
-        // User doesn't exist, create account
-        const userData = {
-          name: user.displayName || user.email?.split("@")[0] || "User",
-          email: user.email,
-          phone: user.phoneNumber,
-          role: "user",
-          isOver18: true,
-        };
+      // For Google login, we need to register/link the user
+      const userData = {
+        name: user.displayName || user.email?.split("@")[0] || "User",
+        email: user.email,
+        phone: user.phoneNumber || null,
+        role: "user",
+        isOver18: true,
+      };
 
-        const registerResponse = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-
-        if (!registerResponse.ok) {
-          const errorData = await registerResponse.json();
-          throw new Error(errorData.error || "Failed to create account");
+      try {
+        // Try to register/create user account
+        await apiClient.post("/auth/register", userData);
+      } catch (err: any) {
+        // If user already exists, that's fine - they'll be logged in via Firebase
+        if (
+          err.response?.status === 400 &&
+          err.response?.data?.error?.includes("already exists")
+        ) {
+          console.log("User already exists, proceeding with login");
+        } else {
+          throw err;
         }
       }
 
@@ -235,20 +233,10 @@ export default function LoginPage() {
         : `+91${phoneNumber}`;
 
       // Send OTP request to our API
-      const response = await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber: formattedPhone,
-          recaptchaToken: "dummy_token", // In production, use real recaptcha
-        }),
+      const data = await apiClient.post("/auth/send-otp", {
+        phoneNumber: formattedPhone,
+        recaptchaToken: "dummy_token", // In production, use real recaptcha
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send OTP");
-      }
 
       setVerificationId(data.data.verificationId);
       setStep("otp");
@@ -274,21 +262,11 @@ export default function LoginPage() {
         ? phoneNumber
         : `+91${phoneNumber}`;
 
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          verificationId,
-          otp,
-          phoneNumber: formattedPhone,
-        }),
+      const data = await apiClient.post("/auth/verify-otp", {
+        verificationId,
+        otp,
+        phoneNumber: formattedPhone,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Invalid OTP");
-      }
 
       // Sign in with custom token
       if (data.data.customToken) {

@@ -47,6 +47,19 @@
 | `/not-found`    | `src/app/not-found.tsx`    | 404 page                 | Special | Custom 404 design, navigation links    |
 | `/global-error` | `src/app/global-error.tsx` | Global error fallback    | Special | Critical error handling                |
 
+#### **Admin Routes**
+
+| Route               | File Path                           | Description                | Type   | Features                                    |
+| ------------------- | ----------------------------------- | -------------------------- | ------ | ------------------------------------------- |
+| `/admin`            | `src/app/admin/page.tsx`            | Admin dashboard            | Static | RoleGuard (admin only), analytics overview  |
+| `/admin/categories` | `src/app/admin/categories/page.tsx` | Category management        | Static | RoleGuard, CRUD operations, tree/list views |
+| `/admin/products`   | `src/app/admin/products/page.tsx`   | Product management         | Static | RoleGuard, product listing                  |
+| `/admin/orders`     | `src/app/admin/orders/page.tsx`     | Order management           | Static | RoleGuard, order tracking                   |
+| `/admin/analytics`  | `src/app/admin/analytics/page.tsx`  | Analytics dashboard        | Static | RoleGuard, charts and metrics               |
+| `/admin/settings`   | `src/app/admin/settings/page.tsx`   | Admin settings             | Static | RoleGuard, configuration options            |
+| `/admin/support`    | `src/app/admin/support/page.tsx`    | Support/Contact management | Static | RoleGuard, contact messages                 |
+| `/admin/users`      | `src/app/admin/users/page.tsx`      | User management            | Static | RoleGuard, user administration              |
+
 #### **Layout**
 
 | File                 | Description                     | Features                               |
@@ -103,6 +116,15 @@
 | `ClientLinkButton`     | `src/components/shared/ClientLinkButton.tsx`     | Client-side navigation button | Interactive | Next.js router             |
 | `ErrorBoundary`        | `src/components/shared/ErrorBoundary.tsx`        | Error boundary wrapper        | Guard       | React error boundary       |
 | `CookieConsent`        | `src/components/shared/CookieConsent.tsx`        | Cookie management component   | Interactive | localStorage               |
+
+### 🏢 Admin Components
+
+| Component          | File Path                                              | Purpose                       | Type         | Dependencies               |
+| ------------------ | ------------------------------------------------------ | ----------------------------- | ------------ | -------------------------- |
+| `CategoryForm`     | `src/components/admin/categories/CategoryForm.tsx`     | Category create/edit form     | Interactive  | React Hook Form, Zod, MUI  |
+| `CategoryTreeView` | `src/components/admin/categories/CategoryTreeView.tsx` | Hierarchical category display | Interactive  | MUI Tree, expand/collapse  |
+| `CategoryListView` | `src/components/admin/categories/CategoryListView.tsx` | Searchable paginated table    | Interactive  | MUI Table, search, filters |
+| `AdminSidebar`     | `src/components/layout/AdminSidebar.tsx`               | Admin navigation sidebar      | Presentation | MUI Sidebar, navigation    |
 
 ---
 

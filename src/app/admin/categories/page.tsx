@@ -22,7 +22,7 @@ import {
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
-import { fetchWithAuth } from "@/lib/api/auth-fetch";
+import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
 import CategoryTreeView from "@/components/admin/categories/CategoryTreeView";
@@ -66,16 +66,12 @@ function AdminCategoriesContent() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetchWithAuth(`/api/admin/categories?format=list`);
-      const data = await response.json();
-
-      if (data.success) {
-        setCategories(data.data);
-      } else {
-        setError(data.error || "Failed to fetch categories");
-      }
-    } catch (err) {
-      setError("Failed to fetch categories");
+      const data = await apiClient.get<Category[]>(
+        "/admin/categories?format=list"
+      );
+      setCategories(data);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to fetch categories");
       console.error(err);
     } finally {
       setLoading(false);
@@ -101,31 +97,23 @@ function AdminCategoriesContent() {
       setError(null);
       const method = selectedCategory ? "PATCH" : "POST";
       const url = selectedCategory
-        ? `/api/admin/categories?id=${selectedCategory.id}`
-        : `/api/admin/categories`;
+        ? `/admin/categories?id=${selectedCategory.id}`
+        : `/admin/categories`;
 
-      const response = await fetchWithAuth(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const data = await (method === "PATCH"
+        ? apiClient.patch<Category>(url, formData)
+        : apiClient.post<Category>(url, formData));
 
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess(
-          selectedCategory
-            ? "Category updated successfully"
-            : "Category created successfully"
-        );
-        handleCloseDialog();
-        fetchCategories();
-        setTimeout(() => setSuccess(null), 3000);
-      } else {
-        setError(data.error || "Failed to save category");
-      }
-    } catch (err) {
-      setError("Failed to save category");
+      setSuccess(
+        selectedCategory
+          ? "Category updated successfully"
+          : "Category created successfully"
+      );
+      handleCloseDialog();
+      fetchCategories();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to save category");
       console.error(err);
     }
   };
@@ -137,21 +125,13 @@ function AdminCategoriesContent() {
 
     try {
       setError(null);
-      const response = await fetchWithAuth(`/api/admin/categories?id=${categoryId}`, {
-        method: "DELETE",
-      });
+      await apiClient.delete(`/admin/categories?id=${categoryId}`);
 
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess("Category deleted successfully");
-        fetchCategories();
-        setTimeout(() => setSuccess(null), 3000);
-      } else {
-        setError(data.error || "Failed to delete category");
-      }
-    } catch (err) {
-      setError("Failed to delete category");
+      setSuccess("Category deleted successfully");
+      fetchCategories();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to delete category");
       console.error(err);
     }
   };
