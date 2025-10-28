@@ -24,6 +24,7 @@ import {
   Support,
   ChevronLeft,
   ChevronRight,
+  Category,
 } from "@mui/icons-material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -44,6 +45,11 @@ const adminMenuItems = [
     label: "Products",
     icon: ShoppingCart,
     href: "/admin/products",
+  },
+  {
+    label: "Categories",
+    icon: Category,
+    href: "/admin/categories",
   },
   {
     label: "Orders",
