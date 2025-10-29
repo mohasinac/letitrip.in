@@ -13,10 +13,15 @@ import {
 
 interface UseGameStateOptions {
   onGameEnd?: (winner: GameBeyblade | null) => void;
+  gameMode?: "1p" | "2p";
+  multiplayerData?: {
+    playerNumber: number;
+    roomId: string;
+  };
 }
 
 export const useGameState = (options: UseGameStateOptions = {}) => {
-  const { onGameEnd } = options;
+  const { onGameEnd, gameMode = "1p", multiplayerData } = options;
   
   const gameLoopRef = useRef<number>();
   const lastTimeRef = useRef<number>(0);
@@ -43,6 +48,22 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     selectChargePoint2: false,
     selectChargePoint3: false,
   });
+
+  // Multiplayer state
+  const opponentInputRef = useRef<Vector2D>({ x: 0, y: 0 });
+  const opponentSpecialActionsRef = useRef<{
+    dodgeRight: boolean;
+    dodgeLeft: boolean;
+    heavyAttack: boolean;
+    ultimateAttack: boolean;
+  }>({
+    dodgeRight: false,
+    dodgeLeft: false,
+    heavyAttack: false,
+    ultimateAttack: false,
+  });
+  const isMultiplayer = gameMode === "2p";
+  const playerNumber = multiplayerData?.playerNumber || 1;
 
   const [gameState, setGameState] = useState<GameState>(() => {
     return createInitialGameState();
@@ -449,8 +470,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update AI movement and special actions
-      if (aiBey && playerBey && !aiBey.isDead && !aiBey.isOutOfBounds && !aiBey.isInBlueLoop && !aiBey.isChargeDashing) {
+      // Update AI movement and special actions (ONLY in single-player mode)
+      if (!isMultiplayer && aiBey && playerBey && !aiBey.isDead && !aiBey.isOutOfBounds && !aiBey.isInBlueLoop && !aiBey.isChargeDashing) {
         const targetDirection = vectorSubtract(playerBey.position, aiBey.position);
         const targetDistance = vectorLength(targetDirection);
 
@@ -555,6 +576,95 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
             aiBey.velocity.x += ((targetVelocity.x - aiBey.velocity.x) * acceleration * deltaTime) / 100;
             aiBey.velocity.y += ((targetVelocity.y - aiBey.velocity.y) * acceleration * deltaTime) / 100;
+          }
+        }
+      }
+
+      // Update opponent movement in multiplayer mode
+      if (isMultiplayer && aiBey && !aiBey.isDead && !aiBey.isOutOfBounds && 
+          !aiBey.isInBlueLoop && !aiBey.isChargeDashing && 
+          !aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
+        // Apply opponent's input direction
+        const direction = opponentInputRef.current;
+        
+        if (direction.x !== 0 || direction.y !== 0) {
+          const maxSpeed = 250;
+          const acceleration = 500;
+          const targetVelocity = {
+            x: direction.x * maxSpeed,
+            y: direction.y * maxSpeed,
+          };
+
+          aiBey.velocity.x += ((targetVelocity.x - aiBey.velocity.x) * acceleration * deltaTime) / 100;
+          aiBey.velocity.y += ((targetVelocity.y - aiBey.velocity.y) * acceleration * deltaTime) / 100;
+        } else {
+          const deceleration = 0.90;
+          aiBey.velocity = {
+            x: aiBey.velocity.x * deceleration,
+            y: aiBey.velocity.y * deceleration,
+          };
+        }
+
+        // Process opponent special actions
+        if (aiBey && playerBey) {
+          const directionToPlayer = vectorSubtract(playerBey.position, aiBey.position);
+          const distanceToPlayer = vectorLength(directionToPlayer);
+          const normalizedDirection = distanceToPlayer > 0 ? {
+            x: directionToPlayer.x / distanceToPlayer,
+            y: directionToPlayer.y / distanceToPlayer,
+          } : { x: 0, y: 0 };
+
+          // Dodge right
+          if (opponentSpecialActionsRef.current.dodgeRight) {
+            const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
+            if (canDodge && aiBey.spin >= 20) {
+              aiBey.spin = Math.max(0, aiBey.spin - 20);
+              const dodgeSpeed = 400;
+              aiBey.velocity.x += dodgeSpeed;
+              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
+              aiBey.isDodging = true;
+              aiBey.lastDodgeTime = Date.now();
+            }
+            opponentSpecialActionsRef.current.dodgeRight = false;
+          }
+
+          // Dodge left
+          if (opponentSpecialActionsRef.current.dodgeLeft) {
+            const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
+            if (canDodge && aiBey.spin >= 20) {
+              aiBey.spin = Math.max(0, aiBey.spin - 20);
+              const dodgeSpeed = 400;
+              aiBey.velocity.x -= dodgeSpeed;
+              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
+              aiBey.isDodging = true;
+              aiBey.lastDodgeTime = Date.now();
+            }
+            opponentSpecialActionsRef.current.dodgeLeft = false;
+          }
+
+          // Heavy attack
+          if (opponentSpecialActionsRef.current.heavyAttack) {
+            aiBey.heavyAttackActive = true;
+            aiBey.attackStartPosition = { ...aiBey.position };
+            aiBey.attackTargetDistance = 20;
+            const attackSpeed = 350;
+            aiBey.velocity.x = normalizedDirection.x * attackSpeed;
+            aiBey.velocity.y = normalizedDirection.y * attackSpeed;
+            opponentSpecialActionsRef.current.heavyAttack = false;
+          }
+
+          // Ultimate attack
+          if (opponentSpecialActionsRef.current.ultimateAttack) {
+            if (aiBey.spin >= 100) {
+              aiBey.spin = Math.max(0, aiBey.spin - 100);
+              aiBey.ultimateAttackActive = true;
+              aiBey.attackStartPosition = { ...aiBey.position };
+              aiBey.attackTargetDistance = 40;
+              const ultimateAttackSpeed = 500;
+              aiBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
+              aiBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
+            }
+            opponentSpecialActionsRef.current.ultimateAttack = false;
           }
         }
       }
@@ -699,6 +809,52 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     }, 1000); // 1 second per countdown number
   }, [selectedBeyblade, selectedAIBeyblade]);
 
+  // Functions to receive opponent input in multiplayer
+  const setOpponentInput = useCallback((input: Vector2D) => {
+    opponentInputRef.current = input;
+  }, []);
+
+  const setOpponentSpecialAction = useCallback((action: {
+    dodgeRight?: boolean;
+    dodgeLeft?: boolean;
+    heavyAttack?: boolean;
+    ultimateAttack?: boolean;
+  }) => {
+    if (action.dodgeRight !== undefined) {
+      opponentSpecialActionsRef.current.dodgeRight = action.dodgeRight;
+    }
+    if (action.dodgeLeft !== undefined) {
+      opponentSpecialActionsRef.current.dodgeLeft = action.dodgeLeft;
+    }
+    if (action.heavyAttack !== undefined) {
+      opponentSpecialActionsRef.current.heavyAttack = action.heavyAttack;
+    }
+    if (action.ultimateAttack !== undefined) {
+      opponentSpecialActionsRef.current.ultimateAttack = action.ultimateAttack;
+    }
+  }, []);
+
+  // Function to get current input for sending to opponent
+  const getCurrentInput = useCallback((): {
+    direction: Vector2D;
+    specialActions: {
+      dodgeRight: boolean;
+      dodgeLeft: boolean;
+      heavyAttack: boolean;
+      ultimateAttack: boolean;
+    };
+  } => {
+    return {
+      direction: getMovementDirection(),
+      specialActions: {
+        dodgeRight: specialActionsRef.current.dodgeRight,
+        dodgeLeft: specialActionsRef.current.dodgeLeft,
+        heavyAttack: specialActionsRef.current.heavyAttack,
+        ultimateAttack: specialActionsRef.current.ultimateAttack,
+      },
+    };
+  }, [getMovementDirection]);
+
   return {
     gameState,
     selectedBeyblade,
@@ -713,6 +869,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     handleVirtualDPad,
     handleVirtualAction,
     isLoading,
+    // Multiplayer functions
+    setOpponentInput,
+    setOpponentSpecialAction,
+    getCurrentInput,
   };
 };
 

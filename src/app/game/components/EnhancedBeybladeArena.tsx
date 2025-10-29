@@ -1,22 +1,39 @@
 "use client";
 
-import React from "react";
-import { Box, Typography, Card, CardContent, useTheme } from "@mui/material";
+import React, { useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  useTheme,
+  Button,
+} from "@mui/material";
 import { BEYBLADE_CONFIGS } from "@/constants/beyblades";
 import { useGameState } from "../hooks/useGameState";
+import { useMultiplayer } from "../hooks/useMultiplayer";
 import GameArena from "./GameArena";
 import GameControls from "./GameControls";
 import ControlsHelp from "./ControlsHelp";
 import DraggableVirtualDPad from "./DraggableVirtualDPad";
 import GameInstructions from "./GameInstructions";
 import SpecialControlsHelp from "./SpecialControlsHelp";
+import MatchResultScreen from "./MatchResultScreen";
 
 interface EnhancedBeybladeArenaProps {
+  gameMode?: "1p" | "2p";
+  multiplayerData?: any;
+  onBackToMenu?: () => void;
   onGameEnd?: (winner: any) => void;
+  onPlayAgainMultiplayer?: () => void;
 }
 
 const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
+  gameMode = "1p",
+  multiplayerData,
+  onBackToMenu,
   onGameEnd,
+  onPlayAgainMultiplayer,
 }) => {
   const theme = useTheme();
   const {
@@ -33,7 +50,73 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     handleVirtualDPad,
     handleVirtualAction,
     isLoading,
-  } = useGameState({ onGameEnd });
+    setOpponentInput,
+    setOpponentSpecialAction,
+    getCurrentInput,
+  } = useGameState({
+    onGameEnd,
+    gameMode,
+    multiplayerData,
+  });
+
+  // Show multiplayer info if in 2P mode
+  const isMultiplayer = gameMode === "2p";
+  const playerNumber = multiplayerData?.playerNumber || 1;
+
+  // Setup multiplayer if in 2P mode
+  const multiplayer =
+    isMultiplayer && multiplayerData
+      ? useMultiplayer({
+          playerNumber: multiplayerData.playerNumber,
+          roomId: multiplayerData.roomId,
+          onOpponentInput: (input: any) => {
+            // Apply opponent's input to their beyblade
+            if (input.direction) {
+              setOpponentInput(input.direction);
+            }
+            if (input.specialActions) {
+              setOpponentSpecialAction(input.specialActions);
+            }
+          },
+          onGameStateUpdate: (state: any) => {
+            // Player 2 receives game state updates from Player 1
+            // This would sync the entire game state, but we'll keep it simple
+            // and rely on input synchronization for now
+            console.log("Game state update received:", state);
+          },
+          onMatchResult: (result: any) => {
+            console.log("Match result:", result);
+            if (onGameEnd) {
+              onGameEnd(result.winner);
+            }
+          },
+          onOpponentDisconnected: () => {
+            alert("Opponent disconnected!");
+            if (onBackToMenu) {
+              onBackToMenu();
+            }
+          },
+        })
+      : null;
+
+  // Send player input to opponent in multiplayer
+  useEffect(() => {
+    if (!isMultiplayer || !multiplayer) return;
+
+    const interval = setInterval(() => {
+      const input = getCurrentInput();
+      multiplayer.sendInput(input);
+    }, 50); // Send input 20 times per second
+
+    return () => clearInterval(interval);
+  }, [isMultiplayer, multiplayer, getCurrentInput]);
+
+  // Send game over event in multiplayer
+  useEffect(() => {
+    if (!isMultiplayer || !multiplayer || !gameState.winner) return;
+
+    multiplayer.sendGameOver(gameState.winner);
+  }, [isMultiplayer, multiplayer, gameState.winner]);
 
   return (
     <Box
@@ -164,42 +247,19 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       {/* Controls Help - Always visible */}
       <ControlsHelp className="w-full max-w-4xl" />
 
-      {/* Game Status */}
+      {/* Game Result Screen */}
       {!gameState.isPlaying && gameState.winner && (
-        <Card
-          sx={{
-            textAlign: "center",
-            p: { xs: 3, md: 4 },
-            borderRadius: 3,
-            backgroundColor: theme.palette.background.paper,
-            border: `2px solid ${theme.palette.primary.main}`,
-            maxWidth: 500,
-            mx: { xs: 2, md: "auto" },
-            width: "100%",
-          }}
-        >
-          <CardContent>
-            <Typography
-              variant="h3"
-              color="primary.main"
-              fontWeight={700}
-              gutterBottom
-              sx={{ fontSize: { xs: "1.75rem", md: "3rem" } }}
-            >
-              🏆 {gameState.winner.config.name} Wins!
-            </Typography>
-            <Typography
-              variant="h5"
-              color="text.primary"
-              sx={{ mb: 3, fontSize: { xs: "1.25rem", md: "1.5rem" } }}
-            >
-              {gameState.winner.isPlayer ? "🎉 Victory!" : "💥 Defeat!"}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Game Duration: {gameState.gameTime.toFixed(1)} seconds
-            </Typography>
-          </CardContent>
-        </Card>
+        <MatchResultScreen
+          winner={gameState.winner}
+          isPlayerWinner={gameState.winner.isPlayer}
+          gameTime={gameState.gameTime}
+          isMultiplayer={isMultiplayer}
+          onPlayAgain={isMultiplayer ? undefined : restartGame}
+          onBackToMenu={onBackToMenu || (() => {})}
+          onPlayAgainMultiplayer={
+            isMultiplayer ? onPlayAgainMultiplayer : undefined
+          }
+        />
       )}
 
       {/* Battle Statistics */}
