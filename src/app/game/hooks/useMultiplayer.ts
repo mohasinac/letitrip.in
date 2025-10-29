@@ -7,6 +7,7 @@ interface UseMultiplayerOptions {
   playerNumber: number;
   roomId: string;
   onOpponentInput?: (input: any) => void;
+  onOpponentBeybladeUpdate?: (beybladeState: any) => void;
   onGameStateUpdate?: (gameState: any) => void;
   onMatchResult?: (result: any) => void;
   onOpponentDisconnected?: () => void;
@@ -17,6 +18,7 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     playerNumber,
     roomId,
     onOpponentInput,
+    onOpponentBeybladeUpdate,
     onGameStateUpdate,
     onMatchResult,
     onOpponentDisconnected,
@@ -33,6 +35,11 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     // Listen for opponent input
     if (onOpponentInput) {
       socket.current.on('opponent-input', onOpponentInput);
+    }
+
+    // Listen for opponent beyblade state updates
+    if (onOpponentBeybladeUpdate) {
+      socket.current.on('opponent-beyblade-update', onOpponentBeybladeUpdate);
     }
 
     // Listen for game state updates (Player 2 only)
@@ -53,12 +60,13 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     return () => {
       if (socket.current) {
         socket.current.off('opponent-input');
+        socket.current.off('opponent-beyblade-update');
         socket.current.off('game-state-update');
         socket.current.off('match-result');
         socket.current.off('opponent-disconnected');
       }
     };
-  }, [isPlayer1, onOpponentInput, onGameStateUpdate, onMatchResult, onOpponentDisconnected]);
+  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onGameStateUpdate, onMatchResult, onOpponentDisconnected]);
 
   // Send input to opponent
   const sendInput = useCallback((inputData: any) => {
@@ -81,10 +89,18 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     }
   }, []);
 
+  // Send beyblade state update
+  const sendBeybladeState = useCallback((beybladeState: any) => {
+    if (socket.current) {
+      socket.current.emit('update-beyblade-state', beybladeState);
+    }
+  }, []);
+
   return {
     sendInput,
     syncGameState,
     sendGameOver,
+    sendBeybladeState,
     isHost: isPlayer1,
   };
 };

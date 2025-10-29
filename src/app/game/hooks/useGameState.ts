@@ -912,6 +912,56 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     };
   }, [getMovementDirection]);
 
+  // Function to get current beyblade state for sending to opponent
+  const getMyBeybladeState = useCallback(() => {
+    const myBey = gameState.beyblades.find(b => 
+      isMultiplayer ? b.isPlayer : b.isPlayer
+    );
+    
+    if (!myBey) return null;
+    
+    return {
+      position: myBey.position,
+      velocity: myBey.velocity,
+      rotation: myBey.rotation,
+      spin: myBey.spin,
+      currentMaxAcceleration: myBey.currentMaxAcceleration,
+      isDead: myBey.isDead,
+      isOutOfBounds: myBey.isOutOfBounds,
+      isInBlueLoop: myBey.isInBlueLoop,
+      isChargeDashing: myBey.isChargeDashing,
+      isDodging: myBey.isDodging,
+      heavyAttackActive: myBey.heavyAttackActive,
+      ultimateAttackActive: myBey.ultimateAttackActive,
+    };
+  }, [gameState.beyblades, isMultiplayer]);
+
+  // Function to apply opponent's beyblade state
+  const setOpponentBeybladeState = useCallback((beybladeState: any) => {
+    setGameState(prevState => {
+      const newState = { ...prevState };
+      const opponentBey = newState.beyblades.find(b => !b.isPlayer);
+      
+      if (opponentBey && beybladeState) {
+        // Apply the state from opponent
+        opponentBey.position = beybladeState.position;
+        opponentBey.velocity = beybladeState.velocity;
+        opponentBey.rotation = beybladeState.rotation;
+        opponentBey.spin = beybladeState.spin;
+        opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;
+        opponentBey.isDead = beybladeState.isDead;
+        opponentBey.isOutOfBounds = beybladeState.isOutOfBounds;
+        opponentBey.isInBlueLoop = beybladeState.isInBlueLoop;
+        opponentBey.isChargeDashing = beybladeState.isChargeDashing;
+        opponentBey.isDodging = beybladeState.isDodging;
+        opponentBey.heavyAttackActive = beybladeState.heavyAttackActive;
+        opponentBey.ultimateAttackActive = beybladeState.ultimateAttackActive;
+      }
+      
+      return newState;
+    });
+  }, []);
+
   return {
     gameState,
     selectedBeyblade,
@@ -930,6 +980,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     setOpponentInput,
     setOpponentSpecialAction,
     getCurrentInput,
+    getMyBeybladeState,
+    setOpponentBeybladeState,
   };
 };
 

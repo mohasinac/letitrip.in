@@ -53,6 +53,8 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     setOpponentInput,
     setOpponentSpecialAction,
     getCurrentInput,
+    getMyBeybladeState,
+    setOpponentBeybladeState,
   } = useGameState({
     onGameEnd,
     gameMode,
@@ -102,10 +104,12 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
               setOpponentSpecialAction(input.specialActions);
             }
           },
+          onOpponentBeybladeUpdate: (data: any) => {
+            // Update opponent's beyblade state
+            setOpponentBeybladeState(data);
+          },
           onGameStateUpdate: (state: any) => {
             // Player 2 receives game state updates from Player 1
-            // This would sync the entire game state, but we'll keep it simple
-            // and rely on input synchronization for now
             console.log("Game state update received:", state);
           },
           onMatchResult: (result: any) => {

@@ -135,6 +135,9 @@ io.on('connection', (socket) => {
       playerNumber,
       beyblade: null,
       ready: false,
+      lastInput: null,
+      lastInputTime: null,
+      beybladeState: null,
     };
 
     room.players.push(player);
@@ -239,22 +242,62 @@ io.on('connection', (socket) => {
   socket.on('game-input', (inputData) => {
     const playerData = players.get(socket.id);
     if (playerData) {
-      // Broadcast input to other player in room
-      socket.to(playerData.roomId).emit('opponent-input', {
-        playerNumber: playerData.playerNumber,
-        ...inputData,
-      });
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        // Store the input in the room
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+          player.lastInput = inputData;
+          player.lastInputTime = Date.now();
+        }
+        
+        // Broadcast input to other player in room
+        socket.to(playerData.roomId).emit('opponent-input', {
+          playerNumber: playerData.playerNumber,
+          ...inputData,
+        });
+      }
     }
   });
 
-  // Game state sync (from host player)
-  socket.on('sync-game-state', (gameState) => {
+  // Game state sync from host (Player 1)
+  socket.on('sync-game-state', (gameStateUpdate) => {
     const playerData = players.get(socket.id);
     if (playerData && playerData.playerNumber === 1) {
       const room = rooms.get(playerData.roomId);
       if (room) {
-        room.gameState = gameState;
-        socket.to(playerData.roomId).emit('game-state-update', gameState);
+        // Store the game state in the room
+        room.gameState = {
+          ...gameStateUpdate,
+          lastUpdate: Date.now(),
+          updateBy: socket.id,
+        };
+        
+        // Broadcast to Player 2
+        socket.to(playerData.roomId).emit('game-state-update', gameStateUpdate);
+      }
+    }
+  });
+
+  // Client reports their local beyblade state
+  socket.on('update-beyblade-state', (beybladeState) => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+          player.beybladeState = {
+            ...beybladeState,
+            lastUpdate: Date.now(),
+          };
+        }
+        
+        // Broadcast to opponent
+        socket.to(playerData.roomId).emit('opponent-beyblade-update', {
+          playerNumber: playerData.playerNumber,
+          ...beybladeState,
+        });
       }
     }
   });
