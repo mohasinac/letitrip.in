@@ -37,7 +37,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   onPlayAgainMultiplayer,
 }) => {
   const theme = useTheme();
-  
+
   // Show multiplayer info if in 2P mode
   const isMultiplayer = gameMode === "2p";
   const playerNumber = multiplayerData?.playerNumber || 1;
@@ -72,12 +72,14 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     onGameEnd,
     gameMode,
     multiplayerData,
-    onCollision: isMultiplayer ? (collisionData: any) => {
-      // Send collision event to opponent
-      if (multiplayerRef.current) {
-        multiplayerRef.current.sendCollision(collisionData);
-      }
-    } : undefined,
+    onCollision: isMultiplayer
+      ? (collisionData: any) => {
+          // Send collision event to opponent
+          if (multiplayerRef.current) {
+            multiplayerRef.current.sendCollision(collisionData);
+          }
+        }
+      : undefined,
   });
 
   // Set beyblades from multiplayer data if available
@@ -125,7 +127,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           },
           onOpponentCollision: (data: any) => {
             // Log collision from opponent's perspective for debugging
-            console.log('Opponent collision:', data);
+            console.log("Opponent collision:", data);
           },
           onGameStateUpdate: (state: any) => {
             // Player 2 receives game state updates from Player 1
@@ -144,7 +146,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
             }
           },
           onRematchAccepted: (data: any) => {
-            console.log('Rematch accepted!', data);
+            console.log("Rematch accepted!", data);
             // Reset rematch flags
             setPlayerWantsRematch(false);
             setOpponentWantsRematch(false);
@@ -152,11 +154,11 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
             restartGame();
           },
           onOpponentWantsRematch: () => {
-            console.log('Opponent wants a rematch');
+            console.log("Opponent wants a rematch");
             setOpponentWantsRematch(true);
           },
           onOpponentCancelledRematch: () => {
-            console.log('Opponent cancelled rematch');
+            console.log("Opponent cancelled rematch");
             setOpponentWantsRematch(false);
           },
         })
@@ -203,7 +205,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   // Handle rematch request
   const handleRematchRequest = React.useCallback(() => {
     if (!multiplayer) return;
-    
+
     setPlayerWantsRematch(true);
     multiplayer.requestRematch();
   }, [multiplayer]);
@@ -214,7 +216,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       multiplayer.cancelRematch();
       setPlayerWantsRematch(false);
     }
-    
+
     if (onBackToMenu) {
       onBackToMenu();
     }

@@ -233,19 +233,20 @@ onOpponentBeybladeUpdate: (data: any) => {
 
 ### Additional Properties Synced:
 
-| Property | Sync Rate | Purpose |
-|----------|-----------|---------|
-| **acceleration** | 10/s | Current acceleration value for damage calculations |
-| **currentMaxAcceleration** | 10/s | Max acceleration cap (decays from 20 to 10) |
-| **blueLoopAngle** | 10/s | Animation state for blue loop |
-| **isInNormalLoop** | 10/s | Normal loop status |
-| **normalLoopAngle** | 10/s | Animation state for normal loop |
+| Property                   | Sync Rate | Purpose                                            |
+| -------------------------- | --------- | -------------------------------------------------- |
+| **acceleration**           | 10/s      | Current acceleration value for damage calculations |
+| **currentMaxAcceleration** | 10/s      | Max acceleration cap (decays from 20 to 10)        |
+| **blueLoopAngle**          | 10/s      | Animation state for blue loop                      |
+| **isInNormalLoop**         | 10/s      | Normal loop status                                 |
+| **normalLoopAngle**        | 10/s      | Animation state for normal loop                    |
 
 ### Collision Event Synchronization
 
 In addition to state updates, collision events are now broadcast to ensure both players see consistent damage:
 
 **Flow:**
+
 ```
 Player 1 Detects Collision
   ├─> Calculate damage locally
@@ -256,6 +257,7 @@ Player 1 Detects Collision
 ```
 
 **Collision Data Shared:**
+
 ```javascript
 {
   mySpinLoss: 15,              // How much spin I lost
@@ -277,10 +279,11 @@ Player 1 Detects Collision
 ### Server Events:
 
 **New Event: `collision-detected`**
+
 ```javascript
-socket.on('collision-detected', (collisionData) => {
+socket.on("collision-detected", (collisionData) => {
   // Relay collision to opponent
-  socket.to(roomId).emit('opponent-collision', {
+  socket.to(roomId).emit("opponent-collision", {
     playerNumber: playerData.playerNumber,
     ...collisionData,
     timestamp: Date.now(),
@@ -289,11 +292,12 @@ socket.on('collision-detected', (collisionData) => {
 ```
 
 **Received: `opponent-collision`**
+
 ```javascript
 // Client logs collision for validation/debugging
 onOpponentCollision: (data) => {
-  console.log('Opponent collision:', data);
-}
+  console.log("Opponent collision:", data);
+};
 ```
 
 ## Data Flow
