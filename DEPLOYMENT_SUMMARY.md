@@ -8,9 +8,50 @@ Your multiplayer Beyblade game uses **Socket.IO** which requires **persistent We
 
 ---
 
-## ✅ RECOMMENDED: Deploy to Render.com
+## ✅ RECOMMENDED: Vercel + Render (Split Deployment)
 
-**Why:** Full WebSocket support, simpler setup, free tier available
+**Best of Both Worlds:**
+
+- ⚡ **Vercel**: Fast global CDN for your Next.js frontend
+- 🎮 **Render**: Dedicated WebSocket server for multiplayer game
+
+This is now **THE RECOMMENDED APPROACH** for your project!
+
+### Quick Start (15 minutes):
+
+```powershell
+# 1. Push your code
+git add .
+git commit -m "Add split deployment setup"
+git push origin breadcrumbs
+
+# 2. Deploy Socket Server to Render
+# Go to: https://render.com
+# Create Web Service → Connect repo
+# Build: npm install
+# Start: node socket-server.js
+# Get your URL: https://your-server.onrender.com
+
+# 3. Deploy Next.js to Vercel
+npm i -g vercel
+vercel --prod
+
+# 4. Set Environment Variable in Vercel
+# NEXT_PUBLIC_SOCKET_URL=https://your-server.onrender.com
+
+# 5. Update CORS in Render
+# Add your Vercel URL to ALLOWED_ORIGINS
+```
+
+**Cost:** Vercel FREE + Render $7/month = $7/month total
+
+**See `SPLIT_DEPLOYMENT_GUIDE.md` for detailed step-by-step instructions!**
+
+---
+
+## Alternative: Deploy Everything to Render.com
+
+**Why:** Simpler setup if you don't need Vercel's features
 
 ### Quick Start (5 minutes):
 
@@ -41,34 +82,6 @@ Your app: https://justforview-xxxx.onrender.com
 ```
 
 **Cost:** FREE (spins down after 15min) or $7/month (always on)
-
----
-
-## Alternative: Vercel + Render (Split Deployment)
-
-⚠️ **More complex** - Only if you specifically need Vercel
-
-### Setup:
-
-1. **Deploy Socket Server to Render**
-
-   - Create Web Service
-   - Command: `node server.js`
-   - Get URL: `https://socket-server.onrender.com`
-
-2. **Deploy Next.js to Vercel**
-
-   ```bash
-   npm i -g vercel
-   vercel --prod
-   ```
-
-3. **Set Environment Variable in Vercel**
-   ```
-   NEXT_PUBLIC_SOCKET_URL=https://socket-server.onrender.com
-   ```
-
-**Cost:** Vercel FREE + Render $7/month = $7/month total
 
 ---
 

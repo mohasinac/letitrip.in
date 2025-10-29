@@ -4,8 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "node server.js",
+    "dev:next": "next dev",
+    "dev:socket": "node socket-server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
+    "start:next": "next start",
+    "start:socket": "node socket-server.js",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "firebase:init": "node scripts/init-firebase.js",
