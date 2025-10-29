@@ -35,6 +35,7 @@ import SettingsLayout from "@/components/admin/settings/SettingsLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface CategoryWithMeta extends Category {
   productCount?: number;
@@ -51,6 +52,23 @@ function FeaturedCategoriesContent() {
   const [success, setSuccess] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+    },
+    {
+      label: "Featured Categories",
+      href: "/admin/settings/featured-categories",
+      active: true,
+    },
+  ]);
 
   // Fetch all categories
   const fetchCategories = useCallback(async () => {

@@ -13,6 +13,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import Link from "next/link";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface ContactFormData {
   name: string;
@@ -46,6 +47,15 @@ export default function HelpPage() {
     orderNumber: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Help Center",
+      href: "/help",
+      active: true,
+    },
+  ]);
 
   const supportCategories: SupportCategory[] = [
     {

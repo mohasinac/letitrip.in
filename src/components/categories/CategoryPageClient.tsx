@@ -29,6 +29,10 @@ import {
 } from "@mui/icons-material";
 import NextLink from "next/link";
 import type { Category } from "@/types";
+import {
+  useBreadcrumbTracker,
+  buildCategoryBreadcrumb,
+} from "@/hooks/useBreadcrumbTracker";
 
 interface CategoryWithCounts extends Category {
   directProductCount: number;
@@ -82,35 +86,27 @@ export default function CategoryPageClient({
   }, [allCategories, currentCategory, searchTerm]);
 
   // Build breadcrumb trail
-  const breadcrumbs = useMemo(() => {
+  const breadcrumbItems = useMemo(() => {
     if (!currentCategory) {
-      return [{ name: "Categories", slug: null, id: "root" }];
+      return [
+        {
+          label: "Categories",
+          href: "/categories",
+          active: true,
+        },
+      ];
     }
-
-    const trail: Array<{ name: string; slug: string | null; id: string }> = [
-      { name: "Categories", slug: null, id: "root" },
+    return [
+      {
+        label: "Categories",
+        href: "/categories",
+      },
+      ...buildCategoryBreadcrumb(currentCategory, allCategories),
     ];
-
-    // Build path from current to root
-    const buildPath = (category: Category) => {
-      // Get first parent (or use history tracking in future)
-      const parentId = category.parentIds?.[0];
-      if (parentId) {
-        const parent = allCategories.find((cat) => cat.id === parentId);
-        if (parent) {
-          buildPath(parent);
-        }
-      }
-      trail.push({
-        name: category.name,
-        slug: category.slug,
-        id: category.id,
-      });
-    };
-
-    buildPath(currentCategory);
-    return trail;
   }, [currentCategory, allCategories]);
+
+  // Add breadcrumb tracking
+  useBreadcrumbTracker(breadcrumbItems);
 
   // Get current category data with counts
   const currentCategoryWithCounts = useMemo(() => {
@@ -126,17 +122,17 @@ export default function CategoryPageClient({
         aria-label="breadcrumb"
         sx={{ mb: 3 }}
       >
-        {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
-          const href = crumb.slug ? `/categories/${crumb.slug}` : "/categories";
+        {breadcrumbItems.map((crumb, index) => {
+          const isLast = index === breadcrumbItems.length - 1;
+          const href = crumb.href ? crumb.href : "/categories";
 
           return isLast ? (
-            <Typography key={crumb.id} color="text.primary" fontWeight={600}>
-              {crumb.name}
+            <Typography key={index} color="text.primary" fontWeight={600}>
+              {crumb.label}
             </Typography>
           ) : (
             <Link
-              key={crumb.id}
+              key={index}
               component={NextLink}
               href={href}
               underline="hover"
@@ -144,7 +140,7 @@ export default function CategoryPageClient({
               sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {index === 0 && <HomeIcon fontSize="small" />}
-              {crumb.name}
+              {crumb.label}
             </Link>
           );
         })}

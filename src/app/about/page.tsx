@@ -21,9 +21,19 @@ import {
   Verified,
   Star,
 } from "@mui/icons-material";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function AboutPage() {
   const theme = useTheme();
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "About",
+      href: "/about",
+      active: true,
+    },
+  ]);
 
   return (
     <Box>

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function ProfilePage() {
   return (
@@ -34,6 +35,15 @@ function ProfileContent() {
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Profile",
+      href: "/profile",
+      active: true,
+    },
+  ]);
 
   const handleSave = async () => {
     try {

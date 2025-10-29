@@ -2,8 +2,22 @@
 
 import { Box, Container, Typography, Card, CardContent } from "@mui/material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 function AdminSupportContent() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Support",
+      href: "/admin/support",
+      active: true,
+    },
+  ]);
+
   return (
     <Box sx={{ py: 4 }}>
       <Container maxWidth="lg">

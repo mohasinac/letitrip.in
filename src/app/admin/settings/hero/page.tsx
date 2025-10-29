@@ -6,6 +6,7 @@ import RoleGuard from "@/components/features/auth/RoleGuard";
 import SettingsLayout from "@/components/admin/settings/SettingsLayout";
 import HeroCarouselSettings from "@/components/admin/settings/hero/HeroCarouselSettings";
 import HeroProductSettings from "@/components/admin/settings/hero/HeroProductSettings";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -28,6 +29,23 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 
 function HeroSettingsContent() {
   const [tabValue, setTabValue] = useState(0);
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+    },
+    {
+      label: "Hero",
+      href: "/admin/settings/hero",
+      active: true,
+    },
+  ]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);

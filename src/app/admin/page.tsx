@@ -3,6 +3,7 @@
 import { Box, Container, Typography, Card, CardContent } from "@mui/material";
 import { ShoppingCart, People, TrendingUp, Warning } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 const StatCard = ({
   icon: Icon,
@@ -46,6 +47,15 @@ const StatCard = ({
 );
 
 function AdminDashboardContent() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+      active: true,
+    },
+  ]);
+
   const stats = [
     {
       icon: ShoppingCart,

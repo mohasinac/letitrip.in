@@ -43,7 +43,9 @@ const GameControls: React.FC<GameControlsProps> = ({
         flexDirection: { xs: "column", sm: "row" },
         alignItems: "center",
         justifyContent: "center",
-        gap: 3,
+        gap: { xs: 2, sm: 3 },
+        px: { xs: 2, sm: 0 },
+        width: "100%",
       }}
     >
       {/* Player Beyblade Selection */}
@@ -52,7 +54,8 @@ const GameControls: React.FC<GameControlsProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minWidth: 200,
+          minWidth: { xs: "100%", sm: 200 },
+          maxWidth: { xs: "100%", sm: 250 },
         }}
       >
         <FormControl fullWidth disabled={isPlaying}>
@@ -88,19 +91,20 @@ const GameControls: React.FC<GameControlsProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minWidth: 200,
+          minWidth: { xs: "100%", sm: 200 },
+          maxWidth: { xs: "100%", sm: 250 },
         }}
       >
         <Button
           onClick={onRestart}
           variant="contained"
           size="large"
+          fullWidth
           sx={{
             px: 4,
-            py: 1.5,
+            py: { xs: 1.25, sm: 1.5 },
             borderRadius: 2,
             fontWeight: 600,
-            minWidth: 180,
             boxShadow: `0 4px 15px ${theme.palette.primary.main}40`,
             transition: "all 0.2s ease",
             "&:hover": {
@@ -122,7 +126,8 @@ const GameControls: React.FC<GameControlsProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minWidth: 200,
+          minWidth: { xs: "100%", sm: 200 },
+          maxWidth: { xs: "100%", sm: 250 },
         }}
       >
         <FormControl fullWidth disabled={isPlaying}>

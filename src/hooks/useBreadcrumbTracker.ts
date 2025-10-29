@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { BreadcrumbItem } from "@/components/shared/Breadcrumb";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { Category } from "@/types";
@@ -27,8 +27,9 @@ export const useBreadcrumbTracker = (
 
   const { setBreadcrumbItems } = useBreadcrumb();
 
-  useEffect(() => {
-    if (!enabled) return;
+  // Memoize the breadcrumb items to prevent infinite loops
+  const memoizedItems = useMemo(() => {
+    if (!enabled) return [];
 
     const items: BreadcrumbItem[] = [];
 
@@ -41,8 +42,16 @@ export const useBreadcrumbTracker = (
 
     items.push(...breadcrumbItems);
 
-    setBreadcrumbItems(items);
-  }, [breadcrumbItems, enabled, includeHome, homeLabel, homeHref, setBreadcrumbItems]);
+    return items;
+  }, [breadcrumbItems.length, enabled, includeHome, homeLabel, homeHref, 
+      // Stringify items to compare by value, not reference
+      JSON.stringify(breadcrumbItems)]);
+
+  useEffect(() => {
+    if (!enabled || memoizedItems.length === 0) return;
+
+    setBreadcrumbItems(memoizedItems);
+  }, [memoizedItems, enabled, setBreadcrumbItems]);
 };
 
 /**

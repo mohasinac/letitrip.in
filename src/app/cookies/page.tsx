@@ -1,17 +1,22 @@
-import { Metadata } from "next";
+"use client";
+
 import { Box, Container, Typography, Card, CardContent } from "@mui/material";
 import {
   HeroSection,
   ThemeAwareBox,
 } from "@/components/shared/ThemeAwareComponents";
-
-export const metadata: Metadata = {
-  title: "Cookie Policy - JustForView",
-  description:
-    "Learn about how we use cookies to improve your experience on JustForView.",
-};
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function CookiePolicyPage() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Cookie Policy",
+      href: "/cookies",
+      active: true,
+    },
+  ]);
+
   return (
     <ThemeAwareBox>
       {/* Hero Section */}

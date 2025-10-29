@@ -28,6 +28,7 @@ import type { Category } from "@/types";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
 import CategoryTreeView from "@/components/admin/categories/CategoryTreeView";
 import CategoryListView from "@/components/admin/categories/CategoryListView";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,6 +63,19 @@ function AdminCategoriesContent() {
     null
   );
   const [tabValue, setTabValue] = useState(1);
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Categories",
+      href: "/admin/categories",
+      active: true,
+    },
+  ]);
 
   // Fetch categories
   const fetchCategories = useCallback(async () => {

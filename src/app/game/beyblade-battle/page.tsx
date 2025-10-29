@@ -15,25 +15,48 @@ import {
   Stack,
 } from "@mui/material";
 import EnhancedBeybladeArena from "../components/EnhancedBeybladeArena";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function BeybladeGamePage() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Games",
+      href: "/game",
+    },
+    {
+      label: "Beyblade Battle",
+      href: "/game/beyblade-battle",
+      active: true,
+    },
+  ]);
+
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        py: 4,
+        py: { xs: 2, md: 4 },
         backgroundColor: "background.default",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl" sx={{ maxWidth: { xs: "100%", xl: "1600px" } }}>
         {/* Header Section */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            mb: { xs: 3, md: 6 },
+            px: { xs: 2, md: 0 },
+          }}
+        >
           <Typography
             variant="h3"
             component="h1"
             gutterBottom
             fontWeight="bold"
-            sx={{ color: "text.primary" }}
+            sx={{
+              color: "text.primary",
+              fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3rem" },
+            }}
           >
             🌪️ Beyblade Battle Arena
           </Typography>
@@ -43,24 +66,45 @@ export default function BeybladeGamePage() {
               maxWidth: 600,
               mx: "auto",
               color: "text.secondary",
+              fontSize: { xs: "0.875rem", sm: "1rem", md: "1.25rem" },
+              px: { xs: 1, md: 0 },
             }}
           >
-            Real-time Beyblade battles! Control your Beyblade with your mouse
+            Real-time Beyblade battles! Control your Beyblade with{" "}
+            <Box
+              component="span"
+              sx={{ display: { xs: "inline", md: "none" } }}
+            >
+              touch or the virtual D-pad
+            </Box>
+            <Box
+              component="span"
+              sx={{ display: { xs: "none", md: "inline" } }}
+            >
+              your mouse
+            </Box>{" "}
             while the AI pursues you. Both start with 100% spin - collisions
             reduce spin until one Beyblade remains!
           </Typography>
         </Box>
 
         {/* Main Game Arena */}
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 8 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mb: { xs: 4, md: 8 },
+            px: { xs: 1, md: 0 },
+          }}
+        >
           <EnhancedBeybladeArena />
         </Box>
 
         {/* Game Information Cards */}
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={4}
-          sx={{ mb: 6 }}
+          spacing={{ xs: 3, md: 4 }}
+          sx={{ mb: { xs: 4, md: 6 }, px: { xs: 2, md: 0 } }}
         >
           {/* Game Features Card */}
           <Box sx={{ flex: 1 }}>
@@ -235,9 +279,10 @@ export default function BeybladeGamePage() {
             border: "2px solid",
             borderColor: "primary.main",
             boxShadow: "0 10px 30px rgba(0, 149, 246, 0.1)",
+            mx: { xs: 2, md: 0 },
           }}
         >
-          <CardContent>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             <Typography
               variant="h5"
               component="h2"
@@ -249,6 +294,7 @@ export default function BeybladeGamePage() {
                 justifyContent: "center",
                 color: "text.primary",
                 fontWeight: "bold",
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
               }}
             >
               <span style={{ marginRight: "12px" }}>🔬</span>
@@ -257,8 +303,8 @@ export default function BeybladeGamePage() {
 
             <Stack
               direction={{ xs: "column", md: "row" }}
-              spacing={3}
-              sx={{ mb: 4 }}
+              spacing={{ xs: 2, md: 3 }}
+              sx={{ mb: { xs: 3, md: 4 } }}
             >
               {/* Blue Zone */}
               <Box sx={{ flex: 1 }}>
@@ -356,7 +402,10 @@ export default function BeybladeGamePage() {
             </Stack>
 
             {/* Collision Damage */}
-            <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={{ xs: 2, md: 3 }}
+            >
               <Box sx={{ flex: 1 }}>
                 <Card sx={{ bgcolor: "#1a2332", border: "2px solid #0ea5e9" }}>
                   <CardContent>

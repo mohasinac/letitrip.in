@@ -24,6 +24,10 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
   const bey2ChargeDash = bey2.isChargeDashing || false;
   const chargeKnockbackMultiplier = (bey1ChargeDash || bey2ChargeDash) ? 1.25 : 1.0; // 1.25x for charge dash, 1x for normal
   
+  // Check for special attack multipliers
+  const bey1DamageMultiplier = bey1.ultimateAttackActive ? 2.0 : bey1.heavyAttackActive ? 1.25 : 1.0;
+  const bey2DamageMultiplier = bey2.ultimateAttackActive ? 2.0 : bey2.heavyAttackActive ? 1.25 : 1.0;
+  
   let damage1 = 0;
   let damage2 = 0;
   
@@ -33,10 +37,10 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
     const newSpin1 = avgSpin + bey1.acceleration;
     const newSpin2 = avgSpin + bey2.acceleration;
     
-    // Calculate damage: average of accelerations plus the other's acceleration
+    // Calculate damage: reduced for easier gameplay, then apply attack multipliers
     const avgAcceleration = Math.floor((bey1.acceleration + bey2.acceleration) / 2);
-    damage1 = avgAcceleration + bey2.acceleration;
-    damage2 = avgAcceleration + bey1.acceleration;
+    damage1 = (avgAcceleration + bey2.acceleration * bey2DamageMultiplier) * 0.6; // Apply bey2's attack multiplier to damage dealt to bey1
+    damage2 = (avgAcceleration + bey1.acceleration * bey1DamageMultiplier) * 0.6; // Apply bey1's attack multiplier to damage dealt to bey2
     
     // Apply new spins and damage
     bey1.spin = Math.max(0, newSpin1 - damage1);
@@ -44,8 +48,8 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
   } else {
     // Same spin collision: Damage = difference of accelerations + opposite bey's acceleration
     const accelerationDiff = Math.abs(bey1.acceleration - bey2.acceleration);
-    damage1 = accelerationDiff + bey2.acceleration;
-    damage2 = accelerationDiff + bey1.acceleration;
+    damage1 = (accelerationDiff + bey2.acceleration * bey2DamageMultiplier) * 0.6; // Apply bey2's attack multiplier
+    damage2 = (accelerationDiff + bey1.acceleration * bey1DamageMultiplier) * 0.6; // Apply bey1's attack multiplier
     
     // Apply damage
     bey1.spin = Math.max(0, bey1.spin - damage1);
@@ -61,7 +65,7 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
   const newPos2 = vectorAdd(bey2.position, knockback2);
   
   // Stadium bounds for strategic gameplay
-  const stadiumCenter = { x: 400, y: 300 };
+  const stadiumCenter = { x: 400, y: 450 }; // Moved down for better visual centering in square canvas (800x800)
   const stadiumRadius = 290; // Full outer radius - allow exits but limit excessive knockback
   const maxKnockbackDistance = 80; // Maximum knockback distance per collision
   

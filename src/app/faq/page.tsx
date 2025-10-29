@@ -25,6 +25,7 @@ import {
   Phone,
   HelpOutline,
 } from "@mui/icons-material";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface FAQItem {
   question: string;
@@ -38,6 +39,15 @@ export default function FAQPage() {
   const [faqData, setFAQData] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "FAQ",
+      href: "/faq",
+      active: true,
+    },
+  ]);
 
   useEffect(() => {
     async function loadFAQData() {

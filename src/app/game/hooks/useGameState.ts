@@ -25,6 +25,24 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   const touchRef = useRef<Vector2D>({ x: 0, y: 0 });
   const isTouchActiveRef = useRef(false);
   const virtualDPadRef = useRef<Vector2D>({ x: 0, y: 0 });
+  const controlModeRef = useRef<'mouse' | 'gamepad'>('mouse'); // Track active control mode
+  const specialActionsRef = useRef<{
+    dodgeRight: boolean;
+    dodgeLeft: boolean;
+    heavyAttack: boolean;
+    ultimateAttack: boolean;
+    selectChargePoint1: boolean;
+    selectChargePoint2: boolean;
+    selectChargePoint3: boolean;
+  }>({
+    dodgeRight: false,
+    dodgeLeft: false,
+    heavyAttack: false,
+    ultimateAttack: false,
+    selectChargePoint1: false,
+    selectChargePoint2: false,
+    selectChargePoint3: false,
+  });
 
   const [gameState, setGameState] = useState<GameState>(() => {
     return createInitialGameState();
@@ -36,12 +54,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Create initial game state
   function createInitialGameState(): GameState {
     const stadium: Stadium = {
-      center: { x: 400, y: 300 },
+      center: { x: 400, y: 450 }, // Moved down for better visual centering in square canvas (800x800)
       innerRadius: 240,
       outerRadius: 290,
       exitRadius: 290,
       width: 800,
-      height: 600,
+      height: 800, // Square canvas
     };
 
     return {
@@ -58,15 +76,20 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Input handlers
   const handleMouseMove = useCallback((position: Vector2D) => {
     mouseRef.current = position;
+    // Switch to mouse mode when mouse is moved in arena
+    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchStart = useCallback((position: Vector2D) => {
     touchRef.current = position;
     isTouchActiveRef.current = true;
+    // Switch to mouse mode when touch is used in arena
+    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchMove = useCallback((position: Vector2D) => {
     touchRef.current = position;
+    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchEnd = useCallback(() => {
@@ -75,15 +98,65 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
   const handleVirtualDPad = useCallback((direction: Vector2D) => {
     virtualDPadRef.current = direction;
+    // Switch to gamepad mode when D-pad is used
+    if (direction.x !== 0 || direction.y !== 0) {
+      controlModeRef.current = 'gamepad';
+    }
+  }, []);
+
+  const handleVirtualAction = useCallback((action: 1 | 2 | 3 | 4) => {
+    // Switch to gamepad mode when action buttons are pressed
+    controlModeRef.current = 'gamepad';
+    
+    // Map action buttons to special actions
+    if (action === 1) {
+      specialActionsRef.current.dodgeRight = true;
+      specialActionsRef.current.selectChargePoint1 = true;
+    } else if (action === 2) {
+      specialActionsRef.current.heavyAttack = true;
+      specialActionsRef.current.selectChargePoint2 = true;
+    } else if (action === 3) {
+      specialActionsRef.current.dodgeLeft = true;
+      specialActionsRef.current.selectChargePoint3 = true;
+    } else if (action === 4) {
+      specialActionsRef.current.ultimateAttack = true;
+    }
   }, []);
 
   // Keyboard input handling
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
+      
+      // Movement keys
       if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
         event.preventDefault();
         keysRef.current.add(key);
+        controlModeRef.current = 'gamepad'; // Switch to gamepad mode for keyboard controls
+      }
+      
+      // Special action keys
+      if (key === "1") {
+        event.preventDefault();
+        specialActionsRef.current.dodgeRight = true;
+        // Also used for charge point selection during blue loop
+        specialActionsRef.current.selectChargePoint1 = true;
+      }
+      if (key === "2") {
+        event.preventDefault();
+        specialActionsRef.current.heavyAttack = true;
+        // Also used for charge point selection during blue loop
+        specialActionsRef.current.selectChargePoint2 = true;
+      }
+      if (key === "3") {
+        event.preventDefault();
+        specialActionsRef.current.dodgeLeft = true;
+        // Also used for charge point selection during blue loop
+        specialActionsRef.current.selectChargePoint3 = true;
+      }
+      if (key === "4") {
+        event.preventDefault();
+        specialActionsRef.current.ultimateAttack = true;
       }
     };
 
@@ -92,12 +165,46 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       keysRef.current.delete(key);
     };
 
+    const handleMouseDown = (event: MouseEvent) => {
+      event.preventDefault();
+      // Right click = 1 (dodge right)
+      if (event.button === 2) {
+        specialActionsRef.current.dodgeRight = true;
+        specialActionsRef.current.selectChargePoint1 = true;
+      }
+      // Left click = 2 (heavy attack)
+      if (event.button === 0) {
+        specialActionsRef.current.heavyAttack = true;
+        specialActionsRef.current.selectChargePoint2 = true;
+      }
+      // Middle button = 3 (dodge left)
+      if (event.button === 1) {
+        specialActionsRef.current.dodgeLeft = true;
+        specialActionsRef.current.selectChargePoint3 = true;
+      }
+    };
+
+    const handleDoubleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      specialActionsRef.current.ultimateAttack = true;
+    };
+
+    const handleContextMenu = (event: MouseEvent) => {
+      event.preventDefault(); // Prevent context menu on right click
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("dblclick", handleDoubleClick);
+    window.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("dblclick", handleDoubleClick);
+      window.removeEventListener("contextmenu", handleContextMenu);
     };
   }, []);
 
@@ -114,36 +221,42 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       return { x: 0, y: 0 }; // No user control during automated sequences
     }
 
-    // Check virtual D-Pad first
-    if (virtualDPadRef.current.x !== 0 || virtualDPadRef.current.y !== 0) {
-      return virtualDPadRef.current;
-    }
-
-    // Check keyboard input
-    let x = 0;
-    let y = 0;
-    if (keysRef.current.has("a") || keysRef.current.has("arrowleft")) x -= 1;
-    if (keysRef.current.has("d") || keysRef.current.has("arrowright")) x += 1;
-    if (keysRef.current.has("w") || keysRef.current.has("arrowup")) y -= 1;
-    if (keysRef.current.has("s") || keysRef.current.has("arrowdown")) y += 1;
-
-    if (x !== 0 || y !== 0) {
-      // Normalize diagonal movement
-      const length = Math.sqrt(x * x + y * y);
-      return { x: x / length, y: y / length };
-    }
-
-    // Check touch input
-    if (isTouchActiveRef.current && playerBey) {
-      const direction = vectorSubtract(touchRef.current, playerBey.position);
-      const distance = vectorLength(direction);
-      if (distance > 10) {
-        return { x: direction.x / distance, y: direction.y / distance };
+    // GAMEPAD MODE: Use virtual D-Pad or keyboard
+    if (controlModeRef.current === 'gamepad') {
+      // Check virtual D-Pad first
+      if (virtualDPadRef.current.x !== 0 || virtualDPadRef.current.y !== 0) {
+        return virtualDPadRef.current;
       }
+
+      // Check keyboard input
+      let x = 0;
+      let y = 0;
+      if (keysRef.current.has("a") || keysRef.current.has("arrowleft")) x -= 1;
+      if (keysRef.current.has("d") || keysRef.current.has("arrowright")) x += 1;
+      if (keysRef.current.has("w") || keysRef.current.has("arrowup")) y -= 1;
+      if (keysRef.current.has("s") || keysRef.current.has("arrowdown")) y += 1;
+
+      if (x !== 0 || y !== 0) {
+        // Normalize diagonal movement
+        const length = Math.sqrt(x * x + y * y);
+        return { x: x / length, y: y / length };
+      }
+
+      return { x: 0, y: 0 };
     }
 
-    // Fall back to mouse input
+    // MOUSE MODE: Move towards mouse/touch position (directional)
     if (playerBey) {
+      // Check touch input first
+      if (isTouchActiveRef.current) {
+        const direction = vectorSubtract(touchRef.current, playerBey.position);
+        const distance = vectorLength(direction);
+        if (distance > 10) {
+          return { x: direction.x / distance, y: direction.y / distance };
+        }
+      }
+
+      // Fall back to mouse input
       const direction = vectorSubtract(mouseRef.current, playerBey.position);
       const distance = vectorLength(direction);
       if (distance > 10) {
@@ -165,6 +278,76 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       const newState = { ...prevState };
       const playerBey = newState.beyblades.find((b) => b.isPlayer);
       const aiBey = newState.beyblades.find((b) => !b.isPlayer);
+
+      // Process special actions for player
+      if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds) {
+        // Process dodge right (1 or right click)
+        if (specialActionsRef.current.dodgeRight) {
+          const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
+          if (canDodge && playerBey.spin >= 20) {
+            playerBey.spin = Math.max(0, playerBey.spin - 20);
+            // Dodge right with quick burst
+            const dodgeSpeed = 400;
+            playerBey.velocity.x += dodgeSpeed;
+            playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
+          }
+          specialActionsRef.current.dodgeRight = false;
+        }
+        
+        // Process dodge left (3 or middle button)
+        if (specialActionsRef.current.dodgeLeft) {
+          const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
+          if (canDodge && playerBey.spin >= 20) {
+            playerBey.spin = Math.max(0, playerBey.spin - 20);
+            // Dodge left with quick burst
+            const dodgeSpeed = 400;
+            playerBey.velocity.x -= dodgeSpeed;
+            playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
+          }
+          specialActionsRef.current.dodgeLeft = false;
+        }
+        
+        // Process heavy attack (2 or left click)
+        if (specialActionsRef.current.heavyAttack) {
+          playerBey.heavyAttackActive = true;
+          playerBey.heavyAttackEndTime = newState.gameTime + 0.3; // 0.3 second duration
+          specialActionsRef.current.heavyAttack = false;
+        }
+        
+        // Process ultimate attack (4 or double click)
+        if (specialActionsRef.current.ultimateAttack) {
+          if (playerBey.spin >= 100) { // Requires 100 spin
+            playerBey.spin = Math.max(0, playerBey.spin - 100);
+            playerBey.ultimateAttackActive = true;
+            playerBey.ultimateAttackEndTime = newState.gameTime + 0.5; // 0.5 second duration
+          }
+          specialActionsRef.current.ultimateAttack = false;
+        }
+        
+        // Check if attacks have expired
+        if (playerBey.heavyAttackActive && playerBey.heavyAttackEndTime && newState.gameTime >= playerBey.heavyAttackEndTime) {
+          playerBey.heavyAttackActive = false;
+        }
+        if (playerBey.ultimateAttackActive && playerBey.ultimateAttackEndTime && newState.gameTime >= playerBey.ultimateAttackEndTime) {
+          playerBey.ultimateAttackActive = false;
+        }
+        
+        // Process charge point selection during blue loop
+        if (playerBey.isInBlueLoop) {
+          if (specialActionsRef.current.selectChargePoint1) {
+            playerBey.selectedChargePoint = 1;
+            specialActionsRef.current.selectChargePoint1 = false;
+          }
+          if (specialActionsRef.current.selectChargePoint2) {
+            playerBey.selectedChargePoint = 2;
+            specialActionsRef.current.selectChargePoint2 = false;
+          }
+          if (specialActionsRef.current.selectChargePoint3) {
+            playerBey.selectedChargePoint = 3;
+            specialActionsRef.current.selectChargePoint3 = false;
+          }
+        }
+      }
 
       // Update player movement - only allow control when not in automated sequences
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds && 
@@ -195,14 +378,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         const targetDirection = vectorSubtract(playerBey.position, aiBey.position);
         const targetDistance = vectorLength(targetDirection);
 
-        const randomFactor = 0.3;
+        const randomFactor = 0.4; // Increased from 0.3 for less accurate AI
         const randomAngle = Math.random() * Math.PI * 2;
         const randomX = Math.cos(randomAngle) * randomFactor;
         const randomY = Math.sin(randomAngle) * randomFactor;
 
         if (targetDistance > 60) {
-          const maxSpeed = 220; // Increased from 170 for faster AI
-          const acceleration = 450; // Increased from 350 for quicker AI response
+          const maxSpeed = 180; // Reduced from 220 for slower AI
+          const acceleration = 380; // Reduced from 450 for slower AI response
           const normalizedDirection = {
             x: targetDirection.x / targetDistance + randomX,
             y: targetDirection.y / targetDistance + randomY,
@@ -285,16 +468,16 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Restart game function
   const restartGame = useCallback(() => {
     const stadium: Stadium = {
-      center: { x: 400, y: 300 },
+      center: { x: 400, y: 450 }, // Moved down for better visual centering in square canvas (800x800)
       innerRadius: 240,
       outerRadius: 290,
       exitRadius: 290,
       width: 800,
-      height: 600,
+      height: 800, // Square canvas
     };
 
-    const playerBey = createBeyblade("player", selectedBeyblade, { x: 320, y: 250 }, true);
-    playerBey.spin = 2000;
+    const playerBey = createBeyblade("player", selectedBeyblade, { x: 320, y: 400 }, true);
+    playerBey.spin = 3500; // Increased from 2000 for longer gameplay
     playerBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     playerBey.accelerationDecayStartTime = 0; // Start decay immediately
 
@@ -304,7 +487,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     const aiY = stadium.center.y + Math.sin(randomAngle) * randomRadius;
 
     const aiBey = createBeyblade("ai", selectedAIBeyblade, { x: aiX, y: aiY }, false);
-    aiBey.spin = 2000;
+    aiBey.spin = 2800; // Increased from 2000, but less than player for easier gameplay
     aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     aiBey.accelerationDecayStartTime = 0; // Start decay immediately
 
@@ -360,6 +543,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     handleTouchMove,
     handleTouchEnd,
     handleVirtualDPad,
+    handleVirtualAction,
   };
 };
 
@@ -435,10 +619,16 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
       beyblade.position.x - gameState.stadium.center.x
     );
     
-    // Randomly select one charge point for this loop
-    const chargePointAngles = [30, 150, 270];
-    const randomIndex = Math.floor(Math.random() * chargePointAngles.length);
-    beyblade.selectedChargePointAngle = chargePointAngles[randomIndex];
+    // For player: wait 1 second for charge point selection, then use random if not selected
+    if (beyblade.isPlayer) {
+      beyblade.selectedChargePoint = null; // Reset selection
+      beyblade.selectedChargePointAngle = undefined; // Will be set after 1 second or by player input
+    } else {
+      // AI: Randomly select one charge point immediately
+      const chargePointAngles = [30, 150, 270];
+      const randomIndex = Math.floor(Math.random() * chargePointAngles.length);
+      beyblade.selectedChargePointAngle = chargePointAngles[randomIndex];
+    }
   }
 
   // Process blue loop with charge point detection
@@ -447,6 +637,22 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
     const angularSpeed = (Math.PI * 2) / 1.0; // 1 second per loop
 
     beyblade.blueLoopAngle += angularSpeed * spinDirection * deltaTime;
+    
+    // For player: check if 1 second has passed and no selection made
+    if (beyblade.isPlayer && beyblade.selectedChargePointAngle === undefined) {
+      const timeInLoop = gameState.gameTime - beyblade.blueCircleLoopStartTime;
+      
+      // Check if player has selected a charge point
+      if (beyblade.selectedChargePoint !== null && beyblade.selectedChargePoint !== undefined) {
+        const chargePointAngles = [30, 150, 270];
+        beyblade.selectedChargePointAngle = chargePointAngles[beyblade.selectedChargePoint - 1];
+      } else if (timeInLoop >= 1.0) {
+        // 1 second passed, use random
+        const chargePointAngles = [30, 150, 270];
+        const randomIndex = Math.floor(Math.random() * chargePointAngles.length);
+        beyblade.selectedChargePointAngle = chargePointAngles[randomIndex];
+      }
+    }
 
     // Check if beyblade has reached the selected charge point angle
     let currentAngleDegrees = (beyblade.blueLoopAngle * 180) / Math.PI;
@@ -499,7 +705,7 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
       const tangentX = -Math.sin(beyblade.blueLoopAngle) * spinDirection;
       const tangentY = Math.cos(beyblade.blueLoopAngle) * spinDirection;
       const circularSpeed = 200;
-      const accelerationMultiplier = 4; // Increased from 2 for faster blue loop movement
+      const accelerationMultiplier = 1.3; // Reduced from 4 for better control
       beyblade.velocity = {
         x: tangentX * circularSpeed * accelerationMultiplier,
         y: tangentY * circularSpeed * accelerationMultiplier,
@@ -538,8 +744,8 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
   // Handle spin decay and death
   if (!beyblade.isInBlueLoop) {
     const frictionCoefficient = 0.995;
-    const velocityDrag = velocityMagnitude * 0.01;
-    const baseLoss = 0.5;
+    const velocityDrag = velocityMagnitude * 0.008; // Reduced from 0.01 for slower spin loss
+    const baseLoss = 0.35; // Reduced from 0.5 for slower spin decay
     const totalSpinLoss = baseLoss + velocityDrag;
     beyblade.spin = Math.max(0, beyblade.spin - totalSpinLoss * deltaTime);
   }
@@ -597,7 +803,7 @@ function handleStadiumBounds(beyblade: GameBeyblade, gameState: GameState) {
 
     if (isWallSegment) {
       // Wall collision
-      const spinLoss = 10 + beyblade.acceleration;
+      const spinLoss = 8 + beyblade.acceleration * 0.7; // Reduced from 10 + acceleration for less harsh penalty
       beyblade.spin = Math.max(50, beyblade.spin - spinLoss);
       beyblade.isOutOfBounds = false;
       beyblade.isDead = false;

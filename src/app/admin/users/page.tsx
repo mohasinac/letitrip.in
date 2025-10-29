@@ -14,6 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface User {
   id: string;
@@ -41,6 +42,19 @@ function AdminUsersContent() {
   >(null);
   const [newRole, setNewRole] = useState<"user" | "seller" | "admin">("user");
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Users",
+      href: "/admin/users",
+      active: true,
+    },
+  ]);
 
   // Fetch all users
   const fetchUsers = async () => {

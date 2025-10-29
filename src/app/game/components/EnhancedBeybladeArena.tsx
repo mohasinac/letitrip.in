@@ -7,8 +7,9 @@ import { useGameState } from "../hooks/useGameState";
 import GameArena from "./GameArena";
 import GameControls from "./GameControls";
 import ControlsHelp from "./ControlsHelp";
-import VirtualDPad from "./VirtualDPad";
+import DraggableVirtualDPad from "./DraggableVirtualDPad";
 import GameInstructions from "./GameInstructions";
+import SpecialControlsHelp from "./SpecialControlsHelp";
 
 interface EnhancedBeybladeArenaProps {
   onGameEnd?: (winner: any) => void;
@@ -30,6 +31,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     handleTouchMove,
     handleTouchEnd,
     handleVirtualDPad,
+    handleVirtualAction,
   } = useGameState({ onGameEnd });
 
   return (
@@ -38,10 +40,11 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 4,
+        gap: { xs: 2, md: 4 },
         width: "100%",
-        maxWidth: "1200px",
+        maxWidth: "1400px", // Increased from 1200px for widescreen support
         mx: "auto",
+        px: { xs: 0, sm: 2, md: 3 },
       }}
     >
       {/* Game Controls */}
@@ -57,7 +60,14 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       />
 
       {/* Game Arena */}
-      <Box sx={{ position: "relative" }}>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <GameArena
           gameState={gameState}
           onMouseMove={handleMouseMove}
@@ -67,18 +77,21 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           className="shadow-2xl"
         />
 
-        {/* Mobile Virtual D-Pad positioned on stadium bottom-right */}
+        {/* Mobile Virtual D-Pad - Draggable and position saved in cookies */}
         <Box
           sx={{
             display: { xs: "block", md: "none" },
             position: "absolute",
-            bottom: 16,
-            right: 16,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            pointerEvents: "none",
           }}
         >
-          <VirtualDPad
+          <DraggableVirtualDPad
             onDirectionChange={handleVirtualDPad}
-            className="w-24 h-24 opacity-80 bg-black/20 backdrop-blur-sm rounded-full border-2 border-white/30"
+            onActionButton={handleVirtualAction}
           />
         </Box>
       </Box>
@@ -89,6 +102,9 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         className="w-full max-w-4xl"
       />
 
+      {/* Special Controls Help */}
+      <SpecialControlsHelp className="w-full max-w-4xl" />
+
       {/* Controls Help - Always visible */}
       <ControlsHelp className="w-full max-w-4xl" />
 
@@ -97,11 +113,13 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         <Card
           sx={{
             textAlign: "center",
-            p: 4,
+            p: { xs: 3, md: 4 },
             borderRadius: 3,
             backgroundColor: theme.palette.background.paper,
             border: `2px solid ${theme.palette.primary.main}`,
             maxWidth: 500,
+            mx: { xs: 2, md: "auto" },
+            width: "100%",
           }}
         >
           <CardContent>
@@ -110,10 +128,15 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
               color="primary.main"
               fontWeight={700}
               gutterBottom
+              sx={{ fontSize: { xs: "1.75rem", md: "3rem" } }}
             >
               🏆 {gameState.winner.config.name} Wins!
             </Typography>
-            <Typography variant="h5" color="text.primary" sx={{ mb: 3 }}>
+            <Typography
+              variant="h5"
+              color="text.primary"
+              sx={{ mb: 3, fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+            >
               {gameState.winner.isPlayer ? "🎉 Victory!" : "💥 Defeat!"}
             </Typography>
             <Typography variant="body1" color="text.secondary">
@@ -128,17 +151,18 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-            gap: 3,
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+            gap: { xs: 2, md: 3 },
             width: "100%",
-            maxWidth: 600,
+            maxWidth: { xs: "100%", sm: "600px", lg: "800px" }, // Better widescreen support
+            px: { xs: 2, md: 0 },
           }}
         >
           {gameState.beyblades.map((beyblade, index) => (
             <Card
               key={beyblade.id}
               sx={{
-                p: 2,
+                p: { xs: 1.5, md: 2 },
                 borderRadius: 2,
                 backgroundColor: beyblade.isPlayer
                   ? `${theme.palette.primary.main}20`
@@ -150,50 +174,73 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                 }`,
               }}
             >
-              <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+              <CardContent
+                sx={{
+                  p: { xs: 1.5, md: 2 },
+                  "&:last-child": { pb: { xs: 1.5, md: 2 } },
+                }}
+              >
                 <Typography
                   variant="h6"
                   fontWeight={600}
                   gutterBottom
                   color={beyblade.isPlayer ? "primary.main" : "secondary.main"}
+                  sx={{ fontSize: { xs: "1rem", md: "1.25rem" } }}
                 >
                   {beyblade.isPlayer ? "🎮 Player" : "🤖 AI"}:{" "}
                   {beyblade.config.name}
                 </Typography>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: { xs: 0.5, md: 1 },
+                  }}
+                >
                   <Box
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
-                    <Typography variant="body2" color="text.primary">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Spin:
                     </Typography>
                     <Typography
                       variant="body2"
                       fontFamily="monospace"
                       sx={{
+                        fontSize: { xs: "0.75rem", md: "0.875rem" },
                         color:
-                          beyblade.spin > 500
+                          beyblade.spin > 1000
                             ? "#22C55E"
-                            : beyblade.spin > 200
+                            : beyblade.spin > 400
                             ? "#F59E0B"
                             : "#EF4444",
                       }}
                     >
-                      {Math.floor(beyblade.spin)}/2000
+                      {Math.floor(beyblade.spin)}/
+                      {beyblade.isPlayer ? "3500" : "2800"}
                     </Typography>
                   </Box>
 
                   <Box
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
-                    <Typography variant="body2" color="text.primary">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Acceleration:
                     </Typography>
                     <Typography
                       variant="body2"
                       fontFamily="monospace"
                       color="text.secondary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
                     >
                       {beyblade.acceleration}/10
                     </Typography>
@@ -202,12 +249,17 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                   <Box
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
-                    <Typography variant="body2" color="text.primary">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Status:
                     </Typography>
                     <Typography
                       variant="body2"
                       sx={{
+                        fontSize: { xs: "0.75rem", md: "0.875rem" },
                         color: beyblade.isDead
                           ? "#EF4444"
                           : beyblade.isOutOfBounds

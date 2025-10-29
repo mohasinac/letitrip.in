@@ -25,6 +25,7 @@ const GameArena: React.FC<GameArenaProps> = ({
   const beybladeImagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const stadiumImageRef = useRef<HTMLImageElement | null>(null);
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
+  const [canvasScale, setCanvasScale] = React.useState(1);
   const theme = useTheme();
 
   // Load game assets
@@ -73,6 +74,37 @@ const GameArena: React.FC<GameArenaProps> = ({
     loadImages();
   }, [gameState.beyblades]);
 
+  // Handle canvas scaling for different screen sizes
+  useEffect(() => {
+    const updateCanvasScale = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const container = canvas.parentElement;
+      if (!container) return;
+
+      const containerWidth = container.clientWidth;
+      const containerHeight = window.innerHeight * 0.7; // Max 70vh
+      const canvasSize = 800; // Square canvas (800x800)
+
+      // Calculate scale to fit within container (proportional)
+      const scale = Math.min(
+        containerWidth / canvasSize,
+        containerHeight / canvasSize,
+        1.2 // Cap at 1.2x for better control on large screens
+      );
+
+      setCanvasScale(scale);
+    };
+
+    updateCanvasScale();
+    window.addEventListener("resize", updateCanvasScale);
+
+    return () => {
+      window.removeEventListener("resize", updateCanvasScale);
+    };
+  }, []);
+
   // Handle mouse movement
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -82,9 +114,11 @@ const GameArena: React.FC<GameArenaProps> = ({
       if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
+      const scale = 800 / rect.width; // Uniform scale for square canvas
+
       const position = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
+        x: (event.clientX - rect.left) * scale,
+        y: (event.clientY - rect.top) * scale,
       };
       onMouseMove(position);
     },
@@ -102,9 +136,11 @@ const GameArena: React.FC<GameArenaProps> = ({
 
       const touch = event.touches[0];
       const rect = canvas.getBoundingClientRect();
+      const scale = 800 / rect.width; // Uniform scale for square canvas
+
       const position = {
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top,
+        x: (touch.clientX - rect.left) * scale,
+        y: (touch.clientY - rect.top) * scale,
       };
       onTouchStart(position);
     },
@@ -121,9 +157,11 @@ const GameArena: React.FC<GameArenaProps> = ({
 
       const touch = event.touches[0];
       const rect = canvas.getBoundingClientRect();
+      const scale = 800 / rect.width; // Uniform scale for square canvas
+
       const position = {
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top,
+        x: (touch.clientX - rect.left) * scale,
+        y: (touch.clientY - rect.top) * scale,
       };
       onTouchMove(position);
     },
@@ -221,16 +259,20 @@ const GameArena: React.FC<GameArenaProps> = ({
     <canvas
       ref={canvasRef}
       width={800}
-      height={600}
-      className={`border-4 rounded-xl shadow-2xl w-full h-auto max-w-full transition-all duration-300 ${
+      height={800}
+      className={`border-4 rounded-xl shadow-2xl transition-all duration-300 ${
         gameState.isPlaying ? "cursor-crosshair" : "cursor-default"
       } ${className}`}
       style={{
         touchAction: "none",
         borderColor: theme.palette.primary.main,
         boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
-        aspectRatio: "4/3", // Maintain 4:3 aspect ratio for mobile scaling
-        maxHeight: "80vh", // Prevent canvas from being too tall on mobile
+        aspectRatio: "1/1", // Square aspect ratio
+        width: "100%",
+        maxWidth: "min(100vw, 70vh, 800px)", // Fit within viewport while maintaining square
+        height: "auto",
+        display: "block",
+        margin: "0 auto",
       }}
       onMouseMove={handleMouseMove}
       onTouchStart={handleTouchStart}
@@ -435,23 +477,28 @@ const drawGameUI = (
   colors: any,
   beybladeImages: Map<string, HTMLImageElement> | null = null
 ) => {
+  const canvasWidth = 800;
+  const canvasHeight = 800; // Square canvas
+  const centerX = canvasWidth / 2;
+  const centerY = canvasHeight / 2;
+
   ctx.font = "bold 18px Inter";
   ctx.fillStyle = "#fff";
 
   const timeText = `Time: ${gameState.gameTime.toFixed(1)}s`;
   ctx.textAlign = "center";
-  ctx.fillText(timeText, 400, 35); // Center the time
+  ctx.fillText(timeText, centerX, 30); // Positioned near top
 
   // Draw player stats in top-left corner
   const playerBey = gameState.beyblades.find((b) => b.isPlayer);
   if (playerBey && !playerBey.isOutOfBounds && !playerBey.isDead) {
-    drawCornerStats(ctx, playerBey, "PLAYER", 20, 20, colors, true);
+    drawCornerStats(ctx, playerBey, "PLAYER", 20, 15, colors, true);
   }
 
   // Draw AI stats in top-right corner
   const aiBey = gameState.beyblades.find((b) => !b.isPlayer);
   if (aiBey && !aiBey.isOutOfBounds && !aiBey.isDead) {
-    drawCornerStats(ctx, aiBey, "AI", 680, 20, colors, false);
+    drawCornerStats(ctx, aiBey, "AI", canvasWidth - 120, 15, colors, false);
   }
 
   ctx.textAlign = "left"; // Reset text alignment
@@ -460,7 +507,7 @@ const drawGameUI = (
   if (gameState.countdownActive) {
     // Draw semi-transparent overlay
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, 800, 600);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Draw countdown text
     ctx.font = "bold 120px Inter";
@@ -474,8 +521,8 @@ const drawGameUI = (
       ctx.lineWidth = 6;
 
       const countText = gameState.countdownValue.toString();
-      ctx.strokeText(countText, 400, 300);
-      ctx.fillText(countText, 400, 300);
+      ctx.strokeText(countText, centerX, centerY);
+      ctx.fillText(countText, centerX, centerY);
     } else {
       // "LET IT RIP!" text
       ctx.font = "bold 80px Inter";
@@ -484,8 +531,8 @@ const drawGameUI = (
       ctx.lineWidth = 4;
 
       const ripText = "LET IT RIP!";
-      ctx.strokeText(ripText, 400, 300);
-      ctx.fillText(ripText, 400, 300);
+      ctx.strokeText(ripText, centerX, centerY);
+      ctx.fillText(ripText, centerX, centerY);
     }
 
     ctx.textAlign = "left";
@@ -496,7 +543,7 @@ const drawGameUI = (
   if (!gameState.isPlaying && gameState.winner) {
     // Draw semi-transparent overlay
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-    ctx.fillRect(0, 0, 800, 600);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Draw banner background
     const bannerY = 150;
@@ -512,12 +559,12 @@ const drawGameUI = (
     gradient.addColorStop(1, `${colors.secondary.main}70`);
 
     ctx.fillStyle = gradient;
-    ctx.fillRect(100, bannerY, 600, bannerHeight);
+    ctx.fillRect(100, bannerY, canvasWidth - 200, bannerHeight);
 
     // Draw banner border
     ctx.strokeStyle = colors.primary.main;
     ctx.lineWidth = 4;
-    ctx.strokeRect(100, bannerY, 600, bannerHeight);
+    ctx.strokeRect(100, bannerY, canvasWidth - 200, bannerHeight);
 
     // Draw winner image if available
     const winnerImageKey = gameState.winner.config.fileName.replace(".svg", "");
@@ -525,7 +572,7 @@ const drawGameUI = (
 
     if (winnerImage) {
       const imageSize = 120;
-      const imageX = 400 - imageSize / 2;
+      const imageX = centerX - imageSize / 2;
       const imageY = bannerY + 40;
 
       ctx.save();
@@ -549,14 +596,14 @@ const drawGameUI = (
     ctx.lineWidth = 3;
 
     const winText = `${gameState.winner.config.name} Wins!`;
-    ctx.strokeText(winText, 400, bannerY + 200);
-    ctx.fillText(winText, 400, bannerY + 200);
+    ctx.strokeText(winText, centerX, bannerY + 200);
+    ctx.fillText(winText, centerX, bannerY + 200);
 
     ctx.font = "bold 24px Inter";
     ctx.fillStyle = "#fff";
     const subText = gameState.winner.isPlayer ? "🏆 Victory!" : "💀 Defeat!";
-    ctx.strokeText(subText, 400, bannerY + 240);
-    ctx.fillText(subText, 400, bannerY + 240);
+    ctx.strokeText(subText, centerX, bannerY + 240);
+    ctx.fillText(subText, centerX, bannerY + 240);
 
     // Draw both beyblade images at bottom for comparison
     const allBeyblades = gameState.beyblades;
@@ -568,7 +615,7 @@ const drawGameUI = (
         if (beybladeImage) {
           const smallImageSize = 80;
           const spacing = 200;
-          const startX = 400 - (spacing * (allBeyblades.length - 1)) / 2;
+          const startX = centerX - (spacing * (allBeyblades.length - 1)) / 2;
           const imageX = startX + index * spacing - smallImageSize / 2;
           const imageY = bannerY + 280;
 

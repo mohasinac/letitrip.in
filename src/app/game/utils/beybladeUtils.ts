@@ -43,6 +43,15 @@ export const createBeyblade = (
     currentMaxAcceleration: 15, // Start with enhanced acceleration cap (normal max: 20, charge dash max: 40)
     accelerationDecayStartTime: undefined, // Track gradual decay timing
     selectedChargePointAngle: undefined, // Randomly selected charge point for current loop
+    
+    // Special Attacks & Dodges
+    heavyAttackActive: false,
+    heavyAttackEndTime: undefined,
+    ultimateAttackActive: false,
+    ultimateAttackEndTime: undefined,
+    dodgeCooldownEnd: undefined,
+    lastDodgeTime: undefined,
+    selectedChargePoint: null,
   };
 };
 

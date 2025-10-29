@@ -11,9 +11,19 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function GamePage() {
   const theme = useTheme();
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Games",
+      href: "/game",
+      active: true,
+    },
+  ]);
 
   return (
     <Box>

@@ -24,6 +24,7 @@ import {
 } from "@mui/icons-material";
 import { apiClient } from "@/lib/api/client";
 import toast from "react-hot-toast";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -35,6 +36,15 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const theme = useTheme();
+
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Contact",
+      href: "/contact",
+      active: true,
+    },
+  ]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Box,
@@ -12,8 +14,18 @@ import {
   ThemeAwareBox,
 } from "@/components/shared/ThemeAwareComponents";
 import { ClientLinkButton } from "@/components/shared/ClientLinkButton";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function PrivacyPage() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Privacy Policy",
+      href: "/privacy",
+      active: true,
+    },
+  ]);
+
   return (
     <ThemeAwareBox>
       {/* Hero Section */}

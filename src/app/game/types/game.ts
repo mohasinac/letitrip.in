@@ -29,6 +29,15 @@ export interface BeybladePhysics {
   currentMaxAcceleration: number; // Current max acceleration cap (gradually decays from 20 to 10)
   accelerationDecayStartTime?: number; // When the gradual decay started
   selectedChargePointAngle?: number; // The randomly selected charge point angle for the current loop
+  
+  // Special Attacks & Dodges
+  heavyAttackActive: boolean; // 1.25x damage multiplier active
+  heavyAttackEndTime?: number; // When heavy attack ends
+  ultimateAttackActive: boolean; // 2x damage multiplier active
+  ultimateAttackEndTime?: number; // When ultimate attack ends
+  dodgeCooldownEnd?: number; // When dodge can be used again
+  lastDodgeTime?: number; // Track last dodge for cooldown
+  selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)
 }
 
 export interface GameBeyblade extends BeybladePhysics {
