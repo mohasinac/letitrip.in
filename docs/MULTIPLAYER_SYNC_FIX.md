@@ -9,6 +9,7 @@ The second player connecting to a multiplayer battle was losing control of their
 The issue was caused by **dual physics simulation** and **insufficient sync rate**:
 
 1. **Dual Simulation Problem:**
+
    - Both clients were simulating physics for BOTH beyblades
    - Each client would calculate movement, collisions, and physics for both players
    - When clients exchanged state updates, they would overwrite each other's calculations
@@ -39,12 +40,13 @@ newState.beyblades.forEach((beyblade) => {
   if (isMultiplayer && !beyblade.isPlayer) {
     return; // Opponent state comes from network only
   }
-  
+
   updateBeybladeLogic(beyblade, deltaTime, newState);
 });
 ```
 
 **Benefits:**
+
 - Each player has full authority over their own beyblade
 - No conflicting physics calculations
 - Opponent's beyblade position/velocity comes entirely from network
@@ -69,6 +71,7 @@ const interval = setInterval(() => {
 ```
 
 **Benefits:**
+
 - Smoother opponent movement rendering
 - Reduced perceived input lag
 - Better collision timing accuracy
@@ -85,6 +88,7 @@ Since the opponent's beyblade now receives its complete state from the network (
 ### Synchronization Architecture
 
 #### Before (Broken)
+
 ```
 Player 1 Client:
 ├── Simulates Player 1 beyblade (with local input)
@@ -100,6 +104,7 @@ Result: Constant state conflicts, second player loses control
 ```
 
 #### After (Fixed)
+
 ```
 Player 1 Client:
 ├── Simulates ONLY Player 1 beyblade (with local input)
@@ -116,11 +121,11 @@ Result: Each player has authority over their beyblade, smooth sync
 
 ### Sync Frequencies
 
-| Data Type | Frequency | Interval | Purpose |
-|-----------|-----------|----------|---------|
-| **Input** | 20 Hz | 50ms | Fast input responsiveness |
-| **Beyblade State** | 30 Hz | 33ms | Smooth position/velocity sync |
-| **Collision Events** | On-demand | N/A | Damage validation |
+| Data Type            | Frequency | Interval | Purpose                       |
+| -------------------- | --------- | -------- | ----------------------------- |
+| **Input**            | 20 Hz     | 50ms     | Fast input responsiveness     |
+| **Beyblade State**   | 30 Hz     | 33ms     | Smooth position/velocity sync |
+| **Collision Events** | On-demand | N/A      | Damage validation             |
 
 ### State Synchronization Flow
 
@@ -142,11 +147,13 @@ P2 → Server → P1: Complete beyblade state (position, velocity, spin, etc.)
 ### Network Bandwidth
 
 **Before:**
+
 - Input: 20 packets/sec × ~50 bytes = 1 KB/sec
 - State: 10 packets/sec × ~200 bytes = 2 KB/sec
 - **Total: ~3 KB/sec per player**
 
 **After:**
+
 - Input: 20 packets/sec × ~50 bytes = 1 KB/sec
 - State: 30 packets/sec × ~200 bytes = 6 KB/sec
 - **Total: ~7 KB/sec per player**
@@ -156,10 +163,12 @@ P2 → Server → P1: Complete beyblade state (position, velocity, spin, etc.)
 ### CPU Usage
 
 **Before:**
+
 - Both clients simulate 2 beyblades = 2x physics calculations
 - Frequent state conflicts and corrections
 
 **After:**
+
 - Each client simulates 1 beyblade = 1x physics calculations
 - No state conflicts, clean synchronization
 
@@ -170,19 +179,23 @@ P2 → Server → P1: Complete beyblade state (position, velocity, spin, etc.)
 ### Manual Test Steps
 
 1. **Start Development Server:**
+
    ```powershell
    npm run dev
    ```
 
 2. **Open Two Browser Windows:**
+
    - Window 1: Navigate to multiplayer lobby
    - Window 2: Navigate to multiplayer lobby (different browser or incognito)
 
 3. **Create & Join Room:**
+
    - Window 1: Create a room, select a beyblade
    - Window 2: Join the room, select a beyblade
 
 4. **Test Control:**
+
    - ✅ Player 1 can control their beyblade immediately
    - ✅ Player 2 can control their beyblade immediately
    - ✅ Both players see smooth opponent movement
@@ -211,14 +224,16 @@ P2 → Server → P1: Complete beyblade state (position, velocity, spin, etc.)
 ## Future Improvements
 
 ### 1. Client-Side Prediction
+
 ```typescript
 // Predict opponent movement based on last known velocity
 if (Date.now() - lastUpdateTime > 100) {
-  predictedPosition = lastPosition + (velocity * timeDelta);
+  predictedPosition = lastPosition + velocity * timeDelta;
 }
 ```
 
 ### 2. Interpolation
+
 ```typescript
 // Smooth out opponent movement between updates
 const interpolatedPosition = lerp(
@@ -229,15 +244,17 @@ const interpolatedPosition = lerp(
 ```
 
 ### 3. Server-Side Collision Authority
+
 ```typescript
 // Server validates all collisions
-server.on('collision-detected', (collision) => {
+server.on("collision-detected", (collision) => {
   const validated = validateCollision(collision);
-  io.to(roomId).emit('collision-validated', validated);
+  io.to(roomId).emit("collision-validated", validated);
 });
 ```
 
 ### 4. Lag Compensation
+
 ```typescript
 // Rewind game state to opponent's timestamp
 const opponentState = getHistoricalState(opponentTimestamp);
@@ -249,38 +266,43 @@ const collision = checkCollision(myState, opponentState);
 ### Player Still Loses Control
 
 **Check:**
+
 1. Verify `isPlayer` flag is set correctly for each beyblade
 2. Check browser console for Socket.IO errors
 3. Confirm server is running on port 3001
 4. Test with localhost first, then remote server
 
 **Debug Code:**
+
 ```typescript
-console.log('Player Number:', playerNumber);
-console.log('My Beyblade isPlayer:', myBeyblade.isPlayer);
-console.log('Opponent Beyblade isPlayer:', opponentBeyblade.isPlayer);
+console.log("Player Number:", playerNumber);
+console.log("My Beyblade isPlayer:", myBeyblade.isPlayer);
+console.log("Opponent Beyblade isPlayer:", opponentBeyblade.isPlayer);
 ```
 
 ### Opponent Movement is Stuttering
 
 **Check:**
+
 1. Network latency: Open browser DevTools → Network tab
 2. Check for packet loss: Monitor WebSocket frames
 3. Verify state sync is at 30 Hz: Add console.log in sync loop
 4. Test on different network conditions
 
 **Debug Code:**
+
 ```typescript
 let lastSyncTime = 0;
 const beybladeState = getMyBeybladeState();
 const now = Date.now();
-console.log('Sync interval:', now - lastSyncTime, 'ms');
+console.log("Sync interval:", now - lastSyncTime, "ms");
 lastSyncTime = now;
 ```
 
 ### Collisions Feel Delayed
 
 **Check:**
+
 1. Sync rate is 30 Hz (not 10 Hz)
 2. Both clients are detecting collisions
 3. Collision events are broadcasting correctly
