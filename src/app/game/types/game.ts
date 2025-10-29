@@ -12,7 +12,8 @@ export interface BeybladePhysics {
   spinDecayRate: number; // how fast spin decreases per frame
   mass: number;
   radius: number;
-  acceleration: number; // Current acceleration value for damage calculations
+  acceleration: number; // DEPRECATED: Kept for compatibility only, not shown in HUD
+  power: number; // 0-25, increases by 5/sec (10/sec in loops/dash), consumed by special moves
   isCharging: boolean;
   chargeLevel: number; // 0-100, for powerful attacks
   isOutOfBounds: boolean;

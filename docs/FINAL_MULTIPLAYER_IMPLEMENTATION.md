@@ -7,6 +7,7 @@ This document summarizes the final implementation of the multiplayer synchroniza
 ## Architecture Summary
 
 ### Single-Player Mode (AI Opponent)
+
 ```typescript
 Player's Client:
 ├── Player Beyblade: Full local physics + user input
@@ -15,6 +16,7 @@ Player's Client:
 ```
 
 ### Multiplayer Mode (2 Players)
+
 ```typescript
 Player A's Client:
 ├── Player A Beyblade: Full local physics + user input
@@ -32,6 +34,7 @@ Player B's Client:
 ### 1. Mode Detection
 
 **Single-Player:**
+
 ```typescript
 const isMultiplayer = gameMode === "2p";
 
@@ -46,6 +49,7 @@ if (!isMultiplayer && aiBey && playerBey) {
 ```
 
 **Multiplayer:**
+
 ```typescript
 // Opponent state comes entirely from network
 // No local AI or input processing for opponent
@@ -55,6 +59,7 @@ if (!isMultiplayer && aiBey && playerBey) {
 ### 2. State Synchronization
 
 **What Gets Synced (30 Hz):**
+
 ```typescript
 {
   position: { x, y },
@@ -78,6 +83,7 @@ if (!isMultiplayer && aiBey && playerBey) {
 ```
 
 **What Does NOT Get Synced:**
+
 - Input directions (sent separately at 20 Hz, but not used for opponent movement)
 - Special action triggers (handled locally)
 - Collision results (calculated independently on each client)
@@ -85,6 +91,7 @@ if (!isMultiplayer && aiBey && playerBey) {
 ### 3. Physics Simulation
 
 **Both Modes:**
+
 ```typescript
 // Update all beyblades (for rendering/animations)
 newState.beyblades.forEach((beyblade) => {
@@ -93,6 +100,7 @@ newState.beyblades.forEach((beyblade) => {
 ```
 
 **Why Both Beyblades Run Physics:**
+
 - Player beyblade: Full authoritative physics
 - Opponent beyblade (multiplayer): Rendering only (position/velocity overwritten by network)
 - AI beyblade (single-player): Full authoritative AI logic
@@ -100,13 +108,14 @@ newState.beyblades.forEach((beyblade) => {
 ### 4. Removed Redundant Code
 
 **Before (Broken):**
+
 ```typescript
 // Multiplayer opponent movement processing
 if (isMultiplayer && aiBey && ...) {
   // Apply opponent input
   const direction = opponentInputRef.current;
   aiBey.velocity.x += ...
-  
+
   // Process opponent special actions
   if (opponentSpecialActionsRef.current.dodgeRight) { ... }
   if (opponentSpecialActionsRef.current.heavyAttack) { ... }
@@ -115,12 +124,14 @@ if (isMultiplayer && aiBey && ...) {
 ```
 
 **After (Fixed):**
+
 ```typescript
 // In multiplayer mode, opponent beyblade state comes entirely from network
 // No local AI simulation - all movement/actions are received via setOpponentBeybladeState
 ```
 
 **Why Removed:**
+
 - Network state (30 Hz) already includes position, velocity, and all action states
 - Local input processing created conflicts with network updates
 - Opponent's special actions are reflected in their synced state (isDodging, heavyAttackActive, etc.)
@@ -128,6 +139,7 @@ if (isMultiplayer && aiBey && ...) {
 ## Data Flow Diagrams
 
 ### Single-Player Flow
+
 ```
 ┌─────────────────┐
 │  Player Input   │
@@ -155,6 +167,7 @@ if (isMultiplayer && aiBey && ...) {
 ```
 
 ### Multiplayer Flow
+
 ```
 Player A:
 ┌─────────────────┐
@@ -190,6 +203,7 @@ Player A:
 ## Testing Checklist
 
 ### Single-Player Mode ✅
+
 - [ ] AI opponent moves towards player
 - [ ] AI uses dodge when close (< 50 units)
 - [ ] AI uses heavy attack at medium range (40-120 units)
@@ -199,6 +213,7 @@ Player A:
 - [ ] Game ends when one beyblade dies/exits
 
 ### Multiplayer Mode ✅
+
 - [ ] Both players can control their beyblades immediately
 - [ ] No "second player loses control" bug
 - [ ] Smooth opponent movement (no jitter/teleporting)
@@ -209,6 +224,7 @@ Player A:
 - [ ] Rematch functionality works
 
 ### Performance ✅
+
 - [ ] 60 FPS maintained on both modes
 - [ ] Network bandwidth < 10 KB/sec per player
 - [ ] No memory leaks during extended play
@@ -217,11 +233,13 @@ Player A:
 ## Key Files Modified
 
 1. **src/app/game/hooks/useGameState.ts**
+
    - Removed multiplayer opponent input processing logic
    - Kept single-player AI logic intact
    - Network state sync via `setOpponentBeybladeState`
 
 2. **src/app/game/components/EnhancedBeybladeArena.tsx**
+
    - State sync rate: 30 Hz (33ms intervals)
    - Input sync rate: 20 Hz (50ms intervals)
 
@@ -230,23 +248,25 @@ Player A:
 
 ## Sync Rates Summary
 
-| Data Type | Single-Player | Multiplayer | Purpose |
-|-----------|---------------|-------------|---------|
-| **Player Physics** | 60 FPS | 60 FPS | Local control |
-| **AI Logic** | 60 FPS | N/A | Autonomous behavior |
-| **Network State** | N/A | 30 Hz | Opponent position/velocity |
-| **Input Broadcast** | N/A | 20 Hz | Fast response feedback |
-| **Collision Detection** | 60 FPS | 60 FPS | Real-time impacts |
+| Data Type               | Single-Player | Multiplayer | Purpose                    |
+| ----------------------- | ------------- | ----------- | -------------------------- |
+| **Player Physics**      | 60 FPS        | 60 FPS      | Local control              |
+| **AI Logic**            | 60 FPS        | N/A         | Autonomous behavior        |
+| **Network State**       | N/A           | 30 Hz       | Opponent position/velocity |
+| **Input Broadcast**     | N/A           | 20 Hz       | Fast response feedback     |
+| **Collision Detection** | 60 FPS        | 60 FPS      | Real-time impacts          |
 
 ## Network Optimization
 
 **Bandwidth Usage Per Player:**
+
 - State updates: 30/sec × ~200 bytes = 6 KB/sec
 - Input updates: 20/sec × ~50 bytes = 1 KB/sec
 - Collision events: ~5/sec × ~100 bytes = 0.5 KB/sec
 - **Total: ~7.5 KB/sec** (negligible for modern connections)
 
 **Latency Tolerance:**
+
 - Good experience: < 100ms ping
 - Acceptable: 100-200ms ping
 - Noticeable lag: > 200ms ping
@@ -256,9 +276,13 @@ Player A:
 ### AI Not Working in Single-Player
 
 **Check:**
+
 ```typescript
-console.log('Is Multiplayer:', isMultiplayer);
-console.log('AI Beyblade:', gameState.beyblades.find(b => !b.isPlayer));
+console.log("Is Multiplayer:", isMultiplayer);
+console.log(
+  "AI Beyblade:",
+  gameState.beyblades.find((b) => !b.isPlayer)
+);
 ```
 
 **Fix:** Ensure `gameMode !== "2p"` for single-player.
@@ -266,10 +290,11 @@ console.log('AI Beyblade:', gameState.beyblades.find(b => !b.isPlayer));
 ### Multiplayer Opponent Not Moving
 
 **Check:**
+
 ```typescript
 onOpponentBeybladeUpdate: (data) => {
-  console.log('Received opponent state:', data);
-}
+  console.log("Received opponent state:", data);
+};
 ```
 
 **Fix:** Verify Socket.IO connection and state sync rate.
@@ -277,9 +302,16 @@ onOpponentBeybladeUpdate: (data) => {
 ### Both Players Can't Control in Multiplayer
 
 **Check:**
+
 ```typescript
-console.log('My Beyblade:', gameState.beyblades.find(b => b.isPlayer));
-console.log('Opponent Beyblade:', gameState.beyblades.find(b => !b.isPlayer));
+console.log(
+  "My Beyblade:",
+  gameState.beyblades.find((b) => b.isPlayer)
+);
+console.log(
+  "Opponent Beyblade:",
+  gameState.beyblades.find((b) => !b.isPlayer)
+);
 ```
 
 **Fix:** Ensure `isPlayer` flag is correctly set based on player number.
@@ -295,6 +327,7 @@ console.log('Opponent Beyblade:', gameState.beyblades.find(b => !b.isPlayer));
 ## Conclusion
 
 The multiplayer synchronization is now working correctly with:
+
 - ✅ Single-player AI fully functional
 - ✅ Multiplayer real-time battles smooth and responsive
 - ✅ Each player has full control of their beyblade

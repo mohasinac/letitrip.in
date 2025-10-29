@@ -96,7 +96,7 @@ const MatchResultScreen: React.FC<MatchResultScreenProps> = ({
                   Remaining Spin: {Math.floor(winner.spin)}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Final Acceleration: {winner.acceleration.toFixed(1)}
+                  Final Power: {Math.floor(winner.power || 0)}/25
                 </Typography>
               </>
             )}

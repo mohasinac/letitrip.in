@@ -210,8 +210,8 @@ export function calculatePhysicsBasedDamage(
   const ke1 = calculateTotalKineticEnergy(bey1.mass, bey1.radius, bey1.velocity, omega1);
   const ke2 = calculateTotalKineticEnergy(bey2.mass, bey2.radius, bey2.velocity, omega2);
   
-  // Energy-based damage factor
-  const energyFactor = (ke1 + ke2) * 0.001;
+  // Energy-based damage factor (REDUCED for longer battles)
+  const energyFactor = (ke1 + ke2) * 0.0005; // Reduced from 0.001
   
   // 11. Calculate base damage for each beyblade
   // Heavier, faster beyblade with more spin does less damage to itself
@@ -222,9 +222,9 @@ export function calculatePhysicsBasedDamage(
   const massRatio1 = bey2.mass / totalMass; // Bey1 takes less damage if bey2 is heavier
   const massRatio2 = bey1.mass / totalMass; // Bey2 takes less damage if bey1 is heavier
   
-  // Momentum-based damage
-  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.15;
-  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.15;
+  // Momentum-based damage (REDUCED for longer battles)
+  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.08; // Reduced from 0.15
+  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.08; // Reduced from 0.15
   
   // 12. Apply special attack multipliers
   const bey1AttackMultiplier = bey1.ultimateAttackActive ? 2.0 : bey1.heavyAttackActive ? 1.5 : 1.0;
@@ -256,8 +256,8 @@ export function calculatePhysicsBasedDamage(
   const knockback1 = vectorMultiply(collisionNormal, -knockbackMagnitude1);
   const knockback2 = vectorMultiply(collisionNormal, knockbackMagnitude2);
   
-  // 16. Cap damage values for gameplay balance
-  const maxDamage = 200; // Maximum damage per collision
+  // 16. Cap damage values for gameplay balance (REDUCED for longer battles)
+  const maxDamage = 120; // Reduced from 200
   damage1 = Math.min(maxDamage, Math.max(0, damage1));
   damage2 = Math.min(maxDamage, Math.max(0, damage2));
   

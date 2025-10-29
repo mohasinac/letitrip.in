@@ -132,7 +132,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           onServerCollisionResult: (result: any) => {
             // Apply server-authoritative collision damage
             console.log("Server collision result:", result);
-            
+
             // Note: This callback is called from within useMultiplayer effect
             // We cannot directly modify gameState here - need to pass to game state hook
             // For now, log it - will be handled by the game state's collision sync
@@ -472,7 +472,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                       color="text.primary"
                       sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
                     >
-                      Acceleration:
+                      Power:
                     </Typography>
                     <Typography
                       variant="body2"
@@ -480,7 +480,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                       color="text.secondary"
                       sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
                     >
-                      {beyblade.acceleration}/10
+                      {Math.floor(beyblade.power || 0)}/25
                     </Typography>
                   </Box>
 

@@ -572,21 +572,21 @@ function drawCornerStatsPixi(
   }
   graphics.fill({ color: spinColor });
 
-  // Acceleration bar
-  const accelBarY = y + 50;
-  graphics.rect(x + 5, accelBarY, width - 10, 8);
+  // Power bar (replaces acceleration)
+  const powerBarY = y + 50;
+  graphics.rect(x + 5, powerBarY, width - 10, 8);
   graphics.fill({ color: 0xffffff, alpha: 0.3 });
 
-  const maxAccel = beyblade.currentMaxAcceleration;
-  const accelFillWidth = (beyblade.acceleration / maxAccel) * (width - 10);
-  const accelColor = beyblade.isChargeDashing ? 0xff4500 : 0xf59e0b;
+  const maxPower = 25;
+  const powerFillWidth = ((beyblade.power || 0) / maxPower) * (width - 10);
+  const powerColor = beyblade.isChargeDashing ? 0xff4500 : 0xf59e0b;
 
   if (!isPlayer) {
-    graphics.rect(x + width - 5 - accelFillWidth, accelBarY, accelFillWidth, 8);
+    graphics.rect(x + width - 5 - powerFillWidth, powerBarY, powerFillWidth, 8);
   } else {
-    graphics.rect(x + 5, accelBarY, accelFillWidth, 8);
+    graphics.rect(x + 5, powerBarY, powerFillWidth, 8);
   }
-  graphics.fill({ color: accelColor });
+  graphics.fill({ color: powerColor });
 
   container.addChild(graphics);
 
@@ -618,10 +618,8 @@ function drawCornerStatsPixi(
   spinText.y = y + 68;
   container.addChild(spinText);
 
-  const accelText = new Text({
-    text: `Accel: ${beyblade.acceleration}/${Math.floor(
-      beyblade.currentMaxAcceleration
-    )}`,
+  const powerText = new Text({
+    text: `Power: ${Math.floor(beyblade.power || 0)}/${maxPower}`,
     style: {
       fontFamily: "Inter",
       fontSize: 10,
@@ -629,9 +627,9 @@ function drawCornerStatsPixi(
       fill: 0xffffff,
     },
   });
-  accelText.x = x + 5;
-  accelText.y = y + 78;
-  container.addChild(accelText);
+  powerText.x = x + 5;
+  powerText.y = y + 78;
+  container.addChild(powerText);
 }
 
 export default GameArenaPixi;

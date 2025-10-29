@@ -354,11 +354,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           } : { x: 0, y: 0 };
         }
 
-        // Process dodge right (2 or right click) - Fixed 50 units distance
+        // Process dodge right (2 or right click) - Fixed 50 units distance, costs 10 power
         if (specialActionsRef.current.dodgeRight) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
-          if (canDodge && playerBey.spin >= 20) {
-            playerBey.spin = Math.max(0, playerBey.spin - 20);
+          const hasPower = (playerBey.power || 0) >= 10;
+          if (canDodge && hasPower) {
+            playerBey.power = Math.max(0, (playerBey.power || 0) - 10);
             playerBey.isDodging = true;
             playerBey.attackStartPosition = { ...playerBey.position };
             playerBey.attackTargetDistance = 50;
@@ -370,11 +371,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           specialActionsRef.current.dodgeRight = false;
         }
         
-        // Process dodge left (1 or left click) - Fixed 50 units distance
+        // Process dodge left (1 or left click) - Fixed 50 units distance, costs 10 power
         if (specialActionsRef.current.dodgeLeft) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
-          if (canDodge && playerBey.spin >= 20) {
-            playerBey.spin = Math.max(0, playerBey.spin - 20);
+          const hasPower = (playerBey.power || 0) >= 10;
+          if (canDodge && hasPower) {
+            playerBey.power = Math.max(0, (playerBey.power || 0) - 10);
             playerBey.isDodging = true;
             playerBey.attackStartPosition = { ...playerBey.position };
             playerBey.attackTargetDistance = 50;
@@ -398,10 +400,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           }
         }
         
-        // Process heavy attack (3 or middle mouse) - Travel in joystick/mouse direction
+        // Process heavy attack (3 or middle mouse) - Travel in joystick/mouse direction, costs 15 power
         if (specialActionsRef.current.heavyAttack) {
           const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
-          if (canAttack) {
+          const hasPower = (playerBey.power || 0) >= 15;
+          if (canAttack && hasPower) {
+            playerBey.power = Math.max(0, (playerBey.power || 0) - 15);
             playerBey.heavyAttackActive = true;
             playerBey.attackStartPosition = { ...playerBey.position };
             playerBey.attackTargetDistance = 100; // Travel 100 units
@@ -420,11 +424,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           specialActionsRef.current.heavyAttack = false;
         }
         
-        // Process ultimate attack (4 or double click) - Travel in joystick/mouse direction
+        // Process ultimate attack (4 or double click) - Travel in joystick/mouse direction, costs 25 power (full bar)
         if (specialActionsRef.current.ultimateAttack) {
           const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
-          if (canAttack && playerBey.spin >= 100) { // Requires 100 spin
-            playerBey.spin = Math.max(0, playerBey.spin - 100);
+          const hasPower = (playerBey.power || 0) >= 25;
+          if (canAttack && hasPower) {
+            playerBey.power = Math.max(0, (playerBey.power || 0) - 25);
             playerBey.ultimateAttackActive = true;
             playerBey.attackStartPosition = { ...playerBey.position };
             playerBey.attackTargetDistance = 150; // Travel 150 units
@@ -439,6 +444,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             const ultimateAttackSpeed = 500;
             playerBey.velocity.x = attackDirection.x * ultimateAttackSpeed;
             playerBey.velocity.y = attackDirection.y * ultimateAttackSpeed;
+            playerBey.ultimateAttackEndTime = Date.now() + 3000;
           }
           specialActionsRef.current.ultimateAttack = false;
         }
@@ -484,10 +490,11 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update player movement - allow control except during attacks and dodges
-      // Players can now move during loops and charge dash
+      // Update player movement - lose control during loops/charge dash, except during special moves
+      // Players can still use special moves (dodge, heavy, ultimate) to escape dangerous situations
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds && 
-          !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive && !playerBey.isDodging) {
+          !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive && !playerBey.isDodging &&
+          !playerBey.isInNormalLoop && !playerBey.isInBlueLoop && !playerBey.isChargeDashing) {
         const direction = getMovementDirection();
         
         if (direction.x !== 0 || direction.y !== 0) {
@@ -516,14 +523,16 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
         // AI Special Moves Logic
         if (!aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
-          // Ultimate Attack: 150 units distance, requires 100+ spin
+          // Ultimate Attack: 150 units distance, requires 25 power (full bar)
           const canAttack = !aiBey.attackCooldownEnd || newState.gameTime >= aiBey.attackCooldownEnd;
-          if (canAttack && targetDistance >= 60 && targetDistance <= 150 && aiBey.spin >= 100 && Math.random() < 0.015) {
-            aiBey.spin = Math.max(0, aiBey.spin - 100);
+          const hasPowerForUltimate = (aiBey.power || 0) >= 25;
+          if (canAttack && hasPowerForUltimate && targetDistance >= 60 && targetDistance <= 150 && Math.random() < 0.015) {
+            aiBey.power = Math.max(0, (aiBey.power || 0) - 25);
             aiBey.ultimateAttackActive = true;
             aiBey.attackStartPosition = { ...aiBey.position };
             aiBey.attackTargetDistance = 150; // 150 units for ultimate
             aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
+            aiBey.ultimateAttackEndTime = Date.now() + 3000;
             
             const normalizedDirection = {
               x: targetDirection.x / targetDistance,
@@ -533,12 +542,15 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             aiBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
             aiBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
           }
-          // Heavy Attack: 100 units distance at medium range
-          else if (canAttack && targetDistance >= 40 && targetDistance <= 120 && Math.random() < 0.02) {
+          // Heavy Attack: 100 units distance at medium range, requires 15 power
+          const hasPowerForHeavy = (aiBey.power || 0) >= 15;
+          if (canAttack && hasPowerForHeavy && targetDistance >= 40 && targetDistance <= 120 && Math.random() < 0.02) {
+            aiBey.power = Math.max(0, (aiBey.power || 0) - 15);
             aiBey.heavyAttackActive = true;
             aiBey.attackStartPosition = { ...aiBey.position };
             aiBey.attackTargetDistance = 100; // 100 units for heavy
             aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
+            aiBey.heavyAttackEndTime = Date.now() + 2000;
             
             const normalizedDirection = {
               x: targetDirection.x / targetDistance,
@@ -548,11 +560,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             aiBey.velocity.x = normalizedDirection.x * attackSpeed;
             aiBey.velocity.y = normalizedDirection.y * attackSpeed;
           }
-          // Dodge: Fixed 50 units distance when very close
-          else if (targetDistance < 50 && aiBey.spin >= 20) {
+          // Dodge: Fixed 50 units distance when very close, requires 10 power
+          const hasPowerForDodge = (aiBey.power || 0) >= 10;
+          if (hasPowerForDodge && targetDistance < 50) {
             const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
             if (canDodge && Math.random() < 0.025) {
-              aiBey.spin = Math.max(0, aiBey.spin - 20);
+              aiBey.power = Math.max(0, (aiBey.power || 0) - 10);
               aiBey.isDodging = true;
               aiBey.attackStartPosition = { ...aiBey.position };
               aiBey.attackTargetDistance = 50; // Fixed 50 units
@@ -779,6 +792,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     playerBey.spin = 3500; // Increased from 2000 for longer gameplay
     playerBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     playerBey.accelerationDecayStartTime = 0; // Start decay immediately
+    playerBey.power = 0; // Initialize power system (0-25 max)
 
     const randomAngle = Math.random() * Math.PI * 2;
     const randomRadius = 100 + Math.random() * 80;
@@ -789,6 +803,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     aiBey.spin = 2800; // Increased from 2000, but less than player for easier gameplay
     aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     aiBey.accelerationDecayStartTime = 0; // Start decay immediately
+    aiBey.power = 0; // Initialize power system (0-25 max)
 
     // Skip loading screen - start game with countdown immediately
     // Set the game state with countdown and start the game loop
@@ -896,6 +911,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       spin: myBey.spin,
       acceleration: myBey.acceleration,                          // ✅ Current acceleration
       currentMaxAcceleration: myBey.currentMaxAcceleration,      // ✅ Max acceleration cap
+      power: myBey.power,                                         // ✅ Power system (0-25)
       isDead: myBey.isDead,
       isOutOfBounds: myBey.isOutOfBounds,
       isInBlueLoop: myBey.isInBlueLoop,
@@ -930,6 +946,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         opponentBey.spin = beybladeState.spin;
         opponentBey.acceleration = beybladeState.acceleration;
         opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;
+        opponentBey.power = beybladeState.power || 0;
         opponentBey.isDead = beybladeState.isDead;
         opponentBey.isOutOfBounds = beybladeState.isOutOfBounds;
         opponentBey.isInBlueLoop = beybladeState.isInBlueLoop;
@@ -983,6 +1000,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
 // Helper function for beyblade logic
 function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameState: GameState) {
+  // Power gain system: +5/sec normal, +10/sec in loops/charge dash, max 25
+  if (!beyblade.isDead && !beyblade.isOutOfBounds) {
+    const powerGainRate = (beyblade.isInNormalLoop || beyblade.isInBlueLoop || beyblade.isChargeDashing) ? 10 : 5;
+    beyblade.power = Math.min(25, (beyblade.power || 0) + (powerGainRate * deltaTime));
+  }
+  
   // Calculate acceleration and rotation
   const velocityMagnitude = Math.sqrt(
     beyblade.velocity.x * beyblade.velocity.x + beyblade.velocity.y * beyblade.velocity.y

@@ -1269,19 +1269,19 @@ const drawCornerStats = (
     ctx.fillRect(x + 5, spinBarY, spinFillWidth, 8);
   }
 
-  // Acceleration bar
-  const accelBarY = y + 50;
+  // Power bar (replaces acceleration)
+  const powerBarY = y + 50;
   ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-  ctx.fillRect(x + 5, accelBarY, width - 10, 8);
+  ctx.fillRect(x + 5, powerBarY, width - 10, 8);
 
-  const maxAccel = beyblade.currentMaxAcceleration;
-  const accelFillWidth = (beyblade.acceleration / maxAccel) * (width - 10);
+  const maxPower = 25;
+  const powerFillWidth = ((beyblade.power || 0) / maxPower) * (width - 10);
   ctx.fillStyle = beyblade.isChargeDashing ? "#FF4500" : colors.secondary.main;
   // For AI (not player), draw bar from right to left
   if (!isPlayer) {
-    ctx.fillRect(x + width - 5 - accelFillWidth, accelBarY, accelFillWidth, 8);
+    ctx.fillRect(x + width - 5 - powerFillWidth, powerBarY, powerFillWidth, 8);
   } else {
-    ctx.fillRect(x + 5, accelBarY, accelFillWidth, 8);
+    ctx.fillRect(x + 5, powerBarY, powerFillWidth, 8);
   }
 
   // Text values
@@ -1290,9 +1290,7 @@ const drawCornerStats = (
   ctx.textAlign = "left";
   ctx.fillText(`Spin: ${Math.floor(beyblade.spin)}`, x + 5, y + 68);
   ctx.fillText(
-    `Accel: ${beyblade.acceleration}/${Math.floor(
-      beyblade.currentMaxAcceleration
-    )}`,
+    `Power: ${Math.floor(beyblade.power || 0)}/${maxPower}`,
     x + 5,
     y + 78
   );

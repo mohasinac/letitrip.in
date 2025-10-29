@@ -112,19 +112,19 @@ function calculateServerCollisionDamage(bey1Data, bey2Data) {
   const angularCollisionForce = angularMomentumInteraction * 0.02;
   const collisionForce = linearCollisionForce + angularCollisionForce;
   
-  // Energy transfer
+  // Energy transfer (REDUCED for longer battles)
   const ke1 = calculateTotalKineticEnergy(bey1Data.mass, bey1Data.radius, bey1Data.velocity, omega1);
   const ke2 = calculateTotalKineticEnergy(bey2Data.mass, bey2Data.radius, bey2Data.velocity, omega2);
-  const energyFactor = (ke1 + ke2) * 0.001;
+  const energyFactor = (ke1 + ke2) * 0.0005; // Reduced from 0.001
   
   // Mass ratios
   const totalMass = bey1Data.mass + bey2Data.mass;
   const massRatio1 = bey2Data.mass / totalMass;
   const massRatio2 = bey1Data.mass / totalMass;
   
-  // Base damage
-  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.15;
-  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.15;
+  // Base damage (REDUCED for longer battles)
+  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.08; // Reduced from 0.15
+  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.08; // Reduced from 0.15
   
   // Attack multipliers
   const bey1AttackMultiplier = bey1Data.ultimateAttackActive ? 2.0 : bey1Data.heavyAttackActive ? 1.5 : 1.0;
@@ -141,8 +141,8 @@ function calculateServerCollisionDamage(bey1Data, bey2Data) {
   damage1 *= (1 + spinResistance1 * 0.5);
   damage2 *= (1 + spinResistance2 * 0.5);
   
-  // Cap damage
-  const maxDamage = 200;
+  // Cap damage (REDUCED for longer battles)
+  const maxDamage = 120; // Reduced from 200
   damage1 = Math.min(maxDamage, Math.max(0, damage1));
   damage2 = Math.min(maxDamage, Math.max(0, damage2));
   
