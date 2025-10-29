@@ -1,160 +1,54 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebase/admin";
-import { createAdminHandler } from "@/lib/auth/api-middleware";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 
-interface UserStats {
-  ordersCount: number;
-  totalSpent: number;
-}
-
-async function getUserStats(userId: string): Promise<UserStats> {
+export async function GET(request: NextRequest) {
   try {
-    const db = getAdminDb();
-    // Get orders count and total spent from orders collection
-    const ordersSnapshot = await db
-      .collection('orders')
-      .where('userId', '==', userId)
-      .get();
-
-    let totalSpent = 0;
-    ordersSnapshot.docs.forEach((doc: any) => {
-      const order = doc.data();
-      if (order.status === 'delivered' || order.status === 'completed') {
-        totalSpent += order.total || 0;
-      }
-    });
-
-    return {
-      ordersCount: ordersSnapshot.size,
-      totalSpent,
-    };
-  } catch (error) {
-    console.error('Error getting user stats:', error);
-    return { ordersCount: 0, totalSpent: 0 };
-  }
-}
-
-export const GET = createAdminHandler(async (request: NextRequest, user) => {
-  try {
-    const db = getAdminDb();
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const role = searchParams.get('role');
-    const search = searchParams.get('search');
-
-    let query: any = db.collection('users');
-
-    // Apply role filter
-    if (role && role !== 'all') {
-      query = query.where('role', '==', role);
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { success: false, error: 'Not authenticated' },
+        { status: 401 }
+      );
     }
 
-    const snapshot = await query.orderBy('createdAt', 'desc').get();
-    
-    const allUsers = await Promise.all(
-      snapshot.docs.map(async (doc: any) => {
-        const userData = doc.data();
-        
-        // Apply search filter
-        if (search) {
-          const searchLower = search.toLowerCase();
-          if (!userData.name?.toLowerCase().includes(searchLower) &&
-              !userData.email?.toLowerCase().includes(searchLower)) {
-            return null;
-          }
-        }
+    try {
+      const token = authHeader.substring(7);
+      const auth = getAdminAuth();
+      const decodedToken = await auth.verifyIdToken(token);
 
-        const stats = await getUserStats(doc.id);
-        
-        // Get store information for sellers and admins
-        let storeInfo = {};
-        if (userData.role === 'seller' || userData.role === 'admin') {
-          try {
-            // Get seller information
-            const storeDoc = await db.collection('sellers').doc(doc.id).get();
-            if (storeDoc.exists) {
-              const storeData = storeDoc.data();
-              storeInfo = {
-                storeName: storeData?.storeName,
-                storeStatus: storeData?.storeStatus || "offline",
-                isFeatured: storeData?.isFeatured || false,
-                businessName: storeData?.businessName,
-                storeDescription: storeData?.description,
-                storeAddress: storeData?.address,
-                storePhone: storeData?.phone,
-                storeWebsite: storeData?.website,
-                storeRegistrationDate: storeData?.createdAt?.toDate?.()?.toISOString(),
-              };
-            }
+      // Check if user is admin
+      const db = getAdminDb();
+      const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+      const userData = userDoc.data();
 
-            // Get additional store stats from stores collection
-            const storeSnapshot = await db.collection('stores').where('ownerId', '==', doc.id).limit(1).get();
-            if (!storeSnapshot.empty) {
-              const storeDoc = storeSnapshot.docs[0];
-              const storeData = storeDoc.data();
-              
-              // Get products count
-              const productsSnapshot = await db.collection('products').where('sellerId', '==', doc.id).get();
-              
-              // Get reviews for this store
-              const reviewsSnapshot = await db.collection('reviews').where('storeId', '==', storeDoc.id).get();
-              let totalRating = 0;
-              reviewsSnapshot.docs.forEach(review => {
-                const reviewData = review.data();
-                totalRating += reviewData.rating || 0;
-              });
-              
-              storeInfo = {
-                ...storeInfo,
-                totalProducts: productsSnapshot.size,
-                totalRevenue: storeData.totalRevenue || 0,
-                averageRating: reviewsSnapshot.size > 0 ? totalRating / reviewsSnapshot.size : 0,
-                reviewCount: reviewsSnapshot.size,
-              };
-            }
-          } catch (error) {
-            console.error(`Error fetching store info for user ${doc.id}:`, error);
-          }
-        }
-        
-        return {
-          id: doc.id,
-          name: userData.name || userData.displayName || 'Unknown',
-          email: userData.email || '',
-          role: userData.role || 'user',
-          verified: userData.verified || userData.emailVerified || false,
-          createdAt: userData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-          updatedAt: userData.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-          lastLoginAt: userData.lastLoginAt?.toDate?.()?.toISOString(),
-          ...stats,
-          ...storeInfo,
-        };
-      })
-    );
-
-    // Filter out null results from search
-    const filteredUsers = allUsers.filter(user => user !== null);
-
-    // Apply pagination
-    const offset = (page - 1) * limit;
-    const paginatedUsers = filteredUsers.slice(offset, offset + limit);
-
-    return NextResponse.json({
-      success: true,
-      users: paginatedUsers,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(filteredUsers.length / limit),
-        totalUsers: filteredUsers.length,
-        hasMore: offset + limit < filteredUsers.length
+      if (!userData || userData.role !== 'admin') {
+        return NextResponse.json(
+          { success: false, error: 'Admin access required' },
+          { status: 403 }
+        );
       }
-    });
-  } catch (error) {
-    console.error("Error fetching users:", error);
+
+      // Fetch all users
+      const usersSnapshot = await db.collection('users').limit(100).get();
+      const users = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        uid: doc.id,
+        ...doc.data(),
+      }));
+
+      return NextResponse.json(users);
+    } catch (error: any) {
+      console.error('Firebase token verification error:', error);
+      return NextResponse.json(
+        { success: false, error: 'Not authenticated' },
+        { status: 401 }
+      );
+    }
+  } catch (error: any) {
+    console.error('Get users error:', error);
     return NextResponse.json(
-      { error: "Failed to fetch users" },
+      { success: false, error: 'Failed to fetch users' },
       { status: 500 }
     );
   }
-});
+}

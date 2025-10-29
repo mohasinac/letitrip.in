@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
+import { useEnhancedAuth } from '@/hooks/auth/useEnhancedAuth';
 import { useEffect } from 'react';
 
 export const useAuthRedirect = () => {
@@ -59,7 +59,8 @@ export const useAuthRedirect = () => {
   // Auto-redirect for protected routes
   useEffect(() => {
     if (!loading && !user) {
-      const protectedRoutes = ['/account', '/orders', '/admin', '/seller', '/checkout'];
+      // No protected routes remaining
+      const protectedRoutes: string[] = [];
       const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
       
       if (isProtectedRoute) {

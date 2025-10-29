@@ -1,21 +1,39 @@
 "use client";
 
-import ThemeSettings from "@/components/ui/ThemeSettings";
+import RoleGuard from "@/components/features/auth/RoleGuard";
+import SettingsLayout from "@/components/admin/settings/SettingsLayout";
+import ThemeSettingsComponent from "@/components/admin/settings/ThemeSettings";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
-export default function AdminThemeSettingsPage() {
+function ThemeSettingsContent() {
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+    },
+    {
+      label: "Theme",
+      href: "/admin/settings/theme",
+      active: true,
+    },
+  ]);
+
   return (
-    <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-primary">Theme Settings</h1>
-          <p className="mt-2 text-secondary">
-            Customize the appearance of your admin panel with theme options,
-            font sizing, and accessibility preferences.
-          </p>
-        </div>
+    <SettingsLayout>
+      <ThemeSettingsComponent />
+    </SettingsLayout>
+  );
+}
 
-        <div className="max-w-2xl">
-          <ThemeSettings />
-        </div>
-      </div>
+export default function ThemeSettings() {
+  return (
+    <RoleGuard requiredRole="admin">
+      <ThemeSettingsContent />
+    </RoleGuard>
   );
 }

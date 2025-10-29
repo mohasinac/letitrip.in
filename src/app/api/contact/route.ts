@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser, ApiResponse } from "@/lib/auth/middleware";
-import { db } from "@/lib/firebase/config";
+import { db } from "@/lib/database/config";
 import { collection, addDoc, getDocs, query, orderBy, where } from "firebase/firestore";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,9 +77,12 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check if user is admin - for admin to view contact messages
-    const user = await authenticateUser(request);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
-      return ApiResponse.unauthorized("Admin access required");
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 403 }
+      );
     }
 
     const { searchParams } = new URL(request.url);

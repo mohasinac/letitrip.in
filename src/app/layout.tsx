@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import "../theme/globals.css";
+import "./modern-globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { CartProvider } from "@/contexts/CartContext";
-import UserDebug from "@/components/debug/UserDebug";
-import CookieConsentBanner from "@/components/auth/CookieConsentBanner";
-import AppLayout from "@/components/layout/AppLayout";
+import { ModernThemeProvider } from "@/contexts/ModernThemeContext";
+import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
+import ModernLayout from "@/components/layout/ModernLayout";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
+import ThemeRegistry from "@/components/shared/ThemeRegistry";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -15,23 +15,20 @@ const inter = Inter({
   display: "swap",
   preload: true,
   fallback: [
-    "ui-sans-serif",
-    "system-ui",
     "-apple-system",
     "BlinkMacSystemFont",
     "Segoe UI",
     "Roboto",
     "Helvetica Neue",
     "Arial",
-    "Noto Sans",
     "sans-serif",
   ],
 });
 
 export const metadata: Metadata = {
-  title: "JustForView - Premium Hobby Store",
+  title: "JustForView - Premium Beyblade Store",
   description:
-    "Your one-stop shop for premium hobby products, collectibles, and more",
+    "Your premium destination for authentic Beyblades, collectibles, and accessories",
 };
 
 export default function RootLayout({
@@ -42,60 +39,61 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="emotion-insertion-point" content="" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} font-sans antialiased`}
         style={{
           fontFamily:
-            "Inter, var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
-          fontSize: "16px",
-          fontWeight: "400",
-          lineHeight: "1.6",
-          color: "hsl(var(--foreground))",
-          backgroundColor: "hsl(var(--background))",
+            "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <AuthProvider>
-          <CartProvider>
-            <AppLayout>{children}</AppLayout>
-            <UserDebug />
-            <CookieConsentBanner />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: "#363636",
-                  color: "#fff",
-                },
-                success: {
-                  duration: 3000,
+        <ThemeRegistry>
+          <AuthProvider>
+            <ModernThemeProvider>
+              <BreadcrumbProvider>
+                <ErrorBoundary>
+                  <ModernLayout>{children}</ModernLayout>
+                </ErrorBoundary>
+              </BreadcrumbProvider>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
                   style: {
-                    background: "#10b981",
-                    color: "#fff",
+                    background: "#1a1a1a",
+                    color: "#ffffff",
+                    border: "1px solid #333333",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                   },
-                },
-                error: {
-                  duration: 5000,
-                  style: {
-                    background: "#ef4444",
-                    color: "#fff",
+                  success: {
+                    duration: 3000,
+                    style: {
+                      background: "#2ed573",
+                      color: "white",
+                    },
                   },
-                },
-              }}
-            />
-          </CartProvider>
-        </AuthProvider>
+                  error: {
+                    duration: 5000,
+                    style: {
+                      background: "#ff4757",
+                      color: "white",
+                    },
+                  },
+                }}
+              />
+            </ModernThemeProvider>
+          </AuthProvider>
+        </ThemeRegistry>
       </body>
     </html>
   );

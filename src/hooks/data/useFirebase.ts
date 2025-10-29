@@ -15,8 +15,8 @@ import {
   getDoc,
   getDocs
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
-import { Product, Auction, User } from '@/lib/firebase/services';
+import { db } from '@/lib/database/config';
+import { Product, Auction, User } from '@/lib/database/services';
 
 // Products Hook
 export function useProducts(filters: {

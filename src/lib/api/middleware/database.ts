@@ -3,7 +3,7 @@
  * Centralized database operations with common patterns and error handling
  */
 
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/database/admin";
 import { Firestore, QuerySnapshot, DocumentSnapshot, Query } from "firebase-admin/firestore";
 import { throwApiError } from "./error-handler";
 

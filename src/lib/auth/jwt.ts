@@ -13,9 +13,10 @@ if (!JWT_SECRET || JWT_SECRET.length < 32) {
   throw new Error('JWT_SECRET must be at least 32 characters long');
 }
 
+// Minimal JWT payload - only essential authentication info
+// All other user data should be fetched from database
 export interface JWTPayload {
   userId: string;
-  email: string;
   role: 'admin' | 'seller' | 'user';
   iat?: number;
   exp?: number;
@@ -47,7 +48,6 @@ export function verifyToken(token: string): JWTPayload | null {
       decoded &&
       typeof decoded === 'object' &&
       'userId' in decoded &&
-      'email' in decoded &&
       'role' in decoded
     ) {
       return decoded as JWTPayload;

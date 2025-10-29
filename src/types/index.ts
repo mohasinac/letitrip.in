@@ -110,11 +110,14 @@ export interface Category {
   icon?: string;
   seo?: CategorySEO;
   
-  // Hierarchy
-  parentId?: string;
-  parentIds?: string[]; // Full hierarchy path for efficient querying
-  level: number; // 0 for root categories
-  children?: Category[];
+  // Hierarchy - Many-to-Many Relationship
+  parentIds?: string[]; // Multiple parent category IDs
+  parentSlugs?: string[]; // Multiple parent category slugs for easy identification
+  childIds?: string[]; // Multiple child category IDs (computed)
+  paths?: string[][]; // All possible paths from root to this category
+  minLevel?: number; // Minimum level in hierarchy (shortest path from root)
+  maxLevel?: number; // Maximum level in hierarchy (longest path from root)
+  children?: Category[]; // For tree view (computed)
   
   // Status and Organization
   isActive: boolean;
@@ -139,7 +142,7 @@ export interface CategoryFormData {
   description?: string;
   image?: string;
   icon?: string;
-  parentId?: string;
+  parentIds?: string[]; // Multiple parents
   isActive: boolean;
   featured: boolean;
   sortOrder: number;

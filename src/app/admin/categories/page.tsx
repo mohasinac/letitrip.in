@@ -1,345 +1,279 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Dialog,
+  Alert,
+  Tabs,
+  Tab,
+  CircularProgress,
+} from "@mui/material";
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Visibility as VisibilityIcon,
+} from "@mui/icons-material";
+import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useAuth } from "@/contexts/AuthContext";
-import { Category, CategoryTreeNode } from "@/types";
-import { CategoryService } from "@/lib/services/category.service";
-import CategoryTree from "@/components/admin/categories/CategoryTree";
+import { apiClient } from "@/lib/api/client";
+import type { Category } from "@/types";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
-import CategoryBulkActions from "@/components/admin/categories/CategoryBulkActions";
-import CategorySearch from "@/components/admin/categories/CategorySearch";
-import CategoryStats from "@/components/admin/categories/CategoryStats";
+import CategoryTreeView from "@/components/admin/categories/CategoryTreeView";
+import CategoryListView from "@/components/admin/categories/CategoryListView";
+import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
-export default function AdminCategoriesPage() {
-  const { user } = useAuth();
-  const [categories, setCategories] = useState<CategoryTreeNode[]>([]);
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+function AdminCategoriesContent() {
+  const { user, loading: authLoading } = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [view, setView] = useState<"tree" | "list">("tree");
-  const [filters, setFilters] = useState({
-    includeInactive: false,
-    showFeaturedOnly: false,
-    level: null as number | null,
-  });
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [tabValue, setTabValue] = useState(1);
 
-  // Load categories
-  const loadCategories = async () => {
-    setLoading(true);
+  // Add breadcrumb
+  useBreadcrumbTracker([
+    {
+      label: "Admin",
+      href: "/admin",
+    },
+    {
+      label: "Categories",
+      href: "/admin/categories",
+      active: true,
+    },
+  ]);
+
+  // Fetch categories
+  const fetchCategories = useCallback(async () => {
     try {
-      // Get auth token
-      const token = user?.getIdToken ? await user.getIdToken() : "";
-
-      const response = await fetch(
-        "/api/admin/categories/tree?" +
-          new URLSearchParams({
-            includeInactive: filters.includeInactive.toString(),
-            withProductCounts: "true",
-          }),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      setLoading(true);
+      setError(null);
+      const data = await apiClient.get<Category[]>(
+        "/admin/categories?format=list"
       );
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setCategories(result.data.categories);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load categories:", error);
+      setCategories(data);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to fetch categories");
+      console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadCategories();
-  }, [filters]);
+    // Only fetch when user is authenticated and auth loading is complete
+    if (!authLoading && user) {
+      fetchCategories();
+    } else if (!authLoading && !user) {
+      setError("Not authenticated");
+      setLoading(false);
+    }
+  }, [authLoading, user, fetchCategories]);
 
-  // Handle category operations
-  const handleCreateCategory = () => {
-    setEditingCategory(null);
-    setShowForm(true);
+  const handleOpenDialog = (category?: Category) => {
+    setSelectedCategory(category || null);
+    setOpenDialog(true);
   };
 
-  const handleEditCategory = (category: Category) => {
-    setEditingCategory(category);
-    setShowForm(true);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedCategory(null);
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm("Are you sure you want to delete this category?")) {
+  const handleSubmit = async (formData: any) => {
+    try {
+      setError(null);
+      const method = selectedCategory ? "PATCH" : "POST";
+      const url = selectedCategory
+        ? `/admin/categories?id=${selectedCategory.id}`
+        : `/admin/categories`;
+
+      const data = await (method === "PATCH"
+        ? apiClient.patch<Category>(url, formData)
+        : apiClient.post<Category>(url, formData));
+
+      setSuccess(
+        selectedCategory
+          ? "Category updated successfully"
+          : "Category created successfully"
+      );
+      handleCloseDialog();
+      fetchCategories();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to save category");
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (categoryId: string) => {
+    if (!window.confirm("Are you sure you want to delete this category?")) {
       return;
     }
 
     try {
-      const token = user?.getIdToken ? await user.getIdToken() : "";
+      setError(null);
+      await apiClient.delete(`/admin/categories?id=${categoryId}`);
 
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        await loadCategories();
-      } else {
-        alert(result.error || "Failed to delete category");
-      }
-    } catch (error) {
-      console.error("Failed to delete category:", error);
-      alert("Failed to delete category");
+      setSuccess("Category deleted successfully");
+      fetchCategories();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to delete category");
+      console.error(err);
     }
   };
-
-  const handleFormSubmit = async () => {
-    setShowForm(false);
-    setEditingCategory(null);
-    await loadCategories();
-  };
-
-  const handleBulkAction = async (action: string, data?: any) => {
-    if (selectedCategories.length === 0) {
-      alert("Please select categories first");
-      return;
-    }
-
-    try {
-      const token = user?.getIdToken ? await user.getIdToken() : "";
-
-      const response = await fetch("/api/admin/categories/bulk", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          operation: action,
-          categoryIds: selectedCategories,
-          data,
-        }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        setSelectedCategories([]);
-        await loadCategories();
-      } else {
-        alert(result.error || "Bulk operation failed");
-      }
-    } catch (error) {
-      console.error("Bulk operation failed:", error);
-      alert("Bulk operation failed");
-    }
-  };
-
-  // Check admin access
-  if (!user || (user as any).role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Access Denied
-          </h1>
-          <p className="text-gray-600">
-            You need admin privileges to access this page.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Category Management
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage product categories and their hierarchy
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              {/* View Toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setView("tree")}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    view === "tree"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Tree View
-                </button>
-                <button
-                  onClick={() => setView("list")}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    view === "list"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  List View
-                </button>
-              </div>
+    <Box sx={{ py: 4 }}>
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <Typography variant="h4" fontWeight={700}>
+            Category Management
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+            sx={{
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Add Category
+          </Button>
+        </Box>
 
-              <button
-                onClick={handleCreateCategory}
-                className="btn btn-primary"
+        {/* Alerts */}
+        {error && (
+          <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert
+            severity="success"
+            onClose={() => setSuccess(null)}
+            sx={{ mb: 2 }}
+          >
+            {success}
+          </Alert>
+        )}
+
+        {/* Loading */}
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Card>
+            {/* Tabs */}
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={tabValue}
+                onChange={(e, newValue) => setTabValue(newValue)}
+                aria-label="category view"
               >
-                Add Category
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                <Tab label="Tree View" id="tab-0" aria-controls="tabpanel-0" />
+                <Tab label="List View" id="tab-1" aria-controls="tabpanel-1" />
+              </Tabs>
+            </Box>
 
-      {/* Main Content */}
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Stats */}
-            <CategoryStats categories={categories} />
-
-            {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Filters
-              </h3>
-
-              <div className="space-y-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filters.includeInactive}
-                    onChange={(e) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        includeInactive: e.target.checked,
-                      }))
-                    }
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    Include inactive
-                  </span>
-                </label>
-
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filters.showFeaturedOnly}
-                    onChange={(e) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        showFeaturedOnly: e.target.checked,
-                      }))
-                    }
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    Featured only
-                  </span>
-                </label>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Level Filter
-                  </label>
-                  <select
-                    value={filters.level || ""}
-                    onChange={(e) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        level: e.target.value ? parseInt(e.target.value) : null,
-                      }))
-                    }
-                    className="input"
-                  >
-                    <option value="">All levels</option>
-                    <option value="0">Root categories</option>
-                    <option value="1">Level 1</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Bulk Actions */}
-            {selectedCategories.length > 0 && (
-              <CategoryBulkActions
-                selectedCount={selectedCategories.length}
-                onAction={handleBulkAction}
-                onClearSelection={() => setSelectedCategories([])}
-              />
-            )}
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Search */}
-            <div className="mb-6">
-              <CategorySearch
-                value={searchQuery}
-                onChange={setSearchQuery}
-                onResults={(results: Category[]) => {
-                  // Handle search results if needed
-                }}
-              />
-            </div>
-
-            {/* Categories */}
-            <div className="bg-white rounded-lg shadow">
-              {loading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-gray-500">Loading categories...</p>
-                </div>
+            {/* Tree View */}
+            <TabPanel value={tabValue} index={0}>
+              {categories.length === 0 ? (
+                <Box sx={{ textAlign: "center", py: 4 }}>
+                  <Typography color="text.secondary">
+                    No categories found. Create your first category!
+                  </Typography>
+                </Box>
               ) : (
-                <CategoryTree
+                <CategoryTreeView
                   categories={categories}
-                  searchQuery={searchQuery}
-                  filters={filters}
-                  selectedCategories={selectedCategories}
-                  onSelectionChange={setSelectedCategories}
-                  onEdit={handleEditCategory}
-                  onDelete={handleDeleteCategory}
-                  view={view}
+                  onEdit={handleOpenDialog}
+                  onDelete={handleDelete}
                 />
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </TabPanel>
 
-      {/* Category Form Modal */}
-      {showForm && (
-        <CategoryForm
-          category={editingCategory}
-          allCategories={categories.flat()} // Flatten tree for parent selection
-          onSubmit={handleFormSubmit}
-          onCancel={() => {
-            setShowForm(false);
-            setEditingCategory(null);
-          }}
-        />
-      )}
-    </div>
+            {/* List View */}
+            <TabPanel value={tabValue} index={1}>
+              {categories.length === 0 ? (
+                <Box sx={{ textAlign: "center", py: 4 }}>
+                  <Typography color="text.secondary">
+                    No categories found. Create your first category!
+                  </Typography>
+                </Box>
+              ) : (
+                <CategoryListView
+                  categories={categories}
+                  onEdit={handleOpenDialog}
+                  onDelete={handleDelete}
+                />
+              )}
+            </TabPanel>
+          </Card>
+        )}
+      </Container>
+
+      {/* Category Form Dialog */}
+      <CategoryForm
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onSubmit={handleSubmit}
+        category={selectedCategory}
+        allCategories={categories}
+      />
+    </Box>
+  );
+}
+
+export default function AdminCategories() {
+  return (
+    <RoleGuard requiredRole="admin">
+      <AdminCategoriesContent />
+    </RoleGuard>
   );
 }

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: beyblade-socket-server
+    runtime: node
+    plan: free # or starter ($7/month) for always-on
+    buildCommand: npm install
+    startCommand: node socket-server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://justforview.vercel.app,https://www.justforview.in
+    healthCheckPath: /health
