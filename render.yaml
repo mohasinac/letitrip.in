@@ -9,5 +9,5 @@ services:
       - key: NODE_ENV
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://justforview.vercel.app,https://www.justforview.in,http://localhost:3000
+        value: https://justforview-in.vercel.app,https://justforview.vercel.app,https://www.justforview.in,https://*.vercel.app,http://localhost:3000,http://localhost:3001
     healthCheckPath: /health

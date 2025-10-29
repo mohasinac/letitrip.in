@@ -37,3 +37,4 @@ vercel.json
 *.tsbuildinfo
 next-env.d.ts
 .env.production
+.env.production.new
