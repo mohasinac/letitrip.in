@@ -25,10 +25,20 @@ const GameArena: React.FC<GameArenaProps> = ({
   const beybladeImagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const stadiumImageRef = useRef<HTMLImageElement | null>(null);
   const stadiumCacheRef = useRef<HTMLCanvasElement | null>(null); // Cache for static stadium
-  const lastRenderTime = useRef<number>(0); // For FPS limiting
+  const gameStateRef = useRef(gameState); // Store latest gameState
+  const imagesLoadedRef = useRef(false); // Store images loaded state
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
   const [canvasScale, setCanvasScale] = React.useState(1);
   const theme = useTheme();
+
+  // Update refs when props change
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
+    imagesLoadedRef.current = imagesLoaded;
+  }, [imagesLoaded]);
 
   // Load game assets
   useEffect(() => {
@@ -344,7 +354,7 @@ const GameArena: React.FC<GameArenaProps> = ({
     [onTouchEnd]
   );
 
-  // Render game state
+  // Render game state - stable function that uses refs
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -356,11 +366,8 @@ const GameArena: React.FC<GameArenaProps> = ({
     if (!ctx) return;
 
     const currentTime = Date.now();
-
-    // FPS limiting to 60fps (optional, can help on slower devices)
-    // const deltaTime = currentTime - lastRenderTime.current;
-    // if (deltaTime < 16.67) return; // ~60fps cap
-    // lastRenderTime.current = currentTime;
+    const currentGameState = gameStateRef.current;
+    const currentImagesLoaded = imagesLoadedRef.current;
 
     // Use cached stadium if available, otherwise draw full background
     if (stadiumCacheRef.current) {
@@ -370,9 +377,9 @@ const GameArena: React.FC<GameArenaProps> = ({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       drawGameZones(
         ctx,
-        gameState.stadium,
+        currentGameState.stadium,
         theme.palette,
-        gameState,
+        currentGameState,
         currentTime
       );
     }
@@ -380,18 +387,18 @@ const GameArena: React.FC<GameArenaProps> = ({
     // Only draw dynamic blue circles (not static stadium)
     drawDynamicBlueCircles(
       ctx,
-      gameState.stadium,
+      currentGameState.stadium,
       theme.palette,
-      gameState,
+      currentGameState,
       currentTime
     );
 
     // Draw beyblades
-    gameState.beyblades.forEach((beyblade) => {
+    currentGameState.beyblades.forEach((beyblade) => {
       drawBeyblade(
         ctx,
         beyblade,
-        imagesLoaded,
+        currentImagesLoaded,
         beybladeImagesRef.current,
         theme.palette,
         currentTime
@@ -401,12 +408,12 @@ const GameArena: React.FC<GameArenaProps> = ({
     // Draw UI elements
     drawGameUI(
       ctx,
-      gameState,
+      currentGameState,
       theme.palette,
       beybladeImagesRef.current,
       currentTime
     );
-  }, [gameState, imagesLoaded, theme.palette]);
+  }, [theme.palette]); // Only recreate if theme changes
 
   // Animation loop
   useEffect(() => {
