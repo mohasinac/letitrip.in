@@ -37,19 +37,19 @@ export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameB
     const newSpin1 = avgSpin + bey1.acceleration;
     const newSpin2 = avgSpin + bey2.acceleration;
     
-    // Calculate damage: reduced for easier gameplay, then apply attack multipliers
+    // Calculate damage: 1.5x multiplier for faster-paced battles
     const avgAcceleration = Math.floor((bey1.acceleration + bey2.acceleration) / 2);
-    damage1 = (avgAcceleration + bey2.acceleration * bey2DamageMultiplier) * 0.6; // Apply bey2's attack multiplier to damage dealt to bey1
-    damage2 = (avgAcceleration + bey1.acceleration * bey1DamageMultiplier) * 0.6; // Apply bey1's attack multiplier to damage dealt to bey2
+    damage1 = (avgAcceleration + bey2.acceleration * bey2DamageMultiplier) * 0.9; // 0.6 * 1.5 = 0.9
+    damage2 = (avgAcceleration + bey1.acceleration * bey1DamageMultiplier) * 0.9; // 0.6 * 1.5 = 0.9
     
     // Apply new spins and damage
     bey1.spin = Math.max(0, newSpin1 - damage1);
     bey2.spin = Math.max(0, newSpin2 - damage2);
   } else {
-    // Same spin collision: Damage = difference of accelerations + opposite bey's acceleration
+    // Same spin collision: 1.5x multiplier for faster-paced battles
     const accelerationDiff = Math.abs(bey1.acceleration - bey2.acceleration);
-    damage1 = (accelerationDiff + bey2.acceleration * bey2DamageMultiplier) * 0.6; // Apply bey2's attack multiplier
-    damage2 = (accelerationDiff + bey1.acceleration * bey1DamageMultiplier) * 0.6; // Apply bey1's attack multiplier
+    damage1 = (accelerationDiff + bey2.acceleration * bey2DamageMultiplier) * 0.9; // 0.6 * 1.5 = 0.9
+    damage2 = (accelerationDiff + bey1.acceleration * bey1DamageMultiplier) * 0.9; // 0.6 * 1.5 = 0.9
     
     // Apply damage
     bey1.spin = Math.max(0, bey1.spin - damage1);

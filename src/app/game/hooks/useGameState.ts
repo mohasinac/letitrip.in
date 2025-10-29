@@ -18,10 +18,11 @@ interface UseGameStateOptions {
     playerNumber: number;
     roomId: string;
   };
+  onCollision?: (collisionData: any) => void;
 }
 
 export const useGameState = (options: UseGameStateOptions = {}) => {
-  const { onGameEnd, gameMode = "1p", multiplayerData } = options;
+  const { onGameEnd, gameMode = "1p", multiplayerData, onCollision } = options;
   
   const gameLoopRef = useRef<number>();
   const lastTimeRef = useRef<number>(0);
@@ -751,7 +752,30 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
           if (!bey1.isDead && !bey1.isOutOfBounds && !bey2.isDead && !bey2.isOutOfBounds) {
             if (checkCollision(bey1, bey2)) {
+              // Store pre-collision state for comparison
+              const bey1SpinBefore = bey1.spin;
+              const bey2SpinBefore = bey2.spin;
+              
               resolveCollisionWithAcceleration(bey1, bey2);
+              
+              // Report collision to multiplayer if this is my beyblade
+              if (isMultiplayer && onCollision) {
+                const myBey = bey1.isPlayer ? bey1 : bey2;
+                const opponentBey = bey1.isPlayer ? bey2 : bey1;
+                const spinLoss = bey1.isPlayer 
+                  ? (bey1SpinBefore - bey1.spin)
+                  : (bey2SpinBefore - bey2.spin);
+                
+                onCollision({
+                  mySpinLoss: spinLoss,
+                  myNewSpin: myBey.spin,
+                  myAcceleration: myBey.acceleration,
+                  opponentSpinLoss: bey1.isPlayer 
+                    ? (bey2SpinBefore - bey2.spin)
+                    : (bey1SpinBefore - bey1.spin),
+                  collisionForce: Math.abs(bey1.velocity.x - bey2.velocity.x) + Math.abs(bey1.velocity.y - bey2.velocity.y),
+                });
+              }
             }
           }
         }
@@ -775,7 +799,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     if (gameState.isPlaying || gameState.countdownActive) {
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     }
-  }, [gameState.isPlaying, gameState.countdownActive, getMovementDirection, onGameEnd]);
+  }, [gameState.isPlaying, gameState.countdownActive, getMovementDirection, onGameEnd, isMultiplayer, onCollision]);
 
   // Start game loop when playing or countdown is active
   useEffect(() => {
@@ -925,7 +949,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       velocity: myBey.velocity,
       rotation: myBey.rotation,
       spin: myBey.spin,
-      currentMaxAcceleration: myBey.currentMaxAcceleration,
+      acceleration: myBey.acceleration,                          // ✅ Current acceleration
+      currentMaxAcceleration: myBey.currentMaxAcceleration,      // ✅ Max acceleration cap
       isDead: myBey.isDead,
       isOutOfBounds: myBey.isOutOfBounds,
       isInBlueLoop: myBey.isInBlueLoop,
@@ -933,6 +958,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       isDodging: myBey.isDodging,
       heavyAttackActive: myBey.heavyAttackActive,
       ultimateAttackActive: myBey.ultimateAttackActive,
+      // Animation states
+      blueLoopAngle: myBey.blueLoopAngle,
+      isInNormalLoop: myBey.isInNormalLoop,
+      normalLoopAngle: myBey.normalLoopAngle,
     };
   }, [gameState.beyblades, isMultiplayer]);
 
@@ -948,7 +977,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         opponentBey.velocity = beybladeState.velocity;
         opponentBey.rotation = beybladeState.rotation;
         opponentBey.spin = beybladeState.spin;
-        opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;
+        opponentBey.acceleration = beybladeState.acceleration;                      // ✅ Sync acceleration
+        opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;  // ✅ Sync max acceleration
         opponentBey.isDead = beybladeState.isDead;
         opponentBey.isOutOfBounds = beybladeState.isOutOfBounds;
         opponentBey.isInBlueLoop = beybladeState.isInBlueLoop;
@@ -956,6 +986,16 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         opponentBey.isDodging = beybladeState.isDodging;
         opponentBey.heavyAttackActive = beybladeState.heavyAttackActive;
         opponentBey.ultimateAttackActive = beybladeState.ultimateAttackActive;
+        // Animation states
+        if (beybladeState.blueLoopAngle !== undefined) {
+          opponentBey.blueLoopAngle = beybladeState.blueLoopAngle;
+        }
+        if (beybladeState.isInNormalLoop !== undefined) {
+          opponentBey.isInNormalLoop = beybladeState.isInNormalLoop;
+        }
+        if (beybladeState.normalLoopAngle !== undefined) {
+          opponentBey.normalLoopAngle = beybladeState.normalLoopAngle;
+        }
       }
       
       return newState;

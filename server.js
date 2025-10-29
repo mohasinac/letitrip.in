@@ -138,6 +138,7 @@ io.on('connection', (socket) => {
       lastInput: null,
       lastInputTime: null,
       beybladeState: null,
+      wantsRematch: false,
     };
 
     room.players.push(player);
@@ -302,6 +303,19 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Collision event - for synchronizing damage
+  socket.on('collision-detected', (collisionData) => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      // Broadcast collision to opponent for validation/sync
+      socket.to(playerData.roomId).emit('opponent-collision', {
+        playerNumber: playerData.playerNumber,
+        ...collisionData,
+        timestamp: Date.now(),
+      });
+    }
+  });
+
   // Game over
   socket.on('game-over', ({ winner }) => {
     const playerData = players.get(socket.id);
@@ -314,6 +328,57 @@ io.on('connection', (socket) => {
           player1: room.players[0],
           player2: room.players[1],
         });
+      }
+    }
+  });
+
+  // Play again request
+  socket.on('request-rematch', () => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+          player.wantsRematch = true;
+          
+          // Notify opponent
+          socket.to(playerData.roomId).emit('opponent-wants-rematch', {
+            playerNumber: playerData.playerNumber,
+          });
+          
+          // Check if both players want rematch
+          if (room.players.every(p => p.wantsRematch)) {
+            // Reset rematch flags
+            room.players.forEach(p => p.wantsRematch = false);
+            
+            // Start new game
+            room.status = 'playing';
+            io.to(playerData.roomId).emit('rematch-accepted', {
+              player1: room.players[0],
+              player2: room.players[1],
+            });
+          }
+        }
+      }
+    }
+  });
+
+  // Cancel rematch request
+  socket.on('cancel-rematch', () => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+          player.wantsRematch = false;
+          
+          // Notify opponent
+          socket.to(playerData.roomId).emit('opponent-cancelled-rematch', {
+            playerNumber: playerData.playerNumber,
+          });
+        }
       }
     }
   });

@@ -8,9 +8,13 @@ interface UseMultiplayerOptions {
   roomId: string;
   onOpponentInput?: (input: any) => void;
   onOpponentBeybladeUpdate?: (beybladeState: any) => void;
+  onOpponentCollision?: (collisionData: any) => void;
   onGameStateUpdate?: (gameState: any) => void;
   onMatchResult?: (result: any) => void;
   onOpponentDisconnected?: () => void;
+  onRematchAccepted?: (data: any) => void;
+  onOpponentWantsRematch?: () => void;
+  onOpponentCancelledRematch?: () => void;
 }
 
 export const useMultiplayer = (options: UseMultiplayerOptions) => {
@@ -19,9 +23,13 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     roomId,
     onOpponentInput,
     onOpponentBeybladeUpdate,
+    onOpponentCollision,
     onGameStateUpdate,
     onMatchResult,
     onOpponentDisconnected,
+    onRematchAccepted,
+    onOpponentWantsRematch,
+    onOpponentCancelledRematch,
   } = options;
 
   const socket = useRef<Socket | null>(null);
@@ -42,6 +50,11 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
       socket.current.on('opponent-beyblade-update', onOpponentBeybladeUpdate);
     }
 
+    // Listen for opponent collision events
+    if (onOpponentCollision) {
+      socket.current.on('opponent-collision', onOpponentCollision);
+    }
+
     // Listen for game state updates (Player 2 only)
     if (!isPlayer1 && onGameStateUpdate) {
       socket.current.on('game-state-update', onGameStateUpdate);
@@ -57,16 +70,33 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
       socket.current.on('opponent-disconnected', onOpponentDisconnected);
     }
 
+    // Listen for rematch events
+    if (onRematchAccepted) {
+      socket.current.on('rematch-accepted', onRematchAccepted);
+    }
+
+    if (onOpponentWantsRematch) {
+      socket.current.on('opponent-wants-rematch', onOpponentWantsRematch);
+    }
+
+    if (onOpponentCancelledRematch) {
+      socket.current.on('opponent-cancelled-rematch', onOpponentCancelledRematch);
+    }
+
     return () => {
       if (socket.current) {
         socket.current.off('opponent-input');
         socket.current.off('opponent-beyblade-update');
+        socket.current.off('opponent-collision');
         socket.current.off('game-state-update');
         socket.current.off('match-result');
         socket.current.off('opponent-disconnected');
+        socket.current.off('rematch-accepted');
+        socket.current.off('opponent-wants-rematch');
+        socket.current.off('opponent-cancelled-rematch');
       }
     };
-  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onGameStateUpdate, onMatchResult, onOpponentDisconnected]);
+  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onOpponentCollision, onGameStateUpdate, onMatchResult, onOpponentDisconnected, onRematchAccepted, onOpponentWantsRematch, onOpponentCancelledRematch]);
 
   // Send input to opponent
   const sendInput = useCallback((inputData: any) => {
@@ -96,11 +126,35 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     }
   }, []);
 
+  // Send collision event
+  const sendCollision = useCallback((collisionData: any) => {
+    if (socket.current) {
+      socket.current.emit('collision-detected', collisionData);
+    }
+  }, []);
+
+  // Request rematch
+  const requestRematch = useCallback(() => {
+    if (socket.current) {
+      socket.current.emit('request-rematch');
+    }
+  }, []);
+
+  // Cancel rematch request
+  const cancelRematch = useCallback(() => {
+    if (socket.current) {
+      socket.current.emit('cancel-rematch');
+    }
+  }, []);
+
   return {
     sendInput,
     syncGameState,
     sendGameOver,
     sendBeybladeState,
+    sendCollision,
+    requestRematch,
+    cancelRematch,
     isHost: isPlayer1,
   };
 };

@@ -229,6 +229,73 @@ onOpponentBeybladeUpdate: (data: any) => {
 },
 ```
 
+## Enhanced: Acceleration and Damage Synchronization
+
+### Additional Properties Synced:
+
+| Property | Sync Rate | Purpose |
+|----------|-----------|---------|
+| **acceleration** | 10/s | Current acceleration value for damage calculations |
+| **currentMaxAcceleration** | 10/s | Max acceleration cap (decays from 20 to 10) |
+| **blueLoopAngle** | 10/s | Animation state for blue loop |
+| **isInNormalLoop** | 10/s | Normal loop status |
+| **normalLoopAngle** | 10/s | Animation state for normal loop |
+
+### Collision Event Synchronization
+
+In addition to state updates, collision events are now broadcast to ensure both players see consistent damage:
+
+**Flow:**
+```
+Player 1 Detects Collision
+  ├─> Calculate damage locally
+  ├─> Apply spin loss
+  ├─> Send collision event to server
+  └─> Server broadcasts to Player 2
+        └─> Player 2 logs collision (for validation/debugging)
+```
+
+**Collision Data Shared:**
+```javascript
+{
+  mySpinLoss: 15,              // How much spin I lost
+  myNewSpin: 985,              // My new spin value
+  myAcceleration: 12.5,        // My current acceleration
+  opponentSpinLoss: 18,        // How much opponent lost
+  collisionForce: 150,         // Total collision force
+  timestamp: 1698765432000     // Server timestamp
+}
+```
+
+### Why This Matters:
+
+1. **Acceleration Affects Damage**: Higher acceleration = more damage in collisions
+2. **Gradual Decay**: Max acceleration decays from 20→10 over time, affecting combat
+3. **Special Moves**: Heavy attacks (1.25x) and ultimate attacks (2x) multiply acceleration damage
+4. **Consistent Combat**: Both players see the same acceleration values = same damage calculations
+
+### Server Events:
+
+**New Event: `collision-detected`**
+```javascript
+socket.on('collision-detected', (collisionData) => {
+  // Relay collision to opponent
+  socket.to(roomId).emit('opponent-collision', {
+    playerNumber: playerData.playerNumber,
+    ...collisionData,
+    timestamp: Date.now(),
+  });
+});
+```
+
+**Received: `opponent-collision`**
+```javascript
+// Client logs collision for validation/debugging
+onOpponentCollision: (data) => {
+  console.log('Opponent collision:', data);
+}
+```
+
 ## Data Flow
 
 ### Player 1's Perspective:
@@ -341,6 +408,7 @@ const STATE_RATE = 50; // 20/s
 2. `src/app/game/hooks/useMultiplayer.ts` - Added beyblade state methods
 3. `src/app/game/hooks/useGameState.ts` - Added state extraction/application
 4. `src/app/game/components/EnhancedBeybladeArena.tsx` - Added sync loops
+5. `docs/GAME_STATE_SYNCHRONIZATION.md` - Updated documentation
 
 ## Summary
 
