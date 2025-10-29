@@ -362,18 +362,15 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       {/* Controls Help - Always visible */}
       <ControlsHelp className="w-full max-w-4xl" />
 
-      {/* Game Result Screen */}
-      {!gameState.isPlaying && gameState.winner && (
+      {/* Game Result Screen - Only show in single player mode */}
+      {!isMultiplayer && !gameState.isPlaying && gameState.winner && (
         <MatchResultScreen
           winner={gameState.winner}
-          isPlayerWinner={gameState.winner.isPlayer}
+          isPlayerWinner={gameState.winner.isPlayer || false}
           gameTime={gameState.gameTime}
-          isMultiplayer={isMultiplayer}
-          onPlayAgain={isMultiplayer ? undefined : restartGame}
+          isMultiplayer={false}
+          onPlayAgain={restartGame}
           onBackToMenu={onBackToMenu || (() => {})}
-          onPlayAgainMultiplayer={
-            isMultiplayer ? onPlayAgainMultiplayer : undefined
-          }
         />
       )}
 
