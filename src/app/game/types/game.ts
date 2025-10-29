@@ -42,7 +42,8 @@ export interface BeybladePhysics {
   ultimateAttackEndTime?: number; // When ultimate attack ends
   attackStartPosition?: Vector2D; // Starting position for distance-based attacks
   attackTargetDistance?: number; // Target distance to travel during attack
-  dodgeCooldownEnd?: number; // When dodge can be used again
+  attackCooldownEnd?: number; // When next attack can be used (5 second cooldown)
+  dodgeCooldownEnd?: number; // When dodge can be used again (2 second cooldown)
   lastDodgeTime?: number; // Track last dodge for cooldown
   isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
   selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)

@@ -339,62 +339,78 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           } : { x: 0, y: 0 };
         }
 
-        // Process dodge right (1 or right click)
+        // Process dodge right (1 or right click) - Fixed 50 units distance
         if (specialActionsRef.current.dodgeRight) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
           if (canDodge && playerBey.spin >= 20) {
             playerBey.spin = Math.max(0, playerBey.spin - 20);
-            // Dodge right with quick burst
+            // Dodge right with fixed distance
+            playerBey.isDodging = true;
+            playerBey.attackStartPosition = { ...playerBey.position };
+            playerBey.attackTargetDistance = 50; // Fixed 50 units
             const dodgeSpeed = 400;
             playerBey.velocity.x += dodgeSpeed;
-            playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
-            playerBey.isDodging = true; // Set dodging flag for immunity
-            playerBey.lastDodgeTime = Date.now(); // Track dodge animation start
+            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
+            playerBey.lastDodgeTime = Date.now();
           }
           specialActionsRef.current.dodgeRight = false;
         }
         
-        // Process dodge left (3 or middle button)
+        // Process dodge left (3 or middle button) - Fixed 50 units distance
         if (specialActionsRef.current.dodgeLeft) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
           if (canDodge && playerBey.spin >= 20) {
             playerBey.spin = Math.max(0, playerBey.spin - 20);
-            // Dodge left with quick burst
+            // Dodge left with fixed distance
+            playerBey.isDodging = true;
+            playerBey.attackStartPosition = { ...playerBey.position };
+            playerBey.attackTargetDistance = 50; // Fixed 50 units
             const dodgeSpeed = 400;
             playerBey.velocity.x -= dodgeSpeed;
-            playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
-            playerBey.isDodging = true; // Set dodging flag for immunity
-            playerBey.lastDodgeTime = Date.now(); // Track dodge animation start
+            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
+            playerBey.lastDodgeTime = Date.now();
           }
           specialActionsRef.current.dodgeLeft = false;
         }
         
-        // Clear dodging flag after animation completes (500ms)
-        if (playerBey.isDodging && playerBey.lastDodgeTime && Date.now() - playerBey.lastDodgeTime > 500) {
-          playerBey.isDodging = false;
+        // Clear dodging flag after distance traveled
+        if (playerBey.isDodging && playerBey.attackStartPosition && playerBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(playerBey.position, playerBey.attackStartPosition)
+          );
+          if (distanceTraveled >= playerBey.attackTargetDistance) {
+            playerBey.isDodging = false;
+            playerBey.attackStartPosition = undefined;
+            playerBey.attackTargetDistance = undefined;
+          }
         }
         
-        // Process heavy attack (3 or middle click) - 20 units travel distance
+        // Process heavy attack (2 or right click) - 100 units travel distance
         if (specialActionsRef.current.heavyAttack) {
-          playerBey.heavyAttackActive = true;
-          playerBey.attackStartPosition = { ...playerBey.position }; // Track start position
-          playerBey.attackTargetDistance = 20; // Travel 20 units
-          
-          // Move towards opponent during heavy attack
-          const attackSpeed = 350;
-          playerBey.velocity.x = normalizedDirection.x * attackSpeed;
-          playerBey.velocity.y = normalizedDirection.y * attackSpeed;
-          
+          const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
+          if (canAttack) {
+            playerBey.heavyAttackActive = true;
+            playerBey.attackStartPosition = { ...playerBey.position };
+            playerBey.attackTargetDistance = 100; // Travel 100 units
+            playerBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
+            
+            // Move towards opponent during heavy attack
+            const attackSpeed = 350;
+            playerBey.velocity.x = normalizedDirection.x * attackSpeed;
+            playerBey.velocity.y = normalizedDirection.y * attackSpeed;
+          }
           specialActionsRef.current.heavyAttack = false;
         }
         
-        // Process ultimate attack (4 or double click) - 40 units travel distance
+        // Process ultimate attack (4 or double click) - 150 units travel distance
         if (specialActionsRef.current.ultimateAttack) {
-          if (playerBey.spin >= 100) { // Requires 100 spin
+          const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
+          if (canAttack && playerBey.spin >= 100) { // Requires 100 spin
             playerBey.spin = Math.max(0, playerBey.spin - 100);
             playerBey.ultimateAttackActive = true;
-            playerBey.attackStartPosition = { ...playerBey.position }; // Track start position
-            playerBey.attackTargetDistance = 40; // Travel 40 units
+            playerBey.attackStartPosition = { ...playerBey.position };
+            playerBey.attackTargetDistance = 150; // Travel 150 units
+            playerBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
             
             // Move towards opponent during ultimate attack with stronger force
             const ultimateAttackSpeed = 500;
@@ -445,10 +461,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update player movement - only allow control when not in automated sequences or attacks
+      // Update player movement - only allow control when not in automated sequences, attacks, or dodges
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds && 
           !playerBey.isInBlueLoop && !playerBey.isChargeDashing && 
-          !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive) {
+          !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive && !playerBey.isDodging) {
         const direction = getMovementDirection();
         
         if (direction.x !== 0 || direction.y !== 0) {
@@ -477,12 +493,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
         // AI Special Moves Logic
         if (!aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
-          // Ultimate Attack: Use when close (40-100 units), has enough spin (100+), and random chance
-          if (targetDistance >= 40 && targetDistance <= 100 && aiBey.spin >= 100 && Math.random() < 0.015) {
+          // Ultimate Attack: 150 units distance, requires 100+ spin
+          const canAttack = !aiBey.attackCooldownEnd || newState.gameTime >= aiBey.attackCooldownEnd;
+          if (canAttack && targetDistance >= 60 && targetDistance <= 150 && aiBey.spin >= 100 && Math.random() < 0.015) {
             aiBey.spin = Math.max(0, aiBey.spin - 100);
             aiBey.ultimateAttackActive = true;
             aiBey.attackStartPosition = { ...aiBey.position };
-            aiBey.attackTargetDistance = 40;
+            aiBey.attackTargetDistance = 150; // 150 units for ultimate
+            aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
             
             const normalizedDirection = {
               x: targetDirection.x / targetDistance,
@@ -492,11 +510,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             aiBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
             aiBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
           }
-          // Heavy Attack: Use when at medium range (30-80 units) and random chance
-          else if (targetDistance >= 30 && targetDistance <= 80 && Math.random() < 0.02) {
+          // Heavy Attack: 100 units distance at medium range
+          else if (canAttack && targetDistance >= 40 && targetDistance <= 120 && Math.random() < 0.02) {
             aiBey.heavyAttackActive = true;
             aiBey.attackStartPosition = { ...aiBey.position };
-            aiBey.attackTargetDistance = 20;
+            aiBey.attackTargetDistance = 100; // 100 units for heavy
+            aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
             
             const normalizedDirection = {
               x: targetDirection.x / targetDistance,
@@ -506,11 +525,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             aiBey.velocity.x = normalizedDirection.x * attackSpeed;
             aiBey.velocity.y = normalizedDirection.y * attackSpeed;
           }
-          // Dodge: Use when very close (less than 50 units), has spin, and random chance
+          // Dodge: Fixed 50 units distance when very close
           else if (targetDistance < 50 && aiBey.spin >= 20) {
             const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
             if (canDodge && Math.random() < 0.025) {
               aiBey.spin = Math.max(0, aiBey.spin - 20);
+              aiBey.isDodging = true;
+              aiBey.attackStartPosition = { ...aiBey.position };
+              aiBey.attackTargetDistance = 50; // Fixed 50 units
               const dodgeSpeed = 400;
               // Randomly dodge left or right
               if (Math.random() < 0.5) {
@@ -518,16 +540,22 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
               } else {
                 aiBey.velocity.x -= dodgeSpeed;
               }
-              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
-              aiBey.isDodging = true;
+              aiBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
               aiBey.lastDodgeTime = Date.now();
             }
           }
         }
 
-        // Clear dodging flag after animation completes
-        if (aiBey.isDodging && aiBey.lastDodgeTime && Date.now() - aiBey.lastDodgeTime > 500) {
-          aiBey.isDodging = false;
+        // Clear dodging flag after distance traveled
+        if (aiBey.isDodging && aiBey.attackStartPosition && aiBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(aiBey.position, aiBey.attackStartPosition)
+          );
+          if (distanceTraveled >= aiBey.attackTargetDistance) {
+            aiBey.isDodging = false;
+            aiBey.attackStartPosition = undefined;
+            aiBey.attackTargetDistance = undefined;
+          }
         }
 
         // Check if AI heavy attack distance traveled
@@ -577,13 +605,20 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             aiBey.velocity.x += ((targetVelocity.x - aiBey.velocity.x) * acceleration * deltaTime) / 100;
             aiBey.velocity.y += ((targetVelocity.y - aiBey.velocity.y) * acceleration * deltaTime) / 100;
           }
+        } else {
+          // Apply slight deceleration during special moves to prevent sliding
+          const deceleration = 0.95;
+          if (!aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
+            aiBey.velocity.x *= deceleration;
+            aiBey.velocity.y *= deceleration;
+          }
         }
       }
 
       // Update opponent movement in multiplayer mode
       if (isMultiplayer && aiBey && !aiBey.isDead && !aiBey.isOutOfBounds && 
           !aiBey.isInBlueLoop && !aiBey.isChargeDashing && 
-          !aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
+          !aiBey.heavyAttackActive && !aiBey.ultimateAttackActive && !aiBey.isDodging) {
         // Apply opponent's input direction
         const direction = opponentInputRef.current;
         
@@ -614,52 +649,74 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             y: directionToPlayer.y / distanceToPlayer,
           } : { x: 0, y: 0 };
 
-          // Dodge right
+          // Dodge right - Fixed 50 units
           if (opponentSpecialActionsRef.current.dodgeRight) {
             const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
             if (canDodge && aiBey.spin >= 20) {
               aiBey.spin = Math.max(0, aiBey.spin - 20);
+              aiBey.isDodging = true;
+              aiBey.attackStartPosition = { ...aiBey.position };
+              aiBey.attackTargetDistance = 50; // Fixed 50 units
               const dodgeSpeed = 400;
               aiBey.velocity.x += dodgeSpeed;
-              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
-              aiBey.isDodging = true;
+              aiBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
               aiBey.lastDodgeTime = Date.now();
             }
             opponentSpecialActionsRef.current.dodgeRight = false;
           }
 
-          // Dodge left
+          // Dodge left - Fixed 50 units
           if (opponentSpecialActionsRef.current.dodgeLeft) {
             const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
             if (canDodge && aiBey.spin >= 20) {
               aiBey.spin = Math.max(0, aiBey.spin - 20);
+              aiBey.isDodging = true;
+              aiBey.attackStartPosition = { ...aiBey.position };
+              aiBey.attackTargetDistance = 50; // Fixed 50 units
               const dodgeSpeed = 400;
               aiBey.velocity.x -= dodgeSpeed;
-              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
-              aiBey.isDodging = true;
+              aiBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
               aiBey.lastDodgeTime = Date.now();
             }
             opponentSpecialActionsRef.current.dodgeLeft = false;
           }
 
-          // Heavy attack
+          // Clear dodging flag when distance traveled
+          if (aiBey.isDodging && aiBey.attackStartPosition && aiBey.attackTargetDistance) {
+            const distanceTraveled = vectorLength(
+              vectorSubtract(aiBey.position, aiBey.attackStartPosition)
+            );
+            if (distanceTraveled >= aiBey.attackTargetDistance) {
+              aiBey.isDodging = false;
+              aiBey.attackStartPosition = undefined;
+              aiBey.attackTargetDistance = undefined;
+            }
+          }
+
+          // Heavy attack - 100 units
           if (opponentSpecialActionsRef.current.heavyAttack) {
-            aiBey.heavyAttackActive = true;
-            aiBey.attackStartPosition = { ...aiBey.position };
-            aiBey.attackTargetDistance = 20;
-            const attackSpeed = 350;
-            aiBey.velocity.x = normalizedDirection.x * attackSpeed;
-            aiBey.velocity.y = normalizedDirection.y * attackSpeed;
+            const canAttack = !aiBey.attackCooldownEnd || newState.gameTime >= aiBey.attackCooldownEnd;
+            if (canAttack) {
+              aiBey.heavyAttackActive = true;
+              aiBey.attackStartPosition = { ...aiBey.position };
+              aiBey.attackTargetDistance = 100; // 100 units
+              aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
+              const attackSpeed = 350;
+              aiBey.velocity.x = normalizedDirection.x * attackSpeed;
+              aiBey.velocity.y = normalizedDirection.y * attackSpeed;
+            }
             opponentSpecialActionsRef.current.heavyAttack = false;
           }
 
-          // Ultimate attack
+          // Ultimate attack - 150 units
           if (opponentSpecialActionsRef.current.ultimateAttack) {
-            if (aiBey.spin >= 100) {
+            const canAttack = !aiBey.attackCooldownEnd || newState.gameTime >= aiBey.attackCooldownEnd;
+            if (canAttack && aiBey.spin >= 100) {
               aiBey.spin = Math.max(0, aiBey.spin - 100);
               aiBey.ultimateAttackActive = true;
               aiBey.attackStartPosition = { ...aiBey.position };
-              aiBey.attackTargetDistance = 40;
+              aiBey.attackTargetDistance = 150; // 150 units
+              aiBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
               const ultimateAttackSpeed = 500;
               aiBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
               aiBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
