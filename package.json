@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run dev:next\" \"npm run dev:socket\" --names \"NEXT,SOCKET\" --prefix-colors \"cyan,magenta\"",
+    "dev:next": "next dev",
     "dev:socket": "node server.js",
     "build": "next build",
     "start": "node server.js",
@@ -88,6 +89,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "autoprefixer": "^10.4.17",
+    "concurrently": "^9.2.1",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.0",
     "postcss": "^8.4.33",
