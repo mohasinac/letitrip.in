@@ -449,31 +449,113 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update AI movement
+      // Update AI movement and special actions
       if (aiBey && playerBey && !aiBey.isDead && !aiBey.isOutOfBounds && !aiBey.isInBlueLoop && !aiBey.isChargeDashing) {
         const targetDirection = vectorSubtract(playerBey.position, aiBey.position);
         const targetDistance = vectorLength(targetDirection);
 
-        const randomFactor = 0.4; // Increased from 0.3 for less accurate AI
-        const randomAngle = Math.random() * Math.PI * 2;
-        const randomX = Math.cos(randomAngle) * randomFactor;
-        const randomY = Math.sin(randomAngle) * randomFactor;
+        // AI Special Moves Logic
+        if (!aiBey.heavyAttackActive && !aiBey.ultimateAttackActive) {
+          // Ultimate Attack: Use when close (40-100 units), has enough spin (100+), and random chance
+          if (targetDistance >= 40 && targetDistance <= 100 && aiBey.spin >= 100 && Math.random() < 0.015) {
+            aiBey.spin = Math.max(0, aiBey.spin - 100);
+            aiBey.ultimateAttackActive = true;
+            aiBey.attackStartPosition = { ...aiBey.position };
+            aiBey.attackTargetDistance = 40;
+            
+            const normalizedDirection = {
+              x: targetDirection.x / targetDistance,
+              y: targetDirection.y / targetDistance,
+            };
+            const ultimateAttackSpeed = 500;
+            aiBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
+            aiBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
+          }
+          // Heavy Attack: Use when at medium range (30-80 units) and random chance
+          else if (targetDistance >= 30 && targetDistance <= 80 && Math.random() < 0.02) {
+            aiBey.heavyAttackActive = true;
+            aiBey.attackStartPosition = { ...aiBey.position };
+            aiBey.attackTargetDistance = 20;
+            
+            const normalizedDirection = {
+              x: targetDirection.x / targetDistance,
+              y: targetDirection.y / targetDistance,
+            };
+            const attackSpeed = 350;
+            aiBey.velocity.x = normalizedDirection.x * attackSpeed;
+            aiBey.velocity.y = normalizedDirection.y * attackSpeed;
+          }
+          // Dodge: Use when very close (less than 50 units), has spin, and random chance
+          else if (targetDistance < 50 && aiBey.spin >= 20) {
+            const canDodge = !aiBey.dodgeCooldownEnd || newState.gameTime >= aiBey.dodgeCooldownEnd;
+            if (canDodge && Math.random() < 0.025) {
+              aiBey.spin = Math.max(0, aiBey.spin - 20);
+              const dodgeSpeed = 400;
+              // Randomly dodge left or right
+              if (Math.random() < 0.5) {
+                aiBey.velocity.x += dodgeSpeed;
+              } else {
+                aiBey.velocity.x -= dodgeSpeed;
+              }
+              aiBey.dodgeCooldownEnd = newState.gameTime + 0.5;
+              aiBey.isDodging = true;
+              aiBey.lastDodgeTime = Date.now();
+            }
+          }
+        }
 
-        if (targetDistance > 60) {
-          const maxSpeed = 180; // Reduced from 220 for slower AI
-          const acceleration = 380; // Reduced from 450 for slower AI response
-          const normalizedDirection = {
-            x: targetDirection.x / targetDistance + randomX,
-            y: targetDirection.y / targetDistance + randomY,
-          };
+        // Clear dodging flag after animation completes
+        if (aiBey.isDodging && aiBey.lastDodgeTime && Date.now() - aiBey.lastDodgeTime > 500) {
+          aiBey.isDodging = false;
+        }
 
-          const targetVelocity = {
-            x: normalizedDirection.x * maxSpeed,
-            y: normalizedDirection.y * maxSpeed,
-          };
+        // Check if AI heavy attack distance traveled
+        if (aiBey.heavyAttackActive && aiBey.attackStartPosition && aiBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(aiBey.position, aiBey.attackStartPosition)
+          );
+          if (distanceTraveled >= aiBey.attackTargetDistance) {
+            aiBey.heavyAttackActive = false;
+            aiBey.attackStartPosition = undefined;
+            aiBey.attackTargetDistance = undefined;
+          }
+        }
 
-          aiBey.velocity.x += ((targetVelocity.x - aiBey.velocity.x) * acceleration * deltaTime) / 100;
-          aiBey.velocity.y += ((targetVelocity.y - aiBey.velocity.y) * acceleration * deltaTime) / 100;
+        // Check if AI ultimate attack distance traveled
+        if (aiBey.ultimateAttackActive && aiBey.attackStartPosition && aiBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(aiBey.position, aiBey.attackStartPosition)
+          );
+          if (distanceTraveled >= aiBey.attackTargetDistance) {
+            aiBey.ultimateAttackActive = false;
+            aiBey.attackStartPosition = undefined;
+            aiBey.attackTargetDistance = undefined;
+          }
+        }
+
+        // Normal AI movement (only when not attacking or dodging)
+        if (!aiBey.heavyAttackActive && !aiBey.ultimateAttackActive && !aiBey.isDodging) {
+          const randomFactor = 0.4; // Increased from 0.3 for less accurate AI
+          const randomAngle = Math.random() * Math.PI * 2;
+          const randomX = Math.cos(randomAngle) * randomFactor;
+          const randomY = Math.sin(randomAngle) * randomFactor;
+
+          if (targetDistance > 60) {
+            const maxSpeed = 180; // Reduced from 220 for slower AI
+            const acceleration = 380; // Reduced from 450 for slower AI response
+            const normalizedDirection = {
+              x: targetDirection.x / targetDistance + randomX,
+              y: targetDirection.y / targetDistance + randomY,
+            };
+
+            const targetVelocity = {
+              x: normalizedDirection.x * maxSpeed,
+              y: normalizedDirection.y * maxSpeed,
+            };
+
+            aiBey.velocity.x += ((targetVelocity.x - aiBey.velocity.x) * acceleration * deltaTime) / 100;
+            aiBey.velocity.y += ((targetVelocity.y - aiBey.velocity.y) * acceleration * deltaTime) / 100;
+          }
         }
       }
 
