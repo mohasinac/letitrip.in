@@ -14,6 +14,21 @@ const handle = app.getRequestHandler();
 const rooms = new Map();
 const players = new Map();
 
+// Server capacity limits
+const MAX_ROOMS = 10; // Maximum 10 concurrent games
+const MAX_PLAYERS = MAX_ROOMS * 2; // 20 players max
+
+// Helper function to check server capacity
+function isServerFull() {
+  // Count all players (in rooms + waiting)
+  const totalPlayers = players.size;
+  const totalRooms = rooms.size;
+  
+  console.log(`Server status: ${totalPlayers}/${MAX_PLAYERS} players, ${totalRooms}/${MAX_ROOMS} rooms`);
+  
+  return totalPlayers >= MAX_PLAYERS || totalRooms >= MAX_ROOMS;
+}
+
 app.prepare().then(() => {
   const httpServer = createServer(async (req, res) => {
     try {
