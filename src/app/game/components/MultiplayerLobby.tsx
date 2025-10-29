@@ -96,6 +96,13 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
       }, 3000);
     });
 
+    socket.on("server-full", (data) => {
+      setError(
+        `Server is full! ${data.currentPlayers}/${data.maxPlayers} players online. Please try again in a few minutes.`
+      );
+      setStatus("name-entry");
+    });
+
     return () => {
       socket.off("room-joined");
       socket.off("opponent-joined");
@@ -103,6 +110,7 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
       socket.off("wait-extended");
       socket.off("final-timeout");
       socket.off("opponent-disconnected");
+      socket.off("server-full");
     };
   }, [socket, onGameStart]);
 

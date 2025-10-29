@@ -53,6 +53,17 @@ app.prepare().then(() => {
 
     // Join room
     socket.on('join-room', ({ playerName }) => {
+      // CHECK SERVER CAPACITY FIRST
+      if (isServerFull()) {
+        socket.emit('server-full', {
+          message: 'Server is at capacity. Please try again later.',
+          currentPlayers: players.size,
+          maxPlayers: MAX_PLAYERS,
+        });
+        console.log(`Server full - rejected player: ${playerName}`);
+        return; // Don't allow joining
+      }
+
       // Find available room or create new one
       let roomId = null;
       let playerNumber = null;
