@@ -129,6 +129,14 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
             // Log collision from opponent's perspective for debugging
             console.log("Opponent collision:", data);
           },
+          onServerCollisionResult: (result: any) => {
+            // Apply server-authoritative collision damage
+            console.log("Server collision result:", result);
+            
+            // Note: This callback is called from within useMultiplayer effect
+            // We cannot directly modify gameState here - need to pass to game state hook
+            // For now, log it - will be handled by the game state's collision sync
+          },
           onGameStateUpdate: (state: any) => {
             // Player 2 receives game state updates from Player 1
             console.log("Game state update received:", state);

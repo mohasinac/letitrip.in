@@ -9,6 +9,7 @@ interface UseMultiplayerOptions {
   onOpponentInput?: (input: any) => void;
   onOpponentBeybladeUpdate?: (beybladeState: any) => void;
   onOpponentCollision?: (collisionData: any) => void;
+  onServerCollisionResult?: (result: any) => void; // NEW: Server-authoritative collision result
   onGameStateUpdate?: (gameState: any) => void;
   onMatchResult?: (result: any) => void;
   onOpponentDisconnected?: () => void;
@@ -24,6 +25,7 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     onOpponentInput,
     onOpponentBeybladeUpdate,
     onOpponentCollision,
+    onServerCollisionResult,
     onGameStateUpdate,
     onMatchResult,
     onOpponentDisconnected,
@@ -53,6 +55,11 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
     // Listen for opponent collision events
     if (onOpponentCollision) {
       socket.current.on('opponent-collision', onOpponentCollision);
+    }
+
+    // Listen for server-authoritative collision results
+    if (onServerCollisionResult) {
+      socket.current.on('server-collision-result', onServerCollisionResult);
     }
 
     // Listen for game state updates (Player 2 only)
@@ -88,6 +95,7 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
         socket.current.off('opponent-input');
         socket.current.off('opponent-beyblade-update');
         socket.current.off('opponent-collision');
+        socket.current.off('server-collision-result');
         socket.current.off('game-state-update');
         socket.current.off('match-result');
         socket.current.off('opponent-disconnected');
@@ -96,7 +104,7 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
         socket.current.off('opponent-cancelled-rematch');
       }
     };
-  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onOpponentCollision, onGameStateUpdate, onMatchResult, onOpponentDisconnected, onRematchAccepted, onOpponentWantsRematch, onOpponentCancelledRematch]);
+  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onOpponentCollision, onServerCollisionResult, onGameStateUpdate, onMatchResult, onOpponentDisconnected, onRematchAccepted, onOpponentWantsRematch, onOpponentCancelledRematch]);
 
   // Send input to opponent
   const sendInput = useCallback((inputData: any) => {

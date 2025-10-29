@@ -3,12 +3,17 @@ import { vectorDistance, vectorNormalize, vectorSubtract, vectorAdd, vectorMulti
 
 /**
  * Collision detection and response utilities
+ * NOTE: This file contains the OLD acceleration-based collision system.
+ * For NEW physics-based collisions, see physicsCollision.ts
  */
 
 export const checkCollision = (bey1: GameBeyblade, bey2: GameBeyblade): boolean => {
   const distance = vectorDistance(bey1.position, bey2.position);
   return distance < (bey1.radius + bey2.radius);
 };
+
+// Re-export for backwards compatibility
+export { checkCollision as default };
 
 export const resolveCollisionWithAcceleration = (bey1: GameBeyblade, bey2: GameBeyblade): void => {
   const distance = vectorDistance(bey1.position, bey2.position);

@@ -4,12 +4,12 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { GameState, GameBeyblade, Stadium, Vector2D } from "../types/game";
 import {
   updateBeyblade,
-  checkCollision,
-  resolveCollisionWithAcceleration,
   createBeyblade,
   vectorSubtract,
   vectorLength,
 } from "../utils/gamePhysics";
+import { checkCollision } from "../utils/collisionUtils";
+import { resolvePhysicsCollision } from "../utils/physicsCollision";
 
 interface UseGameStateOptions {
   onGameEnd?: (winner: GameBeyblade | null) => void;
@@ -250,11 +250,19 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       return { x: 0, y: 0 };
     }
 
-    // Check if player beyblade is in automated sequence (blue loop, charge dash, or attacks)
-    const playerBey = gameState.beyblades.find(b => b.isPlayer);
-    if (playerBey && (playerBey.isInBlueLoop || playerBey.isChargeDashing || 
-                      playerBey.heavyAttackActive || playerBey.ultimateAttackActive)) {
-      return { x: 0, y: 0 }; // No user control during automated sequences or attacks
+    // In multiplayer, find MY beyblade by player number (not just isPlayer)
+    // Player 1 controls beyblade at index 0, Player 2 controls beyblade at index 1
+    const myBeybladeIndex = isMultiplayer ? (playerNumber - 1) : 0;
+    const playerBey = gameState.beyblades[myBeybladeIndex];
+    
+    if (!playerBey) {
+      return { x: 0, y: 0 };
+    }
+
+    // Players can now control during loops and charge dash for special moves
+    // But not during heavy/ultimate attacks or dodges
+    if (playerBey.heavyAttackActive || playerBey.ultimateAttackActive || playerBey.isDodging) {
+      return { x: 0, y: 0 }; // No control during active attacks/dodges
     }
 
     // GAMEPAD MODE: Use virtual D-Pad or keyboard
@@ -313,8 +321,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       if (!prevState.isPlaying && !prevState.countdownActive) return prevState;
 
       const newState = { ...prevState };
-      const playerBey = newState.beyblades.find((b) => b.isPlayer);
-      const aiBey = newState.beyblades.find((b) => !b.isPlayer);
+      
+      // In multiplayer, identify MY beyblade and OPPONENT beyblade by index
+      // Player 1 = index 0, Player 2 = index 1
+      const myBeybladeIndex = isMultiplayer ? (playerNumber - 1) : 0;
+      const opponentBeybladeIndex = isMultiplayer ? (playerNumber === 1 ? 1 : 0) : 1;
+      
+      const playerBey = newState.beyblades[myBeybladeIndex];
+      const aiBey = newState.beyblades[opponentBeybladeIndex];
 
       // Keep beyblades stationary during countdown
       if (newState.countdownActive) {
@@ -327,7 +341,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         return newState;
       }
 
-      // Process special actions for player (only when not in countdown)
+      // Process special actions for player (can now be used during loops/charge dash)
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds) {
         // Calculate direction to opponent for attack movements (if opponent exists)
         let normalizedDirection = { x: 0, y: 0 };
@@ -340,35 +354,33 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           } : { x: 0, y: 0 };
         }
 
-        // Process dodge right (1 or right click) - Fixed 50 units distance
+        // Process dodge right (2 or right click) - Fixed 50 units distance
         if (specialActionsRef.current.dodgeRight) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
           if (canDodge && playerBey.spin >= 20) {
             playerBey.spin = Math.max(0, playerBey.spin - 20);
-            // Dodge right with fixed distance
             playerBey.isDodging = true;
             playerBey.attackStartPosition = { ...playerBey.position };
-            playerBey.attackTargetDistance = 50; // Fixed 50 units
+            playerBey.attackTargetDistance = 50;
             const dodgeSpeed = 400;
             playerBey.velocity.x += dodgeSpeed;
-            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
+            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0;
             playerBey.lastDodgeTime = Date.now();
           }
           specialActionsRef.current.dodgeRight = false;
         }
         
-        // Process dodge left (3 or middle button) - Fixed 50 units distance
+        // Process dodge left (1 or left click) - Fixed 50 units distance
         if (specialActionsRef.current.dodgeLeft) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
           if (canDodge && playerBey.spin >= 20) {
             playerBey.spin = Math.max(0, playerBey.spin - 20);
-            // Dodge left with fixed distance
             playerBey.isDodging = true;
             playerBey.attackStartPosition = { ...playerBey.position };
-            playerBey.attackTargetDistance = 50; // Fixed 50 units
+            playerBey.attackTargetDistance = 50;
             const dodgeSpeed = 400;
             playerBey.velocity.x -= dodgeSpeed;
-            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0; // 2 second cooldown
+            playerBey.dodgeCooldownEnd = newState.gameTime + 2.0;
             playerBey.lastDodgeTime = Date.now();
           }
           specialActionsRef.current.dodgeLeft = false;
@@ -386,7 +398,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           }
         }
         
-        // Process heavy attack (2 or right click) - 100 units travel distance
+        // Process heavy attack (3 or middle mouse) - Travel in joystick/mouse direction
         if (specialActionsRef.current.heavyAttack) {
           const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
           if (canAttack) {
@@ -395,15 +407,20 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             playerBey.attackTargetDistance = 100; // Travel 100 units
             playerBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
             
-            // Move towards opponent during heavy attack
+            // Move in current joystick/mouse direction (or towards opponent if no input)
+            const currentDirection = getMovementDirection();
+            const attackDirection = (currentDirection.x !== 0 || currentDirection.y !== 0)
+              ? currentDirection
+              : normalizedDirection; // Fall back to opponent direction
+              
             const attackSpeed = 350;
-            playerBey.velocity.x = normalizedDirection.x * attackSpeed;
-            playerBey.velocity.y = normalizedDirection.y * attackSpeed;
+            playerBey.velocity.x = attackDirection.x * attackSpeed;
+            playerBey.velocity.y = attackDirection.y * attackSpeed;
           }
           specialActionsRef.current.heavyAttack = false;
         }
         
-        // Process ultimate attack (4 or double click) - 150 units travel distance
+        // Process ultimate attack (4 or double click) - Travel in joystick/mouse direction
         if (specialActionsRef.current.ultimateAttack) {
           const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
           if (canAttack && playerBey.spin >= 100) { // Requires 100 spin
@@ -413,10 +430,15 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             playerBey.attackTargetDistance = 150; // Travel 150 units
             playerBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
             
-            // Move towards opponent during ultimate attack with stronger force
+            // Move in current joystick/mouse direction (or towards opponent if no input)
+            const currentDirection = getMovementDirection();
+            const attackDirection = (currentDirection.x !== 0 || currentDirection.y !== 0)
+              ? currentDirection
+              : normalizedDirection; // Fall back to opponent direction
+              
             const ultimateAttackSpeed = 500;
-            playerBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
-            playerBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
+            playerBey.velocity.x = attackDirection.x * ultimateAttackSpeed;
+            playerBey.velocity.y = attackDirection.y * ultimateAttackSpeed;
           }
           specialActionsRef.current.ultimateAttack = false;
         }
@@ -462,15 +484,15 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update player movement - only allow control when not in automated sequences, attacks, or dodges
+      // Update player movement - allow control except during attacks and dodges
+      // Players can now move during loops and charge dash
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds && 
-          !playerBey.isInBlueLoop && !playerBey.isChargeDashing && 
           !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive && !playerBey.isDodging) {
         const direction = getMovementDirection();
         
         if (direction.x !== 0 || direction.y !== 0) {
-          const maxSpeed = 250; // Increased from 200 for faster movement
-          const acceleration = 500; // Increased from 400 for quicker response
+          const maxSpeed = 250;
+          const acceleration = 500;
           const targetVelocity = {
             x: direction.x * maxSpeed,
             y: direction.y * maxSpeed,
@@ -479,7 +501,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           playerBey.velocity.x += ((targetVelocity.x - playerBey.velocity.x) * acceleration * deltaTime) / 100;
           playerBey.velocity.y += ((targetVelocity.y - playerBey.velocity.y) * acceleration * deltaTime) / 100;
         } else {
-          const deceleration = 0.90; // Slightly higher deceleration for more responsive stops
+          const deceleration = 0.90;
           playerBey.velocity = {
             x: playerBey.velocity.x * deceleration,
             y: playerBey.velocity.y * deceleration,
@@ -648,24 +670,54 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
               const bey1SpinBefore = bey1.spin;
               const bey2SpinBefore = bey2.spin;
               
-              resolveCollisionWithAcceleration(bey1, bey2);
+              // Use NEW physics-based collision system
+              const collisionResult = resolvePhysicsCollision(bey1, bey2);
               
               // Report collision to multiplayer if this is my beyblade
+              // In multiplayer, send collision to server for authoritative calculation
               if (isMultiplayer && onCollision) {
-                const myBey = bey1.isPlayer ? bey1 : bey2;
-                const opponentBey = bey1.isPlayer ? bey2 : bey1;
-                const spinLoss = bey1.isPlayer 
+                // Determine which beyblade is mine based on player number
+                const myBeybladeIndex = playerNumber - 1;
+                const myBey = newState.beyblades[myBeybladeIndex];
+                const opponentBeybladeIndex = playerNumber === 1 ? 1 : 0;
+                const opponentBey = newState.beyblades[opponentBeybladeIndex];
+                
+                const spinLoss = myBey === bey1 
                   ? (bey1SpinBefore - bey1.spin)
                   : (bey2SpinBefore - bey2.spin);
                 
+                // Send beyblade states to server for authoritative collision calculation
                 onCollision({
+                  bey1: {
+                    mass: bey1.mass,
+                    radius: bey1.radius,
+                    velocity: bey1.velocity,
+                    position: bey1.position,
+                    spin: bey1SpinBefore, // Use pre-collision spin
+                    maxSpin: bey1.maxSpin,
+                    direction: bey1.config.direction,
+                    isChargeDashing: bey1.isChargeDashing,
+                    heavyAttackActive: bey1.heavyAttackActive,
+                    ultimateAttackActive: bey1.ultimateAttackActive,
+                  },
+                  bey2: {
+                    mass: bey2.mass,
+                    radius: bey2.radius,
+                    velocity: bey2.velocity,
+                    position: bey2.position,
+                    spin: bey2SpinBefore, // Use pre-collision spin
+                    maxSpin: bey2.maxSpin,
+                    direction: bey2.config.direction,
+                    isChargeDashing: bey2.isChargeDashing,
+                    heavyAttackActive: bey2.heavyAttackActive,
+                    ultimateAttackActive: bey2.ultimateAttackActive,
+                  },
                   mySpinLoss: spinLoss,
                   myNewSpin: myBey.spin,
-                  myAcceleration: myBey.acceleration,
-                  opponentSpinLoss: bey1.isPlayer 
+                  opponentSpinLoss: myBey === bey1 
                     ? (bey2SpinBefore - bey2.spin)
                     : (bey1SpinBefore - bey1.spin),
-                  collisionForce: Math.abs(bey1.velocity.x - bey2.velocity.x) + Math.abs(bey1.velocity.y - bey2.velocity.y),
+                  collisionForce: collisionResult.collisionForce,
                 });
               }
             }
@@ -830,9 +882,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
   // Function to get current beyblade state for sending to opponent
   const getMyBeybladeState = useCallback(() => {
-    const myBey = gameState.beyblades.find(b => 
-      isMultiplayer ? b.isPlayer : b.isPlayer
-    );
+    // In multiplayer, use player number to find MY beyblade
+    // Player 1 = index 0, Player 2 = index 1
+    const myBeybladeIndex = isMultiplayer ? (playerNumber - 1) : 0;
+    const myBey = gameState.beyblades[myBeybladeIndex];
     
     if (!myBey) return null;
     
@@ -861,7 +914,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   const setOpponentBeybladeState = useCallback((beybladeState: any) => {
     setGameState(prevState => {
       const newState = { ...prevState };
-      const opponentBey = newState.beyblades.find(b => !b.isPlayer);
+      
+      // In multiplayer, opponent is at the opposite index
+      // If I'm Player 1 (index 0), opponent is at index 1
+      // If I'm Player 2 (index 1), opponent is at index 0
+      const opponentBeybladeIndex = isMultiplayer ? (playerNumber === 1 ? 1 : 0) : 1;
+      const opponentBey = newState.beyblades[opponentBeybladeIndex];
       
       if (opponentBey && beybladeState) {
         // Apply the authoritative state from opponent
