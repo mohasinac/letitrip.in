@@ -8,7 +8,7 @@ interface MobileSpecialButtonsProps {
   disabled?: boolean;
 }
 
-const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
+const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
   onActionButton,
   disabled = false,
 }) => {
@@ -174,8 +174,10 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       </Box>
     </>
   );
-});
+};
 
+// Memoized export for performance
+const MobileSpecialButtons = React.memo(MobileSpecialButtonsComponent);
 MobileSpecialButtons.displayName = "MobileSpecialButtons";
 
 export default MobileSpecialButtons;
