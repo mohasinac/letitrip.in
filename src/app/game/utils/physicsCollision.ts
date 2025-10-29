@@ -162,6 +162,8 @@ export function calculatePhysicsBasedDamage(
   knockback1: Vector2D;
   knockback2: Vector2D;
   collisionForce: number;
+  spinSteal1: number;
+  spinSteal2: number;
 } {
   // 1. Calculate angular velocities
   const omega1 = calculateAngularVelocity(bey1.spin, bey1.maxSpin, bey1.direction);
@@ -222,9 +224,9 @@ export function calculatePhysicsBasedDamage(
   const massRatio1 = bey2.mass / totalMass; // Bey1 takes less damage if bey2 is heavier
   const massRatio2 = bey1.mass / totalMass; // Bey2 takes less damage if bey1 is heavier
   
-  // Momentum-based damage (REDUCED for longer battles)
-  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.08; // Reduced from 0.15
-  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.08; // Reduced from 0.15
+  // Momentum-based damage - Raw calculation
+  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1);
+  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2);
   
   // 12. Apply special attack multipliers
   const bey1AttackMultiplier = bey1.ultimateAttackActive ? 2.0 : bey1.heavyAttackActive ? 1.5 : 1.0;
@@ -242,6 +244,26 @@ export function calculatePhysicsBasedDamage(
   damage1 *= (1 + spinResistance1 * 0.5);
   damage2 *= (1 + spinResistance2 * 0.5);
   
+  // 14b. Spin Stealing for Opposite Spins (Realistic Physics)
+  // When opposite spins collide, they equalize - lower spin steals from higher spin
+  let spinSteal1 = 0;
+  let spinSteal2 = 0;
+  
+  if (isOppositeSpins) {
+    const spinDifference = bey2.spin - bey1.spin;
+    const spinTransferRate = 0.15; // 15% of spin difference transfers
+    
+    if (spinDifference > 0) {
+      // Bey2 has more spin, transfers to bey1
+      spinSteal1 = spinDifference * spinTransferRate; // Bey1 gains spin
+      spinSteal2 = -spinDifference * spinTransferRate * 0.5; // Bey2 loses less (more efficient)
+    } else {
+      // Bey1 has more spin, transfers to bey2
+      spinSteal2 = Math.abs(spinDifference) * spinTransferRate; // Bey2 gains spin
+      spinSteal1 = -Math.abs(spinDifference) * spinTransferRate * 0.5; // Bey1 loses less
+    }
+  }
+  
   // 15. Calculate knockback based on momentum transfer
   // Use impulse-momentum theorem: J = Δp = F * Δt
   
@@ -256,10 +278,26 @@ export function calculatePhysicsBasedDamage(
   const knockback1 = vectorMultiply(collisionNormal, -knockbackMagnitude1);
   const knockback2 = vectorMultiply(collisionNormal, knockbackMagnitude2);
   
-  // 16. Cap damage values for gameplay balance (REDUCED for longer battles)
-  const maxDamage = 120; // Reduced from 200
-  damage1 = Math.min(maxDamage, Math.max(0, damage1));
-  damage2 = Math.min(maxDamage, Math.max(0, damage2));
+  // 16. Normalize damage to 0-100 range using logarithmic scaling
+  // This provides natural scaling without artificial caps
+  // Formula: damage_normalized = (log(1 + damage_raw) / log(1 + max_expected_raw)) * 100
+  
+  // Expected maximum raw damage (based on typical high-speed, high-spin collisions)
+  // With mass=20, velocity=200, spin=2000, we get raw damage around 100,000-200,000
+  const maxExpectedRawDamage = 150000;
+  
+  // Logarithmic normalization to 0-100 range
+  // Using log ensures smooth scaling: low damage = low output, high damage = high output
+  const normalizeDamage = (rawDamage: number): number => {
+    if (rawDamage <= 0) return 0;
+    // Log base scaling: log(1 + x) / log(1 + max) gives 0-1 range, then multiply by 100
+    const normalized = (Math.log(1 + rawDamage) / Math.log(1 + maxExpectedRawDamage)) * 100;
+    // Clamp to 0-100 range
+    return Math.max(0, Math.min(100, normalized));
+  };
+  
+  damage1 = normalizeDamage(damage1);
+  damage2 = normalizeDamage(damage2);
   
   return {
     damage1,
@@ -267,6 +305,8 @@ export function calculatePhysicsBasedDamage(
     knockback1,
     knockback2,
     collisionForce,
+    spinSteal1,
+    spinSteal2,
   };
 }
 
@@ -282,11 +322,17 @@ export function applyCollisionResults(
     damage2: number;
     knockback1: Vector2D;
     knockback2: Vector2D;
+    spinSteal1?: number;
+    spinSteal2?: number;
   }
 ): void {
-  // Apply damage (reduce spin)
-  bey1.spin = Math.max(0, bey1.spin - collisionResult.damage1);
-  bey2.spin = Math.max(0, bey2.spin - collisionResult.damage2);
+  // Apply damage (reduce spin) and spin stealing
+  const spinSteal1 = collisionResult.spinSteal1 || 0;
+  const spinSteal2 = collisionResult.spinSteal2 || 0;
+  
+  // Apply damage and spin stealing together
+  bey1.spin = Math.max(0, Math.min(bey1.maxSpin, bey1.spin - collisionResult.damage1 + spinSteal1));
+  bey2.spin = Math.max(0, Math.min(bey2.maxSpin, bey2.spin - collisionResult.damage2 + spinSteal2));
   
   // Apply knockback to positions
   // Cap knockback distance for gameplay control

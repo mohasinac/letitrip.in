@@ -122,9 +122,9 @@ function calculateServerCollisionDamage(bey1Data, bey2Data) {
   const massRatio1 = bey2Data.mass / totalMass;
   const massRatio2 = bey1Data.mass / totalMass;
   
-  // Base damage (REDUCED for longer battles)
-  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1) * 0.08; // Reduced from 0.15
-  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2) * 0.08; // Reduced from 0.15
+  // Base damage - Raw calculation
+  const baseDamage1 = (p2 * massRatio1 + angularMomentumInteraction * massRatio1);
+  const baseDamage2 = (p1 * massRatio2 + angularMomentumInteraction * massRatio2);
   
   // Attack multipliers
   const bey1AttackMultiplier = bey1Data.ultimateAttackActive ? 2.0 : bey1Data.heavyAttackActive ? 1.5 : 1.0;
@@ -141,10 +141,36 @@ function calculateServerCollisionDamage(bey1Data, bey2Data) {
   damage1 *= (1 + spinResistance1 * 0.5);
   damage2 *= (1 + spinResistance2 * 0.5);
   
-  // Cap damage (REDUCED for longer battles)
-  const maxDamage = 120; // Reduced from 200
-  damage1 = Math.min(maxDamage, Math.max(0, damage1));
-  damage2 = Math.min(maxDamage, Math.max(0, damage2));
+  // Spin Stealing for Opposite Spins (Realistic Physics)
+  let spinSteal1 = 0;
+  let spinSteal2 = 0;
+  
+  if (isOppositeSpins) {
+    const spinDifference = bey2Data.spin - bey1Data.spin;
+    const spinTransferRate = 0.15; // 15% of spin difference transfers
+    
+    if (spinDifference > 0) {
+      // Bey2 has more spin, transfers to bey1
+      spinSteal1 = spinDifference * spinTransferRate; // Bey1 gains spin
+      spinSteal2 = -spinDifference * spinTransferRate * 0.5; // Bey2 loses less (more efficient)
+    } else {
+      // Bey1 has more spin, transfers to bey2
+      spinSteal2 = Math.abs(spinDifference) * spinTransferRate; // Bey2 gains spin
+      spinSteal1 = -Math.abs(spinDifference) * spinTransferRate * 0.5; // Bey1 loses less
+    }
+  }
+  
+  // Normalize damage to 0-100 range using logarithmic scaling
+  const maxExpectedRawDamage = 150000;
+  
+  const normalizeDamage = (rawDamage) => {
+    if (rawDamage <= 0) return 0;
+    const normalized = (Math.log(1 + rawDamage) / Math.log(1 + maxExpectedRawDamage)) * 100;
+    return Math.max(0, Math.min(100, normalized));
+  };
+  
+  damage1 = normalizeDamage(damage1);
+  damage2 = normalizeDamage(damage2);
   
   // Calculate knockback
   const dx = bey2Data.position.x - bey1Data.position.x;
@@ -160,6 +186,8 @@ function calculateServerCollisionDamage(bey1Data, bey2Data) {
   return {
     damage1,
     damage2,
+    spinSteal1,
+    spinSteal2,
     knockback1: { x: -normalX * knockbackMagnitude1, y: -normalY * knockbackMagnitude1 },
     knockback2: { x: normalX * knockbackMagnitude2, y: normalY * knockbackMagnitude2 },
     collisionForce,
