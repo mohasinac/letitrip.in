@@ -267,12 +267,13 @@ const GameArena: React.FC<GameArenaProps> = ({
         touchAction: "none",
         borderColor: theme.palette.primary.main,
         boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
-        aspectRatio: "1/1", // Square aspect ratio
+        aspectRatio: "1/1", // Force square aspect ratio
         width: "100%",
-        maxWidth: "min(100vw, 70vh, 800px)", // Fit within viewport while maintaining square
+        maxWidth: "min(100vw - 2rem, 70vh, 800px)", // Account for padding
         height: "auto",
         display: "block",
         margin: "0 auto",
+        imageRendering: "crisp-edges", // Prevent image smoothing/distortion
       }}
       onMouseMove={handleMouseMove}
       onTouchStart={handleTouchStart}
@@ -434,6 +435,119 @@ const drawBeyblade = (
     ctx.fill();
   }
 
+  // Draw dodge animation effects
+  const time = Date.now() / 1000;
+  if (beyblade.lastDodgeTime && Date.now() - beyblade.lastDodgeTime < 500) {
+    const dodgeProgress = (Date.now() - beyblade.lastDodgeTime) / 500;
+    const dodgeOpacity = 1 - dodgeProgress;
+
+    // Afterimage trail effect
+    for (let i = 1; i <= 3; i++) {
+      ctx.globalAlpha = dodgeOpacity * (0.3 / i);
+      ctx.fillStyle = "#22C55E";
+      ctx.beginPath();
+      ctx.arc(-i * 15, 0, beyblade.radius * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Speed lines
+    ctx.strokeStyle = `rgba(34, 197, 94, ${dodgeOpacity})`;
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 5; i++) {
+      const angle = (Math.PI * 2 * i) / 5;
+      const startRadius = beyblade.radius + 10;
+      const endRadius = beyblade.radius + 30;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * startRadius, Math.sin(angle) * startRadius);
+      ctx.lineTo(Math.cos(angle) * endRadius, Math.sin(angle) * endRadius);
+      ctx.stroke();
+    }
+  }
+
+  // Draw heavy attack animation (normal attack)
+  if (beyblade.heavyAttackActive && beyblade.heavyAttackEndTime) {
+    const attackProgress =
+      1 - (beyblade.heavyAttackEndTime - Date.now()) / 2000;
+    const attackOpacity = Math.sin(attackProgress * Math.PI);
+
+    // Orange energy ring
+    ctx.strokeStyle = `rgba(251, 146, 60, ${attackOpacity * 0.8})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(0, 0, beyblade.radius + 10 + attackProgress * 15, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Rotating energy particles
+    for (let i = 0; i < 8; i++) {
+      const particleAngle = (Math.PI * 2 * i) / 8 + time * 3;
+      const particleRadius = beyblade.radius + 15;
+      const particleX = Math.cos(particleAngle) * particleRadius;
+      const particleY = Math.sin(particleAngle) * particleRadius;
+
+      ctx.fillStyle = `rgba(251, 146, 60, ${attackOpacity})`;
+      ctx.beginPath();
+      ctx.arc(particleX, particleY, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Draw ultimate attack animation (power attack)
+  if (beyblade.ultimateAttackActive && beyblade.ultimateAttackEndTime) {
+    const ultimateProgress =
+      1 - (beyblade.ultimateAttackEndTime - Date.now()) / 3000;
+    const ultimateOpacity = Math.sin(ultimateProgress * Math.PI);
+
+    // Red energy explosion
+    const explosionRadius = beyblade.radius + ultimateProgress * 50;
+    const gradient = ctx.createRadialGradient(
+      0,
+      0,
+      beyblade.radius,
+      0,
+      0,
+      explosionRadius
+    );
+    gradient.addColorStop(0, `rgba(239, 68, 68, 0)`);
+    gradient.addColorStop(0.5, `rgba(239, 68, 68, ${ultimateOpacity * 0.5})`);
+    gradient.addColorStop(1, `rgba(239, 68, 68, 0)`);
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, explosionRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lightning bolts
+    ctx.strokeStyle = `rgba(255, 215, 0, ${ultimateOpacity})`;
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 6; i++) {
+      const boltAngle = (Math.PI * 2 * i) / 6 + time * 2;
+      const boltLength = explosionRadius * 0.8;
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+
+      // Jagged lightning effect
+      let currentRadius = 0;
+      let currentAngle = boltAngle;
+      while (currentRadius < boltLength) {
+        currentRadius += 10;
+        currentAngle += (Math.random() - 0.5) * 0.3;
+        ctx.lineTo(
+          Math.cos(currentAngle) * currentRadius,
+          Math.sin(currentAngle) * currentRadius
+        );
+      }
+      ctx.stroke();
+    }
+
+    // Text indicator
+    ctx.font = "bold 14px Inter";
+    ctx.fillStyle = `rgba(255, 215, 0, ${ultimateOpacity})`;
+    ctx.textAlign = "center";
+    ctx.fillText("POWER ATTACK!", 0, -beyblade.radius - 25);
+  }
+
   // Draw beyblade
   ctx.rotate(beyblade.rotation);
   const beybladeImage = images.get(
@@ -443,7 +557,9 @@ const drawBeyblade = (
   if (imagesLoaded && beybladeImage) {
     const opacity = beyblade.isOutOfBounds ? 0.4 : 1.0;
     ctx.globalAlpha = opacity;
-    const size = beyblade.radius * 1.8; // Reduced multiplier for smaller visual size
+    // Use 2x the radius for visual size, ensuring it's perfectly square
+    const size = beyblade.radius * 2;
+    // Draw as perfect square to prevent distortion
     ctx.drawImage(beybladeImage, -size / 2, -size / 2, size, size);
     ctx.globalAlpha = 1.0;
   } else {
@@ -653,6 +769,40 @@ const drawGameUI = (
 
     ctx.textAlign = "left";
   }
+
+  // Draw control legend at bottom-left
+  const legendX = 20;
+  const legendY = canvasHeight - 120;
+
+  // Background for legend
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(legendX, legendY, 180, 100);
+  ctx.strokeStyle = colors.primary.main;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(legendX, legendY, 180, 100);
+
+  // Legend title
+  ctx.font = "bold 11px Inter";
+  ctx.fillStyle = colors.primary.main;
+  ctx.textAlign = "left";
+  ctx.fillText("CONTROLS", legendX + 10, legendY + 15);
+
+  // Control mappings
+  ctx.font = "10px Inter";
+  ctx.fillStyle = "#fff";
+  const controls = [
+    "1 / Left Click - Dodge Left",
+    "2 / Right Click - Dodge Right",
+    "3 / Middle Click - Attack",
+    "4 / Double Click - Power",
+    "Mouse / WASD - Movement",
+  ];
+
+  controls.forEach((control, index) => {
+    ctx.fillText(control, legendX + 10, legendY + 33 + index * 13);
+  });
+
+  ctx.textAlign = "center"; // Reset
 };
 
 const drawCornerStats = (

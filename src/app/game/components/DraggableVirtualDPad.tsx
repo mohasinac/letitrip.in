@@ -199,26 +199,35 @@ const DraggableVirtualDPad: React.FC<DraggableVirtualDPadProps> = ({
           <Box
             sx={{
               position: "absolute",
-              top: -8,
-              right: -8,
-              width: 24,
-              height: 24,
-              backgroundColor: "rgba(0, 0, 0, 0.6)",
+              top: -12,
+              right: -12,
+              width: 40,
+              height: 40,
+              backgroundColor: "rgba(59, 130, 246, 0.9)",
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "grab",
               zIndex: 11,
-              border: "2px solid rgba(255, 255, 255, 0.3)",
+              border: "3px solid rgba(255, 255, 255, 0.6)",
+              boxShadow:
+                "0 2px 8px rgba(0,0,0,0.4), 0 0 12px rgba(59,130,246,0.5)",
               "&:active": {
                 cursor: "grabbing",
+                transform: "scale(0.95)",
               },
+              "&:hover": {
+                transform: "scale(1.1)",
+                boxShadow:
+                  "0 4px 12px rgba(0,0,0,0.5), 0 0 16px rgba(59,130,246,0.7)",
+              },
+              transition: "all 0.2s ease",
             }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           >
-            <DragIcon sx={{ fontSize: 14, color: "white" }} />
+            <DragIcon sx={{ fontSize: 20, color: "white" }} />
           </Box>
         )}
 

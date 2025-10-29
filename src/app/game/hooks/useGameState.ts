@@ -109,14 +109,18 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     controlModeRef.current = 'gamepad';
     
     // Map action buttons to special actions
+    // 1 = Dodge Left (keyboard 1, left click)
+    // 2 = Dodge Right (keyboard 2, right click)
+    // 3 = Normal Attack (keyboard 3, middle mouse)
+    // 4 = Power Attack (keyboard 4, double click)
     if (action === 1) {
-      specialActionsRef.current.dodgeRight = true;
+      specialActionsRef.current.dodgeLeft = true;
       specialActionsRef.current.selectChargePoint1 = true;
     } else if (action === 2) {
-      specialActionsRef.current.heavyAttack = true;
+      specialActionsRef.current.dodgeRight = true;
       specialActionsRef.current.selectChargePoint2 = true;
     } else if (action === 3) {
-      specialActionsRef.current.dodgeLeft = true;
+      specialActionsRef.current.heavyAttack = true;
       specialActionsRef.current.selectChargePoint3 = true;
     } else if (action === 4) {
       specialActionsRef.current.ultimateAttack = true;
@@ -136,24 +140,25 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       }
       
       // Special action keys
+      // 1 = Dodge Left
       if (key === "1") {
         event.preventDefault();
-        specialActionsRef.current.dodgeRight = true;
-        // Also used for charge point selection during blue loop
+        specialActionsRef.current.dodgeLeft = true;
         specialActionsRef.current.selectChargePoint1 = true;
       }
+      // 2 = Dodge Right
       if (key === "2") {
         event.preventDefault();
-        specialActionsRef.current.heavyAttack = true;
-        // Also used for charge point selection during blue loop
+        specialActionsRef.current.dodgeRight = true;
         specialActionsRef.current.selectChargePoint2 = true;
       }
+      // 3 = Normal Attack
       if (key === "3") {
         event.preventDefault();
-        specialActionsRef.current.dodgeLeft = true;
-        // Also used for charge point selection during blue loop
+        specialActionsRef.current.heavyAttack = true;
         specialActionsRef.current.selectChargePoint3 = true;
       }
+      // 4 = Power Attack
       if (key === "4") {
         event.preventDefault();
         specialActionsRef.current.ultimateAttack = true;
@@ -167,25 +172,26 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
     const handleMouseDown = (event: MouseEvent) => {
       event.preventDefault();
-      // Right click = 1 (dodge right)
-      if (event.button === 2) {
-        specialActionsRef.current.dodgeRight = true;
+      // Left click = Dodge Left (1)
+      if (event.button === 0) {
+        specialActionsRef.current.dodgeLeft = true;
         specialActionsRef.current.selectChargePoint1 = true;
       }
-      // Left click = 2 (heavy attack)
-      if (event.button === 0) {
-        specialActionsRef.current.heavyAttack = true;
+      // Right click = Dodge Right (2)
+      if (event.button === 2) {
+        specialActionsRef.current.dodgeRight = true;
         specialActionsRef.current.selectChargePoint2 = true;
       }
-      // Middle button = 3 (dodge left)
+      // Middle button = Normal Attack (3)
       if (event.button === 1) {
-        specialActionsRef.current.dodgeLeft = true;
+        specialActionsRef.current.heavyAttack = true;
         specialActionsRef.current.selectChargePoint3 = true;
       }
     };
 
     const handleDoubleClick = (event: MouseEvent) => {
       event.preventDefault();
+      // Double click = Power Attack (4)
       specialActionsRef.current.ultimateAttack = true;
     };
 

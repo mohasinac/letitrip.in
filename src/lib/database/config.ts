@@ -4,7 +4,7 @@
  */
 
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
@@ -27,6 +27,13 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Set auth persistence to LOCAL (survives page reloads and browser tabs)
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
+}
 
 // Initialize Analytics (only on client-side)
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
