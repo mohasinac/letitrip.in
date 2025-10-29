@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free # or starter ($7/month) for always-on
     buildCommand: npm install
-    startCommand: node socket-server.js
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production

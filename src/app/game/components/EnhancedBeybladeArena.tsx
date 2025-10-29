@@ -63,6 +63,30 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   const isMultiplayer = gameMode === "2p";
   const playerNumber = multiplayerData?.playerNumber || 1;
 
+  // Set beyblades from multiplayer data if available
+  useEffect(() => {
+    if (isMultiplayer && multiplayerData) {
+      const player1Data = multiplayerData.player1;
+      const player2Data = multiplayerData.player2;
+
+      if (player1Data?.beyblade && player2Data?.beyblade) {
+        // Set beyblade based on player number
+        if (playerNumber === 1) {
+          setSelectedBeyblade(player1Data.beyblade);
+          setSelectedAIBeyblade(player2Data.beyblade);
+        } else {
+          setSelectedBeyblade(player2Data.beyblade);
+          setSelectedAIBeyblade(player1Data.beyblade);
+        }
+
+        // Auto-start the game after a brief delay to ensure state is set
+        setTimeout(() => {
+          restartGame();
+        }, 100);
+      }
+    }
+  }, [isMultiplayer, multiplayerData, playerNumber, restartGame]);
+
   // Setup multiplayer if in 2P mode
   const multiplayer =
     isMultiplayer && multiplayerData
@@ -142,6 +166,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         onRestart={restartGame}
         availableBeyblades={BEYBLADE_CONFIGS}
         className="w-full"
+        isMultiplayer={isMultiplayer}
       />
 
       {/* Game Arena */}

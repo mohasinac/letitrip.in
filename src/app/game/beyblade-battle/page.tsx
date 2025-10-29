@@ -55,7 +55,14 @@ export default function BeybladeGamePage() {
     setGamePhase("beyblade-select");
   };
 
-  const handleBeybladeSelectComplete = () => {
+  const handleBeybladeSelectComplete = (gameData?: any) => {
+    // Merge the beyblade selection data with existing multiplayer data
+    if (gameData) {
+      setMultiplayerData({
+        ...multiplayerData,
+        ...gameData,
+      });
+    }
     setGamePhase("playing");
   };
 

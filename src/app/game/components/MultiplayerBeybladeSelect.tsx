@@ -15,7 +15,7 @@ import { BEYBLADE_CONFIGS } from "@/constants/beyblades";
 
 interface MultiplayerBeybladeSelectProps {
   roomData: any;
-  onStartGame: () => void;
+  onStartGame: (gameData?: any) => void;
   onCancel: () => void;
 }
 
@@ -35,11 +35,12 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
 
     socket.on("opponent-selected", (data: any) => {
       setOpponentBeyblade(data.beyblade);
-      setOpponentReady(data.ready);
+      setOpponentReady(data.ready || false);
     });
 
-    socket.on("start-game", () => {
-      onStartGame();
+    socket.on("start-game", (data: any) => {
+      // Pass the game data including selected beyblades
+      onStartGame(data);
     });
 
     return () => {
