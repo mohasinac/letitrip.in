@@ -7,6 +7,7 @@
 ### Your Options:
 
 1. **✅ RECOMMENDED: Deploy to Render.com** (see DEPLOYMENT_GUIDE.md)
+
    - Full WebSocket support
    - Free tier available
    - Everything in one place
@@ -23,6 +24,7 @@
 See `DEPLOYMENT_GUIDE.md` for complete instructions.
 
 **Quick Start:**
+
 ```bash
 # 1. Push to GitHub
 git push origin breadcrumbs
@@ -46,19 +48,22 @@ Start: npm start
 ### Part A: Deploy Socket.IO Server to Render
 
 1. **Create Web Service on Render**
+
    ```
    https://render.com → New Web Service
    ```
 
 2. **Configure:**
+
    ```yaml
    Name: beyblade-socket-server
-   Root Directory: . 
+   Root Directory: .
    Build Command: npm install
    Start Command: node server.js
    ```
 
 3. **Environment Variables:**
+
    ```bash
    NODE_ENV=production
    PORT=10000
@@ -73,29 +78,33 @@ Start: npm start
 ### Part B: Deploy Next.js to Vercel
 
 1. **Install Vercel CLI**
+
    ```bash
    npm i -g vercel
    ```
 
 2. **Set Environment Variable (CRITICAL)**
+
    ```bash
    # In Vercel Dashboard → Settings → Environment Variables
    NEXT_PUBLIC_SOCKET_URL=https://beyblade-socket-server.onrender.com
    ```
 
 3. **Deploy**
+
    ```bash
    vercel --prod
    ```
 
 4. **Update CORS in server.js**
+
    ```javascript
    // server.js
    const io = new Server(httpServer, {
      cors: {
-       origin: 'https://your-app.vercel.app', // Your Vercel URL
-       methods: ['GET', 'POST']
-     }
+       origin: "https://your-app.vercel.app", // Your Vercel URL
+       methods: ["GET", "POST"],
+     },
    });
    ```
 
@@ -104,12 +113,14 @@ Start: npm start
 ### Part C: Verify Setup
 
 1. **Check Socket Server Health**
+
    ```
    Visit: https://beyblade-socket-server.onrender.com
    Should show "Cannot GET /" (normal for Socket.IO)
    ```
 
 2. **Test Multiplayer**
+
    ```
    Visit: https://your-app.vercel.app/game/beyblade-battle
    Click "Multiplayer"
@@ -147,12 +158,14 @@ NEXT_PUBLIC_SITE_URL=https://your-app.vercel.app
 ## Cost Comparison
 
 ### Full Render Deployment
+
 ```
 Free Tier: $0/month (spins down after 15min)
 Starter: $7/month (always on)
 ```
 
 ### Split Deployment
+
 ```
 Vercel: FREE (Hobby plan)
 Render (Socket): $7/month (Starter, always on)
@@ -160,6 +173,7 @@ Total: $7/month + more complexity
 ```
 
 ### Why Split Deployment Costs More
+
 - Two platforms to maintain
 - CORS configuration needed
 - More environment variables
@@ -173,12 +187,14 @@ Total: $7/month + more complexity
 ### Issue: "Cannot connect to socket server"
 
 1. **Check Socket Server is Running**
+
    ```bash
    curl https://beyblade-socket-server.onrender.com
    # Should return HTTP 400 or connection response
    ```
 
 2. **Verify Environment Variable**
+
    ```javascript
    // In browser console on Vercel site:
    console.log(process.env.NEXT_PUBLIC_SOCKET_URL);
@@ -197,13 +213,17 @@ Total: $7/month + more complexity
 ### Issue: "Multiplayer not working"
 
 1. **Open Browser DevTools → Network → WS**
+
    - Should see WebSocket connection
    - Should be connected (green dot)
 
 2. **Check Socket.IO Client Code**
+
    ```typescript
    // Should use environment variable
-   const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000');
+   const socket = io(
+     process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000"
+   );
    ```
 
 3. **Verify in Render Logs**
@@ -219,11 +239,13 @@ Total: $7/month + more complexity
 ### Technical Limitations
 
 1. **No Persistent Connections**
+
    - Vercel functions timeout after 10 seconds
    - WebSockets need persistent connections
    - Socket.IO requires long-lived connections
 
 2. **Serverless Architecture**
+
    - Each request = new instance
    - No shared memory between functions
    - Cannot maintain game room state
@@ -237,6 +259,7 @@ Total: $7/month + more complexity
 ### Better Alternatives
 
 **Render.com:**
+
 - ✅ Traditional server (not serverless)
 - ✅ Persistent WebSocket support
 - ✅ Shared memory for game rooms
@@ -244,6 +267,7 @@ Total: $7/month + more complexity
 - ✅ Everything in one place
 
 **Railway.app:**
+
 - ✅ Great for Node.js + WebSockets
 - ✅ $5 credit/month free
 - ✅ Automatic deployments
@@ -254,6 +278,7 @@ Total: $7/month + more complexity
 ## Summary: Choose Your Path
 
 ### Path 1: Render Only (RECOMMENDED) ⭐
+
 ```
 ✅ Simplest setup
 ✅ Everything works out of box
@@ -263,6 +288,7 @@ Total: $7/month + more complexity
 ```
 
 ### Path 2: Vercel + Render (Advanced)
+
 ```
 ⚠️ More complex
 ⚠️ Two platforms to manage
@@ -272,6 +298,7 @@ Total: $7/month + more complexity
 ```
 
 ### Path 3: Railway (Good Alternative)
+
 ```
 ✅ Similar to Render
 ✅ $5 credit/month
@@ -284,17 +311,20 @@ Total: $7/month + more complexity
 ## Quick Decision Guide
 
 **Choose Render if:**
+
 - You want simplest setup
 - First time deploying
 - Want free tier
 - Need WebSockets (YOU DO!)
 
 **Choose Vercel + Render if:**
+
 - Already using Vercel for other features
 - Need Vercel-specific features
 - Okay with split deployment complexity
 
 **Choose Railway if:**
+
 - Want similar to Render
 - Prefer Railway interface
 - Have $5/month budget

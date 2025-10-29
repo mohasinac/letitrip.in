@@ -2,7 +2,7 @@
 
 ## ⚠️ Important: WebSocket Limitations on Vercel
 
-Vercel's serverless architecture **does not support persistent WebSocket connections** needed for Socket.IO. 
+Vercel's serverless architecture **does not support persistent WebSocket connections** needed for Socket.IO.
 
 ### Two Deployment Options:
 
@@ -14,6 +14,7 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 ## Option A: Deploy to Render.com (RECOMMENDED - Full Support)
 
 **Why Render?**
+
 - ✅ Free tier available
 - ✅ Native WebSocket/Socket.IO support
 - ✅ Automatic SSL
@@ -23,12 +24,14 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 ### Steps:
 
 1. **Create Render Account**
+
    ```
    https://render.com
    Sign up with GitHub
    ```
 
 2. **Create Web Service**
+
    ```
    1. New → Web Service
    2. Connect GitHub repo: justforview.in
@@ -36,6 +39,7 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
    ```
 
 3. **Configure Service**
+
    ```yaml
    Name: beyblade-battle
    Environment: Node
@@ -47,6 +51,7 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
    ```
 
 4. **Environment Variables**
+
    ```bash
    NODE_ENV=production
    NEXT_PUBLIC_SITE_URL=https://your-app.onrender.com
@@ -68,11 +73,13 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 ### Part 1: Deploy Next.js to Vercel
 
 1. **Install Vercel CLI**
+
    ```bash
    npm i -g vercel
    ```
 
 2. **Deploy**
+
    ```bash
    vercel --prod
    ```
@@ -88,6 +95,7 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 1. **Create separate repository for Socket server** (or use subdirectory)
 
 2. **Create `socket-server/package.json`**
+
    ```json
    {
      "name": "socket-server",
@@ -104,6 +112,7 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 3. **Move `server.js` to socket-server directory** (or create standalone)
 
 4. **Deploy to Render**
+
    - New Web Service
    - Connect repository
    - Start Command: `npm start`
@@ -112,10 +121,13 @@ Vercel's serverless architecture **does not support persistent WebSocket connect
 5. **Update Socket.IO Client**
    ```typescript
    // src/hooks/useMultiplayer.ts or wherever socket is initialized
-   const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000');
+   const socket = io(
+     process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000"
+   );
    ```
 
 **Cost:**
+
 - Vercel: FREE (Hobby plan)
 - Socket server (Render): FREE or $7/month for always-on
 
@@ -164,6 +176,7 @@ MAX_PLAYERS = 20; // Maximum players (2 per room)
 ```
 
 **When server is full:**
+
 - New players see: "Server is at capacity. Please try again later."
 - Existing games continue normally
 - Players can retry when someone leaves
@@ -175,6 +188,7 @@ MAX_PLAYERS = 20; // Maximum players (2 per room)
 ### Test Checklist
 
 1. **Single Player Mode**
+
    ```
    ✓ Click "Single Player"
    ✓ Game loads and works
@@ -182,6 +196,7 @@ MAX_PLAYERS = 20; // Maximum players (2 per room)
    ```
 
 2. **Multiplayer Mode**
+
    ```
    ✓ Click "Multiplayer"
    ✓ Enter name
@@ -269,11 +284,13 @@ Pro: $5/month
 ### Issue: "Cannot connect to server"
 
 **If using Render:**
+
 1. Check if service is running (may be spun down on free tier)
 2. Check Render logs for errors
 3. Verify CORS settings in `server.js`
 
 **If using Vercel + separate socket server:**
+
 1. Verify `NEXT_PUBLIC_SOCKET_URL` is set correctly
 2. Test socket server URL directly
 3. Check CORS configuration
@@ -281,19 +298,21 @@ Pro: $5/month
 ### Issue: "WebSocket connection failed"
 
 **Check:**
+
 ```javascript
 // server.js - Ensure CORS is configured
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.NEXT_PUBLIC_SITE_URL || '*',
-    methods: ['GET', 'POST']
-  }
+    origin: process.env.NEXT_PUBLIC_SITE_URL || "*",
+    methods: ["GET", "POST"],
+  },
 });
 ```
 
 ### Issue: Players can't find opponents
 
 **Debug in Render logs:**
+
 ```bash
 # Check active rooms and players
 console.log('Rooms:', rooms.size);
@@ -332,6 +351,7 @@ git push
 - Next.js Deployment: https://nextjs.org/docs/deployment
 
 **Need help? Check Render logs:**
+
 ```
 Dashboard → Your Service → Logs
 ```

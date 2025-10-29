@@ -51,11 +51,13 @@ Your app: https://justforview-xxxx.onrender.com
 ### Setup:
 
 1. **Deploy Socket Server to Render**
+
    - Create Web Service
    - Command: `node server.js`
    - Get URL: `https://socket-server.onrender.com`
 
 2. **Deploy Next.js to Vercel**
+
    ```bash
    npm i -g vercel
    vercel --prod
@@ -103,6 +105,7 @@ Your app: https://justforview-xxxx.onrender.com
 ## Support
 
 Need help? Check:
+
 - DEPLOYMENT_GUIDE.md (Render)
 - VERCEL_DEPLOYMENT.md (Vercel limitations)
 - Render Docs: https://render.com/docs
