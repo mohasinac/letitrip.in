@@ -374,19 +374,6 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         />
       )}
 
-      {/* Multiplayer Game Overlay - Only show in 2P mode */}
-      {isMultiplayer && (
-        <MultiplayerGameOverlay
-          playerNumber={playerNumber}
-          gameState={gameState}
-          onBackToMenu={onBackToMenu}
-          onPlayAgain={onPlayAgainMultiplayer}
-          isPlayerWinner={gameState.winner?.isPlayer}
-          winner={gameState.winner}
-          className="w-full max-w-4xl"
-        />
-      )}
-
       {/* Battle Statistics */}
       {gameState.isPlaying && (
         <Box
