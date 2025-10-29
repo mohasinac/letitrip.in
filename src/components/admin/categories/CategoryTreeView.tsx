@@ -75,14 +75,14 @@ function CategoryNode({
   // Check if current category or any descendant matches search
   const matchesSearch = useMemo(() => {
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
     const directMatch =
       category.name.toLowerCase().includes(searchLower) ||
       category.slug.toLowerCase().includes(searchLower);
-    
+
     if (directMatch) return true;
-    
+
     // Check if any descendant matches
     const hasMatchingDescendant = (cats: Category[]): boolean => {
       return cats.some((cat) => {
@@ -90,14 +90,14 @@ function CategoryNode({
           cat.name.toLowerCase().includes(searchLower) ||
           cat.slug.toLowerCase().includes(searchLower);
         if (matches) return true;
-        
+
         const subChildren = allCategories.filter((c) =>
           c.parentIds?.includes(cat.id)
         );
         return hasMatchingDescendant(subChildren);
       });
     };
-    
+
     return hasMatchingDescendant(children);
   }, [category, searchTerm, children, allCategories]);
 
@@ -294,79 +294,83 @@ export default function CategoryTreeView({
       </Box>
 
       <TableContainer
-      component={Paper}
-      sx={{
-        backgroundColor: "background.paper",
-        "& thead tr": {
-          backgroundColor: "action.hover",
-        },
-        "& th": {
-          color: "text.primary",
-          fontWeight: 600,
-        },
-        "& td": {
-          color: "text.primary",
-          borderColor: "divider",
-        },
-      }}
-    >
-      <table style={{ width: "100%" }}>
-        <thead>
-          <tr
-            style={{
-              borderBottom: "1px solid var(--palette-divider, #e0e0e0)",
-            }}
-          >
-            <th
-              style={{ padding: "12px 16px", textAlign: "left", width: "40%" }}
-            >
-              <Typography variant="subtitle2" fontWeight={600}>
-                Category Name
-              </Typography>
-            </th>
-            <th style={{ padding: "12px 16px", textAlign: "left" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                Slug
-              </Typography>
-            </th>
-            <th style={{ padding: "12px 16px", textAlign: "center" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                Products
-              </Typography>
-            </th>
-            <th style={{ padding: "12px 16px", textAlign: "center" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                Status
-              </Typography>
-            </th>
-            <th
+        component={Paper}
+        sx={{
+          backgroundColor: "background.paper",
+          "& thead tr": {
+            backgroundColor: "action.hover",
+          },
+          "& th": {
+            color: "text.primary",
+            fontWeight: 600,
+          },
+          "& td": {
+            color: "text.primary",
+            borderColor: "divider",
+          },
+        }}
+      >
+        <table style={{ width: "100%" }}>
+          <thead>
+            <tr
               style={{
-                padding: "12px 16px",
-                textAlign: "right",
-                width: "15%",
+                borderBottom: "1px solid var(--palette-divider, #e0e0e0)",
               }}
             >
-              <Typography variant="subtitle2" fontWeight={600}>
-                Actions
-              </Typography>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rootCategories.map((category) => (
-            <CategoryNode
-              key={category.id}
-              category={category}
-              allCategories={categories}
-              level={0}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              searchTerm={searchTerm}
-            />
-          ))}
-        </tbody>
-      </table>
-    </TableContainer>
+              <th
+                style={{
+                  padding: "12px 16px",
+                  textAlign: "left",
+                  width: "40%",
+                }}
+              >
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Category Name
+                </Typography>
+              </th>
+              <th style={{ padding: "12px 16px", textAlign: "left" }}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Slug
+                </Typography>
+              </th>
+              <th style={{ padding: "12px 16px", textAlign: "center" }}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Products
+                </Typography>
+              </th>
+              <th style={{ padding: "12px 16px", textAlign: "center" }}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Status
+                </Typography>
+              </th>
+              <th
+                style={{
+                  padding: "12px 16px",
+                  textAlign: "right",
+                  width: "15%",
+                }}
+              >
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Actions
+                </Typography>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rootCategories.map((category) => (
+              <CategoryNode
+                key={category.id}
+                category={category}
+                allCategories={categories}
+                level={0}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                searchTerm={searchTerm}
+              />
+            ))}
+          </tbody>
+        </table>
+      </TableContainer>
     </Box>
   );
 }

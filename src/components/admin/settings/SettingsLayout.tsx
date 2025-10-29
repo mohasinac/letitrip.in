@@ -14,7 +14,11 @@ interface SettingsLayoutProps {
 
 const settingsTabs = [
   { label: "Theme", path: "/admin/settings/theme", icon: <PaletteIcon /> },
-  { label: "Hero Slides", path: "/admin/settings/hero", icon: <CarouselIcon /> },
+  {
+    label: "Hero Slides",
+    path: "/admin/settings/hero",
+    icon: <CarouselIcon />,
+  },
   {
     label: "Featured Categories",
     path: "/admin/settings/featured-categories",

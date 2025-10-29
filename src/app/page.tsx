@@ -15,10 +15,10 @@ interface CategoryWithCount extends Category {
 export default async function HomePage() {
   // Fetch featured categories
   let featuredCategories: CategoryWithCount[] = [];
-  
+
   try {
     const db = getAdminDb();
-    
+
     // Get featured categories
     const categoriesSnapshot = await db
       .collection("categories")
@@ -32,7 +32,7 @@ export default async function HomePage() {
     const categoriesWithCounts = await Promise.all(
       categoriesSnapshot.docs.map(async (doc: any) => {
         const category = { id: doc.id, ...doc.data() } as Category;
-        
+
         // Get total product count
         const productsSnapshot = await db
           .collection("products")

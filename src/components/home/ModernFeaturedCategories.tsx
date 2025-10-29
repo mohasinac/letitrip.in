@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
-import { ArrowForward, TrendingUp, Category as CategoryIcon } from "@mui/icons-material";
+import {
+  ArrowForward,
+  TrendingUp,
+  Category as CategoryIcon,
+} from "@mui/icons-material";
 import {
   Box,
   Container,
@@ -26,11 +30,15 @@ interface ModernFeaturedCategoriesProps {
   categories: CategoryWithCount[];
 }
 
-export default function ModernFeaturedCategories({ categories }: ModernFeaturedCategoriesProps) {
+export default function ModernFeaturedCategories({
+  categories,
+}: ModernFeaturedCategoriesProps) {
   const theme = useTheme();
 
   // Filter only featured categories
-  const featuredCategories = categories.filter(cat => cat.featured && cat.isActive);
+  const featuredCategories = categories.filter(
+    (cat) => cat.featured && cat.isActive
+  );
 
   // If no featured categories, don't render the section
   if (featuredCategories.length === 0) {
@@ -107,7 +115,9 @@ export default function ModernFeaturedCategories({ categories }: ModernFeaturedC
                   overflow: "hidden",
                   transition: "all 0.3s ease",
                   border: "1px solid",
-                  borderColor: hasProducts ? "divider" : theme.palette.grey[300],
+                  borderColor: hasProducts
+                    ? "divider"
+                    : theme.palette.grey[300],
                   "&:hover": {
                     transform: "translateY(-8px)",
                     boxShadow: `0 12px 40px ${alpha(categoryColor, 0.2)}`,

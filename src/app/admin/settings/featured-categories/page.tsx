@@ -17,6 +17,8 @@ import {
   IconButton,
   Tooltip,
   Paper,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import {
   DragIndicator as DragIcon,
@@ -26,8 +28,10 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Image as ImageIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import SettingsLayout from "@/components/admin/settings/SettingsLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types";
@@ -46,6 +50,7 @@ function FeaturedCategoriesContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch all categories
   const fetchCategories = useCallback(async () => {
@@ -55,7 +60,7 @@ function FeaturedCategoriesContent() {
       const data = await apiClient.get<CategoryWithMeta[]>(
         "/admin/categories?format=list"
       );
-      
+
       // Sort by sortOrder and featured status
       const sortedData = data.sort((a, b) => {
         // Featured categories first
@@ -64,7 +69,7 @@ function FeaturedCategoriesContent() {
         // Then by sortOrder
         return a.sortOrder - b.sortOrder;
       });
-      
+
       setCategories(sortedData);
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to fetch categories");
@@ -84,6 +89,18 @@ function FeaturedCategoriesContent() {
   }, [authLoading, user, fetchCategories]);
 
   const handleToggleFeatured = (categoryId: string) => {
+    const category = categories.find((c) => c.id === categoryId);
+    const currentFeaturedCount = categories.filter((c) => c.featured).length;
+
+    // Check if trying to add a 7th featured category
+    if (category && !category.featured && currentFeaturedCount >= 6) {
+      setError(
+        "Maximum 6 categories can be featured. Please remove one first."
+      );
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
+
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id === categoryId ? { ...cat, featured: !cat.featured } : cat
@@ -166,186 +183,224 @@ function FeaturedCategoriesContent() {
   const featuredCategories = categories.filter((cat) => cat.featured);
   const nonFeaturedCategories = categories.filter((cat) => !cat.featured);
 
+  // Filter categories based on search query
+  const filteredNonFeatured = nonFeaturedCategories.filter((cat) =>
+    searchQuery.trim()
+      ? cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cat.slug.toLowerCase().includes(searchQuery.toLowerCase())
+      : true
+  );
+
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
-              Featured Categories
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Select and order categories to feature on the homepage
-            </Typography>
-          </Box>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              startIcon={<RefreshIcon />}
-              onClick={handleReset}
-              disabled={!hasChanges || loading}
-              sx={{ textTransform: "none" }}
+    <SettingsLayout>
+      <Box sx={{ py: 4 }}>
+        <Container maxWidth="lg">
+          {/* Alerts */}
+          {error && (
+            <Alert
+              severity="error"
+              onClose={() => setError(null)}
+              sx={{ mb: 2 }}
             >
-              Reset
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-              onClick={handleSave}
-              disabled={!hasChanges || saving || loading}
-              sx={{ textTransform: "none", fontWeight: 600 }}
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert
+              severity="success"
+              onClose={() => setSuccess(null)}
+              sx={{ mb: 2 }}
             >
-              Save Changes
-            </Button>
-          </Stack>
-        </Box>
+              {success}
+            </Alert>
+          )}
 
-        {/* Alerts */}
-        {error && (
-          <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-        {success && (
-          <Alert
-            severity="success"
-            onClose={() => setSuccess(null)}
-            sx={{ mb: 2 }}
-          >
-            {success}
-          </Alert>
-        )}
-
-        {/* Info */}
-        <Alert severity="info" sx={{ mb: 4 }}>
-          <Typography variant="body2" fontWeight={600} gutterBottom>
-            💡 Tips:
-          </Typography>
-          <Typography variant="body2" component="ul" sx={{ pl: 2, mb: 0 }}>
-            <li>Maximum 6 categories will be shown on the homepage</li>
-            <li>Use the arrows to reorder categories (top to bottom = left to right)</li>
-            <li>Featured categories must be active to appear on the homepage</li>
-            <li>Categories with no in-stock products will appear grey</li>
-          </Typography>
-        </Alert>
-
-        {/* Loading */}
-        {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-            <CircularProgress />
+          {/* Action Buttons */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={handleReset}
+                disabled={!hasChanges || loading}
+                sx={{ textTransform: "none" }}
+              >
+                Reset
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={
+                  saving ? <CircularProgress size={20} /> : <SaveIcon />
+                }
+                onClick={handleSave}
+                disabled={!hasChanges || saving || loading}
+                sx={{ textTransform: "none", fontWeight: 600 }}
+              >
+                Save Changes
+              </Button>
+            </Stack>
           </Box>
-        ) : (
-          <>
-            {/* Featured Categories Section */}
-            <Card sx={{ mb: 4 }}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    mb: 3,
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <TrendingIcon color="primary" />
-                    <Typography variant="h6" fontWeight={600}>
-                      Featured Categories ({featuredCategories.length}/6)
-                    </Typography>
+
+          {/* Info */}
+          <Alert severity="info" sx={{ mb: 4 }}>
+            <Typography variant="body2" fontWeight={600} gutterBottom>
+              💡 Tips:
+            </Typography>
+            <Typography variant="body2" component="ul" sx={{ pl: 2, mb: 0 }}>
+              <li>Maximum 6 categories will be shown on the homepage</li>
+              <li>
+                Use the arrows to reorder categories (top to bottom = left to
+                right)
+              </li>
+              <li>
+                Featured categories must be active to appear on the homepage
+              </li>
+              <li>Categories with no in-stock products will appear grey</li>
+            </Typography>
+          </Alert>
+
+          {/* Loading */}
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {/* Featured Categories Section */}
+              <Card sx={{ mb: 4 }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 3,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <TrendingIcon color="primary" />
+                      <Typography variant="h6" fontWeight={600}>
+                        Featured Categories ({featuredCategories.length}/6)
+                      </Typography>
+                    </Box>
+                    {featuredCategories.length > 6 && (
+                      <Chip
+                        label="Exceeds limit - only first 6 will show"
+                        color="warning"
+                        size="small"
+                      />
+                    )}
                   </Box>
-                  {featuredCategories.length > 6 && (
-                    <Chip
-                      label="Exceeds limit - only first 6 will show"
-                      color="warning"
-                      size="small"
-                    />
+
+                  {featuredCategories.length === 0 ? (
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        py: 4,
+                        color: "text.secondary",
+                      }}
+                    >
+                      <Typography>
+                        No featured categories selected. Toggle the "Featured"
+                        switch below to add categories.
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Stack spacing={2}>
+                      {featuredCategories.map((category, index) => (
+                        <CategoryItem
+                          key={category.id}
+                          category={category}
+                          index={categories.findIndex(
+                            (c) => c.id === category.id
+                          )}
+                          totalCount={categories.length}
+                          onToggleFeatured={handleToggleFeatured}
+                          onToggleActive={handleToggleActive}
+                          onMoveUp={handleMoveUp}
+                          onMoveDown={handleMoveDown}
+                          isFeatured={true}
+                          showWarning={index >= 6}
+                        />
+                      ))}
+                    </Stack>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                {featuredCategories.length === 0 ? (
+              {/* Available Categories Section */}
+              <Card>
+                <CardContent>
                   <Box
                     sx={{
-                      textAlign: "center",
-                      py: 4,
-                      color: "text.secondary",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 3,
                     }}
                   >
-                    <Typography>
-                      No featured categories selected. Toggle the "Featured"
-                      switch below to add categories.
+                    <Typography variant="h6" fontWeight={600}>
+                      Available Categories ({filteredNonFeatured.length})
                     </Typography>
                   </Box>
-                ) : (
-                  <Stack spacing={2}>
-                    {featuredCategories.map((category, index) => (
-                      <CategoryItem
-                        key={category.id}
-                        category={category}
-                        index={categories.findIndex((c) => c.id === category.id)}
-                        totalCount={categories.length}
-                        onToggleFeatured={handleToggleFeatured}
-                        onToggleActive={handleToggleActive}
-                        onMoveUp={handleMoveUp}
-                        onMoveDown={handleMoveDown}
-                        isFeatured={true}
-                        showWarning={index >= 6}
-                      />
-                    ))}
-                  </Stack>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Available Categories Section */}
-            <Card>
-              <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                  <Typography variant="h6" fontWeight={600}>
-                    Available Categories ({nonFeaturedCategories.length})
-                  </Typography>
-                </Box>
-
-                {nonFeaturedCategories.length === 0 ? (
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      py: 4,
-                      color: "text.secondary",
+                  {/* Search Field */}
+                  <TextField
+                    fullWidth
+                    size="small"
+                    placeholder="Search categories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
                     }}
-                  >
-                    <Typography>All categories are featured!</Typography>
-                  </Box>
-                ) : (
-                  <Stack spacing={2}>
-                    {nonFeaturedCategories.map((category) => (
-                      <CategoryItem
-                        key={category.id}
-                        category={category}
-                        index={categories.findIndex((c) => c.id === category.id)}
-                        totalCount={categories.length}
-                        onToggleFeatured={handleToggleFeatured}
-                        onToggleActive={handleToggleActive}
-                        onMoveUp={handleMoveUp}
-                        onMoveDown={handleMoveDown}
-                        isFeatured={false}
-                      />
-                    ))}
-                  </Stack>
-                )}
-              </CardContent>
-            </Card>
-          </>
-        )}
-      </Container>
-    </Box>
+                    sx={{ mb: 3 }}
+                  />
+
+                  {filteredNonFeatured.length === 0 ? (
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        py: 4,
+                        color: "text.secondary",
+                      }}
+                    >
+                      <Typography>
+                        {searchQuery.trim()
+                          ? "No categories match your search"
+                          : "All categories are featured!"}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Stack spacing={2}>
+                      {filteredNonFeatured.map((category) => (
+                        <CategoryItem
+                          key={category.id}
+                          category={category}
+                          index={categories.findIndex(
+                            (c) => c.id === category.id
+                          )}
+                          totalCount={categories.length}
+                          onToggleFeatured={handleToggleFeatured}
+                          onToggleActive={handleToggleActive}
+                          onMoveUp={handleMoveUp}
+                          onMoveDown={handleMoveDown}
+                          isFeatured={false}
+                        />
+                      ))}
+                    </Stack>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </Container>
+      </Box>
+    </SettingsLayout>
   );
 }
 

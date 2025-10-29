@@ -1,14 +1,17 @@
 # Featured Categories Admin Page
 
 ## Overview
+
 Created a comprehensive admin interface for managing featured categories that appear on the homepage. Admins can now select, reorder, and configure which categories are featured without touching code.
 
 ## Features Implemented
 
 ### 1. **Featured Categories Management Page**
+
 **Location:** `/admin/settings` (Featured Categories tab)
 
 **Capabilities:**
+
 - ✅ View all categories with product counts
 - ✅ Toggle featured status with a switch
 - ✅ Reorder featured categories with up/down arrows
@@ -20,6 +23,7 @@ Created a comprehensive admin interface for managing featured categories that ap
 - ✅ Product and stock count display
 
 ### 2. **Batch Update API Endpoint**
+
 **Location:** `/api/admin/categories/batch-update`
 
 **Method:** POST
@@ -27,20 +31,22 @@ Created a comprehensive admin interface for managing featured categories that ap
 **Authentication:** Admin role required
 
 **Request Body:**
+
 ```typescript
 {
   updates: [
     {
       id: string,
-      featured?: boolean,
-      isActive?: boolean,
-      sortOrder?: number
-    }
-  ]
+      featured: boolean,
+      isActive: boolean,
+      sortOrder: number,
+    },
+  ];
 }
 ```
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -84,6 +90,7 @@ Created a comprehensive admin interface for managing featured categories that ap
 ### Category Card Components
 
 Each category displays:
+
 - **Image:** 60x60px thumbnail or placeholder icon
 - **Name:** Category name in bold
 - **Slug:** Monospace font for easy identification
@@ -100,11 +107,13 @@ Each category displays:
 ### Visual Indicators
 
 1. **Featured Section:**
+
    - Shows count (X/6)
    - Warning chip if exceeds 6 items
    - Yellow border for items beyond position 6
 
 2. **Reordering:**
+
    - Drag indicator icons (up/down arrows)
    - Disabled state for boundary items
    - Instant visual feedback
@@ -117,12 +126,15 @@ Each category displays:
 ## Integration
 
 ### Admin Settings Tab
+
 Added as third tab in `/admin/settings`:
+
 1. Theme
 2. Hero Slides
 3. **Featured Categories** ⭐ NEW
 
 ### Navigation Path
+
 ```
 Admin Dashboard → Settings → Featured Categories
 ```
@@ -130,6 +142,7 @@ Admin Dashboard → Settings → Featured Categories
 ## Usage Workflow
 
 ### Featuring a Category
+
 1. Navigate to Admin → Settings → Featured Categories
 2. Find category in "Available Categories" section
 3. Toggle the "Featured" switch ON
@@ -137,17 +150,20 @@ Admin Dashboard → Settings → Featured Categories
 5. Click "Save Changes"
 
 ### Reordering Featured Categories
+
 1. Click up ↑ arrow to move category higher (left on homepage)
 2. Click down ↓ arrow to move category lower (right on homepage)
 3. Order changes are reflected immediately
 4. Click "Save Changes" to persist
 
 ### Disabling a Category
+
 1. Toggle the "Active" switch OFF
 2. Category won't appear on homepage even if featured
 3. Click "Save Changes"
 
 ### Removing from Featured
+
 1. Toggle the "Featured" switch OFF
 2. Category moves to "Available Categories"
 3. Click "Save Changes"
@@ -157,6 +173,7 @@ Admin Dashboard → Settings → Featured Categories
 ### Components
 
 **1. FeaturedCategoriesSettings.tsx**
+
 ```typescript
 // Main component with state management
 - fetchCategories() - Loads all categories with counts
@@ -169,6 +186,7 @@ Admin Dashboard → Settings → Featured Categories
 ```
 
 **2. CategoryItem Component**
+
 ```typescript
 // Individual category card with controls
 Props:
@@ -186,6 +204,7 @@ Props:
 ### API Endpoint
 
 **batch-update/route.ts**
+
 ```typescript
 - Verifies admin authentication
 - Validates request body
@@ -197,6 +216,7 @@ Props:
 ### State Management
 
 **Local State:**
+
 ```typescript
 categories: CategoryWithMeta[]  // All categories
 loading: boolean                // Initial load state
@@ -207,9 +227,10 @@ hasChanges: boolean             // Track unsaved changes
 ```
 
 **Derived State:**
+
 ```typescript
-featuredCategories = categories.filter(cat => cat.featured)
-nonFeaturedCategories = categories.filter(cat => !cat.featured)
+featuredCategories = categories.filter((cat) => cat.featured);
+nonFeaturedCategories = categories.filter((cat) => !cat.featured);
 ```
 
 ## Data Flow
@@ -237,13 +258,16 @@ nonFeaturedCategories = categories.filter(cat => !cat.featured)
 ## Database Updates
 
 ### Batch Operation
+
 Updates three fields per category:
+
 - `featured: boolean`
-- `isActive: boolean`  
+- `isActive: boolean`
 - `sortOrder: number`
 - `updatedAt: ISO string`
 
 ### Firestore Structure
+
 ```typescript
 categories/{categoryId}
 {
@@ -261,18 +285,21 @@ categories/{categoryId}
 ## Error Handling
 
 ### Frontend
+
 - Network errors → Alert message
 - API errors → Alert message with details
 - Loading states → Spinner or disabled buttons
 - Validation → Inline feedback
 
 ### Backend
+
 - Authentication check → 401 Unauthorized
 - Authorization check → 403 Forbidden
 - Invalid data → 400 Bad Request
 - Server errors → 500 Internal Server Error
 
 ### Edge Cases
+
 - No categories → "No categories" message
 - All featured → "All featured" message
 - Exceeds 6 → Visual warning (won't prevent save)
@@ -281,6 +308,7 @@ categories/{categoryId}
 ## Performance Considerations
 
 ### Optimizations
+
 1. **Single API Call:** Batch update instead of multiple requests
 2. **Optimistic UI:** Immediate visual feedback before save
 3. **Lazy Loading:** Only fetch when tab is accessed
@@ -288,6 +316,7 @@ categories/{categoryId}
 5. **Firestore Batch:** Atomic updates for consistency
 
 ### Potential Improvements
+
 1. **Drag & Drop:** Replace arrows with drag-and-drop
 2. **Preview:** Live preview of how homepage will look
 3. **History:** Track changes history
@@ -318,11 +347,13 @@ categories/{categoryId}
 ## Files Created/Modified
 
 ### New Files
+
 1. `/src/app/admin/settings/featured-categories/page.tsx` - Standalone page
 2. `/src/components/admin/settings/FeaturedCategoriesSettings.tsx` - Reusable component
 3. `/src/app/api/admin/categories/batch-update/route.ts` - API endpoint
 
 ### Modified Files
+
 1. `/src/app/admin/settings/page.tsx` - Added Featured Categories tab
 
 ## Related Documentation
@@ -334,11 +365,13 @@ categories/{categoryId}
 ## Access Control
 
 ### Required Permissions
+
 - **Role:** Admin
 - **Path:** `/admin/settings` or `/admin/settings/featured-categories`
 - **API:** Admin authentication via `verifyAdmin()`
 
 ### Security
+
 - ✅ RoleGuard component wraps page
 - ✅ API verifies admin role
 - ✅ Firestore rules should enforce admin-only writes
@@ -347,12 +380,14 @@ categories/{categoryId}
 ## Future Enhancements
 
 ### Phase 1 (Current)
+
 - ✅ Basic featured selection
 - ✅ Manual ordering with arrows
 - ✅ Active/inactive toggle
 - ✅ Batch save
 
 ### Phase 2 (Planned)
+
 - Drag & drop reordering
 - Category preview modal
 - Bulk actions (select multiple)
@@ -360,6 +395,7 @@ categories/{categoryId}
 - Sort options
 
 ### Phase 3 (Future)
+
 - Scheduling (feature for date range)
 - A/B testing variants
 - Analytics integration
@@ -370,12 +406,14 @@ categories/{categoryId}
 ## Troubleshooting
 
 ### Categories not saving
+
 1. Check browser console for errors
 2. Verify admin authentication
 3. Check network tab for API response
 4. Verify Firestore permissions
 
 ### Categories not showing on homepage
+
 1. Ensure featured = true
 2. Ensure isActive = true
 3. Check if exceeds 6-item limit
@@ -383,13 +421,16 @@ categories/{categoryId}
 5. Check browser cache
 
 ### Order not updating
+
 1. Ensure Save was clicked
 2. Check sortOrder values in database
 3. Verify batch update completed
 4. Refresh page to see changes
 
 ### TypeScript errors
+
 If you see "Cannot find module" errors:
+
 1. Restart TypeScript server
 2. Delete `.next` folder and rebuild
 3. Check import paths are correct
@@ -398,6 +439,7 @@ If you see "Cannot find module" errors:
 ## Support
 
 For issues or questions:
+
 1. Check console for error messages
 2. Verify authentication and permissions
 3. Check Firestore rules

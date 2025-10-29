@@ -54,7 +54,7 @@ export default function CategoryPageClient({
   // Get categories to display
   const displayCategories = useMemo(() => {
     let categories: CategoryWithCounts[];
-    
+
     if (!currentCategory) {
       // Show root categories (no parents)
       categories = allCategories.filter(
@@ -278,7 +278,9 @@ export default function CategoryPageClient({
           <Typography variant="h6" color="text.secondary">
             {searchTerm
               ? `No categories found matching "${searchTerm}"`
-              : `No ${currentCategory ? "subcategories" : "categories"} available`}
+              : `No ${
+                  currentCategory ? "subcategories" : "categories"
+                } available`}
           </Typography>
           {currentCategory && (
             <Button
@@ -319,7 +321,7 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
 
   // Check if category has in-stock products
   const hasInStockProducts = category.totalProductCount > 0;
-  
+
   // Generate a color for the category based on stock availability
   const categoryColor = hasInStockProducts
     ? category.featured
@@ -378,10 +380,10 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
           height: 200,
           background: category.image
             ? `url(${category.image})`
-            : `linear-gradient(135deg, ${alpha(categoryColor, 0.15)} 0%, ${alpha(
+            : `linear-gradient(135deg, ${alpha(
                 categoryColor,
-                0.05
-              )} 100%)`,
+                0.15
+              )} 0%, ${alpha(categoryColor, 0.05)} 100%)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
@@ -509,37 +511,38 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
             </Button>
           )}
 
-          {category.subcategoryCount > 0 && category.totalProductCount === 0 && (
-            <Button
-              component={NextLink}
-              href={`/categories/${category.slug}`}
-              endIcon={
-                <Box
-                  component="span"
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    transition: "transform 0.2s ease",
-                    ".MuiButton-root:hover &": {
-                      transform: "translateX(4px)",
-                    },
-                  }}
-                >
-                  →
-                </Box>
-              }
-              sx={{
-                color: categoryColor,
-                fontWeight: 600,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: alpha(categoryColor, 0.1),
-                },
-              }}
-            >
-              Explore
-            </Button>
-          )}
+          {category.subcategoryCount > 0 &&
+            category.totalProductCount === 0 && (
+              <Button
+                component={NextLink}
+                href={`/categories/${category.slug}`}
+                endIcon={
+                  <Box
+                    component="span"
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      transition: "transform 0.2s ease",
+                      ".MuiButton-root:hover &": {
+                        transform: "translateX(4px)",
+                      },
+                    }}
+                  >
+                    →
+                  </Box>
+                }
+                sx={{
+                  color: categoryColor,
+                  fontWeight: 600,
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: alpha(categoryColor, 0.1),
+                  },
+                }}
+              >
+                Explore
+              </Button>
+            )}
         </Box>
       </CardContent>
     </Card>
