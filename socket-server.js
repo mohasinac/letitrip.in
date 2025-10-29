@@ -43,11 +43,41 @@ const httpServer = createServer((req, res) => {
   }
 });
 
+// CORS origin function to support wildcards
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:3000', 'https://justforview.vercel.app'];
+
+const corsOrigin = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) return callback(null, true);
+  
+  // Check if origin matches any allowed origin
+  const isAllowed = allowedOrigins.some(allowedOrigin => {
+    // Exact match
+    if (allowedOrigin === origin) return true;
+    
+    // Wildcard match (e.g., https://*.vercel.app)
+    if (allowedOrigin.includes('*')) {
+      const pattern = allowedOrigin.replace(/\*/g, '.*');
+      const regex = new RegExp(`^${pattern}$`);
+      return regex.test(origin);
+    }
+    
+    return false;
+  });
+  
+  if (isAllowed) {
+    callback(null, true);
+  } else {
+    console.log(`CORS blocked origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.ALLOWED_ORIGINS 
-      ? process.env.ALLOWED_ORIGINS.split(',')
-      : ['http://localhost:3000', 'https://justforview.vercel.app'],
+    origin: corsOrigin,
     methods: ['GET', 'POST'],
     credentials: true
   },
