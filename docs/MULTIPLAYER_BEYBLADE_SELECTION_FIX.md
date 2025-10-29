@@ -87,6 +87,7 @@ Fixed the multiplayer flow so that players select their beyblades during the lob
 **Fix**:
 
 - Added effect to extract and set beyblades from multiplayer data:
+
   ```typescript
   useEffect(() => {
     if (isMultiplayer && multiplayerData) {
@@ -111,6 +112,7 @@ Fixed the multiplayer flow so that players select their beyblades during the lob
     }
   }, [isMultiplayer, multiplayerData, playerNumber, restartGame]);
   ```
+
 - Passed `isMultiplayer` prop to GameControls component
 
 ## Flow After Fix
@@ -240,6 +242,7 @@ https://justforview.vercel.app    wss://your-app.onrender.com
 ### Deployment Steps:
 
 1. **Render** (Socket Server):
+
    - Already configured via `render.yaml`
    - Runs: `node server.js`
    - Health check: `/health`
@@ -253,6 +256,7 @@ https://justforview.vercel.app    wss://your-app.onrender.com
    - Deploy Next.js app normally
 
 ### Development:
+
 ```bash
 # Run Next.js frontend
 npm run dev
