@@ -45,15 +45,20 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
     if (!containerRef.current) return;
 
     const initPixi = async () => {
-      // Create PixiJS application with WebGL renderer
+      // Detect mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Create PixiJS application with WebGL renderer and mobile optimizations
       const app = new Application();
       await app.init({
         width: 800,
         height: 800,
         backgroundColor: theme.palette.background.default,
-        antialias: true,
-        resolution: window.devicePixelRatio || 1,
+        antialias: !isMobile, // Disable antialiasing on mobile for better performance
+        resolution: isMobile ? 1 : (window.devicePixelRatio || 1), // Lower resolution on mobile
         autoDensity: true,
+        powerPreference: 'high-performance', // Request high-performance GPU
+        preserveDrawingBuffer: false, // Better performance
       });
 
       containerRef.current?.appendChild(app.canvas);
