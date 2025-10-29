@@ -13,21 +13,21 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
   disabled = false,
 }) => {
   // Optimized press handler with haptic feedback
-  const handlePress = useCallback((
-    action: 1 | 2 | 3 | 4,
-    e: React.TouchEvent | React.MouseEvent
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!disabled) {
-      // Haptic feedback for mobile devices
-      if ('vibrate' in navigator) {
-        navigator.vibrate(10); // Short vibration (10ms)
+  const handlePress = useCallback(
+    (action: 1 | 2 | 3 | 4, e: React.TouchEvent | React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!disabled) {
+        // Haptic feedback for mobile devices
+        if ("vibrate" in navigator) {
+          navigator.vibrate(10); // Short vibration (10ms)
+        }
+        onActionButton(action);
       }
-      onActionButton(action);
-    }
-  }, [disabled, onActionButton]);
+    },
+    [disabled, onActionButton]
+  );
 
   const buttonStyle = {
     position: "absolute" as const,
