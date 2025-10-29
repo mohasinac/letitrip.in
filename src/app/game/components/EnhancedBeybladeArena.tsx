@@ -190,7 +190,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       if (beybladeState) {
         multiplayer.sendBeybladeState(beybladeState);
       }
-    }, 100); // Send beyblade state 10 times per second
+    }, 33); // Send beyblade state 30 times per second for smooth real-time sync
 
     return () => clearInterval(interval);
   }, [isMultiplayer, multiplayer, gameState.isPlaying, getMyBeybladeState]);

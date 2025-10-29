@@ -972,13 +972,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       const opponentBey = newState.beyblades.find(b => !b.isPlayer);
       
       if (opponentBey && beybladeState) {
-        // Apply the state from opponent
-        opponentBey.position = beybladeState.position;
-        opponentBey.velocity = beybladeState.velocity;
+        // Apply the authoritative state from opponent
+        // These are the source of truth from the network
+        opponentBey.position = { ...beybladeState.position };
+        opponentBey.velocity = { ...beybladeState.velocity };
         opponentBey.rotation = beybladeState.rotation;
         opponentBey.spin = beybladeState.spin;
-        opponentBey.acceleration = beybladeState.acceleration;                      // ✅ Sync acceleration
-        opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;  // ✅ Sync max acceleration
+        opponentBey.acceleration = beybladeState.acceleration;
+        opponentBey.currentMaxAcceleration = beybladeState.currentMaxAcceleration;
         opponentBey.isDead = beybladeState.isDead;
         opponentBey.isOutOfBounds = beybladeState.isOutOfBounds;
         opponentBey.isInBlueLoop = beybladeState.isInBlueLoop;
@@ -986,6 +987,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         opponentBey.isDodging = beybladeState.isDodging;
         opponentBey.heavyAttackActive = beybladeState.heavyAttackActive;
         opponentBey.ultimateAttackActive = beybladeState.ultimateAttackActive;
+        
         // Animation states
         if (beybladeState.blueLoopAngle !== undefined) {
           opponentBey.blueLoopAngle = beybladeState.blueLoopAngle;
@@ -996,6 +998,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         if (beybladeState.normalLoopAngle !== undefined) {
           opponentBey.normalLoopAngle = beybladeState.normalLoopAngle;
         }
+        
+        // Mark that this beyblade just received network update
+        // This prevents local physics from overriding it immediately
+        opponentBey.lastNetworkUpdate = Date.now();
       }
       
       return newState;

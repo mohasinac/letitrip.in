@@ -47,6 +47,7 @@ export interface BeybladePhysics {
   lastDodgeTime?: number; // Track last dodge for cooldown
   isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
   selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)
+  lastNetworkUpdate?: number; // Timestamp of last network state update (for multiplayer sync)
 }
 
 export interface GameBeyblade extends BeybladePhysics {
