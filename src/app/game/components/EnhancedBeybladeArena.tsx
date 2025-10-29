@@ -15,7 +15,7 @@ import { useMultiplayer } from "../hooks/useMultiplayer";
 import GameArena from "./GameArena";
 import GameControls from "./GameControls";
 import ControlsHelp from "./ControlsHelp";
-import DraggableVirtualDPad from "./DraggableVirtualDPad";
+import MobileSpecialButtons from "./MobileSpecialButtons";
 import GameInstructions from "./GameInstructions";
 import SpecialControlsHelp from "./SpecialControlsHelp";
 import MatchResultScreen from "./MatchResultScreen";
@@ -60,7 +60,6 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-    handleVirtualDPad,
     handleVirtualAction,
     isLoading,
     setOpponentInput,
@@ -329,7 +328,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           </Box>
         )}
 
-        {/* Mobile Virtual D-Pad - Draggable and position saved in cookies */}
+        {/* Mobile Special Move Buttons - Only on small screens */}
         <Box
           sx={{
             display: { xs: "block", md: "none" },
@@ -339,11 +338,14 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
             right: 0,
             bottom: 0,
             pointerEvents: "none",
+            "& > *": {
+              pointerEvents: "auto",
+            },
           }}
         >
-          <DraggableVirtualDPad
-            onDirectionChange={handleVirtualDPad}
+          <MobileSpecialButtons
             onActionButton={handleVirtualAction}
+            disabled={!gameState.isPlaying}
           />
         </Box>
 

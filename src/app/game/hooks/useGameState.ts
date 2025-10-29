@@ -30,8 +30,6 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   const keysRef = useRef<Set<string>>(new Set());
   const touchRef = useRef<Vector2D>({ x: 0, y: 0 });
   const isTouchActiveRef = useRef(false);
-  const virtualDPadRef = useRef<Vector2D>({ x: 0, y: 0 });
-  const controlModeRef = useRef<'mouse' | 'gamepad'>('mouse'); // Track active control mode
   const specialActionsRef = useRef<{
     dodgeRight: boolean;
     dodgeLeft: boolean;
@@ -101,43 +99,27 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Input handlers
   const handleMouseMove = useCallback((position: Vector2D) => {
     mouseRef.current = position;
-    // Switch to mouse mode when mouse is moved in arena
-    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchStart = useCallback((position: Vector2D) => {
     touchRef.current = position;
     isTouchActiveRef.current = true;
-    // Switch to mouse mode when touch is used in arena
-    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchMove = useCallback((position: Vector2D) => {
     touchRef.current = position;
-    controlModeRef.current = 'mouse';
   }, []);
 
   const handleTouchEnd = useCallback(() => {
     isTouchActiveRef.current = false;
   }, []);
 
-  const handleVirtualDPad = useCallback((direction: Vector2D) => {
-    virtualDPadRef.current = direction;
-    // Switch to gamepad mode when D-pad is used
-    if (direction.x !== 0 || direction.y !== 0) {
-      controlModeRef.current = 'gamepad';
-    }
-  }, []);
-
   const handleVirtualAction = useCallback((action: 1 | 2 | 3 | 4) => {
-    // Switch to gamepad mode when action buttons are pressed
-    controlModeRef.current = 'gamepad';
-    
     // Map action buttons to special actions
     // 1 = Dodge Left (keyboard 1, left click)
     // 2 = Dodge Right (keyboard 2, right click)
-    // 3 = Normal Attack (keyboard 3, middle mouse)
-    // 4 = Power Attack (keyboard 4, double click)
+    // 3 = Heavy Attack (keyboard 3, middle mouse)
+    // 4 = Ultimate Attack (keyboard 4, double click)
     if (action === 1) {
       specialActionsRef.current.dodgeLeft = true;
       specialActionsRef.current.selectChargePoint1 = true;
@@ -161,7 +143,6 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
         event.preventDefault();
         keysRef.current.add(key);
-        controlModeRef.current = 'gamepad'; // Switch to gamepad mode for keyboard controls
       }
       
       // Special action keys
@@ -265,42 +246,31 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       return { x: 0, y: 0 }; // No control during active attacks/dodges
     }
 
-    // GAMEPAD MODE: Use virtual D-Pad or keyboard
-    if (controlModeRef.current === 'gamepad') {
-      // Check virtual D-Pad first
-      if (virtualDPadRef.current.x !== 0 || virtualDPadRef.current.y !== 0) {
-        return virtualDPadRef.current;
-      }
+    // Check keyboard input first (WASD/Arrow keys)
+    let x = 0;
+    let y = 0;
+    if (keysRef.current.has("a") || keysRef.current.has("arrowleft")) x -= 1;
+    if (keysRef.current.has("d") || keysRef.current.has("arrowright")) x += 1;
+    if (keysRef.current.has("w") || keysRef.current.has("arrowup")) y -= 1;
+    if (keysRef.current.has("s") || keysRef.current.has("arrowdown")) y += 1;
 
-      // Check keyboard input
-      let x = 0;
-      let y = 0;
-      if (keysRef.current.has("a") || keysRef.current.has("arrowleft")) x -= 1;
-      if (keysRef.current.has("d") || keysRef.current.has("arrowright")) x += 1;
-      if (keysRef.current.has("w") || keysRef.current.has("arrowup")) y -= 1;
-      if (keysRef.current.has("s") || keysRef.current.has("arrowdown")) y += 1;
-
-      if (x !== 0 || y !== 0) {
-        // Normalize diagonal movement
-        const length = Math.sqrt(x * x + y * y);
-        return { x: x / length, y: y / length };
-      }
-
-      return { x: 0, y: 0 };
+    if (x !== 0 || y !== 0) {
+      // Normalize diagonal movement
+      const length = Math.sqrt(x * x + y * y);
+      return { x: x / length, y: y / length };
     }
 
-    // MOUSE MODE: Move towards mouse/touch position (directional)
-    if (playerBey) {
-      // Check touch input first
-      if (isTouchActiveRef.current) {
-        const direction = vectorSubtract(touchRef.current, playerBey.position);
-        const distance = vectorLength(direction);
-        if (distance > 10) {
-          return { x: direction.x / distance, y: direction.y / distance };
-        }
+    // Check touch input (mobile drag control)
+    if (isTouchActiveRef.current && playerBey) {
+      const direction = vectorSubtract(touchRef.current, playerBey.position);
+      const distance = vectorLength(direction);
+      if (distance > 10) {
+        return { x: direction.x / distance, y: direction.y / distance };
       }
+    }
 
-      // Fall back to mouse input
+    // Fall back to mouse input (desktop)
+    if (playerBey) {
       const direction = vectorSubtract(mouseRef.current, playerBey.position);
       const distance = vectorLength(direction);
       if (distance > 10) {
@@ -986,7 +956,6 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-    handleVirtualDPad,
     handleVirtualAction,
     isLoading,
     // Multiplayer functions
