@@ -54,10 +54,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Create initial game state
   function createInitialGameState(): GameState {
     const stadium: Stadium = {
-      center: { x: 400, y: 450 }, // Moved down for better visual centering in square canvas (800x800)
-      innerRadius: 240,
-      outerRadius: 290,
-      exitRadius: 290,
+      center: { x: 400, y: 400 }, // Centered in square canvas (800x800)
+      innerRadius: 360, // Outer playing area boundary
+      outerRadius: 380, // Wall/exit zone boundary
+      exitRadius: 380,
+      chargeDashRadius: 300, // Blue circle for charge dash with charge points
+      normalLoopRadius: 200, // Blue circle for normal loop (center)
       width: 800,
       height: 800, // Square canvas
     };
@@ -296,6 +298,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             const dodgeSpeed = 400;
             playerBey.velocity.x += dodgeSpeed;
             playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
+            playerBey.isDodging = true; // Set dodging flag for immunity
+            playerBey.lastDodgeTime = Date.now(); // Track dodge animation start
           }
           specialActionsRef.current.dodgeRight = false;
         }
@@ -309,8 +313,15 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             const dodgeSpeed = 400;
             playerBey.velocity.x -= dodgeSpeed;
             playerBey.dodgeCooldownEnd = newState.gameTime + 0.5; // 0.5 second cooldown
+            playerBey.isDodging = true; // Set dodging flag for immunity
+            playerBey.lastDodgeTime = Date.now(); // Track dodge animation start
           }
           specialActionsRef.current.dodgeLeft = false;
+        }
+        
+        // Clear dodging flag after animation completes (500ms)
+        if (playerBey.isDodging && playerBey.lastDodgeTime && Date.now() - playerBey.lastDodgeTime > 500) {
+          playerBey.isDodging = false;
         }
         
         // Process heavy attack (2 or left click)
@@ -474,10 +485,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   // Restart game function
   const restartGame = useCallback(() => {
     const stadium: Stadium = {
-      center: { x: 400, y: 450 }, // Moved down for better visual centering in square canvas (800x800)
-      innerRadius: 240,
-      outerRadius: 290,
-      exitRadius: 290,
+      center: { x: 400, y: 400 }, // Centered in square canvas (800x800)
+      innerRadius: 360, // Outer playing area boundary
+      outerRadius: 380, // Wall/exit zone boundary
+      exitRadius: 380,
+      chargeDashRadius: 300, // Blue circle for charge dash with charge points
+      normalLoopRadius: 200, // Blue circle for normal loop (center)
       width: 800,
       height: 800, // Square canvas
     };
@@ -612,12 +625,12 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
   const distanceFromCenter = vectorLength(
     vectorSubtract(beyblade.position, gameState.stadium.center)
   );
-  const isOnBlueCircle = Math.abs(distanceFromCenter - gameState.stadium.innerRadius) <= 5;
+  const isOnBlueCircle = Math.abs(distanceFromCenter - gameState.stadium.chargeDashRadius) <= 5;
 
   const canLoop = !beyblade.blueLoopCooldownEnd || gameState.gameTime >= beyblade.blueLoopCooldownEnd;
 
-  // Start blue loop if on blue circle and conditions are met
-  if (isOnBlueCircle && beyblade.spin > 0 && !beyblade.isInBlueLoop && canLoop && !beyblade.isChargeDashing) {
+  // Start blue loop if on blue circle and conditions are met (but not while dodging)
+  if (isOnBlueCircle && beyblade.spin > 0 && !beyblade.isInBlueLoop && canLoop && !beyblade.isChargeDashing && !beyblade.isDodging) {
     beyblade.isInBlueLoop = true;
     beyblade.blueCircleLoopStartTime = gameState.gameTime;
     beyblade.blueLoopAngle = Math.atan2(
@@ -704,8 +717,8 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
     } else {
       // Continue normal blue loop movement
       beyblade.position = {
-        x: gameState.stadium.center.x + Math.cos(beyblade.blueLoopAngle) * gameState.stadium.innerRadius,
-        y: gameState.stadium.center.y + Math.sin(beyblade.blueLoopAngle) * gameState.stadium.innerRadius,
+        x: gameState.stadium.center.x + Math.cos(beyblade.blueLoopAngle) * gameState.stadium.chargeDashRadius,
+        y: gameState.stadium.center.y + Math.sin(beyblade.blueLoopAngle) * gameState.stadium.chargeDashRadius,
       };
 
       const tangentX = -Math.sin(beyblade.blueLoopAngle) * spinDirection;
@@ -778,8 +791,8 @@ function getChargePoints(stadium: Stadium) {
   for (const angleDegrees of chargePointAngles) {
     const angleRadians = (angleDegrees * Math.PI) / 180;
     const chargePoint = {
-      x: stadium.center.x + Math.cos(angleRadians) * stadium.innerRadius,
-      y: stadium.center.y + Math.sin(angleRadians) * stadium.innerRadius,
+      x: stadium.center.x + Math.cos(angleRadians) * stadium.chargeDashRadius,
+      y: stadium.center.y + Math.sin(angleRadians) * stadium.chargeDashRadius,
     };
     chargePoints.push(chargePoint);
   }

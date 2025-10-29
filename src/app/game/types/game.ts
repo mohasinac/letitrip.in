@@ -22,6 +22,7 @@ export interface BeybladePhysics {
   isInBlueLoop: boolean; // Track if beyblade is locked in blue circle loop
   blueLoopAngle: number; // Track current angle in blue loop
   blueLoopCooldownEnd?: number; // Track when blue loop cooldown ends (3 seconds after last loop)
+  normalLoopCooldownEnd?: number; // Track when normal loop (200 radius) cooldown ends (10 seconds after last loop)
   isChargingToPoint: boolean; // Track if beyblade is charging to a wall center point
   chargePoint: Vector2D | null; // Target charge point position
   isChargeDashing: boolean; // Track if beyblade is in enhanced charge dash mode
@@ -37,6 +38,7 @@ export interface BeybladePhysics {
   ultimateAttackEndTime?: number; // When ultimate attack ends
   dodgeCooldownEnd?: number; // When dodge can be used again
   lastDodgeTime?: number; // Track last dodge for cooldown
+  isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
   selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)
 }
 
@@ -54,9 +56,11 @@ export interface GameBeyblade extends BeybladePhysics {
 
 export interface Stadium {
   center: Vector2D;
-  innerRadius: number; // Blue speed zone
-  outerRadius: number; // Red wall zone
+  innerRadius: number; // Outer playing area boundary (360)
+  outerRadius: number; // Wall/exit zone boundary (380)
   exitRadius: number; // Yellow exit zone
+  chargeDashRadius: number; // Blue circle for charge dash (350)
+  normalLoopRadius: number; // Blue circle for normal loop (200)
   width: number;
   height: number;
 }

@@ -51,6 +51,7 @@ export const createBeyblade = (
     ultimateAttackEndTime: undefined,
     dodgeCooldownEnd: undefined,
     lastDodgeTime: undefined,
+    isDodging: false,
     selectedChargePoint: null,
   };
 };

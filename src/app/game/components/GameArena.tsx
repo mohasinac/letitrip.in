@@ -24,6 +24,8 @@ const GameArena: React.FC<GameArenaProps> = ({
   const animationRef = useRef<number>();
   const beybladeImagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const stadiumImageRef = useRef<HTMLImageElement | null>(null);
+  const stadiumCacheRef = useRef<HTMLCanvasElement | null>(null); // Cache for static stadium
+  const lastRenderTime = useRef<number>(0); // For FPS limiting
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
   const [canvasScale, setCanvasScale] = React.useState(1);
   const theme = useTheme();
@@ -65,6 +67,9 @@ const GameArena: React.FC<GameArenaProps> = ({
         await Promise.all(loadPromises);
         beybladeImagesRef.current = imageMap;
         setImagesLoaded(true);
+
+        // Pre-render static stadium to offscreen canvas
+        renderStadiumToCache();
       } catch (error) {
         console.error("Failed to load game images:", error);
         setImagesLoaded(true); // Continue with fallback rendering
@@ -73,6 +78,169 @@ const GameArena: React.FC<GameArenaProps> = ({
 
     loadImages();
   }, [gameState.beyblades]);
+
+  // Pre-render static stadium elements to offscreen canvas
+  const renderStadiumToCache = useCallback(() => {
+    const offscreenCanvas = document.createElement("canvas");
+    offscreenCanvas.width = 800;
+    offscreenCanvas.height = 800;
+    const ctx = offscreenCanvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    // Draw static stadium elements
+    ctx.fillStyle = theme.palette.background.default;
+    ctx.fillRect(0, 0, 800, 800);
+
+    const stadium = gameState.stadium;
+
+    // Draw main arena floor
+    const floorGradient = ctx.createRadialGradient(
+      stadium.center.x,
+      stadium.center.y,
+      0,
+      stadium.center.x,
+      stadium.center.y,
+      stadium.innerRadius
+    );
+    floorGradient.addColorStop(0, "#1a1a1a");
+    floorGradient.addColorStop(0.7, "#2a2a2a");
+    floorGradient.addColorStop(1, "#3a3a3a");
+    ctx.fillStyle = floorGradient;
+    ctx.beginPath();
+    ctx.arc(
+      stadium.center.x,
+      stadium.center.y,
+      stadium.innerRadius,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+
+    // Draw angle-based zones (walls and exits)
+    const angleRanges = [
+      { start: 0, end: 60, isWall: true },
+      { start: 60, end: 120, isWall: false },
+      { start: 120, end: 180, isWall: true },
+      { start: 180, end: 240, isWall: false },
+      { start: 240, end: 300, isWall: true },
+      { start: 300, end: 360, isWall: false },
+    ];
+
+    for (const range of angleRanges) {
+      const startAngle = (range.start * Math.PI) / 180;
+      const endAngle = (range.end * Math.PI) / 180;
+
+      if (range.isWall) {
+        // Yellow wall zones
+        ctx.fillStyle = "#FBBF24";
+        ctx.beginPath();
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.outerRadius,
+          startAngle,
+          endAngle
+        );
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.innerRadius,
+          endAngle,
+          startAngle,
+          true
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        // Black wall pattern
+        const wallThickness = 15;
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.outerRadius,
+          startAngle,
+          endAngle
+        );
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.outerRadius - wallThickness,
+          endAngle,
+          startAngle,
+          true
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        // Brick pattern
+        const numBricks = 8;
+        const angleStep = (endAngle - startAngle) / numBricks;
+        ctx.strokeStyle = "#333333";
+        ctx.lineWidth = 2;
+        for (let i = 1; i < numBricks; i++) {
+          const brickAngle = startAngle + angleStep * i;
+          const innerR = stadium.outerRadius - wallThickness;
+          const outerR = stadium.outerRadius;
+          ctx.beginPath();
+          ctx.moveTo(
+            stadium.center.x + Math.cos(brickAngle) * innerR,
+            stadium.center.y + Math.sin(brickAngle) * innerR
+          );
+          ctx.lineTo(
+            stadium.center.x + Math.cos(brickAngle) * outerR,
+            stadium.center.y + Math.sin(brickAngle) * outerR
+          );
+          ctx.stroke();
+        }
+        const midRadius = stadium.outerRadius - wallThickness / 2;
+        ctx.beginPath();
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          midRadius,
+          startAngle,
+          endAngle
+        );
+        ctx.stroke();
+      } else {
+        // Red exit zones
+        ctx.fillStyle = "#EF4444";
+        ctx.beginPath();
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.outerRadius,
+          startAngle,
+          endAngle
+        );
+        ctx.arc(
+          stadium.center.x,
+          stadium.center.y,
+          stadium.innerRadius,
+          endAngle,
+          startAngle,
+          true
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        // Warning icon
+        const centerAngle = (startAngle + endAngle) / 2;
+        const iconRadius = (stadium.outerRadius + stadium.innerRadius) / 2;
+        const iconX = stadium.center.x + Math.cos(centerAngle) * iconRadius;
+        const iconY = stadium.center.y + Math.sin(centerAngle) * iconRadius;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 24px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("⚠️", iconX, iconY);
+      }
+    }
+
+    stadiumCacheRef.current = offscreenCanvas;
+  }, [gameState.stadium, theme.palette.background.default]);
 
   // Handle canvas scaling for different screen sizes
   useEffect(() => {
@@ -181,46 +349,42 @@ const GameArena: React.FC<GameArenaProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", {
+      alpha: false, // Performance: no transparency needed
+      desynchronized: true, // Performance: allow async rendering
+    });
     if (!ctx) return;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const currentTime = Date.now();
 
-    const stadium = gameState.stadium;
+    // FPS limiting to 60fps (optional, can help on slower devices)
+    // const deltaTime = currentTime - lastRenderTime.current;
+    // if (deltaTime < 16.67) return; // ~60fps cap
+    // lastRenderTime.current = currentTime;
 
-    // Draw stadium background
-    if (imagesLoaded && stadiumImageRef.current) {
-      const stadiumSize = stadium.outerRadius * 2.8;
-      ctx.save();
-      ctx.translate(stadium.center.x, stadium.center.y);
-      ctx.drawImage(
-        stadiumImageRef.current,
-        -stadiumSize / 2,
-        -stadiumSize / 2,
-        stadiumSize,
-        stadiumSize
-      );
-      ctx.restore();
+    // Use cached stadium if available, otherwise draw full background
+    if (stadiumCacheRef.current) {
+      ctx.drawImage(stadiumCacheRef.current, 0, 0);
     } else {
-      // Fallback gradient background with theme colors
-      const gradient = ctx.createRadialGradient(
-        stadium.center.x,
-        stadium.center.y,
-        0,
-        stadium.center.x,
-        stadium.center.y,
-        stadium.outerRadius
-      );
-      gradient.addColorStop(0, theme.palette.background.default);
-      gradient.addColorStop(0.7, theme.palette.secondary.main);
-      gradient.addColorStop(1, theme.palette.primary.main);
-      ctx.fillStyle = gradient;
+      ctx.fillStyle = theme.palette.background.default;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawGameZones(
+        ctx,
+        gameState.stadium,
+        theme.palette,
+        gameState,
+        currentTime
+      );
     }
 
-    // Draw game zones with theme colors
-    drawGameZones(ctx, stadium, theme.palette, gameState);
+    // Only draw dynamic blue circles (not static stadium)
+    drawDynamicBlueCircles(
+      ctx,
+      gameState.stadium,
+      theme.palette,
+      gameState,
+      currentTime
+    );
 
     // Draw beyblades
     gameState.beyblades.forEach((beyblade) => {
@@ -229,12 +393,19 @@ const GameArena: React.FC<GameArenaProps> = ({
         beyblade,
         imagesLoaded,
         beybladeImagesRef.current,
-        theme.palette
+        theme.palette,
+        currentTime
       );
     });
 
     // Draw UI elements
-    drawGameUI(ctx, gameState, theme.palette, beybladeImagesRef.current);
+    drawGameUI(
+      ctx,
+      gameState,
+      theme.palette,
+      beybladeImagesRef.current,
+      currentTime
+    );
   }, [gameState, imagesLoaded, theme.palette]);
 
   // Animation loop
@@ -246,7 +417,13 @@ const GameArena: React.FC<GameArenaProps> = ({
       }
     };
 
-    animate();
+    // Only start animation loop when playing
+    if (gameState.isPlaying) {
+      animate();
+    } else {
+      // Render once when not playing
+      render();
+    }
 
     return () => {
       if (animationRef.current) {
@@ -285,14 +462,130 @@ const GameArena: React.FC<GameArenaProps> = ({
 };
 
 // Helper functions for drawing
+const drawDynamicBlueCircles = (
+  ctx: CanvasRenderingContext2D,
+  stadium: any,
+  colors: any,
+  gameState: GameState,
+  currentTime: number
+) => {
+  // Check if any beyblade can use normal loop (200 radius)
+  const canNormalLoop = gameState.beyblades.some(
+    (b) =>
+      !b.isDead &&
+      !b.isOutOfBounds &&
+      (!b.normalLoopCooldownEnd ||
+        gameState.gameTime >= b.normalLoopCooldownEnd)
+  );
+
+  // Draw blue circle for normal loop (200 radius) - always visible when available
+  if (canNormalLoop) {
+    ctx.strokeStyle = `rgba(59, 130, 246, 0.6)`;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 4]);
+    ctx.beginPath();
+    ctx.arc(
+      stadium.center.x,
+      stadium.center.y,
+      stadium.normalLoopRadius,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Check if any beyblade can charge dash
+  const canChargeDash = gameState.beyblades.some(
+    (b) =>
+      !b.isDead &&
+      !b.isOutOfBounds &&
+      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd)
+  );
+
+  // Draw blue circle for charge dash (300 radius) when available
+  if (canChargeDash) {
+    ctx.strokeStyle = `rgba(59, 130, 246, 0.6)`;
+    ctx.lineWidth = 4;
+    ctx.setLineDash([10, 5]);
+    ctx.beginPath();
+    ctx.arc(
+      stadium.center.x,
+      stadium.center.y,
+      stadium.chargeDashRadius,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Draw charge points on blue circle at 30°, 150°, 270°
+  const chargePointAngles = [30, 150, 270];
+  const activeBey = gameState.beyblades.find((b) => b.isInBlueLoop);
+  const selectedChargePoint = activeBey?.selectedChargePointAngle;
+
+  for (const angleDegrees of chargePointAngles) {
+    const angleRadians = (angleDegrees * Math.PI) / 180;
+    const chargePointX =
+      stadium.center.x + Math.cos(angleRadians) * stadium.chargeDashRadius;
+    const chargePointY =
+      stadium.center.y + Math.sin(angleRadians) * stadium.chargeDashRadius;
+
+    const isSelected = selectedChargePoint === angleDegrees;
+    const pointSize = isSelected ? 15 : 10;
+
+    // Outer glow
+    ctx.fillStyle = isSelected
+      ? `${colors.primary.main}80`
+      : `${colors.primary.main}40`;
+    ctx.beginPath();
+    ctx.arc(chargePointX, chargePointY, pointSize * 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Main charge point
+    ctx.fillStyle = isSelected ? "#FF4500" : colors.primary.main;
+    ctx.beginPath();
+    ctx.arc(chargePointX, chargePointY, pointSize, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Inner core
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath();
+    ctx.arc(chargePointX, chargePointY, pointSize * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Targeting indicator for selected charge point
+    if (isSelected) {
+      ctx.strokeStyle = "#FFD700";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(chargePointX, chargePointY, pointSize * 2, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+};
+
 const drawGameZones = (
   ctx: CanvasRenderingContext2D,
   stadium: any,
   colors: any,
-  gameState: GameState
+  gameState: GameState,
+  currentTime: number
 ) => {
-  // Draw main arena (inner circle)
-  ctx.fillStyle = `${colors.background.default}20`;
+  // Draw main arena floor (inner circle) with subtle gradient
+  const floorGradient = ctx.createRadialGradient(
+    stadium.center.x,
+    stadium.center.y,
+    0,
+    stadium.center.x,
+    stadium.center.y,
+    stadium.innerRadius
+  );
+  floorGradient.addColorStop(0, "#1a1a1a");
+  floorGradient.addColorStop(0.7, "#2a2a2a");
+  floorGradient.addColorStop(1, "#3a3a3a");
+  ctx.fillStyle = floorGradient;
   ctx.beginPath();
   ctx.arc(
     stadium.center.x,
@@ -303,7 +596,60 @@ const drawGameZones = (
   );
   ctx.fill();
 
-  // Draw angle-based zones with charge points on blue circle
+  // Check if any beyblade can use normal loop (200 radius)
+  const canNormalLoop = gameState.beyblades.some(
+    (b) =>
+      !b.isDead &&
+      !b.isOutOfBounds &&
+      (!b.normalLoopCooldownEnd ||
+        gameState.gameTime >= b.normalLoopCooldownEnd)
+  );
+
+  // Draw blue circle for normal loop (200 radius) - always visible when available
+  if (canNormalLoop) {
+    // Solid blue circle without pulsing or glow
+    ctx.strokeStyle = `rgba(59, 130, 246, 0.6)`;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 4]); // Dashed line
+    ctx.beginPath();
+    ctx.arc(
+      stadium.center.x,
+      stadium.center.y,
+      stadium.normalLoopRadius,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset dash
+  }
+
+  // Check if any beyblade can charge dash (has completed blue loop recently)
+  const canChargeDash = gameState.beyblades.some(
+    (b) =>
+      !b.isDead &&
+      !b.isOutOfBounds &&
+      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd)
+  );
+
+  // Draw blue circle for charge dash (350 radius) when available
+  if (canChargeDash) {
+    // Solid blue circle without pulsing or glow
+    ctx.strokeStyle = `rgba(59, 130, 246, 0.6)`;
+    ctx.lineWidth = 4;
+    ctx.setLineDash([10, 5]); // Dashed line
+    ctx.beginPath();
+    ctx.arc(
+      stadium.center.x,
+      stadium.center.y,
+      stadium.chargeDashRadius,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset dash
+  }
+
+  // Draw angle-based zones
   const angleRanges = [
     { start: 0, end: 60, isWall: true },
     { start: 60, end: 120, isWall: false },
@@ -317,38 +663,114 @@ const drawGameZones = (
     const startAngle = (range.start * Math.PI) / 180;
     const endAngle = (range.end * Math.PI) / 180;
 
-    ctx.fillStyle = range.isWall
-      ? "#FBBF24" // Bright yellow for wall zones
-      : "#EF4444"; // Bright red for exit zones
+    if (range.isWall) {
+      // Yellow wall zones with black wall design
+      ctx.fillStyle = "#FBBF24";
+      ctx.beginPath();
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.outerRadius,
+        startAngle,
+        endAngle
+      );
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.innerRadius,
+        endAngle,
+        startAngle,
+        true
+      );
+      ctx.closePath();
+      ctx.fill();
 
-    ctx.beginPath();
-    ctx.arc(
-      stadium.center.x,
-      stadium.center.y,
-      stadium.outerRadius,
-      startAngle,
-      endAngle
-    );
-    ctx.arc(
-      stadium.center.x,
-      stadium.center.y,
-      stadium.innerRadius,
-      endAngle,
-      startAngle,
-      true
-    );
-    ctx.closePath();
-    ctx.fill();
+      // Draw black wall pattern at the outer edge
+      const wallThickness = 15;
+      ctx.fillStyle = "#000000";
+      ctx.beginPath();
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.outerRadius,
+        startAngle,
+        endAngle
+      );
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.outerRadius - wallThickness,
+        endAngle,
+        startAngle,
+        true
+      );
+      ctx.closePath();
+      ctx.fill();
 
-    // Add danger icons for exit zones
-    if (!range.isWall) {
+      // Add brick/panel pattern on the black wall
+      const numBricks = 8;
+      const angleStep = (endAngle - startAngle) / numBricks;
+      ctx.strokeStyle = "#333333";
+      ctx.lineWidth = 2;
+
+      for (let i = 1; i < numBricks; i++) {
+        const brickAngle = startAngle + angleStep * i;
+        const innerR = stadium.outerRadius - wallThickness;
+        const outerR = stadium.outerRadius;
+
+        ctx.beginPath();
+        ctx.moveTo(
+          stadium.center.x + Math.cos(brickAngle) * innerR,
+          stadium.center.y + Math.sin(brickAngle) * innerR
+        );
+        ctx.lineTo(
+          stadium.center.x + Math.cos(brickAngle) * outerR,
+          stadium.center.y + Math.sin(brickAngle) * outerR
+        );
+        ctx.stroke();
+      }
+
+      // Add horizontal line in the middle
+      const midRadius = stadium.outerRadius - wallThickness / 2;
+      ctx.beginPath();
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        midRadius,
+        startAngle,
+        endAngle
+      );
+      ctx.stroke();
+    } else {
+      // Red exit zones (keep same)
+      ctx.fillStyle = "#EF4444";
+      ctx.beginPath();
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.outerRadius,
+        startAngle,
+        endAngle
+      );
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.innerRadius,
+        endAngle,
+        startAngle,
+        true
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      // Add danger icons for exit zones
       const centerAngle = (startAngle + endAngle) / 2;
       const iconRadius = (stadium.outerRadius + stadium.innerRadius) / 2;
       const iconX = stadium.center.x + Math.cos(centerAngle) * iconRadius;
       const iconY = stadium.center.y + Math.sin(centerAngle) * iconRadius;
 
       // Draw danger icon (warning triangle)
-      ctx.fillStyle = "#FFFFFF"; // White warning color for better visibility
+      ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 24px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -358,7 +780,6 @@ const drawGameZones = (
 
   // Draw charge points on blue circle at 90°, 210°, 330°
   const chargePointAngles = [30, 150, 270];
-  const time = Date.now() / 1000;
 
   // Check if any beyblade is in a blue loop to highlight selected charge point
   const activeBey = gameState.beyblades.find((b) => b.isInBlueLoop);
@@ -367,33 +788,32 @@ const drawGameZones = (
   for (const angleDegrees of chargePointAngles) {
     const angleRadians = (angleDegrees * Math.PI) / 180;
     const chargePointX =
-      stadium.center.x + Math.cos(angleRadians) * stadium.innerRadius;
+      stadium.center.x + Math.cos(angleRadians) * stadium.chargeDashRadius;
     const chargePointY =
-      stadium.center.y + Math.sin(angleRadians) * stadium.innerRadius;
+      stadium.center.y + Math.sin(angleRadians) * stadium.chargeDashRadius;
 
     const isSelected = selectedChargePoint === angleDegrees;
-    const pulseSize = isSelected
-      ? 15 + 5 * Math.sin(time * 6) // Larger, faster pulse for selected point
-      : 10 + 3 * Math.sin(time * 4); // Normal pulse for other points
+    // Fixed sizes without pulsing
+    const pointSize = isSelected ? 15 : 10;
 
     // Outer glow - brighter for selected point
     ctx.fillStyle = isSelected
       ? `${colors.primary.main}80`
       : `${colors.primary.main}40`;
     ctx.beginPath();
-    ctx.arc(chargePointX, chargePointY, pulseSize * 1.5, 0, Math.PI * 2);
+    ctx.arc(chargePointX, chargePointY, pointSize * 1.5, 0, Math.PI * 2);
     ctx.fill();
 
     // Main charge point - different color for selected
     ctx.fillStyle = isSelected ? "#FF4500" : colors.primary.main;
     ctx.beginPath();
-    ctx.arc(chargePointX, chargePointY, pulseSize, 0, Math.PI * 2);
+    ctx.arc(chargePointX, chargePointY, pointSize, 0, Math.PI * 2);
     ctx.fill();
 
     // Inner core
     ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
-    ctx.arc(chargePointX, chargePointY, pulseSize * 0.4, 0, Math.PI * 2);
+    ctx.arc(chargePointX, chargePointY, pointSize * 0.4, 0, Math.PI * 2);
     ctx.fill();
 
     // Add targeting indicator for selected charge point
@@ -401,7 +821,7 @@ const drawGameZones = (
       ctx.strokeStyle = "#FFD700";
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(chargePointX, chargePointY, pulseSize * 2, 0, Math.PI * 2);
+      ctx.arc(chargePointX, chargePointY, pointSize * 2, 0, Math.PI * 2);
       ctx.stroke();
     }
   }
@@ -412,14 +832,16 @@ const drawBeyblade = (
   beyblade: GameBeyblade,
   imagesLoaded: boolean,
   images: Map<string, HTMLImageElement>,
-  colors: any
+  colors: any,
+  currentTime: number
 ) => {
   ctx.save();
   ctx.translate(beyblade.position.x, beyblade.position.y);
 
+  const time = currentTime / 1000;
+
   // Handle out-of-bounds state
   if (beyblade.isOutOfBounds && beyblade.isDead) {
-    const time = Date.now() / 1000;
     const pulseIntensity = 0.5 + 0.5 * Math.sin(time * 4);
     const exitRadius = beyblade.radius * 2;
 
@@ -436,9 +858,8 @@ const drawBeyblade = (
   }
 
   // Draw dodge animation effects
-  const time = Date.now() / 1000;
-  if (beyblade.lastDodgeTime && Date.now() - beyblade.lastDodgeTime < 500) {
-    const dodgeProgress = (Date.now() - beyblade.lastDodgeTime) / 500;
+  if (beyblade.lastDodgeTime && currentTime - beyblade.lastDodgeTime < 500) {
+    const dodgeProgress = (currentTime - beyblade.lastDodgeTime) / 500;
     const dodgeOpacity = 1 - dodgeProgress;
 
     // Afterimage trail effect
@@ -468,7 +889,7 @@ const drawBeyblade = (
   // Draw heavy attack animation (normal attack)
   if (beyblade.heavyAttackActive && beyblade.heavyAttackEndTime) {
     const attackProgress =
-      1 - (beyblade.heavyAttackEndTime - Date.now()) / 2000;
+      1 - (beyblade.heavyAttackEndTime - currentTime) / 2000;
     const attackOpacity = Math.sin(attackProgress * Math.PI);
 
     // Orange energy ring
@@ -495,7 +916,7 @@ const drawBeyblade = (
   // Draw ultimate attack animation (power attack)
   if (beyblade.ultimateAttackActive && beyblade.ultimateAttackEndTime) {
     const ultimateProgress =
-      1 - (beyblade.ultimateAttackEndTime - Date.now()) / 3000;
+      1 - (beyblade.ultimateAttackEndTime - currentTime) / 3000;
     const ultimateOpacity = Math.sin(ultimateProgress * Math.PI);
 
     // Red energy explosion
@@ -591,7 +1012,8 @@ const drawGameUI = (
   ctx: CanvasRenderingContext2D,
   gameState: GameState,
   colors: any,
-  beybladeImages: Map<string, HTMLImageElement> | null = null
+  beybladeImages: Map<string, HTMLImageElement> | null = null,
+  currentTime?: number
 ) => {
   const canvasWidth = 800;
   const canvasHeight = 800; // Square canvas
@@ -693,7 +1115,7 @@ const drawGameUI = (
 
       ctx.save();
       ctx.translate(imageX + imageSize / 2, imageY + imageSize / 2);
-      ctx.rotate(Date.now() / 1000); // Spinning effect
+      ctx.rotate((currentTime || Date.now()) / 1000); // Spinning effect
       ctx.drawImage(
         winnerImage,
         -imageSize / 2,
@@ -770,39 +1192,7 @@ const drawGameUI = (
     ctx.textAlign = "left";
   }
 
-  // Draw control legend at bottom-left
-  const legendX = 20;
-  const legendY = canvasHeight - 120;
-
-  // Background for legend
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(legendX, legendY, 180, 100);
-  ctx.strokeStyle = colors.primary.main;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(legendX, legendY, 180, 100);
-
-  // Legend title
-  ctx.font = "bold 11px Inter";
-  ctx.fillStyle = colors.primary.main;
-  ctx.textAlign = "left";
-  ctx.fillText("CONTROLS", legendX + 10, legendY + 15);
-
-  // Control mappings
-  ctx.font = "10px Inter";
-  ctx.fillStyle = "#fff";
-  const controls = [
-    "1 / Left Click - Dodge Left",
-    "2 / Right Click - Dodge Right",
-    "3 / Middle Click - Attack",
-    "4 / Double Click - Power",
-    "Mouse / WASD - Movement",
-  ];
-
-  controls.forEach((control, index) => {
-    ctx.fillText(control, legendX + 10, legendY + 33 + index * 13);
-  });
-
-  ctx.textAlign = "center"; // Reset
+  // Controls legend removed for performance optimization
 };
 
 const drawCornerStats = (
@@ -864,7 +1254,12 @@ const drawCornerStats = (
   else spinColor = "#EF4444";
 
   ctx.fillStyle = spinColor;
-  ctx.fillRect(x + 5, spinBarY, spinFillWidth, 8);
+  // For AI (not player), draw bar from right to left
+  if (!isPlayer) {
+    ctx.fillRect(x + width - 5 - spinFillWidth, spinBarY, spinFillWidth, 8);
+  } else {
+    ctx.fillRect(x + 5, spinBarY, spinFillWidth, 8);
+  }
 
   // Acceleration bar
   const accelBarY = y + 50;
@@ -874,7 +1269,12 @@ const drawCornerStats = (
   const maxAccel = beyblade.currentMaxAcceleration;
   const accelFillWidth = (beyblade.acceleration / maxAccel) * (width - 10);
   ctx.fillStyle = beyblade.isChargeDashing ? "#FF4500" : colors.secondary.main;
-  ctx.fillRect(x + 5, accelBarY, accelFillWidth, 8);
+  // For AI (not player), draw bar from right to left
+  if (!isPlayer) {
+    ctx.fillRect(x + width - 5 - accelFillWidth, accelBarY, accelFillWidth, 8);
+  } else {
+    ctx.fillRect(x + 5, accelBarY, accelFillWidth, 8);
+  }
 
   // Text values
   ctx.font = "bold 10px Inter";
