@@ -1,19 +1,11 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Typography,
-  Breadcrumbs,
-  Link,
-  Tabs,
-  Tab,
-} from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 import { useState } from "react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
+import SettingsLayout from "@/components/admin/settings/SettingsLayout";
 import HeroCarouselSettings from "@/components/admin/settings/hero/HeroCarouselSettings";
 import HeroProductSettings from "@/components/admin/settings/hero/HeroProductSettings";
-import NextLink from "next/link";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -42,49 +34,36 @@ function HeroSettingsContent() {
   };
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        {/* Breadcrumbs */}
-        <Breadcrumbs sx={{ mb: 3 }}>
-          <Link component={NextLink} href="/admin" color="inherit">
-            Admin
-          </Link>
-          <Link component={NextLink} href="/admin/settings" color="inherit">
-            Settings
-          </Link>
-          <Typography color="text.primary">Hero Settings</Typography>
-        </Breadcrumbs>
+    <SettingsLayout>
+      {/* Sub-tabs for Hero Settings */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="hero settings tabs"
+        >
+          <Tab
+            label="Carousel Backgrounds"
+            id="hero-tab-0"
+            sx={{ textTransform: "none", fontWeight: 600 }}
+          />
+          <Tab
+            label="Featured Products"
+            id="hero-tab-1"
+            sx={{ textTransform: "none", fontWeight: 600 }}
+          />
+        </Tabs>
+      </Box>
 
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-          Hero Section Settings
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-          Customize the hero carousel backgrounds, featured products, and
-          promotional content displayed on your homepage.
-        </Typography>
+      {/* Tab Panels */}
+      <TabPanel value={tabValue} index={0}>
+        <HeroCarouselSettings />
+      </TabPanel>
 
-        {/* Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="hero settings tabs"
-          >
-            <Tab label="Carousel Backgrounds" id="hero-tab-0" />
-            <Tab label="Featured Products" id="hero-tab-1" />
-          </Tabs>
-        </Box>
-
-        {/* Tab Panels */}
-        <TabPanel value={tabValue} index={0}>
-          <HeroCarouselSettings />
-        </TabPanel>
-
-        <TabPanel value={tabValue} index={1}>
-          <HeroProductSettings />
-        </TabPanel>
-      </Container>
-    </Box>
+      <TabPanel value={tabValue} index={1}>
+        <HeroProductSettings />
+      </TabPanel>
+    </SettingsLayout>
   );
 }
 

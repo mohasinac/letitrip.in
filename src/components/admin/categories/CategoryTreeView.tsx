@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,6 +15,8 @@ import {
   Tooltip,
   Badge,
   TableRow as MuiTableRow,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -24,6 +26,7 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Storage as StorageIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import type { Category } from "@/types";
 
@@ -39,6 +42,7 @@ interface CategoryNodeProps {
   level: number;
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
+  searchTerm?: string;
 }
 
 function CategoryNode({
@@ -47,15 +51,64 @@ function CategoryNode({
   level,
   onEdit,
   onDelete,
+  searchTerm = "",
 }: CategoryNodeProps) {
   const [expanded, setExpanded] = React.useState(true);
 
   const children = useMemo(
-    () => allCategories.filter((cat) => cat.parentId === category.id),
+    () => allCategories.filter((cat) => cat.parentIds?.includes(category.id)),
     [allCategories, category.id]
   );
 
-  const hasChildren = children.length > 0;
+  // Filter children based on search term
+  const filteredChildren = useMemo(() => {
+    if (!searchTerm) return children;
+    return children.filter(
+      (cat) =>
+        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [children, searchTerm]);
+
+  const hasChildren = filteredChildren.length > 0;
+
+  // Check if current category or any descendant matches search
+  const matchesSearch = useMemo(() => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const directMatch =
+      category.name.toLowerCase().includes(searchLower) ||
+      category.slug.toLowerCase().includes(searchLower);
+    
+    if (directMatch) return true;
+    
+    // Check if any descendant matches
+    const hasMatchingDescendant = (cats: Category[]): boolean => {
+      return cats.some((cat) => {
+        const matches =
+          cat.name.toLowerCase().includes(searchLower) ||
+          cat.slug.toLowerCase().includes(searchLower);
+        if (matches) return true;
+        
+        const subChildren = allCategories.filter((c) =>
+          c.parentIds?.includes(cat.id)
+        );
+        return hasMatchingDescendant(subChildren);
+      });
+    };
+    
+    return hasMatchingDescendant(children);
+  }, [category, searchTerm, children, allCategories]);
+
+  // Auto-expand if search is active and has matching descendants
+  React.useEffect(() => {
+    if (searchTerm && hasChildren) {
+      setExpanded(true);
+    }
+  }, [searchTerm, hasChildren]);
+
+  if (!matchesSearch) return null;
 
   return (
     <>
@@ -179,7 +232,7 @@ function CategoryNode({
       {/* Children */}
       {hasChildren && (
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {children.map((child) => (
+          {filteredChildren.map((child) => (
             <CategoryNode
               key={child.id}
               category={child}
@@ -187,6 +240,7 @@ function CategoryNode({
               level={level + 1}
               onEdit={onEdit}
               onDelete={onDelete}
+              searchTerm={searchTerm}
             />
           ))}
         </Collapse>
@@ -209,16 +263,37 @@ export default function CategoryTreeView({
   onEdit,
   onDelete,
 }: CategoryTreeViewProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const rootCategories = useMemo(
     () =>
       categories
-        .filter((cat) => !cat.parentId)
+        .filter((cat) => !cat.parentIds || cat.parentIds.length === 0)
         .sort((a, b) => a.sortOrder - b.sortOrder),
     [categories]
   );
 
   return (
-    <TableContainer
+    <Box>
+      {/* Search Bar */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          placeholder="Search categories by name or slug..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          fullWidth
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
+      <TableContainer
       component={Paper}
       sx={{
         backgroundColor: "background.paper",
@@ -286,10 +361,12 @@ export default function CategoryTreeView({
               level={0}
               onEdit={onEdit}
               onDelete={onDelete}
+              searchTerm={searchTerm}
             />
           ))}
         </tbody>
       </table>
     </TableContainer>
+    </Box>
   );
 }

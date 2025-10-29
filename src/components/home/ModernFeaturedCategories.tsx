@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowForward, TrendingUp } from "@mui/icons-material";
+import { ArrowForward, TrendingUp, Category as CategoryIcon } from "@mui/icons-material";
 import {
   Box,
   Container,
@@ -11,61 +11,31 @@ import {
   Button,
   Chip,
   useTheme,
+  alpha,
 } from "@mui/material";
+import NextLink from "next/link";
+import type { Category } from "@/types";
 
-const categories = [
-  {
-    name: "Beyblade Burst",
-    description: "Latest generation with burst mechanics",
-    count: "150+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#4f46e5", // primary.main
-    trending: true,
-  },
-  {
-    name: "Metal Series",
-    description: "Classic metal performance system",
-    count: "200+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#22c55e", // success.main
-    trending: false,
-  },
-  {
-    name: "Plastic Gen",
-    description: "Original generation plastic series",
-    count: "100+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#f59e0b", // warning.main
-    trending: false,
-  },
-  {
-    name: "Beyblade X",
-    description: "Next evolution of Beyblade",
-    count: "80+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#f59e0b", // warning.main (dark variant)
-    trending: true,
-  },
-  {
-    name: "Accessories",
-    description: "Stadiums, launchers & more",
-    count: "75+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#ef4444", // error.main
-    trending: false,
-  },
-  {
-    name: "Sticker Sheets",
-    description: "Custom designs & rare collections",
-    count: "50+ Products",
-    image: "/api/placeholder/400/300",
-    color: "#ec4899", // secondary.main
-    trending: false,
-  },
-];
+interface CategoryWithCount extends Category {
+  productCount: number;
+  inStockCount?: number;
+  outOfStockCount?: number;
+}
 
-export default function ModernFeaturedCategories() {
+interface ModernFeaturedCategoriesProps {
+  categories: CategoryWithCount[];
+}
+
+export default function ModernFeaturedCategories({ categories }: ModernFeaturedCategoriesProps) {
   const theme = useTheme();
+
+  // Filter only featured categories
+  const featuredCategories = categories.filter(cat => cat.featured && cat.isActive);
+
+  // If no featured categories, don't render the section
+  if (featuredCategories.length === 0) {
+    return null;
+  }
 
   return (
     <Box
@@ -118,141 +88,169 @@ export default function ModernFeaturedCategories() {
             gap: 4,
           }}
         >
-          {categories.map((category, index) => (
-            <Card
-              key={index}
-              sx={{
-                height: "100%",
-                backgroundColor: "background.paper",
-                borderRadius: 3,
-                overflow: "hidden",
-                transition: "all 0.3s ease",
-                border: "1px solid",
-                borderColor: "divider",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: `0 12px 40px ${category.color}20`,
-                  borderColor: category.color,
-                },
-                cursor: "pointer",
-                position: "relative",
-              }}
-            >
-              {/* Trending Badge */}
-              {category.trending && (
-                <Chip
-                  icon={<TrendingUp />}
-                  label="Trending"
-                  size="small"
-                  sx={{
-                    position: "absolute",
-                    top: 16,
-                    right: 16,
-                    zIndex: 2,
-                    backgroundColor: "warning.main",
-                    color: "common.white",
-                    fontWeight: 600,
-                    "&:hover": {
-                      backgroundColor: "warning.dark",
-                    },
-                  }}
-                />
-              )}
+          {featuredCategories.map((category, index) => {
+            // Determine category color based on product availability
+            const hasProducts = (category.inStockCount || 0) > 0;
+            const categoryColor = hasProducts
+              ? theme.palette.primary.main
+              : theme.palette.grey[400];
 
-              {/* Image */}
-              <CardMedia
-                component="div"
+            return (
+              <Card
+                key={category.id}
                 sx={{
-                  height: 200,
-                  background: `linear-gradient(135deg, ${category.color}15 0%, ${category.color}05 100%)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    inset: 0,
-                    background: `radial-gradient(circle at center, ${category.color}20 0%, transparent 70%)`,
+                  height: "100%",
+                  backgroundColor: hasProducts
+                    ? "background.paper"
+                    : alpha(theme.palette.grey[100], 0.5),
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  transition: "all 0.3s ease",
+                  border: "1px solid",
+                  borderColor: hasProducts ? "divider" : theme.palette.grey[300],
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: `0 12px 40px ${alpha(categoryColor, 0.2)}`,
+                    borderColor: categoryColor,
                   },
+                  cursor: "pointer",
+                  position: "relative",
+                  opacity: hasProducts ? 1 : 0.75,
                 }}
               >
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontSize: "4rem",
-                    color: category.color,
-                    opacity: 0.8,
-                    zIndex: 1,
-                  }}
-                >
-                  ⚡
-                </Typography>
-              </CardMedia>
+                {/* Trending Badge */}
+                {category.featured && (
+                  <Chip
+                    icon={<TrendingUp />}
+                    label="Trending"
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 16,
+                      right: 16,
+                      zIndex: 2,
+                      backgroundColor: "warning.main",
+                      color: "common.white",
+                      fontWeight: 600,
+                      "&:hover": {
+                        backgroundColor: "warning.dark",
+                      },
+                    }}
+                  />
+                )}
 
-              {/* Content */}
-              <CardContent sx={{ p: 3 }}>
-                <Typography
-                  variant="h5"
+                {/* Image */}
+                <CardMedia
+                  component="div"
                   sx={{
-                    fontWeight: 600,
-                    mb: 1,
-                    color: "text.primary",
-                  }}
-                >
-                  {category.name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mb: 2,
-                    lineHeight: 1.6,
-                    color: "text.secondary",
-                  }}
-                >
-                  {category.description}
-                </Typography>
-
-                <Box
-                  sx={{
+                    height: 200,
+                    background: category.image
+                      ? `url(${category.image})`
+                      : `linear-gradient(135deg, ${alpha(
+                          categoryColor,
+                          0.15
+                        )} 0%, ${alpha(categoryColor, 0.05)} 100%)`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    mt: 3,
+                    justifyContent: "center",
+                    position: "relative",
+                    "&::before": {
+                      content: '""',
+                      position: "absolute",
+                      inset: 0,
+                      background: `radial-gradient(circle at center, ${alpha(
+                        categoryColor,
+                        0.2
+                      )} 0%, transparent 70%)`,
+                    },
                   }}
                 >
+                  {!category.image && (
+                    <CategoryIcon
+                      sx={{
+                        fontSize: 80,
+                        color: categoryColor,
+                        opacity: 0.8,
+                        zIndex: 1,
+                      }}
+                    />
+                  )}
+                </CardMedia>
+
+                {/* Content */}
+                <CardContent sx={{ p: 3 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 1,
+                      color: "text.primary",
+                    }}
+                  >
+                    {category.name}
+                  </Typography>
                   <Typography
                     variant="body2"
                     sx={{
-                      fontWeight: 600,
-                      color: category.color,
+                      mb: 2,
+                      lineHeight: 1.6,
+                      color: "text.secondary",
                     }}
                   >
-                    {category.count}
+                    {category.description || "Explore this category"}
                   </Typography>
 
-                  <Button
-                    endIcon={<ArrowForward />}
+                  <Box
                     sx={{
-                      color: category.color,
-                      fontWeight: 600,
-                      textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: `${category.color}10`,
-                      },
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mt: 3,
                     }}
                   >
-                    Explore
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: categoryColor,
+                      }}
+                    >
+                      {category.productCount > 0
+                        ? `${category.productCount}+ Products`
+                        : "Coming Soon"}
+                    </Typography>
+
+                    {hasProducts && (
+                      <Button
+                        component={NextLink}
+                        href={`/products?category=${category.slug}`}
+                        endIcon={<ArrowForward />}
+                        sx={{
+                          color: categoryColor,
+                          fontWeight: 600,
+                          textTransform: "none",
+                          "&:hover": {
+                            backgroundColor: alpha(categoryColor, 0.1),
+                          },
+                        }}
+                      >
+                        Explore
+                      </Button>
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
+            );
+          })}
         </Box>
 
         {/* View All Button */}
         <Box sx={{ textAlign: "center", mt: 6 }}>
           <Button
+            component={NextLink}
+            href="/categories"
             variant="contained"
             size="large"
             endIcon={<ArrowForward />}
