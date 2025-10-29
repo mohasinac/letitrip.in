@@ -139,6 +139,20 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     return () => clearInterval(interval);
   }, [isMultiplayer, multiplayer, getCurrentInput]);
 
+  // Send beyblade state to opponent in multiplayer
+  useEffect(() => {
+    if (!isMultiplayer || !multiplayer || !gameState.isPlaying) return;
+
+    const interval = setInterval(() => {
+      const beybladeState = getMyBeybladeState();
+      if (beybladeState) {
+        multiplayer.sendBeybladeState(beybladeState);
+      }
+    }, 100); // Send beyblade state 10 times per second
+
+    return () => clearInterval(interval);
+  }, [isMultiplayer, multiplayer, gameState.isPlaying, getMyBeybladeState]);
+
   // Send game over event in multiplayer
   useEffect(() => {
     if (!isMultiplayer || !multiplayer || !gameState.winner) return;
