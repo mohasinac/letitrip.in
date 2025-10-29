@@ -294,7 +294,18 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       const playerBey = newState.beyblades.find((b) => b.isPlayer);
       const aiBey = newState.beyblades.find((b) => !b.isPlayer);
 
-      // Process special actions for player
+      // Keep beyblades stationary during countdown
+      if (newState.countdownActive) {
+        newState.beyblades.forEach((bey) => {
+          bey.velocity = { x: 0, y: 0 };
+        });
+        
+        // Still update game time and continue loop
+        newState.gameTime += deltaTime;
+        return newState;
+      }
+
+      // Process special actions for player (only when not in countdown)
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds) {
         // Calculate direction to opponent for attack movements (if opponent exists)
         let normalizedDirection = { x: 0, y: 0 };
@@ -342,40 +353,58 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           playerBey.isDodging = false;
         }
         
-        // Process heavy attack (2 or left click)
+        // Process heavy attack (3 or middle click) - 20 units travel distance
         if (specialActionsRef.current.heavyAttack) {
           playerBey.heavyAttackActive = true;
-          playerBey.heavyAttackEndTime = newState.gameTime + 0.3; // 0.3 second duration
+          playerBey.attackStartPosition = { ...playerBey.position }; // Track start position
+          playerBey.attackTargetDistance = 20; // Travel 20 units
           
           // Move towards opponent during heavy attack
           const attackSpeed = 350;
-          playerBey.velocity.x += normalizedDirection.x * attackSpeed;
-          playerBey.velocity.y += normalizedDirection.y * attackSpeed;
+          playerBey.velocity.x = normalizedDirection.x * attackSpeed;
+          playerBey.velocity.y = normalizedDirection.y * attackSpeed;
           
           specialActionsRef.current.heavyAttack = false;
         }
         
-        // Process ultimate attack (4 or double click)
+        // Process ultimate attack (4 or double click) - 40 units travel distance
         if (specialActionsRef.current.ultimateAttack) {
           if (playerBey.spin >= 100) { // Requires 100 spin
             playerBey.spin = Math.max(0, playerBey.spin - 100);
             playerBey.ultimateAttackActive = true;
-            playerBey.ultimateAttackEndTime = newState.gameTime + 0.5; // 0.5 second duration
+            playerBey.attackStartPosition = { ...playerBey.position }; // Track start position
+            playerBey.attackTargetDistance = 40; // Travel 40 units
             
             // Move towards opponent during ultimate attack with stronger force
             const ultimateAttackSpeed = 500;
-            playerBey.velocity.x += normalizedDirection.x * ultimateAttackSpeed;
-            playerBey.velocity.y += normalizedDirection.y * ultimateAttackSpeed;
+            playerBey.velocity.x = normalizedDirection.x * ultimateAttackSpeed;
+            playerBey.velocity.y = normalizedDirection.y * ultimateAttackSpeed;
           }
           specialActionsRef.current.ultimateAttack = false;
         }
         
-        // Check if attacks have expired
-        if (playerBey.heavyAttackActive && playerBey.heavyAttackEndTime && newState.gameTime >= playerBey.heavyAttackEndTime) {
-          playerBey.heavyAttackActive = false;
+        // Check if heavy attack distance traveled
+        if (playerBey.heavyAttackActive && playerBey.attackStartPosition && playerBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(playerBey.position, playerBey.attackStartPosition)
+          );
+          if (distanceTraveled >= playerBey.attackTargetDistance) {
+            playerBey.heavyAttackActive = false;
+            playerBey.attackStartPosition = undefined;
+            playerBey.attackTargetDistance = undefined;
+          }
         }
-        if (playerBey.ultimateAttackActive && playerBey.ultimateAttackEndTime && newState.gameTime >= playerBey.ultimateAttackEndTime) {
-          playerBey.ultimateAttackActive = false;
+        
+        // Check if ultimate attack distance traveled
+        if (playerBey.ultimateAttackActive && playerBey.attackStartPosition && playerBey.attackTargetDistance) {
+          const distanceTraveled = vectorLength(
+            vectorSubtract(playerBey.position, playerBey.attackStartPosition)
+          );
+          if (distanceTraveled >= playerBey.attackTargetDistance) {
+            playerBey.ultimateAttackActive = false;
+            playerBey.attackStartPosition = undefined;
+            playerBey.attackTargetDistance = undefined;
+          }
         }
         
         // Process charge point selection during blue loop
@@ -493,14 +522,15 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       return newState;
     });
 
-    if (gameState.isPlaying) {
+    // Continue game loop if playing OR if countdown is active
+    if (gameState.isPlaying || gameState.countdownActive) {
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     }
-  }, [gameState.isPlaying, getMovementDirection, onGameEnd]);
+  }, [gameState.isPlaying, gameState.countdownActive, getMovementDirection, onGameEnd]);
 
-  // Start game loop when playing
+  // Start game loop when playing or countdown is active
   useEffect(() => {
-    if (gameState.isPlaying) {
+    if (gameState.isPlaying || gameState.countdownActive) {
       lastTimeRef.current = performance.now();
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     }
@@ -510,7 +540,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         cancelAnimationFrame(gameLoopRef.current);
       }
     };
-  }, [gameLoop, gameState.isPlaying]);
+  }, [gameLoop, gameState.isPlaying, gameState.countdownActive]);
 
   // Restart game function
   const restartGame = useCallback(() => {

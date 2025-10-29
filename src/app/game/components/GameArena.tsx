@@ -419,16 +419,17 @@ const GameArena: React.FC<GameArenaProps> = ({
   useEffect(() => {
     const animate = () => {
       render();
-      if (gameState.isPlaying) {
+      // Keep animating during countdown OR when playing
+      if (gameState.isPlaying || gameState.countdownActive) {
         animationRef.current = requestAnimationFrame(animate);
       }
     };
 
-    // Only start animation loop when playing
-    if (gameState.isPlaying) {
+    // Start animation loop when playing OR countdown is active
+    if (gameState.isPlaying || gameState.countdownActive) {
       animate();
     } else {
-      // Render once when not playing
+      // Render once when not playing and no countdown
       render();
     }
 
@@ -437,7 +438,7 @@ const GameArena: React.FC<GameArenaProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [render, gameState.isPlaying]);
+  }, [render, gameState.isPlaying, gameState.countdownActive]);
 
   return (
     <canvas

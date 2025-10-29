@@ -40,6 +40,8 @@ export interface BeybladePhysics {
   heavyAttackEndTime?: number; // When heavy attack ends
   ultimateAttackActive: boolean; // 2x damage multiplier active
   ultimateAttackEndTime?: number; // When ultimate attack ends
+  attackStartPosition?: Vector2D; // Starting position for distance-based attacks
+  attackTargetDistance?: number; // Target distance to travel during attack
   dodgeCooldownEnd?: number; // When dodge can be used again
   lastDodgeTime?: number; // Track last dodge for cooldown
   isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
