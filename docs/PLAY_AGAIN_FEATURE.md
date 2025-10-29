@@ -11,17 +11,15 @@ The "Play Again" button for AI (single-player) matches is **already fully functi
 The match result screen displays after every game (both AI and multiplayer) and includes:
 
 #### Single Player (AI Mode)
+
 ```tsx
-{onPlayAgain && !isMultiplayer && (
-  <Button
-    variant="contained"
-    onClick={onPlayAgain}
-    size="large"
-    fullWidth
-  >
-    Play Again
-  </Button>
-)}
+{
+  onPlayAgain && !isMultiplayer && (
+    <Button variant="contained" onClick={onPlayAgain} size="large" fullWidth>
+      Play Again
+    </Button>
+  );
+}
 ```
 
 #### How It Works
@@ -38,16 +36,18 @@ The match result screen displays after every game (both AI and multiplayer) and 
 ### Connected in `EnhancedBeybladeArena.tsx`
 
 ```tsx
-{!isMultiplayer && !gameState.isPlaying && gameState.winner && (
-  <MatchResultScreen
-    winner={gameState.winner}
-    isPlayerWinner={gameState.winner.isPlayer || false}
-    gameTime={gameState.gameTime}
-    isMultiplayer={false}
-    onPlayAgain={restartGame}  // ✅ Triggers new game
-    onBackToMenu={onBackToMenu || (() => {})}
-  />
-)}
+{
+  !isMultiplayer && !gameState.isPlaying && gameState.winner && (
+    <MatchResultScreen
+      winner={gameState.winner}
+      isPlayerWinner={gameState.winner.isPlayer || false}
+      gameTime={gameState.gameTime}
+      isMultiplayer={false}
+      onPlayAgain={restartGame} // ✅ Triggers new game
+      onBackToMenu={onBackToMenu || (() => {})}
+    />
+  );
+}
 ```
 
 ## What The Screen Shows
@@ -82,6 +82,7 @@ The match result screen displays after every game (both AI and multiplayer) and 
 ## Features
 
 ### ✅ Already Working
+
 - [x] Shows after AI battles
 - [x] Full-width blue button
 - [x] Restarts game with countdown
@@ -91,6 +92,7 @@ The match result screen displays after every game (both AI and multiplayer) and 
 - [x] Responsive design
 
 ### Button Behavior
+
 1. **Click "Play Again"**
 2. MatchResultScreen disappears
 3. Game controls reappear
@@ -101,12 +103,14 @@ The match result screen displays after every game (both AI and multiplayer) and 
 ## Multiplayer Difference
 
 For multiplayer matches, a different button shows:
+
 - **Single Player**: "Play Again" → Instant rematch
 - **Multiplayer**: "Find New Opponent" → Return to matchmaking
 
 ## Visual Hierarchy
 
 The result screen has clear visual hierarchy:
+
 1. **Winner Icon** (🏆/💔) - Largest
 2. **Victory/Defeat Title** - Bold, colored
 3. **Winner Name** - Secondary heading
@@ -158,6 +162,7 @@ User clicks "Play Again"
 **The Play Again feature for AI mode is complete and functional.**
 
 If you're not seeing it, possible reasons:
+
 1. Game might still be in progress
 2. Looking at multiplayer mode instead
 3. Result screen hidden behind other UI

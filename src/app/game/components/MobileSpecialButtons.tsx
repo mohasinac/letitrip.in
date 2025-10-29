@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { Box } from "@mui/material";
 
 interface MobileSpecialButtonsProps {
@@ -8,20 +8,26 @@ interface MobileSpecialButtonsProps {
   disabled?: boolean;
 }
 
-const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = ({
+const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
   onActionButton,
   disabled = false,
 }) => {
-  const handlePress = (
+  // Optimized press handler with haptic feedback
+  const handlePress = useCallback((
     action: 1 | 2 | 3 | 4,
     e: React.TouchEvent | React.MouseEvent
   ) => {
     e.preventDefault();
     e.stopPropagation();
+    
     if (!disabled) {
+      // Haptic feedback for mobile devices
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10); // Short vibration (10ms)
+      }
       onActionButton(action);
     }
-  };
+  }, [disabled, onActionButton]);
 
   const buttonStyle = {
     position: "absolute" as const,

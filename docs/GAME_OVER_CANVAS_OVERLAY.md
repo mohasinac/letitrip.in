@@ -1,16 +1,20 @@
 # Game Over Screen on Canvas Overlay
 
 ## Change Summary
+
 Moved the single-player game over screen from below the arena to appear as an overlay directly on top of the canvas, matching the multiplayer overlay style.
 
 ## Problem
+
 - Victory/Defeat screen appeared below the game arena
 - Required scrolling to see the "Play Again" button
 - Inconsistent with multiplayer overlay presentation
 - User had to manually scroll after each match
 
 ## Solution
+
 Created an inline overlay component directly in the arena container that:
+
 - Appears centered on the canvas
 - Has dark backdrop (85% opacity)
 - Shows compact game stats
@@ -44,6 +48,7 @@ Created an inline overlay component directly in the arena container that:
 ## Implementation Details
 
 ### Overlay Container
+
 ```tsx
 <Box
   sx={{
@@ -64,6 +69,7 @@ Created an inline overlay component directly in the arena container that:
 ```
 
 ### Result Card
+
 - **Max Width**: 400px
 - **Border**: 3px solid (green for victory, red for defeat)
 - **Background**: theme background.paper
@@ -71,6 +77,7 @@ Created an inline overlay component directly in the arena container that:
 - **Border Radius**: 3
 
 ### Responsive Font Sizes
+
 - **Icon**: 3rem (mobile) → 4rem (desktop)
 - **Title**: 1.5rem (mobile) → 2rem (desktop)
 - **Subtitle**: 1.25rem (mobile) → 1.5rem (desktop)
@@ -78,6 +85,7 @@ Created an inline overlay component directly in the arena container that:
 - **Buttons**: 0.875rem (mobile) → 1rem (desktop)
 
 ### Colors
+
 - **Victory Border**: success.main (green)
 - **Defeat Border**: error.main (red)
 - **Stats Background**: background.default
@@ -86,12 +94,14 @@ Created an inline overlay component directly in the arena container that:
 ## Button Actions
 
 ### 🔄 Play Again
+
 - **Action**: `restartGame()`
 - **Style**: Contained button
 - **Color**: Primary theme color
 - **Full Width**: Yes
 
 ### 🏠 Back to Menu
+
 - **Action**: `onBackToMenu()`
 - **Style**: Outlined button
 - **Color**: Default
@@ -100,6 +110,7 @@ Created an inline overlay component directly in the arena container that:
 ## Comparison: Before vs After
 
 ### Before ❌
+
 ```
 [Game Arena]
 [Instructions]
@@ -109,6 +120,7 @@ Created an inline overlay component directly in the arena container that:
 ```
 
 ### After ✅
+
 ```
 ┌──────────────────┐
 │  [Game Arena]    │
