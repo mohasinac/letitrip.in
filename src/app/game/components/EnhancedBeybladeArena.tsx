@@ -32,6 +32,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     handleTouchEnd,
     handleVirtualDPad,
     handleVirtualAction,
+    isLoading,
   } = useGameState({ onGameEnd });
 
   return (
@@ -50,6 +51,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       {/* Game Controls */}
       <GameControls
         isPlaying={gameState.isPlaying}
+        isLoading={isLoading}
         playerBeyblade={selectedBeyblade}
         aiBeyblade={selectedAIBeyblade}
         onPlayerBeybladeChange={setSelectedBeyblade}
@@ -76,6 +78,60 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           onTouchEnd={handleTouchEnd}
           className="shadow-2xl"
         />
+
+        {/* Loading Screen Overlay */}
+        {isLoading && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              borderRadius: 2,
+              zIndex: 10,
+            }}
+          >
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                sx={{
+                  fontSize: "4rem",
+                  mb: 2,
+                  animation: "spin 1s linear infinite",
+                  "@keyframes spin": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" },
+                  },
+                }}
+              >
+                ⚡
+              </Box>
+              <Typography
+                variant="h4"
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontWeight: 700,
+                  mb: 1,
+                }}
+              >
+                Loading Battle...
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "white",
+                  opacity: 0.8,
+                }}
+              >
+                Preparing the arena
+              </Typography>
+            </Box>
+          </Box>
+        )}
 
         {/* Mobile Virtual D-Pad - Draggable and position saved in cookies */}
         <Box

@@ -5,6 +5,18 @@ import { auth, db } from '@/lib/database/config';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 import { z } from 'zod';
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email format'),
@@ -29,7 +41,7 @@ export async function POST(request: NextRequest) {
       await adminAuth.getUserByEmail(email);
       return NextResponse.json(
         { success: false, error: 'User already exists with this email' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     } catch (error: any) {
       // User doesn't exist, continue with registration
@@ -98,7 +110,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'User registered successfully',
       data: { user: responseData },
-    });
+    }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Registration error:', error);
@@ -110,34 +122,34 @@ export async function POST(request: NextRequest) {
           error: 'Validation failed',
           details: error.errors 
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     if (error.code === 'auth/email-already-exists') {
       return NextResponse.json(
         { success: false, error: 'User already exists with this email' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     if (error.code === 'auth/invalid-email') {
       return NextResponse.json(
         { success: false, error: 'Invalid email format' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     if (error.code === 'auth/weak-password') {
       return NextResponse.json(
         { success: false, error: 'Password is too weak' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
       { success: false, error: 'Registration failed. Please try again.' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

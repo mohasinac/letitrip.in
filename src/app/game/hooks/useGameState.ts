@@ -50,6 +50,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
   const [selectedBeyblade, setSelectedBeyblade] = useState("dragoon-gt");
   const [selectedAIBeyblade, setSelectedAIBeyblade] = useState("spriggan");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Create initial game state
   function createInitialGameState(): GameState {
@@ -227,10 +228,11 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       return { x: 0, y: 0 };
     }
 
-    // Check if player beyblade is in automated sequence (blue loop or charge dash)
+    // Check if player beyblade is in automated sequence (blue loop, charge dash, or attacks)
     const playerBey = gameState.beyblades.find(b => b.isPlayer);
-    if (playerBey && (playerBey.isInBlueLoop || playerBey.isChargeDashing)) {
-      return { x: 0, y: 0 }; // No user control during automated sequences
+    if (playerBey && (playerBey.isInBlueLoop || playerBey.isChargeDashing || 
+                      playerBey.heavyAttackActive || playerBey.ultimateAttackActive)) {
+      return { x: 0, y: 0 }; // No user control during automated sequences or attacks
     }
 
     // GAMEPAD MODE: Use virtual D-Pad or keyboard
@@ -281,11 +283,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
   // Main game loop
   const gameLoop = useCallback((currentTime: number) => {
-    const deltaTime = Math.min((currentTime - lastTimeRef.current) / 1000, 1 / 30);
+    const deltaTime = Math.min((currentTime - lastTimeRef.current) / 1000, 1 / 60);
     lastTimeRef.current = currentTime;
 
     setGameState((prevState) => {
-      if (!prevState.isPlaying) return prevState;
+      // Allow game loop to run during countdown for animation
+      if (!prevState.isPlaying && !prevState.countdownActive) return prevState;
 
       const newState = { ...prevState };
       const playerBey = newState.beyblades.find((b) => b.isPlayer);
@@ -293,6 +296,17 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
       // Process special actions for player
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds) {
+        // Calculate direction to opponent for attack movements (if opponent exists)
+        let normalizedDirection = { x: 0, y: 0 };
+        if (aiBey && !aiBey.isDead && !aiBey.isOutOfBounds) {
+          const directionToOpponent = vectorSubtract(aiBey.position, playerBey.position);
+          const distanceToOpponent = vectorLength(directionToOpponent);
+          normalizedDirection = distanceToOpponent > 0 ? {
+            x: directionToOpponent.x / distanceToOpponent,
+            y: directionToOpponent.y / distanceToOpponent,
+          } : { x: 0, y: 0 };
+        }
+
         // Process dodge right (1 or right click)
         if (specialActionsRef.current.dodgeRight) {
           const canDodge = !playerBey.dodgeCooldownEnd || newState.gameTime >= playerBey.dodgeCooldownEnd;
@@ -332,6 +346,12 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         if (specialActionsRef.current.heavyAttack) {
           playerBey.heavyAttackActive = true;
           playerBey.heavyAttackEndTime = newState.gameTime + 0.3; // 0.3 second duration
+          
+          // Move towards opponent during heavy attack
+          const attackSpeed = 350;
+          playerBey.velocity.x += normalizedDirection.x * attackSpeed;
+          playerBey.velocity.y += normalizedDirection.y * attackSpeed;
+          
           specialActionsRef.current.heavyAttack = false;
         }
         
@@ -341,6 +361,11 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
             playerBey.spin = Math.max(0, playerBey.spin - 100);
             playerBey.ultimateAttackActive = true;
             playerBey.ultimateAttackEndTime = newState.gameTime + 0.5; // 0.5 second duration
+            
+            // Move towards opponent during ultimate attack with stronger force
+            const ultimateAttackSpeed = 500;
+            playerBey.velocity.x += normalizedDirection.x * ultimateAttackSpeed;
+            playerBey.velocity.y += normalizedDirection.y * ultimateAttackSpeed;
           }
           specialActionsRef.current.ultimateAttack = false;
         }
@@ -370,9 +395,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         }
       }
 
-      // Update player movement - only allow control when not in automated sequences
+      // Update player movement - only allow control when not in automated sequences or attacks
       if (playerBey && !playerBey.isDead && !playerBey.isOutOfBounds && 
-          !playerBey.isInBlueLoop && !playerBey.isChargeDashing) {
+          !playerBey.isInBlueLoop && !playerBey.isChargeDashing && 
+          !playerBey.heavyAttackActive && !playerBey.ultimateAttackActive) {
         const direction = getMovementDirection();
         
         if (direction.x !== 0 || direction.y !== 0) {
@@ -488,6 +514,9 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
   // Restart game function
   const restartGame = useCallback(() => {
+    // Set loading state
+    setIsLoading(true);
+    
     const stadium: Stadium = {
       center: { x: 400, y: 400 }, // Centered in square canvas (800x800)
       innerRadius: 360, // Outer playing area boundary
@@ -514,18 +543,22 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
     aiBey.accelerationDecayStartTime = 0; // Start decay immediately
 
-    // Start countdown instead of immediately playing
+    // Skip loading screen - start game with countdown immediately
+    // Set the game state with countdown and start the game loop
     setGameState({
       beyblades: [playerBey, aiBey],
       stadium,
-      isPlaying: false,
+      isPlaying: false, // Will be set to true after countdown
       winner: null,
       gameTime: 0,
       countdownActive: true,
       countdownValue: 3,
     });
+    
+    // End loading screen immediately
+    setIsLoading(false);
 
-    // Start countdown sequence
+    // Start countdown sequence - game will animate during countdown
     let countValue = 3;
     const countdownInterval = setInterval(() => {
       countValue--;
@@ -551,7 +584,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         
         clearInterval(countdownInterval);
       }
-    }, 1000);
+    }, 1000); // 1 second per countdown number
   }, [selectedBeyblade, selectedAIBeyblade]);
 
   return {
@@ -567,6 +600,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     handleTouchEnd,
     handleVirtualDPad,
     handleVirtualAction,
+    isLoading,
   };
 };
 

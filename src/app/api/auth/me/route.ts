@@ -2,13 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyFirebaseToken } from '@/lib/auth/firebase-api-auth';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
         { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -43,7 +55,7 @@ export async function GET(request: NextRequest) {
             updatedAt: new Date().toISOString(),
             lastLogin: new Date().toISOString(),
           },
-        });
+        }, { headers: corsHeaders });
       }
       
       // Return full user data from Firestore
@@ -64,13 +76,13 @@ export async function GET(request: NextRequest) {
           updatedAt: userData?.updatedAt,
           lastLogin: userData?.lastLogin,
         },
-      });
+      }, { headers: corsHeaders });
 
     } catch (error: any) {
       console.error('Firebase token verification error:', error);
       return NextResponse.json(
         { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -78,7 +90,7 @@ export async function GET(request: NextRequest) {
     console.error('Get user error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to get user data' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

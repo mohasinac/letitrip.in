@@ -3,6 +3,18 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '@/lib/database/config';
 import { z } from 'zod';
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 const sendOTPSchema = z.object({
   phoneNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number format. Use international format (+1234567890)'),
   recaptchaToken: z.string().min(1, 'Recaptcha verification required'),
@@ -35,7 +47,7 @@ export async function POST(request: NextRequest) {
         verificationId,
         expiresIn: 300, // 5 minutes
       },
-    });
+    }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Send OTP error:', error);
@@ -47,13 +59,13 @@ export async function POST(request: NextRequest) {
           error: 'Validation failed',
           details: error.errors 
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
       { success: false, error: 'Failed to send OTP. Please try again.' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

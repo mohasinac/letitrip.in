@@ -14,6 +14,7 @@ import {
 
 interface GameControlsProps {
   isPlaying: boolean;
+  isLoading?: boolean;
   playerBeyblade: string;
   aiBeyblade: string;
   onPlayerBeybladeChange: (beyblade: string) => void;
@@ -25,6 +26,7 @@ interface GameControlsProps {
 
 const GameControls: React.FC<GameControlsProps> = ({
   isPlaying,
+  isLoading = false,
   playerBeyblade,
   aiBeyblade,
   onPlayerBeybladeChange,
@@ -97,6 +99,7 @@ const GameControls: React.FC<GameControlsProps> = ({
       >
         <Button
           onClick={onRestart}
+          disabled={isPlaying || isLoading}
           variant="contained"
           size="large"
           fullWidth
@@ -108,15 +111,26 @@ const GameControls: React.FC<GameControlsProps> = ({
             boxShadow: `0 4px 15px ${theme.palette.primary.main}40`,
             transition: "all 0.2s ease",
             "&:hover": {
-              transform: "scale(1.05)",
-              boxShadow: `0 6px 20px ${theme.palette.primary.main}60`,
+              transform: isPlaying || isLoading ? "none" : "scale(1.05)",
+              boxShadow:
+                isPlaying || isLoading
+                  ? undefined
+                  : `0 6px 20px ${theme.palette.primary.main}60`,
             },
             "&:active": {
-              transform: "scale(0.95)",
+              transform: isPlaying || isLoading ? "none" : "scale(0.95)",
+            },
+            "&:disabled": {
+              opacity: 0.6,
+              cursor: "not-allowed",
             },
           }}
         >
-          {isPlaying ? "Restart Battle" : "New Battle"}
+          {isLoading
+            ? "Loading..."
+            : isPlaying
+            ? "Battle In Progress"
+            : "New Battle"}
         </Button>
       </Box>
 

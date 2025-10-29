@@ -243,7 +243,7 @@ export const COUNTDOWN = {
 
 // ====== GAME TIMINGS ======
 export const TIMING = {
-  MAX_DELTA_TIME: 1 / 30,        // Cap at 30fps minimum
+  MAX_DELTA_TIME: 1 / 60,        // Cap at 60fps target
   TARGET_FPS: 60,
 } as const;
 

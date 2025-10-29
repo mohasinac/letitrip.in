@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 import { z } from 'zod';
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 const verifyOTPSchema = z.object({
   verificationId: z.string().min(1, 'Verification ID required'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
@@ -22,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (otp !== '123456') {
       return NextResponse.json(
         { success: false, error: 'Invalid OTP. Please try again.' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -69,7 +81,7 @@ export async function POST(request: NextRequest) {
           },
           customToken,
         },
-      });
+      }, { headers: corsHeaders });
     } else {
       // Create new user with phone number
       const newUser = await adminAuth.createUser({
@@ -125,7 +137,7 @@ export async function POST(request: NextRequest) {
           },
           customToken,
         },
-      });
+      }, { headers: corsHeaders });
     }
 
   } catch (error: any) {
@@ -138,13 +150,13 @@ export async function POST(request: NextRequest) {
           error: 'Validation failed',
           details: error.errors 
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
       { success: false, error: 'OTP verification failed. Please try again.' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
