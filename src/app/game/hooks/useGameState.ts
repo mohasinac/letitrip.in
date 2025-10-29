@@ -192,9 +192,13 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     };
 
     const handleDoubleClick = (event: MouseEvent) => {
-      event.preventDefault();
-      // Double click = Power Attack (4)
-      specialActionsRef.current.ultimateAttack = true;
+      // Only trigger on canvas double-click, not UI elements
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'CANVAS') {
+        event.preventDefault();
+        // Double click = Power Attack (4)
+        specialActionsRef.current.ultimateAttack = true;
+      }
     };
 
     const handleContextMenu = (event: MouseEvent) => {
@@ -621,16 +625,73 @@ function updateBeybladeLogic(beyblade: GameBeyblade, deltaTime: number, gameStat
   const direction = beyblade.config.direction === "left" ? -1 : 1;
   beyblade.rotation += rotationSpeed * direction * deltaTime;
 
-  // Handle blue loop mechanics with charge point detection
+  // Calculate distance from center for loop mechanics
   const distanceFromCenter = vectorLength(
     vectorSubtract(beyblade.position, gameState.stadium.center)
   );
+
+  // NORMAL LOOP (200 radius) - 2x Acceleration Boost
+  const isOnNormalLoop = Math.abs(distanceFromCenter - gameState.stadium.normalLoopRadius) <= 5;
+  const canNormalLoop = !beyblade.normalLoopCooldownEnd || gameState.gameTime >= beyblade.normalLoopCooldownEnd;
+
+  // Track if beyblade is entering normal loop
+  if (isOnNormalLoop && beyblade.spin > 0 && !beyblade.isInNormalLoop && canNormalLoop && 
+      !beyblade.isChargeDashing && !beyblade.isDodging && !beyblade.isInBlueLoop) {
+    beyblade.isInNormalLoop = true;
+    beyblade.normalLoopStartTime = gameState.gameTime;
+    beyblade.normalLoopAngle = Math.atan2(
+      beyblade.position.y - gameState.stadium.center.y,
+      beyblade.position.x - gameState.stadium.center.x
+    );
+    beyblade.normalLoopStartAngle = beyblade.normalLoopAngle;
+  }
+
+  // Process normal loop - full circle for 2x acceleration
+  if (beyblade.isInNormalLoop && beyblade.normalLoopStartTime !== undefined && beyblade.normalLoopStartAngle !== undefined) {
+    const spinDirection = beyblade.config.direction === "left" ? -1 : 1;
+    const angularSpeed = (Math.PI * 2) / 2.0; // 2 seconds per loop (slower than blue loop)
+
+    beyblade.normalLoopAngle! += angularSpeed * spinDirection * deltaTime;
+
+    // Force beyblade to stay on the normal loop circle
+    beyblade.position = {
+      x: gameState.stadium.center.x + Math.cos(beyblade.normalLoopAngle!) * gameState.stadium.normalLoopRadius,
+      y: gameState.stadium.center.y + Math.sin(beyblade.normalLoopAngle!) * gameState.stadium.normalLoopRadius,
+    };
+
+    // Time-based completion check (primary method - more reliable)
+    const timeInLoop = gameState.gameTime - beyblade.normalLoopStartTime;
+    
+    // Complete after 2 seconds (guaranteed exit to prevent infinite loops)
+    if (timeInLoop >= 2.0) {
+      // Loop complete! Grant 2x acceleration boost
+      beyblade.isInNormalLoop = false;
+      beyblade.normalLoopStartTime = undefined;
+      beyblade.normalLoopStartAngle = undefined;
+      beyblade.normalLoopCooldownEnd = gameState.gameTime + 5.0; // 5 second cooldown
+      
+      // Grant 2x acceleration
+      const currentAccel = beyblade.acceleration;
+      beyblade.acceleration = Math.min(beyblade.currentMaxAcceleration, currentAccel * 2);
+      
+      // Boost velocity to exit the loop
+      const exitAngle = beyblade.normalLoopAngle!;
+      const exitSpeed = 300;
+      beyblade.velocity = {
+        x: Math.cos(exitAngle) * exitSpeed,
+        y: Math.sin(exitAngle) * exitSpeed,
+      };
+    }
+  }
+
+  // BLUE LOOP (300 radius) - Charge Dash with Charge Points
   const isOnBlueCircle = Math.abs(distanceFromCenter - gameState.stadium.chargeDashRadius) <= 5;
 
-  const canLoop = !beyblade.blueLoopCooldownEnd || gameState.gameTime >= beyblade.blueLoopCooldownEnd;
+  const canBlueLoop = !beyblade.blueLoopCooldownEnd || gameState.gameTime >= beyblade.blueLoopCooldownEnd;
 
-  // Start blue loop if on blue circle and conditions are met (but not while dodging)
-  if (isOnBlueCircle && beyblade.spin > 0 && !beyblade.isInBlueLoop && canLoop && !beyblade.isChargeDashing && !beyblade.isDodging) {
+  // Start blue loop if on blue circle and conditions are met (but not while dodging or in normal loop)
+  if (isOnBlueCircle && beyblade.spin > 0 && !beyblade.isInBlueLoop && canBlueLoop && 
+      !beyblade.isChargeDashing && !beyblade.isDodging && !beyblade.isInNormalLoop) {
     beyblade.isInBlueLoop = true;
     beyblade.blueCircleLoopStartTime = gameState.gameTime;
     beyblade.blueLoopAngle = Math.atan2(

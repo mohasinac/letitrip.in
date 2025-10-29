@@ -36,6 +36,11 @@ export const createBeyblade = (
     blueLoopAngle: 0,
     blueCircleLoopStartTime: undefined,
     blueLoopCooldownEnd: undefined,
+    normalLoopCooldownEnd: undefined,
+    isInNormalLoop: false,
+    normalLoopStartTime: undefined,
+    normalLoopAngle: undefined,
+    normalLoopStartAngle: undefined,
     isChargingToPoint: false, // New property for charge point mechanic
     chargePoint: null, // Target charge point
     isChargeDashing: false, // Track charge dash mode

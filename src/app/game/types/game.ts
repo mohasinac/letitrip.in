@@ -22,7 +22,11 @@ export interface BeybladePhysics {
   isInBlueLoop: boolean; // Track if beyblade is locked in blue circle loop
   blueLoopAngle: number; // Track current angle in blue loop
   blueLoopCooldownEnd?: number; // Track when blue loop cooldown ends (3 seconds after last loop)
-  normalLoopCooldownEnd?: number; // Track when normal loop (200 radius) cooldown ends (10 seconds after last loop)
+  normalLoopCooldownEnd?: number; // Track when normal loop (200 radius) cooldown ends (5 seconds after last loop)
+  isInNormalLoop?: boolean; // Track if beyblade is locked in normal loop (200 radius)
+  normalLoopStartTime?: number; // Track when beyblade started normal loop
+  normalLoopAngle?: number; // Track current angle in normal loop
+  normalLoopStartAngle?: number; // Track starting angle to detect full loop completion
   isChargingToPoint: boolean; // Track if beyblade is charging to a wall center point
   chargePoint: Vector2D | null; // Target charge point position
   isChargeDashing: boolean; // Track if beyblade is in enhanced charge dash mode
