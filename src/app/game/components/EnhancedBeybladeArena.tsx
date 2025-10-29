@@ -44,7 +44,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
   // Store multiplayer instance in ref to access in useGameState
   const multiplayerRef = React.useRef<any>(null);
-  
+
   // Ref for arena to enable auto-scroll/focus
   const arenaRef = React.useRef<HTMLDivElement>(null);
 
@@ -110,14 +110,17 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
   // Auto-scroll to arena when game starts or countdown begins
   useEffect(() => {
-    if ((gameState.isPlaying || gameState.countdownActive) && arenaRef.current) {
+    if (
+      (gameState.isPlaying || gameState.countdownActive) &&
+      arenaRef.current
+    ) {
       // Smooth scroll to arena with some offset for better visibility
-      arenaRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center',
-        inline: 'center'
+      arenaRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
       });
-      
+
       // Focus on arena for keyboard controls (mobile-friendly)
       setTimeout(() => {
         arenaRef.current?.focus({ preventScroll: true });
@@ -386,6 +389,133 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           opponentWantsRematch={opponentWantsRematch}
           playerWantsRematch={playerWantsRematch}
         />
+
+        {/* Single Player Game Over Overlay - Show on canvas */}
+        {!isMultiplayer && !gameState.isPlaying && gameState.winner && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              borderRadius: 2,
+              zIndex: 10,
+              padding: 2,
+            }}
+          >
+            <Box
+              sx={{
+                textAlign: "center",
+                maxWidth: 400,
+                width: "100%",
+                backgroundColor: "background.paper",
+                borderRadius: 3,
+                border: `3px solid`,
+                borderColor: gameState.winner.isPlayer
+                  ? "success.main"
+                  : "error.main",
+                p: { xs: 2, sm: 3 },
+              }}
+            >
+              {/* Victory/Defeat Icon */}
+              <Box sx={{ fontSize: { xs: "3rem", sm: "4rem" }, mb: 1 }}>
+                {gameState.winner.isPlayer ? "🏆" : "💔"}
+              </Box>
+
+              {/* Result Title */}
+              <Typography
+                variant="h4"
+                color={
+                  gameState.winner.isPlayer ? "success.main" : "error.main"
+                }
+                fontWeight={700}
+                gutterBottom
+                sx={{ fontSize: { xs: "1.5rem", sm: "2rem" } }}
+              >
+                {gameState.winner.config.name} Wins!
+              </Typography>
+
+              <Typography
+                variant="h5"
+                color={
+                  gameState.winner.isPlayer ? "success.main" : "error.main"
+                }
+                fontWeight={700}
+                sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" }, mb: 2 }}
+              >
+                {gameState.winner.isPlayer ? "Victory!" : "Defeat!"}
+              </Typography>
+
+              {/* Game Stats */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  mb: 2,
+                  p: 1.5,
+                  bgcolor: "background.default",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
+                  Time: {gameState.gameTime.toFixed(1)}s
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
+                  Spin: {Math.floor(gameState.winner.spin)}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
+                  Power: {Math.floor(gameState.winner.power || 0)}/25
+                </Typography>
+              </Box>
+
+              {/* Action Buttons */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <Button
+                  variant="contained"
+                  onClick={restartGame}
+                  size="large"
+                  fullWidth
+                  sx={{
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    py: { xs: 1, sm: 1.5 },
+                  }}
+                >
+                  🔄 Play Again
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={onBackToMenu || (() => {})}
+                  size="large"
+                  fullWidth
+                  sx={{
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    py: { xs: 1, sm: 1.5 },
+                  }}
+                >
+                  🏠 Back to Menu
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Box>
 
       {/* Game Instructions - Only show during gameplay */}
@@ -399,18 +529,6 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
       {/* Controls Help - Always visible */}
       <ControlsHelp className="w-full max-w-4xl" />
-
-      {/* Game Result Screen - Only show in single player mode */}
-      {!isMultiplayer && !gameState.isPlaying && gameState.winner && (
-        <MatchResultScreen
-          winner={gameState.winner}
-          isPlayerWinner={gameState.winner.isPlayer || false}
-          gameTime={gameState.gameTime}
-          isMultiplayer={false}
-          onPlayAgain={restartGame}
-          onBackToMenu={onBackToMenu || (() => {})}
-        />
-      )}
 
       {/* Battle Statistics */}
       {gameState.isPlaying && (

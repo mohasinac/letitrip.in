@@ -12,7 +12,10 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = ({
   onActionButton,
   disabled = false,
 }) => {
-  const handlePress = (action: 1 | 2 | 3 | 4, e: React.TouchEvent | React.MouseEvent) => {
+  const handlePress = (
+    action: 1 | 2 | 3 | 4,
+    e: React.TouchEvent | React.MouseEvent
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     if (!disabled) {
@@ -56,40 +59,56 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = ({
 
   return (
     <>
-      {/* Top-Left: Dodge Left (Button 1) */}
+      {/* Top-Left: Dodge Left (Button 1) - Positioned below HUD */}
       <Box
         sx={{
           ...buttonStyle,
-          top: { xs: "10px", sm: "15px", md: "20px" },
+          top: { xs: "110px", sm: "120px", md: "130px" }, // Moved below HUD (100px height + margin)
           left: { xs: "10px", sm: "15px", md: "20px" },
-          background: "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
+          background:
+            "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
           border: "2px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+          boxShadow:
+            "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
         }}
         onTouchStart={(e) => handlePress(1, e)}
         onMouseDown={(e) => handlePress(1, e)}
       >
         <div>◄</div>
-        <Box component="div" sx={{ fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" }, ...labelStyle }}>
+        <Box
+          component="div"
+          sx={{
+            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            ...labelStyle,
+          }}
+        >
           DODGE L
         </Box>
       </Box>
 
-      {/* Top-Right: Dodge Right (Button 2) */}
+      {/* Top-Right: Dodge Right (Button 2) - Positioned below HUD */}
       <Box
         sx={{
           ...buttonStyle,
-          top: { xs: "10px", sm: "15px", md: "20px" },
+          top: { xs: "110px", sm: "120px", md: "130px" }, // Moved below HUD
           right: { xs: "10px", sm: "15px", md: "20px" },
-          background: "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
+          background:
+            "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
           border: "2px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+          boxShadow:
+            "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
         }}
         onTouchStart={(e) => handlePress(2, e)}
         onMouseDown={(e) => handlePress(2, e)}
       >
         <div>►</div>
-        <Box component="div" sx={{ fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" }, ...labelStyle }}>
+        <Box
+          component="div"
+          sx={{
+            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            ...labelStyle,
+          }}
+        >
           DODGE R
         </Box>
       </Box>
@@ -100,15 +119,23 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = ({
           ...buttonStyle,
           bottom: { xs: "10px", sm: "15px", md: "20px" },
           left: { xs: "10px", sm: "15px", md: "20px" },
-          background: "linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(249, 115, 22, 0.9))",
+          background:
+            "linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(249, 115, 22, 0.9))",
           border: "2px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 4px 12px rgba(251, 146, 60, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+          boxShadow:
+            "0 4px 12px rgba(251, 146, 60, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
         }}
         onTouchStart={(e) => handlePress(3, e)}
         onMouseDown={(e) => handlePress(3, e)}
       >
         <div>⚔</div>
-        <Box component="div" sx={{ fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" }, ...labelStyle }}>
+        <Box
+          component="div"
+          sx={{
+            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            ...labelStyle,
+          }}
+        >
           HEAVY
         </Box>
       </Box>
@@ -119,15 +146,23 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = ({
           ...buttonStyle,
           bottom: { xs: "10px", sm: "15px", md: "20px" },
           right: { xs: "10px", sm: "15px", md: "20px" },
-          background: "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
+          background:
+            "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
           border: "2px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 4px 12px rgba(239, 68, 68, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+          boxShadow:
+            "0 4px 12px rgba(239, 68, 68, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
         }}
         onTouchStart={(e) => handlePress(4, e)}
         onMouseDown={(e) => handlePress(4, e)}
       >
         <div>⚡</div>
-        <Box component="div" sx={{ fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" }, ...labelStyle }}>
+        <Box
+          component="div"
+          sx={{
+            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            ...labelStyle,
+          }}
+        >
           ULTIMATE
         </Box>
       </Box>
