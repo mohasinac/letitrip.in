@@ -31,28 +31,28 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
 
   const buttonStyle = {
     position: "absolute" as const,
-    width: { xs: "60px", sm: "70px", md: "80px" },
-    height: { xs: "60px", sm: "70px", md: "80px" },
+    width: { xs: "70px", sm: "75px", md: "80px" }, // Increased for better touch targets
+    height: { xs: "70px", sm: "75px", md: "80px" },
     borderRadius: "50%",
     display: "flex",
     flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
-    fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
+    fontSize: { xs: "1.75rem", sm: "1.85rem", md: "2rem" }, // Slightly larger icons
     fontWeight: "bold",
     color: "white",
     cursor: disabled ? "not-allowed" : "pointer",
     userSelect: "none" as const,
     WebkitUserSelect: "none" as const,
     MozUserSelect: "none" as const,
+    WebkitTapHighlightColor: "transparent", // Remove tap highlight on iOS
     touchAction: "manipulation" as const,
-    transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-    opacity: disabled ? 0.5 : 0.85,
-    backdropFilter: "blur(4px)",
-    WebkitBackdropFilter: "blur(4px)",
+    transition: "transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.1s", // Faster transitions
+    opacity: disabled ? 0.4 : 0.9, // Better visibility
+    willChange: "transform", // GPU acceleration hint
     "&:active": {
-      transform: disabled ? "none" : "scale(0.85)",
-      opacity: disabled ? 0.5 : 1,
+      transform: disabled ? "none" : "scale(0.9)", // Slightly less aggressive
+      opacity: disabled ? 0.4 : 1,
     },
   };
 
@@ -69,13 +69,13 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       <Box
         sx={{
           ...buttonStyle,
-          top: { xs: "110px", sm: "120px", md: "130px" }, // Moved below HUD (100px height + margin)
-          left: { xs: "10px", sm: "15px", md: "20px" },
+          top: { xs: "105px", sm: "115px", md: "125px" }, // Optimized positioning
+          left: { xs: "8px", sm: "12px", md: "16px" },
           background:
-            "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
+            "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))", // Slightly more opaque
+          border: "3px solid rgba(255, 255, 255, 0.4)", // Thicker border for visibility
           boxShadow:
-            "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+            "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)", // Enhanced shadow
         }}
         onTouchStart={(e) => handlePress(1, e)}
         onMouseDown={(e) => handlePress(1, e)}
@@ -84,7 +84,7 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
         <Box
           component="div"
           sx={{
-            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
             ...labelStyle,
           }}
         >
@@ -96,13 +96,13 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       <Box
         sx={{
           ...buttonStyle,
-          top: { xs: "110px", sm: "120px", md: "130px" }, // Moved below HUD
-          right: { xs: "10px", sm: "15px", md: "20px" },
+          top: { xs: "105px", sm: "115px", md: "125px" },
+          right: { xs: "8px", sm: "12px", md: "16px" },
           background:
-            "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9))",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
+            "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))",
+          border: "3px solid rgba(255, 255, 255, 0.4)",
           boxShadow:
-            "0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+            "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
         }}
         onTouchStart={(e) => handlePress(2, e)}
         onMouseDown={(e) => handlePress(2, e)}
@@ -111,7 +111,7 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
         <Box
           component="div"
           sx={{
-            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
             ...labelStyle,
           }}
         >
@@ -123,13 +123,13 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       <Box
         sx={{
           ...buttonStyle,
-          bottom: { xs: "10px", sm: "15px", md: "20px" },
-          left: { xs: "10px", sm: "15px", md: "20px" },
+          bottom: { xs: "8px", sm: "12px", md: "16px" },
+          left: { xs: "8px", sm: "12px", md: "16px" },
           background:
-            "linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(249, 115, 22, 0.9))",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
+            "linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95))",
+          border: "3px solid rgba(255, 255, 255, 0.4)",
           boxShadow:
-            "0 4px 12px rgba(251, 146, 60, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+            "0 4px 16px rgba(251, 146, 60, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
         }}
         onTouchStart={(e) => handlePress(3, e)}
         onMouseDown={(e) => handlePress(3, e)}
@@ -138,7 +138,7 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
         <Box
           component="div"
           sx={{
-            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
             ...labelStyle,
           }}
         >
@@ -150,13 +150,13 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       <Box
         sx={{
           ...buttonStyle,
-          bottom: { xs: "10px", sm: "15px", md: "20px" },
-          right: { xs: "10px", sm: "15px", md: "20px" },
+          bottom: { xs: "8px", sm: "12px", md: "16px" },
+          right: { xs: "8px", sm: "12px", md: "16px" },
           background:
-            "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
+            "linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95))",
+          border: "3px solid rgba(255, 255, 255, 0.4)",
           boxShadow:
-            "0 4px 12px rgba(239, 68, 68, 0.4), inset 0 1px 2px rgba(255,255,255,0.2)",
+            "0 4px 16px rgba(239, 68, 68, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
         }}
         onTouchStart={(e) => handlePress(4, e)}
         onMouseDown={(e) => handlePress(4, e)}
@@ -165,7 +165,7 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
         <Box
           component="div"
           sx={{
-            fontSize: { xs: "0.65rem", sm: "0.7rem", md: "0.75rem" },
+            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
             ...labelStyle,
           }}
         >
@@ -174,6 +174,8 @@ const MobileSpecialButtons: React.FC<MobileSpecialButtonsProps> = React.memo(({
       </Box>
     </>
   );
-};
+});
+
+MobileSpecialButtons.displayName = "MobileSpecialButtons";
 
 export default MobileSpecialButtons;
