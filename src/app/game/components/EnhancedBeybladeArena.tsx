@@ -44,6 +44,9 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
   // Store multiplayer instance in ref to access in useGameState
   const multiplayerRef = React.useRef<any>(null);
+  
+  // Ref for arena to enable auto-scroll/focus
+  const arenaRef = React.useRef<HTMLDivElement>(null);
 
   // Track rematch state
   const [playerWantsRematch, setPlayerWantsRematch] = React.useState(false);
@@ -104,6 +107,23 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       }
     }
   }, [isMultiplayer, multiplayerData, playerNumber, restartGame]);
+
+  // Auto-scroll to arena when game starts or countdown begins
+  useEffect(() => {
+    if ((gameState.isPlaying || gameState.countdownActive) && arenaRef.current) {
+      // Smooth scroll to arena with some offset for better visibility
+      arenaRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'center'
+      });
+      
+      // Focus on arena for keyboard controls (mobile-friendly)
+      setTimeout(() => {
+        arenaRef.current?.focus({ preventScroll: true });
+      }, 500);
+    }
+  }, [gameState.isPlaying, gameState.countdownActive]);
 
   // Setup multiplayer if in 2P mode
   const multiplayer =
@@ -258,11 +278,17 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
       {/* Game Arena */}
       <Box
+        ref={arenaRef}
+        tabIndex={-1}
         sx={{
           position: "relative",
           width: "100%",
           display: "flex",
           justifyContent: "center",
+          outline: "none", // Remove focus outline
+          "&:focus": {
+            outline: "none",
+          },
         }}
       >
         <GameArena
