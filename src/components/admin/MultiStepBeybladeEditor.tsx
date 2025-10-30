@@ -7,9 +7,10 @@
 
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { BeybladeStats, SpecialMoveFlags } from "@/types/beybladeStats";
 import BeybladePreview from "./BeybladePreview";
+import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 
 interface MultiStepBeybladeEditorProps {
   beyblade?: BeybladeStats | null;
@@ -124,8 +125,13 @@ export default function MultiStepBeybladeEditor({
   const [imagePreview, setImagePreview] = useState<string>(
     beyblade?.imageUrl || ""
   );
-  const [imageScale, setImageScale] = useState(1);
-  const [imageRotation, setImageRotation] = useState(0);
+  const [showImageEditor, setShowImageEditor] = useState(false);
+  const [imagePosition, setImagePosition] = useState<{
+    x: number;
+    y: number;
+    scale: number;
+    rotation: number;
+  }>(beyblade?.imagePosition || { x: 0, y: 0, scale: 1, rotation: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form data
@@ -139,6 +145,12 @@ export default function MultiStepBeybladeEditor({
     maxSpin: beyblade?.maxSpin || 100,
     spinDecayRate: beyblade?.spinDecayRate || 1.5,
     spinStealFactor: beyblade?.spinStealFactor || 0.15,
+    imagePosition: beyblade?.imagePosition || {
+      x: 0,
+      y: 0,
+      scale: 1,
+      rotation: 0,
+    },
     typeDistribution: beyblade?.typeDistribution || {
       attack: 100,
       defense: 110,
@@ -174,13 +186,34 @@ export default function MultiStepBeybladeEditor({
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+        setShowImageEditor(true); // Open WhatsApp-style editor
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleImageRotate = () => {
-    setImageRotation((prev) => (prev + 90) % 360);
+  const handleImagePositionChange = useCallback(
+    (position: { x: number; y: number; scale: number; rotation: number }) => {
+      setImagePosition(position);
+      setFormData((prev) => ({
+        ...prev,
+        imagePosition: position,
+      }));
+    },
+    []
+  );
+
+  const handleImageEditorSave = () => {
+    setShowImageEditor(false);
+  };
+
+  const handleImageEditorCancel = () => {
+    setShowImageEditor(false);
+    if (!beyblade?.imageUrl) {
+      // If no existing image, clear the preview
+      setImagePreview("");
+      setImageFile(null);
+    }
   };
 
   const applyPresetMove = (preset: (typeof PRESET_MOVES)[0]) => {
@@ -362,65 +395,53 @@ export default function MultiStepBeybladeEditor({
                     Beyblade Image
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    {imagePreview ? (
+                    {imagePreview && !showImageEditor ? (
                       <div className="space-y-4">
-                        {/* Image Preview with Editing */}
-                        <div
-                          className="relative bg-gray-100 rounded-lg overflow-hidden"
-                          style={{ height: "300px" }}
-                        >
-                          <div
-                            className="absolute inset-0 flex items-center justify-center"
-                            style={{
-                              transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
-                              transition: "transform 0.3s ease",
-                            }}
-                          >
+                        {/* Image Preview Thumbnail */}
+                        <div className="flex items-center justify-center">
+                          <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-red-500">
                             <img
                               src={imagePreview}
                               alt="Preview"
-                              className="max-w-full max-h-full object-contain"
+                              className="w-full h-full object-cover"
+                              style={{
+                                transform: `scale(${
+                                  imagePosition.scale
+                                }) translate(${imagePosition.x * 50}%, ${
+                                  imagePosition.y * 50
+                                }%) rotate(${imagePosition.rotation}deg)`,
+                                transformOrigin: "center",
+                              }}
                             />
                           </div>
                         </div>
 
-                        {/* Editing Controls (WhatsApp-style) */}
-                        <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                          <div className="flex-1">
-                            <label className="text-xs font-semibold text-gray-700 mb-1 block">
-                              Scale
-                            </label>
-                            <input
-                              type="range"
-                              min="0.5"
-                              max="2"
-                              step="0.1"
-                              value={imageScale}
-                              onChange={(e) =>
-                                setImageScale(parseFloat(e.target.value))
-                              }
-                              className="w-full"
-                            />
-                            <div className="text-xs text-gray-500 mt-1">
-                              {(imageScale * 100).toFixed(0)}%
-                            </div>
-                          </div>
-
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 justify-center">
                           <button
-                            onClick={handleImageRotate}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            onClick={() => setShowImageEditor(true)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                           >
-                            🔄 Rotate
+                            ✏️ Adjust Position
                           </button>
 
                           <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                           >
-                            Change Image
+                            🔄 Change Image
                           </button>
                         </div>
                       </div>
+                    ) : imagePreview && showImageEditor ? (
+                      <WhatsAppStyleImageEditor
+                        imageUrl={imagePreview}
+                        onPositionChange={handleImagePositionChange}
+                        initialPosition={imagePosition}
+                        circleSize={300}
+                        onSave={handleImageEditorSave}
+                        onCancel={handleImageEditorCancel}
+                      />
                     ) : (
                       <div className="text-center">
                         <div className="mb-4">
@@ -948,6 +969,8 @@ export default function MultiStepBeybladeEditor({
                   {
                     ...formData,
                     id: beyblade?.id || "preview",
+                    fileName: beyblade?.fileName || "preview.svg",
+                    speed: formData.speed || 1.0,
                     imageUrl: imagePreview || formData.imageUrl,
                   } as BeybladeStats
                 }

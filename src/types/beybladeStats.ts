@@ -226,6 +226,14 @@ export interface BeybladeStats {
   fileName: string; // SVG file name (legacy)
   imageUrl?: string; // Custom uploaded image URL (300x300 PNG with transparent background)
   
+  // Image positioning (for WhatsApp-style editor)
+  imagePosition?: {
+    x: number; // Horizontal offset from center (-2 to 2, where 0 is center)
+    y: number; // Vertical offset from center (-2 to 2, where 0 is center)
+    scale: number; // Scale multiplier (0.5 to 3.0)
+    rotation: number; // Rotation in degrees (0-360)
+  };
+  
   // Basic Properties
   type: BeybladeType;
   spinDirection: SpinDirection;

@@ -17,6 +17,27 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
   const [showAnimation, setShowAnimation] = useState(false);
   const animationFrameRef = useRef<number>();
   const rotationRef = useRef(0);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Load beyblade image
+  useEffect(() => {
+    if (beyblade.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        imageRef.current = img;
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        console.error("Failed to load beyblade image:", beyblade.imageUrl);
+        setImageLoaded(false);
+      };
+      img.src = beyblade.imageUrl;
+    } else {
+      setImageLoaded(false);
+    }
+  }, [beyblade.imageUrl]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,40 +61,118 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Draw beyblade placeholder
+      // Draw beyblade
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const size = 40;
+      const size = beyblade.actualSize || 80;
 
       ctx.save();
       ctx.translate(centerX, centerY);
       ctx.rotate(rotationRef.current);
 
-      // Main beyblade circle
-      ctx.beginPath();
-      ctx.arc(0, 0, size, 0, Math.PI * 2);
-      ctx.fillStyle = getTypeColor(beyblade.type);
-      ctx.fill();
-      ctx.strokeStyle = "#1f2937";
-      ctx.lineWidth = 3;
-      ctx.stroke();
+      // If image is loaded, draw it in a circular clip
+      if (imageLoaded && imageRef.current) {
+        // Get image position settings (WhatsApp-style positioning)
+        const imagePos = beyblade.imagePosition || {
+          x: 0,
+          y: 0,
+          scale: 1,
+          rotation: 0,
+        };
 
-      // Spin direction indicator
-      const arrowSize = 20;
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 20px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(beyblade.spinDirection === "left" ? "◄" : "►", 0, 0);
+        // Create circular clipping path
+        ctx.beginPath();
+        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+
+        // Apply image rotation (in addition to beyblade spin rotation)
+        ctx.rotate((imagePos.rotation * Math.PI) / 180);
+
+        // Calculate image size with scale
+        const imgSize = size * imagePos.scale;
+
+        // Calculate position offset from center
+        // imagePos x and y are from -2 to 2, convert to pixels
+        const offsetX = imagePos.x * (size / 2);
+        const offsetY = imagePos.y * (size / 2);
+
+        // Draw the image with position, scale, and rotation
+        ctx.drawImage(
+          imageRef.current,
+          -imgSize / 2 + offsetX,
+          -imgSize / 2 + offsetY,
+          imgSize,
+          imgSize
+        );
+
+        // Reset clipping
+        ctx.restore();
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotationRef.current);
+
+        // Draw border around the image
+        ctx.beginPath();
+        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.strokeStyle = getTypeColor(beyblade.type);
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      } else {
+        // Fallback: Draw colored circle with type indicator
+        ctx.beginPath();
+        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = getTypeColor(beyblade.type);
+        ctx.fill();
+        ctx.strokeStyle = "#1f2937";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Spin direction indicator
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(beyblade.spinDirection === "left" ? "◄" : "►", 0, 0);
+      }
 
       ctx.restore();
 
       // Update rotation
-      rotationRef.current += beyblade.spinDirection === "left" ? -0.05 : 0.05;
+      const spinSpeed = beyblade.spinDirection === "left" ? -0.1 : 0.1;
+      rotationRef.current += spinSpeed;
 
       // Draw special move animation if active
       if (showAnimation) {
         drawSpecialMoveAnimation(ctx, canvas.width, canvas.height);
+      }
+
+      // Draw contact points (spikes)
+      if (beyblade.pointsOfContact && beyblade.pointsOfContact.length > 0) {
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotationRef.current);
+
+        beyblade.pointsOfContact.forEach((point) => {
+          const angleRad = (point.angle - 90) * (Math.PI / 180);
+          const widthRad = (point.width / 2) * (Math.PI / 180);
+          const contactRadius = size / 2 + 5; // Just outside the beyblade
+
+          const startAngle = angleRad - widthRad;
+          const endAngle = angleRad + widthRad;
+
+          // Draw contact arc
+          ctx.beginPath();
+          ctx.arc(0, 0, contactRadius, startAngle, endAngle);
+          ctx.lineWidth = 4;
+
+          // Color based on damage multiplier
+          const hue = Math.min((point.damageMultiplier - 1.0) * 300, 120);
+          ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+          ctx.stroke();
+        });
+
+        ctx.restore();
       }
 
       animationFrameRef.current = requestAnimationFrame(draw);
@@ -86,7 +185,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [beyblade, showAnimation]);
+  }, [beyblade, showAnimation, imageLoaded]);
 
   const drawSpecialMoveAnimation = (
     ctx: CanvasRenderingContext2D,
