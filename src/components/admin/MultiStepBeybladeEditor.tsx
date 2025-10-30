@@ -987,9 +987,9 @@ export default function MultiStepBeybladeEditor({
           </div>
 
           {/* Right Side - Fixed Preview */}
-          <div className="w-96 bg-gray-900 p-6 flex flex-col border-l border-gray-700">
+          <div className="hidden lg:flex lg:w-96 bg-gray-900 p-6 flex-col border-l border-gray-700 sticky top-0 self-start max-h-screen">
             <h3 className="text-white text-lg font-bold mb-4">Live Preview</h3>
-            <div className="flex-1 bg-gray-800 rounded-lg overflow-hidden">
+            <div className="flex-1 bg-gray-800 rounded-lg overflow-hidden min-h-[500px]">
               <BeybladePreview
                 beyblade={
                   {
