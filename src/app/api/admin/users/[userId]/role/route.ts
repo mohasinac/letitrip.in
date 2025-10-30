@@ -3,9 +3,10 @@ import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -43,7 +44,7 @@ export async function PUT(
       }
 
       // Update user role
-      await db.collection('users').doc(params.userId).update({
+      await db.collection('users').doc(userId).update({
         role,
         updatedAt: new Date().toISOString(),
       });

@@ -3,9 +3,10 @@ import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -32,7 +33,7 @@ export async function GET(
       }
 
       // Get specific user
-      const targetUserDoc = await db.collection('users').doc(params.userId).get();
+      const targetUserDoc = await db.collection('users').doc(userId).get();
       if (!targetUserDoc.exists) {
         return NextResponse.json(
           { success: false, error: 'User not found' },
@@ -65,9 +66,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -114,7 +116,7 @@ export async function PUT(
 
       updateData.updatedAt = new Date().toISOString();
 
-      await db.collection('users').doc(params.userId).update(updateData);
+      await db.collection('users').doc(userId).update(updateData);
 
       return NextResponse.json({
         success: true,

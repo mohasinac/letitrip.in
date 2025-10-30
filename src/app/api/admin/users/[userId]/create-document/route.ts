@@ -3,9 +3,10 @@ import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -36,7 +37,7 @@ export async function POST(
 
       // Create or update user document
       const userDocData = {
-        uid: params.userId,
+        uid: userId,
         email: email || '',
         name: name || 'User',
         phone: phone || null,
@@ -51,7 +52,7 @@ export async function POST(
         lastLogin: new Date().toISOString(),
       };
 
-      await db.collection('users').doc(params.userId).set(userDocData, { merge: true });
+      await db.collection('users').doc(userId).set(userDocData, { merge: true });
 
       return NextResponse.json({
         success: true,
