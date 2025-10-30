@@ -24,7 +24,7 @@ export default function CreateBeybladePage() {
 
       if (data.success) {
         alert("Beyblade created successfully!");
-        router.push("/admin/beyblade-stats");
+        router.push("/admin/game/beyblades");
       } else {
         alert(`Failed to create Beyblade: ${data.message}`);
       }
@@ -35,7 +35,7 @@ export default function CreateBeybladePage() {
   };
 
   const handleCancel = () => {
-    router.push("/admin/beyblade-stats");
+    router.push("/admin/game/beyblades");
   };
 
   return (

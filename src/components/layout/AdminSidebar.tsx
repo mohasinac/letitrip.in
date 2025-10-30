@@ -76,11 +76,15 @@ const adminMenuItems = [
   {
     label: "Game",
     icon: SportsEsports,
-    href: "/admin/game/settings",
+    href: "/admin/game/beyblades",
     subItems: [
       {
-        label: "Settings",
-        href: "/admin/game/settings",
+        label: "Beyblades",
+        href: "/admin/game/beyblades",
+      },
+      {
+        label: "Stadiums",
+        href: "/admin/game/stadiums",
       },
       {
         label: "Stats",

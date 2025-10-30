@@ -182,9 +182,7 @@ export default function GameStatsPage() {
                   </p>
                 </div>
                 <div className="bg-indigo-50 rounded-lg p-4">
-                  <p className="text-sm text-indigo-600 mb-1">
-                    Unique Shapes
-                  </p>
+                  <p className="text-sm text-indigo-600 mb-1">Unique Shapes</p>
                   <p className="text-3xl font-bold text-indigo-600">
                     {arenaStats.shapes}
                   </p>
@@ -231,10 +229,7 @@ export default function GameStatsPage() {
                         Stamina
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Max Spin
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Special Move
+                        Contact Points
                       </th>
                     </tr>
                   </thead>
@@ -285,15 +280,7 @@ export default function GameStatsPage() {
                           {beyblade.typeDistribution.stamina}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {beyblade.maxSpin}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {beyblade.specialMove.name}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            Power: {beyblade.specialMove.powerCost}
-                          </div>
+                          {beyblade.pointsOfContact.length} points
                         </td>
                       </tr>
                     ))}

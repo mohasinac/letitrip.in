@@ -24,7 +24,7 @@ export default function CreateArenaPage() {
 
       if (data.success) {
         alert("Arena created successfully!");
-        router.push("/admin/arenas");
+        router.push("/admin/game/stadiums");
       } else {
         alert(`Failed to create Arena: ${data.message}`);
       }
@@ -35,7 +35,7 @@ export default function CreateArenaPage() {
   };
 
   const handleCancel = () => {
-    router.push("/admin/arenas");
+    router.push("/admin/game/stadiums");
   };
 
   return (

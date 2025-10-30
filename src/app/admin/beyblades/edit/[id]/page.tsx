@@ -32,12 +32,12 @@ export default function EditBeybladePage({
         setBeyblade(data.data);
       } else {
         alert("Beyblade not found");
-        router.push("/admin/beyblade-stats");
+        router.push("/admin/game/beyblades");
       }
     } catch (error) {
       console.error("Error fetching Beyblade:", error);
       alert("Failed to load Beyblade");
-      router.push("/admin/beyblade-stats");
+      router.push("/admin/game/beyblades");
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function EditBeybladePage({
 
       if (data.success) {
         alert("Beyblade updated successfully!");
-        router.push("/admin/beyblade-stats");
+        router.push("/admin/game/beyblades");
       } else {
         alert(`Failed to update Beyblade: ${data.message}`);
       }
@@ -66,7 +66,7 @@ export default function EditBeybladePage({
   };
 
   const handleCancel = () => {
-    router.push("/admin/beyblade-stats");
+    router.push("/admin/game/beyblades");
   };
 
   if (loading) {

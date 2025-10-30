@@ -11,7 +11,8 @@ export default function GameLayout({
   const pathname = usePathname();
 
   const tabs = [
-    { name: "Settings", href: "/admin/game/settings", icon: "⚙️" },
+    { name: "Beyblades", href: "/admin/game/beyblades", icon: "🎮" },
+    { name: "Stadiums", href: "/admin/game/stadiums", icon: "🏟️" },
     { name: "Stats", href: "/admin/game/stats", icon: "📊" },
   ];
 
