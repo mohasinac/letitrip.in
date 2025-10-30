@@ -370,108 +370,152 @@ export default function ArenaConfigurator({
                     <label className="text-sm font-medium">Enable Walls</label>
                   </div>
 
+                  {!config.wall.enabled && (
+                    <div className="flex items-center gap-3 mb-4 ml-8">
+                      <input
+                        type="checkbox"
+                        checked={config.wall.allExits || false}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            wall: { ...config.wall, allExits: e.target.checked },
+                          })
+                        }
+                        className="w-5 h-5"
+                      />
+                      <label className="text-sm font-medium">
+                        All Boundary is Exit Zone
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        (If unchecked, closed boundary with no exits)
+                      </p>
+                    </div>
+                  )}
+
                   {config.wall.enabled && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm text-gray-700 mb-1">
-                          Wall Count
-                        </label>
-                        <input
-                          type="number"
-                          value={config.wall.wallCount || 8}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              wall: {
-                                ...config.wall,
-                                wallCount: parseInt(e.target.value),
-                              },
-                            })
-                          }
-                          min={3}
-                          max={20}
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Number of wall segments (3-20)
-                        </p>
-                      </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-1">
+                            Wall Count
+                          </label>
+                          <input
+                            type="number"
+                            value={config.wall.wallCount || 8}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  wallCount: parseInt(e.target.value),
+                                },
+                              })
+                            }
+                            min={3}
+                            max={20}
+                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Number of wall segments (3-20)
+                          </p>
+                        </div>
 
-                      <div>
-                        <label className="block text-sm text-gray-700 mb-1">
-                          Base Damage
-                        </label>
-                        <input
-                          type="number"
-                          value={config.wall.baseDamage}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              wall: {
-                                ...config.wall,
-                                baseDamage: parseFloat(e.target.value),
-                              },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
-                      </div>
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-1">
+                            Base Damage
+                          </label>
+                          <input
+                            type="number"
+                            value={config.wall.baseDamage}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  baseDamage: parseFloat(e.target.value),
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                          />
+                        </div>
 
-                      <div>
-                        <label className="block text-sm text-gray-700 mb-1">
-                          Recoil Distance (em)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.5"
-                          value={config.wall.recoilDistance}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              wall: {
-                                ...config.wall,
-                                recoilDistance: parseFloat(e.target.value),
-                              },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
-                      </div>
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-1">
+                            Recoil Distance (em)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={config.wall.recoilDistance}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  recoilDistance: parseFloat(e.target.value),
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                          />
+                        </div>
 
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={config.wall.hasSpikes}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              wall: {
-                                ...config.wall,
-                                hasSpikes: e.target.checked,
-                              },
-                            })
-                          }
-                          className="w-4 h-4"
-                        />
-                        <label className="text-sm">Spikes (2x damage)</label>
-                      </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={config.wall.hasSpikes}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  hasSpikes: e.target.checked,
+                                },
+                              })
+                            }
+                            className="w-4 h-4"
+                          />
+                          <label className="text-sm">Spikes (2x damage)</label>
+                        </div>
 
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={config.wall.hasSprings}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              wall: {
-                                ...config.wall,
-                                hasSprings: e.target.checked,
-                              },
-                            })
-                          }
-                          className="w-4 h-4"
-                        />
-                        <label className="text-sm">Springs (1.5x recoil)</label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={config.wall.hasSprings}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  hasSprings: e.target.checked,
+                                },
+                              })
+                            }
+                            className="w-4 h-4"
+                          />
+                          <label className="text-sm">Springs (1.5x recoil)</label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={config.wall.exitsBetweenWalls || false}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                wall: {
+                                  ...config.wall,
+                                  exitsBetweenWalls: e.target.checked,
+                                },
+                              })
+                            }
+                            className="w-4 h-4"
+                          />
+                          <label className="text-sm">
+                            Exits Between Wall Segments
+                          </label>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -652,6 +696,71 @@ export default function ArenaConfigurator({
                         />
                       </div>
                     </div>
+
+                    {/* Charge Points Configuration */}
+                    <div className="mt-3 bg-yellow-50 p-3 rounded border border-yellow-200">
+                      <h5 className="text-sm font-semibold text-yellow-900 mb-2">
+                        ⚡ Charge Points (Spin Recovery)
+                      </h5>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-yellow-700 mb-1">
+                            Number of Charge Points
+                          </label>
+                          <input
+                            type="number"
+                            value={loop.chargePointCount || 0}
+                            onChange={(e) => {
+                              const count = parseInt(e.target.value);
+                              const points = count > 0
+                                ? Array.from({ length: count }, (_, i) => ({
+                                    angle: (360 / count) * i,
+                                    rechargeRate: 5,
+                                    radius: 1,
+                                    color: "#fbbf24",
+                                  }))
+                                : undefined;
+                              handleUpdateLoop(index, {
+                                chargePointCount: count,
+                                chargePoints: points,
+                              });
+                            }}
+                            min={0}
+                            max={12}
+                            className="w-full px-3 py-2 border border-yellow-300 rounded"
+                          />
+                          <p className="text-xs text-yellow-600 mt-1">
+                            Evenly distributed (0-12)
+                          </p>
+                        </div>
+
+                        {(loop.chargePointCount || 0) > 0 && (
+                          <div>
+                            <label className="block text-xs text-yellow-700 mb-1">
+                              Recharge Rate (%/sec)
+                            </label>
+                            <input
+                              type="number"
+                              value={loop.chargePoints?.[0]?.rechargeRate || 5}
+                              onChange={(e) => {
+                                const rate = parseFloat(e.target.value);
+                                const updatedPoints = loop.chargePoints?.map(p => ({
+                                  ...p,
+                                  rechargeRate: rate,
+                                }));
+                                handleUpdateLoop(index, {
+                                  chargePoints: updatedPoints,
+                                });
+                              }}
+                              min={1}
+                              max={20}
+                              step="0.5"
+                              className="w-full px-3 py-2 border border-yellow-300 rounded"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
 
@@ -660,6 +769,249 @@ export default function ArenaConfigurator({
                     No loops yet. Click "Add Loop" to create speed boost zones.
                   </div>
                 )}
+
+                {/* Portals Section */}
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 mt-6">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-semibold text-purple-900">
+                      🌀 Portals (Teleportation) - Max 2
+                    </h3>
+                    <button
+                      onClick={() => {
+                        const portalCount = config.portals?.length || 0;
+                        if (portalCount < 2) {
+                          const newPortal: any = {
+                            id: `portal${portalCount + 1}`,
+                            inPoint: { x: 0, y: -15 + portalCount * 30 },
+                            outPoint: { x: 0, y: 15 - portalCount * 30 },
+                            radius: 2,
+                            cooldown: 1,
+                            color: portalCount === 0 ? "#8b5cf6" : "#06b6d4",
+                            bidirectional: true,
+                          };
+                          setConfig({
+                            ...config,
+                            portals: [...(config.portals || []), newPortal],
+                          });
+                        }
+                      }}
+                      disabled={(config.portals?.length || 0) >= 2}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      + Add Portal
+                    </button>
+                  </div>
+
+                  {config.portals && config.portals.length > 0 ? (
+                    <div className="space-y-4">
+                      {config.portals.map((portal, index) => (
+                        <div
+                          key={portal.id}
+                          className="bg-white p-4 rounded border border-purple-300"
+                        >
+                          <div className="flex justify-between items-center mb-3">
+                            <h4 className="font-semibold text-purple-900">
+                              Portal {index + 1}
+                            </h4>
+                            <button
+                              onClick={() => {
+                                const newPortals = config.portals!.filter(
+                                  (_, i) => i !== index
+                                );
+                                setConfig({
+                                  ...config,
+                                  portals:
+                                    newPortals.length > 0
+                                      ? newPortals
+                                      : undefined,
+                                });
+                              }}
+                              className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+                            >
+                              Remove
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Entry Point X (em)
+                              </label>
+                              <input
+                                type="number"
+                                value={portal.inPoint.x}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    inPoint: {
+                                      ...portal.inPoint,
+                                      x: parseFloat(e.target.value),
+                                    },
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Entry Point Y (em)
+                              </label>
+                              <input
+                                type="number"
+                                value={portal.inPoint.y}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    inPoint: {
+                                      ...portal.inPoint,
+                                      y: parseFloat(e.target.value),
+                                    },
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Exit Point X (em)
+                              </label>
+                              <input
+                                type="number"
+                                value={portal.outPoint.x}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    outPoint: {
+                                      ...portal.outPoint,
+                                      x: parseFloat(e.target.value),
+                                    },
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Exit Point Y (em)
+                              </label>
+                              <input
+                                type="number"
+                                value={portal.outPoint.y}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    outPoint: {
+                                      ...portal.outPoint,
+                                      y: parseFloat(e.target.value),
+                                    },
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Portal Radius (em)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={portal.radius}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    radius: parseFloat(e.target.value),
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                min={1}
+                                max={5}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Cooldown (seconds)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={portal.cooldown || 0}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    cooldown: parseFloat(e.target.value),
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                min={0}
+                                max={10}
+                                className="w-full px-3 py-2 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-purple-700 mb-1">
+                                Portal Color
+                              </label>
+                              <input
+                                type="color"
+                                value={portal.color || "#8b5cf6"}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    color: e.target.value,
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-full h-10 border border-purple-300 rounded"
+                              />
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={portal.bidirectional !== false}
+                                onChange={(e) => {
+                                  const newPortals = [...config.portals!];
+                                  newPortals[index] = {
+                                    ...portal,
+                                    bidirectional: e.target.checked,
+                                  };
+                                  setConfig({ ...config, portals: newPortals });
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <label className="text-sm text-purple-700">
+                                Bidirectional
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-purple-700 text-center py-4">
+                      No portals. Add up to 2 portals for teleportation.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
