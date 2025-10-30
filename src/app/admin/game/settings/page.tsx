@@ -1,16 +1,16 @@
 /**
- * Admin Page: Beyblade Stats Manager
- * View and manage all Beyblade stats in the database
+ * Admin Page: Game Settings (Beyblade Management)
+ * Create, edit, and manage Beyblades
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
 import { BeybladeStats } from "@/types/beybladeStats";
+import MultiStepBeybladeEditor from "@/components/admin/MultiStepBeybladeEditor";
 import BeybladeImageUploader from "@/components/admin/BeybladeImageUploader";
-import BeybladeEditor from "@/components/admin/BeybladeEditor";
 
-export default function BeybladeStatsAdmin() {
+export default function GameSettingsPage() {
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
   const [selectedType, setSelectedType] = useState<string>("all");
   const [loading, setLoading] = useState(true);
@@ -90,7 +90,6 @@ export default function BeybladeStatsAdmin() {
   };
 
   const handleImageUploaded = (beybladeId: string, imageUrl: string) => {
-    // Update the beyblade in the list
     setBeyblades((prev) =>
       prev.map((bey) => (bey.id === beybladeId ? { ...bey, imageUrl } : bey))
     );
@@ -129,6 +128,30 @@ export default function BeybladeStatsAdmin() {
     }
   };
 
+  const handleDeleteBeyblade = async (beybladeId: string) => {
+    if (!confirm("Are you sure you want to delete this Beyblade?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/beyblades/${beybladeId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Beyblade deleted successfully!");
+        fetchBeyblades();
+      } else {
+        alert("Failed to delete: " + data.error);
+      }
+    } catch (error) {
+      console.error("Error deleting Beyblade:", error);
+      alert("Error deleting Beyblade");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
@@ -136,23 +159,23 @@ export default function BeybladeStatsAdmin() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Beyblade Stats Manager
+              Beyblade Management
             </h1>
             <p className="text-gray-600 mt-2">
-              Manage Beyblade statistics and special moves
+              Create, edit, and manage Beyblade configurations
             </p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setShowCreateForm(true)}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
             >
               + Create New Beyblade
             </button>
             <button
               onClick={initializeDefaults}
               disabled={initializing}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-semibold"
             >
               {initializing ? "Initializing..." : "Initialize Defaults"}
             </button>
@@ -177,7 +200,7 @@ export default function BeybladeStatsAdmin() {
           </select>
         </div>
 
-        {/* Stats Grid */}
+        {/* Beyblades Grid */}
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -187,7 +210,8 @@ export default function BeybladeStatsAdmin() {
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <p className="text-gray-600 text-lg">No Beyblades found.</p>
             <p className="text-gray-500 mt-2">
-              Click "Initialize Defaults" to add the default Beyblades.
+              Click "Create New Beyblade" or "Initialize Defaults" to get
+              started.
             </p>
           </div>
         ) : (
@@ -197,10 +221,10 @@ export default function BeybladeStatsAdmin() {
                 key={beyblade.id}
                 className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
               >
-                {/* Header with Image */}
+                {/* Card Header */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-start gap-4 mb-4">
-                    {/* Beyblade Image */}
+                    {/* Image */}
                     <div className="relative">
                       {beyblade.imageUrl ? (
                         <img
@@ -238,7 +262,7 @@ export default function BeybladeStatsAdmin() {
                           {beyblade.type}
                         </span>
                         <span className="text-sm text-gray-500">
-                          Spin: {beyblade.spinDirection}
+                          {beyblade.spinDirection}
                         </span>
                       </div>
                     </div>
@@ -271,169 +295,49 @@ export default function BeybladeStatsAdmin() {
                   )}
                 </div>
 
-                {/* Stats */}
-                <div className="p-6 space-y-4">
-                  {/* Physical Properties */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                      Physical
-                    </h4>
-                    <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div>
-                        <p className="text-gray-500">Mass</p>
-                        <p className="font-semibold">{beyblade.mass} kg</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Radius</p>
-                        <p className="font-semibold">{beyblade.radius} px</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Size</p>
-                        <p className="font-semibold">
-                          {beyblade.actualSize} px
-                        </p>
-                      </div>
-                    </div>
+                {/* Card Body - Quick Stats */}
+                <div className="p-6 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Special Move:</span>
+                    <span className="font-semibold text-purple-600">
+                      {beyblade.specialMove.name}
+                    </span>
                   </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Power Cost:</span>
+                    <span className="font-semibold">
+                      {beyblade.specialMove.powerCost}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Max Spin:</span>
+                    <span className="font-semibold">{beyblade.maxSpin}</span>
+                  </div>
+                </div>
 
-                  {/* Type Distribution */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                      Type Distribution (320)
-                    </h4>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-red-600">Attack</span>
-                          <span className="font-semibold">
-                            {beyblade.typeDistribution.attack}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-red-500 h-2 rounded-full"
-                            style={{
-                              width: `${
-                                (beyblade.typeDistribution.attack / 150) * 100
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-blue-600">Defense</span>
-                          <span className="font-semibold">
-                            {beyblade.typeDistribution.defense}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
-                            style={{
-                              width: `${
-                                (beyblade.typeDistribution.defense / 150) * 100
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-green-600">Stamina</span>
-                          <span className="font-semibold">
-                            {beyblade.typeDistribution.stamina}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-green-500 h-2 rounded-full"
-                            style={{
-                              width: `${
-                                (beyblade.typeDistribution.stamina / 150) * 100
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Spin Properties */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                      Spin Properties
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="text-gray-500">Max Spin</p>
-                        <p className="font-semibold">{beyblade.maxSpin}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Decay Rate</p>
-                        <p className="font-semibold">
-                          {beyblade.spinDecayRate}/s
-                        </p>
-                      </div>
-                      <div className="col-span-2">
-                        <p className="text-gray-500">Spin Steal Factor</p>
-                        <p className="font-semibold">
-                          {(beyblade.spinStealFactor * 100).toFixed(0)}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Special Move */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                      Special Move
-                    </h4>
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3">
-                      <p className="font-semibold text-purple-900">
-                        {beyblade.specialMove.name}
-                      </p>
-                      <p className="text-xs text-purple-700 mt-1">
-                        {beyblade.specialMove.description}
-                      </p>
-                      <div className="flex gap-2 mt-2 text-xs">
-                        <span className="px-2 py-1 bg-purple-200 text-purple-800 rounded">
-                          Power: {beyblade.specialMove.powerCost}
-                        </span>
-                        <span className="px-2 py-1 bg-purple-200 text-purple-800 rounded">
-                          Duration: {beyblade.specialMove.flags.duration}s
-                        </span>
-                        <span className="px-2 py-1 bg-purple-200 text-purple-800 rounded">
-                          CD: {beyblade.specialMove.flags.cooldown}s
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Contact Points */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                      Contact Points ({beyblade.pointsOfContact.length})
-                    </h4>
-                    <div className="text-xs text-gray-600">
-                      Max Damage:{" "}
-                      {Math.max(
-                        ...beyblade.pointsOfContact.map(
-                          (p) => p.damageMultiplier
-                        )
-                      ).toFixed(1)}
-                      x
-                    </div>
-                  </div>
+                {/* Card Footer - Actions */}
+                <div className="p-4 bg-gray-50 border-t border-gray-200 flex gap-2">
+                  <button
+                    onClick={() => setEditingBeyblade(beyblade)}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteBeyblade(beyblade.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Beyblade Editor Modal */}
+        {/* Multi-Step Editor Modal */}
         {(showCreateForm || editingBeyblade) && (
-          <BeybladeEditor
+          <MultiStepBeybladeEditor
             beyblade={editingBeyblade}
             onSave={handleSaveBeyblade}
             onCancel={() => {

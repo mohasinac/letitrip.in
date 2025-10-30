@@ -163,6 +163,7 @@ const GameControls: React.FC<GameControlsProps> = ({
           alignItems: "center",
           minWidth: { xs: "100%", sm: 300 },
           maxWidth: { xs: "100%", sm: 350 },
+          gap: 1,
         }}
       >
         <BeybladeSelect
@@ -170,6 +171,7 @@ const GameControls: React.FC<GameControlsProps> = ({
           onChange={onAIBeybladeChange}
           label="AI Opponent"
           disabled={isPlaying}
+          showRandomButton={true}
         />
       </Box>
     </Box>

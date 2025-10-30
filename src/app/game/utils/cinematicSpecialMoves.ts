@@ -75,7 +75,7 @@ const damageNumbers: DamageNumber[] = [];
 let damageNumberIdCounter = 0;
 
 /**
- * Activate Barrage of Attacks
+ * Activate Barrage of Attacks (using standard flags)
  */
 export function activateBarrageOfAttacks(
   attacker: GameBeyblade,
@@ -84,11 +84,11 @@ export function activateBarrageOfAttacks(
   stadium: Stadium,
   currentTime: number
 ): CinematicMoveState {
-  // Calculate orbit radius (attacker's radius x4)
-  const orbitRadius = attacker.radius * 4;
+  const orbitalConfig = attackerStats.specialMove.flags.orbitalAttack;
   
-  // Calculate number of attacks (from special move config, default 3)
-  const attackCount = 3; // Can be configured in special move flags
+  // Use configuration from flags, or defaults
+  const orbitRadius = orbitalConfig?.orbitRadius || (attacker.radius * 4);
+  const attackCount = orbitalConfig?.attackCount || 3;
   const angleIncrement = 360 / attackCount;
   
   // Generate attack angles
@@ -114,11 +114,11 @@ export function activateBarrageOfAttacks(
     attackAngles,
     nextAttackAngle: attackAngles[0],
     
-    attackerLosesControl: true, // Attacker loses control during move
-    defenderLosesControl: true, // Defender takes reduced damage, loses control
+    attackerLosesControl: attackerStats.specialMove.flags.userLosesControl || true,
+    defenderLosesControl: attackerStats.specialMove.flags.opponentLosesControl || true,
     
     startTime: currentTime,
-    endTime: currentTime + 5000, // 5 seconds total (banner + execution)
+    endTime: currentTime + ((attackerStats.specialMove.flags.duration || 4) * 1000),
   };
   
   activeCinematicMoves.set(attacker.id, state);
@@ -126,7 +126,7 @@ export function activateBarrageOfAttacks(
 }
 
 /**
- * Activate Time Skip
+ * Activate Time Skip (using standard flags)
  */
 export function activateTimeSkip(
   attacker: GameBeyblade,
@@ -135,14 +135,16 @@ export function activateTimeSkip(
   stadium: Stadium,
   currentTime: number
 ): CinematicMoveState {
-  // Calculate target position for frozen beyblade (away from charge dash line)
+  const timeSkipConfig = attackerStats.specialMove.flags.timeSkip;
+  
+  // Calculate target position for frozen beyblade
   const centerDistance = Math.sqrt(
     Math.pow(defender.position.x - stadium.center.x, 2) +
     Math.pow(defender.position.y - stadium.center.y, 2)
   );
   
-  // Move toward center by 4x radius
-  const pushDistance = defender.radius * 4;
+  // Use config or default: Move toward center by 4x radius
+  const pushDistance = timeSkipConfig?.repositionOpponent?.distance || (defender.radius * 4);
   const newDistance = Math.max(100, centerDistance - pushDistance);
   
   const angle = Math.atan2(
@@ -169,20 +171,22 @@ export function activateTimeSkip(
     targetLoopRadius: stadium.chargeDashRadius, // Outer blue ring
     loopStartAngle: 0,
     
-    attackerLosesControl: false, // Attacker keeps control during loop
-    defenderLosesControl: true, // Defender is frozen
+    attackerLosesControl: attackerStats.specialMove.flags.userLosesControl || false,
+    defenderLosesControl: attackerStats.specialMove.flags.freezeOpponent || true,
     
     startTime: currentTime,
-    endTime: currentTime + 5000, // 5 seconds total (banner + 3s loop)
+    endTime: currentTime + ((attackerStats.specialMove.flags.duration || 4) * 1000),
   };
   
   activeCinematicMoves.set(attacker.id, state);
   
-  // Immediately move defender to target position
-  defender.position.x = targetPosition.x;
-  defender.position.y = targetPosition.y;
-  defender.velocity.x = 0;
-  defender.velocity.y = 0;
+  // Immediately move defender to target position if repositioning enabled
+  if (timeSkipConfig?.repositionOpponent?.enabled !== false) {
+    defender.position.x = targetPosition.x;
+    defender.position.y = targetPosition.y;
+    defender.velocity.x = 0;
+    defender.velocity.y = 0;
+  }
   
   return state;
 }
@@ -314,8 +318,8 @@ function performBarrageAttack(
   defender: GameBeyblade,
   state: CinematicMoveState
 ): void {
-  // Calculate damage (reduced for defender)
-  const baseDamage = 150; // Base spin damage
+  // Get damage from orbital attack config or use default
+  const baseDamage = 150; // Base spin damage (can be overridden by beyblade stats)
   const damageReduction = 0.7; // Defender takes 70% damage
   const actualDamage = baseDamage * damageReduction;
   

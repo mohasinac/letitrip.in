@@ -376,6 +376,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           <MobileSpecialButtons
             onActionButton={handleVirtualAction}
             disabled={!gameState.isPlaying}
+            playerBeyblade={gameState.beyblades.find((b) => b.isPlayer)}
           />
         </Box>
 

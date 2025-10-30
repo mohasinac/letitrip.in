@@ -11,7 +11,8 @@ import {
   Alert,
 } from "@mui/material";
 import { getSocket } from "@/lib/socket";
-import { BEYBLADE_CONFIGS } from "@/constants/beyblades";
+import BeybladeSelect from "@/components/game/BeybladeSelect";
+import { useBeyblades } from "@/hooks/useBeyblades";
 
 interface MultiplayerBeybladeSelectProps {
   roomData: any;
@@ -29,6 +30,14 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
   const [isReady, setIsReady] = useState(false);
   const [opponentReady, setOpponentReady] = useState(false);
   const socket = getSocket();
+  const { beyblades, loading } = useBeyblades();
+
+  // Get beyblade name by ID
+  const getBeybladeNameById = (id: string | null) => {
+    if (!id) return "Not selected";
+    const beyblade = beyblades.find((b) => b.id === id);
+    return beyblade?.name || "Not selected";
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -51,6 +60,8 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
 
   const handleSelectBeyblade = (beybladeId: string) => {
     setSelectedBeyblade(beybladeId);
+    // Reset ready state when changing beyblade
+    setIsReady(false);
     if (socket) {
       socket.emit("select-beyblade", { beyblade: beybladeId, ready: false });
     }
@@ -74,7 +85,6 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
   };
 
   const playerNumber = roomData?.playerNumber || 1;
-  const beybladeOptions = Object.entries(BEYBLADE_CONFIGS);
 
   return (
     <Box
@@ -119,10 +129,7 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
               You (Player {playerNumber})
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Beyblade:{" "}
-              {selectedBeyblade
-                ? BEYBLADE_CONFIGS[selectedBeyblade].name
-                : "Not selected"}
+              Beyblade: {getBeybladeNameById(selectedBeyblade)}
             </Typography>
             <Chip
               label={isReady ? "Ready" : "Not Ready"}
@@ -143,10 +150,7 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
               Opponent (Player {playerNumber === 1 ? 2 : 1})
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Beyblade:{" "}
-              {opponentBeyblade
-                ? BEYBLADE_CONFIGS[opponentBeyblade].name
-                : "Not selected"}
+              Beyblade: {getBeybladeNameById(opponentBeyblade)}
             </Typography>
             <Chip
               label={opponentReady ? "Ready" : "Not Ready"}
@@ -157,55 +161,22 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
         </Card>
       </Box>
 
-      {/* Beyblade Selection */}
-      <Box sx={{ maxWidth: 1000, width: "100%" }}>
-        <Typography variant="h6" gutterBottom>
+      {/* Beyblade Selection Dropdown */}
+      <Box sx={{ maxWidth: 600, width: "100%" }}>
+        <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           Choose Your Beyblade:
         </Typography>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-            },
-            gap: 2,
-          }}
-        >
-          {beybladeOptions.map(([id, beyblade]) => (
-            <Card
-              key={id}
-              sx={{
-                cursor: "pointer",
-                border: "2px solid",
-                borderColor:
-                  selectedBeyblade === id ? "primary.main" : "transparent",
-                bgcolor:
-                  selectedBeyblade === id ? "primary.dark" : "background.paper",
-                transition: "all 0.2s",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  borderColor: "primary.main",
-                },
-              }}
-              onClick={() => handleSelectBeyblade(id)}
-            >
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {beyblade.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Direction:{" "}
-                  {beyblade.direction === "left" ? "⬅️ Left" : "➡️ Right"}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Speed: {beyblade.speed}x
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
+        <BeybladeSelect
+          value={selectedBeyblade || ""}
+          onChange={handleSelectBeyblade}
+          label="Your Beyblade"
+          disabled={isReady || loading}
+        />
+        {isReady && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Change your selection by clicking "Not Ready" first
+          </Alert>
+        )}
       </Box>
 
       {/* Ready Button */}

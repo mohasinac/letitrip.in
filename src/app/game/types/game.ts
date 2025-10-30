@@ -88,6 +88,12 @@ export interface GameState {
   gameTime: number;
   countdownActive: boolean;
   countdownValue: number;
+  activeCinematicMoves?: Map<string, any>; // Track active cinematic special moves
+  cinematicBanner?: { // Show cinematic move banner
+    moveName: string;
+    userName: string;
+    show: boolean;
+  };
 }
 
 export interface CollisionResult {

@@ -1110,6 +1110,55 @@ const drawGameUI = (
     ctx.textBaseline = "alphabetic";
   }
 
+  // Draw cinematic special move banner
+  if (gameState.cinematicBanner?.show) {
+    // Draw semi-transparent overlay
+    ctx.fillStyle = "rgba(0, 0, 20, 0.85)";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw banner background with cinematic gradient
+    const bannerY = 250;
+    const bannerHeight = 200;
+    const gradient = ctx.createLinearGradient(
+      0,
+      bannerY,
+      0,
+      bannerY + bannerHeight
+    );
+    gradient.addColorStop(0, "#9C27B090");
+    gradient.addColorStop(0.5, "#FF9800A0");
+    gradient.addColorStop(1, "#F4433690");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(50, bannerY, canvasWidth - 100, bannerHeight);
+
+    // Draw banner border with glow effect
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#FF9800";
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(50, bannerY, canvasWidth - 100, bannerHeight);
+    ctx.shadowBlur = 0;
+
+    // Draw special move name
+    ctx.font = "bold 56px Inter";
+    ctx.fillStyle = "#FFD700";
+    ctx.textAlign = "center";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
+
+    const moveName = gameState.cinematicBanner.moveName;
+    ctx.strokeText(moveName, centerX, bannerY + 90);
+    ctx.fillText(moveName, centerX, bannerY + 90);
+
+    // Draw user name
+    ctx.font = "bold 32px Inter";
+    ctx.fillStyle = "#fff";
+    const userName = gameState.cinematicBanner.userName;
+    ctx.strokeText(userName, centerX, bannerY + 140);
+    ctx.fillText(userName, centerX, bannerY + 140);
+  }
+
   // Draw winner announcement with enhanced banner
   if (!gameState.isPlaying && gameState.winner) {
     // Draw semi-transparent overlay

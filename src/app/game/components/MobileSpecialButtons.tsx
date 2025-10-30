@@ -2,23 +2,40 @@
 
 import React, { useCallback } from "react";
 import { Box } from "@mui/material";
+import { GameBeyblade } from "../types/game";
 
 interface MobileSpecialButtonsProps {
   onActionButton: (action: 1 | 2 | 3 | 4) => void;
   disabled?: boolean;
+  playerBeyblade?: GameBeyblade; // Add player beyblade for power checking
 }
 
 const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
   onActionButton,
   disabled = false,
+  playerBeyblade,
 }) => {
+  // Power requirements for each action
+  const powerRequirements = {
+    1: 10, // Dodge Left
+    2: 10, // Dodge Right
+    3: 15, // Heavy Attack
+    4: 25, // Special Move
+  };
+
+  // Check if action can be performed based on power
+  const canPerformAction = (action: 1 | 2 | 3 | 4): boolean => {
+    if (!playerBeyblade) return true; // If no beyblade data, show all buttons
+    const currentPower = playerBeyblade.power || 0;
+    return currentPower >= powerRequirements[action];
+  };
   // Optimized press handler with haptic feedback
   const handlePress = useCallback(
     (action: 1 | 2 | 3 | 4, e: React.TouchEvent | React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (!disabled) {
+      if (!disabled && canPerformAction(action)) {
         // Haptic feedback for mobile devices
         if ("vibrate" in navigator) {
           navigator.vibrate(10); // Short vibration (10ms)
@@ -26,7 +43,7 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
         onActionButton(action);
       }
     },
-    [disabled, onActionButton]
+    [disabled, onActionButton, playerBeyblade]
   );
 
   const buttonStyle = {
@@ -66,112 +83,120 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
   return (
     <>
       {/* Top-Left: Dodge Left (Button 1) - Positioned below HUD */}
-      <Box
-        sx={{
-          ...buttonStyle,
-          top: { xs: "105px", sm: "115px", md: "125px" }, // Optimized positioning
-          left: { xs: "8px", sm: "12px", md: "16px" },
-          background:
-            "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))", // Slightly more opaque
-          border: "3px solid rgba(255, 255, 255, 0.4)", // Thicker border for visibility
-          boxShadow:
-            "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)", // Enhanced shadow
-        }}
-        onTouchStart={(e) => handlePress(1, e)}
-        onMouseDown={(e) => handlePress(1, e)}
-      >
-        <div>◄</div>
+      {canPerformAction(1) && (
         <Box
-          component="div"
           sx={{
-            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-            ...labelStyle,
+            ...buttonStyle,
+            top: { xs: "105px", sm: "115px", md: "125px" }, // Optimized positioning
+            left: { xs: "8px", sm: "12px", md: "16px" },
+            background:
+              "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))", // Slightly more opaque
+            border: "3px solid rgba(255, 255, 255, 0.4)", // Thicker border for visibility
+            boxShadow:
+              "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)", // Enhanced shadow
           }}
+          onTouchStart={(e) => handlePress(1, e)}
+          onMouseDown={(e) => handlePress(1, e)}
         >
-          DODGE L
+          <div>◄</div>
+          <Box
+            component="div"
+            sx={{
+              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
+              ...labelStyle,
+            }}
+          >
+            DODGE L
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* Top-Right: Dodge Right (Button 2) - Positioned below HUD */}
-      <Box
-        sx={{
-          ...buttonStyle,
-          top: { xs: "105px", sm: "115px", md: "125px" },
-          right: { xs: "8px", sm: "12px", md: "16px" },
-          background:
-            "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))",
-          border: "3px solid rgba(255, 255, 255, 0.4)",
-          boxShadow:
-            "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
-        }}
-        onTouchStart={(e) => handlePress(2, e)}
-        onMouseDown={(e) => handlePress(2, e)}
-      >
-        <div>►</div>
+      {canPerformAction(2) && (
         <Box
-          component="div"
           sx={{
-            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-            ...labelStyle,
+            ...buttonStyle,
+            top: { xs: "105px", sm: "115px", md: "125px" },
+            right: { xs: "8px", sm: "12px", md: "16px" },
+            background:
+              "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))",
+            border: "3px solid rgba(255, 255, 255, 0.4)",
+            boxShadow:
+              "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
           }}
+          onTouchStart={(e) => handlePress(2, e)}
+          onMouseDown={(e) => handlePress(2, e)}
         >
-          DODGE R
+          <div>►</div>
+          <Box
+            component="div"
+            sx={{
+              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
+              ...labelStyle,
+            }}
+          >
+            DODGE R
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* Bottom-Left: Heavy Attack (Button 3) */}
-      <Box
-        sx={{
-          ...buttonStyle,
-          bottom: { xs: "8px", sm: "12px", md: "16px" },
-          left: { xs: "8px", sm: "12px", md: "16px" },
-          background:
-            "linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95))",
-          border: "3px solid rgba(255, 255, 255, 0.4)",
-          boxShadow:
-            "0 4px 16px rgba(251, 146, 60, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
-        }}
-        onTouchStart={(e) => handlePress(3, e)}
-        onMouseDown={(e) => handlePress(3, e)}
-      >
-        <div>⚔</div>
+      {canPerformAction(3) && (
         <Box
-          component="div"
           sx={{
-            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-            ...labelStyle,
+            ...buttonStyle,
+            bottom: { xs: "8px", sm: "12px", md: "16px" },
+            left: { xs: "8px", sm: "12px", md: "16px" },
+            background:
+              "linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95))",
+            border: "3px solid rgba(255, 255, 255, 0.4)",
+            boxShadow:
+              "0 4px 16px rgba(251, 146, 60, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
           }}
+          onTouchStart={(e) => handlePress(3, e)}
+          onMouseDown={(e) => handlePress(3, e)}
         >
-          HEAVY
+          <div>⚔</div>
+          <Box
+            component="div"
+            sx={{
+              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
+              ...labelStyle,
+            }}
+          >
+            HEAVY
+          </Box>
         </Box>
-      </Box>
+      )}
 
-      {/* Bottom-Right: Ultimate Attack (Button 4) */}
-      <Box
-        sx={{
-          ...buttonStyle,
-          bottom: { xs: "8px", sm: "12px", md: "16px" },
-          right: { xs: "8px", sm: "12px", md: "16px" },
-          background:
-            "linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95))",
-          border: "3px solid rgba(255, 255, 255, 0.4)",
-          boxShadow:
-            "0 4px 16px rgba(239, 68, 68, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
-        }}
-        onTouchStart={(e) => handlePress(4, e)}
-        onMouseDown={(e) => handlePress(4, e)}
-      >
-        <div>⚡</div>
+      {/* Bottom-Right: Special Move (Button 4) - Changed from ULTIMATE */}
+      {canPerformAction(4) && (
         <Box
-          component="div"
           sx={{
-            fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-            ...labelStyle,
+            ...buttonStyle,
+            bottom: { xs: "8px", sm: "12px", md: "16px" },
+            right: { xs: "8px", sm: "12px", md: "16px" },
+            background:
+              "linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(126, 34, 206, 0.95))", // Changed to purple
+            border: "3px solid rgba(255, 255, 255, 0.4)",
+            boxShadow:
+              "0 4px 16px rgba(147, 51, 234, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
           }}
+          onTouchStart={(e) => handlePress(4, e)}
+          onMouseDown={(e) => handlePress(4, e)}
         >
-          ULTIMATE
+          <div>✨</div>
+          <Box
+            component="div"
+            sx={{
+              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
+              ...labelStyle,
+            }}
+          >
+            SPECIAL
+          </Box>
         </Box>
-      </Box>
+      )}
     </>
   );
 };

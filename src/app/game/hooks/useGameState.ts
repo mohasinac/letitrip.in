@@ -10,6 +10,16 @@ import {
 } from "../utils/gamePhysics";
 import { checkCollision } from "../utils/collisionUtils";
 import { resolvePhysicsCollision } from "../utils/physicsCollision";
+import {
+  activateBarrageOfAttacks,
+  activateTimeSkip,
+  updateCinematicMoves,
+  getActiveCinematicMove,
+  getAllDamageNumbers,
+  shouldLoseControl,
+  type CinematicMoveState,
+  type DamageNumber,
+} from "../utils/cinematicSpecialMoves";
 
 interface UseGameStateOptions {
   onGameEnd?: (winner: GameBeyblade | null) => void;
@@ -36,6 +46,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     dodgeLeft: boolean;
     heavyAttack: boolean;
     ultimateAttack: boolean;
+    cinematicMove: boolean;
     selectChargePoint1: boolean;
     selectChargePoint2: boolean;
     selectChargePoint3: boolean;
@@ -44,6 +55,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     dodgeLeft: false,
     heavyAttack: false,
     ultimateAttack: false,
+    cinematicMove: false,
     selectChargePoint1: false,
     selectChargePoint2: false,
     selectChargePoint3: false,
@@ -120,7 +132,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     // 1 = Dodge Left (keyboard 1, left click)
     // 2 = Dodge Right (keyboard 2, right click)
     // 3 = Heavy Attack (keyboard 3, middle mouse)
-    // 4 = Ultimate Attack (keyboard 4, double click)
+    // 4 = Special Move (keyboard 4, double click) - Cinematic moves
     if (action === 1) {
       specialActionsRef.current.dodgeLeft = true;
       specialActionsRef.current.selectChargePoint1 = true;
@@ -131,7 +143,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       specialActionsRef.current.heavyAttack = true;
       specialActionsRef.current.selectChargePoint3 = true;
     } else if (action === 4) {
-      specialActionsRef.current.ultimateAttack = true;
+      specialActionsRef.current.cinematicMove = true;
     }
   }, []);
 
@@ -165,10 +177,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
         specialActionsRef.current.heavyAttack = true;
         specialActionsRef.current.selectChargePoint3 = true;
       }
-      // 4 = Power Attack
+      // 4 = Special Move (Cinematic)
       if (key === "4") {
         event.preventDefault();
-        specialActionsRef.current.ultimateAttack = true;
+        specialActionsRef.current.cinematicMove = true;
       }
     };
 
@@ -201,8 +213,8 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       const target = event.target as HTMLElement;
       if (target.tagName === 'CANVAS') {
         event.preventDefault();
-        // Double click = Power Attack (4)
-        specialActionsRef.current.ultimateAttack = true;
+        // Double click = Special Move (4)
+        specialActionsRef.current.cinematicMove = true;
       }
     };
 
@@ -286,11 +298,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   const gameLoop = useCallback((currentTime: number) => {
     const deltaTime = Math.min((currentTime - lastTimeRef.current) / 1000, 1 / 60);
     lastTimeRef.current = currentTime;
+    
+    // Flag to track if we should continue the loop
+    let shouldContinue = true;
 
     setGameState((prevState) => {
       // Stop loop if not playing and no countdown
       if (!prevState.isPlaying && !prevState.countdownActive) {
-        // Don't schedule next frame
+        shouldContinue = false;
         return prevState;
       }
 
@@ -398,69 +413,105 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           specialActionsRef.current.heavyAttack = false;
         }
         
-        // Process ultimate attack (4 or double click) - Travel in joystick/mouse direction, costs 25 power (full bar)
-        if (specialActionsRef.current.ultimateAttack) {
-          const canAttack = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
+        // Process special move (4 or double click) - Cinematic moves, costs 25 power (full bar)
+        if (specialActionsRef.current.cinematicMove) {
+          const canActivate = !playerBey.attackCooldownEnd || newState.gameTime >= playerBey.attackCooldownEnd;
           const hasPower = (playerBey.power || 0) >= 25;
-          if (canAttack && hasPower) {
+          if (canActivate && hasPower && aiBey && !aiBey.isDead && !aiBey.isOutOfBounds) {
             playerBey.power = Math.max(0, (playerBey.power || 0) - 25);
-            playerBey.ultimateAttackActive = true;
-            playerBey.attackStartPosition = { ...playerBey.position };
-            playerBey.attackTargetDistance = 150; // Travel 150 units
-            playerBey.attackCooldownEnd = newState.gameTime + 5.0; // 5 second cooldown
+            playerBey.attackCooldownEnd = newState.gameTime + 10.0; // 10 second cooldown
             
-            // Move in current joystick/mouse direction (or towards opponent if no input)
-            const currentDirection = getMovementDirection();
-            const attackDirection = (currentDirection.x !== 0 || currentDirection.y !== 0)
-              ? currentDirection
-              : normalizedDirection; // Fall back to opponent direction
+            // Randomly choose between Barrage of Attacks or Time Skip
+            const cinematicMoveType = Math.random() < 0.5 ? 'barrage' : 'time-skip';
+            
+            // Create stats with standard flags for activation
+            const mockStats: any = {
+              specialMove: {
+                name: cinematicMoveType === 'barrage' ? 'Barrage of Attacks' : 'Time Skip',
+                powerCost: 25,
+                flags: {
+                  duration: 4,
+                  cooldown: 10,
+                  userLosesControl: true,
+                  opponentLosesControl: true,
+                  freezeOpponent: cinematicMoveType === 'time-skip',
+                  orbitalAttack: cinematicMoveType === 'barrage' ? {
+                    enabled: true,
+                    orbitRadius: playerBey.radius * 4,
+                    attackCount: 3,
+                    damagePerHit: 105,
+                    orbitSpeed: 2.0,
+                  } : undefined,
+                  timeSkip: cinematicMoveType === 'time-skip' ? {
+                    enabled: true,
+                    freezeDuration: 3,
+                    repositionOpponent: {
+                      enabled: true,
+                      direction: 'center' as const,
+                      distance: playerBey.radius * 4,
+                    },
+                    loopRing: {
+                      enabled: true,
+                      ringType: 'charge' as const,
+                      duration: 3,
+                      disableChargePoints: true,
+                    },
+                    spinDrainOnEnd: 400,
+                  } : undefined,
+                },
+              },
+            };
+            
+            // Activate cinematic move
+            if (cinematicMoveType === 'barrage') {
+              const moveState = activateBarrageOfAttacks(
+                playerBey,
+                aiBey,
+                mockStats,
+                newState.stadium,
+                Date.now()
+              );
               
-            const ultimateAttackSpeed = 500;
-            playerBey.velocity.x = attackDirection.x * ultimateAttackSpeed;
-            playerBey.velocity.y = attackDirection.y * ultimateAttackSpeed;
-            playerBey.ultimateAttackEndTime = Date.now() + 3000;
+              // Show banner
+              newState.cinematicBanner = {
+                moveName: 'Barrage of Attacks',
+                userName: playerBey.name,
+                show: true,
+              };
+              
+              // Hide banner after 1 second
+              setTimeout(() => {
+                setGameState(prev => ({
+                  ...prev,
+                  cinematicBanner: undefined,
+                }));
+              }, 1000);
+            } else {
+              const moveState = activateTimeSkip(
+                playerBey,
+                aiBey,
+                mockStats,
+                newState.stadium,
+                Date.now()
+              );
+              
+              // Show banner
+              newState.cinematicBanner = {
+                moveName: 'Time Skip',
+                userName: playerBey.name,
+                show: true,
+              };
+              
+              // Hide banner after 1 second
+              setTimeout(() => {
+                setGameState(prev => ({
+                  ...prev,
+                  cinematicBanner: undefined,
+                }));
+              }, 1000);
+            }
           }
-          specialActionsRef.current.ultimateAttack = false;
-        }
-        
-        // Check if heavy attack distance traveled
-        if (playerBey.heavyAttackActive && playerBey.attackStartPosition && playerBey.attackTargetDistance) {
-          const distanceTraveled = vectorLength(
-            vectorSubtract(playerBey.position, playerBey.attackStartPosition)
-          );
-          if (distanceTraveled >= playerBey.attackTargetDistance) {
-            playerBey.heavyAttackActive = false;
-            playerBey.attackStartPosition = undefined;
-            playerBey.attackTargetDistance = undefined;
-          }
-        }
-        
-        // Check if ultimate attack distance traveled
-        if (playerBey.ultimateAttackActive && playerBey.attackStartPosition && playerBey.attackTargetDistance) {
-          const distanceTraveled = vectorLength(
-            vectorSubtract(playerBey.position, playerBey.attackStartPosition)
-          );
-          if (distanceTraveled >= playerBey.attackTargetDistance) {
-            playerBey.ultimateAttackActive = false;
-            playerBey.attackStartPosition = undefined;
-            playerBey.attackTargetDistance = undefined;
-          }
-        }
-        
-        // Process charge point selection during blue loop
-        if (playerBey.isInBlueLoop) {
-          if (specialActionsRef.current.selectChargePoint1) {
-            playerBey.selectedChargePoint = 1;
-            specialActionsRef.current.selectChargePoint1 = false;
-          }
-          if (specialActionsRef.current.selectChargePoint2) {
-            playerBey.selectedChargePoint = 2;
-            specialActionsRef.current.selectChargePoint2 = false;
-          }
-          if (specialActionsRef.current.selectChargePoint3) {
-            playerBey.selectedChargePoint = 3;
-            specialActionsRef.current.selectChargePoint3 = false;
-          }
+          specialActionsRef.current.cinematicMove = false;
         }
       }
 
@@ -644,6 +695,26 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
           };
         }
       });
+      
+      // Update cinematic special moves
+      // Create mock stats map for updateCinematicMoves
+      const mockStatsMap = new Map<string, any>();
+      newState.beyblades.forEach(bey => {
+        mockStatsMap.set(bey.id, {
+          specialMove: {
+            name: 'Special Move',
+            powerCost: 25,
+            flags: { duration: 4, cooldown: 10 },
+          },
+        });
+      });
+      updateCinematicMoves(
+        newState.beyblades,
+        mockStatsMap,
+        newState.stadium,
+        Date.now(),
+        deltaTime
+      );
 
       // Check collisions
       for (let i = 0; i < newState.beyblades.length; i++) {
@@ -724,15 +795,14 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
 
       newState.gameTime += deltaTime;
       
-      // Schedule next frame if still playing or in countdown
-      if (newState.isPlaying || newState.countdownActive) {
-        if (gameLoopFunctionRef.current) {
-          gameLoopRef.current = requestAnimationFrame(gameLoopFunctionRef.current);
-        }
-      }
-      
       return newState;
     });
+    
+    // Schedule next frame OUTSIDE of setState to avoid infinite loops
+    // Only continue if game is still active
+    if (shouldContinue && gameLoopFunctionRef.current) {
+      gameLoopRef.current = requestAnimationFrame(gameLoopFunctionRef.current);
+    }
   }, [getMovementDirection, onGameEnd, isMultiplayer, onCollision]);
   
   // Store the game loop function in ref for self-calling

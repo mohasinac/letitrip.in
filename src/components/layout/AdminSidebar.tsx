@@ -25,6 +25,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Category,
+  SportsEsports,
+  Casino,
 } from "@mui/icons-material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,6 +72,21 @@ const adminMenuItems = [
     label: "Support",
     icon: Support,
     href: "/admin/support",
+  },
+  {
+    label: "Game",
+    icon: SportsEsports,
+    href: "/admin/game/settings",
+    subItems: [
+      {
+        label: "Settings",
+        href: "/admin/game/settings",
+      },
+      {
+        label: "Stats",
+        href: "/admin/game/stats",
+      },
+    ],
   },
   {
     label: "Settings",
@@ -198,7 +215,8 @@ export default function AdminSidebar({
                   </ListItemButton>
                 </ListItem>
               </Tooltip>
-              {index === 2 && <Divider sx={{ my: 1 }} />}
+              {/* Add dividers for visual grouping */}
+              {(index === 2 || index === 6) && <Divider sx={{ my: 1 }} />}
             </React.Fragment>
           );
         })}
