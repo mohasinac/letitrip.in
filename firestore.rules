@@ -118,52 +118,86 @@ service cloud.firestore {
       allow read, write: if request.auth != null && isAdmin();
     }
     
-    // Seller Products collection - sellers can manage their own products
+    // Seller Products collection - sellers can manage their own products, admins can manage all
     match /seller_products/{productId} {
       allow read: if true; // Anyone can read products
       allow create: if request.auth != null && 
-                       isSeller() &&
-                       request.resource.data.sellerId == request.auth.uid &&
+                       (isAdmin() || 
+                        (isSeller() && 
+                         request.resource.data.sellerId == request.auth.uid)) &&
                        validateSellerProduct();
       allow update: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow delete: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
-    // Seller Coupons collection - sellers can manage their own coupons
+    // Seller Coupons collection - sellers can manage their own coupons, admins can manage all
     match /seller_coupons/{couponId} {
       allow read: if request.auth != null && 
-                     (resource.data.sellerId == request.auth.uid || isAdmin());
+                     (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null && 
-                       isSeller() &&
-                       request.resource.data.sellerId == request.auth.uid &&
+                       (isAdmin() || 
+                        (isSeller() && 
+                         request.resource.data.sellerId == request.auth.uid)) &&
                        validateCoupon();
       allow update: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow delete: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
-    // Seller Sales collection - sellers can manage their own sales
+    // Seller Sales collection - sellers can manage their own sales, admins can manage all
     match /seller_sales/{saleId} {
       allow read: if request.auth != null && 
-                     (resource.data.sellerId == request.auth.uid || isAdmin());
+                     (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null && 
-                       isSeller() &&
-                       request.resource.data.sellerId == request.auth.uid &&
+                       (isAdmin() || 
+                        (isSeller() && 
+                         request.resource.data.sellerId == request.auth.uid)) &&
                        validateSale();
       allow update: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow delete: if request.auth != null && 
-                       (resource.data.sellerId == request.auth.uid || isAdmin());
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
-    // Seller Shops collection - sellers can manage their own shops
+    // Seller Shops collection - sellers can manage their own shops, admins can manage all
     match /sellers/{sellerId} {
       allow read: if true; // Anyone can read shop info
-      allow write: if request.auth != null && 
-                      (request.auth.uid == sellerId || isAdmin());
+      allow create, update: if request.auth != null && 
+                               (isAdmin() || request.auth.uid == sellerId);
+      allow delete: if request.auth != null && isAdmin(); // Only admins can delete shops
+    }
+    
+    // Seller Orders collection - sellers see their orders, admins see all
+    match /seller_orders/{orderId} {
+      allow read: if request.auth != null && 
+                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow create: if request.auth != null; // System creates orders
+      allow update: if request.auth != null && 
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow delete: if isAdmin(); // Only admins can delete orders
+    }
+    
+    // Seller Shipments collection
+    match /seller_shipments/{shipmentId} {
+      allow read: if request.auth != null && 
+                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow create, update: if request.auth != null && 
+                               (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow delete: if isAdmin(); // Only admins can delete shipments
+    }
+    
+    // Seller Alerts collection
+    match /seller_alerts/{alertId} {
+      allow read: if request.auth != null && 
+                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow create: if request.auth != null; // System creates alerts
+      allow update: if request.auth != null && 
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow delete: if request.auth != null && 
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
     // Helper functions
