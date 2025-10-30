@@ -265,8 +265,9 @@ export default function WhatsAppImageEditor({
         </Box>
 
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          <strong>Drag</strong> the image to adjust position. <strong>Zoom</strong> in/out to fit your content. 
-          Settings are saved without uploading.
+          <strong>Drag</strong> the image to adjust position.{" "}
+          <strong>Zoom</strong> in/out to fit your content. Settings are saved
+          without uploading.
         </Typography>
       </DialogContent>
       <DialogActions>

@@ -49,6 +49,7 @@ interface ProductFormData {
     quantity: number;
     lowStockThreshold: number;
     trackInventory: boolean;
+    isUnique: boolean; // True for one-of-a-kind items
   };
   pickupAddressId?: string;
 
@@ -127,9 +128,10 @@ export default function NewProductPage() {
     },
     inventory: {
       sku: "",
-      quantity: 0,
+      quantity: 1,
       lowStockThreshold: 10,
       trackInventory: true,
+      isUnique: true, // Default to unique item
     },
     pickupAddressId: undefined,
     media: {

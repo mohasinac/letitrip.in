@@ -26,14 +26,11 @@ Improved the WhatsApp Image Editor to save crop settings instead of uploading ne
   - Previous: 1x - 3x (zoom in only)
   - Step: 0.05 for fine control
   - Display: Shows current zoom level (e.g., "1.5x")
-  
-- **Drag to Position**: 
+- **Drag to Position**:
   - Click and drag image to adjust offset/position
   - Unrestricted positioning for maximum flexibility
   - Cursor changes to "move" and "grab" for visual feedback
-  
 - **Mouse Wheel Zoom**: Scroll to zoom in/out smoothly
-  
 - **Benefits**:
   - Extreme zoom out (0.1x) fits very wide or tall images
   - Free dragging allows precise positioning
@@ -44,16 +41,14 @@ Improved the WhatsApp Image Editor to save crop settings instead of uploading ne
 
 ### 3. **Visual Enhancements** ✅
 
-- **Enhanced Frame**: 
+- **Enhanced Frame**:
   - Thicker 3px dashed border
   - Subtle glow effect around crop area
   - Emoji indicator in label
-  
-- **Drag Instruction**: 
+- **Drag Instruction**:
   - Shows "👆 Drag image to reposition" on first open
   - Auto-hides after user interacts
-  
-- **Title Instructions**: 
+- **Title Instructions**:
   - "Drag image to position • Scroll or use slider to zoom"
   - Clear guidance on how to use the editor
 

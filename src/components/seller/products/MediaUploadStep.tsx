@@ -26,10 +26,12 @@ import {
   CameraAlt,
   Photo,
   ArrowDropDown,
+  PhotoCamera,
 } from "@mui/icons-material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { uploadWithAuth } from "@/lib/api/seller";
 import WhatsAppImageEditor, { WhatsAppCropData } from "./WhatsAppImageEditor";
+import VideoThumbnailSelector from "./VideoThumbnailSelector";
 
 interface MediaUploadStepProps {
   data: any;
@@ -52,6 +54,12 @@ export default function MediaUploadStep({
   const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(
     null
   );
+  const [thumbnailSelectorOpen, setThumbnailSelectorOpen] = useState(false);
+  const [selectedVideoForThumbnail, setSelectedVideoForThumbnail] = useState<{
+    index: number;
+    url: string;
+    currentThumbnail?: string;
+  } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -300,6 +308,50 @@ export default function MediaUploadStep({
       (_: any, i: number) => i !== index
     );
     onChange({ media: { ...data.media, videos: newVideos } });
+  };
+
+  const openThumbnailSelector = (
+    index: number,
+    videoUrl: string,
+    currentThumbnail?: string
+  ) => {
+    setSelectedVideoForThumbnail({
+      index,
+      url: videoUrl,
+      currentThumbnail,
+    });
+    setThumbnailSelectorOpen(true);
+  };
+
+  const handleThumbnailSave = (
+    thumbnailBlob: Blob,
+    thumbnailUrl: string,
+    timestamp: number
+  ) => {
+    if (!selectedVideoForThumbnail) return;
+
+    try {
+      // Update the video with new thumbnail
+      const newVideos = [...data.media.videos];
+      newVideos[selectedVideoForThumbnail.index] = {
+        ...newVideos[selectedVideoForThumbnail.index],
+        thumbnailBlob: thumbnailBlob,
+        thumbnail: thumbnailUrl,
+        thumbnailTimestamp: timestamp,
+      };
+
+      onChange({
+        media: {
+          ...data.media,
+          videos: newVideos,
+        },
+      });
+    } catch (err: any) {
+      console.error("Thumbnail save error:", err);
+      setError(err.message || "Failed to save thumbnail");
+    } finally {
+      setSelectedVideoForThumbnail(null);
+    }
   };
 
   return (
@@ -668,6 +720,28 @@ export default function MediaUploadStep({
                     <Delete />
                   </IconButton>
 
+                  {/* Change Thumbnail Button */}
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 48,
+                      right: 8,
+                      bgcolor: "background.paper",
+                      "&:hover": {
+                        bgcolor: "primary.light",
+                        color: "white",
+                      },
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openThumbnailSelector(index, video.url, video.thumbnail);
+                    }}
+                    title="Change Thumbnail"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+
                   {/* Video Badge */}
                   <Box
                     sx={{
@@ -730,6 +804,20 @@ export default function MediaUploadStep({
             setSelectedImageForEdit(null);
           }}
           onSave={handleWhatsAppSave}
+        />
+      )}
+
+      {/* Video Thumbnail Selector Modal */}
+      {selectedVideoForThumbnail && (
+        <VideoThumbnailSelector
+          open={thumbnailSelectorOpen}
+          videoUrl={selectedVideoForThumbnail.url}
+          currentThumbnail={selectedVideoForThumbnail.currentThumbnail}
+          onClose={() => {
+            setThumbnailSelectorOpen(false);
+            setSelectedVideoForThumbnail(null);
+          }}
+          onSave={handleThumbnailSave}
         />
       )}
     </Box>

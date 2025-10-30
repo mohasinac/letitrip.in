@@ -13,6 +13,8 @@ import {
   InputAdornment,
   Divider,
   Alert,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { Category } from "@mui/icons-material";
 
@@ -254,6 +256,48 @@ export default function BasicInfoPricingStep({
           Inventory
         </Typography>
 
+        {/* Unique Item Checkbox */}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={data.inventory.isUnique || false}
+              onChange={(e) => {
+                const isUnique = e.target.checked;
+                onChange({
+                  inventory: {
+                    ...data.inventory,
+                    isUnique,
+                    quantity: isUnique ? 1 : data.inventory.quantity,
+                    lowStockThreshold: isUnique
+                      ? 0
+                      : data.inventory.lowStockThreshold,
+                    trackInventory: !isUnique,
+                  },
+                });
+              }}
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body2" fontWeight={600}>
+                Unique Item (One-of-a-Kind)
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                This is a single unique item - no inventory tracking needed
+              </Typography>
+            </Box>
+          }
+          sx={{ mb: 2 }}
+        />
+
+        {data.inventory.isUnique && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <strong>Unique Item Mode:</strong> Quantity is set to 1. No low
+            stock alerts. Perfect for one-of-a-kind products, vintage items, or
+            collectibles.
+          </Alert>
+        )}
+
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             <TextField
@@ -296,10 +340,15 @@ export default function BasicInfoPricingStep({
                   },
                 })
               }
+              disabled={data.inventory.isUnique}
               InputProps={{
                 inputProps: { min: 0, step: 1 },
               }}
-              helperText="Available stock"
+              helperText={
+                data.inventory.isUnique
+                  ? "Fixed at 1 for unique items"
+                  : "Available stock"
+              }
             />
 
             <TextField
@@ -315,10 +364,15 @@ export default function BasicInfoPricingStep({
                   },
                 })
               }
+              disabled={data.inventory.isUnique}
               InputProps={{
                 inputProps: { min: 0, step: 1 },
               }}
-              helperText="Alert threshold"
+              helperText={
+                data.inventory.isUnique
+                  ? "Not applicable for unique items"
+                  : "Alert threshold"
+              }
             />
           </Box>
 

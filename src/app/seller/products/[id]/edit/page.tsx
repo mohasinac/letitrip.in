@@ -60,6 +60,7 @@ interface ProductFormData {
     quantity: number;
     lowStockThreshold: number;
     trackInventory: boolean;
+    isUnique?: boolean; // Flag for single unit items (e.g., collectibles)
   };
   pickupAddressId?: string;
 
@@ -147,6 +148,7 @@ export default function EditProductPage() {
       quantity: 0,
       lowStockThreshold: 10,
       trackInventory: true,
+      isUnique: false,
     },
     pickupAddressId: undefined,
     media: {
@@ -216,6 +218,7 @@ export default function EditProductPage() {
             quantity: product.inventory?.quantity || 0,
             lowStockThreshold: product.inventory?.lowStockThreshold || 10,
             trackInventory: product.inventory?.trackInventory !== false,
+            isUnique: product.inventory?.isUnique || false,
           },
           pickupAddressId: product.pickupAddressId || undefined,
           media: {
