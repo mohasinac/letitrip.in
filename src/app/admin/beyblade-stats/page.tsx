@@ -8,13 +8,12 @@
 import { useState, useEffect } from "react";
 import { BeybladeStats } from "@/types/beybladeStats";
 import BeybladeImageUploader from "@/components/admin/BeybladeImageUploader";
-import BeybladeEditor from "@/components/admin/BeybladeEditor";
+import MultiStepBeybladeEditor from "@/components/admin/MultiStepBeybladeEditor";
 
 export default function BeybladeStatsAdmin() {
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
   const [selectedType, setSelectedType] = useState<string>("all");
   const [loading, setLoading] = useState(true);
-  const [initializing, setInitializing] = useState(false);
   const [editingImageFor, setEditingImageFor] = useState<string | null>(null);
   const [editingBeyblade, setEditingBeyblade] = useState<BeybladeStats | null>(
     null
@@ -43,34 +42,6 @@ export default function BeybladeStatsAdmin() {
       console.error("Error fetching Beyblades:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const initializeDefaults = async () => {
-    if (
-      !confirm(
-        "Initialize default Beyblade stats? This will not overwrite existing data."
-      )
-    ) {
-      return;
-    }
-
-    setInitializing(true);
-    try {
-      const response = await fetch("/api/beyblades/init", { method: "POST" });
-      const data = await response.json();
-
-      if (data.success) {
-        alert("Default Beyblade stats initialized successfully!");
-        fetchBeyblades();
-      } else {
-        alert("Failed to initialize: " + data.error);
-      }
-    } catch (error) {
-      console.error("Error initializing:", error);
-      alert("Error initializing Beyblade stats");
-    } finally {
-      setInitializing(false);
     }
   };
 
@@ -178,13 +149,6 @@ export default function BeybladeStatsAdmin() {
             >
               + Create New Beyblade
             </button>
-            <button
-              onClick={initializeDefaults}
-              disabled={initializing}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {initializing ? "Initializing..." : "Initialize Defaults"}
-            </button>
           </div>
         </div>
 
@@ -216,7 +180,7 @@ export default function BeybladeStatsAdmin() {
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <p className="text-gray-600 text-lg">No Beyblades found.</p>
             <p className="text-gray-500 mt-2">
-              Click "Initialize Defaults" to add the default Beyblades.
+              Click "Create New Beyblade" to add your first Beyblade.
             </p>
           </div>
         ) : (
@@ -474,7 +438,7 @@ export default function BeybladeStatsAdmin() {
 
         {/* Beyblade Editor Modal */}
         {(showCreateForm || editingBeyblade) && (
-          <BeybladeEditor
+          <MultiStepBeybladeEditor
             beyblade={editingBeyblade}
             onSave={handleSaveBeyblade}
             onCancel={() => {

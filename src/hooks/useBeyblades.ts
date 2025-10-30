@@ -18,11 +18,14 @@ export function useBeyblades() {
         throw new Error("Failed to fetch Beyblades");
       }
       const data = await response.json();
-      setBeyblades(data.beyblades || []);
+      // API returns { success: true, data: [...beyblades] }
+      setBeyblades(data.data || []);
       setError(null);
     } catch (err) {
       console.error("Error fetching beyblades:", err);
       setError(err instanceof Error ? err.message : "Failed to load Beyblades");
+      // Set empty array as fallback
+      setBeyblades([]);
     } finally {
       setLoading(false);
     }

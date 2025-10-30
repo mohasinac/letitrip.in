@@ -87,21 +87,30 @@ export default function WhatsAppStyleImageEditor({
       ctx.closePath();
       ctx.clip();
 
-      // Calculate image size and position
-      const scaledWidth = circleSize * position.scale;
-      const scaledHeight = circleSize * position.scale;
+      // Calculate image size and position with proper aspect ratio
+      const aspectRatio = img.width / img.height;
+      let scaledWidth, scaledHeight;
+
+      if (aspectRatio > 1) {
+        // Landscape image
+        scaledWidth = circleSize * position.scale;
+        scaledHeight = scaledWidth / aspectRatio;
+      } else {
+        // Portrait or square image
+        scaledHeight = circleSize * position.scale;
+        scaledWidth = scaledHeight * aspectRatio;
+      }
 
       // Convert position from -2 to 2 range to pixel offset
-      const offsetX = position.x * (circleSize / 2);
-      const offsetY = position.y * (circleSize / 2);
+      const offsetX = position.x * (circleSize / 4);
+      const offsetY = position.y * (circleSize / 4);
 
       // Translate to center, apply rotation, then position
-      ctx.translate(circleSize / 2, circleSize / 2);
+      ctx.translate(circleSize / 2 + offsetX, circleSize / 2 + offsetY);
       ctx.rotate((position.rotation * Math.PI) / 180);
-      ctx.translate(-circleSize / 2, -circleSize / 2);
 
-      const x = (circleSize - scaledWidth) / 2 + offsetX;
-      const y = (circleSize - scaledHeight) / 2 + offsetY;
+      const x = -scaledWidth / 2;
+      const y = -scaledHeight / 2;
 
       // Draw image
       ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
@@ -125,8 +134,8 @@ export default function WhatsAppStyleImageEditor({
       e.preventDefault();
       setIsDragging(true);
       setDragStart({
-        x: e.clientX - position.x * (circleSize / 2),
-        y: e.clientY - position.y * (circleSize / 2),
+        x: e.clientX - position.x * (circleSize / 4),
+        y: e.clientY - position.y * (circleSize / 4),
       });
     },
     [position, circleSize]
@@ -139,12 +148,12 @@ export default function WhatsAppStyleImageEditor({
       e.preventDefault();
 
       // Calculate new position
-      const newX = (e.clientX - dragStart.x) / (circleSize / 2);
-      const newY = (e.clientY - dragStart.y) / (circleSize / 2);
+      const newX = (e.clientX - dragStart.x) / (circleSize / 4);
+      const newY = (e.clientY - dragStart.y) / (circleSize / 4);
 
       // Clamp position to reasonable bounds
-      const clampedX = Math.max(-2, Math.min(2, newX));
-      const clampedY = Math.max(-2, Math.min(2, newY));
+      const clampedX = Math.max(-4, Math.min(4, newX));
+      const clampedY = Math.max(-4, Math.min(4, newY));
 
       setPosition((prev) => ({
         ...prev,

@@ -10,15 +10,41 @@ import { BeybladeStats } from "@/types/beybladeStats";
 
 interface BeybladePreviewProps {
   beyblade: BeybladeStats;
+  onCanvasClick?: (angle: number) => void;
+  clickMode?: boolean;
 }
 
-const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
+const BeybladePreview: React.FC<BeybladePreviewProps> = ({
+  beyblade,
+  onCanvasClick,
+  clickMode = false,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [showAnimation, setShowAnimation] = useState(false);
   const animationFrameRef = useRef<number>();
   const rotationRef = useRef(0);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(true);
+  const [zoom, setZoom] = useState(100);
+
+  // Handle canvas click for spike placement
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!clickMode || !onCanvasClick) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left - canvas.width / 2;
+    const y = e.clientY - rect.top - canvas.height / 2;
+
+    // Calculate angle from center
+    let angle = Math.atan2(y, x) * (180 / Math.PI);
+    angle = (angle + 360) % 360; // Normalize to 0-360
+
+    onCanvasClick(angle);
+  };
 
   // Load beyblade image
   useEffect(() => {
@@ -64,7 +90,8 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
       // Draw beyblade
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const size = beyblade.actualSize || 80;
+      const baseSize = beyblade.actualSize || 80;
+      const size = baseSize * (zoom / 100);
 
       ctx.save();
       ctx.translate(centerX, centerY);
@@ -89,21 +116,33 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
         // Apply image rotation (in addition to beyblade spin rotation)
         ctx.rotate((imagePos.rotation * Math.PI) / 180);
 
-        // Calculate image size with scale
-        const imgSize = size * imagePos.scale;
+        // Calculate image size with proper aspect ratio
+        const img = imageRef.current;
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        let imgWidth, imgHeight;
+
+        if (aspectRatio > 1) {
+          // Landscape image
+          imgWidth = size * imagePos.scale;
+          imgHeight = imgWidth / aspectRatio;
+        } else {
+          // Portrait or square image
+          imgHeight = size * imagePos.scale;
+          imgWidth = imgHeight * aspectRatio;
+        }
 
         // Calculate position offset from center
-        // imagePos x and y are from -2 to 2, convert to pixels
-        const offsetX = imagePos.x * (size / 2);
-        const offsetY = imagePos.y * (size / 2);
+        // imagePos x and y are from -4 to 4, convert to pixels
+        const offsetX = imagePos.x * (size / 4);
+        const offsetY = imagePos.y * (size / 4);
 
         // Draw the image with position, scale, and rotation
         ctx.drawImage(
           imageRef.current,
-          -imgSize / 2 + offsetX,
-          -imgSize / 2 + offsetY,
-          imgSize,
-          imgSize
+          -imgWidth / 2 + offsetX,
+          -imgHeight / 2 + offsetY,
+          imgWidth,
+          imgHeight
         );
 
         // Reset clipping
@@ -138,9 +177,11 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
 
       ctx.restore();
 
-      // Update rotation
-      const spinSpeed = beyblade.spinDirection === "left" ? -0.1 : 0.1;
-      rotationRef.current += spinSpeed;
+      // Update rotation only if spinning is enabled
+      if (isSpinning) {
+        const spinSpeed = beyblade.spinDirection === "left" ? -0.1 : 0.1;
+        rotationRef.current += spinSpeed;
+      }
 
       // Draw special move animation if active
       if (showAnimation) {
@@ -185,7 +226,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [beyblade, showAnimation, imageLoaded]);
+  }, [beyblade, showAnimation, imageLoaded, isSpinning, zoom]);
 
   const drawSpecialMoveAnimation = (
     ctx: CanvasRenderingContext2D,
@@ -280,8 +321,16 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
           ref={canvasRef}
           width={400}
           height={400}
-          className="w-full border-2 border-gray-300 rounded-lg"
+          onClick={handleCanvasClick}
+          className={`w-full border-2 border-gray-300 rounded-lg ${
+            clickMode ? "cursor-crosshair" : ""
+          }`}
         />
+        {clickMode && (
+          <p className="text-xs text-blue-600 mt-2 text-center font-medium">
+            📍 Click on the canvas to place a spike
+          </p>
+        )}
       </div>
 
       {/* Special Move Test Button */}
@@ -298,6 +347,60 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({ beyblade }) => {
           {showAnimation ? "Playing Animation..." : "Test Special Move"}
         </button>
       )}
+
+      {/* Zoom and Spin Controls */}
+      <div className="space-y-3 mb-4">
+        {/* Spin Control */}
+        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <span className="text-sm font-medium text-gray-700">Spinning:</span>
+          <button
+            onClick={() => setIsSpinning(!isSpinning)}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              isSpinning
+                ? "bg-green-600 text-white hover:bg-green-700"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+            }`}
+          >
+            {isSpinning ? "⚡ ON" : "⏸ OFF"}
+          </button>
+        </div>
+
+        {/* Zoom Control */}
+        <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Zoom:</span>
+            <span className="text-sm font-semibold text-blue-600">{zoom}%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setZoom(Math.max(50, zoom - 10))}
+              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold"
+            >
+              −
+            </button>
+            <input
+              type="range"
+              min="50"
+              max="200"
+              value={zoom}
+              onChange={(e) => setZoom(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <button
+              onClick={() => setZoom(Math.min(200, zoom + 10))}
+              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-bold"
+            >
+              +
+            </button>
+            <button
+              onClick={() => setZoom(100)}
+              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Stats Summary */}
       <div className="space-y-2 text-sm">

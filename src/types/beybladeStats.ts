@@ -16,204 +16,17 @@ export interface PointOfContact {
 }
 
 /**
- * Special Move Flags - Defines behavior during special move activation
- * Combine multiple flags to create complex special moves!
- */
-export interface SpecialMoveFlags {
-  // Defensive flags
-  damageReduction?: number; // 0-1, percentage of damage reduction (e.g., 0.5 = 50% reduction)
-  immuneToKnockback?: boolean; // If true, cannot be knocked back during move
-  damageImmune?: boolean; // If true, takes 0 damage during move
-  
-  // Offensive flags
-  damageMultiplier?: number; // Damage multiplier during move (e.g., 2.0 = 2x damage)
-  spinStealMultiplier?: number; // Spin steal effectiveness multiplier (e.g., 2.0 = 2x steal)
-  
-  // Movement flags
-  performLoop?: boolean; // If true, performs a loop after activation
-  counterAttack?: boolean; // If true, performs counter attack after taking hit
-  speedBoost?: number; // Speed multiplier during move (e.g., 1.5 = 50% faster)
-  cannotMove?: boolean; // If true, Beyblade becomes immobile (locked in position)
-  phasing?: boolean; // If true, Beyblade phases through opponents (no collision)
-  
-  // Size/Radius modifications
-  radiusMultiplier?: number; // Multiplier for Beyblade radius (e.g., 1.5 = 50% larger hitbox)
-  visualScale?: number; // Visual scale multiplier (e.g., 1.3 = 30% larger appearance)
-  
-  // Special mechanics
-  reflectDamage?: number; // 0-1, percentage of damage to reflect back to attacker
-  healSpin?: number; // Amount of spin to heal per second during move
-  gravityPull?: number; // Radius in pixels to pull opponents toward beyblade
-  pushAway?: number; // Radius in pixels to push opponents away from beyblade
-  
-  // ==================== CINEMATIC SPECIAL MOVES ====================
-  
-  // Control Flags
-  userLosesControl?: boolean; // If true, user cannot control their Beyblade during move
-  opponentLosesControl?: boolean; // If true, opponent cannot control their Beyblade
-  freezeOpponent?: boolean; // Freeze opponent in place during move
-  
-  // Orbital Attack (Barrage of Attacks)
-  orbitalAttack?: {
-    enabled: boolean;
-    orbitRadius: number; // Radius to orbit around target (e.g., targetRadius * 4)
-    attackCount: number; // Number of attacks (e.g., 3 attacks at 120° intervals)
-    damagePerHit: number; // Damage per orbital attack
-    orbitSpeed: number; // Speed multiplier during orbit (e.g., 2.0 = double speed)
-  };
-  
-  // Time Manipulation (Time Skip)
-  timeSkip?: {
-    enabled: boolean;
-    freezeDuration: number; // How long opponent is frozen (seconds)
-    repositionOpponent?: {
-      enabled: boolean;
-      direction: 'center' | 'edge'; // Move toward center or edge
-      distance: number; // Distance in pixels or multiplier (e.g., radius * 4)
-    };
-    loopRing?: {
-      enabled: boolean;
-      ringType: 'inner' | 'outer' | 'charge'; // Which ring to loop
-      duration: number; // Loop duration in seconds
-      disableChargePoints: boolean; // Don't trigger charge points during loop
-    };
-    spinDrainOnEnd: number; // Flat spin amount to drain when time resumes
-  };
-  
-  // Rush Attack (Rapid Dash)
-  rushAttack?: {
-    enabled: boolean;
-    dashCount: number; // Number of dashes
-    dashSpeed: number; // Speed multiplier per dash
-    damagePerDash: number; // Damage per successful dash hit
-    trailEffect: boolean; // Leave visual trail
-  };
-  
-  // Ultimate Defense (Shield Dome)
-  shieldDome?: {
-    enabled: boolean;
-    absorbDamage: boolean; // Absorb all damage during duration
-    reflectPercentage: number; // 0-1, how much to reflect back
-    pushRadius: number; // Radius to push enemies away
-    healPerSecond: number; // Spin healing per second
-  };
-  
-  // Berserk Mode (Power Surge)
-  berserkMode?: {
-    enabled: boolean;
-    damageBoost: number; // Damage multiplier
-    speedBoost: number; // Speed multiplier
-    defenseReduction: number; // Take more damage (glass cannon)
-    visualIntensity: number; // Visual effect intensity (1.0-3.0)
-  };
-  
-  // Vortex Mode (Spin Steal Amplified)
-  vortexMode?: {
-    enabled: boolean;
-    pullRadius: number; // Gravity pull radius
-    spinStealRate: number; // Spin stolen per second from nearby Beyblades
-    healFromSteal: boolean; // Heal own spin from stolen spin
-    slowOpponents: number; // Speed reduction multiplier for nearby enemies (0.5 = 50% slower)
-  };
-  
-  // Phantom Mode (Invisibility + Phase)
-  phantomMode?: {
-    enabled: boolean;
-    opacity: number; // Visual opacity (0.0-1.0)
-    phaseThrough: boolean; // Pass through walls and Beyblades
-    teleportOnHit?: {
-      enabled: boolean;
-      distance: number; // Teleport distance in pixels
-      direction: 'random' | 'away' | 'behind'; // Teleport direction
-    };
-  };
-  
-  // Explosion (Area Damage)
-  explosion?: {
-    enabled: boolean;
-    explosionRadius: number; // Damage radius in pixels
-    explosionDamage: number; // Damage to all in radius
-    knockbackForce: number; // Knockback force multiplier
-    selfDamage?: number; // Optional self-damage (recoil)
-  };
-  
-  // Clone (Create Afterimages)
-  clone?: {
-    enabled: boolean;
-    cloneCount: number; // Number of visual clones
-    cloneOpacity: number; // Clone opacity
-    confuseOpponent: boolean; // Makes targeting harder
-  };
-  
-  // Magnet Mode (Attract/Repel)
-  magnetMode?: {
-    enabled: boolean;
-    attractRadius: number; // Attract items/power-ups
-    repelOpponents: boolean; // Push away enemies
-    attractOpponents: boolean; // Pull in enemies
-    force: number; // Force multiplier
-  };
-  
-  // Overdrive (Temporary Power Boost)
-  overdrive?: {
-    enabled: boolean;
-    boostMultiplier: number; // Overall power boost
-    drainRate: number; // Spin drain per second during overdrive
-    afterEffectDebuff?: {
-      duration: number; // Debuff duration after overdrive ends
-      speedReduction: number; // Speed penalty
-      damageReduction: number; // Damage penalty
-    };
-  };
-  
-  // Cinematic Settings
-  cinematicSettings?: {
-    showBanner: boolean; // Show "LET IT RIP!" style banner
-    slowMotion?: {
-      enabled: boolean;
-      timeScale: number; // 0.1-1.0, game speed during effect
-      duration: number; // Slow motion duration in seconds
-    };
-    cameraShake?: {
-      enabled: boolean;
-      intensity: number; // Shake intensity (1-10)
-      duration: number; // Shake duration in seconds
-    };
-    screenFlash?: {
-      enabled: boolean;
-      color: string; // Flash color (hex or rgba)
-      intensity: number; // 0-1
-      duration: number; // Flash duration in seconds
-    };
-    soundEffect?: string; // Sound effect ID to play
-  };
-  
-  // Timing
-  duration: number; // Duration in seconds
-  cooldown: number; // Cooldown in seconds before move can be used again
-}
-
-/**
- * Special Move Definition
- */
-export interface SpecialMove {
-  id: string;
-  name: string;
-  description: string; // User-friendly description
-  powerCost: number; // Power required to activate (0-100, typically 100 for ultimate moves)
-  flags: SpecialMoveFlags;
-  activationKey?: string; // Optional keyboard shortcut
-  category?: 'offensive' | 'defensive' | 'utility' | 'ultimate'; // Move category
-}
-
-/**
- * Type Distribution - 320 total points, max 150 per category
+ * Type Distribution - 360 total points, max 150 per category
+ * Each point provides specific bonuses:
+ * - Attack: +0.01 damage, +0.01 speed
+ * - Defense: -0.01 damage taken, +0.01 knockback resistance
+ * - Stamina: +0.01 max stamina, +0.01 spin steal
  */
 export interface TypeDistribution {
-  attack: number; // 0-150, determines attack damage bonus
-  defense: number; // 0-150, determines damage reduction
-  stamina: number; // 0-150, determines spin power/decay
-  total: number; // Must equal 320
+  attack: number; // 0-150, each point: +0.01 damage, +0.01 speed
+  defense: number; // 0-150, each point: -0.01 damage taken, +0.01 knockback resistance
+  stamina: number; // 0-150, each point: +0.01 max stamina, +0.01 spin steal
+  total: number; // Must equal 360
 }
 
 /**
@@ -239,26 +52,25 @@ export interface BeybladeStats {
   spinDirection: SpinDirection;
   
   // Physical Properties
-  mass: number; // kg, affects collision physics (typical: 15-25)
-  radius: number; // pixels, visual size in 800x800 arena (typical: 30-50)
-  actualSize: number; // pixels, hitbox size for collision (typical: 35-45)
+  mass: number; // grams, affects collision physics (typical: 10-2000g, real beyblades are ~40-60g)
+  radius: number; // cm, physical radius (typical: 3-50cm, converts to pixels as radius*10)
+  actualSize?: number; // CALCULATED: pixels, visual display size = radius * 10
   
-  // Spin Properties
-  spinStealFactor: number; // 0-1, chance to steal spin (e.g., 0.7 for Meteo with rubber)
-  maxSpin: number; // Maximum spin value (typical: 2000-4000)
-  spinDecayRate: number; // Spin loss per second (typical: 3-8)
+  // Calculated Stats (from typeDistribution, DO NOT SET MANUALLY)
+  // Base values: stamina=2000, attack=100, defense=100, speed=100, spinSteal=100, knockback=100
+  // Attack points: +1 damage, +1 speed per point (base 10 units/sec, 10 damage)
+  // Defense points: -1% damage taken, +1 knockback resistance per point (base 10 units)
+  // Stamina points: +20 max stamina, +1 spin steal per point (base 10 points)
+  stamina?: number; // CALCULATED: 2000 + (stamina points * 20)
+  spinStealFactor?: number; // CALCULATED: 100 + stamina points
+  spinDecayRate?: number; // CALCULATED: Based on stamina distribution (lower = better)
+  speed?: number; // CALCULATED: 100 + attack points (base 10 units/sec)
   
-  // Type Distribution (320 points total)
+  // Type Distribution (360 points total)
   typeDistribution: TypeDistribution;
   
   // Point of Contact (collision damage zones)
   pointsOfContact: PointOfContact[];
-  
-  // Special Move
-  specialMove: SpecialMove;
-  
-  // Visual
-  speed: number; // Animation speed multiplier (1 = normal)
   
   // Metadata
   createdAt?: string;
@@ -267,46 +79,124 @@ export interface BeybladeStats {
 }
 
 /**
- * Active Special Move State (for runtime tracking)
- */
-export interface ActiveSpecialMove {
-  beybladeId: string;
-  moveId: string;
-  flags: SpecialMoveFlags;
-  startTime: number; // Timestamp when move was activated
-  endTime: number; // Timestamp when move ends
-  cooldownEndTime: number; // Timestamp when cooldown ends
-  isActive: boolean;
-}
-
-/**
- * Type Bonuses calculated from distribution
+ * Type Bonuses calculated from type
+ * Attack: +20% attack damage
+ * Defense: -20% damage taken
+ * Stamina: +20% max stamina (3000 instead of 2500)
+ * Balanced: No bonuses
  */
 export interface TypeBonuses {
-  attackMultiplier: number; // 1.0 + (attack / 150) * 0.2 = 1.0 to 1.2
-  defenseMultiplier: number; // 1.0 - (defense / 150) * 0.2 = 0.8 to 1.0
-  staminaMultiplier: number; // 1.0 + (stamina / 150) * 0.2 = 1.0 to 1.2 (affects spin power)
+  attackMultiplier: number; // Attack: 1.2, Others: 1.0
+  defenseMultiplier: number; // Defense: 0.8 (takes 20% less), Others: 1.0
+  maxStamina: number; // Stamina: 3000, Others: 2500
 }
 
 /**
- * Calculate type bonuses from distribution
+ * Calculate type bonuses based on beyblade type
  */
-export function calculateTypeBonuses(distribution: TypeDistribution): TypeBonuses {
-  return {
-    attackMultiplier: 1.0 + (distribution.attack / 150) * 0.2,
-    defenseMultiplier: 1.0 - (distribution.defense / 150) * 0.2,
-    staminaMultiplier: 1.0 + (distribution.stamina / 150) * 0.2,
-  };
+export function calculateTypeBonuses(type: BeybladeType): TypeBonuses {
+  const baseMaxStamina = 2500;
+  
+  switch (type) {
+    case 'attack':
+      return {
+        attackMultiplier: 1.2, // +20% attack damage
+        defenseMultiplier: 1.0,
+        maxStamina: baseMaxStamina,
+      };
+    case 'defense':
+      return {
+        attackMultiplier: 1.0,
+        defenseMultiplier: 0.8, // Takes 20% less damage
+        maxStamina: baseMaxStamina,
+      };
+    case 'stamina':
+      return {
+        attackMultiplier: 1.0,
+        defenseMultiplier: 1.0,
+        maxStamina: 3000, // +20% max stamina
+      };
+    case 'balanced':
+    default:
+      return {
+        attackMultiplier: 1.0,
+        defenseMultiplier: 1.0,
+        maxStamina: baseMaxStamina,
+      };
+  }
 }
 
 /**
- * Validate type distribution (must sum to 320, max 150 each)
+ * Validate type distribution (must sum to 360, max 150 each)
  */
 export function validateTypeDistribution(distribution: TypeDistribution): boolean {
-  if (distribution.total !== 320) return false;
+  if (distribution.total !== 360) return false;
   if (distribution.attack < 0 || distribution.attack > 150) return false;
   if (distribution.defense < 0 || distribution.defense > 150) return false;
   if (distribution.stamina < 0 || distribution.stamina > 150) return false;
-  if (distribution.attack + distribution.defense + distribution.stamina !== 320) return false;
+  if (distribution.attack + distribution.defense + distribution.stamina !== 360) return false;
   return true;
+}
+
+/**
+ * Calculate all derived stats from type distribution
+ * Base values: stamina=2000, attack=100, defense=100, speed=100, spinSteal=100, knockback=100
+ * - Attack points: +1 damage multiplier, +1 speed multiplier per point
+ * - Defense points: +1 defense multiplier, +1 knockback resistance per point  
+ * - Stamina points: +20 max stamina, +1 spin steal per point
+ */
+export interface CalculatedStats {
+  // Core stats (all start at 100 = 1x multiplier)
+  attackPower: number; // 100 + attack points (base damage = 10)
+  defensePower: number; // 100 + defense points (damage reduction)
+  speedMultiplier: number; // 100 + attack points (base speed = 10 units/sec)
+  knockbackResistance: number; // 100 + defense points (base = 10 units)
+  
+  // Stamina stats
+  maxStamina: number; // 2000 + (stamina points * 20)
+  spinStealPower: number; // 100 + stamina points (base = 10 points per hit)
+  spinDecayRate: number; // Higher stamina = slower decay
+  
+  // Actual game values (for 800x800 arena)
+  damagePerHit: number; // attackPower * 0.1 (so 100 = 10 damage)
+  speedPerSecond: number; // speedMultiplier * 0.1 (so 100 = 10 units/sec)
+  knockbackDistance: number; // knockbackResistance * 0.1 (so 100 = 10 units)
+  spinStealAmount: number; // spinStealPower * 0.1 (so 100 = 10 points)
+  damageReduction: number; // defensePower * 0.01 (so 100 = 1.0x, 150 = 1.5x reduction)
+}
+
+export function calculateStats(distribution: TypeDistribution): CalculatedStats {
+  // Base values (all at 100 = 1x multiplier)
+  const baseValue = 100;
+  const baseStamina = 2000;
+  
+  // Calculate multipliers
+  const attackPower = baseValue + distribution.attack;
+  const defensePower = baseValue + distribution.defense;
+  const speedMultiplier = baseValue + distribution.attack; // Attack also increases speed
+  const knockbackResistance = baseValue + distribution.defense; // Defense also increases knockback resistance
+  
+  // Stamina calculations
+  const maxStamina = baseStamina + (distribution.stamina * 20); // +20 per point
+  const spinStealPower = baseValue + distribution.stamina;
+  
+  // Spin decay rate: inverse of stamina (more stamina = slower decay)
+  // Base decay at 60 stamina points = ~1.67/sec, at 150 = ~0.67/sec
+  const spinDecayRate = 100 / (distribution.stamina + 60);
+  
+  return {
+    attackPower,
+    defensePower,
+    speedMultiplier,
+    knockbackResistance,
+    maxStamina,
+    spinStealPower,
+    spinDecayRate,
+    // Actual game values (multiply by 0.1 to get base = 10)
+    damagePerHit: attackPower * 0.1,
+    speedPerSecond: speedMultiplier * 0.1,
+    knockbackDistance: knockbackResistance * 0.1,
+    spinStealAmount: spinStealPower * 0.1,
+    damageReduction: defensePower * 0.01,
+  };
 }

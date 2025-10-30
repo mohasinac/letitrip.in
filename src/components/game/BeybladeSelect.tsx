@@ -113,10 +113,15 @@ export default function BeybladeSelect({
                     fontWeight: "bold",
                   }}
                 >
-                  {!beyblade.imageUrl && (beyblade.name?.charAt(0) || "?")}
+                  {!beyblade.imageUrl &&
+                    (beyblade.displayName?.charAt(0) ||
+                      beyblade.name?.charAt(0) ||
+                      "?")}
                 </Avatar>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography fontWeight="bold">{beyblade.name}</Typography>
+                  <Typography fontWeight="bold">
+                    {beyblade.displayName || beyblade.name}
+                  </Typography>
                   <Chip
                     label={beyblade.type.toUpperCase()}
                     size="small"
@@ -166,11 +171,13 @@ export default function BeybladeSelect({
                 }}
               >
                 {!selectedBeyblade.imageUrl &&
-                  (selectedBeyblade.name?.charAt(0) || "?")}
+                  (selectedBeyblade.displayName?.charAt(0) ||
+                    selectedBeyblade.name?.charAt(0) ||
+                    "?")}
               </Avatar>
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="subtitle1" fontWeight="bold">
-                  {selectedBeyblade.name}
+                  {selectedBeyblade.displayName || selectedBeyblade.name}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
                   <Chip
@@ -313,11 +320,12 @@ function BeybladeMenuItem({ beyblade }: { beyblade: BeybladeStats }) {
           fontWeight: "bold",
         }}
       >
-        {!beyblade.imageUrl && (beyblade.name?.charAt(0) || "?")}
+        {!beyblade.imageUrl &&
+          (beyblade.displayName?.charAt(0) || beyblade.name?.charAt(0) || "?")}
       </Avatar>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="body2" fontWeight="bold">
-          {beyblade.name}
+          {beyblade.displayName || beyblade.name}
         </Typography>
         <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
           <Chip
