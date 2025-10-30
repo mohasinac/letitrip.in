@@ -234,8 +234,8 @@ export default function MultiStepBeybladeEditor({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[95vh] overflow-hidden flex flex-col">
+    <div className="container mx-auto p-6 max-w-7xl">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <div>
