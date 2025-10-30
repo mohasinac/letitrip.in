@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:next\" \"npm run dev:socket\" --names \"NEXT,SOCKET\" --prefix-colors \"cyan,magenta\"",
-    "dev:next": "next dev",
+    "dev:next": "next dev --turbopack",
+    "dev:next-webpack": "next dev --webpack",
     "dev:socket": "node server.js",
     "build": "next build",
     "start": "node server.js",
