@@ -101,7 +101,9 @@ const nextConfig = {
   
   // Experimental features for better performance
   experimental: {
-    optimizeCss: true,
+    // Disable optimizeCss temporarily to avoid critters issues
+    // Can be re-enabled once Turbopack fully supports it
+    optimizeCss: false,
     optimizePackageImports: ['@mui/material', '@mui/icons-material'],
   },
 }
