@@ -167,12 +167,17 @@ export default function ArenasAdmin() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
           <div className="text-sm text-gray-600">Total Arenas</div>
-          <div className="text-2xl font-bold text-gray-900">{arenas.length}</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {arenas.length}
+          </div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
           <div className="text-sm text-gray-600">With Hazards</div>
           <div className="text-2xl font-bold text-gray-900">
-            {arenas.filter((a) => a.obstacles.length > 0 || a.pits.length > 0).length}
+            {
+              arenas.filter((a) => a.obstacles.length > 0 || a.pits.length > 0)
+                .length
+            }
           </div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
@@ -221,7 +226,7 @@ export default function ArenasAdmin() {
               {/* Preview Area */}
               <div className="h-48 bg-gradient-to-br from-blue-50 to-purple-50 border-b border-gray-200 flex items-center justify-center relative">
                 <ArenaPreview arena={arena} width={300} height={192} />
-                {arena.difficulty === 'easy' && (
+                {arena.difficulty === "easy" && (
                   <div className="absolute top-2 right-2 px-2 py-1 bg-green-600 text-white text-xs rounded font-semibold">
                     DEFAULT
                   </div>
@@ -233,7 +238,9 @@ export default function ArenasAdmin() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <span className="text-2xl">{getShapeIcon(arena.shape)}</span>
+                      <span className="text-2xl">
+                        {getShapeIcon(arena.shape)}
+                      </span>
                       {arena.name}
                     </h3>
                     {arena.description && (
@@ -248,11 +255,15 @@ export default function ArenasAdmin() {
                 <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">Shape:</span>
-                    <span className="font-semibold capitalize">{arena.shape}</span>
+                    <span className="font-semibold capitalize">
+                      {arena.shape}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">Theme:</span>
-                    <span className="font-semibold capitalize">{arena.theme}</span>
+                    <span className="font-semibold capitalize">
+                      {arena.theme}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">Loops:</span>
@@ -261,7 +272,9 @@ export default function ArenasAdmin() {
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">Hazards:</span>
                     <span className="font-semibold">
-                      {arena.obstacles.length + arena.pits.length + arena.laserGuns.length}
+                      {arena.obstacles.length +
+                        arena.pits.length +
+                        arena.laserGuns.length}
                     </span>
                   </div>
                 </div>

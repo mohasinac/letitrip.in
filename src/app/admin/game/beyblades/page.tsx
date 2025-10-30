@@ -1,6 +1,6 @@
 /**
- * Admin Page: Beyblade Stats Manager
- * View and manage all Beyblade stats in the database
+ * Admin Page: Beyblade Management
+ * View and manage all Beyblades in the database
  */
 
 "use client";
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { BeybladeStats } from "@/types/beybladeStats";
 import BeybladeImageUploader from "@/components/admin/BeybladeImageUploader";
 
-export default function BeybladeStatsAdmin() {
+export default function BeybladesPage() {
   const router = useRouter();
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -50,7 +50,7 @@ export default function BeybladeStatsAdmin() {
         return "text-blue-600 bg-blue-50";
       case "stamina":
         return "text-green-600 bg-green-50";
-      case "balanced":
+      case "balance":
         return "text-purple-600 bg-purple-50";
       default:
         return "text-gray-600 bg-gray-50";
@@ -58,66 +58,67 @@ export default function BeybladeStatsAdmin() {
   };
 
   const handleImageUploaded = (beybladeId: string, imageUrl: string) => {
-    // Update the beyblade in the list
     setBeyblades((prev) =>
-      prev.map((bey) => (bey.id === beybladeId ? { ...bey, imageUrl } : bey))
+      prev.map((b) => (b.id === beybladeId ? { ...b, imageUrl } : b))
     );
     setEditingImageFor(null);
   };
 
-  const handlePointsOfContactUpdated = async (
+  const handlePointsOfContactUpdated = (
     beybladeId: string,
-    points: any[]
+    points: BeybladeStats["pointsOfContact"]
   ) => {
+    setBeyblades((prev) =>
+      prev.map((b) =>
+        b.id === beybladeId ? { ...b, pointsOfContact: points } : b
+      )
+    );
+  };
+
+  const handleDeleteBeyblade = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this Beyblade?")) return;
+
     try {
-      // Update the beyblade with new points of contact
-      const response = await fetch(`/api/beyblades/${beybladeId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pointsOfContact: points,
-        }),
+      const response = await fetch(`/api/beyblades/${id}`, {
+        method: "DELETE",
       });
 
       const data = await response.json();
 
       if (data.success) {
-        // Update local state
-        setBeyblades((prev) =>
-          prev.map((bey) =>
-            bey.id === beybladeId ? { ...bey, pointsOfContact: points } : bey
-          )
-        );
+        alert("Beyblade deleted successfully!");
+        fetchBeyblades();
+      } else {
+        alert(`Failed to delete: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error updating points of contact:", error);
+      console.error("Error deleting Beyblade:", error);
+      alert("Failed to delete Beyblade");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Beyblade Stats Manager
+              Beyblade Management
             </h1>
             <p className="text-gray-600 mt-2">
-              Manage Beyblade statistics and special moves
+              Create, edit, and manage Beyblade configurations
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => router.push("/admin/beyblades/create")}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              + Create New Beyblade
-            </button>
-          </div>
+          <button
+            onClick={() => router.push("/admin/game/beyblades/create")}
+            className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm"
+          >
+            + Create New Beyblade
+          </button>
         </div>
 
-        {/* Filters */}
+        {/* Filter */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Filter by Type
@@ -125,13 +126,13 @@ export default function BeybladeStatsAdmin() {
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Types</option>
             <option value="attack">Attack</option>
             <option value="defense">Defense</option>
             <option value="stamina">Stamina</option>
-            <option value="balanced">Balanced</option>
+            <option value="balance">Balance</option>
           </select>
         </div>
 
@@ -200,6 +201,24 @@ export default function BeybladeStatsAdmin() {
                         </span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() =>
+                        router.push(`/admin/game/beyblades/edit/${beyblade.id}`)
+                      }
+                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteBeyblade(beyblade.id)}
+                      className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
 
                   {/* Image Upload Modal */}

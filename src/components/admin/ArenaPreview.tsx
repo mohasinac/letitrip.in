@@ -366,11 +366,7 @@ function drawPit(
 }
 
 // Draw laser gun
-function drawLaserGun(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number
-) {
+function drawLaserGun(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.save();
   ctx.translate(x, y);
 

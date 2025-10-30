@@ -240,63 +240,8 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
     width: number,
     height: number
   ) => {
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    // Orbital Attack Animation
-    if (beyblade.specialMove?.flags.orbitalAttack) {
-      const orbitalConfig = beyblade.specialMove.flags.orbitalAttack;
-      const radius = orbitalConfig.orbitRadius || 80;
-
-      // Draw orbit path
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(147, 51, 234, 0.5)";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Draw attack points
-      const attackCount = orbitalConfig.attackCount || 3;
-      const angleIncrement = (Math.PI * 2) / attackCount;
-
-      for (let i = 0; i < attackCount; i++) {
-        const angle = i * angleIncrement + rotationRef.current;
-        const x = centerX + Math.cos(angle) * radius;
-        const y = centerY + Math.sin(angle) * radius;
-
-        ctx.beginPath();
-        ctx.arc(x, y, 8, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(147, 51, 234, 0.8)";
-        ctx.fill();
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-    }
-
-    // Time Skip Animation
-    if (beyblade.specialMove?.flags.timeSkip) {
-      // Draw freeze effect
-      ctx.fillStyle = "rgba(59, 130, 246, 0.2)";
-      ctx.fillRect(0, 0, width, height);
-
-      // Draw time ripples
-      for (let i = 0; i < 3; i++) {
-        ctx.beginPath();
-        ctx.arc(
-          centerX,
-          centerY,
-          50 + i * 30 + ((rotationRef.current * 100) % 30),
-          0,
-          Math.PI * 2
-        );
-        ctx.strokeStyle = `rgba(59, 130, 246, ${0.5 - i * 0.15})`;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-    }
+    // Special moves have been removed from the system
+    // This function is kept for potential future use
   };
 
   const getTypeColor = (type: string): string => {
@@ -314,9 +259,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
     }
   };
 
-  const hasSpecialMove =
-    beyblade.specialMove?.flags.orbitalAttack ||
-    beyblade.specialMove?.flags.timeSkip;
+  const hasSpecialMove = false;
 
   return (
     <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
@@ -427,24 +370,6 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
             {beyblade.spinDirection}
           </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Special Move:</span>
-          <span className="font-medium">
-            {beyblade.specialMove?.name || "None"}
-          </span>
-        </div>
-        {beyblade.specialMove?.flags.orbitalAttack && (
-          <div className="flex justify-between text-purple-600">
-            <span>Move Type:</span>
-            <span className="font-medium">Orbital Attack</span>
-          </div>
-        )}
-        {beyblade.specialMove?.flags.timeSkip && (
-          <div className="flex justify-between text-blue-600">
-            <span>Move Type:</span>
-            <span className="font-medium">Time Skip</span>
-          </div>
-        )}
       </div>
     </div>
   );

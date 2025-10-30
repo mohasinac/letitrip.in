@@ -15,6 +15,7 @@ Complete admin interface for creating and managing battle arenas with live previ
 ## ✨ Features
 
 ### 1. **Live Preview**
+
 - Canvas-based rendering of arena configurations
 - Real-time visualization of all features:
   - Arena shape and boundaries
@@ -27,7 +28,9 @@ Complete admin interface for creating and managing battle arenas with live previ
   - Exits (green dashed lines)
 
 ### 2. **Arena Cards**
+
 Each arena displays:
+
 - Live preview thumbnail
 - Name and description
 - Shape icon and theme
@@ -38,7 +41,9 @@ Each arena displays:
 - Quick action buttons (Preview, Edit, Set Default, Delete)
 
 ### 3. **Arena Creator**
+
 Full-featured configuration editor with 6 tabs:
+
 - **Basic**: Shape, theme, game mode, walls
 - **Loops & Exits**: Speed zones with custom shapes
 - **Hazards**: Obstacles, pits, water, lasers
@@ -47,6 +52,7 @@ Full-featured configuration editor with 6 tabs:
 - **Preview**: Live preview and JSON export
 
 ### 4. **Default Arena**
+
 - First arena marked with green "DEFAULT" badge
 - Used for new games
 - Can be changed by clicking ⭐ button
@@ -58,11 +64,13 @@ Full-featured configuration editor with 6 tabs:
 ### Initialize Default Arena
 
 **Option 1: Via API**
+
 ```bash
 curl -X POST http://localhost:3000/api/arenas/init
 ```
 
 **Option 2: Via Admin UI**
+
 1. Visit `/admin/arenas`
 2. Click "Create New Arena"
 3. Load "Classic Stadium" preset
@@ -73,13 +81,16 @@ curl -X POST http://localhost:3000/api/arenas/init
 ## 🎨 Creating Arenas
 
 ### Quick Create (Preset)
+
 1. Click "+ Create New Arena"
 2. Click preset button (Classic Stadium, Hazard Zone, Water World)
 3. Modify as needed
 4. Save
 
 ### Custom Create
+
 1. **Basic Tab**:
+
    - Enter name and description
    - Select shape (circle, rectangle, pentagon, hexagon, octagon, star, oval, loop)
    - Choose theme (10 options)
@@ -87,6 +98,7 @@ curl -X POST http://localhost:3000/api/arenas/init
    - Configure walls (damage, recoil, spikes, springs)
 
 2. **Loops Tab**:
+
    - Click "+ Add Loop"
    - Select loop shape (independent of arena shape!)
    - Set radius/size
@@ -96,17 +108,20 @@ curl -X POST http://localhost:3000/api/arenas/init
    - Adjust speed boost and spin boost
 
 3. **Hazards Tab**:
+
    - Generate random obstacles (5-15 rocks, pillars, barriers)
    - Generate pits (edges/center/random placement)
    - Enable water body (center circle or loop path)
    - Add laser guns (coming soon)
 
 4. **Goals Tab**:
+
    - Add goal objects for objective mode
    - Configure health and score values
    - Set win condition (destroy all goals)
 
 5. **Theme Tab**:
+
    - Fine-tune visual appearance
    - Add background layers (coming soon)
 
@@ -116,6 +131,7 @@ curl -X POST http://localhost:3000/api/arenas/init
    - Export JSON
 
 ### Save
+
 - Validates configuration
 - Shows errors if any
 - Saves to database
@@ -126,12 +142,14 @@ curl -X POST http://localhost:3000/api/arenas/init
 ## 🎮 Arena Properties
 
 ### Required
+
 - **Name**: Unique identifier
 - **Shape**: Arena boundary shape
 - **Theme**: Visual style
 - **Game Mode**: player-vs-ai, player-vs-player, single-player-test
 
 ### Optional
+
 - **Description**: Flavor text
 - **Loops**: 0-10 speed zones
 - **Exits**: Boundary openings
@@ -146,6 +164,7 @@ curl -X POST http://localhost:3000/api/arenas/init
 ## 📊 Arena Stats Dashboard
 
 Top of page shows:
+
 - **Total Arenas**: Count of all arenas
 - **With Hazards**: Arenas containing obstacles/pits
 - **With Loops**: Arenas with speed zones
@@ -156,22 +175,26 @@ Top of page shows:
 ## 🔧 Managing Arenas
 
 ### Preview
+
 - Click "👁️ Preview" button
 - Opens full-size canvas preview
 - Shows all features in detail
 
 ### Edit
+
 - Click "✏️ Edit" button
 - Opens configurator with current settings
 - Make changes and save
 
 ### Set as Default
+
 - Click "⭐" button
 - Marks arena as default
 - Used for all new games
 - Only one default at a time
 
 ### Delete
+
 - Click "🗑️" button
 - Confirms before deletion
 - Cannot be undone
@@ -182,6 +205,7 @@ Top of page shows:
 ## 🎯 Use Cases
 
 ### 1. **Classic Mode**
+
 ```
 - Circle shape
 - 2 circular loops
@@ -190,6 +214,7 @@ Top of page shows:
 ```
 
 ### 2. **Hazard Challenge**
+
 ```
 - Octagon shape
 - 3 shaped loops (octagon, hexagon, circle)
@@ -200,6 +225,7 @@ Top of page shows:
 ```
 
 ### 3. **Water Arena**
+
 ```
 - Circle shape
 - 1 loop
@@ -209,6 +235,7 @@ Top of page shows:
 ```
 
 ### 4. **Objective Mode**
+
 ```
 - Any shape
 - Goal objects (towers, crystals, relics)
@@ -221,6 +248,7 @@ Top of page shows:
 ## 🔍 Search & Filter
 
 Coming soon:
+
 - Filter by shape
 - Filter by theme
 - Filter by difficulty
@@ -241,6 +269,7 @@ Coming soon:
 ## 🚨 Validation
 
 Arena validator checks:
+
 - ✅ Positive dimensions
 - ✅ Max 10 loops
 - ✅ Max 50 obstacles
@@ -263,6 +292,7 @@ Arena validator checks:
 ## 🎨 Theme Colors
 
 Each theme has unique gradient:
+
 - **Forest**: Green tones
 - **Mountains**: Gray/blue
 - **Grasslands**: Bright green
@@ -279,11 +309,13 @@ Each theme has unique gradient:
 ## 🏗️ Technical Details
 
 ### Components
+
 - `ArenasAdmin` - Main page component
 - `ArenaConfigurator` - Configuration editor modal
 - `ArenaPreview` - Canvas-based renderer
 
 ### API Endpoints
+
 - `GET /api/arenas` - List all arenas
 - `POST /api/arenas` - Create arena
 - `GET /api/arenas/[id]` - Get specific arena
@@ -293,6 +325,7 @@ Each theme has unique gradient:
 - `POST /api/arenas/init` - Initialize default arena
 
 ### Services
+
 - `arenaService.ts` - Firebase CRUD operations
 - `arenaConfig.ts` - Type definitions and validation
 
