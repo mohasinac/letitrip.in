@@ -327,7 +327,7 @@ function PitRenderer({
           <stop offset="100%" stopColor="#444" stopOpacity={0.6} />
         </radialGradient>
       </defs>
-      
+
       {/* Main pit */}
       <circle
         cx={x}
@@ -335,7 +335,7 @@ function PitRenderer({
         r={radius}
         fill={`url(#pit-gradient-${pit.x}-${pit.y})`}
       />
-      
+
       {/* Depth rings */}
       {Array.from({ length: pit.visualDepth || 3 }).map((_, i) => (
         <circle
@@ -392,7 +392,7 @@ function GoalRenderer({
         opacity={0.2}
         className="animate-pulse"
       />
-      
+
       {/* Icon */}
       <text
         x={x}
@@ -439,7 +439,7 @@ function WallsRenderer({
         stroke="#000"
         strokeWidth={wall.thickness * 10 || 4}
       />
-      
+
       {/* Exits overlay */}
       {exits.map(
         (exit, idx) =>
@@ -506,10 +506,10 @@ function LaserGunRenderer({
     <g className="laser-gun">
       {/* Base */}
       <circle cx={x} cy={y} r={8} fill="#555" />
-      
+
       {/* Barrel */}
       <rect x={x - 2} y={y - 12} width={4} height={12} fill="#ff3333" />
-      
+
       {/* Warning light */}
       <circle cx={x} cy={y} r={3} fill="#ffff00" className="animate-pulse" />
     </g>

@@ -58,7 +58,9 @@ export default function BeybladeImageUploader({
   const [processedBlob, setProcessedBlob] = useState<Blob | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string>("");
-  const [step, setStep] = useState<"select" | "edit" | "preview">("select");
+  const [step, setStep] = useState<"select" | "edit" | "points" | "preview">(
+    "select"
+  );
 
   // Image editing options
   const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(true);
@@ -97,6 +99,22 @@ export default function BeybladeImageUploader({
     const newPoints = pointsOfContact.map((point) => ({
       ...point,
       damageMultiplier: 1.0 + equalDistribution / 100,
+    }));
+
+    setPointsOfContact(newPoints);
+    if (onPointsOfContactUpdated) {
+      onPointsOfContactUpdated(newPoints);
+    }
+  };
+
+  // Evenly distribute contact points around the beyblade
+  const evenlyDistributePoints = () => {
+    if (pointsOfContact.length === 0) return;
+
+    const angleStep = 360 / pointsOfContact.length;
+    const newPoints = pointsOfContact.map((point, index) => ({
+      ...point,
+      angle: Math.round(angleStep * index),
     }));
 
     setPointsOfContact(newPoints);
@@ -414,18 +432,22 @@ export default function BeybladeImageUploader({
       updateScaledPreview();
       updateLivePreview();
     }
+    if (step === "points" && previewUrl) {
+      updateScaledPreview();
+      updateLivePreview();
+    }
   }, [scale, previewUrl, step, pointsOfContact, beybladeData]);
 
   // Draw circle guide when editing
   useEffect(() => {
-    if (step === "edit") {
+    if (step === "edit" || step === "points") {
       drawCircleGuide();
     }
   }, [step]);
 
   // Draw points of contact when they change
   useEffect(() => {
-    if (step === "edit") {
+    if (step === "points") {
       drawPointsOfContact();
     }
   }, [pointsOfContact, selectedPointIndex, step]);
@@ -614,6 +636,208 @@ export default function BeybladeImageUploader({
                     className="absolute top-0 left-0 pointer-events-none"
                     style={{ width: "300px", height: "300px" }}
                   />
+                  {/* Display canvas (non-interactive) */}
+                  <canvas
+                    ref={pointsCanvasRef}
+                    className="relative"
+                    style={{
+                      width: "300px",
+                      height: "300px",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </div>
+                <p className="mt-2 text-sm text-gray-600">
+                  Scale and adjust your image to fit within the circle
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Live Preview */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Live Preview
+              </h3>
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border-2 border-gray-700">
+                <div className="flex justify-center mb-4">
+                  {/* Preview canvas with beyblade */}
+                  <canvas
+                    ref={livePreviewCanvasRef}
+                    width="200"
+                    height="200"
+                    className="rounded-full border-4 border-blue-500 shadow-lg"
+                  />
+                </div>
+
+                {/* Beyblade Stats */}
+                {beybladeData && (
+                  <div className="mt-4 space-y-2 text-sm text-gray-300">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Name:</span>
+                      <span className="font-semibold text-white">
+                        {beybladeData.displayName || "Unnamed"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Type:</span>
+                      <span className="font-semibold capitalize text-white">
+                        {beybladeData.type || "Balanced"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Spin:</span>
+                      <span className="font-semibold capitalize text-white">
+                        {beybladeData.spinDirection || "Right"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Scale Control */}
+          <div className="space-y-2 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+            <label className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-blue-900">Scale</span>
+              <span className="text-lg font-bold text-blue-700">{scale}%</span>
+            </label>
+            <input
+              type="range"
+              min="10"
+              max="200"
+              value={scale}
+              onChange={(e) => setScale(Number(e.target.value))}
+              className="w-full h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer slider-thumb-blue"
+            />
+            <div className="flex justify-between text-xs text-blue-600">
+              <span>10%</span>
+              <span>100%</span>
+              <span>200%</span>
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-gray-900">Image Options</h3>
+
+            {/* Background Removal */}
+            {selectedFile?.type !== "image/svg+xml" && (
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={removeBackgroundEnabled}
+                    onChange={(e) =>
+                      setRemoveBackgroundEnabled(e.target.checked)
+                    }
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Remove Background (Recommended)
+                  </span>
+                </label>
+
+                {removeBackgroundEnabled && (
+                  <div className="ml-6 space-y-2">
+                    <label className="text-xs text-gray-600">
+                      Tolerance: {backgroundTolerance}
+                    </label>
+                    <input
+                      type="range"
+                      min="5"
+                      max="50"
+                      value={backgroundTolerance}
+                      onChange={(e) =>
+                        setBackgroundTolerance(Number(e.target.value))
+                      }
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Higher values remove more background (may remove parts of
+                      the image)
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Fit Mode */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Fit Mode
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="contain"
+                    checked={fitMode === "contain"}
+                    onChange={() => setFitMode("contain")}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Contain (fit inside)
+                  </span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="cover"
+                    checked={fitMode === "cover"}
+                    onChange={() => setFitMode("cover")}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Cover (fill circle)
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleReset}
+              className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => setStep("points")}
+              className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Next: Add Contact Points
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Contact Points Editor */}
+      {step === "points" && (
+        <div className="space-y-6">
+          {/* Preview with Circle Guide and Live Preview Side by Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Image Editor */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Contact Points Editor
+              </h3>
+              <div className="relative text-center">
+                <div className="relative inline-block">
+                  {/* Image canvas (underneath) */}
+                  <canvas
+                    ref={editCanvasRef}
+                    className="absolute top-0 left-0"
+                    style={{ width: "300px", height: "300px" }}
+                  />
+                  {/* Circle guide overlay */}
+                  <canvas
+                    ref={overlayCanvasRef}
+                    className="absolute top-0 left-0 pointer-events-none"
+                    style={{ width: "300px", height: "300px" }}
+                  />
                   {/* Points of contact layer (interactive, on top) */}
                   <canvas
                     ref={pointsCanvasRef}
@@ -625,7 +849,7 @@ export default function BeybladeImageUploader({
                 <p className="mt-2 text-sm text-gray-600">
                   {isPlacingPoint
                     ? "Click on the image to place a contact point"
-                    : "Scale and adjust your image to fit within the circle"}
+                    : "Click on existing points to edit them"}
                 </p>
               </div>
             </div>
@@ -668,18 +892,6 @@ export default function BeybladeImageUploader({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Radius:</span>
-                      <span className="font-semibold text-white">
-                        {beybladeData.radius || 35}px
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Mass:</span>
-                      <span className="font-semibold text-white">
-                        {beybladeData.mass || 20}kg
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
                       <span className="text-gray-400">Contact Points:</span>
                       <span className="font-semibold text-white">
                         {pointsOfContact.length}
@@ -691,50 +903,39 @@ export default function BeybladeImageUploader({
             </div>
           </div>
 
-          {/* Scale Control */}
-          <div className="space-y-2 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
-            <label className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-blue-900">Scale</span>
-              <span className="text-lg font-bold text-blue-700">{scale}%</span>
-            </label>
-            <input
-              type="range"
-              min="10"
-              max="200"
-              value={scale}
-              onChange={(e) => setScale(Number(e.target.value))}
-              className="w-full h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer slider-thumb-blue"
-            />
-            <div className="flex justify-between text-xs text-blue-600">
-              <span>10%</span>
-              <span>100%</span>
-              <span>200%</span>
-            </div>
-          </div>
-
           {/* Points of Contact Section */}
           <div className="space-y-4 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-purple-900">
                 Contact Points (Spikes) - {pointsOfContact.length} points
               </h3>
-              <button
-                onClick={() => {
-                  if (pointsOfContact.length < 10) {
-                    setIsPlacingPoint(!isPlacingPoint);
-                  }
-                }}
-                disabled={pointsOfContact.length >= 10}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isPlacingPoint
-                    ? "bg-purple-600 text-white"
-                    : pointsOfContact.length >= 10
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-purple-200 text-purple-900 hover:bg-purple-300"
-                }`}
-              >
-                {isPlacingPoint ? "Cancel" : "+ Add Point"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={evenlyDistributePoints}
+                  disabled={pointsOfContact.length === 0}
+                  className="px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  title="Evenly distribute points around the beyblade"
+                >
+                  ⚖️ Distribute
+                </button>
+                <button
+                  onClick={() => {
+                    if (pointsOfContact.length < 10) {
+                      setIsPlacingPoint(!isPlacingPoint);
+                    }
+                  }}
+                  disabled={pointsOfContact.length >= 10}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isPlacingPoint
+                      ? "bg-purple-600 text-white"
+                      : pointsOfContact.length >= 10
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-purple-200 text-purple-900 hover:bg-purple-300"
+                  }`}
+                >
+                  {isPlacingPoint ? "Cancel" : "+ Add Point"}
+                </button>
+              </div>
             </div>
 
             {/* Damage Points Budget */}
@@ -877,9 +1078,24 @@ export default function BeybladeImageUploader({
                           <div className="space-y-1">
                             <label className="text-xs text-gray-700 font-medium flex justify-between">
                               <span>Angle</span>
-                              <span className="text-purple-600 font-bold">
-                                {point.angle}°
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="360"
+                                  value={point.angle}
+                                  onChange={(e) => {
+                                    const value = Number(e.target.value);
+                                    if (value >= 0 && value <= 360) {
+                                      updateSelectedPoint("angle", value);
+                                    }
+                                  }}
+                                  className="w-16 px-2 py-1 text-xs border border-purple-300 rounded text-center font-bold text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                <span className="text-purple-600 font-bold">
+                                  °
+                                </span>
+                              </div>
                             </label>
                             <input
                               type="range"
@@ -899,17 +1115,33 @@ export default function BeybladeImageUploader({
                           <div className="space-y-1">
                             <label className="text-xs text-gray-700 font-medium flex justify-between">
                               <span>Damage Multiplier</span>
-                              <span className="text-orange-600 font-bold">
-                                {point.damageMultiplier.toFixed(2)}x
-                                <span className="text-xs ml-1">
-                                  (
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  min="1.0"
+                                  max="2.0"
+                                  step="0.01"
+                                  value={point.damageMultiplier.toFixed(2)}
+                                  onChange={(e) => {
+                                    const value = Number(e.target.value);
+                                    if (value >= 1.0 && value <= 2.0) {
+                                      updateSelectedPoint(
+                                        "damageMultiplier",
+                                        value
+                                      );
+                                    }
+                                  }}
+                                  className="w-16 px-2 py-1 text-xs border border-orange-300 rounded text-center font-bold text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                />
+                                <span className="text-orange-600 font-bold text-xs">
+                                  x (
                                   {(
                                     (point.damageMultiplier - 1.0) *
                                     100
                                   ).toFixed(0)}{" "}
                                   pts)
                                 </span>
-                              </span>
+                              </div>
                             </label>
                             <input
                               type="range"
@@ -934,9 +1166,24 @@ export default function BeybladeImageUploader({
                           <div className="space-y-1">
                             <label className="text-xs text-gray-700 font-medium flex justify-between">
                               <span>Width (Arc)</span>
-                              <span className="text-purple-600 font-bold">
-                                {point.width}°
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  min="10"
+                                  max="90"
+                                  value={point.width}
+                                  onChange={(e) => {
+                                    const value = Number(e.target.value);
+                                    if (value >= 10 && value <= 90) {
+                                      updateSelectedPoint("width", value);
+                                    }
+                                  }}
+                                  className="w-16 px-2 py-1 text-xs border border-purple-300 rounded text-center font-bold text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                <span className="text-purple-600 font-bold">
+                                  °
+                                </span>
+                              </div>
                             </label>
                             <input
                               type="range"
@@ -961,105 +1208,26 @@ export default function BeybladeImageUploader({
             )}
           </div>
 
-          {/* Options */}
-          <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-gray-900">Image Options</h3>
-
-            {/* Background Removal */}
-            {selectedFile?.type !== "image/svg+xml" && (
-              <div className="space-y-2">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={removeBackgroundEnabled}
-                    onChange={(e) =>
-                      setRemoveBackgroundEnabled(e.target.checked)
-                    }
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Remove Background (Recommended)
-                  </span>
-                </label>
-
-                {removeBackgroundEnabled && (
-                  <div className="ml-6 space-y-2">
-                    <label className="text-xs text-gray-600">
-                      Tolerance: {backgroundTolerance}
-                    </label>
-                    <input
-                      type="range"
-                      min="5"
-                      max="50"
-                      value={backgroundTolerance}
-                      onChange={(e) =>
-                        setBackgroundTolerance(Number(e.target.value))
-                      }
-                      className="w-full"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Higher values remove more background (may remove parts of
-                      the image)
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Fit Mode */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Fit Mode
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    value="contain"
-                    checked={fitMode === "contain"}
-                    onChange={() => setFitMode("contain")}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Contain (fit inside)
-                  </span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    value="cover"
-                    checked={fitMode === "cover"}
-                    onChange={() => setFitMode("cover")}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Cover (fill circle)
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-
           {/* Actions */}
           <div className="flex gap-3">
             <button
-              onClick={handleReset}
+              onClick={() => setStep("edit")}
               className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
             >
-              Cancel
+              ← Back to Image
             </button>
             <button
               onClick={processImage}
-              disabled={isProcessing}
+              disabled={isProcessing || pointsOfContact.length === 0}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              {isProcessing ? "Processing..." : "Process Image"}
+              {isProcessing ? "Processing..." : "Next: Preview & Upload"}
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Preview & Upload */}
+      {/* Step 4: Preview & Upload */}
       {step === "preview" && (
         <div className="space-y-6">
           {/* Circular Preview */}

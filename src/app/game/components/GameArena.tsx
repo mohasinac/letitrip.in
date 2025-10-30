@@ -29,6 +29,7 @@ const GameArena: React.FC<GameArenaProps> = ({
   const imagesLoadedRef = useRef(false); // Store images loaded state
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
   const [canvasScale, setCanvasScale] = React.useState(1);
+  const [isScreenTooSmall, setIsScreenTooSmall] = React.useState(false);
   const theme = useTheme();
 
   // Update refs when props change
@@ -39,6 +40,18 @@ const GameArena: React.FC<GameArenaProps> = ({
   useEffect(() => {
     imagesLoadedRef.current = imagesLoaded;
   }, [imagesLoaded]);
+
+  // Check screen size and update isScreenTooSmall
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const minDimension = Math.min(window.innerWidth, window.innerHeight);
+      setIsScreenTooSmall(minDimension < 400);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   // Pre-render static stadium elements to offscreen canvas
   const renderStadiumToCache = useCallback(() => {
@@ -466,31 +479,70 @@ const GameArena: React.FC<GameArenaProps> = ({
   }, [render, gameState.isPlaying, gameState.countdownActive]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={800}
-      height={800}
-      className={`border-4 rounded-xl shadow-2xl transition-all duration-300 ${
-        gameState.isPlaying ? "cursor-crosshair" : "cursor-default"
-      } ${className}`}
-      style={{
-        touchAction: "none",
-        borderColor: theme.palette.primary.main,
-        boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
-        aspectRatio: "1/1", // Force square aspect ratio
-        width: "100%",
-        maxWidth: "min(100vw - 2rem, 70vh, 800px)", // Account for padding
-        height: "auto",
-        display: "block",
-        margin: "0 auto",
-        imageRendering: "crisp-edges", // Prevent image smoothing/distortion
-      }}
-      onMouseMove={handleMouseMove}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onContextMenu={(e) => e.preventDefault()}
-    />
+    <>
+      {isScreenTooSmall ? (
+        <div
+          className="flex flex-col items-center justify-center p-8 border-4 rounded-xl shadow-2xl bg-gradient-to-br from-gray-900 to-gray-800"
+          style={{
+            borderColor: theme.palette.error.main,
+            minHeight: "400px",
+            width: "100%",
+            maxWidth: "600px",
+            margin: "0 auto",
+          }}
+        >
+          <div className="text-center space-y-4">
+            <div className="text-6xl mb-4">📱</div>
+            <h2 className="text-2xl font-bold text-red-500">
+              Screen Too Small
+            </h2>
+            <p className="text-gray-300 text-lg">
+              The Beyblade Arena requires a minimum screen size of{" "}
+              <strong>400x400 pixels</strong>.
+            </p>
+            <p className="text-gray-400 text-sm">
+              Current screen: {Math.min(window.innerWidth, window.innerHeight)}
+              px
+            </p>
+            <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+              <p className="text-gray-300 text-sm">
+                Please use a device with a larger screen or rotate your device
+                to landscape mode.
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <canvas
+          ref={canvasRef}
+          width={800}
+          height={800}
+          className={`border-4 rounded-xl shadow-2xl transition-all duration-300 ${
+            gameState.isPlaying ? "cursor-crosshair" : "cursor-default"
+          } ${className}`}
+          style={{
+            touchAction: "none",
+            borderColor: theme.palette.primary.main,
+            boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
+            aspectRatio: "1/1", // Force square aspect ratio
+            width: "100vmin", // Stadium is 100cm = 100vmin
+            minWidth: "400px", // Minimum size (4px per cm)
+            height: "100vmin",
+            minHeight: "400px",
+            maxWidth: "800px", // Maximum size (8px per cm)
+            maxHeight: "800px",
+            display: "block",
+            margin: "0 auto",
+            imageRendering: "crisp-edges", // Prevent image smoothing/distortion
+          }}
+          onMouseMove={handleMouseMove}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onContextMenu={(e) => e.preventDefault()}
+        />
+      )}
+    </>
   );
 };
 
@@ -1011,7 +1063,7 @@ const drawBeyblade = (
   if (imagesLoaded && beybladeImage) {
     const opacity = beyblade.isOutOfBounds ? 0.4 : 1.0;
     ctx.globalAlpha = opacity;
-    // Use 2x the radius for visual size, ensuring it's perfectly square
+    // Beyblade radius represents cm, display at 1:1 scale (1cm = 1vmin)
     const size = beyblade.radius * 2;
     // Draw as perfect square to prevent distortion
     ctx.drawImage(beybladeImage, -size / 2, -size / 2, size, size);

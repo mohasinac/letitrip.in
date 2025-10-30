@@ -29,9 +29,11 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
   const [zoom, setZoom] = useState(100);
 
   // Auto-pause spinning when in click mode (placing contact points)
+  // Also reset rotation to 0 for accurate spike placement
   useEffect(() => {
     if (clickMode) {
       setIsSpinning(false);
+      rotationRef.current = 0; // Reset rotation to 0 for accurate clicks
     }
   }, [clickMode]);
 

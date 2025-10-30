@@ -7,7 +7,10 @@
 
 import React from "react";
 import { PortalConfig } from "@/types/arenaConfig";
-import { generateWhirlpoolSpiral, generateParticles } from "@/utils/pathGeneration";
+import {
+  generateWhirlpoolSpiral,
+  generateParticles,
+} from "@/utils/pathGeneration";
 import "@/styles/arena-animations.css";
 
 interface PortalRendererProps {

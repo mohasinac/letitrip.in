@@ -7,7 +7,10 @@
 
 import React from "react";
 import { RotationBodyConfig } from "@/types/arenaConfig";
-import { generateShapePath, generateRotationArrows } from "@/utils/pathGeneration";
+import {
+  generateShapePath,
+  generateRotationArrows,
+} from "@/utils/pathGeneration";
 import "@/styles/arena-animations.css";
 
 interface RotationBodyRendererProps {
@@ -57,7 +60,10 @@ export default function RotationBodyRenderer({
   const radius = rotationBody.radius
     ? rotationBody.radius * scale
     : rotationBody.width
-    ? Math.min((rotationBody.width || 10) * scale, (rotationBody.height || 10) * scale) / 2
+    ? Math.min(
+        (rotationBody.width || 10) * scale,
+        (rotationBody.height || 10) * scale
+      ) / 2
     : 5 * scale;
 
   const arrows = generateRotationArrows(
@@ -68,10 +74,7 @@ export default function RotationBodyRenderer({
   );
 
   return (
-    <g
-      className="rotation-body"
-      data-direction={rotationBody.direction}
-    >
+    <g className="rotation-body" data-direction={rotationBody.direction}>
       {/* Main rotation area */}
       <path d={shapePath} fill={color} opacity={opacity} />
 
@@ -104,7 +107,9 @@ export default function RotationBodyRenderer({
             attributeName="transform"
             type="rotate"
             from={`0 ${x} ${y}`}
-            to={`${rotationBody.direction === "clockwise" ? 360 : -360} ${x} ${y}`}
+            to={`${
+              rotationBody.direction === "clockwise" ? 360 : -360
+            } ${x} ${y}`}
             dur="4s"
             repeatCount="indefinite"
           />
