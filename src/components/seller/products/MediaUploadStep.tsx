@@ -612,11 +612,7 @@ export default function MediaUploadStep({
           variant="outlined"
           component="label"
           startIcon={
-            uploadingVideo ? (
-              <CircularProgress size={20} />
-            ) : (
-              <VideoLibrary />
-            )
+            uploadingVideo ? <CircularProgress size={20} /> : <VideoLibrary />
           }
           disabled={data.media.videos.length >= 2 || uploadingVideo}
         >

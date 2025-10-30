@@ -15,6 +15,7 @@ import {
   Alert,
 } from "@mui/material";
 import { ArrowBack, ArrowForward, Check } from "@mui/icons-material";
+import { useAuth } from "@/contexts/AuthContext";
 import { apiGet, apiPost } from "@/lib/api/seller";
 import ProductDetailsStep from "@/components/seller/products/ProductDetailsStep";
 import PricingInventoryStep from "@/components/seller/products/PricingInventoryStep";
@@ -90,6 +91,7 @@ interface ProductFormData {
 
 export default function NewProductPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -140,20 +142,24 @@ export default function NewProductPage() {
     status: "draft",
   });
 
-  // Fetch leaf categories and addresses on mount
+  // Fetch leaf categories and addresses on mount (after auth is ready)
   useEffect(() => {
-    fetchLeafCategories();
-    fetchAddresses();
-  }, []);
+    // Only fetch data when user is authenticated and not loading
+    if (user && !authLoading) {
+      fetchLeafCategories();
+      fetchAddresses();
+    }
+  }, [user, authLoading]);
 
   const fetchLeafCategories = async () => {
     try {
-      const response = await apiGet("/api/seller/products/categories/leaf");
+      const response = await apiGet<any>("/api/seller/products/categories/leaf");
       if (response.success) {
         setCategories(response.data);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setError("Failed to load categories. Please refresh the page.");
     }
   };
 
@@ -252,7 +258,7 @@ export default function NewProductPage() {
     setError(null);
 
     try {
-      const response = await apiPost("/api/seller/products", formData);
+      const response = await apiPost<any>("/api/seller/products", formData);
 
       if (response.success) {
         router.push("/seller/products");
