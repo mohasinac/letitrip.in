@@ -63,7 +63,7 @@ function CouponsListContent() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<SellerCoupon | null>(
-    null
+    null,
   );
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -88,7 +88,7 @@ function CouponsListContent() {
       }
 
       const response = await apiGet<{ coupons: SellerCoupon[]; total: number }>(
-        `/api/seller/coupons?${params.toString()}`
+        `/api/seller/coupons?${params.toString()}`,
       );
       setCoupons(response.coupons);
     } catch (error: any) {
@@ -109,7 +109,7 @@ function CouponsListContent() {
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    coupon: SellerCoupon
+    coupon: SellerCoupon,
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedCoupon(coupon);
@@ -132,8 +132,8 @@ function CouponsListContent() {
                 ...c,
                 status: c.status === "active" ? "inactive" : ("active" as any),
               }
-            : c
-        )
+            : c,
+        ),
       );
 
       setSnackbar({
@@ -397,8 +397,8 @@ function CouponsListContent() {
                         {coupon.type === "percentage"
                           ? `${coupon.value}%`
                           : coupon.type === "fixed"
-                          ? `₹${coupon.value}`
-                          : "Free Shipping"}
+                            ? `₹${coupon.value}`
+                            : "Free Shipping"}
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">

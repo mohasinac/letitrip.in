@@ -73,7 +73,7 @@ export default function AddressManager({
     try {
       setLoading(true);
       const updatedAddresses = addresses.filter(
-        (addr) => addr.id !== addressId
+        (addr) => addr.id !== addressId,
       );
       await onUpdate(updatedAddresses);
       toast.success("Address deleted successfully");
@@ -136,7 +136,7 @@ export default function AddressManager({
       if (editingId) {
         // Update existing address
         updatedAddresses = addresses.map((addr) =>
-          addr.id === editingId ? { ...(formData as Address) } : addr
+          addr.id === editingId ? { ...(formData as Address) } : addr,
         );
       } else {
         // Add new address
@@ -171,7 +171,7 @@ export default function AddressManager({
       toast.success(
         editingId
           ? "Address updated successfully"
-          : "Address added successfully"
+          : "Address added successfully",
       );
       resetForm();
     } catch (error: any) {

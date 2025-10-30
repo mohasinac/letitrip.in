@@ -3,10 +3,10 @@
  * Standardized response formatting for all API routes
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { ZodError } from 'zod';
-import { getCorsHeaders } from './cors';
-import { HTTP_STATUS, API_ERROR_MESSAGES } from './constants';
+import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
+import { getCorsHeaders } from "./cors";
+import { HTTP_STATUS, API_ERROR_MESSAGES } from "./constants";
 
 /**
  * Standard API Response Interface
@@ -27,7 +27,7 @@ export function successResponse<T>(
   data: T,
   message?: string,
   status: number = HTTP_STATUS.OK,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse<T>> {
   const response: ApiResponse<T> = {
     success: true,
@@ -35,9 +35,11 @@ export function successResponse<T>(
     message,
     timestamp: new Date().toISOString(),
   };
-  
-  const headers = request ? getCorsHeaders(request.headers.get('origin') || undefined) : {};
-  
+
+  const headers = request
+    ? getCorsHeaders(request.headers.get("origin") || undefined)
+    : {};
+
   return NextResponse.json(response, { status, headers });
 }
 
@@ -48,7 +50,7 @@ export function errorResponse(
   error: string,
   status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
   errors?: Array<{ field?: string; message: string }>,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
   const response: ApiResponse = {
     success: false,
@@ -56,9 +58,11 @@ export function errorResponse(
     errors,
     timestamp: new Date().toISOString(),
   };
-  
-  const headers = request ? getCorsHeaders(request.headers.get('origin') || undefined) : {};
-  
+
+  const headers = request
+    ? getCorsHeaders(request.headers.get("origin") || undefined)
+    : {};
+
   return NextResponse.json(response, { status, headers });
 }
 
@@ -67,18 +71,18 @@ export function errorResponse(
  */
 export function validationErrorResponse(
   zodError: ZodError,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
-  const errors = zodError.errors.map(err => ({
-    field: err.path.join('.'),
+  const errors = zodError.errors.map((err) => ({
+    field: err.path.join("."),
     message: err.message,
   }));
-  
+
   return errorResponse(
     API_ERROR_MESSAGES.VALIDATION_ERROR,
     HTTP_STATUS.BAD_REQUEST,
     errors,
-    request
+    request,
   );
 }
 
@@ -87,7 +91,7 @@ export function validationErrorResponse(
  */
 export function notFoundResponse(
   message: string = API_ERROR_MESSAGES.NOT_FOUND,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
   return errorResponse(message, HTTP_STATUS.NOT_FOUND, undefined, request);
 }
@@ -97,7 +101,7 @@ export function notFoundResponse(
  */
 export function unauthorizedResponse(
   message: string = API_ERROR_MESSAGES.UNAUTHORIZED,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
   return errorResponse(message, HTTP_STATUS.UNAUTHORIZED, undefined, request);
 }
@@ -107,7 +111,7 @@ export function unauthorizedResponse(
  */
 export function forbiddenResponse(
   message: string = API_ERROR_MESSAGES.FORBIDDEN,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
   return errorResponse(message, HTTP_STATUS.FORBIDDEN, undefined, request);
 }
@@ -117,41 +121,48 @@ export function forbiddenResponse(
  */
 export function internalErrorResponse(
   error: unknown,
-  request?: NextRequest
+  request?: NextRequest,
 ): NextResponse<ApiResponse> {
-  console.error('Internal Server Error:', error);
-  
-  const message = error instanceof Error 
-    ? error.message 
-    : API_ERROR_MESSAGES.INTERNAL_ERROR;
-  
-  return errorResponse(message, HTTP_STATUS.INTERNAL_SERVER_ERROR, undefined, request);
+  console.error("Internal Server Error:", error);
+
+  const message =
+    error instanceof Error ? error.message : API_ERROR_MESSAGES.INTERNAL_ERROR;
+
+  return errorResponse(
+    message,
+    HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    undefined,
+    request,
+  );
 }
 
 /**
  * Handle API Error
  * Centralized error handling for all API routes
  */
-export function handleApiError(error: unknown, request?: NextRequest): NextResponse<ApiResponse> {
+export function handleApiError(
+  error: unknown,
+  request?: NextRequest,
+): NextResponse<ApiResponse> {
   // Zod validation errors
   if (error instanceof ZodError) {
     return validationErrorResponse(error, request);
   }
-  
+
   // Custom API errors
   if (error instanceof Error) {
     // Check for specific error types
-    if (error.message.includes('not found')) {
+    if (error.message.includes("not found")) {
       return notFoundResponse(error.message, request);
     }
-    if (error.message.includes('unauthorized')) {
+    if (error.message.includes("unauthorized")) {
       return unauthorizedResponse(error.message, request);
     }
-    if (error.message.includes('forbidden')) {
+    if (error.message.includes("forbidden")) {
       return forbiddenResponse(error.message, request);
     }
   }
-  
+
   // Default to internal server error
   return internalErrorResponse(error, request);
 }

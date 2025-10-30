@@ -13,7 +13,7 @@ interface BreadcrumbContextType {
 }
 
 const BreadcrumbContext = createContext<BreadcrumbContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const BreadcrumbProvider: React.FC<{ children: React.ReactNode }> = ({

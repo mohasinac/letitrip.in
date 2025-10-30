@@ -225,7 +225,6 @@ Test these scenarios:
 ## Files Modified
 
 1. **WhatsAppImageEditor.tsx**
-
    - Changed zoom min: 0.5 → 0.1
    - Changed zoom step: 0.1 → 0.05
    - Added `minZoom`, `maxZoom`, `zoomSpeed` props

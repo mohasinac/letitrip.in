@@ -1,4 +1,4 @@
-import { createApiHandler, successResponse } from '@/lib/api';
+import { createApiHandler, successResponse } from "@/lib/api";
 import { getAdminDb } from "@/lib/database/admin";
 
 /**
@@ -14,7 +14,8 @@ export const GET = createApiHandler(async (request) => {
   const limit = parseInt(searchParams.get("limit") || "1000");
 
   // Fetch all categories from Firestore
-  const snapshot = await db.collection("categories")
+  const snapshot = await db
+    .collection("categories")
     .orderBy("sortOrder", "asc")
     .limit(limit)
     .get();
@@ -27,9 +28,10 @@ export const GET = createApiHandler(async (request) => {
   // Filter by search if provided
   if (search) {
     const searchLower = search.toLowerCase();
-    allCategories = allCategories.filter((cat: any) =>
-      cat.name?.toLowerCase().includes(searchLower) ||
-      cat.slug?.toLowerCase().includes(searchLower)
+    allCategories = allCategories.filter(
+      (cat: any) =>
+        cat.name?.toLowerCase().includes(searchLower) ||
+        cat.slug?.toLowerCase().includes(searchLower),
     );
   }
 
@@ -47,7 +49,9 @@ export const GET = createApiHandler(async (request) => {
 
 // Helper function to build tree structure from flat category array
 function buildCategoryTree(categories: any[]): any[] {
-  const categoryMap = new Map(categories.map(cat => [cat.id, { ...cat, children: [] }]));
+  const categoryMap = new Map(
+    categories.map((cat) => [cat.id, { ...cat, children: [] }]),
+  );
   const roots: any[] = [];
 
   for (const category of categories) {

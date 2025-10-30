@@ -4,7 +4,7 @@
 
 export async function fetchWithAuth(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<Response> {
   const headers = {
     ...options?.headers,
@@ -13,7 +13,7 @@ export async function fetchWithAuth(
   return fetch(url, {
     ...options,
     headers,
-    credentials: 'include', // Include cookies for auth
+    credentials: "include", // Include cookies for auth
   });
 }
 

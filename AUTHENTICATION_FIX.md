@@ -58,7 +58,6 @@ const response = await uploadWithAuth("/api/storage/upload", formData);
 #### **Seller Coupon Pages**
 
 - **Coupons List** (`src/app/seller/coupons/page.tsx`)
-
   - Uses `apiGet()` for fetching coupons
   - Uses `apiPost()` for toggling status
   - Uses `apiDelete()` for deleting coupons

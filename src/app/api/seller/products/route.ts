@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
         (product: any) =>
           product.name?.toLowerCase().includes(searchLower) ||
           product.sku?.toLowerCase().includes(searchLower) ||
-          product.seo?.slug?.toLowerCase().includes(searchLower)
+          product.seo?.slug?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     console.error("Error listing products:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to list products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -128,12 +128,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    const requiredFields = ["name", "categoryId", "pricing", "inventory", "seo"];
+    const requiredFields = [
+      "name",
+      "categoryId",
+      "pricing",
+      "inventory",
+      "seo",
+    ];
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json(
           { success: false, error: `Missing required field: ${field}` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -150,7 +156,7 @@ export async function POST(request: NextRequest) {
       if (!existingProduct.empty) {
         return NextResponse.json(
           { success: false, error: "SKU already exists for your products" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -165,8 +171,11 @@ export async function POST(request: NextRequest) {
 
       if (!existingSlug.empty) {
         return NextResponse.json(
-          { success: false, error: "Slug already exists. Please use a different one." },
-          { status: 400 }
+          {
+            success: false,
+            error: "Slug already exists. Please use a different one.",
+          },
+          { status: 400 },
         );
       }
     }
@@ -182,7 +191,7 @@ export async function POST(request: NextRequest) {
       categoryName: body.categoryName || "",
       tags: body.tags || [],
       sku: body.sku || "",
-      
+
       pricing: {
         price: parseFloat(body.pricing.price),
         compareAtPrice: body.pricing.compareAtPrice
@@ -206,7 +215,7 @@ export async function POST(request: NextRequest) {
 
       condition: body.condition || "new",
       isReturnable: body.isReturnable !== false,
-      returnPeriodDays: body.isReturnable ? (body.returnPeriodDays || 7) : 0,
+      returnPeriodDays: body.isReturnable ? body.returnPeriodDays || 7 : 0,
       hasFreeShipping: body.hasFreeShipping || false,
       shippingMethod: body.shippingMethod || "seller",
       features: body.features || [],
@@ -220,13 +229,15 @@ export async function POST(request: NextRequest) {
         slug: body.seo.slug,
       },
 
-      startDate: body.startDate ? Timestamp.fromDate(new Date(body.startDate)) : now,
+      startDate: body.startDate
+        ? Timestamp.fromDate(new Date(body.startDate))
+        : now,
       expirationDate: body.expirationDate
         ? Timestamp.fromDate(new Date(body.expirationDate))
         : null,
 
       status: body.status || "draft",
-      
+
       stats: {
         views: 0,
         sales: 0,
@@ -256,13 +267,13 @@ export async function POST(request: NextRequest) {
         data: createdProduct,
         message: "Product created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating product:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to create product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

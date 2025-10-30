@@ -306,7 +306,7 @@ A comprehensive product management system with professional-grade features for c
 
 ```typescript
 const generateVideoThumbnail = (
-  videoFile: File
+  videoFile: File,
 ): Promise<{ blob: Blob; url: string }> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -328,7 +328,7 @@ const generateVideoThumbnail = (
           resolve({ blob, url });
         },
         "image/jpeg",
-        0.85
+        0.85,
       );
     };
 
@@ -499,14 +499,12 @@ sellers/{sellerId}/products/buy-{slug}/
 ### User Experience Excellence
 
 1. ✅ **Intuitive Multi-Step Form**
-
    - Clear progress indicator
    - Step validation
    - Live preview
    - Error messages
 
 2. ✅ **Professional Media Handling**
-
    - Drag-and-drop reordering
    - WhatsApp-optimized images
    - Automatic video thumbnails
@@ -521,14 +519,12 @@ sellers/{sellerId}/products/buy-{slug}/
 ### Technical Excellence
 
 1. ✅ **Modern Stack**
-
    - Next.js 13+ App Router
    - TypeScript for type safety
    - Material-UI for consistent design
    - Firebase Admin SDK
 
 2. ✅ **Advanced Features**
-
    - Canvas-based image processing
    - HTML5 video frame extraction
    - Real-time form validation
@@ -543,14 +539,12 @@ sellers/{sellerId}/products/buy-{slug}/
 ### Business Value
 
 1. ✅ **SEO-Centered Design**
-
    - "buy-" prefix for all products
    - Auto-generated meta tags
    - Search preview
    - Slug validation
 
 2. ✅ **Shipping Ready**
-
    - Weight and dimensions
    - Multiple pickup addresses
    - Shiprocket integration ready
@@ -591,14 +585,12 @@ With Phase 3 complete, we're ready to start Phase 4!
 **Features to Implement:**
 
 1. **Orders List Page**
-
    - Tabbed navigation (All, Pending, Processing, Shipped, Delivered, Cancelled)
    - Stats dashboard
    - Search and filters
    - Quick actions (Approve, Reject, View)
 
 2. **Order Detail Page**
-
    - Order summary
    - Customer info
    - Items list with transaction snapshot
@@ -607,7 +599,6 @@ With Phase 3 complete, we're ready to start Phase 4!
    - Actions (Approve, Reject, Cancel, Invoice)
 
 3. **Orders API**
-
    - GET list orders
    - GET order details
    - POST approve order
@@ -616,7 +607,6 @@ With Phase 3 complete, we're ready to start Phase 4!
    - GET generate invoice PDF
 
 4. **Auto-Approval System**
-
    - 3-day timer for pending orders
    - Automated status updates
    - Customer notifications

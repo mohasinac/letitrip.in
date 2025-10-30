@@ -5,7 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 // GET /api/seller/coupons/[id] - Get a specific coupon
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -19,7 +19,10 @@ export async function GET(
     const decodedToken = await adminAuth.verifyIdToken(token);
     const sellerId = decodedToken.uid;
 
-    const couponDoc = await adminDb.collection("seller_coupons").doc(params.id).get();
+    const couponDoc = await adminDb
+      .collection("seller_coupons")
+      .doc(params.id)
+      .get();
 
     if (!couponDoc.exists) {
       return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
@@ -44,7 +47,7 @@ export async function GET(
     console.error("Error fetching coupon:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -52,7 +55,7 @@ export async function GET(
 // PUT /api/seller/coupons/[id] - Update a coupon
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -66,7 +69,10 @@ export async function PUT(
     const decodedToken = await adminAuth.verifyIdToken(token);
     const sellerId = decodedToken.uid;
 
-    const couponDoc = await adminDb.collection("seller_coupons").doc(params.id).get();
+    const couponDoc = await adminDb
+      .collection("seller_coupons")
+      .doc(params.id)
+      .get();
 
     if (!couponDoc.exists) {
       return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
@@ -91,7 +97,7 @@ export async function PUT(
       if (!existingCoupon.empty && existingCoupon.docs[0].id !== params.id) {
         return NextResponse.json(
           { error: "Coupon code already exists" },
-          { status: 409 }
+          { status: 409 },
         );
       }
     }
@@ -114,14 +120,17 @@ export async function PUT(
       updateData.endDate = null;
     }
 
-    await adminDb.collection("seller_coupons").doc(params.id).update(updateData);
+    await adminDb
+      .collection("seller_coupons")
+      .doc(params.id)
+      .update(updateData);
 
     return NextResponse.json({ message: "Coupon updated successfully" });
   } catch (error: any) {
     console.error("Error updating coupon:", error);
     return NextResponse.json(
       { error: error.message || "Failed to update coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -129,7 +138,7 @@ export async function PUT(
 // DELETE /api/seller/coupons/[id] - Delete a coupon
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -143,7 +152,10 @@ export async function DELETE(
     const decodedToken = await adminAuth.verifyIdToken(token);
     const sellerId = decodedToken.uid;
 
-    const couponDoc = await adminDb.collection("seller_coupons").doc(params.id).get();
+    const couponDoc = await adminDb
+      .collection("seller_coupons")
+      .doc(params.id)
+      .get();
 
     if (!couponDoc.exists) {
       return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
@@ -161,7 +173,7 @@ export async function DELETE(
     console.error("Error deleting coupon:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -2,8 +2,8 @@
  * API Route: Set arena as default
  */
 
-import { createApiHandler, successResponse } from '@/lib/api';
-import { arenaService } from '@/lib/database/arenaService';
+import { createApiHandler, successResponse } from "@/lib/api";
+import { arenaService } from "@/lib/database/arenaService";
 
 export const POST = createApiHandler(async (request, { params }) => {
   const { id } = await params;

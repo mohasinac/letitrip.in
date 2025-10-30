@@ -184,7 +184,7 @@ const fetchAddresses = async () => {
 
     // Auto-select default address
     const defaultAddr = response.data.addresses?.find(
-      (addr: any) => addr.isDefault
+      (addr: any) => addr.isDefault,
     );
     if (defaultAddr && !formData.pickupAddressId) {
       updateFormData({ pickupAddressId: defaultAddr.id });
@@ -311,28 +311,24 @@ match /sellers/{sellerId}/products/{productSlug}/{fileName} {
 ### Step-by-Step Workflow
 
 1. **User navigates to `/seller/products/new`**
-
    - Form loads
    - Fetches leaf categories
    - Fetches shop addresses
    - Auto-selects default address
 
 2. **Step 1: Product Details**
-
    - Enters name, description
    - Selects category
    - Auto-generates slug with "buy-" prefix
    - Adds tags
 
 3. **Step 2: Pricing & Inventory**
-
    - Sets price, compare-at price, cost
    - Generates or enters SKU
    - Sets quantity and threshold
    - Selects pickup address
 
 4. **Step 3: Media Upload** ✅ NOW FUNCTIONAL
-
    - Clicks "Upload Images"
    - Selects 1-5 images
    - **API uploads to Firebase Storage**
@@ -341,14 +337,12 @@ match /sellers/{sellerId}/products/{productSlug}/{fileName} {
    - Enters alt text for each image
 
 5. **Step 4: Condition & Features**
-
    - Selects condition
    - Sets returnable options
    - Configures shipping
    - Adds features and specifications
 
 6. **Step 5: SEO & Publishing**
-
    - Reviews auto-generated SEO
    - Edits if needed
    - Sets dates and status
@@ -402,13 +396,11 @@ match /sellers/{sellerId}/products/{productSlug}/{fileName} {
 ### Immediate (Optional Enhancements)
 
 1. **WhatsApp-Style Image Editor**
-
    - 800x800 frame overlay
    - Crop/resize functionality
    - Save edited version alongside original
 
 2. **Video Upload**
-
    - Accept video files
    - Generate thumbnails
    - Upload to same Firebase path
@@ -486,22 +478,18 @@ Before deploying:
 ## 🐛 Known Limitations
 
 1. **Video Upload**
-
    - Not yet implemented
    - UI shows "Coming Soon"
 
 2. **Image Editor**
-
    - No WhatsApp-style 800x800 editor
    - Uses original images as-is
 
 3. **Reordering**
-
    - Cannot drag-and-drop to reorder
    - First uploaded = main image
 
 4. **Weight & Dimensions**
-
    - Fields not added to Step 4 yet
 
 5. **Product Edit**

@@ -71,7 +71,7 @@ export const ADMIN_ROUTES = {
   SETTINGS: "/admin/settings",
 } as const;
 
-// Development Routes (Development only) - REMOVED  
+// Development Routes (Development only) - REMOVED
 // All dev routes have been removed as requested
 
 // Legacy Routes (for backward compatibility) - REMOVED

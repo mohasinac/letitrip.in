@@ -166,7 +166,7 @@ const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         order: data.media.images.length + index,
         isNew: true, // Flag for upload
       };
-    })
+    }),
   );
 
   onChange({
@@ -190,7 +190,7 @@ const uploadPendingImages = async () => {
 
     const response = await uploadWithAuth(
       "/api/seller/products/media",
-      formData
+      formData,
     );
 
     if (response.success) {

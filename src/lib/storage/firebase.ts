@@ -4,8 +4,8 @@
  * Server-side operations using Firebase Admin SDK
  */
 
-import { getAdminStorage, getAdminDb } from '@/lib/database/admin';
-import { STORAGE_CONSTANTS, DATABASE_CONSTANTS } from '@/constants/app';
+import { getAdminStorage, getAdminDb } from "@/lib/database/admin";
+import { STORAGE_CONSTANTS, DATABASE_CONSTANTS } from "@/constants/app";
 
 interface FileMetadata {
   url: string;
@@ -31,7 +31,7 @@ interface StorageFile {
 export class StorageService {
   private readonly storage = getAdminStorage();
   private readonly db = getAdminDb();
-  private readonly filesCollection = 'storage_files';
+  private readonly filesCollection = "storage_files";
 
   /**
    * Upload file to Firebase Storage
@@ -42,7 +42,7 @@ export class StorageService {
     folder: string,
     userId: string,
     contentType: string,
-    isPublic: boolean = true
+    isPublic: boolean = true,
   ): Promise<FileMetadata> {
     try {
       // Validate file
@@ -90,12 +90,16 @@ export class StorageService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      await this.db.collection(this.filesCollection).add(storageFile as StorageFile);
+      await this.db
+        .collection(this.filesCollection)
+        .add(storageFile as StorageFile);
 
       return metadata;
     } catch (error) {
-      console.error('Storage upload error:', error);
-      throw new Error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Storage upload error:", error);
+      throw new Error(
+        `Failed to upload file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -110,18 +114,19 @@ export class StorageService {
       // Check if file exists
       const [exists] = await file.exists();
       if (!exists) {
-        throw new Error('File not found');
+        throw new Error("File not found");
       }
 
       // Delete from storage
       await file.delete();
 
       // Delete metadata from Firestore
-      if (userId) {      const snapshot = await this.db
-        .collection(this.filesCollection)
-        .where('filepath', '==', filepath)
-        .where('userId', '==', userId)
-        .get();
+      if (userId) {
+        const snapshot = await this.db
+          .collection(this.filesCollection)
+          .where("filepath", "==", filepath)
+          .where("userId", "==", userId)
+          .get();
 
         const batch = this.db.batch();
         snapshot.docs.forEach((doc: any) => {
@@ -133,8 +138,10 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.error('Storage delete error:', error);
-      throw new Error(`Failed to delete file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Storage delete error:", error);
+      throw new Error(
+        `Failed to delete file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -154,15 +161,18 @@ export class StorageService {
       return {
         url: `https://storage.googleapis.com/${bucket.name}/${filepath}`,
         filepath,
-        filename: filepath.split('/').pop() || '',
-        size: typeof metadata.size === 'number' ? metadata.size : 0,
-        type: metadata.contentType || 'application/octet-stream',
+        filename: filepath.split("/").pop() || "",
+        size: typeof metadata.size === "number" ? metadata.size : 0,
+        type: metadata.contentType || "application/octet-stream",
         bucket: bucket.name,
         createdAt: metadata.timeCreated || new Date().toISOString(),
-        uploadedBy: typeof metadata.metadata?.uploadedBy === 'string' ? metadata.metadata.uploadedBy : 'unknown',
+        uploadedBy:
+          typeof metadata.metadata?.uploadedBy === "string"
+            ? metadata.metadata.uploadedBy
+            : "unknown",
       };
     } catch (error) {
-      console.error('Error getting file metadata:', error);
+      console.error("Error getting file metadata:", error);
       return null;
     }
   }
@@ -170,7 +180,10 @@ export class StorageService {
   /**
    * List files in a folder
    */
-  async listFiles(folder: string, maxResults: number = 100): Promise<FileMetadata[]> {
+  async listFiles(
+    folder: string,
+    maxResults: number = 100,
+  ): Promise<FileMetadata[]> {
     try {
       const bucket = this.storage.bucket();
       const [files] = await bucket.getFiles({
@@ -185,18 +198,21 @@ export class StorageService {
         fileMetadata.push({
           url: `https://storage.googleapis.com/${bucket.name}/${file.name}`,
           filepath: file.name,
-          filename: file.name.split('/').pop() || '',
-          size: typeof metadata.size === 'number' ? metadata.size : 0,
-          type: metadata.contentType || 'application/octet-stream',
+          filename: file.name.split("/").pop() || "",
+          size: typeof metadata.size === "number" ? metadata.size : 0,
+          type: metadata.contentType || "application/octet-stream",
           bucket: bucket.name,
           createdAt: metadata.timeCreated || new Date().toISOString(),
-          uploadedBy: typeof metadata.metadata?.uploadedBy === 'string' ? metadata.metadata.uploadedBy : 'unknown',
+          uploadedBy:
+            typeof metadata.metadata?.uploadedBy === "string"
+              ? metadata.metadata.uploadedBy
+              : "unknown",
         });
       }
 
       return fileMetadata;
     } catch (error) {
-      console.error('Error listing files:', error);
+      console.error("Error listing files:", error);
       return [];
     }
   }
@@ -204,26 +220,31 @@ export class StorageService {
   /**
    * Get file download URL
    */
-  async getDownloadUrl(filepath: string, expiresInHours: number = 24): Promise<string> {
+  async getDownloadUrl(
+    filepath: string,
+    expiresInHours: number = 24,
+  ): Promise<string> {
     try {
       const bucket = this.storage.bucket();
       const file = bucket.file(filepath);
 
       const [exists] = await file.exists();
       if (!exists) {
-        throw new Error('File not found');
+        throw new Error("File not found");
       }
 
       const [url] = await file.getSignedUrl({
-        version: 'v4',
-        action: 'read',
+        version: "v4",
+        action: "read",
         expires: Date.now() + expiresInHours * 60 * 60 * 1000,
       });
 
       return url;
     } catch (error) {
-      console.error('Error getting download URL:', error);
-      throw new Error(`Failed to generate download URL: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Error getting download URL:", error);
+      throw new Error(
+        `Failed to generate download URL: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -232,20 +253,25 @@ export class StorageService {
    */
   async getUserFiles(userId: string, folder?: string): Promise<StorageFile[]> {
     try {
-      let query = this.db.collection(this.filesCollection).where('userId', '==', userId);
+      let query = this.db
+        .collection(this.filesCollection)
+        .where("userId", "==", userId);
 
       if (folder) {
-        query = query.where('folder', '==', folder);
+        query = query.where("folder", "==", folder);
       }
 
-      const snapshot = await query.orderBy('createdAt', 'desc').get();
+      const snapshot = await query.orderBy("createdAt", "desc").get();
 
-      return snapshot.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data(),
-      } as StorageFile));
+      return snapshot.docs.map(
+        (doc: any) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          }) as StorageFile,
+      );
     } catch (error) {
-      console.error('Error getting user files:', error);
+      console.error("Error getting user files:", error);
       return [];
     }
   }
@@ -253,7 +279,10 @@ export class StorageService {
   /**
    * Delete user's files in a folder
    */
-  async deleteUserFilesInFolder(userId: string, folder: string): Promise<number> {
+  async deleteUserFilesInFolder(
+    userId: string,
+    folder: string,
+  ): Promise<number> {
     try {
       const files = await this.getUserFiles(userId, folder);
       let deletedCount = 0;
@@ -263,13 +292,16 @@ export class StorageService {
           await this.deleteFile(file.metadata.filepath, userId);
           deletedCount++;
         } catch (error) {
-          console.error(`Failed to delete file ${file.metadata.filepath}:`, error);
+          console.error(
+            `Failed to delete file ${file.metadata.filepath}:`,
+            error,
+          );
         }
       }
 
       return deletedCount;
     } catch (error) {
-      console.error('Error deleting user files:', error);
+      console.error("Error deleting user files:", error);
       return 0;
     }
   }
@@ -277,29 +309,35 @@ export class StorageService {
   /**
    * Validate file before upload
    */
-  private validateFile(file: Buffer, filename: string, contentType: string): void {
+  private validateFile(
+    file: Buffer,
+    filename: string,
+    contentType: string,
+  ): void {
     // Check file size
-    const maxSize = contentType.startsWith('video/')
+    const maxSize = contentType.startsWith("video/")
       ? STORAGE_CONSTANTS.MAX_VIDEO_SIZE_MB * 1024 * 1024
       : STORAGE_CONSTANTS.MAX_FILE_SIZE_MB * 1024 * 1024;
 
     if (file.length > maxSize) {
-      throw new Error(
-        `File size exceeds ${maxSize / (1024 * 1024)}MB limit`
-      );
+      throw new Error(`File size exceeds ${maxSize / (1024 * 1024)}MB limit`);
     }
 
     // Check file type
-    const isImage = (STORAGE_CONSTANTS.ALLOWED_IMAGE_TYPES as readonly string[]).includes(contentType);
-    const isVideo = (STORAGE_CONSTANTS.ALLOWED_VIDEO_TYPES as readonly string[]).includes(contentType);
+    const isImage = (
+      STORAGE_CONSTANTS.ALLOWED_IMAGE_TYPES as readonly string[]
+    ).includes(contentType);
+    const isVideo = (
+      STORAGE_CONSTANTS.ALLOWED_VIDEO_TYPES as readonly string[]
+    ).includes(contentType);
 
     if (!isImage && !isVideo) {
-      throw new Error('Invalid file type. Only images and videos are allowed.');
+      throw new Error("Invalid file type. Only images and videos are allowed.");
     }
 
     // Check filename
     if (!filename || filename.trim().length === 0) {
-      throw new Error('Invalid filename');
+      throw new Error("Invalid filename");
     }
   }
 }

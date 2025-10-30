@@ -1,8 +1,8 @@
 "use server";
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/database/admin';
-import { DATABASE_CONSTANTS } from '@/constants/app';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminDb } from "@/lib/database/admin";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
 
@@ -13,7 +13,7 @@ const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
 export async function GET(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
       return NextResponse.json({
@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const doc = await db.collection(SETTINGS_COLLECTION)
+    const doc = await db
+      .collection(SETTINGS_COLLECTION)
       .doc(`heroBanner_${sessionId}`)
       .get();
 
@@ -42,11 +43,14 @@ export async function GET(request: NextRequest) {
       data: doc.data(),
     });
   } catch (error) {
-    console.error('Error fetching hero banner preferences:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch preferences',
-    }, { status: 500 });
+    console.error("Error fetching hero banner preferences:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch preferences",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -57,13 +61,16 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
-      return NextResponse.json({
-        success: false,
-        error: 'No session found',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No session found",
+        },
+        { status: 400 },
+      );
     }
 
     const body = await request.json();
@@ -83,7 +90,8 @@ export async function PATCH(request: NextRequest) {
       updateData.viewCount = viewCount;
     }
 
-    await db.collection(SETTINGS_COLLECTION)
+    await db
+      .collection(SETTINGS_COLLECTION)
       .doc(`heroBanner_${sessionId}`)
       .set(updateData, { merge: true });
 
@@ -92,11 +100,14 @@ export async function PATCH(request: NextRequest) {
       data: updateData,
     });
   } catch (error) {
-    console.error('Error updating hero banner preferences:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to update preferences',
-    }, { status: 500 });
+    console.error("Error updating hero banner preferences:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to update preferences",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -107,28 +118,35 @@ export async function PATCH(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
-      return NextResponse.json({
-        success: false,
-        error: 'No session found',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No session found",
+        },
+        { status: 400 },
+      );
     }
 
-    await db.collection(SETTINGS_COLLECTION)
+    await db
+      .collection(SETTINGS_COLLECTION)
       .doc(`heroBanner_${sessionId}`)
       .delete();
 
     return NextResponse.json({
       success: true,
-      message: 'Preferences reset',
+      message: "Preferences reset",
     });
   } catch (error) {
-    console.error('Error deleting hero banner preferences:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to reset preferences',
-    }, { status: 500 });
+    console.error("Error deleting hero banner preferences:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to reset preferences",
+      },
+      { status: 500 },
+    );
   }
 }

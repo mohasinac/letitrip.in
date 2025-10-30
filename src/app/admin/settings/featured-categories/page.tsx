@@ -76,7 +76,7 @@ function FeaturedCategoriesContent() {
       setLoading(true);
       setError(null);
       const data = await apiClient.get<CategoryWithMeta[]>(
-        "/admin/categories?format=list"
+        "/admin/categories?format=list",
       );
 
       // Sort by sortOrder and featured status
@@ -113,7 +113,7 @@ function FeaturedCategoriesContent() {
     // Check if trying to add a 7th featured category
     if (category && !category.featured && currentFeaturedCount >= 6) {
       setError(
-        "Maximum 6 categories can be featured. Please remove one first."
+        "Maximum 6 categories can be featured. Please remove one first.",
       );
       setTimeout(() => setError(null), 5000);
       return;
@@ -121,8 +121,8 @@ function FeaturedCategoriesContent() {
 
     setCategories((prev) =>
       prev.map((cat) =>
-        cat.id === categoryId ? { ...cat, featured: !cat.featured } : cat
-      )
+        cat.id === categoryId ? { ...cat, featured: !cat.featured } : cat,
+      ),
     );
     setHasChanges(true);
   };
@@ -130,8 +130,8 @@ function FeaturedCategoriesContent() {
   const handleToggleActive = (categoryId: string) => {
     setCategories((prev) =>
       prev.map((cat) =>
-        cat.id === categoryId ? { ...cat, isActive: !cat.isActive } : cat
-      )
+        cat.id === categoryId ? { ...cat, isActive: !cat.isActive } : cat,
+      ),
     );
     setHasChanges(true);
   };
@@ -206,7 +206,7 @@ function FeaturedCategoriesContent() {
     searchQuery.trim()
       ? cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cat.slug.toLowerCase().includes(searchQuery.toLowerCase())
-      : true
+      : true,
   );
 
   return (
@@ -330,7 +330,7 @@ function FeaturedCategoriesContent() {
                           key={category.id}
                           category={category}
                           index={categories.findIndex(
-                            (c) => c.id === category.id
+                            (c) => c.id === category.id,
                           )}
                           totalCount={categories.length}
                           onToggleFeatured={handleToggleFeatured}
@@ -400,7 +400,7 @@ function FeaturedCategoriesContent() {
                           key={category.id}
                           category={category}
                           index={categories.findIndex(
-                            (c) => c.id === category.id
+                            (c) => c.id === category.id,
                           )}
                           totalCount={categories.length}
                           onToggleFeatured={handleToggleFeatured}

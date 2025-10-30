@@ -62,12 +62,12 @@ export default function CategoryPageClient({
     if (!currentCategory) {
       // Show root categories (no parents)
       categories = allCategories.filter(
-        (cat) => !cat.parentIds || cat.parentIds.length === 0
+        (cat) => !cat.parentIds || cat.parentIds.length === 0,
       );
     } else {
       // Show subcategories of current category
       categories = allCategories.filter((cat) =>
-        cat.parentIds?.includes(currentCategory.id)
+        cat.parentIds?.includes(currentCategory.id),
       );
     }
 
@@ -78,7 +78,7 @@ export default function CategoryPageClient({
         (cat) =>
           cat.name.toLowerCase().includes(searchLower) ||
           cat.slug.toLowerCase().includes(searchLower) ||
-          cat.description?.toLowerCase().includes(searchLower)
+          cat.description?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -378,7 +378,7 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
             ? `url(${category.image})`
             : `linear-gradient(135deg, ${alpha(
                 categoryColor,
-                0.15
+                0.15,
               )} 0%, ${alpha(categoryColor, 0.05)} 100%)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -392,7 +392,7 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
             inset: 0,
             background: `radial-gradient(circle at center, ${alpha(
               categoryColor,
-              0.2
+              0.2,
             )} 0%, transparent 70%)`,
           },
         }}
@@ -470,8 +470,8 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
             {category.totalProductCount > 0
               ? `${category.totalProductCount}+ Products`
               : category.subcategoryCount > 0
-              ? `${category.subcategoryCount} Subcategories`
-              : "Coming Soon"}
+                ? `${category.subcategoryCount} Subcategories`
+                : "Coming Soon"}
           </Typography>
 
           {/* Explore Button */}

@@ -50,7 +50,7 @@ GET / api / seller / products / [id];
 // Update product
 PUT / api / seller / products / [id];
 {
-  name,
+  (name,
     description,
     pricing,
     inventory,
@@ -60,7 +60,7 @@ PUT / api / seller / products / [id];
     features,
     specifications,
     seo,
-    status;
+    status);
 }
 
 // Archive product
@@ -448,13 +448,11 @@ Once video upload is complete, Phase 3 will be 100% done and we can start:
 ### User Experience
 
 1. ✅ **Complete Product Management**
-
    - Create, edit, archive, delete products
    - Pre-filled edit forms
    - Real-time preview
 
 2. ✅ **Professional Media Handling**
-
    - Drag-and-drop reordering
    - WhatsApp-optimized images
    - Visual order indicators
@@ -468,13 +466,11 @@ Once video upload is complete, Phase 3 will be 100% done and we can start:
 ### Technical Excellence
 
 1. ✅ **Modern Libraries**
-
    - @hello-pangea/dnd for drag-drop
    - react-easy-crop for image editing
    - MUI for consistent UI
 
 2. ✅ **Clean Code**
-
    - Reusable WhatsAppImageEditor component
    - Type-safe with TypeScript
    - Proper error handling
@@ -506,7 +502,6 @@ Once video upload is complete, Phase 3 will be 100% done and we can start:
 ### Testing Priorities
 
 1. **High Priority**:
-
    - Edit page data loading
    - Archive/delete confirmation
    - Drag-drop on different devices

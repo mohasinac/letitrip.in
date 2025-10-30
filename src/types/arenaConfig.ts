@@ -3,9 +3,31 @@
  * Supports loops, obstacles, hazards, themes, and various arena shapes
  */
 
-export type ArenaShape = 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'loop' | 'racetrack';
-export type ArenaTheme = 'forest' | 'mountains' | 'grasslands' | 'metrocity' | 'safari' | 'prehistoric' | 'futuristic' | 'desert' | 'sea' | 'riverbank';
-export type GameMode = 'player-vs-ai' | 'player-vs-player' | 'single-player-test';
+export type ArenaShape =
+  | "circle"
+  | "rectangle"
+  | "pentagon"
+  | "hexagon"
+  | "octagon"
+  | "star"
+  | "oval"
+  | "loop"
+  | "racetrack";
+export type ArenaTheme =
+  | "forest"
+  | "mountains"
+  | "grasslands"
+  | "metrocity"
+  | "safari"
+  | "prehistoric"
+  | "futuristic"
+  | "desert"
+  | "sea"
+  | "riverbank";
+export type GameMode =
+  | "player-vs-ai"
+  | "player-vs-player"
+  | "single-player-test";
 
 /**
  * Charge Point Configuration
@@ -13,7 +35,7 @@ export type GameMode = 'player-vs-ai' | 'player-vs-player' | 'single-player-test
  */
 export interface ChargePointConfig {
   angle: number; // Angle in degrees (0-360) on the loop
-  target: 'center' | 'opponent'; // Dash target: center or opponent (fallback to center if no opponent)
+  target: "center" | "opponent"; // Dash target: center or opponent (fallback to center if no opponent)
   dashSpeed?: number; // Speed multiplier for the dash (default: 2.0)
   radius?: number; // Visual size of the charge point (default 1em)
   color?: string; // Visual color (default: yellow/gold)
@@ -26,7 +48,15 @@ export interface ChargePointConfig {
  */
 export interface LoopConfig {
   radius: number; // em units from center (or size for non-circular shapes)
-  shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'ring'; // Loop shape
+  shape:
+    | "circle"
+    | "rectangle"
+    | "pentagon"
+    | "hexagon"
+    | "octagon"
+    | "star"
+    | "oval"
+    | "ring"; // Loop shape
   speedBoost: number; // Multiplier (e.g., 1.5 = 50% faster)
   spinBoost?: number; // Optional spin recovery per second
   frictionMultiplier?: number; // Lower = less friction (default: 1.0)
@@ -39,7 +69,7 @@ export interface LoopConfig {
   chargePointCount?: number; // Number of evenly distributed charge points
   minLoopDuration?: number; // Minimum time beyblade stays in loop (2-5 seconds, default: 2)
   maxLoopDuration?: number; // Maximum time before forced exit (2-5 seconds, default: 5)
-  renderStyle?: 'outline' | 'filled'; // Render as outline circle or filled (default: outline)
+  renderStyle?: "outline" | "filled"; // Render as outline circle or filled (default: outline)
 }
 
 /**
@@ -89,7 +119,7 @@ export interface WallConfig {
  * Random objects placed in arena (rocks, pillars, etc.)
  */
 export interface ObstacleConfig {
-  type: 'rock' | 'pillar' | 'barrier' | 'wall';
+  type: "rock" | "pillar" | "barrier" | "wall";
   x: number; // Position X (em units)
   y: number; // Position Y (em units)
   radius: number; // Size (em units)
@@ -109,8 +139,16 @@ export interface ObstacleConfig {
  */
 export interface WaterBodyConfig {
   enabled: boolean;
-  type: 'center' | 'loop' | 'ring'; // Center shape, follows center loop path (moat), or ring at edges
-  shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'ring'; // Shape of water body
+  type: "center" | "loop" | "ring"; // Center shape, follows center loop path (moat), or ring at edges
+  shape:
+    | "circle"
+    | "rectangle"
+    | "pentagon"
+    | "hexagon"
+    | "octagon"
+    | "star"
+    | "oval"
+    | "ring"; // Shape of water body
   radius?: number; // For circular shapes (em units)
   width?: number; // For rectangular shapes (em units)
   height?: number; // For rectangular shapes (em units)
@@ -119,7 +157,7 @@ export interface WaterBodyConfig {
   loopIndex?: number; // Always 0 for center loop (when type is 'loop')
   innerRadius?: number; // For loop type - inner radius of moat (em units)
   outerRadius?: number; // For loop type - outer radius of moat (em units)
-  liquidType: 'water' | 'blood' | 'lava' | 'acid' | 'oil' | 'ice'; // Type of liquid
+  liquidType: "water" | "blood" | "lava" | "acid" | "oil" | "ice"; // Type of liquid
   spinDrainRate: number; // Spin loss per second (percentage)
   speedMultiplier: number; // Movement speed reduction (e.g., 0.6 = 40% slower)
   viscosity: number; // 0-1, affects acceleration/deceleration
@@ -152,7 +190,7 @@ export interface LaserGunConfig {
   fireInterval: number; // Seconds between shots
   damage: number; // Damage per hit
   bulletSpeed: number; // em/second
-  targetMode: 'random' | 'nearest' | 'strongest'; // Targeting strategy
+  targetMode: "random" | "nearest" | "strongest"; // Targeting strategy
   warmupTime: number; // Seconds to aim before firing
   cooldown: number; // Seconds after firing before next shot
   range: number; // Maximum range (em units)
@@ -170,7 +208,7 @@ export interface GoalObjectConfig {
   radius: number; // Size (em units)
   health: number; // Health points
   scoreValue: number; // Points awarded on collection/destruction
-  type: 'star' | 'crystal' | 'coin' | 'gem' | 'relic' | 'trophy'; // Collectible types
+  type: "star" | "crystal" | "coin" | "gem" | "relic" | "trophy"; // Collectible types
   themeVariant?: string; // Theme-based appearance (e.g., 'forest-star', 'futuristic-crystal')
   color?: string;
   shieldHealth?: number; // Optional shield that must be broken first
@@ -184,17 +222,17 @@ export interface GoalObjectConfig {
 export interface RotationBodyConfig {
   id: string;
   position: { x: number; y: number }; // Position in em units
-  shape: 'circle' | 'rectangle' | 'star' | 'polygon'; // Shape of rotation body
+  shape: "circle" | "rectangle" | "star" | "polygon"; // Shape of rotation body
   radius?: number; // For circle/star/polygon (em units)
   width?: number; // For rectangle (em units)
   height?: number; // For rectangle (em units)
   sides?: number; // For polygon (default: 6)
-  
+
   // Rotation properties
   rotationForce: number; // Force applied (0.1-5.0)
-  direction: 'clockwise' | 'counter-clockwise'; // Direction of rotation
+  direction: "clockwise" | "counter-clockwise"; // Direction of rotation
   falloff: number; // How force decreases with beyblade velocity (0.0-1.0)
-  
+
   // Visual
   color?: string; // Default: red (#ef4444)
   opacity?: number; // Default: 0.5
@@ -221,54 +259,54 @@ export interface ArenaConfig {
   id?: string;
   name: string;
   description?: string;
-  
+
   // Arena geometry (in em units, typically 50em = 800px at base font size)
   width: number; // Default: 50em (800px)
   height: number; // Default: 50em (800px)
   shape: ArenaShape;
   theme: ArenaTheme;
   rotation?: number; // Rotation angle for the entire arena in degrees (0-360)
-  
+
   // Loops (speed boost zones)
   loops: LoopConfig[];
-  
+
   // Exits (where beyblades can leave the arena)
   exits: ExitConfig[];
-  
+
   // Portals (teleportation, max 2)
   portals?: PortalConfig[];
-  
+
   // Wall configuration
   wall: WallConfig;
-  
+
   // Hazards and features
   obstacles: ObstacleConfig[];
   waterBody?: WaterBodyConfig;
   pits: PitConfig[];
   laserGuns: LaserGunConfig[];
   rotationBodies?: RotationBodyConfig[]; // Rotation force fields
-  
+
   // Goal objects (optional objective mode)
   goalObjects: GoalObjectConfig[];
   requireAllGoalsDestroyed: boolean; // Win condition
-  
+
   // Visual and theme
   backgroundColor?: string;
   floorColor?: string; // Custom floor color
   floorTexture?: string; // URL to floor texture image
   backgroundLayers: BackgroundLayer[];
   ambientSound?: string; // Background music/sound
-  
+
   // Physics modifiers
   gravity?: number; // Optional gravity simulation (0 = none)
   airResistance?: number; // Global air resistance (0-1)
   surfaceFriction?: number; // Base surface friction (0-1)
-  
+
   // Metadata
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
-  difficulty?: 'easy' | 'medium' | 'hard' | 'extreme' | 'custom';
+  difficulty?: "easy" | "medium" | "hard" | "extreme" | "custom";
 }
 
 /**
@@ -276,12 +314,12 @@ export interface ArenaConfig {
  */
 export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
   classic: {
-    name: 'Classic Stadium',
-    shape: 'circle',
-    theme: 'metrocity',
+    name: "Classic Stadium",
+    shape: "circle",
+    theme: "metrocity",
     loops: [
-      { radius: 15, shape: 'circle', speedBoost: 1.2 },
-      { radius: 20, shape: 'circle', speedBoost: 1.0 },
+      { radius: 15, shape: "circle", speedBoost: 1.2 },
+      { radius: 20, shape: "circle", speedBoost: 1.0 },
     ],
     exits: [],
     wall: {
@@ -301,15 +339,15 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     requireAllGoalsDestroyed: false,
     backgroundLayers: [],
   },
-  
+
   hazardZone: {
-    name: 'Hazard Zone',
-    shape: 'octagon',
-    theme: 'futuristic',
+    name: "Hazard Zone",
+    shape: "octagon",
+    theme: "futuristic",
     loops: [
-      { radius: 12, shape: 'octagon', speedBoost: 1.5 },
-      { radius: 18, shape: 'hexagon', speedBoost: 1.2 },
-      { radius: 24, shape: 'circle', speedBoost: 1.0 },
+      { radius: 12, shape: "octagon", speedBoost: 1.5 },
+      { radius: 18, shape: "hexagon", speedBoost: 1.2 },
+      { radius: 24, shape: "circle", speedBoost: 1.0 },
     ],
     exits: [
       { angle: 0, width: 30, enabled: true },
@@ -328,25 +366,53 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
       thickness: 0.8,
     },
     pits: [
-      { x: 0, y: 0, radius: 3, damagePerSecond: 10, escapeChance: 0.5, visualDepth: 3, swirl: true },
+      {
+        x: 0,
+        y: 0,
+        radius: 3,
+        damagePerSecond: 10,
+        escapeChance: 0.5,
+        visualDepth: 3,
+        swirl: true,
+      },
     ],
     laserGuns: [
-      { x: 15, y: 15, angle: 0, fireInterval: 3, damage: 50, bulletSpeed: 20, targetMode: 'nearest', warmupTime: 0.5, cooldown: 1, range: 40 },
-      { x: -15, y: -15, angle: 180, fireInterval: 3, damage: 50, bulletSpeed: 20, targetMode: 'nearest', warmupTime: 0.5, cooldown: 1, range: 40 },
+      {
+        x: 15,
+        y: 15,
+        angle: 0,
+        fireInterval: 3,
+        damage: 50,
+        bulletSpeed: 20,
+        targetMode: "nearest",
+        warmupTime: 0.5,
+        cooldown: 1,
+        range: 40,
+      },
+      {
+        x: -15,
+        y: -15,
+        angle: 180,
+        fireInterval: 3,
+        damage: 50,
+        bulletSpeed: 20,
+        targetMode: "nearest",
+        warmupTime: 0.5,
+        cooldown: 1,
+        range: 40,
+      },
     ],
     obstacles: [],
     goalObjects: [],
     requireAllGoalsDestroyed: false,
     backgroundLayers: [],
   },
-  
+
   waterWorld: {
-    name: 'Water World',
-    shape: 'circle',
-    theme: 'sea',
-    loops: [
-      { radius: 18, shape: 'circle', speedBoost: 1.1 },
-    ],
+    name: "Water World",
+    shape: "circle",
+    theme: "sea",
+    loops: [{ radius: 18, shape: "circle", speedBoost: 1.1 }],
     exits: [],
     wall: {
       enabled: true,
@@ -360,14 +426,14 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     },
     waterBody: {
       enabled: true,
-      type: 'center',
-      shape: 'circle',
+      type: "center",
+      shape: "circle",
       radius: 10,
-      liquidType: 'water',
+      liquidType: "water",
       spinDrainRate: 2,
       speedMultiplier: 0.6,
       viscosity: 0.8,
-      color: '#4fc3f7',
+      color: "#4fc3f7",
       waveAnimation: true,
     },
     obstacles: [],
@@ -386,21 +452,22 @@ export function generateRandomObstacles(
   count: number,
   arenaWidth: number,
   arenaHeight: number,
-  excludeZones: { x: number; y: number; radius: number }[] = []
+  excludeZones: { x: number; y: number; radius: number }[] = [],
 ): ObstacleConfig[] {
   const obstacles: ObstacleConfig[] = [];
-  const types: ObstacleConfig['type'][] = ['rock', 'pillar', 'barrier'];
-  
+  const types: ObstacleConfig["type"][] = ["rock", "pillar", "barrier"];
+
   for (let i = 0; i < count; i++) {
     let attempts = 0;
     let validPosition = false;
-    let x = 0, y = 0;
-    
+    let x = 0,
+      y = 0;
+
     // Try to find valid position (not overlapping with loops, water, etc.)
     while (!validPosition && attempts < 50) {
       x = (Math.random() - 0.5) * arenaWidth * 0.8;
       y = (Math.random() - 0.5) * arenaHeight * 0.8;
-      
+
       validPosition = true;
       for (const zone of excludeZones) {
         const dist = Math.sqrt((x - zone.x) ** 2 + (y - zone.y) ** 2);
@@ -411,7 +478,7 @@ export function generateRandomObstacles(
       }
       attempts++;
     }
-    
+
     if (validPosition) {
       obstacles.push({
         type: types[Math.floor(Math.random() * types.length)],
@@ -426,7 +493,7 @@ export function generateRandomObstacles(
       });
     }
   }
-  
+
   return obstacles;
 }
 
@@ -436,20 +503,21 @@ export function generateRandomObstacles(
 export function generateRandomPits(
   count: number,
   arenaRadius: number,
-  placement: 'edges' | 'center' | 'random' = 'random',
-  pitRadius: number = 1.5 // Default pit radius
+  placement: "edges" | "center" | "random" = "random",
+  pitRadius: number = 1.5, // Default pit radius
 ): PitConfig[] {
   const pits: PitConfig[] = [];
-  
+
   for (let i = 0; i < count; i++) {
-    let x = 0, y = 0;
-    
-    if (placement === 'edges') {
+    let x = 0,
+      y = 0;
+
+    if (placement === "edges") {
       const angle = (i / count) * Math.PI * 2;
       const distance = arenaRadius * (0.7 + Math.random() * 0.2);
       x = Math.cos(angle) * distance;
       y = Math.sin(angle) * distance;
-    } else if (placement === 'center') {
+    } else if (placement === "center") {
       const angle = Math.random() * Math.PI * 2;
       const distance = Math.random() * arenaRadius * 0.3;
       x = Math.cos(angle) * distance;
@@ -458,7 +526,7 @@ export function generateRandomPits(
       x = (Math.random() - 0.5) * arenaRadius * 1.6;
       y = (Math.random() - 0.5) * arenaRadius * 1.6;
     }
-    
+
     pits.push({
       x,
       y,
@@ -469,36 +537,39 @@ export function generateRandomPits(
       swirl: Math.random() > 0.5,
     });
   }
-  
+
   return pits;
 }
 
 /**
  * Validate arena configuration
  */
-export function validateArenaConfig(config: ArenaConfig): { valid: boolean; errors: string[] } {
+export function validateArenaConfig(config: ArenaConfig): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
-  
+
   if (config.width <= 0 || config.height <= 0) {
-    errors.push('Arena dimensions must be positive');
+    errors.push("Arena dimensions must be positive");
   }
-  
+
   if (config.loops.length > 10) {
-    errors.push('Maximum 10 loops allowed');
+    errors.push("Maximum 10 loops allowed");
   }
-  
+
   if (config.obstacles.length > 50) {
-    errors.push('Maximum 50 obstacles allowed for performance');
+    errors.push("Maximum 50 obstacles allowed for performance");
   }
-  
+
   if (config.laserGuns.length > 10) {
-    errors.push('Maximum 10 laser guns allowed');
+    errors.push("Maximum 10 laser guns allowed");
   }
-  
+
   if (config.goalObjects.length > 20) {
-    errors.push('Maximum 20 goal objects allowed');
+    errors.push("Maximum 20 goal objects allowed");
   }
-  
+
   // Check for overlapping loops
   for (let i = 0; i < config.loops.length; i++) {
     for (let j = i + 1; j < config.loops.length; j++) {
@@ -507,7 +578,7 @@ export function validateArenaConfig(config: ArenaConfig): { valid: boolean; erro
       }
     }
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,

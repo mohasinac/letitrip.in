@@ -4,13 +4,13 @@
  * This replaces the JWT cookie-based authentication system
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb, getAdminAuth } from '@/lib/database/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminDb, getAdminAuth } from "@/lib/database/admin";
 
 export interface FirebaseUser {
   uid: string;
   email: string | undefined;
-  role: 'admin' | 'seller' | 'user';
+  role: "admin" | "seller" | "user";
   userData: any;
 }
 
@@ -19,9 +19,11 @@ export interface FirebaseUser {
  * @param request - Next.js request object
  * @returns User object or null if authentication fails
  */
-export async function verifyFirebaseToken(request: NextRequest): Promise<FirebaseUser | null> {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
+export async function verifyFirebaseToken(
+  request: NextRequest,
+): Promise<FirebaseUser | null> {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
     return null;
   }
 
@@ -29,25 +31,25 @@ export async function verifyFirebaseToken(request: NextRequest): Promise<Firebas
     const token = authHeader.substring(7);
     const auth = getAdminAuth();
     const decodedToken = await auth.verifyIdToken(token);
-    
+
     // Get user data from Firestore to check role
     const db = getAdminDb();
-    const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+    const userDoc = await db.collection("users").doc(decodedToken.uid).get();
     const userData = userDoc.data();
-    
+
     if (!userData) {
-      console.error('User document not found for uid:', decodedToken.uid);
+      console.error("User document not found for uid:", decodedToken.uid);
       return null;
     }
-    
+
     return {
       uid: decodedToken.uid,
       email: decodedToken.email,
       role: userData.role,
-      userData
+      userData,
     };
   } catch (error) {
-    console.error('Firebase token verification error:', error);
+    console.error("Firebase token verification error:", error);
     return null;
   }
 }
@@ -57,13 +59,15 @@ export async function verifyFirebaseToken(request: NextRequest): Promise<Firebas
  * @param request - Next.js request object
  * @returns User object or null if authentication/authorization fails
  */
-export async function verifySellerOrAdmin(request: NextRequest): Promise<FirebaseUser | null> {
+export async function verifySellerOrAdmin(
+  request: NextRequest,
+): Promise<FirebaseUser | null> {
   const user = await verifyFirebaseToken(request);
-  
-  if (!user || !['seller', 'admin'].includes(user.role)) {
+
+  if (!user || !["seller", "admin"].includes(user.role)) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -72,13 +76,15 @@ export async function verifySellerOrAdmin(request: NextRequest): Promise<Firebas
  * @param request - Next.js request object
  * @returns User object or null if authentication/authorization fails
  */
-export async function verifyAdmin(request: NextRequest): Promise<FirebaseUser | null> {
+export async function verifyAdmin(
+  request: NextRequest,
+): Promise<FirebaseUser | null> {
   const user = await verifyFirebaseToken(request);
-  
-  if (!user || user.role !== 'admin') {
+
+  if (!user || user.role !== "admin") {
     return null;
   }
-  
+
   return user;
 }
 
@@ -90,14 +96,14 @@ export async function verifyAdmin(request: NextRequest): Promise<FirebaseUser | 
  */
 export async function verifyRole(
   request: NextRequest,
-  allowedRoles: Array<'admin' | 'seller' | 'user'>
+  allowedRoles: Array<"admin" | "seller" | "user">,
 ): Promise<FirebaseUser | null> {
   const user = await verifyFirebaseToken(request);
-  
+
   if (!user || !allowedRoles.includes(user.role)) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -106,50 +112,54 @@ export async function verifyRole(
  * Replaces the JWT cookie-based middleware handlers
  */
 export function createFirebaseHandler<T extends any[]>(
-  handler: (request: NextRequest, user: FirebaseUser, ...args: T) => Promise<NextResponse>,
+  handler: (
+    request: NextRequest,
+    user: FirebaseUser,
+    ...args: T
+  ) => Promise<NextResponse>,
   options: {
     requireAdmin?: boolean;
     requireSeller?: boolean;
-    allowedRoles?: Array<'admin' | 'seller' | 'user'>;
-  } = {}
+    allowedRoles?: Array<"admin" | "seller" | "user">;
+  } = {},
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
     let user: FirebaseUser | null = null;
 
     // Verify Firebase token
     user = await verifyFirebaseToken(request);
-    
+
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
+        { success: false, error: "Authentication required" },
+        { status: 401 },
       );
     }
 
     // Check admin role requirement
-    if (options.requireAdmin && user.role !== 'admin') {
+    if (options.requireAdmin && user.role !== "admin") {
       return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 403 }
+        { success: false, error: "Admin access required" },
+        { status: 403 },
       );
     }
 
     // Check seller role requirement (sellers and admins allowed)
-    if (options.requireSeller && !['seller', 'admin'].includes(user.role)) {
+    if (options.requireSeller && !["seller", "admin"].includes(user.role)) {
       return NextResponse.json(
-        { success: false, error: 'Seller access required' },
-        { status: 403 }
+        { success: false, error: "Seller access required" },
+        { status: 403 },
       );
     }
 
     // Check allowed roles
     if (options.allowedRoles && !options.allowedRoles.includes(user.role)) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: `Access denied. Required roles: ${options.allowedRoles.join(", ")}` 
+        {
+          success: false,
+          error: `Access denied. Required roles: ${options.allowedRoles.join(", ")}`,
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -163,7 +173,11 @@ export function createFirebaseHandler<T extends any[]>(
  * Use this instead of createAdminHandler from api-middleware
  */
 export function createFirebaseAdminHandler<T extends any[]>(
-  handler: (request: NextRequest, user: FirebaseUser, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: FirebaseUser,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
   return createFirebaseHandler(handler, { requireAdmin: true });
 }
@@ -173,7 +187,11 @@ export function createFirebaseAdminHandler<T extends any[]>(
  * Use this instead of createSellerHandler from api-middleware
  */
 export function createFirebaseSellerHandler<T extends any[]>(
-  handler: (request: NextRequest, user: FirebaseUser, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: FirebaseUser,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
   return createFirebaseHandler(handler, { requireSeller: true });
 }
@@ -183,7 +201,13 @@ export function createFirebaseSellerHandler<T extends any[]>(
  * Use this instead of createUserHandler from api-middleware
  */
 export function createFirebaseUserHandler<T extends any[]>(
-  handler: (request: NextRequest, user: FirebaseUser, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: FirebaseUser,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
-  return createFirebaseHandler(handler, { allowedRoles: ['user', 'seller', 'admin'] });
+  return createFirebaseHandler(handler, {
+    allowedRoles: ["user", "seller", "admin"],
+  });
 }

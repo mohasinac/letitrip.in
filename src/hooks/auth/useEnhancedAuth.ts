@@ -4,15 +4,15 @@
  */
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useCallback } from 'react';
-import { 
-  signInWithPopup, 
+import { useState, useCallback } from "react";
+import {
+  signInWithPopup,
   GoogleAuthProvider,
-  signInWithCustomToken
-} from 'firebase/auth';
-import { auth as firebaseAuth } from '@/lib/database/config';
-import { authCookies } from '@/lib/auth/cookies';
-import toast from 'react-hot-toast';
+  signInWithCustomToken,
+} from "firebase/auth";
+import { auth as firebaseAuth } from "@/lib/database/config";
+import { authCookies } from "@/lib/auth/cookies";
+import toast from "react-hot-toast";
 
 export interface PhoneAuthCredentials {
   phoneNumber: string;
@@ -29,7 +29,12 @@ export interface AuthHookReturn {
 
   // Auth methods
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role?: "admin" | "seller" | "user") => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role?: "admin" | "seller" | "user",
+  ) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   updateProfile: (updates: Partial<any>) => Promise<void>;
@@ -65,73 +70,78 @@ export const useEnhancedAuth = (): AuthHookReturn => {
   };
 
   // Helper method to check user role
-  const isRole = (role: 'admin' | 'seller' | 'user'): boolean => {
+  const isRole = (role: "admin" | "seller" | "user"): boolean => {
     return auth.user?.role === role;
   };
 
   // Helper method to check resource access
   const canAccess = (resource: string): boolean => {
     if (!auth.user) return false;
-    
+
     const userRole = String(auth.user.role);
-    
+
     // Admin can access everything
-    if (userRole === 'admin') return true;
-    
+    if (userRole === "admin") return true;
+
     // Resource-specific access control
     const roleChecks: Record<string, string[]> = {
-      "admin_panel": ['admin'],
-      "seller_panel": ['admin', 'seller'],
-      "user_profile": ['admin', 'seller', 'user'],
-      "products_manage": ['admin', 'seller'],
-      "orders_manage": ['admin'],
-      "categories_manage": ['admin'],
-      "users_manage": ['admin'],
+      admin_panel: ["admin"],
+      seller_panel: ["admin", "seller"],
+      user_profile: ["admin", "seller", "user"],
+      products_manage: ["admin", "seller"],
+      orders_manage: ["admin"],
+      categories_manage: ["admin"],
+      users_manage: ["admin"],
     };
-    
+
     const allowedRoles = roleChecks[resource];
     return allowedRoles ? allowedRoles.includes(userRole) : false;
   };
 
   // Send OTP for phone authentication
-  const sendOTP = useCallback(async (phoneNumber: string): Promise<{ verificationId: string }> => {
-    try {
-      setEnhancedLoading(true);
-      
-      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
-      
-      const response = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber: formattedPhone,
-          recaptchaToken: 'dummy_token',
-        }),
-      });
+  const sendOTP = useCallback(
+    async (phoneNumber: string): Promise<{ verificationId: string }> => {
+      try {
+        setEnhancedLoading(true);
 
-      const data = await response.json();
+        const formattedPhone = phoneNumber.startsWith("+")
+          ? phoneNumber
+          : `+91${phoneNumber}`;
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send OTP');
+        const response = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phoneNumber: formattedPhone,
+            recaptchaToken: "dummy_token",
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to send OTP");
+        }
+
+        return { verificationId: data.data.verificationId };
+      } catch (error: any) {
+        toast.error(error.message || "Failed to send OTP");
+        throw error;
+      } finally {
+        setEnhancedLoading(false);
       }
-
-      return { verificationId: data.data.verificationId };
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send OTP');
-      throw error;
-    } finally {
-      setEnhancedLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   // Verify OTP for phone authentication
   const verifyOTP = useCallback(async (credentials: PhoneAuthCredentials) => {
     try {
       setEnhancedLoading(true);
 
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           verificationId: credentials.verificationId,
           otp: credentials.otp,
@@ -142,7 +152,7 @@ export const useEnhancedAuth = (): AuthHookReturn => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'OTP verification failed');
+        throw new Error(data.error || "OTP verification failed");
       }
 
       // Sign in with custom token if provided
@@ -150,9 +160,9 @@ export const useEnhancedAuth = (): AuthHookReturn => {
         await signInWithCustomToken(firebaseAuth, data.data.customToken);
       }
 
-      toast.success('Phone verification successful!');
+      toast.success("Phone verification successful!");
     } catch (error: any) {
-      toast.error(error.message || 'OTP verification failed');
+      toast.error(error.message || "OTP verification failed");
       throw error;
     } finally {
       setEnhancedLoading(false);
@@ -165,45 +175,48 @@ export const useEnhancedAuth = (): AuthHookReturn => {
       setEnhancedLoading(true);
 
       const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
+      provider.addScope("email");
+      provider.addScope("profile");
 
       const result = await signInWithPopup(firebaseAuth, provider);
       const firebaseUser = result.user;
 
       // Check if user exists, create if not
       const token = await firebaseUser.getIdToken();
-      const response = await fetch('/api/auth/me', {
+      const response = await fetch("/api/auth/me", {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
         // User doesn't exist, create account
         const userData = {
-          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+          name:
+            firebaseUser.displayName ||
+            firebaseUser.email?.split("@")[0] ||
+            "User",
           email: firebaseUser.email,
           phone: firebaseUser.phoneNumber,
-          role: 'user',
+          role: "user",
           isOver18: true,
         };
 
-        const registerResponse = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const registerResponse = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData),
         });
 
         if (!registerResponse.ok) {
           const errorData = await registerResponse.json();
-          throw new Error(errorData.error || 'Failed to create account');
+          throw new Error(errorData.error || "Failed to create account");
         }
       }
 
-      toast.success('Google login successful!');
+      toast.success("Google login successful!");
     } catch (error: any) {
-      toast.error(error.message || 'Google login failed');
+      toast.error(error.message || "Google login failed");
       throw error;
     } finally {
       setEnhancedLoading(false);
@@ -216,7 +229,7 @@ export const useEnhancedAuth = (): AuthHookReturn => {
       try {
         return await auth.user.getIdToken();
       } catch (error) {
-        console.error('Error getting token:', error);
+        console.error("Error getting token:", error);
         return null;
       }
     }

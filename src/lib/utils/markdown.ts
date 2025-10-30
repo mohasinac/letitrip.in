@@ -3,9 +3,9 @@
  * Functions to parse and process markdown content
  */
 
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
 export interface ParsedMarkdown {
   content: string;
@@ -45,20 +45,22 @@ export interface ReviewItem {
 /**
  * Read and parse a markdown file with frontmatter
  */
-export async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdown> {
+export async function parseMarkdownFile(
+  filePath: string,
+): Promise<ParsedMarkdown> {
   try {
-    const fullPath = path.join(process.cwd(), 'content', filePath);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    
+    const fullPath = path.join(process.cwd(), "content", filePath);
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+
     const { data, content } = matter(fileContents);
-    
-    return { 
-      content, 
-      metadata: data 
+
+    return {
+      content,
+      metadata: data,
     };
   } catch (error) {
     // Return empty content on error to prevent crashes
-    return { content: '' };
+    return { content: "" };
   }
 }
 
@@ -67,54 +69,54 @@ export async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdow
  */
 export function parseFAQMarkdown(content: string): FAQItem[] {
   const faqs: FAQItem[] = [];
-  const lines = content.split('\n');
-  
-  let currentCategory = '';
-  let currentQuestion = '';
-  let currentAnswer = '';
+  const lines = content.split("\n");
+
+  let currentCategory = "";
+  let currentQuestion = "";
+  let currentAnswer = "";
   let inAnswer = false;
-  
+
   for (const line of lines) {
     const trimmedLine = line.trim();
-    
+
     // Check for category (## heading)
-    if (trimmedLine.startsWith('## ')) {
-      currentCategory = trimmedLine.replace('## ', '');
+    if (trimmedLine.startsWith("## ")) {
+      currentCategory = trimmedLine.replace("## ", "");
       continue;
     }
-    
+
     // Check for question (### heading)
-    if (trimmedLine.startsWith('### ')) {
+    if (trimmedLine.startsWith("### ")) {
       // Save previous FAQ if exists
       if (currentQuestion && currentAnswer) {
         faqs.push({
           question: currentQuestion,
           answer: currentAnswer.trim(),
-          category: currentCategory
+          category: currentCategory,
         });
       }
-      
-      currentQuestion = trimmedLine.replace('### ', '');
-      currentAnswer = '';
+
+      currentQuestion = trimmedLine.replace("### ", "");
+      currentAnswer = "";
       inAnswer = true;
       continue;
     }
-    
+
     // Collect answer content
     if (inAnswer && trimmedLine) {
-      currentAnswer += line + '\n';
+      currentAnswer += line + "\n";
     }
   }
-  
+
   // Add the last FAQ
   if (currentQuestion && currentAnswer) {
     faqs.push({
       question: currentQuestion,
       answer: currentAnswer.trim(),
-      category: currentCategory
+      category: currentCategory,
     });
   }
-  
+
   return faqs;
 }
 
@@ -123,39 +125,41 @@ export function parseFAQMarkdown(content: string): FAQItem[] {
  */
 export function parseCategoriesMarkdown(content: string): CategoryItem[] {
   const categories: CategoryItem[] = [];
-  const sections = content.split('---').filter(section => section.trim());
-  
+  const sections = content.split("---").filter((section) => section.trim());
+
   for (const section of sections) {
-    const lines = section.trim().split('\n');
-    const titleLine = lines.find(line => line.startsWith('## '));
-    
+    const lines = section.trim().split("\n");
+    const titleLine = lines.find((line) => line.startsWith("## "));
+
     if (titleLine) {
-      const title = titleLine.replace('## ', '').trim();
-      const description = lines[1] || '';
-      
+      const title = titleLine.replace("## ", "").trim();
+      const description = lines[1] || "";
+
       // Find highlights section
-      const highlightsIndex = lines.findIndex(line => line.includes('**Highlights:**'));
+      const highlightsIndex = lines.findIndex((line) =>
+        line.includes("**Highlights:**"),
+      );
       const highlights: string[] = [];
-      
+
       if (highlightsIndex > -1) {
         for (let i = highlightsIndex + 1; i < lines.length; i++) {
           const line = lines[i].trim();
-          if (line.startsWith('- ')) {
-            highlights.push(line.replace('- ', ''));
-          } else if (line && !line.startsWith('**')) {
+          if (line.startsWith("- ")) {
+            highlights.push(line.replace("- ", ""));
+          } else if (line && !line.startsWith("**")) {
             break;
           }
         }
       }
-      
+
       categories.push({
         title,
         description,
-        highlights
+        highlights,
       });
     }
   }
-  
+
   return categories;
 }
 
@@ -164,25 +168,30 @@ export function parseCategoriesMarkdown(content: string): CategoryItem[] {
  */
 export function parseReviewsMarkdown(content: string): ReviewItem[] {
   const reviews: ReviewItem[] = [];
-  const sections = content.split('---').filter(section => section.trim());
-  
+  const sections = content.split("---").filter((section) => section.trim());
+
   for (const section of sections) {
-    const lines = section.trim().split('\n').filter(line => line.trim());
-    
+    const lines = section
+      .trim()
+      .split("\n")
+      .filter((line) => line.trim());
+
     if (lines.length > 0) {
       const titleLine = lines[0];
-      
+
       // Look for star ratings and title
       const starMatch = titleLine.match(/⭐+/);
       const rating = starMatch ? starMatch[0].length : 5;
-      
+
       // Extract title
-      const title = titleLine.replace(/⭐+\s*/, '').trim();
-      
+      const title = titleLine.replace(/⭐+\s*/, "").trim();
+
       // Extract author and role
-      let author = '';
-      let role = '';
-      const authorLine = lines.find(line => line.startsWith('**') && line.includes('**'));
+      let author = "";
+      let role = "";
+      const authorLine = lines.find(
+        (line) => line.startsWith("**") && line.includes("**"),
+      );
       if (authorLine) {
         const authorMatch = authorLine.match(/\*\*(.*?)\*\*\s*-\s*\*(.*?)\*/);
         if (authorMatch) {
@@ -190,15 +199,19 @@ export function parseReviewsMarkdown(content: string): ReviewItem[] {
           role = authorMatch[2];
         }
       }
-      
+
       // Extract content (quote)
-      const quoteLine = lines.find(line => line.startsWith('>'));
-      const content = quoteLine ? quoteLine.replace('> ', '').replace(/"/g, '') : '';
-      
+      const quoteLine = lines.find((line) => line.startsWith(">"));
+      const content = quoteLine
+        ? quoteLine.replace("> ", "").replace(/"/g, "")
+        : "";
+
       // Extract date
-      const dateLine = lines.find(line => line.startsWith('*Posted:'));
-      const date = dateLine ? dateLine.replace('*Posted: ', '').replace('*', '') : '';
-      
+      const dateLine = lines.find((line) => line.startsWith("*Posted:"));
+      const date = dateLine
+        ? dateLine.replace("*Posted: ", "").replace("*", "")
+        : "";
+
       if (title && author && content) {
         reviews.push({
           rating,
@@ -206,12 +219,12 @@ export function parseReviewsMarkdown(content: string): ReviewItem[] {
           title,
           content,
           date,
-          role
+          role,
         });
       }
     }
   }
-  
+
   return reviews;
 }
 
@@ -220,9 +233,9 @@ export function parseReviewsMarkdown(content: string): ReviewItem[] {
  */
 export function getMarkdownFiles(directory: string): string[] {
   try {
-    const fullPath = path.join(process.cwd(), 'content', directory);
+    const fullPath = path.join(process.cwd(), "content", directory);
     const files = fs.readdirSync(fullPath);
-    return files.filter(file => file.endsWith('.md'));
+    return files.filter((file) => file.endsWith(".md"));
   } catch (error) {
     // Return empty array on error to prevent crashes
     return [];
@@ -234,5 +247,5 @@ export default {
   parseFAQMarkdown,
   parseCategoriesMarkdown,
   parseReviewsMarkdown,
-  getMarkdownFiles
+  getMarkdownFiles,
 };

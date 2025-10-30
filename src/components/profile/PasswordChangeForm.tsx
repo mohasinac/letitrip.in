@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 interface PasswordChangeFormProps {
   onPasswordChange: (
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ) => Promise<void>;
 }
 

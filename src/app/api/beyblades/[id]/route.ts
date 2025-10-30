@@ -5,13 +5,13 @@
  * DELETE /api/beyblades/[id]
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { beybladeStatsService } from '@/lib/database/beybladeStatsService';
-import { BeybladeStats } from '@/types/beybladeStats';
+import { NextRequest, NextResponse } from "next/server";
+import { beybladeStatsService } from "@/lib/database/beybladeStatsService";
+import { BeybladeStats } from "@/types/beybladeStats";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -21,9 +21,9 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          error: 'Beyblade not found',
+          error: "Beyblade not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -32,33 +32,33 @@ export async function GET(
       data: beyblade,
     });
   } catch (error) {
-    console.error('Error fetching Beyblade:', error);
+    console.error("Error fetching Beyblade:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch Beyblade',
+        error: "Failed to fetch Beyblade",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const body = await request.text();
 
     // Check if body is empty
-    if (!body || body.trim() === '') {
+    if (!body || body.trim() === "") {
       return NextResponse.json(
         {
           success: false,
-          error: 'Request body is empty',
+          error: "Request body is empty",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -70,9 +70,9 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid JSON in request body',
+          error: "Invalid JSON in request body",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -83,9 +83,9 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          error: 'Beyblade not found',
+          error: "Beyblade not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -97,27 +97,27 @@ export async function PUT(
     };
 
     // Save to database
-    await beybladeStatsService.saveBeybladeStats(updatedBeyblade, 'admin');
+    await beybladeStatsService.saveBeybladeStats(updatedBeyblade, "admin");
 
     return NextResponse.json({
       success: true,
       data: updatedBeyblade,
     });
   } catch (error) {
-    console.error('Error updating Beyblade:', error);
+    console.error("Error updating Beyblade:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to update Beyblade',
+        error: "Failed to update Beyblade",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -129,9 +129,9 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: 'Beyblade not found',
+          error: "Beyblade not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -140,16 +140,16 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Beyblade deleted successfully',
+      message: "Beyblade deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting Beyblade:', error);
+    console.error("Error deleting Beyblade:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to delete Beyblade',
+        error: "Failed to delete Beyblade",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

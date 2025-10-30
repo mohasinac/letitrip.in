@@ -3,12 +3,12 @@
  * Handles CRUD operations for Arena data in Firestore
  */
 
-import { getAdminDb } from '@/lib/database/admin';
-import { ArenaConfig, validateArenaConfig } from '@/types/arenaConfig';
+import { getAdminDb } from "@/lib/database/admin";
+import { ArenaConfig, validateArenaConfig } from "@/types/arenaConfig";
 
 export class ArenaService {
   private readonly db = getAdminDb();
-  private readonly collection = 'arenas';
+  private readonly collection = "arenas";
 
   /**
    * Get all arenas
@@ -17,16 +17,19 @@ export class ArenaService {
     try {
       const snapshot = await this.db
         .collection(this.collection)
-        .orderBy('createdAt', 'desc')
+        .orderBy("createdAt", "desc")
         .get();
 
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as ArenaConfig));
+      return snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          }) as ArenaConfig,
+      );
     } catch (error) {
-      console.error('Error getting arenas:', error);
-      throw new Error('Failed to fetch arenas');
+      console.error("Error getting arenas:", error);
+      throw new Error("Failed to fetch arenas");
     }
   }
 
@@ -43,11 +46,11 @@ export class ArenaService {
 
       return {
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       } as ArenaConfig;
     } catch (error) {
-      console.error('Error getting arena:', error);
-      throw new Error('Failed to fetch arena');
+      console.error("Error getting arena:", error);
+      throw new Error("Failed to fetch arena");
     }
   }
 
@@ -58,7 +61,7 @@ export class ArenaService {
     try {
       const snapshot = await this.db
         .collection(this.collection)
-        .where('difficulty', '==', 'easy')
+        .where("difficulty", "==", "easy")
         .limit(1)
         .get();
 
@@ -76,34 +79,36 @@ export class ArenaService {
         const doc = allSnapshot.docs[0];
         return {
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         } as ArenaConfig;
       }
 
       const doc = snapshot.docs[0];
       return {
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       } as ArenaConfig;
     } catch (error) {
-      console.error('Error getting default arena:', error);
-      throw new Error('Failed to fetch default arena');
+      console.error("Error getting default arena:", error);
+      throw new Error("Failed to fetch default arena");
     }
   }
 
   /**
    * Create new arena
    */
-  async createArena(arena: Omit<ArenaConfig, 'id'>): Promise<ArenaConfig> {
+  async createArena(arena: Omit<ArenaConfig, "id">): Promise<ArenaConfig> {
     try {
       // Validate arena
       const validation = validateArenaConfig(arena as ArenaConfig);
       if (!validation.valid) {
-        throw new Error(`Arena validation failed: ${validation.errors.join(', ')}`);
+        throw new Error(
+          `Arena validation failed: ${validation.errors.join(", ")}`,
+        );
       }
 
       // Generate ID from name
-      const id = arena.name.toLowerCase().replace(/\s+/g, '_');
+      const id = arena.name.toLowerCase().replace(/\s+/g, "_");
 
       const arenaData = {
         ...arena,
@@ -115,24 +120,32 @@ export class ArenaService {
 
       return {
         id,
-        ...arenaData
+        ...arenaData,
       } as ArenaConfig;
     } catch (error) {
-      console.error('Error creating arena:', error);
-      throw new Error('Failed to create arena');
+      console.error("Error creating arena:", error);
+      throw new Error("Failed to create arena");
     }
   }
 
   /**
    * Update arena
    */
-  async updateArena(id: string, updates: Partial<ArenaConfig>): Promise<ArenaConfig> {
+  async updateArena(
+    id: string,
+    updates: Partial<ArenaConfig>,
+  ): Promise<ArenaConfig> {
     try {
       // Validate if full config provided
       if (updates.name && updates.shape) {
-        const validation = validateArenaConfig({ id, ...updates } as ArenaConfig);
+        const validation = validateArenaConfig({
+          id,
+          ...updates,
+        } as ArenaConfig);
         if (!validation.valid) {
-          throw new Error(`Arena validation failed: ${validation.errors.join(', ')}`);
+          throw new Error(
+            `Arena validation failed: ${validation.errors.join(", ")}`,
+          );
         }
       }
 
@@ -145,13 +158,13 @@ export class ArenaService {
 
       const updated = await this.getArenaById(id);
       if (!updated) {
-        throw new Error('Arena not found after update');
+        throw new Error("Arena not found after update");
       }
 
       return updated;
     } catch (error) {
-      console.error('Error updating arena:', error);
-      throw new Error('Failed to update arena');
+      console.error("Error updating arena:", error);
+      throw new Error("Failed to update arena");
     }
   }
 
@@ -162,8 +175,8 @@ export class ArenaService {
     try {
       await this.db.collection(this.collection).doc(id).delete();
     } catch (error) {
-      console.error('Error deleting arena:', error);
-      throw new Error('Failed to delete arena');
+      console.error("Error deleting arena:", error);
+      throw new Error("Failed to delete arena");
     }
   }
 
@@ -177,21 +190,21 @@ export class ArenaService {
       // Remove default from all arenas
       const snapshot = await this.db
         .collection(this.collection)
-        .where('difficulty', '==', 'easy')
+        .where("difficulty", "==", "easy")
         .get();
 
-      snapshot.docs.forEach(doc => {
-        batch.update(doc.ref, { difficulty: 'custom' });
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { difficulty: "custom" });
       });
 
       // Set new default
       const arenaRef = this.db.collection(this.collection).doc(id);
-      batch.update(arenaRef, { difficulty: 'easy' });
+      batch.update(arenaRef, { difficulty: "easy" });
 
       await batch.commit();
     } catch (error) {
-      console.error('Error setting default arena:', error);
-      throw new Error('Failed to set default arena');
+      console.error("Error setting default arena:", error);
+      throw new Error("Failed to set default arena");
     }
   }
 }

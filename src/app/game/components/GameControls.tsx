@@ -176,8 +176,8 @@ const GameControls: React.FC<GameControlsProps> = ({
           {isLoading
             ? "Loading..."
             : isPlaying
-            ? "Battle In Progress"
-            : "New Battle"}
+              ? "Battle In Progress"
+              : "New Battle"}
         </Button>
       </Box>
 

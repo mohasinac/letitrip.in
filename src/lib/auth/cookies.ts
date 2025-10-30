@@ -1,26 +1,26 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export interface CookieOptions {
   expires?: number | Date;
   path?: string;
   domain?: string;
   secure?: boolean;
-  sameSite?: 'strict' | 'lax' | 'none';
+  sameSite?: "strict" | "lax" | "none";
   httpOnly?: boolean;
 }
 
 class AuthCookieManager {
-  private readonly AUTH_TOKEN_KEY = 'firebase-token';
-  private readonly REFRESH_TOKEN_KEY = 'firebase-refresh-token';
-  private readonly USER_DATA_KEY = 'user-data';
-  private readonly SESSION_KEY = 'session-id';
+  private readonly AUTH_TOKEN_KEY = "firebase-token";
+  private readonly REFRESH_TOKEN_KEY = "firebase-refresh-token";
+  private readonly USER_DATA_KEY = "user-data";
+  private readonly SESSION_KEY = "session-id";
 
   // Default cookie options for security
   private readonly defaultOptions: CookieOptions = {
     expires: 7, // 7 days
-    path: '/',
-    secure: process.env.NODE_ENV === 'production', // Only HTTPS in production
-    sameSite: 'lax',
+    path: "/",
+    secure: process.env.NODE_ENV === "production", // Only HTTPS in production
+    sameSite: "lax",
   };
 
   // Set Firebase ID token
@@ -36,15 +36,15 @@ class AuthCookieManager {
 
   // Remove auth token
   removeAuthToken(): void {
-    Cookies.remove(this.AUTH_TOKEN_KEY, { path: '/' });
+    Cookies.remove(this.AUTH_TOKEN_KEY, { path: "/" });
   }
 
   // Set refresh token (for long-term authentication)
   setRefreshToken(token: string, options?: CookieOptions): void {
-    const cookieOptions = { 
-      ...this.defaultOptions, 
+    const cookieOptions = {
+      ...this.defaultOptions,
       expires: 30, // 30 days for refresh token
-      ...options 
+      ...options,
     };
     Cookies.set(this.REFRESH_TOKEN_KEY, token, cookieOptions);
   }
@@ -56,7 +56,7 @@ class AuthCookieManager {
 
   // Remove refresh token
   removeRefreshToken(): void {
-    Cookies.remove(this.REFRESH_TOKEN_KEY, { path: '/' });
+    Cookies.remove(this.REFRESH_TOKEN_KEY, { path: "/" });
   }
 
   // Set user data (non-sensitive information only)
@@ -70,7 +70,11 @@ class AuthCookieManager {
       isEmailVerified: userData.isEmailVerified,
       isPhoneVerified: userData.isPhoneVerified,
     };
-    Cookies.set(this.USER_DATA_KEY, JSON.stringify(safeUserData), cookieOptions);
+    Cookies.set(
+      this.USER_DATA_KEY,
+      JSON.stringify(safeUserData),
+      cookieOptions,
+    );
   }
 
   // Get user data
@@ -79,7 +83,7 @@ class AuthCookieManager {
       const userData = Cookies.get(this.USER_DATA_KEY);
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
-      console.error('Error parsing user data from cookie:', error);
+      console.error("Error parsing user data from cookie:", error);
       this.removeUserData();
       return null;
     }
@@ -87,7 +91,7 @@ class AuthCookieManager {
 
   // Remove user data
   removeUserData(): void {
-    Cookies.remove(this.USER_DATA_KEY, { path: '/' });
+    Cookies.remove(this.USER_DATA_KEY, { path: "/" });
   }
 
   // Set session ID for tracking
@@ -103,7 +107,7 @@ class AuthCookieManager {
 
   // Remove session ID
   removeSessionId(): void {
-    Cookies.remove(this.SESSION_KEY, { path: '/' });
+    Cookies.remove(this.SESSION_KEY, { path: "/" });
   }
 
   // Clear all auth-related cookies
@@ -148,21 +152,21 @@ class AuthCookieManager {
       ...preferences,
       timestamp: new Date().toISOString(),
     };
-    Cookies.set('cookie-consent', JSON.stringify(consentData), {
+    Cookies.set("cookie-consent", JSON.stringify(consentData), {
       expires: 365, // 1 year
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
     });
   }
 
   // Get cookie consent preferences
   getCookieConsent(): any | null {
     try {
-      const consent = Cookies.get('cookie-consent');
+      const consent = Cookies.get("cookie-consent");
       return consent ? JSON.parse(consent) : null;
     } catch (error) {
-      console.error('Error parsing cookie consent:', error);
+      console.error("Error parsing cookie consent:", error);
       return null;
     }
   }
@@ -195,31 +199,31 @@ export class ServerCookieManager {
 
   // Parse cookies from request headers
   private parseCookies(): Record<string, string> {
-    const cookieHeader = this.request.headers.get('cookie');
+    const cookieHeader = this.request.headers.get("cookie");
     if (!cookieHeader) return {};
 
     return Object.fromEntries(
-      cookieHeader.split(';').map(cookie => {
-        const [name, ...rest] = cookie.trim().split('=');
-        return [name, rest.join('=')];
-      })
+      cookieHeader.split(";").map((cookie) => {
+        const [name, ...rest] = cookie.trim().split("=");
+        return [name, rest.join("=")];
+      }),
     );
   }
 
   // Get auth token from request cookies
   getAuthToken(): string | undefined {
     const cookies = this.parseCookies();
-    return cookies['firebase-token'];
+    return cookies["firebase-token"];
   }
 
   // Get user data from request cookies
   getUserData(): any | null {
     try {
       const cookies = this.parseCookies();
-      const userData = cookies['user-data'];
+      const userData = cookies["user-data"];
       return userData ? JSON.parse(decodeURIComponent(userData)) : null;
     } catch (error) {
-      console.error('Error parsing user data from request cookies:', error);
+      console.error("Error parsing user data from request cookies:", error);
       return null;
     }
   }
@@ -227,7 +231,7 @@ export class ServerCookieManager {
   // Get session ID from request cookies
   getSessionId(): string | undefined {
     const cookies = this.parseCookies();
-    return cookies['session-id'];
+    return cookies["session-id"];
   }
 
   // Check if user is authenticated

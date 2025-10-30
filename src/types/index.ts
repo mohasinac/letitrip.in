@@ -8,7 +8,7 @@ export interface User {
   email: string;
   name: string;
   phone?: string;
-  role: 'admin' | 'user' | 'seller';
+  role: "admin" | "user" | "seller";
   avatar?: string;
   addresses: Address[];
   isOver18?: boolean; // Age verification flag
@@ -44,18 +44,18 @@ export interface Product {
   quantity: number;
   lowStockThreshold: number;
   weight: number; // Required for shipping calculations
-  weightUnit: 'kg' | 'g' | 'lb' | 'oz'; // Weight unit
+  weightUnit: "kg" | "g" | "lb" | "oz"; // Weight unit
   dimensions?: {
     length: number;
     width: number;
     height: number;
-    unit: 'cm' | 'in';
+    unit: "cm" | "in";
   };
   images: ProductImage[];
   videos?: ProductVideo[]; // Support for product videos
   category: string;
   tags: string[];
-  status: 'active' | 'draft' | 'archived';
+  status: "active" | "draft" | "archived";
   isFeatured: boolean;
   rating?: number;
   reviewCount?: number;
@@ -65,7 +65,7 @@ export interface Product {
     name?: string;
     storeName?: string;
     businessName?: string;
-    storeStatus?: 'live' | 'maintenance' | 'offline';
+    storeStatus?: "live" | "maintenance" | "offline";
     isVerified?: boolean;
   };
   seo?: {
@@ -104,12 +104,12 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
-  
+
   // SEO and Images
   image?: string;
   icon?: string;
   seo?: CategorySEO;
-  
+
   // Hierarchy - Many-to-Many Relationship
   parentIds?: string[]; // Multiple parent category IDs
   parentSlugs?: string[]; // Multiple parent category slugs for easy identification
@@ -118,12 +118,12 @@ export interface Category {
   minLevel?: number; // Minimum level in hierarchy (shortest path from root)
   maxLevel?: number; // Maximum level in hierarchy (longest path from root)
   children?: Category[]; // For tree view (computed)
-  
+
   // Status and Organization
   isActive: boolean;
   featured: boolean;
   sortOrder: number;
-  
+
   // Metadata
   productCount?: number;
   inStockCount?: number;
@@ -168,7 +168,7 @@ export interface Order {
   total: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
-  paymentMethod: 'razorpay' | 'cod';
+  paymentMethod: "razorpay" | "cod";
   paymentId?: string;
   shippingAddress: Address;
   billingAddress: Address;
@@ -191,15 +191,15 @@ export interface OrderItem {
 }
 
 export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-  | 'refunded';
+  | "pending"
+  | "confirmed"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | "refunded";
 
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 
 // Cart Types
 export interface CartItem {
@@ -235,7 +235,7 @@ export interface Auction {
   buyNowPrice?: number;
   startTime: string;
   endTime: string;
-  status: 'upcoming' | 'active' | 'ended' | 'cancelled';
+  status: "upcoming" | "active" | "ended" | "cancelled";
   winnerId?: string;
   bids: Bid[];
   createdAt: string;
@@ -266,7 +266,7 @@ export interface Review {
   images?: string[];
   verified: boolean;
   helpful: number;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
   updatedAt: string;
 }
@@ -338,11 +338,11 @@ export interface ProductFilters {
   maxPrice?: number;
   tags?: string[];
   search?: string;
-  sort?: 'price-asc' | 'price-desc' | 'newest' | 'popular';
+  sort?: "price-asc" | "price-desc" | "newest" | "popular";
   page?: number;
   pageSize?: number;
   sellerId?: string;
-  status?: 'active' | 'inactive' | 'pending';
+  status?: "active" | "inactive" | "pending";
 }
 
 export interface OrderFilters {
@@ -361,7 +361,7 @@ export interface Coupon {
   code: string;
   name: string;
   description?: string;
-  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo';
+  type: "percentage" | "fixed" | "free_shipping" | "bogo";
   value: number; // percentage (0-100) or fixed amount
   minimumAmount?: number; // minimum order amount required
   maximumAmount?: number; // maximum discount amount (for percentage coupons)
@@ -370,7 +370,7 @@ export interface Coupon {
   usedCount: number;
   startDate: string;
   endDate: string;
-  status: 'active' | 'inactive' | 'expired';
+  status: "active" | "inactive" | "expired";
   applicableProducts?: string[]; // product IDs
   applicableCategories?: string[]; // category IDs
   excludeProducts?: string[]; // excluded product IDs
@@ -411,7 +411,7 @@ export interface CouponFormData {
   code: string;
   name: string;
   description: string;
-  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo';
+  type: "percentage" | "fixed" | "free_shipping" | "bogo";
   value: number;
   minimumAmount: number;
   maximumAmount: number;
@@ -419,7 +419,7 @@ export interface CouponFormData {
   maxUsesPerUser: number;
   startDate: string;
   endDate: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   applicableProducts: string[];
   applicableCategories: string[];
   excludeProducts: string[];
@@ -447,7 +447,7 @@ export interface RazorpayPayment {
   orderId: string;
   amount: number;
   currency: string;
-  status: 'created' | 'authorized' | 'captured' | 'refunded' | 'failed';
+  status: "created" | "authorized" | "captured" | "refunded" | "failed";
   method: string;
   description: string;
   notes: any;
@@ -495,7 +495,7 @@ export interface ShiprocketOrderRequest {
     tax?: string;
     hsn?: string;
   }>;
-  payment_method: 'Prepaid' | 'COD';
+  payment_method: "Prepaid" | "COD";
   shipping_charges: number;
   giftwrap_charges?: number;
   transaction_charges?: number;
@@ -530,9 +530,9 @@ export interface SellerProfile {
   userId: string;
   businessName?: string;
   storeName?: string; // Custom store name for display
-  storeStatus: 'live' | 'maintenance' | 'offline'; // Store operational status
+  storeStatus: "live" | "maintenance" | "offline"; // Store operational status
   storeDescription?: string;
-  businessType?: 'individual' | 'company' | 'partnership';
+  businessType?: "individual" | "company" | "partnership";
   gstNumber?: string;
   panNumber?: string;
   businessAddress?: Address;
@@ -577,7 +577,7 @@ export interface SellerShop {
   };
   businessInfo: {
     businessName?: string;
-    businessType?: 'individual' | 'company' | 'partnership';
+    businessType?: "individual" | "company" | "partnership";
     gstNumber?: string;
     panNumber?: string;
     bankDetails?: {
@@ -630,46 +630,46 @@ export interface SellerProduct {
   name: string;
   description: string;
   shortDescription?: string;
-  
+
   // Pricing
   price: number;
   compareAtPrice?: number;
   cost?: number;
-  
+
   // Inventory
   sku: string;
   quantity: number;
   lowStockThreshold: number;
-  
+
   // Category (only leaf categories allowed)
   categoryId: string;
   categorySlug: string;
   tags: string[];
-  
+
   // Media
   images: ProductMediaImage[];
   videos: ProductMediaVideo[];
-  
+
   // Pickup & Shipping
   pickupAddressId: string;
   weight: number;
-  weightUnit: 'kg' | 'g' | 'lb' | 'oz';
+  weightUnit: "kg" | "g" | "lb" | "oz";
   dimensions?: {
     length: number;
     width: number;
     height: number;
-    unit: 'cm' | 'in';
+    unit: "cm" | "in";
   };
   freeShipping: boolean;
-  shippingMethod: 'seller' | 'shiprocket' | 'pickup';
-  
+  shippingMethod: "seller" | "shiprocket" | "pickup";
+
   // Condition & Features
-  condition: 'new' | 'used-mint' | 'used-good' | 'used-fair' | 'damaged';
+  condition: "new" | "used-mint" | "used-good" | "used-fair" | "damaged";
   returnable: boolean;
   returnPeriod?: number; // days
   features: string[];
   specifications: { [key: string]: string };
-  
+
   // SEO
   seo: {
     title: string;
@@ -677,14 +677,14 @@ export interface SellerProduct {
     keywords: string[];
     slug: string; // Auto-generated with "buy-" prefix
   };
-  
+
   // Dates
   startDate: string;
   expirationDate?: string; // null means permanent
-  
+
   // Status
-  status: 'active' | 'draft' | 'archived' | 'expired';
-  
+  status: "active" | "draft" | "archived" | "expired";
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -720,27 +720,27 @@ export interface SellerCoupon {
   code: string;
   name: string;
   description?: string;
-  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo' | 'cart_discount';
+  type: "percentage" | "fixed" | "free_shipping" | "bogo" | "cart_discount";
   value: number;
-  
+
   // Usage Restrictions
   minimumAmount?: number;
   maximumAmount?: number;
   maxUses?: number;
   maxUsesPerUser?: number;
   usedCount: number;
-  
+
   // Dates
   startDate: string;
   endDate: string;
   isPermanent: boolean;
-  
+
   // Applicability
   applicableProducts?: string[];
   applicableCategories?: string[];
   excludeProducts?: string[];
   excludeCategories?: string[];
-  
+
   // Restrictions
   restrictions: {
     firstTimeOnly?: boolean;
@@ -748,18 +748,18 @@ export interface SellerCoupon {
     existingCustomersOnly?: boolean;
     minQuantity?: number;
     maxQuantity?: number;
-    allowedPaymentMethods?: ('cod' | 'prepaid')[];
+    allowedPaymentMethods?: ("cod" | "prepaid")[];
     allowedUserEmails?: string[];
     excludedUserEmails?: string[];
   };
-  
+
   // Stacking
   combinable: boolean;
   priority: number;
-  
+
   // Status
-  status: 'active' | 'inactive' | 'expired' | 'scheduled';
-  
+  status: "active" | "inactive" | "expired" | "scheduled";
+
   createdAt: string;
   updatedAt: string;
 }
@@ -770,32 +770,32 @@ export interface SellerSale {
   sellerId: string;
   name: string;
   description?: string;
-  discountType: 'percentage' | 'fixed';
+  discountType: "percentage" | "fixed";
   discountValue: number;
-  
+
   // Applicability
-  applyTo: 'all_products' | 'specific_products' | 'specific_categories';
+  applyTo: "all_products" | "specific_products" | "specific_categories";
   productIds?: string[];
   categoryIds?: string[];
-  
+
   // Shipping
   enableFreeShipping: boolean;
-  
+
   // Dates
   startDate: string;
   endDate?: string;
   isPermanent: boolean;
-  
+
   // Status
-  status: 'active' | 'inactive' | 'scheduled' | 'expired';
-  
+  status: "active" | "inactive" | "scheduled" | "expired";
+
   // Stats
   stats: {
     ordersCount: number;
     revenue: number;
     productsAffected: number;
   };
-  
+
   createdAt: string;
   updatedAt: string;
 }
@@ -809,49 +809,57 @@ export interface SellerOrder {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  
+
   // Items
   items: SellerOrderItem[];
-  
+
   // Pricing
   subtotal: number;
   discount: number;
   shipping: number;
   tax: number;
   total: number;
-  
+
   // Coupon Used
   couponId?: string;
   couponCode?: string;
   couponDiscount?: number;
-  
+
   // Sale Applied
   saleId?: string;
   saleDiscount?: number;
-  
+
   // Addresses
   shippingAddress: Address;
   billingAddress: Address;
   pickupAddress: PickupAddress;
-  
+
   // Payment
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethod: 'razorpay' | 'cod';
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  paymentMethod: "razorpay" | "cod";
   paymentId?: string;
-  
+
   // Order Status
-  status: 'pending' | 'approved' | 'rejected' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  status:
+    | "pending"
+    | "approved"
+    | "rejected"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled"
+    | "refunded";
   autoApprovedAt?: string;
   approvedAt?: string;
   rejectedAt?: string;
   rejectionReason?: string;
-  
+
   // Shipping
-  shippingMethod: 'seller' | 'shiprocket';
+  shippingMethod: "seller" | "shiprocket";
   trackingNumber?: string;
   shiprocketOrderId?: string;
   shippingLabel?: string;
-  
+
   // Transaction Snapshot (immutable copy)
   transactionSnapshot: {
     products: SellerOrderItem[];
@@ -873,12 +881,12 @@ export interface SellerOrder {
     };
     timestamp: string;
   };
-  
+
   // Notes
   sellerNotes?: string;
   customerNotes?: string;
   internalNotes?: string;
-  
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -895,7 +903,7 @@ export interface SellerOrderItem {
   price: number;
   quantity: number;
   total: number;
-  
+
   // Product snapshot at time of order
   snapshot: {
     name: string;
@@ -913,37 +921,44 @@ export interface SellerShipment {
   sellerId: string;
   orderId: string;
   orderNumber: string;
-  
+
   // Shipping details
   carrier: string;
   trackingNumber: string;
   shiprocketOrderId?: string;
   shiprocketShipmentId?: string;
-  
+
   // Addresses
   fromAddress: PickupAddress;
   toAddress: Address;
-  
+
   // Package details
   weight: number;
   dimensions: {
     length: number;
     width: number;
     height: number;
-    unit: 'cm' | 'in';
+    unit: "cm" | "in";
   };
-  
+
   // Status
-  status: 'pending' | 'pickup_scheduled' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed' | 'returned';
-  
+  status:
+    | "pending"
+    | "pickup_scheduled"
+    | "in_transit"
+    | "out_for_delivery"
+    | "delivered"
+    | "failed"
+    | "returned";
+
   // Tracking
   trackingHistory: ShipmentTrackingEvent[];
-  
+
   // Labels & Documents
   shippingLabel?: string;
   invoiceUrl?: string;
   manifestUrl?: string;
-  
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -962,24 +977,32 @@ export interface ShipmentTrackingEvent {
 export interface SellerAlert {
   id: string;
   sellerId: string;
-  type: 'new_order' | 'pending_approval' | 'pending_shipment' | 'low_stock' | 'order_delivered' | 'return_request' | 'review' | 'system';
+  type:
+    | "new_order"
+    | "pending_approval"
+    | "pending_shipment"
+    | "low_stock"
+    | "order_delivered"
+    | "return_request"
+    | "review"
+    | "system";
   title: string;
   message: string;
-  severity: 'info' | 'warning' | 'error' | 'success';
-  
+  severity: "info" | "warning" | "error" | "success";
+
   // Related entities
   orderId?: string;
   productId?: string;
   shipmentId?: string;
-  
+
   // Actions
   actionUrl?: string;
   actionLabel?: string;
-  
+
   // Status
   isRead: boolean;
   readAt?: string;
-  
+
   createdAt: string;
 }
 

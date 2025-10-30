@@ -186,7 +186,7 @@ const BeybladeEditor: React.FC<BeybladeEditorProps> = ({
                         onChange={(e) =>
                           handleChange(
                             "spinDirection",
-                            e.target.value as SpinDirection
+                            e.target.value as SpinDirection,
                           )
                         }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -324,7 +324,7 @@ const BeybladeEditor: React.FC<BeybladeEditorProps> = ({
                         onChange={(e) =>
                           handleSpecialMoveChange(
                             "powerCost",
-                            parseInt(e.target.value)
+                            parseInt(e.target.value),
                           )
                         }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -442,8 +442,8 @@ const BeybladeEditor: React.FC<BeybladeEditorProps> = ({
               {saving
                 ? "Saving..."
                 : isEditing
-                ? "Update Beyblade"
-                : "Create Beyblade"}
+                  ? "Update Beyblade"
+                  : "Create Beyblade"}
             </button>
           </div>
         </form>

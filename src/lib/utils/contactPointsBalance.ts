@@ -1,7 +1,7 @@
 /**
  * Contact Points Balance System
  * Calculates balanced damage multipliers based on the number of contact points (spikes)
- * 
+ *
  * Balance Formula:
  * - More spikes = more consistent hits but lower peak damage
  * - Fewer spikes = fewer hits but higher peak damage
@@ -17,7 +17,7 @@ export interface ContactPoint {
 /**
  * Calculate the base damage multiplier for a beyblade based on number of contact points
  * This represents the "spike" damage when a contact point hits
- * 
+ *
  * Formula:
  * - 1 spike: 2.0x (max damage, but only hits occasionally)
  * - 2 spikes: 1.6x
@@ -29,7 +29,7 @@ export interface ContactPoint {
  * - 8 spikes: 1.12x
  * - 9 spikes: 1.11x
  * - 10 spikes: 1.1x (minimum, but very consistent hits)
- * 
+ *
  * The formula ensures: fewer spikes = higher damage but less frequent
  */
 export function calculateBalancedDamageMultiplier(numSpikes: number): number {
@@ -60,16 +60,16 @@ export function getBaseDamage(): number {
  */
 export function generateEvenlyDistributedPoints(
   numPoints: number,
-  startAngle: number = 0
+  startAngle: number = 0,
 ): ContactPoint[] {
   if (numPoints <= 0 || numPoints > 10) return [];
-  
+
   const angleStep = 360 / numPoints;
   const baseDamage = calculateBalancedDamageMultiplier(numPoints);
-  const baseWidth = Math.max(20, 360 / numPoints * 0.7); // Width proportional to spacing
-  
+  const baseWidth = Math.max(20, (360 / numPoints) * 0.7); // Width proportional to spacing
+
   const points: ContactPoint[] = [];
-  
+
   for (let i = 0; i < numPoints; i++) {
     points.push({
       angle: (startAngle + angleStep * i) % 360,
@@ -77,7 +77,7 @@ export function generateEvenlyDistributedPoints(
       width: Math.min(baseWidth, 60), // Cap at 60 degrees
     });
   }
-  
+
   return points;
 }
 
@@ -86,10 +86,10 @@ export function generateEvenlyDistributedPoints(
  */
 export function normalizeContactPoints(points: ContactPoint[]): ContactPoint[] {
   if (points.length === 0) return points;
-  
+
   const recommendedDamage = calculateBalancedDamageMultiplier(points.length);
-  
-  return points.map(point => ({
+
+  return points.map((point) => ({
     ...point,
     // Ensure angles are within 0-360
     angle: ((point.angle % 360) + 360) % 360,
@@ -106,20 +106,20 @@ export function normalizeContactPoints(points: ContactPoint[]): ContactPoint[] {
  */
 export function calculateDamageAtAngle(
   contactPoints: ContactPoint[],
-  hitAngle: number
+  hitAngle: number,
 ): { isHit: boolean; damageMultiplier: number; hitPointIndex: number | null } {
   // Normalize hit angle to 0-360
   const normalizedAngle = ((hitAngle % 360) + 360) % 360;
-  
+
   // Check each contact point
   for (let i = 0; i < contactPoints.length; i++) {
     const point = contactPoints[i];
     const halfWidth = point.width / 2;
-    
+
     // Calculate angle difference (accounting for wraparound)
     let angleDiff = Math.abs(normalizedAngle - point.angle);
     if (angleDiff > 180) angleDiff = 360 - angleDiff;
-    
+
     // Check if within the contact point's width
     if (angleDiff <= halfWidth) {
       return {
@@ -129,7 +129,7 @@ export function calculateDamageAtAngle(
       };
     }
   }
-  
+
   // No hit - return base damage
   return {
     isHit: false,
@@ -153,19 +153,19 @@ export function getContactPointStats(points: ContactPoint[]) {
       isBalanced: true,
     };
   }
-  
+
   const recommendedDamage = calculateBalancedDamageMultiplier(points.length);
-  const damages = points.map(p => p.damageMultiplier);
+  const damages = points.map((p) => p.damageMultiplier);
   const averageDamage = damages.reduce((a, b) => a + b, 0) / damages.length;
   const maxDamage = Math.max(...damages);
   const minDamage = Math.min(...damages);
   const totalCoverage = points.reduce((sum, p) => sum + p.width, 0);
-  
+
   // Consider balanced if all points are within 20% of recommended damage
   const isBalanced = damages.every(
-    d => Math.abs(d - recommendedDamage) / recommendedDamage < 0.2
+    (d) => Math.abs(d - recommendedDamage) / recommendedDamage < 0.2,
   );
-  
+
   return {
     numPoints: points.length,
     recommendedDamage,
@@ -186,42 +186,42 @@ export function suggestContactPointsForType(type: string): {
   points: ContactPoint[];
 } {
   switch (type.toLowerCase()) {
-    case 'attack':
+    case "attack":
       // Attack types: 3-4 spikes for high damage
       return {
         numPoints: 3,
-        description: '3 heavy spikes for maximum impact damage',
+        description: "3 heavy spikes for maximum impact damage",
         points: generateEvenlyDistributedPoints(3),
       };
-    
-    case 'defense':
+
+    case "defense":
       // Defense types: 2 large spikes for counter-attacks
       return {
         numPoints: 2,
-        description: '2 massive contact points for powerful counters',
+        description: "2 massive contact points for powerful counters",
         points: generateEvenlyDistributedPoints(2),
       };
-    
-    case 'stamina':
+
+    case "stamina":
       // Stamina types: 6-8 small points for consistent hits
       return {
         numPoints: 6,
-        description: '6 balanced points for consistent damage',
+        description: "6 balanced points for consistent damage",
         points: generateEvenlyDistributedPoints(6),
       };
-    
-    case 'balanced':
+
+    case "balanced":
       // Balanced types: 4-5 medium points
       return {
         numPoints: 4,
-        description: '4 well-balanced contact points',
+        description: "4 well-balanced contact points",
         points: generateEvenlyDistributedPoints(4),
       };
-    
+
     default:
       return {
         numPoints: 3,
-        description: '3 standard contact points',
+        description: "3 standard contact points",
         points: generateEvenlyDistributedPoints(3),
       };
   }

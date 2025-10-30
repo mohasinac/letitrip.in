@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb, getAdminStorage } from "@/lib/database/admin";
+import {
+  getAdminAuth,
+  getAdminDb,
+  getAdminStorage,
+} from "@/lib/database/admin";
 import { Timestamp } from "firebase-admin/firestore";
 
 /**
@@ -37,7 +41,7 @@ async function deleteStorageFolder(sellerId: string, slug: string) {
 async function renameStorageFolder(
   sellerId: string,
   oldSlug: string,
-  newSlug: string
+  newSlug: string,
 ) {
   try {
     const storage = getAdminStorage();
@@ -45,7 +49,9 @@ async function renameStorageFolder(
     const oldFolderPath = `sellers/${sellerId}/products/${oldSlug}/`;
     const newFolderPath = `sellers/${sellerId}/products/${newSlug}/`;
 
-    console.log(`Renaming storage folder: ${oldFolderPath} -> ${newFolderPath}`);
+    console.log(
+      `Renaming storage folder: ${oldFolderPath} -> ${newFolderPath}`,
+    );
 
     // List all files in the old folder
     const [files] = await bucket.getFiles({ prefix: oldFolderPath });
@@ -68,7 +74,7 @@ async function renameStorageFolder(
         await file.delete();
 
         console.log(`Moved: ${oldPath} -> ${newPath}`);
-      })
+      }),
     );
 
     console.log(`Renamed folder with ${files.length} files`);
@@ -101,8 +107,14 @@ function updateMediaURLs(media: any, oldSlug: string, newSlug: string): any {
     updatedMedia.videos = updatedMedia.videos.map((video: any) => ({
       ...video,
       url: video.url?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
-      thumbnail: video.thumbnail?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
-      path: video.path?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
+      thumbnail: video.thumbnail?.replace(
+        `/products/${oldSlug}/`,
+        `/products/${newSlug}/`,
+      ),
+      path: video.path?.replace(
+        `/products/${oldSlug}/`,
+        `/products/${newSlug}/`,
+      ),
     }));
   }
 
@@ -115,7 +127,7 @@ function updateMediaURLs(media: any, oldSlug: string, newSlug: string): any {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify authentication
@@ -123,7 +135,7 @@ export async function GET(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -137,7 +149,7 @@ export async function GET(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -151,7 +163,7 @@ export async function GET(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -161,7 +173,7 @@ export async function GET(
     if (role !== "admin" && productData?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -184,7 +196,7 @@ export async function GET(
     console.error("Error fetching product:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -195,7 +207,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify authentication
@@ -203,7 +215,7 @@ export async function PUT(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -217,7 +229,7 @@ export async function PUT(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -232,7 +244,7 @@ export async function PUT(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -242,7 +254,7 @@ export async function PUT(
     if (role !== "admin" && existingProduct?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -258,7 +270,7 @@ export async function PUT(
       if (!existingSkuProduct.empty) {
         return NextResponse.json(
           { success: false, error: "SKU already exists for your products" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -277,7 +289,7 @@ export async function PUT(
             success: false,
             error: "Slug already exists. Please use a different one.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -286,7 +298,7 @@ export async function PUT(
       const newSlug = body.seo.slug;
       if (oldSlug && newSlug && oldSlug !== newSlug) {
         await renameStorageFolder(uid, oldSlug, newSlug);
-        
+
         // Update media URLs in the update data if media exists
         if (body.media || existingProduct?.media) {
           const mediaToUpdate = body.media || existingProduct?.media;
@@ -325,8 +337,7 @@ export async function PUT(
     if (body.inventory !== undefined) {
       updateData.inventory = {
         quantity: parseInt(body.inventory.quantity) || 0,
-        lowStockThreshold:
-          parseInt(body.inventory.lowStockThreshold) || 10,
+        lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 10,
         trackInventory: body.inventory.trackInventory !== false,
       };
     }
@@ -388,7 +399,7 @@ export async function PUT(
     console.error("Error updating product:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -399,7 +410,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify authentication
@@ -407,7 +418,7 @@ export async function DELETE(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -421,7 +432,7 @@ export async function DELETE(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -435,7 +446,7 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -445,7 +456,7 @@ export async function DELETE(
     if (role !== "admin" && productData?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -466,7 +477,7 @@ export async function DELETE(
     console.error("Error deleting product:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to delete product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,7 +6,7 @@
     "plaintext": true,
     "markdown": true
   },
-  
+
   // AI Command Approval Settings
   "github.copilot.chat.terminalChatLocation": "terminal",
   "github.copilot.chat.welcomeMessage": "never",
@@ -25,7 +25,7 @@
   // Try these additional settings
   "github.copilot.chat.runCommand.requireConfirmation": false,
   "workbench.editor.chat.executeCommand.requireConfirmation": false,
-  
+
   // Terminal Integration
   "terminal.integrated.enableMultiLinePasteWarning": "never",
   "terminal.integrated.confirmOnExit": "never",
@@ -34,13 +34,13 @@
   "terminal.integrated.commandsToSkipShell": [
     "language-configuration.clearCache"
   ],
-  
+
   // Reduce command verification for common safe commands
   "security.workspace.trust.untrustedFiles": "open",
   "security.workspace.trust.banner": "never",
   "security.workspace.trust.startupPrompt": "never",
   "security.workspace.trust.emptyWindow": false,
-  
+
   // Git settings to reduce prompts
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
@@ -48,35 +48,35 @@
   "git.allowForcePush": true,
   "git.alwaysSignOff": false,
   "git.postCommitCommand": "none",
-  
+
   // Auto-save settings
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000,
-  
+
   // Editor settings for better AI experience
   "editor.inlineSuggest.enabled": true,
   "editor.suggestSelection": "first",
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  
+
   // NPM/Package manager settings
   "npm.packageManager": "npm",
   "extensions.ignoreRecommendations": false,
-  
+
   // Disable various confirmation dialogs
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "workbench.enableExperiments": false,
   "telemetry.telemetryLevel": "off",
-  
+
   // Task and debug settings
   "task.allowAutomaticTasks": "on",
   "debug.allowBreakpointsEverywhere": true,
-  
+
   // Additional AI/Chat command settings
   "workbench.experimental.chat.defaultAgent": "copilot",
   "chat.editor.wordWrap": "on",
   "github.copilot.chat.localeOverride": "en",
-  
+
   // Experimental settings to disable confirmations
   "workbench.experimental.settingsProfiles.enabled": true,
   "terminal.integrated.experimentalUseTitleEvent": true

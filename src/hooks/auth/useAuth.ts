@@ -2,10 +2,10 @@
  * Enhanced Auth Hook using new API services
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { authAPI } from '@/lib/api/auth';
-import type { User } from '@/types';
-import type { LoginCredentials, RegisterCredentials } from '@/lib/api/auth';
+import { useState, useEffect, useCallback } from "react";
+import { authAPI } from "@/lib/api/auth";
+import type { User } from "@/types";
+import type { LoginCredentials, RegisterCredentials } from "@/lib/api/auth";
 
 export interface UseAuthReturn {
   user: User | null;
@@ -16,7 +16,10 @@ export interface UseAuthReturn {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<void>;
-  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<void>;
   refetch: () => Promise<void>;
   clearError: () => void;
 }
@@ -45,7 +48,7 @@ export function useAuth(): UseAuthReturn {
       const currentUser = await authAPI.getCurrentUser();
       setUser(currentUser);
     } catch (err) {
-      console.error('Failed to fetch current user:', err);
+      console.error("Failed to fetch current user:", err);
       setUser(null);
       authAPI.clearAuthToken();
     } finally {
@@ -61,7 +64,7 @@ export function useAuth(): UseAuthReturn {
       const response = await authAPI.login(credentials);
       setUser(response.user);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -77,7 +80,8 @@ export function useAuth(): UseAuthReturn {
       const response = await authAPI.register(credentials);
       setUser(response.user);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Registration failed";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -90,7 +94,7 @@ export function useAuth(): UseAuthReturn {
       setLoading(true);
       await authAPI.logout();
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
     } finally {
       setUser(null);
       setLoading(false);
@@ -105,7 +109,8 @@ export function useAuth(): UseAuthReturn {
       const updatedUser = await authAPI.updateProfile(updates);
       setUser(updatedUser);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Profile update failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Profile update failed";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -113,20 +118,24 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      await authAPI.changePassword({ currentPassword, newPassword });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Password change failed';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        await authAPI.changePassword({ currentPassword, newPassword });
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Password change failed";
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   const refetch = useCallback(() => fetchCurrentUser(), [fetchCurrentUser]);
 
@@ -165,37 +174,42 @@ export function usePasswordReset() {
 
       const response = await authAPI.requestPasswordReset(email);
       setSuccess(response.success);
-      
+
       if (!response.success) {
         setError(response.message);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Password reset request failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Password reset request failed";
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const resetPassword = useCallback(async (token: string, newPassword: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(false);
+  const resetPassword = useCallback(
+    async (token: string, newPassword: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        setSuccess(false);
 
-      const response = await authAPI.resetPassword(token, newPassword);
-      setSuccess(response.success);
-      
-      if (!response.success) {
-        setError(response.message);
+        const response = await authAPI.resetPassword(token, newPassword);
+        setSuccess(response.success);
+
+        if (!response.success) {
+          setError(response.message);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Password reset failed";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Password reset failed';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const clearState = useCallback(() => {
     setError(null);
@@ -228,12 +242,13 @@ export function useEmailVerification() {
 
       const response = await authAPI.verifyEmail(token);
       setSuccess(response.success);
-      
+
       if (!response.success) {
         setError(response.message);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Email verification failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Email verification failed";
       setError(errorMessage);
     } finally {
       setLoading(false);

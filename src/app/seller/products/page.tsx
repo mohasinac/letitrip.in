@@ -70,7 +70,7 @@ function ProductsListContent() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProduct, setSelectedProduct] = useState<SellerProduct | null>(
-    null
+    null,
   );
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -102,7 +102,7 @@ function ProductsListContent() {
       }>(
         `/api/seller/products${
           params.toString() ? `?${params.toString()}` : ""
-        }`
+        }`,
       );
 
       if (response.success && response.data) {
@@ -125,7 +125,7 @@ function ProductsListContent() {
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    product: SellerProduct
+    product: SellerProduct,
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedProduct(product);
@@ -147,7 +147,7 @@ function ProductsListContent() {
     try {
       setDeletingProduct(true);
       const response = await apiDelete<{ success: boolean; message?: string }>(
-        `/api/seller/products/${selectedProduct.id}`
+        `/api/seller/products/${selectedProduct.id}`,
       );
 
       if (response.success) {
@@ -212,7 +212,7 @@ function ProductsListContent() {
     lowStock: products.filter(
       (p) =>
         p.inventory.quantity > 0 &&
-        p.inventory.quantity <= (p.inventory.lowStockThreshold || 10)
+        p.inventory.quantity <= (p.inventory.lowStockThreshold || 10),
     ).length,
   };
 
@@ -372,7 +372,7 @@ function ProductsListContent() {
                   {filteredProducts.map((product) => {
                     const stockStatus = getStockStatus(
                       product.inventory.quantity,
-                      product.inventory.lowStockThreshold || 10
+                      product.inventory.lowStockThreshold || 10,
                     );
                     return (
                       <TableRow key={product.id} hover>

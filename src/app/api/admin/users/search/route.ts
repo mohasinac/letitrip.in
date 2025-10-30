@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
 
-    const searchQuery = request.nextUrl.searchParams.get('q') || '';
+    const searchQuery = request.nextUrl.searchParams.get("q") || "";
 
     try {
       const token = authHeader.substring(7);
@@ -20,25 +20,25 @@ export async function GET(request: NextRequest) {
 
       // Check if user is admin
       const db = getAdminDb();
-      const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
       const userData = userDoc.data();
 
-      if (!userData || userData.role !== 'admin') {
+      if (!userData || userData.role !== "admin") {
         return NextResponse.json(
-          { success: false, error: 'Admin access required' },
-          { status: 403 }
+          { success: false, error: "Admin access required" },
+          { status: 403 },
         );
       }
 
       // Search users by email or name
-      const usersSnapshot = await db.collection('users').limit(100).get();
-      const allUsers = usersSnapshot.docs.map(doc => {
+      const usersSnapshot = await db.collection("users").limit(100).get();
+      const allUsers = usersSnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
           uid: doc.id,
-          email: data?.email || '',
-          name: data?.name || '',
+          email: data?.email || "",
+          name: data?.name || "",
           phone: data?.phone,
           role: data?.role,
           isBanned: data?.isBanned,
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         };
       });
 
-      const results = allUsers.filter(user => {
+      const results = allUsers.filter((user) => {
         const query = searchQuery.toLowerCase();
         return (
           user.email?.toLowerCase().includes(query) ||
@@ -58,17 +58,17 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json(results);
     } catch (error: any) {
-      console.error('Firebase token verification error:', error);
+      console.error("Firebase token verification error:", error);
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
   } catch (error: any) {
-    console.error('Search users error:', error);
+    console.error("Search users error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to search users' },
-      { status: 500 }
+      { success: false, error: "Failed to search users" },
+      { status: 500 },
     );
   }
 }

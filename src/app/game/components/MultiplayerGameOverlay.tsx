@@ -86,8 +86,8 @@ const MultiplayerGameOverlay: React.FC<MultiplayerGameOverlayProps> = ({
           {playerWantsRematch && opponentWantsRematch
             ? "⏳ Starting rematch..."
             : playerWantsRematch
-            ? "⏳ Waiting for opponent..."
-            : "⏳ Opponent wants a rematch!"}
+              ? "⏳ Waiting for opponent..."
+              : "⏳ Opponent wants a rematch!"}
         </Typography>
       )}
 

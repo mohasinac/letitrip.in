@@ -344,7 +344,7 @@ Also fixed the API route to handle Next.js 15+ async params:
 // OLD
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const { id } = params; // ❌ Sync access
 }
@@ -352,7 +352,7 @@ export async function GET(
 // NEW
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params; // ✅ Async access
 }

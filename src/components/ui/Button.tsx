@@ -46,7 +46,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <button
@@ -57,7 +57,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           variantClasses[variant],
           sizeClasses[size],
           fullWidth && "w-full",
-          className
+          className,
         )}
         {...props}
       >
@@ -91,7 +91,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

@@ -65,7 +65,7 @@ export default async function HomePage() {
           inStockCount: inStockSnapshot.data().count,
           outOfStockCount: outOfStockSnapshot.data().count,
         } as CategoryWithCount;
-      })
+      }),
     );
 
     featuredCategories = categoriesWithCounts;

@@ -40,6 +40,7 @@ import {
   Print as PrintIcon,
   Search as SearchIcon,
   ShoppingBag as OrdersIcon,
+  Receipt,
 } from "@mui/icons-material";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
@@ -132,7 +133,7 @@ function OrdersListContent() {
       setLoading(true);
       const statusFilter = tabs[activeTab].value;
       const response = await apiGet<any>(
-        `/api/seller/orders?status=${statusFilter}&search=${searchQuery}`
+        `/api/seller/orders?status=${statusFilter}&search=${searchQuery}`,
       );
 
       if (response.success) {
@@ -160,7 +161,7 @@ function OrdersListContent() {
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    order: Order
+    order: Order,
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedOrder(order);
@@ -190,7 +191,7 @@ function OrdersListContent() {
       if (actionDialog.type === "approve") {
         const response = await apiPost<any>(
           `/api/seller/orders/${actionDialog.order.id}/approve`,
-          {}
+          {},
         );
 
         if (response.success) {
@@ -212,7 +213,7 @@ function OrdersListContent() {
 
         const response = await apiPost<any>(
           `/api/seller/orders/${actionDialog.order.id}/reject`,
-          { reason: actionDialog.reason }
+          { reason: actionDialog.reason },
         );
 
         if (response.success) {
@@ -317,6 +318,14 @@ function OrdersListContent() {
               Manage customer orders and fulfillment
             </Typography>
           </Box>
+          <Button
+            variant="outlined"
+            startIcon={<Receipt />}
+            component={Link}
+            href="/seller/orders/bulk-invoice"
+          >
+            Bulk Invoice
+          </Button>
         </Box>
 
         {/* Stats */}

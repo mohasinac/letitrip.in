@@ -36,7 +36,7 @@ export default function RouteGuard({ children }: RouteGuardProps) {
     // Redirect to login if not authenticated
     if (!user) {
       router.push(
-        `${AUTH_ROUTES.LOGIN}?redirect=${encodeURIComponent(pathname)}`
+        `${AUTH_ROUTES.LOGIN}?redirect=${encodeURIComponent(pathname)}`,
       );
       return;
     }
@@ -56,7 +56,7 @@ export default function RouteGuard({ children }: RouteGuardProps) {
 
   const checkRoleAccess = (
     routeGroup: string,
-    role: string | null
+    role: string | null,
   ): boolean => {
     switch (routeGroup) {
       case ROUTE_GROUPS.ADMIN:

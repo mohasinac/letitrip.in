@@ -25,7 +25,7 @@ export default function MultiStepBeybladeEditor({
   const [currentStep, setCurrentStep] = useState(1);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
-    beyblade?.imageUrl || ""
+    beyblade?.imageUrl || "",
   );
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [imagePosition, setImagePosition] = useState<{
@@ -39,7 +39,7 @@ export default function MultiStepBeybladeEditor({
   // Spike editing state
   const [isPlacingPoint, setIsPlacingPoint] = useState(false);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(
-    null
+    null,
   );
 
   // Form data
@@ -99,7 +99,7 @@ export default function MultiStepBeybladeEditor({
         imagePosition: position,
       }));
     },
-    []
+    [],
   );
 
   const handleImageEditorSave = () => {
@@ -120,7 +120,7 @@ export default function MultiStepBeybladeEditor({
     return (
       formData.pointsOfContact?.reduce(
         (sum, point) => sum + (point.damageMultiplier - 1.0) * 100,
-        0
+        0,
       ) || 0
     );
   };
@@ -247,8 +247,8 @@ export default function MultiStepBeybladeEditor({
               {currentStep === 1
                 ? "Basic Info & Physical Properties"
                 : currentStep === 2
-                ? "Type Distribution & Stats"
-                : "Contact Points"}
+                  ? "Type Distribution & Stats"
+                  : "Contact Points"}
             </p>
           </div>
           <button
@@ -269,8 +269,8 @@ export default function MultiStepBeybladeEditor({
                     step === currentStep
                       ? "bg-blue-600 text-white"
                       : step < currentStep
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-300 text-gray-600"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-300 text-gray-600"
                   }`}
                 >
                   {step < currentStep ? "✓" : step}
@@ -534,9 +534,9 @@ export default function MultiStepBeybladeEditor({
                           Attack{" "}
                           {calculatedStats &&
                             `(+${calculatedStats.damagePerHit.toFixed(
-                              1
+                              1,
                             )} dmg, +${calculatedStats.speedPerSecond.toFixed(
-                              1
+                              1,
                             )} speed)`}
                         </span>
                         <div className="flex items-center gap-2">
@@ -548,7 +548,7 @@ export default function MultiStepBeybladeEditor({
                             onChange={(e) => {
                               const newAttack = Math.min(
                                 150,
-                                Math.max(0, parseInt(e.target.value) || 0)
+                                Math.max(0, parseInt(e.target.value) || 0),
                               );
                               const defense =
                                 formData.typeDistribution?.defense || 0;
@@ -558,7 +558,7 @@ export default function MultiStepBeybladeEditor({
                               const availablePoints = 360 - currentTotal;
                               const finalAttack = Math.min(
                                 newAttack,
-                                availablePoints
+                                availablePoints,
                               );
 
                               setFormData({
@@ -592,7 +592,7 @@ export default function MultiStepBeybladeEditor({
                           const availablePoints = 360 - currentTotal;
                           const finalAttack = Math.min(
                             newAttack,
-                            availablePoints
+                            availablePoints,
                           );
 
                           setFormData({
@@ -614,9 +614,9 @@ export default function MultiStepBeybladeEditor({
                           Defense{" "}
                           {calculatedStats &&
                             `(${calculatedStats.damageReduction.toFixed(
-                              2
+                              2,
                             )}x reduction, +${calculatedStats.knockbackDistance.toFixed(
-                              1
+                              1,
                             )} knockback)`}
                         </span>
                         <div className="flex items-center gap-2">
@@ -628,7 +628,7 @@ export default function MultiStepBeybladeEditor({
                             onChange={(e) => {
                               const newDefense = Math.min(
                                 150,
-                                Math.max(0, parseInt(e.target.value) || 0)
+                                Math.max(0, parseInt(e.target.value) || 0),
                               );
                               const attack =
                                 formData.typeDistribution?.attack || 0;
@@ -638,7 +638,7 @@ export default function MultiStepBeybladeEditor({
                               const availablePoints = 360 - currentTotal;
                               const finalDefense = Math.min(
                                 newDefense,
-                                availablePoints
+                                availablePoints,
                               );
 
                               setFormData({
@@ -671,7 +671,7 @@ export default function MultiStepBeybladeEditor({
                           const availablePoints = 360 - currentTotal;
                           const finalDefense = Math.min(
                             newDefense,
-                            availablePoints
+                            availablePoints,
                           );
 
                           setFormData({
@@ -695,7 +695,7 @@ export default function MultiStepBeybladeEditor({
                             `(${
                               calculatedStats.maxStamina
                             } HP, +${calculatedStats.spinStealAmount.toFixed(
-                              1
+                              1,
                             )} steal)`}
                         </span>
                         <div className="flex items-center gap-2">
@@ -707,7 +707,7 @@ export default function MultiStepBeybladeEditor({
                             onChange={(e) => {
                               const newStamina = Math.min(
                                 150,
-                                Math.max(0, parseInt(e.target.value) || 0)
+                                Math.max(0, parseInt(e.target.value) || 0),
                               );
                               const attack =
                                 formData.typeDistribution?.attack || 0;
@@ -717,7 +717,7 @@ export default function MultiStepBeybladeEditor({
                               const availablePoints = 360 - currentTotal;
                               const finalStamina = Math.min(
                                 newStamina,
-                                availablePoints
+                                availablePoints,
                               );
 
                               setFormData({
@@ -750,7 +750,7 @@ export default function MultiStepBeybladeEditor({
                           const availablePoints = 360 - currentTotal;
                           const finalStamina = Math.min(
                             newStamina,
-                            availablePoints
+                            availablePoints,
                           );
 
                           setFormData({
@@ -920,8 +920,8 @@ export default function MultiStepBeybladeEditor({
                         isPlacingPoint
                           ? "bg-purple-600 text-white"
                           : (formData.pointsOfContact?.length || 0) >= 10
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "bg-purple-200 text-purple-900 hover:bg-purple-300"
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-purple-200 text-purple-900 hover:bg-purple-300"
                       }`}
                     >
                       {isPlacingPoint ? "Cancel" : "+ Add Point"}
@@ -1082,7 +1082,7 @@ export default function MultiStepBeybladeEditor({
                                     onChange={(e) =>
                                       updateSelectedPoint(
                                         "angle",
-                                        Number(e.target.value)
+                                        Number(e.target.value),
                                       )
                                     }
                                     className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
@@ -1113,7 +1113,7 @@ export default function MultiStepBeybladeEditor({
                                     onChange={(e) =>
                                       updateSelectedPoint(
                                         "damageMultiplier",
-                                        Number(e.target.value)
+                                        Number(e.target.value),
                                       )
                                     }
                                     className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
@@ -1139,7 +1139,7 @@ export default function MultiStepBeybladeEditor({
                                     onChange={(e) =>
                                       updateSelectedPoint(
                                         "width",
-                                        Number(e.target.value)
+                                        Number(e.target.value),
                                       )
                                     }
                                     className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"

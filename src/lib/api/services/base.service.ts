@@ -106,7 +106,7 @@ export abstract class BaseService {
    */
   protected validateRequired(
     params: Record<string, any>,
-    required: string[]
+    required: string[],
   ): void {
     const missing = required.filter((key) => !params[key]);
 
@@ -120,9 +120,7 @@ export abstract class BaseService {
    */
   protected formatResponse<T>(response: ApiResponse<T>): T {
     if (!response.success) {
-      const error = new Error(
-        response.error || "Unknown error"
-      ) as any;
+      const error = new Error(response.error || "Unknown error") as any;
       error.response = response;
       throw error;
     }

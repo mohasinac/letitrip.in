@@ -26,14 +26,12 @@ A **world-class product management system** for an e-commerce platform that riva
 ### Feature Highlights
 
 1. **Multi-Step Product Creation** 🪜
-
    - 5 intuitive steps
    - Real-time validation
    - Live preview panel
    - Auto-save capabilities
 
 2. **Professional Media Handling** 📸
-
    - Upload up to 5 images
    - Upload up to 2 videos
    - Drag-and-drop reordering
@@ -41,7 +39,6 @@ A **world-class product management system** for an e-commerce platform that riva
    - Automatic video thumbnails
 
 3. **Advanced Editing** ✏️
-
    - Pre-filled forms
    - Archive functionality
    - Delete with confirmation

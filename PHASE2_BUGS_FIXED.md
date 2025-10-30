@@ -92,14 +92,12 @@ const updateProfile = async (updates: Partial<AuthUser>) => {
 #### API Routes Created:
 
 1. **`GET /api/seller/sales`**
-
    - List all sales for authenticated seller
    - Supports filtering by status (active, inactive, scheduled, expired)
    - Supports search by name/description
    - Returns sales with converted Firestore timestamps
 
 2. **`POST /api/seller/sales`**
-
    - Create new sale
    - Validates required fields (name, discountType, discountValue, applyTo)
    - Validates discount type (percentage | fixed)
@@ -108,20 +106,17 @@ const updateProfile = async (updates: Partial<AuthUser>) => {
    - Stores in `seller_sales` Firestore collection
 
 3. **`GET /api/seller/sales/[id]`**
-
    - Get specific sale by ID
    - Verifies ownership (sellers can only access their own sales)
    - Admins can access all sales
 
 4. **`PUT /api/seller/sales/[id]`**
-
    - Update existing sale
    - Partial updates supported
    - Validates discount type and applyTo values
    - Updates `updatedAt` timestamp
 
 5. **`DELETE /api/seller/sales/[id]`**
-
    - Delete sale
    - Verifies ownership
    - Permanent deletion from Firestore

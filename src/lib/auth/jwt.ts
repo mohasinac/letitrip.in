@@ -3,21 +3,21 @@
  * Server-side only - handles token generation and verification
  */
 
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
-import { cookies } from 'next/headers';
+import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 if (!JWT_SECRET || JWT_SECRET.length < 32) {
-  throw new Error('JWT_SECRET must be at least 32 characters long');
+  throw new Error("JWT_SECRET must be at least 32 characters long");
 }
 
 // Minimal JWT payload - only essential authentication info
 // All other user data should be fetched from database
 export interface JWTPayload {
   userId: string;
-  role: 'admin' | 'seller' | 'user';
+  role: "admin" | "seller" | "user";
   iat?: number;
   exp?: number;
 }
@@ -27,7 +27,9 @@ export interface JWTPayload {
  * @param payload - User data to encode in the token
  * @returns Signed JWT token
  */
-export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
+export function generateToken(
+  payload: Omit<JWTPayload, "iat" | "exp">,
+): string {
   const options: SignOptions = {
     expiresIn: JWT_EXPIRES_IN as any,
   };
@@ -42,17 +44,17 @@ export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string 
 export function verifyToken(token: string): JWTPayload | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET!) as JwtPayload;
-    
+
     // Type guard to ensure it's our custom payload
     if (
       decoded &&
-      typeof decoded === 'object' &&
-      'userId' in decoded &&
-      'role' in decoded
+      typeof decoded === "object" &&
+      "userId" in decoded &&
+      "role" in decoded
     ) {
       return decoded as JWTPayload;
     }
-    
+
     return null;
   } catch (error) {
     return null;
@@ -66,7 +68,7 @@ export function verifyToken(token: string): JWTPayload | null {
 export async function getCurrentUser(): Promise<JWTPayload | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('auth_token')?.value;
+    const token = cookieStore.get("auth_token")?.value;
 
     if (!token) {
       return null;
@@ -84,7 +86,7 @@ export async function getCurrentUser(): Promise<JWTPayload | null> {
  */
 export async function isAdmin(): Promise<boolean> {
   const user = await getCurrentUser();
-  return user?.role === 'admin';
+  return user?.role === "admin";
 }
 
 /**
@@ -93,12 +95,12 @@ export async function isAdmin(): Promise<boolean> {
  */
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set('auth_token', token, {
+  cookieStore.set("auth_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax", // Changed from 'strict' to 'lax' for better compatibility
     maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
+    path: "/",
   });
 }
 
@@ -107,5 +109,5 @@ export async function setAuthCookie(token: string): Promise<void> {
  */
 export async function clearAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete('auth_token');
+  cookieStore.delete("auth_token");
 }

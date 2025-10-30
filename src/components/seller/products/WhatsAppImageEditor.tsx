@@ -59,7 +59,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
-  rotation = 0
+  rotation = 0,
 ): Promise<Blob> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
@@ -97,7 +97,7 @@ async function getCroppedImg(
     offsetX,
     offsetY,
     pixelCrop.width * scale,
-    pixelCrop.height * scale
+    pixelCrop.height * scale,
   );
 
   // Convert canvas to blob
@@ -129,7 +129,7 @@ export default function WhatsAppImageEditor({
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
-    []
+    [],
   );
 
   const handleSave = async () => {

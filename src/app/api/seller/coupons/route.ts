@@ -20,8 +20,14 @@ export async function GET(request: NextRequest) {
     // Verify seller role
     const userDoc = await adminDb.collection("users").doc(sellerId).get();
     const userData = userDoc.data();
-    if (!userData || (userData.role !== "seller" && userData.role !== "admin")) {
-      return NextResponse.json({ error: "Forbidden: Seller access required" }, { status: 403 });
+    if (
+      !userData ||
+      (userData.role !== "seller" && userData.role !== "admin")
+    ) {
+      return NextResponse.json(
+        { error: "Forbidden: Seller access required" },
+        { status: 403 },
+      );
     }
 
     // Get query parameters
@@ -72,7 +78,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching coupons:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch coupons" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -94,8 +100,14 @@ export async function POST(request: NextRequest) {
     // Verify seller role
     const userDoc = await adminDb.collection("users").doc(sellerId).get();
     const userData = userDoc.data();
-    if (!userData || (userData.role !== "seller" && userData.role !== "admin")) {
-      return NextResponse.json({ error: "Forbidden: Seller access required" }, { status: 403 });
+    if (
+      !userData ||
+      (userData.role !== "seller" && userData.role !== "admin")
+    ) {
+      return NextResponse.json(
+        { error: "Forbidden: Seller access required" },
+        { status: 403 },
+      );
     }
 
     const body = await request.json();
@@ -104,7 +116,7 @@ export async function POST(request: NextRequest) {
     if (!body.code || !body.type || body.discountValue === undefined) {
       return NextResponse.json(
         { error: "Missing required fields: code, type, discountValue" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -119,7 +131,7 @@ export async function POST(request: NextRequest) {
     if (!existingCoupon.empty) {
       return NextResponse.json(
         { error: "Coupon code already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -149,10 +161,17 @@ export async function POST(request: NextRequest) {
       allowedPaymentMethods: body.allowedPaymentMethods || [],
       allowedUserEmails: body.allowedUserEmails || [],
       excludedUserEmails: body.excludedUserEmails || [],
-      canStackWithOthers: body.canStackWithOthers !== undefined ? body.canStackWithOthers : true,
+      canStackWithOthers:
+        body.canStackWithOthers !== undefined ? body.canStackWithOthers : true,
       priority: body.priority || 5,
-      startDate: body.startDate ? Timestamp.fromDate(new Date(body.startDate)) : null,
-      endDate: body.isPermanent ? null : (body.endDate ? Timestamp.fromDate(new Date(body.endDate)) : null),
+      startDate: body.startDate
+        ? Timestamp.fromDate(new Date(body.startDate))
+        : null,
+      endDate: body.isPermanent
+        ? null
+        : body.endDate
+          ? Timestamp.fromDate(new Date(body.endDate))
+          : null,
       isPermanent: body.isPermanent || false,
       status: body.status || "active",
       createdAt: now,
@@ -163,15 +182,18 @@ export async function POST(request: NextRequest) {
     const docRef = await adminDb.collection("seller_coupons").add(couponData);
     const newCoupon = await docRef.get();
 
-    return NextResponse.json({
-      message: "Coupon created successfully",
-      coupon: { id: newCoupon.id, ...newCoupon.data() },
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: "Coupon created successfully",
+        coupon: { id: newCoupon.id, ...newCoupon.data() },
+      },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error("Error creating coupon:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

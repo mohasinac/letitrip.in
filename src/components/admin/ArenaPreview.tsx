@@ -125,7 +125,7 @@ export default function ArenaPreview({
             centerY={centerY}
             scale={scale}
           />
-        ))
+        )),
       )}
 
       {/* 7. Obstacles */}
@@ -178,7 +178,7 @@ export default function ArenaPreview({
               centerY={centerY}
               arenaRadius={arenaRadius}
             />
-          ) : null
+          ) : null,
         )
       )}
 
@@ -237,7 +237,7 @@ function ArenaShape({
     { x: centerX, y: centerY },
     radius,
     width * scale,
-    height * scale
+    height * scale,
   );
 
   return (
@@ -277,7 +277,7 @@ function WaterBodyRenderer({
   const shapePath = generateShapePath(
     config.shape,
     { x: centerX, y: centerY },
-    radius
+    radius,
   );
 
   return (
@@ -290,7 +290,7 @@ function WaterBodyRenderer({
           d={generateShapePath(
             config.shape === "circle" ? "circle" : config.shape,
             { x: centerX, y: centerY },
-            radius * factor
+            radius * factor,
           )}
           fill="none"
           stroke={color}
@@ -451,7 +451,7 @@ function WallsRenderer({
               centerY={centerY}
               arenaRadius={arenaRadius}
             />
-          )
+          ),
       )}
     </g>
   );
@@ -473,7 +473,7 @@ function ExitRenderer({
     { x: centerX, y: centerY },
     arenaRadius,
     exit.angle - exit.width / 2,
-    exit.angle + exit.width / 2
+    exit.angle + exit.width / 2,
   );
 
   return (

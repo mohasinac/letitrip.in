@@ -35,7 +35,7 @@ export interface BeybladePhysics {
   currentMaxAcceleration: number; // Current max acceleration cap (gradually decays from 20 to 10)
   accelerationDecayStartTime?: number; // When the gradual decay started
   selectedChargePointAngle?: number; // The randomly selected charge point angle for the current loop
-  
+
   // Special Attacks & Dodges
   heavyAttackActive: boolean; // 1.25x damage multiplier active
   heavyAttackEndTime?: number; // When heavy attack ends
@@ -49,7 +49,7 @@ export interface BeybladePhysics {
   isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
   selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)
   lastNetworkUpdate?: number; // Timestamp of last network state update (for multiplayer sync)
-  
+
   // Special Move Effects
   isFrozen?: boolean; // Cannot move when frozen by special move
   isPhasing?: boolean; // Phases through collisions (no collision detection)
@@ -63,7 +63,7 @@ export interface GameBeyblade extends BeybladePhysics {
   config: {
     name: string;
     fileName: string;
-    direction: 'left' | 'right';
+    direction: "left" | "right";
     speed: number;
   };
   isPlayer: boolean;
@@ -90,7 +90,8 @@ export interface GameState {
   countdownActive: boolean;
   countdownValue: number;
   activeCinematicMoves?: Map<string, any>; // Track active cinematic special moves
-  cinematicBanner?: { // Show cinematic move banner
+  cinematicBanner?: {
+    // Show cinematic move banner
     moveName: string;
     userName: string;
     show: boolean;

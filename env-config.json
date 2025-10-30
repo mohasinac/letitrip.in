@@ -38,5 +38,5 @@
   "SMTP_PASS": "your-email-password",
   "GOOGLE_ANALYTICS_ID": "GA-XXXXXXXXX",
   "SENTRY_DSN": "your-sentry-dsn",
-  "NEXT_PUBLIC_SOCKET_URL":"https://beyblade-socket-server.onrender.com"
+  "NEXT_PUBLIC_SOCKET_URL": "https://beyblade-socket-server.onrender.com"
 }

@@ -31,7 +31,7 @@ export default function ProtectedRoute({
         // Store current path for redirect after login using enhanced storage
         console.log(
           "ProtectedRoute: No user, storing path and redirecting",
-          pathname
+          pathname,
         );
         if (pathname !== "/login" && pathname !== "/register") {
           setStorageItem("auth_redirect_after_login", pathname);
@@ -46,7 +46,7 @@ export default function ProtectedRoute({
 
         if (!hasRequiredRole) {
           console.log(
-            "ProtectedRoute: Insufficient role, redirecting to unauthorized"
+            "ProtectedRoute: Insufficient role, redirecting to unauthorized",
           );
           router.push("/unauthorized");
           return;

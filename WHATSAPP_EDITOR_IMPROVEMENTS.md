@@ -146,7 +146,7 @@ interface WhatsAppCropData {
 if (image.whatsappCrop) {
   const croppedBlob = await getCroppedImg(
     image.url,
-    image.whatsappCrop.croppedAreaPixels
+    image.whatsappCrop.croppedAreaPixels,
   );
   // Use the cropped image for WhatsApp
 }

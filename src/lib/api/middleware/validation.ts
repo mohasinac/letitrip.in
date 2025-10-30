@@ -3,17 +3,17 @@
  * Enhanced with comprehensive schema support and utilities
  */
 
-import { NextRequest } from 'next/server';
-import { ZodSchema, ZodError, z } from 'zod';
-import { throwApiError } from './error-handler';
-import * as schemas from '../../validations';
+import { NextRequest } from "next/server";
+import { ZodSchema, ZodError, z } from "zod";
+import { throwApiError } from "./error-handler";
+import * as schemas from "../../validations";
 
 /**
  * Validate request body with Zod schema
  */
 export async function validateRequestBody<T>(
   request: NextRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): Promise<T> {
   try {
     const body = await request.json();
@@ -21,24 +21,24 @@ export async function validateRequestBody<T>(
   } catch (error) {
     if (error instanceof ZodError) {
       const formattedErrors = error.errors.map((err) => ({
-        path: err.path.join('.'),
+        path: err.path.join("."),
         message: err.message,
         code: err.code,
       }));
-      
+
       throwApiError(
-        'Request validation failed',
+        "Request validation failed",
         422,
-        'VALIDATION_ERROR',
-        formattedErrors
+        "VALIDATION_ERROR",
+        formattedErrors,
       );
     }
-    
+
     if (error instanceof SyntaxError) {
-      throwApiError('Invalid JSON in request body', 400, 'INVALID_JSON');
+      throwApiError("Invalid JSON in request body", 400, "INVALID_JSON");
     }
-    
-    throwApiError('Failed to validate request body', 500);
+
+    throwApiError("Failed to validate request body", 500);
   }
 }
 
@@ -47,12 +47,12 @@ export async function validateRequestBody<T>(
  */
 export function validateQueryParams<T>(
   request: NextRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): T {
   try {
     const { searchParams } = new URL(request.url);
     const params: Record<string, any> = {};
-    
+
     // Convert URLSearchParams to object
     searchParams.forEach((value, key) => {
       // Handle multiple values for the same key
@@ -71,20 +71,20 @@ export function validateQueryParams<T>(
   } catch (error) {
     if (error instanceof ZodError) {
       const formattedErrors = error.errors.map((err) => ({
-        path: err.path.join('.'),
+        path: err.path.join("."),
         message: err.message,
         code: err.code,
       }));
-      
+
       throwApiError(
-        'Query parameter validation failed',
+        "Query parameter validation failed",
         422,
-        'VALIDATION_ERROR',
-        formattedErrors
+        "VALIDATION_ERROR",
+        formattedErrors,
       );
     }
-    
-    throwApiError('Failed to validate query parameters', 500);
+
+    throwApiError("Failed to validate query parameters", 500);
   }
 }
 
@@ -93,27 +93,27 @@ export function validateQueryParams<T>(
  */
 export function validatePathParams<T>(
   params: Record<string, string | string[]>,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): T {
   try {
     return schema.parse(params);
   } catch (error) {
     if (error instanceof ZodError) {
       const formattedErrors = error.errors.map((err) => ({
-        path: err.path.join('.'),
+        path: err.path.join("."),
         message: err.message,
         code: err.code,
       }));
-      
+
       throwApiError(
-        'Path parameter validation failed',
+        "Path parameter validation failed",
         422,
-        'VALIDATION_ERROR',
-        formattedErrors
+        "VALIDATION_ERROR",
+        formattedErrors,
       );
     }
-    
-    throwApiError('Failed to validate path parameters', 500);
+
+    throwApiError("Failed to validate path parameters", 500);
   }
 }
 
@@ -126,16 +126,20 @@ export class ValidationHandler {
    */
   static async validateField<T>(schema: ZodSchema<T>, value: T) {
     try {
-      return { isValid: true, data: await schema.parseAsync(value), error: null };
+      return {
+        isValid: true,
+        data: await schema.parseAsync(value),
+        error: null,
+      };
     } catch (error) {
       if (error instanceof ZodError) {
-        return { 
-          isValid: false, 
-          data: null, 
-          error: error.errors[0]?.message || 'Validation failed' 
+        return {
+          isValid: false,
+          data: null,
+          error: error.errors[0]?.message || "Validation failed",
         };
       }
-      return { isValid: false, data: null, error: 'Validation failed' };
+      return { isValid: false, data: null, error: "Validation failed" };
     }
   }
 
@@ -147,12 +151,16 @@ export class ValidationHandler {
       if (error instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const path = err.path.join('.');
+          const path = err.path.join(".");
           fieldErrors[path] = err.message;
         });
         return { isValid: false, data: null, errors: fieldErrors };
       }
-      return { isValid: false, data: null, errors: { general: 'Validation failed' } };
+      return {
+        isValid: false,
+        data: null,
+        errors: { general: "Validation failed" },
+      };
     }
   }
 }
@@ -162,26 +170,25 @@ export class ValidationHandler {
  */
 export const CommonSchemas = {
   pagination: {
-    page: (defaultValue = 1, min = 1, max = 1000) => 
+    page: (defaultValue = 1, min = 1, max = 1000) =>
       z.coerce.number().int().min(min).max(max).default(defaultValue),
-    limit: (defaultValue = 50, min = 1, max = 100) => 
+    limit: (defaultValue = 50, min = 1, max = 100) =>
       z.coerce.number().int().min(min).max(max).default(defaultValue),
-    offset: (min = 0) => 
-      z.coerce.number().int().min(min).optional(),
+    offset: (min = 0) => z.coerce.number().int().min(min).optional(),
   },
-  
-  id: z.string().min(1, 'ID cannot be empty'),
-  
+
+  id: z.string().min(1, "ID cannot be empty"),
+
   search: z.string().optional(),
-  
+
   sort: {
     field: z.string().min(1),
-    direction: z.enum(['asc', 'desc']).default('desc'),
+    direction: z.enum(["asc", "desc"]).default("desc"),
   },
-  
+
   filters: {
-    status: z.enum(['active', 'inactive', 'pending', 'deleted']).optional(),
-    role: z.enum(['user', 'seller', 'admin']).optional(),
+    status: z.enum(["active", "inactive", "pending", "deleted"]).optional(),
+    role: z.enum(["user", "seller", "admin"]).optional(),
     dateRange: {
       from: z.string().datetime().optional(),
       to: z.string().datetime().optional(),
@@ -195,7 +202,7 @@ export const CommonSchemas = {
 export function withRequestValidation<
   TBody = any,
   TQuery = any,
-  TParams = any
+  TParams = any,
 >(config: {
   body?: ZodSchema<TBody>;
   query?: ZodSchema<TQuery>;
@@ -210,7 +217,7 @@ export function withRequestValidation<
         params?: TParams;
       },
       ...args: T
-    ) => Promise<any>
+    ) => Promise<any>,
   ) {
     return async (
       request: NextRequest,
@@ -249,6 +256,6 @@ export function withRequestValidation<
 export function createSortSchema(allowedFields: string[]) {
   return z.object({
     sortBy: z.enum(allowedFields as [string, ...string[]]).optional(),
-    sortOrder: z.enum(['asc', 'desc']).default('desc'),
+    sortOrder: z.enum(["asc", "desc"]).default("desc"),
   });
 }

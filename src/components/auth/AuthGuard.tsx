@@ -31,7 +31,7 @@ export function AuthGuard({
       if (requireAuth && !user) {
         const currentPath = window.location.pathname;
         const redirectUrl = `${redirectTo}?redirect=${encodeURIComponent(
-          currentPath
+          currentPath,
         )}`;
         router.push(redirectUrl);
         return;

@@ -52,7 +52,7 @@ export default function MediaUploadStep({
   } | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(
-    null
+    null,
   );
   const [thumbnailSelectorOpen, setThumbnailSelectorOpen] = useState(false);
   const [selectedVideoForThumbnail, setSelectedVideoForThumbnail] = useState<{
@@ -91,7 +91,7 @@ export default function MediaUploadStep({
             order: data.media.images.length + index,
             isNew: true, // Flag to indicate this needs to be uploaded
           };
-        })
+        }),
       );
 
       onChange({
@@ -111,7 +111,7 @@ export default function MediaUploadStep({
 
   const removeImage = (index: number) => {
     const newImages = data.media.images.filter(
-      (_: any, i: number) => i !== index
+      (_: any, i: number) => i !== index,
     );
     onChange({ media: { ...data.media, images: newImages } });
   };
@@ -178,7 +178,7 @@ export default function MediaUploadStep({
    * Generate video thumbnail from first frame
    */
   const generateVideoThumbnail = (
-    videoFile: File
+    videoFile: File,
   ): Promise<{ blob: Blob; url: string }> => {
     return new Promise((resolve, reject) => {
       const video = document.createElement("video");
@@ -222,7 +222,7 @@ export default function MediaUploadStep({
               URL.revokeObjectURL(video.src);
             },
             "image/jpeg",
-            0.85
+            0.85,
           );
         } catch (error) {
           reject(error);
@@ -305,7 +305,7 @@ export default function MediaUploadStep({
 
   const removeVideo = (index: number) => {
     const newVideos = data.media.videos.filter(
-      (_: any, i: number) => i !== index
+      (_: any, i: number) => i !== index,
     );
     onChange({ media: { ...data.media, videos: newVideos } });
   };
@@ -313,7 +313,7 @@ export default function MediaUploadStep({
   const openThumbnailSelector = (
     index: number,
     videoUrl: string,
-    currentThumbnail?: string
+    currentThumbnail?: string,
   ) => {
     setSelectedVideoForThumbnail({
       index,
@@ -326,7 +326,7 @@ export default function MediaUploadStep({
   const handleThumbnailSave = (
     thumbnailBlob: Blob,
     thumbnailUrl: string,
-    timestamp: number
+    timestamp: number,
   ) => {
     if (!selectedVideoForThumbnail) return;
 

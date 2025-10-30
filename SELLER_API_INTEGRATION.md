@@ -128,7 +128,7 @@ handleSave() - Validates + Posts to /api/seller/coupons
 
 ```typescript
 {
-  code,
+  (code,
     name,
     description,
     type,
@@ -154,7 +154,7 @@ handleSave() - Validates + Posts to /api/seller/coupons
     startDate,
     endDate,
     isPermanent,
-    status;
+    status);
 }
 ```
 

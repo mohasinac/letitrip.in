@@ -2,8 +2,8 @@
  * Common Utility Functions
  */
 
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Merge Tailwind classes with proper precedence
@@ -15,9 +15,12 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format currency
  */
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+export function formatCurrency(
+  amount: number,
+  currency: string = "USD",
+): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency,
   }).format(amount);
 }
@@ -26,13 +29,17 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
  * Format number with commas
  */
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
+  return new Intl.NumberFormat("en-US").format(num);
 }
 
 /**
  * Truncate string
  */
-export function truncate(str: string, length: number, suffix: string = '...'): string {
+export function truncate(
+  str: string,
+  length: number,
+  suffix: string = "...",
+): string {
   if (str.length <= length) return str;
   return str.slice(0, length) + suffix;
 }
@@ -50,9 +57,9 @@ export function capitalize(str: string): string {
 export function titleCase(str: string): string {
   return str
     .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**
@@ -62,15 +69,15 @@ export function slugify(str: string): string {
   return str
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /**
  * Random ID generation
  */
-export function generateId(prefix: string = ''): string {
+export function generateId(prefix: string = ""): string {
   const random = Math.random().toString(36).substring(2, 15);
   const timestamp = Date.now().toString(36);
   return prefix ? `${prefix}_${timestamp}_${random}` : `${timestamp}_${random}`;
@@ -88,8 +95,8 @@ export function deepClone<T>(obj: T): T {
  */
 export function isEmpty(obj: any): boolean {
   if (obj == null) return true;
-  if (Array.isArray(obj) || typeof obj === 'string') return obj.length === 0;
-  if (typeof obj === 'object') return Object.keys(obj).length === 0;
+  if (Array.isArray(obj) || typeof obj === "string") return obj.length === 0;
+  if (typeof obj === "object") return Object.keys(obj).length === 0;
   return false;
 }
 
@@ -97,7 +104,7 @@ export function isEmpty(obj: any): boolean {
  * Delay/Sleep function
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -109,15 +116,15 @@ export async function retry<T>(
     retries?: number;
     delay?: number;
     backoff?: number;
-  } = {}
+  } = {},
 ): Promise<T> {
   const { retries = 3, delay = 1000, backoff = 2 } = options;
-  
+
   try {
     return await fn();
   } catch (error) {
     if (retries <= 0) throw error;
-    
+
     await sleep(delay);
     return retry(fn, {
       retries: retries - 1,
@@ -149,26 +156,33 @@ export function unique<T>(array: T[]): T[] {
  * Group by
  */
 export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
-  return array.reduce((result, item) => {
-    const groupKey = String(item[key]);
-    if (!result[groupKey]) {
-      result[groupKey] = [];
-    }
-    result[groupKey].push(item);
-    return result;
-  }, {} as Record<string, T[]>);
+  return array.reduce(
+    (result, item) => {
+      const groupKey = String(item[key]);
+      if (!result[groupKey]) {
+        result[groupKey] = [];
+      }
+      result[groupKey].push(item);
+      return result;
+    },
+    {} as Record<string, T[]>,
+  );
 }
 
 /**
  * Sort by key
  */
-export function sortBy<T>(array: T[], key: keyof T, order: 'asc' | 'desc' = 'asc'): T[] {
+export function sortBy<T>(
+  array: T[],
+  key: keyof T,
+  order: "asc" | "desc" = "asc",
+): T[] {
   return [...array].sort((a, b) => {
     const aVal = a[key];
     const bVal = b[key];
-    
-    if (aVal < bVal) return order === 'asc' ? -1 : 1;
-    if (aVal > bVal) return order === 'asc' ? 1 : -1;
+
+    if (aVal < bVal) return order === "asc" ? -1 : 1;
+    if (aVal > bVal) return order === "asc" ? 1 : -1;
     return 0;
   });
 }
@@ -178,10 +192,10 @@ export function sortBy<T>(array: T[], key: keyof T, order: 'asc' | 'desc' = 'asc
  */
 export function omit<T extends object, K extends keyof T>(
   obj: T,
-  keys: K[]
+  keys: K[],
 ): Omit<T, K> {
   const result = { ...obj };
-  keys.forEach(key => delete result[key]);
+  keys.forEach((key) => delete result[key]);
   return result;
 }
 
@@ -190,10 +204,10 @@ export function omit<T extends object, K extends keyof T>(
  */
 export function pick<T extends object, K extends keyof T>(
   obj: T,
-  keys: K[]
+  keys: K[],
 ): Pick<T, K> {
   const result = {} as Pick<T, K>;
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (key in obj) {
       result[key] = obj[key];
     }
@@ -205,14 +219,14 @@ export function pick<T extends object, K extends keyof T>(
  * Get nested property value
  */
 export function get(obj: any, path: string, defaultValue?: any): any {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let result = obj;
-  
+
   for (const key of keys) {
     if (result == null) return defaultValue;
     result = result[key];
   }
-  
+
   return result ?? defaultValue;
 }
 
@@ -220,16 +234,16 @@ export function get(obj: any, path: string, defaultValue?: any): any {
  * Set nested property value
  */
 export function set(obj: any, path: string, value: any): void {
-  const keys = path.split('.');
+  const keys = path.split(".");
   const lastKey = keys.pop()!;
   let current = obj;
-  
+
   for (const key of keys) {
     if (!(key in current)) {
       current[key] = {};
     }
     current = current[key];
   }
-  
+
   current[lastKey] = value;
 }

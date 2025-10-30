@@ -30,7 +30,7 @@ The `uploadWithAuth()` function in `src/lib/api/seller.ts` returns a raw Fetch `
 ```typescript
 export async function uploadWithAuth(
   url: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<Response> {
   // ← Returns Response, not parsed JSON
   const user = auth.currentUser;
@@ -90,7 +90,7 @@ if (response.success && response.data && response.data.length > 0) {
 ```typescript
 const response: any = await uploadWithAuth(
   "/api/seller/products/media",
-  formDataUpload
+  formDataUpload,
 );
 ```
 
@@ -99,7 +99,7 @@ const response: any = await uploadWithAuth(
 ```typescript
 const responseRaw = await uploadWithAuth(
   "/api/seller/products/media",
-  formDataUpload
+  formDataUpload,
 );
 
 // Parse JSON response
@@ -113,7 +113,7 @@ const response: any = await responseRaw.json();
 ```typescript
 const videoResponse: any = await uploadWithAuth(
   "/api/seller/products/media",
-  videoFormData
+  videoFormData,
 );
 ```
 
@@ -122,7 +122,7 @@ const videoResponse: any = await uploadWithAuth(
 ```typescript
 const videoResponseRaw = await uploadWithAuth(
   "/api/seller/products/media",
-  videoFormData
+  videoFormData,
 );
 
 // Parse JSON response
@@ -136,7 +136,7 @@ const videoResponse: any = await videoResponseRaw.json();
 ```typescript
 const thumbnailResponse: any = await uploadWithAuth(
   "/api/seller/products/media",
-  thumbnailFormData
+  thumbnailFormData,
 );
 ```
 
@@ -145,7 +145,7 @@ const thumbnailResponse: any = await uploadWithAuth(
 ```typescript
 const thumbnailResponseRaw = await uploadWithAuth(
   "/api/seller/products/media",
-  thumbnailFormData
+  thumbnailFormData,
 );
 
 // Parse JSON response
@@ -325,7 +325,7 @@ Location: `src/lib/api/seller.ts`
 ```typescript
 export async function uploadWithAuth(
   url: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<Response> {
   const user = auth.currentUser;
 

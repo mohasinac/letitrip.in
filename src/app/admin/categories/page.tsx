@@ -60,7 +60,7 @@ function AdminCategoriesContent() {
   const [success, setSuccess] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
+    null,
   );
   const [tabValue, setTabValue] = useState(1);
 
@@ -83,7 +83,7 @@ function AdminCategoriesContent() {
       setLoading(true);
       setError(null);
       const data = await apiClient.get<Category[]>(
-        "/admin/categories?format=list"
+        "/admin/categories?format=list",
       );
       setCategories(data);
     } catch (err: any) {
@@ -129,7 +129,7 @@ function AdminCategoriesContent() {
       setSuccess(
         selectedCategory
           ? "Category updated successfully"
-          : "Category created successfully"
+          : "Category created successfully",
       );
       handleCloseDialog();
       fetchCategories();

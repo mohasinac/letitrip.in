@@ -49,7 +49,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
     ...items.map((item, index) => ({
       ...item,
       active: index === items.length - 1 && items.length > 0,
-    }))
+    })),
   );
 
   const getDivider = () => {

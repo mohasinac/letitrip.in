@@ -85,7 +85,7 @@ Renames a storage folder by copying and deleting files.
 async function renameStorageFolder(
   sellerId: string,
   oldSlug: string,
-  newSlug: string
+  newSlug: string,
 ) {
   const storage = getAdminStorage();
   const bucket = storage.bucket();
@@ -106,7 +106,7 @@ async function renameStorageFolder(
       await file.copy(newPath);
       // Delete old file
       await file.delete();
-    })
+    }),
   );
 
   console.log(`Renamed folder with ${files.length} files`);
@@ -142,11 +142,11 @@ function updateMediaURLs(media: any, oldSlug: string, newSlug: string): any {
       url: video.url?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
       thumbnail: video.thumbnail?.replace(
         `/products/${oldSlug}/`,
-        `/products/${newSlug}/`
+        `/products/${newSlug}/`,
       ),
       path: video.path?.replace(
         `/products/${oldSlug}/`,
-        `/products/${newSlug}/`
+        `/products/${newSlug}/`,
       ),
     }));
   }

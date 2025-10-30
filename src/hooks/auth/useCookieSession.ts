@@ -3,10 +3,10 @@
  * Client-side hook for managing sessions via cookies
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { API_CONSTANTS } from '@/constants/app';
+import { useEffect, useState, useCallback } from "react";
+import { API_CONSTANTS } from "@/constants/app";
 
 export interface SessionState {
   sessionId: string | null;
@@ -32,8 +32,8 @@ export function useCookieSession() {
     const initSession = async () => {
       try {
         const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-          method: 'GET',
-          credentials: 'include',
+          method: "GET",
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -52,11 +52,11 @@ export function useCookieSession() {
           setSession((prev) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
-        console.error('Error initializing session:', error);
+        console.error("Error initializing session:", error);
         setSession((prev) => ({
           ...prev,
           isLoading: false,
-          error: 'Failed to initialize session',
+          error: "Failed to initialize session",
         }));
       }
     };
@@ -68,11 +68,11 @@ export function useCookieSession() {
   const updateLastVisitedPage = useCallback(async (page: string) => {
     try {
       const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'update_page',
+          action: "update_page",
           data: { page },
         }),
       });
@@ -87,7 +87,7 @@ export function useCookieSession() {
         }
       }
     } catch (error) {
-      console.error('Error updating page:', error);
+      console.error("Error updating page:", error);
     }
   }, []);
 
@@ -95,11 +95,11 @@ export function useCookieSession() {
   const updateCartCount = useCallback(async (count: number) => {
     try {
       const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'update_cart',
+          action: "update_cart",
           data: { count },
         }),
       });
@@ -114,7 +114,7 @@ export function useCookieSession() {
         }
       }
     } catch (error) {
-      console.error('Error updating cart count:', error);
+      console.error("Error updating cart count:", error);
     }
   }, []);
 
@@ -122,11 +122,11 @@ export function useCookieSession() {
   const setUserInSession = useCallback(async (userId: string) => {
     try {
       const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'set_user',
+          action: "set_user",
           data: { userId },
         }),
       });
@@ -141,7 +141,7 @@ export function useCookieSession() {
         }
       }
     } catch (error) {
-      console.error('Error setting user in session:', error);
+      console.error("Error setting user in session:", error);
     }
   }, []);
 
@@ -149,8 +149,8 @@ export function useCookieSession() {
   const clearSession = useCallback(async () => {
     try {
       await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'DELETE',
-        credentials: 'include',
+        method: "DELETE",
+        credentials: "include",
       });
 
       setSession({
@@ -162,7 +162,7 @@ export function useCookieSession() {
         error: null,
       });
     } catch (error) {
-      console.error('Error clearing session:', error);
+      console.error("Error clearing session:", error);
     }
   }, []);
 
@@ -170,11 +170,11 @@ export function useCookieSession() {
   const getLastVisitedPage = useCallback(async (): Promise<string | null> => {
     try {
       const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'get_last_page',
+          action: "get_last_page",
         }),
       });
 
@@ -185,7 +185,7 @@ export function useCookieSession() {
         }
       }
     } catch (error) {
-      console.error('Error getting last visited page:', error);
+      console.error("Error getting last visited page:", error);
     }
     return null;
   }, []);
@@ -194,11 +194,11 @@ export function useCookieSession() {
   const getCartCount = useCallback(async (): Promise<number> => {
     try {
       const response = await fetch(`${API_CONSTANTS.ENDPOINTS.SESSIONS}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'get_cart_count',
+          action: "get_cart_count",
         }),
       });
 
@@ -209,7 +209,7 @@ export function useCookieSession() {
         }
       }
     } catch (error) {
-      console.error('Error getting cart count:', error);
+      console.error("Error getting cart count:", error);
     }
     return 0;
   }, []);

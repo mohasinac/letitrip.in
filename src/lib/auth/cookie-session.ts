@@ -4,8 +4,8 @@
  * Server-side service for session management via cookies
  */
 
-import { cookies } from 'next/headers';
-import { COOKIE_CONSTANTS } from '@/constants/app';
+import { cookies } from "next/headers";
+import { COOKIE_CONSTANTS } from "@/constants/app";
 
 export interface CookieSessionData {
   sessionId: string;
@@ -47,7 +47,7 @@ export class CookieSessionService {
       // For now, return null to indicate no session in cookie
       return null;
     } catch (error) {
-      console.error('Error parsing session cookie:', error);
+      console.error("Error parsing session cookie:", error);
       return null;
     }
   }
@@ -59,15 +59,19 @@ export class CookieSessionService {
     try {
       const cookieStore = await cookies();
 
-      cookieStore.set(COOKIE_CONSTANTS.SESSION_COOKIE_NAME, JSON.stringify(data), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: COOKIE_CONSTANTS.SESSION_EXPIRY_DAYS * 24 * 60 * 60, // in seconds
-        path: '/',
-      });
+      cookieStore.set(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+        JSON.stringify(data),
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: COOKIE_CONSTANTS.SESSION_EXPIRY_DAYS * 24 * 60 * 60, // in seconds
+          path: "/",
+        },
+      );
     } catch (error) {
-      console.error('Error setting session cookie:', error);
+      console.error("Error setting session cookie:", error);
     }
   }
 
@@ -77,17 +81,19 @@ export class CookieSessionService {
   static async updateLastVisitedPage(page: string): Promise<void> {
     // Don't save auth pages or API routes
     if (
-      page.includes('/login') ||
-      page.includes('/register') ||
-      page.includes('/api/') ||
-      page.includes('/_next/')
+      page.includes("/login") ||
+      page.includes("/register") ||
+      page.includes("/api/") ||
+      page.includes("/_next/")
     ) {
       return;
     }
 
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -102,7 +108,7 @@ export class CookieSessionService {
         await this.setSessionCookie(updatedSession);
       }
     } catch (error) {
-      console.error('Error updating last visited page:', error);
+      console.error("Error updating last visited page:", error);
     }
   }
 
@@ -112,7 +118,9 @@ export class CookieSessionService {
   static async updateCartCount(count: number): Promise<void> {
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -126,7 +134,7 @@ export class CookieSessionService {
         await this.setSessionCookie(updatedSession);
       }
     } catch (error) {
-      console.error('Error updating cart count:', error);
+      console.error("Error updating cart count:", error);
     }
   }
 
@@ -136,7 +144,9 @@ export class CookieSessionService {
   static async setUserInSession(userId: string): Promise<void> {
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -160,7 +170,7 @@ export class CookieSessionService {
         await this.setSessionCookie(newSession);
       }
     } catch (error) {
-      console.error('Error setting user in session:', error);
+      console.error("Error setting user in session:", error);
     }
   }
 
@@ -172,7 +182,7 @@ export class CookieSessionService {
       const cookieStore = await cookies();
       cookieStore.delete(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
     } catch (error) {
-      console.error('Error clearing session:', error);
+      console.error("Error clearing session:", error);
     }
   }
 
@@ -182,7 +192,9 @@ export class CookieSessionService {
   static async getLastVisitedPage(): Promise<string | null> {
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -191,7 +203,7 @@ export class CookieSessionService {
 
       return null;
     } catch (error) {
-      console.error('Error getting last visited page:', error);
+      console.error("Error getting last visited page:", error);
       return null;
     }
   }
@@ -202,7 +214,9 @@ export class CookieSessionService {
   static async getCartCount(): Promise<number> {
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -211,7 +225,7 @@ export class CookieSessionService {
 
       return 0;
     } catch (error) {
-      console.error('Error getting cart count:', error);
+      console.error("Error getting cart count:", error);
       return 0;
     }
   }
@@ -222,7 +236,9 @@ export class CookieSessionService {
   static async getUserIdFromSession(): Promise<string | null> {
     try {
       const cookieStore = await cookies();
-      const sessionCookie = cookieStore.get(COOKIE_CONSTANTS.SESSION_COOKIE_NAME);
+      const sessionCookie = cookieStore.get(
+        COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
+      );
 
       if (sessionCookie?.value) {
         const sessionData: CookieSessionData = JSON.parse(sessionCookie.value);
@@ -231,7 +247,7 @@ export class CookieSessionService {
 
       return null;
     } catch (error) {
-      console.error('Error getting user ID from session:', error);
+      console.error("Error getting user ID from session:", error);
       return null;
     }
   }

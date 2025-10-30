@@ -33,8 +33,14 @@ export function generateMetadata(params: {
   keywords?: string[];
   type?: "website" | "article" | "product";
 }): SEOMetadata {
-  const { title, description, path, image, keywords, type = "website" } =
-    params;
+  const {
+    title,
+    description,
+    path,
+    image,
+    keywords,
+    type = "website",
+  } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in";
 
   return {
@@ -164,14 +170,7 @@ export function generateOrganizationSchema(params: {
     email?: string;
   };
 }): Record<string, any> {
-  const {
-    name,
-    description,
-    logo,
-    sameAs,
-    address,
-    contactPoint,
-  } = params;
+  const { name, description, logo, sameAs, address, contactPoint } = params;
 
   const schema: any = {
     "@context": "https://schema.org",
@@ -205,10 +204,12 @@ export function generateOrganizationSchema(params: {
 /**
  * Generate schema.org breadcrumb schema
  */
-export function generateBreadcrumbSchema(items: Array<{
-  name: string;
-  url: string;
-}>): Record<string, any> {
+export function generateBreadcrumbSchema(
+  items: Array<{
+    name: string;
+    url: string;
+  }>,
+): Record<string, any> {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

@@ -1,9 +1,9 @@
 "use server";
 
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdmin } from '@/lib/auth/firebase-api-auth';
-import { getAdminDb } from '@/lib/database/admin';
-import { DATABASE_CONSTANTS } from '@/constants/app';
+import { NextRequest, NextResponse } from "next/server";
+import { verifyAdmin } from "@/lib/auth/firebase-api-auth";
+import { getAdminDb } from "@/lib/database/admin";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
 
@@ -16,14 +16,15 @@ export async function GET(request: NextRequest) {
     const user = await verifyAdmin(request);
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
+        { success: false, error: "Authentication required" },
+        { status: 401 },
       );
     }
 
     const db = getAdminDb();
-    const doc = await db.collection(SETTINGS_COLLECTION)
-      .doc('hero-settings')
+    const doc = await db
+      .collection(SETTINGS_COLLECTION)
+      .doc("hero-settings")
       .get();
 
     if (!doc.exists) {
@@ -41,11 +42,14 @@ export async function GET(request: NextRequest) {
       data: doc.data(),
     });
   } catch (error) {
-    console.error('Error fetching hero settings:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch settings',
-    }, { status: 500 });
+    console.error("Error fetching hero settings:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch settings",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -58,8 +62,8 @@ export async function POST(request: NextRequest) {
     const user = await verifyAdmin(request);
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
+        { success: false, error: "Authentication required" },
+        { status: 401 },
       );
     }
 
@@ -68,10 +72,13 @@ export async function POST(request: NextRequest) {
     const { type, data } = body; // type: 'products' or 'carousels'
 
     if (!type || !data) {
-      return NextResponse.json({
-        success: false,
-        error: 'Type and data are required',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Type and data are required",
+        },
+        { status: 400 },
+      );
     }
 
     const updateData: any = {
@@ -79,19 +86,23 @@ export async function POST(request: NextRequest) {
       updatedBy: user.uid,
     };
 
-    if (type === 'products') {
+    if (type === "products") {
       updateData.products = data;
-    } else if (type === 'carousels') {
+    } else if (type === "carousels") {
       updateData.carousels = data;
     } else {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid type',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid type",
+        },
+        { status: 400 },
+      );
     }
 
-    await db.collection(SETTINGS_COLLECTION)
-      .doc('hero-settings')
+    await db
+      .collection(SETTINGS_COLLECTION)
+      .doc("hero-settings")
       .set(updateData, { merge: true });
 
     return NextResponse.json({
@@ -99,11 +110,14 @@ export async function POST(request: NextRequest) {
       data: updateData,
     });
   } catch (error) {
-    console.error('Error saving hero settings:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to save settings',
-    }, { status: 500 });
+    console.error("Error saving hero settings:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to save settings",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -116,8 +130,8 @@ export async function PATCH(request: NextRequest) {
     const user = await verifyAdmin(request);
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
+        { success: false, error: "Authentication required" },
+        { status: 401 },
       );
     }
 
@@ -126,14 +140,18 @@ export async function PATCH(request: NextRequest) {
     const { type, item, itemId, action } = body; // action: 'add', 'update', 'delete'
 
     if (!type || !action) {
-      return NextResponse.json({
-        success: false,
-        error: 'Type and action are required',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Type and action are required",
+        },
+        { status: 400 },
+      );
     }
 
-    const doc = await db.collection(SETTINGS_COLLECTION)
-      .doc('hero-settings')
+    const doc = await db
+      .collection(SETTINGS_COLLECTION)
+      .doc("hero-settings")
       .get();
 
     const savedData = doc.exists ? doc.data() : null;
@@ -142,17 +160,25 @@ export async function PATCH(request: NextRequest) {
 
     let updatedItems;
 
-    if (action === 'add') {
-      updatedItems = [...items, { ...item, id: item.id || `${type}_${Date.now()}` }];
-    } else if (action === 'update' && itemId) {
-      updatedItems = items.map((i: any) => i.id === itemId ? { ...i, ...item } : i);
-    } else if (action === 'delete' && itemId) {
+    if (action === "add") {
+      updatedItems = [
+        ...items,
+        { ...item, id: item.id || `${type}_${Date.now()}` },
+      ];
+    } else if (action === "update" && itemId) {
+      updatedItems = items.map((i: any) =>
+        i.id === itemId ? { ...i, ...item } : i,
+      );
+    } else if (action === "delete" && itemId) {
       updatedItems = items.filter((i: any) => i.id !== itemId);
     } else {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid action',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid action",
+        },
+        { status: 400 },
+      );
     }
 
     const updateData: any = {
@@ -161,8 +187,9 @@ export async function PATCH(request: NextRequest) {
       updatedBy: user.uid,
     };
 
-    await db.collection(SETTINGS_COLLECTION)
-      .doc('hero-settings')
+    await db
+      .collection(SETTINGS_COLLECTION)
+      .doc("hero-settings")
       .set(updateData, { merge: true });
 
     return NextResponse.json({
@@ -170,10 +197,13 @@ export async function PATCH(request: NextRequest) {
       data: updatedItems,
     });
   } catch (error) {
-    console.error('Error updating hero settings:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to update settings',
-    }, { status: 500 });
+    console.error("Error updating hero settings:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to update settings",
+      },
+      { status: 500 },
+    );
   }
 }

@@ -1,14 +1,26 @@
-import { createApiHandler, successResponse, errorResponse, HTTP_STATUS } from '@/lib/api';
-import { commonSchemas } from '@/lib/api/validation';
+import {
+  createApiHandler,
+  successResponse,
+  errorResponse,
+  HTTP_STATUS,
+} from "@/lib/api";
+import { commonSchemas } from "@/lib/api/validation";
 import { db } from "@/lib/database/config";
-import { collection, addDoc, getDocs, query, orderBy, where } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  where,
+} from "firebase/firestore";
 import { getCurrentUser } from "@/lib/auth/jwt";
-import { z } from 'zod';
+import { z } from "zod";
 
 const contactSchema = z.object({
   email: commonSchemas.email,
-  subject: z.string().min(3, 'Subject must be at least 3 characters'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
   name: z.string().optional(),
   phone: z.string().optional(),
 });
@@ -19,11 +31,15 @@ const contactSchema = z.object({
  */
 export const POST = createApiHandler(async (request) => {
   const body = await request.json();
-  
+
   // Validate input
   const validation = contactSchema.safeParse(body);
   if (!validation.success) {
-    return errorResponse('Validation failed', HTTP_STATUS.BAD_REQUEST, validation.error.errors);
+    return errorResponse(
+      "Validation failed",
+      HTTP_STATUS.BAD_REQUEST,
+      validation.error.errors,
+    );
   }
 
   const { email, subject, message, name, phone } = validation.data;
@@ -40,16 +56,19 @@ export const POST = createApiHandler(async (request) => {
     category: "general", // Could be determined from subject/message
     source: "website",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
-  const docRef = await addDoc(collection(db, "contactMessages"), contactMessageData);
+  const docRef = await addDoc(
+    collection(db, "contactMessages"),
+    contactMessageData,
+  );
 
   const contactMessage = {
     id: docRef.id,
     ...contactMessageData,
     createdAt: contactMessageData.createdAt.toISOString(),
-    updatedAt: contactMessageData.updatedAt.toISOString()
+    updatedAt: contactMessageData.updatedAt.toISOString(),
   };
 
   // TODO: In a real implementation, you would:
@@ -63,10 +82,10 @@ export const POST = createApiHandler(async (request) => {
     {
       id: contactMessage.id,
       reference: `REF-${contactMessage.id.slice(-8).toUpperCase()}`,
-      estimatedResponse: "Within 24 hours"
+      estimatedResponse: "Within 24 hours",
     },
     "Your message has been sent successfully. We'll get back to you within 24 hours.",
-    HTTP_STATUS.CREATED
+    HTTP_STATUS.CREATED,
   );
 });
 
@@ -93,26 +112,28 @@ export const GET = createApiHandler(async (request) => {
   // Fetch contact messages from Firestore
   let messagesQuery = query(
     collection(db, "contactMessages"),
-    orderBy("createdAt", "desc")
+    orderBy("createdAt", "desc"),
   );
 
   const messagesSnapshot = await getDocs(messagesQuery);
-  let allMessages = messagesSnapshot.docs.map(doc => ({
+  let allMessages = messagesSnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
-    createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
-    updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt
+    createdAt:
+      doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
+    updatedAt:
+      doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt,
   })) as any[];
 
   // Apply filters
   if (status !== "all") {
-    allMessages = allMessages.filter(msg => msg.status === status);
+    allMessages = allMessages.filter((msg) => msg.status === status);
   }
   if (priority !== "all") {
-    allMessages = allMessages.filter(msg => msg.priority === priority);
+    allMessages = allMessages.filter((msg) => msg.priority === priority);
   }
   if (category !== "all") {
-    allMessages = allMessages.filter(msg => msg.category === category);
+    allMessages = allMessages.filter((msg) => msg.category === category);
   }
 
   // Apply pagination
@@ -124,14 +145,18 @@ export const GET = createApiHandler(async (request) => {
       currentPage: page,
       totalPages: Math.ceil(allMessages.length / limit),
       totalMessages: allMessages.length,
-      hasMore: offset + limit < allMessages.length
+      hasMore: offset + limit < allMessages.length,
     },
     summary: {
       totalMessages: allMessages.length,
-      newMessages: allMessages.filter(msg => msg.status === "new").length,
-      inProgressMessages: allMessages.filter(msg => msg.status === "in-progress").length,
-      resolvedMessages: allMessages.filter(msg => msg.status === "resolved").length,
-      highPriorityMessages: allMessages.filter(msg => msg.priority === "high").length
-    }
+      newMessages: allMessages.filter((msg) => msg.status === "new").length,
+      inProgressMessages: allMessages.filter(
+        (msg) => msg.status === "in-progress",
+      ).length,
+      resolvedMessages: allMessages.filter((msg) => msg.status === "resolved")
+        .length,
+      highPriorityMessages: allMessages.filter((msg) => msg.priority === "high")
+        .length,
+    },
   });
 });

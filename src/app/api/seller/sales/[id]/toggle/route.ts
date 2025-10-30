@@ -8,7 +8,7 @@ import { Timestamp } from "firebase-admin/firestore";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -16,7 +16,7 @@ export async function POST(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Sale not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(
     if (role !== "admin" && saleData?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your sale" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -77,8 +77,11 @@ export async function POST(
   } catch (error: any) {
     console.error("Error toggling sale status:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to toggle sale status" },
-      { status: 500 }
+      {
+        success: false,
+        error: error.message || "Failed to toggle sale status",
+      },
+      { status: 500 },
     );
   }
 }

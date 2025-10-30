@@ -1,7 +1,7 @@
 /**
  * Cookie Management Utilities
  * For non-authentication purposes only (preferences, consent, etc.)
- * 
+ *
  * Note: Authentication is handled via Firebase tokens in headers, NOT cookies
  */
 
@@ -10,7 +10,7 @@ export interface CookieOptions {
   path?: string;
   domain?: string;
   secure?: boolean;
-  sameSite?: 'Strict' | 'Lax' | 'None';
+  sameSite?: "Strict" | "Lax" | "None";
 }
 
 /**
@@ -18,18 +18,18 @@ export interface CookieOptions {
  * Now fetches from database via API
  */
 export async function hasCookieConsent(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   try {
-    const response = await fetch('/api/consent', {
-      method: 'GET',
-      credentials: 'include',
+    const response = await fetch("/api/consent", {
+      method: "GET",
+      credentials: "include",
     });
     if (response.ok) {
       const data = await response.json();
       return data.data?.consentGiven === true;
     }
   } catch (error) {
-    console.error('Error checking consent:', error);
+    console.error("Error checking consent:", error);
   }
   return false;
 }
@@ -39,22 +39,22 @@ export async function hasCookieConsent(): Promise<boolean> {
  * Now saves to database via API
  */
 export async function setCookieConsent(consent: boolean): Promise<void> {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
-    await fetch('/api/consent', {
-      method: 'POST',
-      credentials: 'include',
+    await fetch("/api/consent", {
+      method: "POST",
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         consentGiven: consent,
-        analyticsStorage: consent ? 'granted' : 'denied',
+        analyticsStorage: consent ? "granted" : "denied",
         consentDate: new Date().toISOString(),
       }),
     });
   } catch (error) {
-    console.error('Error setting consent:', error);
+    console.error("Error setting consent:", error);
   }
 }
 
@@ -62,12 +62,12 @@ export async function setCookieConsent(consent: boolean): Promise<void> {
  * Set a cookie (only if user has consented or it's essential)
  */
 export function setCookie(
-  name: string, 
-  value: string, 
-  options: CookieOptions & { essential?: boolean } = {}
+  name: string,
+  value: string,
+  options: CookieOptions & { essential?: boolean } = {},
 ): void {
-  if (typeof document === 'undefined') return;
-  
+  if (typeof document === "undefined") return;
+
   // Only set non-essential cookies if user has consented
   if (!options.essential && !hasCookieConsent()) {
     // Silently skip non-essential cookies without consent
@@ -76,32 +76,32 @@ export function setCookie(
 
   const {
     days = 365,
-    path = '/',
+    path = "/",
     domain,
-    secure = process.env.NODE_ENV === 'production',
-    sameSite = 'Lax',
+    secure = process.env.NODE_ENV === "production",
+    sameSite = "Lax",
   } = options;
 
   let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
-  
+
   if (days) {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
     cookie += `; expires=${expires.toUTCString()}`;
   }
-  
+
   cookie += `; path=${path}`;
-  
+
   if (domain) {
     cookie += `; domain=${domain}`;
   }
-  
+
   if (secure) {
-    cookie += '; secure';
+    cookie += "; secure";
   }
-  
+
   cookie += `; samesite=${sameSite}`;
-  
+
   document.cookie = cookie;
 }
 
@@ -109,33 +109,37 @@ export function setCookie(
  * Get cookie value
  */
 export function getCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null;
-  
-  const nameEQ = encodeURIComponent(name) + '=';
-  const cookies = document.cookie.split(';');
-  
+  if (typeof document === "undefined") return null;
+
+  const nameEQ = encodeURIComponent(name) + "=";
+  const cookies = document.cookie.split(";");
+
   for (let cookie of cookies) {
     cookie = cookie.trim();
     if (cookie.startsWith(nameEQ)) {
       return decodeURIComponent(cookie.substring(nameEQ.length));
     }
   }
-  
+
   return null;
 }
 
 /**
  * Delete a cookie
  */
-export function deleteCookie(name: string, path: string = '/', domain?: string): void {
-  if (typeof document === 'undefined') return;
-  
+export function deleteCookie(
+  name: string,
+  path: string = "/",
+  domain?: string,
+): void {
+  if (typeof document === "undefined") return;
+
   let cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
-  
+
   if (domain) {
     cookie += `; domain=${domain}`;
   }
-  
+
   document.cookie = cookie;
 }
 
@@ -143,28 +147,28 @@ export function deleteCookie(name: string, path: string = '/', domain?: string):
  * Preference cookies (only set with consent)
  */
 export const preferences = {
-  setTheme(theme: 'light' | 'dark'): void {
-    setCookie('theme', theme, { days: 365 });
+  setTheme(theme: "light" | "dark"): void {
+    setCookie("theme", theme, { days: 365 });
   },
-  
-  getTheme(): 'light' | 'dark' | null {
-    return getCookie('theme') as 'light' | 'dark' | null;
+
+  getTheme(): "light" | "dark" | null {
+    return getCookie("theme") as "light" | "dark" | null;
   },
-  
+
   setLanguage(lang: string): void {
-    setCookie('language', lang, { days: 365 });
+    setCookie("language", lang, { days: 365 });
   },
-  
+
   getLanguage(): string | null {
-    return getCookie('language');
+    return getCookie("language");
   },
-  
+
   setCurrency(currency: string): void {
-    setCookie('currency', currency, { days: 365 });
+    setCookie("currency", currency, { days: 365 });
   },
-  
+
   getCurrency(): string | null {
-    return getCookie('currency');
+    return getCookie("currency");
   },
 };
 
@@ -174,18 +178,18 @@ export const preferences = {
  */
 export const essential = {
   setSessionId(sessionId: string): void {
-    setCookie('session_id', sessionId, { 
+    setCookie("session_id", sessionId, {
       days: 1, // Short-lived
-      essential: true 
+      essential: true,
     });
   },
-  
+
   getSessionId(): string | null {
-    return getCookie('session_id');
+    return getCookie("session_id");
   },
-  
+
   clearSession(): void {
-    deleteCookie('session_id');
+    deleteCookie("session_id");
   },
 };
 
@@ -199,14 +203,14 @@ export const analytics = {
     if (!consent) return false;
     return true; // Default to enabled if consent given
   },
-  
+
   async setEnabled(enabled: boolean): Promise<void> {
     await setCookieConsent(enabled);
-    
+
     // Update Google Analytics consent if available
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
-        analytics_storage: enabled ? 'granted' : 'denied'
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("consent", "update", {
+        analytics_storage: enabled ? "granted" : "denied",
       });
     }
   },
@@ -216,19 +220,19 @@ export const analytics = {
  * Clear all non-essential cookies
  */
 export function clearAllCookies(): void {
-  if (typeof document === 'undefined') return;
-  
-  const cookies = document.cookie.split(';');
-  
+  if (typeof document === "undefined") return;
+
+  const cookies = document.cookie.split(";");
+
   for (const cookie of cookies) {
-    const name = cookie.split('=')[0].trim();
-    
+    const name = cookie.split("=")[0].trim();
+
     // Don't delete essential cookies
-    if (name === 'session_id') continue;
-    
+    if (name === "session_id") continue;
+
     deleteCookie(name);
-    deleteCookie(name, '/');
-    deleteCookie(name, '/', window.location.hostname);
+    deleteCookie(name, "/");
+    deleteCookie(name, "/", window.location.hostname);
   }
 }
 

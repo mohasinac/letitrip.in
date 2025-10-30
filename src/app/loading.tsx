@@ -38,8 +38,8 @@ export default function Loading() {
                   index === 0
                     ? "primary.main"
                     : index === 1
-                    ? "secondary.main"
-                    : "success.main",
+                      ? "secondary.main"
+                      : "success.main",
                 animation: "bounce 1s infinite",
                 animationDelay: `${delay}ms`,
                 "@keyframes bounce": {

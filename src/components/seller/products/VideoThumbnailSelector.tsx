@@ -23,7 +23,7 @@ interface VideoThumbnailSelectorProps {
   onSave: (
     thumbnailBlob: Blob,
     thumbnailUrl: string,
-    timestamp: number
+    timestamp: number,
   ) => void;
 }
 
@@ -105,7 +105,7 @@ export default function VideoThumbnailSelector({
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = video.videoWidth;
       tempCanvas.height = video.videoHeight;
-      
+
       const ctx = tempCanvas.getContext("2d", { willReadFrequently: true });
       if (!ctx) {
         alert("Failed to get canvas context");
@@ -129,7 +129,7 @@ export default function VideoThumbnailSelector({
       }
     } catch (error) {
       console.error("Error capturing frame:", error);
-      
+
       // Fallback: Try with MediaRecorder API or direct blob creation
       try {
         // Alternative: Use ImageCapture API if available
@@ -138,18 +138,18 @@ export default function VideoThumbnailSelector({
           const track = stream.getVideoTracks()[0];
           const imageCapture = new (window as any).ImageCapture(track);
           const bitmap = await imageCapture.grabFrame();
-          
+
           // Create canvas from bitmap
           const tempCanvas = document.createElement("canvas");
           tempCanvas.width = bitmap.width;
           tempCanvas.height = bitmap.height;
           const ctx = tempCanvas.getContext("2d");
           ctx?.drawImage(bitmap, 0, 0);
-          
+
           const blob = await new Promise<Blob | null>((resolve) => {
             tempCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
           });
-          
+
           if (blob) {
             const previewUrl = URL.createObjectURL(blob);
             setThumbnailPreview(previewUrl);
@@ -159,9 +159,9 @@ export default function VideoThumbnailSelector({
       } catch (fallbackError) {
         console.error("Fallback capture failed:", fallbackError);
       }
-      
+
       alert(
-        "Unable to capture frame from this video. This may be due to browser security restrictions."
+        "Unable to capture frame from this video. This may be due to browser security restrictions.",
       );
     }
   };
@@ -358,8 +358,8 @@ export default function VideoThumbnailSelector({
           {saving
             ? "Saving..."
             : thumbnailPreview
-            ? "Use This Thumbnail"
-            : "Capture Frame First"}
+              ? "Use This Thumbnail"
+              : "Capture Frame First"}
         </Button>
       </DialogActions>
     </Dialog>

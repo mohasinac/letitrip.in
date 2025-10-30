@@ -47,13 +47,13 @@ export default function ProductDetailsStep({
   };
 
   const handleShortDescriptionChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     onChange({ shortDescription: e.target.value });
   };
 
   const handleFullDescriptionChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     onChange({ fullDescription: e.target.value });
   };

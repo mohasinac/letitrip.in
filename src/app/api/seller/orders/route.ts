@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Access denied. Seller role required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -40,7 +40,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "50");
 
     // Build query
-    let query = adminDb.collection("seller_orders").where("sellerId", "==", sellerId);
+    let query = adminDb
+      .collection("seller_orders")
+      .where("sellerId", "==", sellerId);
 
     // Filter by status if provided
     if (status && status !== "all") {
@@ -66,7 +68,7 @@ export async function GET(request: NextRequest) {
         (order: any) =>
           order.orderNumber?.toLowerCase().includes(searchLower) ||
           order.customerName?.toLowerCase().includes(searchLower) ||
-          order.customerEmail?.toLowerCase().includes(searchLower)
+          order.customerEmail?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -80,8 +82,10 @@ export async function GET(request: NextRequest) {
 
     const stats = {
       total: allOrders.length,
-      pendingApproval: allOrders.filter((o: any) => o.status === "pending").length,
-      processing: allOrders.filter((o: any) => o.status === "processing").length,
+      pendingApproval: allOrders.filter((o: any) => o.status === "pending")
+        .length,
+      processing: allOrders.filter((o: any) => o.status === "processing")
+        .length,
       shipped: allOrders.filter((o: any) => o.status === "shipped").length,
       delivered: allOrders.filter((o: any) => o.status === "delivered").length,
       cancelled: allOrders.filter((o: any) => o.status === "cancelled").length,
@@ -102,7 +106,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: error.message || "Failed to fetch orders",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -84,7 +84,7 @@ The original immediate upload approach caused issues:
 
 ```typescript
 const generateVideoThumbnail = (
-  videoFile: File
+  videoFile: File,
 ): Promise<{ blob: Blob; url: string }> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -116,7 +116,7 @@ const generateVideoThumbnail = (
           URL.revokeObjectURL(video.src);
         },
         "image/jpeg",
-        0.85
+        0.85,
       );
     };
 
@@ -140,7 +140,7 @@ const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   videoFormData.append("type", "video");
   const videoResponse = await uploadWithAuth(
     "/api/seller/products/media",
-    videoFormData
+    videoFormData,
   );
 
   // 4. Upload thumbnail
@@ -148,13 +148,13 @@ const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   thumbnailFormData.append(
     "files",
     thumbnailBlob,
-    `${videoData.name}-thumb.jpg`
+    `${videoData.name}-thumb.jpg`,
   );
   thumbnailFormData.append("slug", data.seo.slug);
   thumbnailFormData.append("type", "image");
   const thumbnailResponse = await uploadWithAuth(
     "/api/seller/products/media",
-    thumbnailFormData
+    thumbnailFormData,
   );
 
   // 5. Store both URLs
@@ -454,7 +454,6 @@ media: {
    ```
 
 2. Test complete flow
-
    - Create product
    - Upload 5 images
    - Drag to reorder
@@ -464,7 +463,6 @@ media: {
    - Submit form
 
 3. Verify Firebase Storage
-
    - Check uploaded images
    - Check uploaded videos
    - Check generated thumbnails

@@ -3,12 +3,12 @@
  * Provides a unified interface for storing data in cookies with proper security
  */
 
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export interface CookieOptions {
   expires?: number | Date;
   secure?: boolean;
-  sameSite?: 'strict' | 'lax' | 'none';
+  sameSite?: "strict" | "lax" | "none";
   domain?: string;
   path?: string;
 }
@@ -16,9 +16,10 @@ export interface CookieOptions {
 class CookieStorage {
   private readonly defaultOptions: CookieOptions = {
     expires: 7, // 7 days
-    secure: typeof window !== 'undefined' && window.location.protocol === 'https:',
-    sameSite: 'strict',
-    path: '/'
+    secure:
+      typeof window !== "undefined" && window.location.protocol === "https:",
+    sameSite: "strict",
+    path: "/",
   };
 
   /**
@@ -57,7 +58,7 @@ class CookieStorage {
   getJson<T>(key: string): T | null {
     const value = this.get(key);
     if (!value) return null;
-    
+
     try {
       return JSON.parse(value);
     } catch {
@@ -77,11 +78,13 @@ class CookieStorage {
    */
   clearAll(): void {
     const allCookies = Cookies.get();
-    Object.keys(allCookies).forEach(key => {
-      if (key.startsWith('auth_') || 
-          key.startsWith('user_') || 
-          key.startsWith('cart_') ||
-          key.startsWith('app_')) {
+    Object.keys(allCookies).forEach((key) => {
+      if (
+        key.startsWith("auth_") ||
+        key.startsWith("user_") ||
+        key.startsWith("cart_") ||
+        key.startsWith("app_")
+      ) {
         this.remove(key);
       }
     });
@@ -89,79 +92,79 @@ class CookieStorage {
 
   // Auth-specific methods
   setAuthToken(token: string): void {
-    this.set('auth_token', token, {
+    this.set("auth_token", token, {
       expires: 30, // 30 days for auth token
       secure: true,
-      sameSite: 'strict'
+      sameSite: "strict",
     });
   }
 
   getAuthToken(): string | undefined {
-    return this.get('auth_token');
+    return this.get("auth_token");
   }
 
   removeAuthToken(): void {
-    this.remove('auth_token');
+    this.remove("auth_token");
   }
 
   // User data methods
   setUserData(userData: any): void {
-    this.setJson('user_data', userData, {
+    this.setJson("user_data", userData, {
       expires: 30,
       secure: true,
-      sameSite: 'strict'
+      sameSite: "strict",
     });
   }
 
   getUserData<T>(): T | null {
-    return this.getJson<T>('user_data');
+    return this.getJson<T>("user_data");
   }
 
   removeUserData(): void {
-    this.remove('user_data');
+    this.remove("user_data");
   }
 
   // Cart data methods
   setCartData(cartData: any): void {
-    this.setJson('cart_data', cartData, {
+    this.setJson("cart_data", cartData, {
       expires: 7,
       secure: true,
-      sameSite: 'strict'
+      sameSite: "strict",
     });
   }
 
   getCartData<T>(): T | null {
-    return this.getJson<T>('cart_data');
+    return this.getJson<T>("cart_data");
   }
 
   removeCartData(): void {
-    this.remove('cart_data');
+    this.remove("cart_data");
   }
 
   // Last visited page methods
   setLastVisitedPage(url: string): void {
     // Don't save auth pages or API routes
     if (
-      url.includes('/login') ||
-      url.includes('/register') ||
-      url.includes('/api/') ||
-      url.includes('/_next/')
+      url.includes("/login") ||
+      url.includes("/register") ||
+      url.includes("/api/") ||
+      url.includes("/_next/")
     ) {
       return;
     }
-    this.set('last_visited_page', url, {
+    this.set("last_visited_page", url, {
       expires: 1, // 1 day
       secure: true,
-      sameSite: 'lax'
+      sameSite: "lax",
     });
   }
 
   getLastVisitedPage(): string | null {
-    return this.get('last_visited_page') || null;
+    return this.get("last_visited_page") || null;
   }
 
   removeLastVisitedPage(): void {
-    this.remove('last_visited_page');
+    this.remove("last_visited_page");
   }
 
   // Guest session data (for non-logged-in users)
@@ -171,22 +174,26 @@ class CookieStorage {
     browsing_history?: string[];
     timestamp?: string;
   }): void {
-    this.setJson('guest_session', {
-      ...data,
-      timestamp: new Date().toISOString()
-    }, {
-      expires: 30, // 30 days
-      secure: true,
-      sameSite: 'lax'
-    });
+    this.setJson(
+      "guest_session",
+      {
+        ...data,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        expires: 30, // 30 days
+        secure: true,
+        sameSite: "lax",
+      },
+    );
   }
 
   getGuestSession<T>(): T | null {
-    return this.getJson<T>('guest_session');
+    return this.getJson<T>("guest_session");
   }
 
   removeGuestSession(): void {
-    this.remove('guest_session');
+    this.remove("guest_session");
   }
 
   // Preferences methods
@@ -194,7 +201,7 @@ class CookieStorage {
     this.setJson(`pref_${key}`, value, {
       expires: 365, // 1 year for preferences
       secure: true,
-      sameSite: 'strict'
+      sameSite: "strict",
     });
   }
 

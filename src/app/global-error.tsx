@@ -19,7 +19,7 @@ export default function GlobalError({
     try {
       const savedTheme = localStorage.getItem("theme");
       const systemTheme = window.matchMedia(
-        "(prefers-color-scheme: dark)"
+        "(prefers-color-scheme: dark)",
       ).matches;
       setIsDark(savedTheme === "dark" || (!savedTheme && systemTheme));
     } catch {

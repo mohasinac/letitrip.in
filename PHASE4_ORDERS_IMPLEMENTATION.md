@@ -99,19 +99,16 @@ All seller order management APIs have been created with Firebase Admin SDK integ
 Before sellers can process orders, they must complete:
 
 1. **Basic Shop Info** (Tab 1)
-
    - Store name
    - Store description
    - Logo & cover image
 
 2. **Pickup Addresses** (Tab 2)
-
    - At least one pickup address
    - Default address selection
    - Multiple warehouse support
 
 3. **Business Details** (Tab 3)
-
    - GST number
    - PAN number
    - Business type
@@ -197,7 +194,6 @@ useEffect(() => {
 ### Pending for Phase 4:
 
 1. **Order Detail Page** (`/seller/orders/[id]`)
-
    - Full order information display
    - Order timeline component
    - Product snapshots from transactionSnapshot
@@ -206,14 +202,12 @@ useEffect(() => {
    - Seller notes functionality
 
 2. **Invoice Generation API**
-
    - `POST /api/seller/orders/[id]/invoice`
    - PDF generation with order details
    - Download or email to customer
    - Store invoice URL in order document
 
 3. **Initiate Shipment Flow**
-
    - `POST /api/seller/orders/[id]/initiate-shipment`
    - Create shipment record
    - Generate shipping label
@@ -221,14 +215,12 @@ useEffect(() => {
    - Integrate with Shiprocket API
 
 4. **Auto-Approval System**
-
    - Cloud Function or scheduled task
    - Auto-approve orders after 3 days
    - Update status: `pending` → `processing`
    - Send notification to seller
 
 5. **Shop Setup Validation**
-
    - Check if shop setup is complete
    - Show warning banner on orders page
    - Redirect to shop setup if incomplete

@@ -13,8 +13,10 @@ export interface AuthMiddlewareOptions {
  */
 export async function withAuth(
   request: NextRequest,
-  options: AuthMiddlewareOptions = {}
-): Promise<{ user: JWTPayload; error?: never } | { user?: never; error: NextResponse }> {
+  options: AuthMiddlewareOptions = {},
+): Promise<
+  { user: JWTPayload; error?: never } | { user?: never; error: NextResponse }
+> {
   try {
     const user = await getCurrentUser();
 
@@ -23,8 +25,8 @@ export async function withAuth(
       return {
         error: NextResponse.json(
           { success: false, error: "Authentication required" },
-          { status: 401 }
-        )
+          { status: 401 },
+        ),
       };
     }
 
@@ -33,8 +35,8 @@ export async function withAuth(
       return {
         error: NextResponse.json(
           { success: false, error: "Admin access required" },
-          { status: 403 }
-        )
+          { status: 403 },
+        ),
       };
     }
 
@@ -43,8 +45,8 @@ export async function withAuth(
       return {
         error: NextResponse.json(
           { success: false, error: "Seller access required" },
-          { status: 403 }
-        )
+          { status: 403 },
+        ),
       };
     }
 
@@ -52,12 +54,12 @@ export async function withAuth(
     if (options.allowedRoles && !options.allowedRoles.includes(user.role)) {
       return {
         error: NextResponse.json(
-          { 
-            success: false, 
-            error: `Access denied. Required roles: ${options.allowedRoles.join(", ")}` 
+          {
+            success: false,
+            error: `Access denied. Required roles: ${options.allowedRoles.join(", ")}`,
           },
-          { status: 403 }
-        )
+          { status: 403 },
+        ),
       };
     }
 
@@ -67,8 +69,8 @@ export async function withAuth(
     return {
       error: NextResponse.json(
         { success: false, error: "Authentication failed" },
-        { status: 500 }
-      )
+        { status: 500 },
+      ),
     };
   }
 }
@@ -98,12 +100,16 @@ export function withRoleAuth(allowedRoles: string[]) {
  * Wrapper function for API route handlers with authentication
  */
 export function createAuthenticatedHandler<T extends any[]>(
-  handler: (request: NextRequest, user: JWTPayload, ...args: T) => Promise<NextResponse>,
-  options: AuthMiddlewareOptions = {}
+  handler: (
+    request: NextRequest,
+    user: JWTPayload,
+    ...args: T
+  ) => Promise<NextResponse>,
+  options: AuthMiddlewareOptions = {},
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
     const authResult = await withAuth(request, options);
-    
+
     if (authResult.error) {
       return authResult.error;
     }
@@ -116,7 +122,11 @@ export function createAuthenticatedHandler<T extends any[]>(
  * Wrapper specifically for admin handlers
  */
 export function createAdminHandler<T extends any[]>(
-  handler: (request: NextRequest, user: JWTPayload, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: JWTPayload,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
   return createAuthenticatedHandler(handler, { requireAdmin: true });
 }
@@ -125,7 +135,11 @@ export function createAdminHandler<T extends any[]>(
  * Wrapper specifically for seller handlers
  */
 export function createSellerHandler<T extends any[]>(
-  handler: (request: NextRequest, user: JWTPayload, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: JWTPayload,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
   return createAuthenticatedHandler(handler, { requireSeller: true });
 }
@@ -134,16 +148,26 @@ export function createSellerHandler<T extends any[]>(
  * Wrapper specifically for user handlers (authenticated users)
  */
 export function createUserHandler<T extends any[]>(
-  handler: (request: NextRequest, user: JWTPayload, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: JWTPayload,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
-  return createAuthenticatedHandler(handler, { allowedRoles: ['user', 'seller', 'admin'] });
+  return createAuthenticatedHandler(handler, {
+    allowedRoles: ["user", "seller", "admin"],
+  });
 }
 
 /**
  * Wrapper for public endpoints that optionally accept authentication
  */
 export function createOptionalAuthHandler<T extends any[]>(
-  handler: (request: NextRequest, user: JWTPayload | null, ...args: T) => Promise<NextResponse>
+  handler: (
+    request: NextRequest,
+    user: JWTPayload | null,
+    ...args: T
+  ) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
     try {
@@ -177,14 +201,14 @@ export function hasPermission(user: JWTPayload, permission: string): boolean {
  */
 export function getUserPermissions(user: JWTPayload): string[] {
   const permissions = ["user"]; // All authenticated users have user permission
-  
+
   if (["seller", "admin"].includes(user.role)) {
     permissions.push("seller");
   }
-  
+
   if (user.role === "admin") {
     permissions.push("admin");
   }
-  
+
   return permissions;
 }

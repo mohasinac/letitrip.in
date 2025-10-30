@@ -359,19 +359,16 @@ firebase deploy --only firestore,storage
 After successful deployment:
 
 1. **Verify All Indexes Built**
-
    - Check Firebase Console
    - All should show "Enabled"
    - If any show "Error", redeploy
 
 2. **Test API Endpoints**
-
    - Test all 17 seller API endpoints
    - Verify admin can access all
    - Verify sellers can only access own
 
 3. **Continue Phase 3 Implementation**
-
    - Multi-step product creation form
    - Media upload API with WhatsApp editor
    - Leaf categories API

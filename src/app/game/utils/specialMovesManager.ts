@@ -3,8 +3,12 @@
  * Handles activation, tracking, and execution of Beyblade special moves
  */
 
-import { GameBeyblade } from '../types/game';
-import { BeybladeStats, ActiveSpecialMove, SpecialMoveFlags } from '@/types/beybladeStats';
+import { GameBeyblade } from "../types/game";
+import {
+  BeybladeStats,
+  ActiveSpecialMove,
+  SpecialMoveFlags,
+} from "@/types/beybladeStats";
 
 /**
  * Active special moves registry
@@ -17,31 +21,34 @@ const activeSpecialMoves = new Map<string, ActiveSpecialMove>();
 export function canActivateSpecialMove(
   beyblade: GameBeyblade,
   stats: BeybladeStats,
-  currentTime: number
+  currentTime: number,
 ): { canActivate: boolean; reason?: string } {
   // Check if Beyblade is dead or out of bounds
   if (beyblade.isDead || beyblade.isOutOfBounds) {
-    return { canActivate: false, reason: 'Beyblade is inactive' };
+    return { canActivate: false, reason: "Beyblade is inactive" };
   }
-  
+
   // Check power requirement
   if ((beyblade.power || 0) < stats.specialMove.powerCost) {
-    return { 
-      canActivate: false, 
-      reason: `Need ${stats.specialMove.powerCost} power (have ${beyblade.power || 0})` 
+    return {
+      canActivate: false,
+      reason: `Need ${stats.specialMove.powerCost} power (have ${beyblade.power || 0})`,
     };
   }
-  
+
   // Check cooldown
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (activeMove && currentTime < activeMove.cooldownEndTime) {
-    const remaining = ((activeMove.cooldownEndTime - currentTime) / 1000).toFixed(1);
-    return { 
-      canActivate: false, 
-      reason: `Cooldown: ${remaining}s remaining` 
+    const remaining = (
+      (activeMove.cooldownEndTime - currentTime) /
+      1000
+    ).toFixed(1);
+    return {
+      canActivate: false,
+      reason: `Cooldown: ${remaining}s remaining`,
     };
   }
-  
+
   return { canActivate: true };
 }
 
@@ -51,18 +58,21 @@ export function canActivateSpecialMove(
 export function activateSpecialMove(
   beyblade: GameBeyblade,
   stats: BeybladeStats,
-  currentTime: number
+  currentTime: number,
 ): ActiveSpecialMove | null {
   const check = canActivateSpecialMove(beyblade, stats, currentTime);
-  
+
   if (!check.canActivate) {
     console.log(`Cannot activate special move: ${check.reason}`);
     return null;
   }
-  
+
   // Deduct power cost
-  beyblade.power = Math.max(0, (beyblade.power || 0) - stats.specialMove.powerCost);
-  
+  beyblade.power = Math.max(
+    0,
+    (beyblade.power || 0) - stats.specialMove.powerCost,
+  );
+
   // Create active move
   const activeMove: ActiveSpecialMove = {
     beybladeId: beyblade.id,
@@ -70,16 +80,19 @@ export function activateSpecialMove(
     flags: stats.specialMove.flags,
     startTime: currentTime,
     endTime: currentTime + stats.specialMove.flags.duration * 1000,
-    cooldownEndTime: currentTime + (stats.specialMove.flags.duration + stats.specialMove.flags.cooldown) * 1000,
+    cooldownEndTime:
+      currentTime +
+      (stats.specialMove.flags.duration + stats.specialMove.flags.cooldown) *
+        1000,
     isActive: true,
   };
-  
+
   // Register active move
   activeSpecialMoves.set(beyblade.id, activeMove);
-  
+
   // Apply initial move effects
   applySpecialMoveEffects(beyblade, stats, activeMove.flags);
-  
+
   return activeMove;
 }
 
@@ -89,64 +102,64 @@ export function activateSpecialMove(
 function applySpecialMoveEffects(
   beyblade: GameBeyblade,
   stats: BeybladeStats,
-  flags: SpecialMoveFlags
+  flags: SpecialMoveFlags,
 ): void {
   // Store original values before modifications
   if (!beyblade.baseRadius) {
     beyblade.baseRadius = beyblade.radius;
   }
-  
+
   // === MOVEMENT FLAGS ===
-  
+
   // Speed boost
   if (flags.speedBoost) {
     beyblade.velocity.x *= flags.speedBoost;
     beyblade.velocity.y *= flags.speedBoost;
   }
-  
+
   // Cannot move - freeze in position
   if (flags.cannotMove) {
     beyblade.velocity.x = 0;
     beyblade.velocity.y = 0;
     beyblade.isFrozen = true;
   }
-  
+
   // Phasing - disable collisions
   if (flags.phasing) {
     beyblade.isPhasing = true;
   }
-  
+
   // Perform loop (trigger loop mechanics)
   if (flags.performLoop) {
     beyblade.isInNormalLoop = true;
     beyblade.normalLoopStartTime = Date.now();
     beyblade.normalLoopAngle = 0;
   }
-  
+
   // === SIZE/VISUAL FLAGS ===
-  
+
   // Radius multiplier - increase hitbox size
   if (flags.radiusMultiplier) {
     beyblade.radius = beyblade.baseRadius * flags.radiusMultiplier;
   }
-  
+
   // Visual scale - store for rendering
   if (flags.visualScale) {
     beyblade.visualScale = flags.visualScale;
   }
-  
+
   // === DEFENSIVE FLAGS ===
   // These are applied during collision/damage calculations in collision handlers
-  
+
   // === OFFENSIVE FLAGS ===
   // Damage multipliers are applied during collision detection
-  
+
   // === CINEMATIC MOVES ===
   // Orbital Attack and Time Skip are handled by cinematicSpecialMoves.ts
   // But we can set flags here that affect behavior
-  
+
   // === COMPLEX MOVE TYPES ===
-  
+
   // Berserk Mode
   if (flags.berserkMode?.enabled) {
     if (flags.berserkMode.speedBoost) {
@@ -156,13 +169,13 @@ function applySpecialMoveEffects(
     // Visual intensity stored for rendering
     beyblade.visualScale = flags.berserkMode.visualIntensity || 1.5;
   }
-  
+
   // Phantom Mode
   if (flags.phantomMode?.enabled) {
     beyblade.isPhasing = flags.phantomMode.phaseThrough || false;
     beyblade.visualScale = flags.phantomMode.opacity || 0.5;
   }
-  
+
   // Shield Dome
   if (flags.shieldDome?.enabled) {
     // Shield absorbs damage during updateSpecialMoves
@@ -176,51 +189,51 @@ function applyContinuousEffects(
   beyblade: GameBeyblade,
   stats: BeybladeStats,
   flags: SpecialMoveFlags,
-  deltaTime: number
+  deltaTime: number,
 ): void {
   // === HEALING/DAMAGE OVER TIME ===
-  
+
   // Heal spin
   if (flags.healSpin) {
     beyblade.spin = Math.min(
       beyblade.maxSpin,
-      beyblade.spin + flags.healSpin * deltaTime
+      beyblade.spin + flags.healSpin * deltaTime,
     );
   }
-  
+
   // Shield Dome healing
   if (flags.shieldDome?.enabled && flags.shieldDome.healPerSecond) {
     beyblade.spin = Math.min(
       beyblade.maxSpin,
-      beyblade.spin + flags.shieldDome.healPerSecond * deltaTime
+      beyblade.spin + flags.shieldDome.healPerSecond * deltaTime,
     );
   }
-  
+
   // === GRAVITY/PUSH EFFECTS ===
   // These would need access to other beyblades, handled in game loop
-  
+
   // === VORTEX MODE ===
   if (flags.vortexMode?.enabled) {
     // Spin steal handled in collision detection
     // Visual effects stored for rendering
   }
-  
+
   // === BERSERK MODE ===
   if (flags.berserkMode?.enabled) {
     // Continuous damage boost is applied during collisions
     // Defense reduction is applied when taking damage
   }
-  
+
   // === RUSH ATTACK ===
   if (flags.rushAttack?.enabled) {
     // Dash mechanics handled in game loop
   }
-  
+
   // === PHANTOM MODE TELEPORT ===
   if (flags.phantomMode?.enabled && flags.phantomMode.teleportOnHit) {
     // Teleport logic handled on collision
   }
-  
+
   // === EXPLOSION ===
   if (flags.explosion?.enabled) {
     // Explosion triggered at end of move or on collision
@@ -234,15 +247,15 @@ export function updateSpecialMoves(
   beyblades: GameBeyblade[],
   stats: Map<string, BeybladeStats>,
   currentTime: number,
-  deltaTime: number
+  deltaTime: number,
 ): void {
   for (const beyblade of beyblades) {
     const activeMove = activeSpecialMoves.get(beyblade.id);
-    
+
     if (activeMove && activeMove.isActive) {
       const beyStats = stats.get(beyblade.name);
       if (!beyStats) continue;
-      
+
       // Check if move duration ended
       if (currentTime >= activeMove.endTime) {
         activeMove.isActive = false;
@@ -260,7 +273,7 @@ export function updateSpecialMoves(
  */
 function removeSpecialMoveEffects(
   beyblade: GameBeyblade,
-  flags: SpecialMoveFlags
+  flags: SpecialMoveFlags,
 ): void {
   // Speed boost reversal (gradual deceleration)
   if (flags.speedBoost) {
@@ -268,27 +281,27 @@ function removeSpecialMoveEffects(
     beyblade.velocity.x *= reverseMultiplier;
     beyblade.velocity.y *= reverseMultiplier;
   }
-  
+
   // Unfreeze movement
   if (flags.cannotMove) {
     beyblade.isFrozen = false;
   }
-  
+
   // Disable phasing
   if (flags.phasing) {
     beyblade.isPhasing = false;
   }
-  
+
   // Reset radius
   if (flags.radiusMultiplier && beyblade.baseRadius) {
     beyblade.radius = beyblade.baseRadius;
   }
-  
+
   // Reset visual scale
   if (flags.visualScale) {
     beyblade.visualScale = 1.0;
   }
-  
+
   // End loop
   if (flags.performLoop) {
     beyblade.isInNormalLoop = false;
@@ -298,7 +311,9 @@ function removeSpecialMoveEffects(
 /**
  * Get active special move for a Beyblade
  */
-export function getActiveSpecialMove(beybladeId: string): ActiveSpecialMove | null {
+export function getActiveSpecialMove(
+  beybladeId: string,
+): ActiveSpecialMove | null {
   return activeSpecialMoves.get(beybladeId) || null;
 }
 
@@ -316,57 +331,58 @@ export function hasActiveSpecialMove(beybladeId: string): boolean {
 export function calculateDamageWithSpecialMoves(
   attacker: GameBeyblade,
   defender: GameBeyblade,
-  baseDamage: number
+  baseDamage: number,
 ): number {
   let finalDamage = baseDamage;
-  
+
   // Apply attacker's damage multiplier
   const attackerMove = activeSpecialMoves.get(attacker.id);
   if (attackerMove && attackerMove.isActive) {
     const flags = attackerMove.flags;
-    
+
     // Base damage multiplier
     if (flags.damageMultiplier) {
       finalDamage *= flags.damageMultiplier;
     }
-    
+
     // Berserk mode damage boost
     if (flags.berserkMode?.enabled && flags.berserkMode.damageBoost) {
       finalDamage *= flags.berserkMode.damageBoost;
     }
-    
+
     // Rush attack damage per dash
     if (flags.rushAttack?.enabled && flags.rushAttack.damagePerDash) {
-      finalDamage += flags.rushAttack.damagePerDash * (flags.rushAttack.dashCount || 1);
+      finalDamage +=
+        flags.rushAttack.damagePerDash * (flags.rushAttack.dashCount || 1);
     }
   }
-  
+
   // Apply defender's damage reduction
   const defenderMove = activeSpecialMoves.get(defender.id);
   if (defenderMove && defenderMove.isActive) {
     const flags = defenderMove.flags;
-    
+
     // Damage immunity
     if (flags.damageImmune) {
       finalDamage = 0;
     } else {
       // Base damage reduction
       if (flags.damageReduction) {
-        finalDamage *= (1 - flags.damageReduction);
+        finalDamage *= 1 - flags.damageReduction;
       }
-      
+
       // Shield dome absorption
       if (flags.shieldDome?.enabled && flags.shieldDome.absorbDamage) {
         finalDamage = 0;
       }
-      
+
       // Berserk mode defense reduction (take MORE damage)
       if (flags.berserkMode?.enabled && flags.berserkMode.defenseReduction) {
-        finalDamage *= (1 + flags.berserkMode.defenseReduction);
+        finalDamage *= 1 + flags.berserkMode.defenseReduction;
       }
     }
   }
-  
+
   return Math.max(0, finalDamage);
 }
 
@@ -375,24 +391,24 @@ export function calculateDamageWithSpecialMoves(
  */
 export function calculateReflectedDamage(
   defender: GameBeyblade,
-  incomingDamage: number
+  incomingDamage: number,
 ): number {
   const defenderMove = activeSpecialMoves.get(defender.id);
-  
+
   if (defenderMove && defenderMove.isActive) {
     const flags = defenderMove.flags;
-    
+
     // Shield dome reflection
     if (flags.shieldDome?.enabled && flags.shieldDome.reflectPercentage) {
       return incomingDamage * flags.shieldDome.reflectPercentage;
     }
-    
+
     // Base reflect damage
     if (flags.reflectDamage) {
       return incomingDamage * flags.reflectDamage;
     }
   }
-  
+
   return 0;
 }
 
@@ -402,25 +418,25 @@ export function calculateReflectedDamage(
 export function calculateSpinSteal(
   attacker: GameBeyblade,
   defender: GameBeyblade,
-  baseSpinSteal: number
+  baseSpinSteal: number,
 ): number {
   let finalSpinSteal = baseSpinSteal;
-  
+
   // Apply attacker's spin steal multiplier
   const attackerMove = activeSpecialMoves.get(attacker.id);
   if (attackerMove && attackerMove.isActive) {
     const flags = attackerMove.flags;
-    
+
     if (flags.spinStealMultiplier) {
       finalSpinSteal *= flags.spinStealMultiplier;
     }
-    
+
     // Vortex mode spin steal
     if (flags.vortexMode?.enabled && flags.vortexMode.spinStealRate) {
       finalSpinSteal += flags.vortexMode.spinStealRate;
     }
   }
-  
+
   return finalSpinSteal;
 }
 
@@ -435,7 +451,7 @@ export function getSpecialMoveDamageModifiers(beybladeId: string): {
   spinStealMultiplier: number;
 } {
   const activeMove = activeSpecialMoves.get(beybladeId);
-  
+
   if (!activeMove || !activeMove.isActive) {
     return {
       damageMultiplier: 1.0,
@@ -445,33 +461,37 @@ export function getSpecialMoveDamageModifiers(beybladeId: string): {
       spinStealMultiplier: 1.0,
     };
   }
-  
+
   const flags = activeMove.flags;
-  
+
   // Combine multipliers from different sources
   let totalDamageMultiplier = flags.damageMultiplier || 1.0;
-  
+
   // Berserk mode damage boost
   if (flags.berserkMode?.enabled && flags.berserkMode.damageBoost) {
     totalDamageMultiplier *= flags.berserkMode.damageBoost;
   }
-  
+
   // Shield dome damage reduction
   let totalDamageReduction = flags.damageReduction || 0;
   if (flags.shieldDome?.enabled && flags.shieldDome.absorbDamage) {
     totalDamageReduction = 1.0; // 100% reduction
   }
-  
+
   // Berserk mode defense reduction (take MORE damage)
   if (flags.berserkMode?.enabled && flags.berserkMode.defenseReduction) {
-    totalDamageReduction = Math.max(0, totalDamageReduction - flags.berserkMode.defenseReduction);
+    totalDamageReduction = Math.max(
+      0,
+      totalDamageReduction - flags.berserkMode.defenseReduction,
+    );
   }
-  
+
   return {
     damageMultiplier: totalDamageMultiplier,
     damageReduction: totalDamageReduction,
     damageImmune: flags.damageImmune || false,
-    reflectDamage: flags.reflectDamage || (flags.shieldDome?.reflectPercentage || 0),
+    reflectDamage:
+      flags.reflectDamage || flags.shieldDome?.reflectPercentage || 0,
     spinStealMultiplier: flags.spinStealMultiplier || 1.0,
   };
 }
@@ -482,7 +502,7 @@ export function getSpecialMoveDamageModifiers(beybladeId: string): {
 export function isImmuneToKnockback(beybladeId: string): boolean {
   const activeMove = activeSpecialMoves.get(beybladeId);
   if (!activeMove || !activeMove.isActive) return false;
-  
+
   return activeMove.flags.immuneToKnockback || false;
 }
 
@@ -492,21 +512,21 @@ export function isImmuneToKnockback(beybladeId: string): boolean {
 export function getSpecialMoveForces(
   beybladeId: string,
   targetPosition: { x: number; y: number },
-  beybladePosition: { x: number; y: number }
+  beybladePosition: { x: number; y: number },
 ): { x: number; y: number } | null {
   const activeMove = activeSpecialMoves.get(beybladeId);
   if (!activeMove || !activeMove.isActive) return null;
-  
+
   const flags = activeMove.flags;
   const dx = targetPosition.x - beybladePosition.x;
   const dy = targetPosition.y - beybladePosition.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
-  
+
   if (distance === 0) return null;
-  
+
   const normalizedX = dx / distance;
   const normalizedY = dy / distance;
-  
+
   // Gravity pull
   if (flags.gravityPull && distance <= flags.gravityPull) {
     const pullStrength = 100; // pixels per second
@@ -515,7 +535,7 @@ export function getSpecialMoveForces(
       y: normalizedY * pullStrength,
     };
   }
-  
+
   // Push away
   if (flags.pushAway && distance <= flags.pushAway) {
     const pushStrength = 150; // pixels per second
@@ -524,7 +544,7 @@ export function getSpecialMoveForces(
       y: -normalizedY * pushStrength,
     };
   }
-  
+
   // Shield dome push
   if (flags.shieldDome?.enabled && distance <= flags.shieldDome.pushRadius) {
     const pushStrength = 200;
@@ -533,7 +553,7 @@ export function getSpecialMoveForces(
       y: -normalizedY * pushStrength,
     };
   }
-  
+
   // Vortex mode pull
   if (flags.vortexMode?.enabled && distance <= flags.vortexMode.pullRadius) {
     const pullStrength = 120;
@@ -542,7 +562,7 @@ export function getSpecialMoveForces(
       y: normalizedY * pullStrength,
     };
   }
-  
+
   return null;
 }
 
@@ -552,34 +572,34 @@ export function getSpecialMoveForces(
 export function applyVortexSpinSteal(
   beyblade: GameBeyblade,
   opponents: GameBeyblade[],
-  deltaTime: number
+  deltaTime: number,
 ): void {
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (!activeMove || !activeMove.isActive) return;
-  
+
   const flags = activeMove.flags;
   if (!flags.vortexMode?.enabled) return;
-  
+
   const vortex = flags.vortexMode;
-  
+
   for (const opponent of opponents) {
     if (opponent.id === beyblade.id || opponent.isDead) continue;
-    
+
     const dx = opponent.position.x - beyblade.position.x;
     const dy = opponent.position.y - beyblade.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
+
     if (distance <= vortex.pullRadius) {
       // Steal spin
       const stealAmount = vortex.spinStealRate * deltaTime;
       const actualSteal = Math.min(stealAmount, opponent.spin);
-      
+
       opponent.spin = Math.max(0, opponent.spin - actualSteal);
-      
+
       if (vortex.healFromSteal) {
         beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + actualSteal);
       }
-      
+
       // Slow opponent
       if (vortex.slowOpponents && opponent.velocity) {
         opponent.velocity.x *= vortex.slowOpponents;
@@ -595,7 +615,7 @@ export function applyVortexSpinSteal(
 export function shouldCounterAttack(beybladeId: string): boolean {
   const activeMove = activeSpecialMoves.get(beybladeId);
   if (!activeMove || !activeMove.isActive) return false;
-  
+
   return activeMove.flags.counterAttack || false;
 }
 
@@ -618,7 +638,11 @@ export function getAllActiveSpecialMoves(): ActiveSpecialMove[] {
  */
 export function isPhasing(beybladeId: string): boolean {
   const activeMove = activeSpecialMoves.get(beybladeId);
-  return activeMove !== undefined && activeMove.isActive && (activeMove.flags.phasing || false);
+  return (
+    activeMove !== undefined &&
+    activeMove.isActive &&
+    (activeMove.flags.phasing || false)
+  );
 }
 
 /**
@@ -626,7 +650,11 @@ export function isPhasing(beybladeId: string): boolean {
  */
 export function cannotMove(beybladeId: string): boolean {
   const activeMove = activeSpecialMoves.get(beybladeId);
-  return activeMove !== undefined && activeMove.isActive && (activeMove.flags.cannotMove || false);
+  return (
+    activeMove !== undefined &&
+    activeMove.isActive &&
+    (activeMove.flags.cannotMove || false)
+  );
 }
 
 /**
@@ -634,21 +662,21 @@ export function cannotMove(beybladeId: string): boolean {
  */
 export function handlePhantomTeleport(
   beyblade: GameBeyblade,
-  arenaRadius: number
+  arenaRadius: number,
 ): void {
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (!activeMove || !activeMove.isActive) return;
-  
+
   const flags = activeMove.flags;
   if (!flags.phantomMode?.enabled || !flags.phantomMode.teleportOnHit) return;
-  
+
   // Teleport to random position in arena
   const angle = Math.random() * Math.PI * 2;
   const distance = Math.random() * arenaRadius * 0.7; // Keep away from edges
-  
+
   beyblade.position.x = Math.cos(angle) * distance;
   beyblade.position.y = Math.sin(angle) * distance;
-  
+
   // Reset velocity
   if (beyblade.velocity) {
     beyblade.velocity.x *= 0.5;
@@ -661,36 +689,36 @@ export function handlePhantomTeleport(
  */
 export function triggerExplosion(
   beyblade: GameBeyblade,
-  opponents: GameBeyblade[]
+  opponents: GameBeyblade[],
 ): void {
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (!activeMove || !activeMove.isActive) return;
-  
+
   const flags = activeMove.flags;
   if (!flags.explosion?.enabled) return;
-  
+
   const explosion = flags.explosion;
-  
+
   for (const opponent of opponents) {
     if (opponent.id === beyblade.id || opponent.isDead) continue;
-    
+
     const dx = opponent.position.x - beyblade.position.x;
     const dy = opponent.position.y - beyblade.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
+
     if (distance <= explosion.explosionRadius) {
       // Apply damage
       opponent.spin = Math.max(0, opponent.spin - explosion.explosionDamage);
-      
+
       // Apply knockback
       if (opponent.velocity) {
         const normalizedX = dx / (distance || 1);
         const normalizedY = dy / (distance || 1);
-        
+
         opponent.velocity.x += normalizedX * explosion.knockbackForce;
         opponent.velocity.y += normalizedY * explosion.knockbackForce;
       }
-      
+
       // Self damage if specified
       if (explosion.selfDamage) {
         beyblade.spin = Math.max(0, beyblade.spin - explosion.selfDamage);
@@ -704,26 +732,26 @@ export function triggerExplosion(
  */
 export function executeRushAttack(
   beyblade: GameBeyblade,
-  targetPosition: { x: number; y: number }
+  targetPosition: { x: number; y: number },
 ): void {
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (!activeMove || !activeMove.isActive) return;
-  
+
   const flags = activeMove.flags;
   if (!flags.rushAttack?.enabled) return;
-  
+
   const rush = flags.rushAttack;
-  
+
   // Calculate dash direction
   const dx = targetPosition.x - beyblade.position.x;
   const dy = targetPosition.y - beyblade.position.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
-  
+
   if (distance === 0) return;
-  
+
   const normalizedX = dx / distance;
   const normalizedY = dy / distance;
-  
+
   // Apply dash velocity
   if (beyblade.velocity) {
     beyblade.velocity.x = normalizedX * rush.dashSpeed;
@@ -736,29 +764,33 @@ export function executeRushAttack(
  */
 export function getMagnetForce(
   beyblade: GameBeyblade,
-  opponent: GameBeyblade
+  opponent: GameBeyblade,
 ): { x: number; y: number } | null {
   const activeMove = activeSpecialMoves.get(beyblade.id);
   if (!activeMove || !activeMove.isActive) return null;
-  
+
   const flags = activeMove.flags;
   if (!flags.magnetMode?.enabled) return null;
-  
+
   const dx = opponent.position.x - beyblade.position.x;
   const dy = opponent.position.y - beyblade.position.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
-  
+
   if (distance === 0 || distance > flags.magnetMode.attractRadius) return null;
-  
+
   const normalizedX = dx / distance;
   const normalizedY = dy / distance;
   const force = flags.magnetMode.force;
-  
+
   // Attract or repel based on mode
-  const direction = flags.magnetMode.attractOpponents ? -1 : (flags.magnetMode.repelOpponents ? 1 : 0);
-  
+  const direction = flags.magnetMode.attractOpponents
+    ? -1
+    : flags.magnetMode.repelOpponents
+      ? 1
+      : 0;
+
   if (direction === 0) return null;
-  
+
   return {
     x: direction * normalizedX * force,
     y: direction * normalizedY * force,

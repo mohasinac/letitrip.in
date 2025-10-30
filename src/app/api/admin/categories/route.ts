@@ -17,7 +17,7 @@ const CATEGORIES_COLLECTION = "categories";
  */
 function calculateCategoryPaths(
   parentIds: string[],
-  categoryMap: Map<string, Category>
+  categoryMap: Map<string, Category>,
 ): { paths: string[][]; minLevel: number; maxLevel: number } {
   if (parentIds.length === 0) {
     return { paths: [[]], minLevel: 0, maxLevel: 0 };
@@ -28,7 +28,7 @@ function calculateCategoryPaths(
   function traversePaths(currentId: string, currentPath: string[]): string[][] {
     const paths: string[][] = [];
     const category = categoryMap.get(currentId);
-    
+
     if (!category) {
       return [[...currentPath, currentId]];
     }
@@ -52,10 +52,10 @@ function calculateCategoryPaths(
   // Get all paths from each direct parent
   for (const parentId of parentIds) {
     const paths = traversePaths(parentId, []);
-    allPaths.push(...paths.map(p => p.reverse()));
+    allPaths.push(...paths.map((p) => p.reverse()));
   }
 
-  const levels = allPaths.map(p => p.length);
+  const levels = allPaths.map((p) => p.length);
   const minLevel = Math.min(...levels);
   const maxLevel = Math.max(...levels);
 
@@ -75,10 +75,13 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     const snapshot = await db.collection(CATEGORIES_COLLECTION).get();
-    let allCategories: Category[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as Category));
+    let allCategories: Category[] = snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Category,
+    );
 
     // Filter by search
     if (search) {
@@ -86,7 +89,7 @@ export async function GET(request: NextRequest) {
       allCategories = allCategories.filter(
         (cat) =>
           cat.name.toLowerCase().includes(searchLower) ||
-          cat.slug.toLowerCase().includes(searchLower)
+          cat.slug.toLowerCase().includes(searchLower),
       );
     }
 
@@ -107,7 +110,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching categories:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -123,7 +126,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -139,7 +142,7 @@ export async function POST(request: NextRequest) {
           error: "Validation failed",
           errors: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -147,10 +150,13 @@ export async function POST(request: NextRequest) {
 
     // Get all categories to build hierarchy map
     const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
-    const allCats = allCatsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as Category));
+    const allCats = allCatsSnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Category,
+    );
 
     const categoryMap = new Map<string, Category>();
     allCats.forEach((cat) => {
@@ -161,24 +167,21 @@ export async function POST(request: NextRequest) {
     const hierarchyValid = validateCategoryHierarchy(
       "",
       formData.parentIds,
-      categoryMap
+      categoryMap,
     );
     if (!hierarchyValid.valid) {
       return NextResponse.json(
         { success: false, error: hierarchyValid.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate depth
-    const depthValid = validateCategoryDepth(
-      formData.parentIds,
-      categoryMap
-    );
+    const depthValid = validateCategoryDepth(formData.parentIds, categoryMap);
     if (!depthValid.valid) {
       return NextResponse.json(
         { success: false, error: depthValid.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -187,22 +190,25 @@ export async function POST(request: NextRequest) {
     if (slugExists) {
       return NextResponse.json(
         { success: false, error: "Category slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Create new category
     const categoryId = `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const parentIds = formData.parentIds || [];
-    
+
     // Get parent slugs if parents exist
     const parentSlugs = parentIds
-      .map(pid => categoryMap.get(pid)?.slug)
+      .map((pid) => categoryMap.get(pid)?.slug)
       .filter(Boolean) as string[];
 
     // Calculate all paths and levels
-    const { paths, minLevel, maxLevel } = calculateCategoryPaths(parentIds, categoryMap);
+    const { paths, minLevel, maxLevel } = calculateCategoryPaths(
+      parentIds,
+      categoryMap,
+    );
 
     const newCategory: Category = {
       id: categoryId,
@@ -253,17 +259,16 @@ export async function POST(request: NextRequest) {
         success: true,
         data: newCategory,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
 
 /**
  * PATCH /api/admin/categories/[id]
@@ -276,7 +281,7 @@ export async function PATCH(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -287,15 +292,18 @@ export async function PATCH(request: NextRequest) {
     if (!categoryId) {
       return NextResponse.json(
         { success: false, error: "Category ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const categoryDoc = await db.collection(CATEGORIES_COLLECTION).doc(categoryId).get();
+    const categoryDoc = await db
+      .collection(CATEGORIES_COLLECTION)
+      .doc(categoryId)
+      .get();
     if (!categoryDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -310,7 +318,7 @@ export async function PATCH(request: NextRequest) {
           error: "Validation failed",
           errors: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -318,10 +326,13 @@ export async function PATCH(request: NextRequest) {
 
     // Get all categories for hierarchy validation
     const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
-    const allCats = allCatsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as Category));
+    const allCats = allCatsSnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Category,
+    );
 
     const categoryMap = new Map<string, Category>();
     allCats.forEach((cat) => {
@@ -333,23 +344,20 @@ export async function PATCH(request: NextRequest) {
       const hierarchyValid = validateCategoryHierarchy(
         categoryId,
         formData.parentIds,
-        categoryMap
+        categoryMap,
       );
       if (!hierarchyValid.valid) {
         return NextResponse.json(
           { success: false, error: hierarchyValid.error },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
-      const depthValid = validateCategoryDepth(
-        formData.parentIds,
-        categoryMap
-      );
+      const depthValid = validateCategoryDepth(formData.parentIds, categoryMap);
       if (!depthValid.valid) {
         return NextResponse.json(
           { success: false, error: depthValid.error },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -357,12 +365,12 @@ export async function PATCH(request: NextRequest) {
     // Check for duplicate slug (excluding current)
     if (formData.slug && formData.slug !== category.slug) {
       const slugExists = allCats.some(
-        (cat) => cat.id !== categoryId && cat.slug === formData.slug
+        (cat) => cat.id !== categoryId && cat.slug === formData.slug,
       );
       if (slugExists) {
         return NextResponse.json(
           { success: false, error: "Category slug already exists" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -380,15 +388,18 @@ export async function PATCH(request: NextRequest) {
     if (formData.parentIds !== undefined) {
       const newParentIds = formData.parentIds || [];
       const oldParentIds = category.parentIds || [];
-      
+
       // Get parent slugs
       const parentSlugs = newParentIds
-        .map(pid => categoryMap.get(pid)?.slug)
+        .map((pid) => categoryMap.get(pid)?.slug)
         .filter(Boolean) as string[];
-      
+
       // Calculate paths and levels
-      const { paths, minLevel, maxLevel } = calculateCategoryPaths(newParentIds, categoryMap);
-      
+      const { paths, minLevel, maxLevel } = calculateCategoryPaths(
+        newParentIds,
+        categoryMap,
+      );
+
       if (newParentIds.length > 0) {
         updatedCategory.parentIds = newParentIds;
         updatedCategory.parentSlugs = parentSlugs;
@@ -396,27 +407,32 @@ export async function PATCH(request: NextRequest) {
         delete updatedCategory.parentIds;
         delete updatedCategory.parentSlugs;
       }
-      
+
       updatedCategory.paths = paths;
       updatedCategory.minLevel = minLevel;
       updatedCategory.maxLevel = maxLevel;
-      
+
       // Update old parents - remove this category from their childIds
       for (const oldParentId of oldParentIds) {
         if (!newParentIds.includes(oldParentId)) {
           const oldParent = categoryMap.get(oldParentId);
           if (oldParent) {
-            const updatedChildIds = (oldParent.childIds || []).filter(id => id !== categoryId);
-            await db.collection(CATEGORIES_COLLECTION).doc(oldParentId).update({
-              childIds: updatedChildIds,
-              isLeaf: updatedChildIds.length === 0,
-              updatedAt: new Date().toISOString(),
-              updatedBy: user.uid,
-            });
+            const updatedChildIds = (oldParent.childIds || []).filter(
+              (id) => id !== categoryId,
+            );
+            await db
+              .collection(CATEGORIES_COLLECTION)
+              .doc(oldParentId)
+              .update({
+                childIds: updatedChildIds,
+                isLeaf: updatedChildIds.length === 0,
+                updatedAt: new Date().toISOString(),
+                updatedBy: user.uid,
+              });
           }
         }
       }
-      
+
       // Update new parents - add this category to their childIds
       for (const newParentId of newParentIds) {
         if (!oldParentIds.includes(newParentId)) {
@@ -434,7 +450,10 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    await db.collection(CATEGORIES_COLLECTION).doc(categoryId).set(updatedCategory);
+    await db
+      .collection(CATEGORIES_COLLECTION)
+      .doc(categoryId)
+      .set(updatedCategory);
 
     return NextResponse.json({
       success: true,
@@ -444,7 +463,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error updating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -460,7 +479,7 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -471,15 +490,18 @@ export async function DELETE(request: NextRequest) {
     if (!categoryId) {
       return NextResponse.json(
         { success: false, error: "Category ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const categoryDoc = await db.collection(CATEGORIES_COLLECTION).doc(categoryId).get();
+    const categoryDoc = await db
+      .collection(CATEGORIES_COLLECTION)
+      .doc(categoryId)
+      .get();
     if (!categoryDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -487,20 +509,26 @@ export async function DELETE(request: NextRequest) {
 
     // Get all categories to check for children
     const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
-    const allCats = allCatsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as Category));
+    const allCats = allCatsSnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Category,
+    );
 
     // Check if category has children
-    const hasChildren = allCats.some((cat) => cat.parentIds?.includes(categoryId));
+    const hasChildren = allCats.some((cat) =>
+      cat.parentIds?.includes(categoryId),
+    );
     if (hasChildren) {
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete category with subcategories. Please delete or reassign subcategories first.",
+          error:
+            "Cannot delete category with subcategories. Please delete or reassign subcategories first.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -509,9 +537,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete category with products. Please move or delete products first.",
+          error:
+            "Cannot delete category with products. Please move or delete products first.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -521,16 +550,24 @@ export async function DELETE(request: NextRequest) {
     // Update all parents' childIds
     if (category.parentIds && category.parentIds.length > 0) {
       for (const parentId of category.parentIds) {
-        const parentDoc = await db.collection(CATEGORIES_COLLECTION).doc(parentId).get();
+        const parentDoc = await db
+          .collection(CATEGORIES_COLLECTION)
+          .doc(parentId)
+          .get();
         if (parentDoc.exists) {
           const parent = parentDoc.data() as Category;
-          const updatedChildIds = (parent.childIds || []).filter(id => id !== categoryId);
-          await db.collection(CATEGORIES_COLLECTION).doc(parentId).update({
-            childIds: updatedChildIds,
-            isLeaf: updatedChildIds.length === 0,
-            updatedAt: new Date().toISOString(),
-            updatedBy: user.uid,
-          });
+          const updatedChildIds = (parent.childIds || []).filter(
+            (id) => id !== categoryId,
+          );
+          await db
+            .collection(CATEGORIES_COLLECTION)
+            .doc(parentId)
+            .update({
+              childIds: updatedChildIds,
+              isLeaf: updatedChildIds.length === 0,
+              updatedAt: new Date().toISOString(),
+              updatedBy: user.uid,
+            });
         }
       }
     }
@@ -543,7 +580,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -552,9 +589,14 @@ export async function DELETE(request: NextRequest) {
  * Helper function to build category tree
  * With many-to-many relationships, a category may appear in multiple places
  */
-function buildCategoryTree(categories: Category[]): (Category & { children?: any[] })[] {
-  const categoryMap = new Map<string, Category & { children: (Category & { children?: any[] })[] }>();
-  
+function buildCategoryTree(
+  categories: Category[],
+): (Category & { children?: any[] })[] {
+  const categoryMap = new Map<
+    string,
+    Category & { children: (Category & { children?: any[] })[] }
+  >();
+
   categories.forEach((cat) => {
     categoryMap.set(cat.id, { ...cat, children: [] });
   });

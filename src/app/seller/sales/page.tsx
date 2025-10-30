@@ -93,7 +93,7 @@ function SalesListContent() {
       }
 
       const response = await apiGet<{ success: boolean; data: SellerSale[] }>(
-        `/api/seller/sales${params.toString() ? `?${params.toString()}` : ""}`
+        `/api/seller/sales${params.toString() ? `?${params.toString()}` : ""}`,
       );
 
       if (response.success && response.data) {
@@ -116,7 +116,7 @@ function SalesListContent() {
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    sale: SellerSale
+    sale: SellerSale,
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedSale(sale);
@@ -143,8 +143,8 @@ function SalesListContent() {
           sales.map((s) =>
             s.id === selectedSale.id
               ? { ...s, status: response.data.status as any }
-              : s
-          )
+              : s,
+          ),
         );
 
         setSnackbar({
@@ -179,7 +179,7 @@ function SalesListContent() {
     try {
       setDeletingSale(true);
       const response = await apiDelete<{ success: boolean; message?: string }>(
-        `/api/seller/sales/${selectedSale.id}`
+        `/api/seller/sales/${selectedSale.id}`,
       );
 
       if (response.success) {

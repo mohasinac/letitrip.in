@@ -414,7 +414,6 @@ If upload still fails, check:
    ```
 
 2. **Network Tab:**
-
    - Check POST request to `/api/seller/products/media`
    - Verify FormData contains: files, slug, type
    - Check response status code

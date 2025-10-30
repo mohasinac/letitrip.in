@@ -22,7 +22,7 @@ export interface RealTimeState<T> {
 
 export function useRealTimeData<T>(
   fetchFunction: () => Promise<T>,
-  options: UseRealTimeDataOptions = {}
+  options: UseRealTimeDataOptions = {},
 ): RealTimeState<T> & {
   refresh: () => Promise<void>;
   setError: (error: string | null) => void;
@@ -48,72 +48,79 @@ export function useRealTimeData<T>(
   const mountedRef = useRef(true);
   const { user } = useAuth();
 
-  const fetchData = useCallback(async (isRetry = false) => {
-    if (!mountedRef.current || !enabled || !user) return;
+  const fetchData = useCallback(
+    async (isRetry = false) => {
+      if (!mountedRef.current || !enabled || !user) return;
 
-    try {
-      if (!isRetry) {
-        setState(prev => ({ ...prev, loading: true, error: null }));
-      }
+      try {
+        if (!isRetry) {
+          setState((prev) => ({ ...prev, loading: true, error: null }));
+        }
 
-      const result = await fetchFunction();
-      
-      if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          data: result,
-          loading: false,
-          error: null,
-          lastUpdated: new Date(),
-          isConnected: true,
-          retryCount: 0,
-        }));
-      }
-    } catch (error) {
-      console.error("Real-time data fetch error:", error);
-      
-      if (mountedRef.current) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        
-        setState(prev => {
-          const newRetryCount = prev.retryCount + 1;
-          
-          return {
+        const result = await fetchFunction();
+
+        if (mountedRef.current) {
+          setState((prev) => ({
             ...prev,
+            data: result,
             loading: false,
-            error: newRetryCount <= maxRetries ? null : errorMessage,
-            isConnected: newRetryCount <= maxRetries,
-            retryCount: newRetryCount,
-          };
-        });
+            error: null,
+            lastUpdated: new Date(),
+            isConnected: true,
+            retryCount: 0,
+          }));
+        }
+      } catch (error) {
+        console.error("Real-time data fetch error:", error);
 
-        // Retry logic
-        if (state.retryCount < maxRetries) {
-          setTimeout(() => fetchData(true), Math.pow(2, state.retryCount) * 1000);
-        } else {
-          onError?.(error instanceof Error ? error : new Error(errorMessage));
+        if (mountedRef.current) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error";
+
+          setState((prev) => {
+            const newRetryCount = prev.retryCount + 1;
+
+            return {
+              ...prev,
+              loading: false,
+              error: newRetryCount <= maxRetries ? null : errorMessage,
+              isConnected: newRetryCount <= maxRetries,
+              retryCount: newRetryCount,
+            };
+          });
+
+          // Retry logic
+          if (state.retryCount < maxRetries) {
+            setTimeout(
+              () => fetchData(true),
+              Math.pow(2, state.retryCount) * 1000,
+            );
+          } else {
+            onError?.(error instanceof Error ? error : new Error(errorMessage));
+          }
         }
       }
-    }
-  }, [fetchFunction, enabled, user, maxRetries, onError, state.retryCount]);
+    },
+    [fetchFunction, enabled, user, maxRetries, onError, state.retryCount],
+  );
 
   const refresh = useCallback(async () => {
-    setState(prev => ({ ...prev, retryCount: 0 }));
+    setState((prev) => ({ ...prev, retryCount: 0 }));
     await fetchData();
   }, [fetchData]);
 
   const setError = useCallback((error: string | null) => {
-    setState(prev => ({ ...prev, error, loading: false }));
+    setState((prev) => ({ ...prev, error, loading: false }));
   }, []);
 
   // Initial fetch and setup interval
   useEffect(() => {
     if (!enabled || !user) {
-      setState(prev => ({ 
-        ...prev, 
-        loading: false, 
+      setState((prev) => ({
+        ...prev,
+        loading: false,
         isConnected: false,
-        data: null 
+        data: null,
       }));
       return;
     }
@@ -154,7 +161,8 @@ export function useRealTimeData<T>(
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [refresh, enabled, user]);
 
   return {
@@ -165,14 +173,14 @@ export function useRealTimeData<T>(
 }
 
 // Hook for managing multiple real-time data sources
-export function useMultipleRealTimeData<T extends Record<string, any>>(
-  sources: {
-    [K in keyof T]: {
-      fetchFunction: () => Promise<T[K]>;
-      options?: UseRealTimeDataOptions;
-    };
-  }
-): {
+export function useMultipleRealTimeData<
+  T extends Record<string, any>,
+>(sources: {
+  [K in keyof T]: {
+    fetchFunction: () => Promise<T[K]>;
+    options?: UseRealTimeDataOptions;
+  };
+}): {
   [K in keyof T]: RealTimeState<T[K]>;
 } & {
   refreshAll: () => Promise<void>;
@@ -197,12 +205,18 @@ export function useMultipleRealTimeData<T extends Record<string, any>>(
   }
 
   const refreshAll = useCallback(async () => {
-    await Promise.all(refreshFunctions.map(refresh => refresh()));
+    await Promise.all(refreshFunctions.map((refresh) => refresh()));
   }, [refreshFunctions]);
 
-  const isAnyLoading = Object.values(results).some((result: any) => result.loading);
-  const hasAnyError = Object.values(results).some((result: any) => result.error);
-  const allConnected = Object.values(results).every((result: any) => result.isConnected);
+  const isAnyLoading = Object.values(results).some(
+    (result: any) => result.loading,
+  );
+  const hasAnyError = Object.values(results).some(
+    (result: any) => result.error,
+  );
+  const allConnected = Object.values(results).every(
+    (result: any) => result.isConnected,
+  );
 
   return {
     ...results,
@@ -222,10 +236,11 @@ export function useRealTimeNotifications() {
   const fetchNotifications = useCallback(async () => {
     if (!user) return [];
 
-    const endpoint = user.role === "admin" 
-      ? "/api/admin/notifications" 
-      : "/api/seller/notifications";
-    
+    const endpoint =
+      user.role === "admin"
+        ? "/api/admin/notifications"
+        : "/api/seller/notifications";
+
     const response = await fetch(endpoint, {
       credentials: "include",
     });
@@ -235,7 +250,7 @@ export function useRealTimeNotifications() {
     }
 
     const data = await response.json();
-    
+
     // Handle different response structures based on role
     if (user.role === "admin") {
       // Admin API returns { data: { notifications: [...] } }
@@ -251,7 +266,7 @@ export function useRealTimeNotifications() {
     {
       enabled: !!user,
       interval: 15000, // Check every 15 seconds
-    }
+    },
   );
 
   useEffect(() => {
@@ -267,50 +282,51 @@ export function useRealTimeNotifications() {
     }
   }, [data]);
 
-  const markAsRead = useCallback(async (notificationId: string) => {
-    if (!user) return;
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      if (!user) return;
 
-    try {
-      if (user.role === "admin") {
-        // Admin uses PUT to specific notification endpoint
-        const endpoint = `/api/admin/notifications/${notificationId}`;
-        await fetch(endpoint, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ isRead: true }),
-        });
-      } else {
-        // Seller uses PATCH to base notifications endpoint
-        const endpoint = "/api/seller/notifications";
-        await fetch(endpoint, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ 
-            notificationId, 
-            read: true 
-          }),
-        });
+      try {
+        if (user.role === "admin") {
+          // Admin uses PUT to specific notification endpoint
+          const endpoint = `/api/admin/notifications/${notificationId}`;
+          await fetch(endpoint, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ isRead: true }),
+          });
+        } else {
+          // Seller uses PATCH to base notifications endpoint
+          const endpoint = "/api/seller/notifications";
+          await fetch(endpoint, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              notificationId,
+              read: true,
+            }),
+          });
+        }
+
+        // Update local state - handle both isRead and read properties
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true, read: true } : n,
+          ),
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
       }
-
-      // Update local state - handle both isRead and read properties
-      setNotifications(prev => 
-        prev.map(n => 
-          n.id === notificationId 
-            ? { ...n, isRead: true, read: true } 
-            : n
-        )
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
   return {
     notifications,
@@ -339,10 +355,11 @@ export function useRealTimeStats(role: "admin" | "seller") {
       }
     }
 
-    const endpoint = role === "admin" 
-      ? "/api/admin/dashboard/stats"
-      : "/api/seller/dashboard/stats";
-    
+    const endpoint =
+      role === "admin"
+        ? "/api/admin/dashboard/stats"
+        : "/api/seller/dashboard/stats";
+
     const response = await fetch(endpoint, {
       credentials: "include",
       cache: "no-store",

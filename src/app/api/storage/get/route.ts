@@ -9,18 +9,18 @@ export const config = {
 
 /**
  * GET /api/storage/get
- * 
+ *
  * Retrieves images from Firebase Storage with caching support
- * 
+ *
  * Query Parameters:
  * - path: The file path in storage (e.g., "uploads/image-uuid.jpg")
  * - cache: Cache duration in seconds (default: 86400 = 24 hours)
- * 
+ *
  * Response Headers:
  * - Cache-Control: Set based on cache parameter for browser/CDN caching
  * - Content-Type: Image MIME type
  * - ETag: For cache validation
- * 
+ *
  * Examples:
  * - GET /api/storage/get?path=uploads/abc123.jpg
  * - GET /api/storage/get?path=uploads/abc123.jpg&cache=3600
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     if (!path) {
       return NextResponse.json(
         { success: false, error: "Missing required parameter: path" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     if (path.includes("..") || path.startsWith("/")) {
       return NextResponse.json(
         { success: false, error: "Invalid path" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (!exists) {
       return NextResponse.json(
         { success: false, error: "File not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         "Content-Type": contentType,
         "Content-Length": fileSize.toString(),
         "Cache-Control": `public, max-age=${cacheSeconds}, immutable`,
-        "ETag": etag,
+        ETag: etag,
         ...(lastModified && { "Last-Modified": lastModified }),
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: error.message || "Failed to retrieve image",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

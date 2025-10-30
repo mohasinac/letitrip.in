@@ -19,7 +19,7 @@ interface ModernThemeContextType {
 }
 
 const ModernThemeContext = createContext<ModernThemeContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // Default theme - original colors
@@ -135,7 +135,7 @@ export function ModernThemeProvider({
         } else {
           // Fallback to system preference if API fails
           const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)"
+            "(prefers-color-scheme: dark)",
           ).matches;
           setMode(prefersDark ? "dark" : "light");
         }
@@ -143,7 +143,7 @@ export function ModernThemeProvider({
         console.error("Failed to fetch theme settings:", error);
         // Fallback to system preference
         const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
+          "(prefers-color-scheme: dark)",
         ).matches;
         setMode(prefersDark ? "dark" : "light");
       }

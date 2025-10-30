@@ -229,8 +229,8 @@ export default function ModernHeroBanner() {
                           product.badge === "Sale"
                             ? "error.main"
                             : product.badge === "New"
-                            ? "success.main"
-                            : "warning.main",
+                              ? "success.main"
+                              : "warning.main",
                         color: "white",
                         fontWeight: 600,
                       }}

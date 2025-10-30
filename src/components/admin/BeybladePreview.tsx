@@ -151,7 +151,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           -imgWidth / 2 + offsetX,
           -imgHeight / 2 + offsetY,
           imgWidth,
-          imgHeight
+          imgHeight,
         );
 
         // Reset clipping
@@ -240,7 +240,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
   const drawSpecialMoveAnimation = (
     ctx: CanvasRenderingContext2D,
     width: number,
-    height: number
+    height: number,
   ) => {
     // Special moves have been removed from the system
     // This function is kept for potential future use

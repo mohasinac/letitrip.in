@@ -32,7 +32,7 @@ export default function RegisterPage() {
   const [verificationId, setVerificationId] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [selectedRole, setSelectedRole] = useState<"user" | "seller" | "admin">(
-    "user"
+    "user",
   );
 
   // Validation states
@@ -90,7 +90,7 @@ export default function RegisterPage() {
 
   const validateConfirmPassword = (
     value: string,
-    originalPassword: string
+    originalPassword: string,
   ): string => {
     if (!value) return "Please confirm your password";
     if (value !== originalPassword) return "Passwords do not match";
@@ -204,7 +204,7 @@ export default function RegisterPage() {
     const passwordError = validatePassword(password);
     const confirmPasswordError = validateConfirmPassword(
       confirmPassword,
-      password
+      password,
     );
     const termsError = validateTerms(acceptTerms);
 
@@ -234,7 +234,7 @@ export default function RegisterPage() {
     const passwordError = validatePassword(password);
     const confirmPasswordError = validateConfirmPassword(
       confirmPassword,
-      password
+      password,
     );
     const termsError = validateTerms(acceptTerms);
 

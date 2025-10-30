@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
     if (!userDoc.exists) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const userData = userDoc.data();
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -69,7 +69,7 @@ export async function PUT(request: NextRequest) {
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
         { success: false, error: "No valid fields to update" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating profile:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

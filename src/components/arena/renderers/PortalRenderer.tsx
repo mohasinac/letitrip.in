@@ -82,7 +82,7 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
             d={generateWhirlpoolSpiral(
               { x: inX, y: inY },
               radius * (1.5 - layer * 0.3),
-              layer * 90
+              layer * 90,
             )}
             stroke={color}
             strokeWidth={2}
@@ -160,7 +160,7 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
             d={generateWhirlpoolSpiral(
               { x: outX, y: outY },
               radius * (1.5 - layer * 0.3),
-              -layer * 90
+              -layer * 90,
             )}
             stroke={color}
             strokeWidth={2}

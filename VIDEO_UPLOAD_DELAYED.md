@@ -139,7 +139,7 @@ const uploadPendingVideos = async () => {
 
     const videoResponse = await uploadWithAuth(
       "/api/seller/products/media",
-      videoFormData
+      videoFormData,
     );
 
     // Upload thumbnail
@@ -147,14 +147,14 @@ const uploadPendingVideos = async () => {
     thumbnailFormData.append(
       "files",
       video.thumbnailBlob,
-      `${videoData.name}-thumb.jpg`
+      `${videoData.name}-thumb.jpg`,
     );
     thumbnailFormData.append("slug", formData.seo.slug);
     thumbnailFormData.append("type", "image");
 
     const thumbnailResponse = await uploadWithAuth(
       "/api/seller/products/media",
-      thumbnailFormData
+      thumbnailFormData,
     );
 
     uploadedVideos.push({
@@ -369,7 +369,7 @@ Videos now generate thumbnails locally using Canvas API:
 
 ```typescript
 const generateVideoThumbnail = (
-  videoFile: File
+  videoFile: File,
 ): Promise<{ blob: Blob; url: string }> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -391,7 +391,7 @@ const generateVideoThumbnail = (
           resolve({ blob, url });
         },
         "image/jpeg",
-        0.85
+        0.85,
       );
     };
 

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 
     // Sort by path string for better organization
     leafCategoriesWithPath.sort((a: any, b: any) =>
-      a.pathString.localeCompare(b.pathString)
+      a.pathString.localeCompare(b.pathString),
     );
 
     return NextResponse.json({
@@ -117,14 +117,14 @@ export async function GET(request: NextRequest) {
     if (error.code === "auth/id-token-expired") {
       return NextResponse.json(
         { success: false, error: "Token expired - Please login again" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (error.code === "auth/argument-error") {
       return NextResponse.json(
         { success: false, error: "Invalid token format" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch leaf categories",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

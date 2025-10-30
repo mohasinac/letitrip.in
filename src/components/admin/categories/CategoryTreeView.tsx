@@ -57,7 +57,7 @@ function CategoryNode({
 
   const children = useMemo(
     () => allCategories.filter((cat) => cat.parentIds?.includes(category.id)),
-    [allCategories, category.id]
+    [allCategories, category.id],
   );
 
   // Filter children based on search term
@@ -66,7 +66,7 @@ function CategoryNode({
     return children.filter(
       (cat) =>
         cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
+        cat.slug.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [children, searchTerm]);
 
@@ -92,7 +92,7 @@ function CategoryNode({
         if (matches) return true;
 
         const subChildren = allCategories.filter((c) =>
-          c.parentIds?.includes(cat.id)
+          c.parentIds?.includes(cat.id),
         );
         return hasMatchingDescendant(subChildren);
       });
@@ -270,7 +270,7 @@ export default function CategoryTreeView({
       categories
         .filter((cat) => !cat.parentIds || cat.parentIds.length === 0)
         .sort((a, b) => a.sortOrder - b.sortOrder),
-    [categories]
+    [categories],
   );
 
   return (

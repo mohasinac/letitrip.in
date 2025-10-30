@@ -3,17 +3,21 @@
  * Common middleware utilities for API routes
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getCorsHeaders, handleCorsPreFlight } from './cors';
-import { errorResponse, handleApiError, unauthorizedResponse } from './response';
-import { HTTP_STATUS } from './constants';
+import { NextRequest, NextResponse } from "next/server";
+import { getCorsHeaders, handleCorsPreFlight } from "./cors";
+import {
+  errorResponse,
+  handleApiError,
+  unauthorizedResponse,
+} from "./response";
+import { HTTP_STATUS } from "./constants";
 
 /**
  * API Handler Type
  */
 export type ApiHandler = (
   request: NextRequest,
-  context?: any
+  context?: any,
 ) => Promise<NextResponse>;
 
 /**
@@ -21,7 +25,7 @@ export type ApiHandler = (
  */
 export type Middleware = (
   request: NextRequest,
-  next: () => Promise<NextResponse>
+  next: () => Promise<NextResponse>,
 ) => Promise<NextResponse>;
 
 /**
@@ -29,19 +33,22 @@ export type Middleware = (
  */
 export const corsMiddleware: Middleware = async (request, next) => {
   // Handle preflight
-  if (request.method === 'OPTIONS') {
+  if (request.method === "OPTIONS") {
     const preflightResponse = handleCorsPreFlight(request);
-    return NextResponse.json(null, { status: 204, headers: preflightResponse.headers });
+    return NextResponse.json(null, {
+      status: 204,
+      headers: preflightResponse.headers,
+    });
   }
-  
+
   const response = await next();
-  const origin = request.headers.get('origin');
+  const origin = request.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin || undefined);
-  
+
   Object.entries(corsHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  
+
   return response;
 };
 
@@ -61,22 +68,26 @@ export const errorHandlingMiddleware: Middleware = async (request, next) => {
  */
 const requestCounts = new Map<string, { count: number; resetAt: number }>();
 
-export const rateLimitMiddleware = (maxRequests: number = 100, windowMs: number = 60000): Middleware => {
+export const rateLimitMiddleware = (
+  maxRequests: number = 100,
+  windowMs: number = 60000,
+): Middleware => {
   return async (request, next) => {
-    const ip = request.headers.get('x-forwarded-for') || 
-               request.headers.get('x-real-ip') || 
-               'unknown';
-    
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
     const now = Date.now();
     const record = requestCounts.get(ip);
-    
+
     if (record && record.resetAt > now) {
       if (record.count >= maxRequests) {
         return errorResponse(
-          'Too many requests. Please try again later.',
+          "Too many requests. Please try again later.",
           HTTP_STATUS.TOO_MANY_REQUESTS,
           undefined,
-          request
+          request,
         );
       }
       record.count++;
@@ -86,7 +97,7 @@ export const rateLimitMiddleware = (maxRequests: number = 100, windowMs: number 
         resetAt: now + windowMs,
       });
     }
-    
+
     // Clean up old entries periodically
     if (requestCounts.size > 10000) {
       for (const [key, value] of requestCounts.entries()) {
@@ -95,7 +106,7 @@ export const rateLimitMiddleware = (maxRequests: number = 100, windowMs: number 
         }
       }
     }
-    
+
     return next();
   };
 };
@@ -104,12 +115,12 @@ export const rateLimitMiddleware = (maxRequests: number = 100, windowMs: number 
  * Authentication Middleware
  */
 export const authMiddleware: Middleware = async (request, next) => {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '');
-  
+  const token = request.headers.get("authorization")?.replace("Bearer ", "");
+
   if (!token) {
-    return unauthorizedResponse('No authentication token provided', request);
+    return unauthorizedResponse("No authentication token provided", request);
   }
-  
+
   // Add token validation logic here
   // For now, just pass through
   return next();
@@ -121,16 +132,16 @@ export const authMiddleware: Middleware = async (request, next) => {
 export function compose(...middlewares: Middleware[]): Middleware {
   return async (request, finalNext) => {
     let index = 0;
-    
+
     const dispatch = async (): Promise<NextResponse> => {
       if (index >= middlewares.length) {
         return finalNext();
       }
-      
+
       const middleware = middlewares[index++];
       return middleware(request, dispatch);
     };
-    
+
     return dispatch();
   };
 }
@@ -140,14 +151,14 @@ export function compose(...middlewares: Middleware[]): Middleware {
  */
 export function createApiHandler(
   handler: ApiHandler,
-  middlewares: Middleware[] = []
+  middlewares: Middleware[] = [],
 ): ApiHandler {
   const composedMiddleware = compose(
     corsMiddleware,
     errorHandlingMiddleware,
-    ...middlewares
+    ...middlewares,
   );
-  
+
   return async (request, context) => {
     return composedMiddleware(request, () => handler(request, context));
   };
@@ -156,20 +167,22 @@ export function createApiHandler(
 /**
  * Method Handler Wrapper
  */
-export function methodHandler(handlers: Partial<Record<string, ApiHandler>>): ApiHandler {
+export function methodHandler(
+  handlers: Partial<Record<string, ApiHandler>>,
+): ApiHandler {
   return async (request, context) => {
     const method = request.method;
     const handler = handlers[method];
-    
+
     if (!handler) {
       return errorResponse(
         `Method ${method} not allowed`,
         HTTP_STATUS.BAD_REQUEST,
         undefined,
-        request
+        request,
       );
     }
-    
+
     return handler(request, context);
   };
 }

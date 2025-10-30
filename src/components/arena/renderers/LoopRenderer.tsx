@@ -34,7 +34,7 @@ export default function LoopRenderer({
     { x: centerX, y: centerY },
     radius,
     width,
-    height
+    height,
   );
 
   return (

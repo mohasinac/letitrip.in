@@ -1,7 +1,7 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { getSocket } from '@/lib/socket';
-import type { Socket } from 'socket.io-client';
-import type { Vector2D } from '../types/game';
+import { useEffect, useCallback, useRef } from "react";
+import { getSocket } from "@/lib/socket";
+import type { Socket } from "socket.io-client";
+import type { Vector2D } from "../types/game";
 
 interface UseMultiplayerOptions {
   playerNumber: number;
@@ -44,114 +44,132 @@ export const useMultiplayer = (options: UseMultiplayerOptions) => {
 
     // Listen for opponent input
     if (onOpponentInput) {
-      socket.current.on('opponent-input', onOpponentInput);
+      socket.current.on("opponent-input", onOpponentInput);
     }
 
     // Listen for opponent beyblade state updates
     if (onOpponentBeybladeUpdate) {
-      socket.current.on('opponent-beyblade-update', onOpponentBeybladeUpdate);
+      socket.current.on("opponent-beyblade-update", onOpponentBeybladeUpdate);
     }
 
     // Listen for opponent collision events
     if (onOpponentCollision) {
-      socket.current.on('opponent-collision', onOpponentCollision);
+      socket.current.on("opponent-collision", onOpponentCollision);
     }
 
     // Listen for server-authoritative collision results
     if (onServerCollisionResult) {
-      socket.current.on('server-collision-result', onServerCollisionResult);
+      socket.current.on("server-collision-result", onServerCollisionResult);
     }
 
     // Listen for game state updates (Player 2 only)
     if (!isPlayer1 && onGameStateUpdate) {
-      socket.current.on('game-state-update', onGameStateUpdate);
+      socket.current.on("game-state-update", onGameStateUpdate);
     }
 
     // Listen for match results
     if (onMatchResult) {
-      socket.current.on('match-result', onMatchResult);
+      socket.current.on("match-result", onMatchResult);
     }
 
     // Listen for opponent disconnect
     if (onOpponentDisconnected) {
-      socket.current.on('opponent-disconnected', onOpponentDisconnected);
+      socket.current.on("opponent-disconnected", onOpponentDisconnected);
     }
 
     // Listen for rematch events
     if (onRematchAccepted) {
-      socket.current.on('rematch-accepted', onRematchAccepted);
+      socket.current.on("rematch-accepted", onRematchAccepted);
     }
 
     if (onOpponentWantsRematch) {
-      socket.current.on('opponent-wants-rematch', onOpponentWantsRematch);
+      socket.current.on("opponent-wants-rematch", onOpponentWantsRematch);
     }
 
     if (onOpponentCancelledRematch) {
-      socket.current.on('opponent-cancelled-rematch', onOpponentCancelledRematch);
+      socket.current.on(
+        "opponent-cancelled-rematch",
+        onOpponentCancelledRematch,
+      );
     }
 
     return () => {
       if (socket.current) {
-        socket.current.off('opponent-input');
-        socket.current.off('opponent-beyblade-update');
-        socket.current.off('opponent-collision');
-        socket.current.off('server-collision-result');
-        socket.current.off('game-state-update');
-        socket.current.off('match-result');
-        socket.current.off('opponent-disconnected');
-        socket.current.off('rematch-accepted');
-        socket.current.off('opponent-wants-rematch');
-        socket.current.off('opponent-cancelled-rematch');
+        socket.current.off("opponent-input");
+        socket.current.off("opponent-beyblade-update");
+        socket.current.off("opponent-collision");
+        socket.current.off("server-collision-result");
+        socket.current.off("game-state-update");
+        socket.current.off("match-result");
+        socket.current.off("opponent-disconnected");
+        socket.current.off("rematch-accepted");
+        socket.current.off("opponent-wants-rematch");
+        socket.current.off("opponent-cancelled-rematch");
       }
     };
-  }, [isPlayer1, onOpponentInput, onOpponentBeybladeUpdate, onOpponentCollision, onServerCollisionResult, onGameStateUpdate, onMatchResult, onOpponentDisconnected, onRematchAccepted, onOpponentWantsRematch, onOpponentCancelledRematch]);
+  }, [
+    isPlayer1,
+    onOpponentInput,
+    onOpponentBeybladeUpdate,
+    onOpponentCollision,
+    onServerCollisionResult,
+    onGameStateUpdate,
+    onMatchResult,
+    onOpponentDisconnected,
+    onRematchAccepted,
+    onOpponentWantsRematch,
+    onOpponentCancelledRematch,
+  ]);
 
   // Send input to opponent
   const sendInput = useCallback((inputData: any) => {
     if (socket.current) {
-      socket.current.emit('game-input', inputData);
+      socket.current.emit("game-input", inputData);
     }
   }, []);
 
   // Sync game state (Player 1 only)
-  const syncGameState = useCallback((gameState: any) => {
-    if (socket.current && isPlayer1) {
-      socket.current.emit('sync-game-state', gameState);
-    }
-  }, [isPlayer1]);
+  const syncGameState = useCallback(
+    (gameState: any) => {
+      if (socket.current && isPlayer1) {
+        socket.current.emit("sync-game-state", gameState);
+      }
+    },
+    [isPlayer1],
+  );
 
   // Send game over
   const sendGameOver = useCallback((winner: any) => {
     if (socket.current) {
-      socket.current.emit('game-over', { winner });
+      socket.current.emit("game-over", { winner });
     }
   }, []);
 
   // Send beyblade state update
   const sendBeybladeState = useCallback((beybladeState: any) => {
     if (socket.current) {
-      socket.current.emit('update-beyblade-state', beybladeState);
+      socket.current.emit("update-beyblade-state", beybladeState);
     }
   }, []);
 
   // Send collision event
   const sendCollision = useCallback((collisionData: any) => {
     if (socket.current) {
-      socket.current.emit('collision-detected', collisionData);
+      socket.current.emit("collision-detected", collisionData);
     }
   }, []);
 
   // Request rematch
   const requestRematch = useCallback(() => {
     if (socket.current) {
-      socket.current.emit('request-rematch');
+      socket.current.emit("request-rematch");
     }
   }, []);
 
   // Cancel rematch request
   const cancelRematch = useCallback(() => {
     if (socket.current) {
-      socket.current.emit('cancel-rematch');
+      socket.current.emit("cancel-rematch");
     }
   }, []);
 

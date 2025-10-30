@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { message: "No file provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!acceptedTypes.includes(file.type)) {
       return NextResponse.json(
         { message: "Invalid file type. Only images and videos allowed." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (file.size > maxSize) {
       return NextResponse.json(
         { message: "File size exceeds 25MB limit" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -69,10 +69,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { message: "Upload failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Upload failed" }, { status: 500 });
   }
 }
 

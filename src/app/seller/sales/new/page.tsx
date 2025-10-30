@@ -265,7 +265,7 @@ function SaleFormContent() {
                   onChange={(e) =>
                     handleChange(
                       "discountValue",
-                      parseFloat(e.target.value) || 0
+                      parseFloat(e.target.value) || 0,
                     )
                   }
                   required
@@ -371,12 +371,12 @@ function SaleFormContent() {
                     options={mockProducts}
                     getOptionLabel={(option) => option.name}
                     value={mockProducts.filter((p) =>
-                      formData.productIds.includes(p.id)
+                      formData.productIds.includes(p.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "productIds",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -399,12 +399,12 @@ function SaleFormContent() {
                     options={mockCategories}
                     getOptionLabel={(option) => option.name}
                     value={mockCategories.filter((c) =>
-                      formData.categoryIds.includes(c.id)
+                      formData.categoryIds.includes(c.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "categoryIds",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -494,8 +494,8 @@ function SaleFormContent() {
                     {formData.applyTo === "all_products"
                       ? "all products"
                       : formData.applyTo === "specific_products"
-                      ? `${formData.productIds.length} products`
-                      : `${formData.categoryIds.length} categories`}
+                        ? `${formData.productIds.length} products`
+                        : `${formData.categoryIds.length} categories`}
                     {formData.enableFreeShipping && " + Free Shipping"}
                   </Typography>
                 </Box>

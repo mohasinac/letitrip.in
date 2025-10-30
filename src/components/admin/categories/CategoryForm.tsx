@@ -194,7 +194,7 @@ export default function CategoryForm({
       reset();
     } catch (error) {
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to save category"
+        error instanceof Error ? error.message : "Failed to save category",
       );
     } finally {
       setIsSubmitting(false);
@@ -347,7 +347,7 @@ export default function CategoryForm({
                           return selectedIds
                             .map((id) => {
                               const cat = availableParents.find(
-                                (c) => c.id === id
+                                (c) => c.id === id,
                               );
                               return cat?.name;
                             })

@@ -67,7 +67,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
 
       const scale = Math.max(
         targetWidth / image.width,
-        targetHeight / image.height
+        targetHeight / image.height,
       );
       setZoom(scale);
       setPosition({ x: 0, y: 0 });
@@ -180,7 +180,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
             }
           },
           "image/jpeg",
-          0.95
+          0.95,
         );
       });
     };
@@ -295,7 +295,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
         </Stack>
       </Paper>
     );
-  }
+  },
 );
 
 ImageCropper.displayName = "ImageCropper";

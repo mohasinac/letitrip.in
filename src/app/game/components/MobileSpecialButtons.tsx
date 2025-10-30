@@ -43,7 +43,7 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
         onActionButton(action);
       }
     },
-    [disabled, onActionButton, playerBeyblade]
+    [disabled, onActionButton, playerBeyblade],
   );
 
   const buttonStyle = {

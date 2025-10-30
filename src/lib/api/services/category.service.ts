@@ -17,16 +17,19 @@ export class CategoryService {
   static async getCategories(
     format: "tree" | "list" = "list",
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<Category[]> {
     try {
       const params = new URLSearchParams({
         format,
-        ...(format === "list" && { page: page.toString(), limit: limit.toString() }),
+        ...(format === "list" && {
+          page: page.toString(),
+          limit: limit.toString(),
+        }),
       });
 
       const response = await apiClient.get<ApiResponse>(
-        `/admin/categories?${params}`
+        `/admin/categories?${params}`,
       );
 
       if (response.success) {
@@ -59,7 +62,7 @@ export class CategoryService {
     try {
       const response = await apiClient.post<Category>(
         "/admin/categories",
-        data
+        data,
       );
       return response;
     } catch (error) {
@@ -73,12 +76,12 @@ export class CategoryService {
    */
   static async updateCategory(
     id: string,
-    data: Partial<CategoryFormData>
+    data: Partial<CategoryFormData>,
   ): Promise<Category> {
     try {
       const response = await apiClient.patch<Category>(
         `/admin/categories?id=${id}`,
-        data
+        data,
       );
       return response;
     } catch (error) {
@@ -104,7 +107,7 @@ export class CategoryService {
    */
   static async validateSlug(
     slug: string,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<{ available: boolean; error?: string }> {
     try {
       const params = new URLSearchParams({ slug });
@@ -127,12 +130,12 @@ export class CategoryService {
    */
   static async generateSlug(
     name: string,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<{ slug: string; error?: string }> {
     try {
       const response = await apiClient.post<{ slug: string; error?: string }>(
         "/admin/categories/validate-slug",
-        { name, excludeId }
+        { name, excludeId },
       );
 
       return response;
@@ -146,11 +149,11 @@ export class CategoryService {
    * Bulk update categories
    */
   static async bulkUpdateCategories(
-    updates: Array<{ id: string; data: Partial<CategoryFormData> }>
+    updates: Array<{ id: string; data: Partial<CategoryFormData> }>,
   ): Promise<Category[]> {
     try {
       const responses = await Promise.all(
-        updates.map((update) => this.updateCategory(update.id, update.data))
+        updates.map((update) => this.updateCategory(update.id, update.data)),
       );
       return responses;
     } catch (error) {

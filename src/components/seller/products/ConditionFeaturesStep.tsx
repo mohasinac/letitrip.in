@@ -53,7 +53,7 @@ export default function ConditionFeaturesStep({
   const updateSpecification = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     const newSpecs = [...data.specifications];
     newSpecs[index] = { ...newSpecs[index], [field]: value };
@@ -63,7 +63,7 @@ export default function ConditionFeaturesStep({
   const removeSpecification = (index: number) => {
     onChange({
       specifications: data.specifications.filter(
-        (_: any, i: number) => i !== index
+        (_: any, i: number) => i !== index,
       ),
     });
   };

@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!updates || !Array.isArray(updates)) {
       return NextResponse.json(
         { error: "Updates array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,12 +33,12 @@ export async function POST(request: NextRequest) {
       if (!id) {
         return NextResponse.json(
           { error: "Category ID is required for each update" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       const categoryRef = db.collection("categories").doc(id);
-      
+
       // Prepare update data
       const updateData: any = {
         updatedAt: new Date().toISOString(),
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     console.error("Batch update error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to update categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -76,14 +76,14 @@ class ApiCache {
    */
   invalidatePattern(pattern: RegExp): void {
     const keysToDelete: string[] = [];
-    
+
     for (const key of this.cache.keys()) {
       if (pattern.test(key)) {
         keysToDelete.push(key);
       }
     }
 
-    keysToDelete.forEach(key => this.cache.delete(key));
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   /**
@@ -109,8 +109,8 @@ export const apiCache = new ApiCache();
 
 // Cache key generators
 export const CACHE_KEYS = {
-  CATEGORIES_LIST: 'categories:list',
-  CATEGORIES_TREE: 'categories:tree',
+  CATEGORIES_LIST: "categories:list",
+  CATEGORIES_TREE: "categories:tree",
   CATEGORY_BY_ID: (id: string) => `category:${id}`,
   CATEGORY_BY_SLUG: (slug: string) => `category:slug:${slug}`,
 } as const;

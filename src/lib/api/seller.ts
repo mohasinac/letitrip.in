@@ -5,7 +5,7 @@ import { auth } from "@/lib/database/config";
  */
 export async function fetchWithAuth(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Response> {
   const user = auth.currentUser;
 
@@ -17,7 +17,7 @@ export async function fetchWithAuth(
 
   const headers = new Headers(options.headers);
   headers.set("Authorization", `Bearer ${token}`);
-  
+
   // Only set Content-Type if not already set and not FormData
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
@@ -35,7 +35,7 @@ export async function fetchWithAuth(
  */
 export async function uploadWithAuth(
   url: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<Response> {
   const user = auth.currentUser;
 
@@ -58,52 +58,84 @@ export async function uploadWithAuth(
  * Helper function for GET requests
  */
 export async function apiGet<T>(url: string): Promise<T> {
-  const response = await fetchWithAuth(url, { method: "GET" });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Request failed");
+  try {
+    const response = await fetchWithAuth(url, { method: "GET" });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Request failed");
+    }
+    return response.json();
+  } catch (error: any) {
+    // If it's an authentication error, return a structured error response
+    if (error.message?.includes("not authenticated")) {
+      return { success: false, error: "Authentication required" } as T;
+    }
+    throw error;
   }
-  return response.json();
 }
 
 /**
  * Helper function for POST requests
  */
 export async function apiPost<T>(url: string, data: any): Promise<T> {
-  const response = await fetchWithAuth(url, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Request failed");
+  try {
+    const response = await fetchWithAuth(url, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Request failed");
+    }
+    return response.json();
+  } catch (error: any) {
+    // If it's an authentication error, return a structured error response
+    if (error.message?.includes("not authenticated")) {
+      return { success: false, error: "Authentication required" } as T;
+    }
+    throw error;
   }
-  return response.json();
 }
 
 /**
  * Helper function for PUT requests
  */
 export async function apiPut<T>(url: string, data: any): Promise<T> {
-  const response = await fetchWithAuth(url, {
-    method: "PUT",
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Request failed");
+  try {
+    const response = await fetchWithAuth(url, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Request failed");
+    }
+    return response.json();
+  } catch (error: any) {
+    // If it's an authentication error, return a structured error response
+    if (error.message?.includes("not authenticated")) {
+      return { success: false, error: "Authentication required" } as T;
+    }
+    throw error;
   }
-  return response.json();
 }
 
 /**
  * Helper function for DELETE requests
  */
 export async function apiDelete<T>(url: string): Promise<T> {
-  const response = await fetchWithAuth(url, { method: "DELETE" });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Request failed");
+  try {
+    const response = await fetchWithAuth(url, { method: "DELETE" });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Request failed");
+    }
+    return response.json();
+  } catch (error: any) {
+    // If it's an authentication error, return a structured error response
+    if (error.message?.includes("not authenticated")) {
+      return { success: false, error: "Authentication required" } as T;
+    }
+    throw error;
   }
-  return response.json();
 }

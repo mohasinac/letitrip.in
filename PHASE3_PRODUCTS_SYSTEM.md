@@ -188,7 +188,6 @@ match /seller_sales/{saleId} {
 **Validation Functions Added:**
 
 1. **validateSellerProduct()**
-
    - Validates: name, sellerId, categoryId, pricing, inventory, seo
    - Name: 1-200 characters
    - Price must be > 0
@@ -196,14 +195,12 @@ match /seller_sales/{saleId} {
    - **SEO slug must start with "buy-"**
 
 2. **validateCoupon()**
-
    - Validates: code, name, sellerId, type, value
    - Code: 1-50 characters
    - Type: percentage, fixed, free_shipping, bogo, cart_discount
    - Value must be > 0
 
 3. **validateSale()**
-
    - Validates: name, sellerId, discountType, discountValue, applyTo
    - discountType: percentage, fixed
    - discountValue must be > 0
@@ -406,7 +403,6 @@ if (role !== "admin" && docData.sellerId !== uid) {
 ### Immediate Tasks:
 
 1. **Multi-Step Product Form** (`/seller/products/new`)
-
    - Step 1: Product Details (name, description, category, tags)
    - Step 2: Pricing & Inventory
    - Step 3: Media Upload (5 images + 2 videos, WhatsApp editor)
@@ -414,14 +410,12 @@ if (role !== "admin" && docData.sellerId !== uid) {
    - Step 5: SEO (auto-generated with "buy-" prefix)
 
 2. **Media Upload API**
-
    - `POST /api/seller/products/[id]/media` - Upload images/videos
    - Handle multiple files
    - Generate thumbnails for videos
    - WhatsApp-style 800x800 cropping
 
 3. **Leaf Categories API**
-
    - `GET /api/seller/products/categories/leaf` - Get only leaf categories
    - Filter out parent categories
    - Required for product category selection

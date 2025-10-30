@@ -30,7 +30,7 @@ const DraggableVirtualDPad: React.FC<DraggableVirtualDPadProps> = ({
   // Load saved position from cookie or use default
   const [savedPosition, setSavedPosition] = useCookie(
     "dpad-position",
-    JSON.stringify({ x: 16, y: -16 }) // Default: bottom-right with 16px offset
+    JSON.stringify({ x: 16, y: -16 }), // Default: bottom-right with 16px offset
   );
 
   // Load saved scale from cookie or use default

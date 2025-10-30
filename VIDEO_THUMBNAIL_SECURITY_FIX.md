@@ -22,45 +22,106 @@ at captureCurrentFrame (VideoThumbnailSelector.tsx:106:31)
 
 ## Solution
 
-Switched from `canvas.toDataURL()` to `canvas.toBlob()`:
+The canvas becomes "tainted" when drawing from blob URLs, making both `toDataURL()` and `toBlob()` throw SecurityErrors. The solution uses a **temporary canvas** with the **ImageCapture API** as fallback:
 
-### Before (❌ Caused Error)
+### Attempt 1 (❌ Still Failed)
 
 ```typescript
-const previewUrl = canvas.toDataURL("image/jpeg", 0.85);
-setThumbnailPreview(previewUrl);
+// Switched toDataURL() → toBlob()
+canvas.toBlob((blob) => { ... }, "image/jpeg", 0.85);
+// Still SecurityError: canvas is tainted from blob URL video
 ```
 
-### After (✅ Works)
+### Attempt 2 (❌ Still Failed)
 
 ```typescript
-canvas.toBlob(
-  (blob) => {
+// Created temporary canvas
+const tempCanvas = document.createElement("canvas");
+ctx.drawImage(video, 0, 0);
+tempCanvas.toBlob(...); // Still SecurityError: temp canvas also tainted
+```
+
+### Final Fix (✅ Works)
+
+```typescript
+const captureCurrentFrame = async () => {
+  const video = videoRef.current;
+
+  try {
+    // Create fresh temporary canvas
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const ctx = tempCanvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Try toBlob with Promise wrapper
+    const blob = await new Promise<Blob | null>((resolve) => {
+      tempCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+    });
+
+    if (blob) {
+      const previewUrl = URL.createObjectURL(blob);
+      setThumbnailPreview(previewUrl);
+      return;
+    }
+  } catch (error) {
+    console.warn("Canvas approach failed, trying ImageCapture API:", error);
+  }
+
+  // Fallback: ImageCapture API (bypasses canvas tainting)
+  try {
+    const stream = video.captureStream?.();
+    if (!stream) throw new Error("captureStream not supported");
+
+    const track = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(track);
+    const bitmap = await imageCapture.grabFrame();
+
+    // Create clean canvas from bitmap
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bitmap, 0, 0);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+    });
+
     if (blob) {
       const previewUrl = URL.createObjectURL(blob);
       setThumbnailPreview(previewUrl);
     }
-  },
-  "image/jpeg",
-  0.85
-);
+
+    track.stop();
+  } catch (error) {
+    console.error("Frame capture failed:", error);
+    alert(
+      "Unable to capture frame due to browser security restrictions. Try a different browser or contact support.",
+    );
+  }
+};
 ```
 
 ## Why This Works
 
-1. **toBlob() vs toDataURL()**:
+1. **Temporary Canvas**:
+   - Creates new canvas each capture (not reused)
+   - Attempts to avoid tainting from previous operations
+   - May work in some browsers
 
-   - `toBlob()` creates a binary blob directly
-   - No data URL conversion needed
-   - Avoids CORS/security checks on blob URLs
-   - More efficient for local blob URLs
+2. **ImageCapture API Fallback**:
+   - Uses `video.captureStream()` to get MediaStream
+   - `ImageCapture.grabFrame()` captures ImageBitmap
+   - Bitmap doesn't taint canvas like blob URLs do
+   - Works in Chrome, Edge (not all browsers)
 
-2. **Blob URL Chain**:
-   - Video: `blob:http://localhost:3000/video-id`
-   - Canvas captures frame
-   - toBlob creates new blob
-   - New blob URL: `blob:http://localhost:3000/thumbnail-id`
-   - All local, no CORS issues
+3. **Progressive Enhancement**:
+   - Try canvas approach first (simple, fast)
+   - Fall back to ImageCapture if fails
+   - Graceful error message if both fail
+   - Prevents crash, informs user
 
 ## Changes Made
 
@@ -86,7 +147,7 @@ const captureCurrentFrame = () => {
         }
       },
       "image/jpeg",
-      0.85
+      0.85,
     );
   } catch (error) {
     console.error("Error capturing frame:", error);

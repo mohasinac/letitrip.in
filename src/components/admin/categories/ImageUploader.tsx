@@ -131,13 +131,13 @@ export default function ImageUploader({
       if (error.name === "NotAllowedError") {
         setCameraPermission("denied");
         handleError(
-          "Camera permission denied. You can still use file upload or provide a URL instead."
+          "Camera permission denied. You can still use file upload or provide a URL instead.",
         );
       } else if (error.name === "NotFoundError") {
         handleError("No camera device found on this device.");
       } else {
         handleError(
-          "Unable to access camera. Please check your browser settings."
+          "Unable to access camera. Please check your browser settings.",
         );
       }
       setShowPermissionDialog(false);
@@ -253,7 +253,7 @@ export default function ImageUploader({
       // Use the apiClient to upload, which will handle auth
       const response = await apiClient.upload<{ url: string }>(
         "/storage/upload",
-        formData
+        formData,
       );
 
       if (response.url) {
@@ -276,7 +276,7 @@ export default function ImageUploader({
       handleError(
         err.response?.data?.error ||
           err.message ||
-          "Failed to upload image to Firebase"
+          "Failed to upload image to Firebase",
       );
     } finally {
       setLoading(false);
@@ -285,7 +285,7 @@ export default function ImageUploader({
 
   // Handle file input change
   const handleFileInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -299,7 +299,7 @@ export default function ImageUploader({
 
   // Handle camera input change
   const handleCameraInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -317,7 +317,7 @@ export default function ImageUploader({
       cameraInputRef.current?.click();
     } else if (cameraPermission === "denied") {
       handleError(
-        "Camera access denied. Please enable camera permissions in your browser settings."
+        "Camera access denied. Please enable camera permissions in your browser settings.",
       );
     } else {
       // Permission is prompt or unknown, show dialog

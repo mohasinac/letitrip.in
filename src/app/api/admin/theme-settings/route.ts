@@ -25,7 +25,7 @@ export async function GET() {
     console.error("Error fetching theme settings:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch theme settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -45,7 +45,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating theme settings:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update theme settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

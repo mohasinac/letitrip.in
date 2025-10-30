@@ -133,7 +133,7 @@ export default function FAQPage() {
   const categories = [
     { id: "all", name: "All Categories", count: faqData.length },
     ...Array.from(
-      new Set(faqData.map((item) => item.category || "General"))
+      new Set(faqData.map((item) => item.category || "General")),
     ).map((category) => ({
       id: category.toLowerCase(),
       name: category,

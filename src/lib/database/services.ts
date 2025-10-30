@@ -3,25 +3,25 @@
  * Handles all Firestore operations with mock fallbacks
  */
 
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  getDoc, 
-  getDocs, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+import {
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
   startAfter,
   Timestamp,
   DocumentSnapshot,
-  QueryDocumentSnapshot
-} from 'firebase/firestore';
-import { db } from './config';
-import { getAdminDb } from './admin';
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import { db } from "./config";
+import { getAdminDb } from "./admin";
 
 // Types
 export interface User {
@@ -30,7 +30,7 @@ export interface User {
   name: string;
   phone?: string;
   avatar?: string;
-  role: 'admin' | 'seller' | 'user';
+  role: "admin" | "seller" | "user";
   dateOfBirth?: string;
   gender?: string;
   preferences?: {
@@ -74,7 +74,7 @@ export interface Product {
     length: number;
     width: number;
     height: number;
-    unit: 'cm' | 'in';
+    unit: "cm" | "in";
   };
   images: Array<{
     url: string;
@@ -83,7 +83,7 @@ export interface Product {
   }>;
   category: string;
   tags: string[];
-  status: 'active' | 'draft' | 'archived';
+  status: "active" | "draft" | "archived";
   isFeatured: boolean;
   rating: number;
   reviewCount: number;
@@ -100,8 +100,15 @@ export interface Order {
   id: string;
   userId: string;
   orderNumber: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled"
+    | "refunded";
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
   items: Array<{
     id: string;
     productId: string;
@@ -154,7 +161,7 @@ export interface Auction {
   startingBid: number;
   minimumBid: number;
   endTime: Date;
-  status: 'upcoming' | 'live' | 'ended';
+  status: "upcoming" | "live" | "ended";
   bidCount: number;
   category: string;
   condition: string;
@@ -218,48 +225,54 @@ export class FirebaseService {
   }
 
   // User operations
-  async createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User | null> {
+  async createUser(
+    userData: Omit<User, "id" | "createdAt" | "updatedAt">,
+  ): Promise<User | null> {
     try {
       const userDoc = {
         ...userData,
         createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
+        updatedAt: Timestamp.now(),
       };
-      const docRef = await addDoc(collection(db, 'users'), userDoc);
+      const docRef = await addDoc(collection(db, "users"), userDoc);
       return {
         id: docRef.id,
         ...userData,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
     } catch (error) {
-      console.error('Firebase createUser error:', error);
+      console.error("Firebase createUser error:", error);
       return null;
     }
   }
 
   async getUserById(userId: string): Promise<User | null> {
     try {
-      const userDoc = await getDoc(doc(db, 'users', userId));
+      const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
         const data = userDoc.data();
         return {
           id: userDoc.id,
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as User;
       }
       return null;
     } catch (error) {
-      console.error('Firebase getUserById error:', error);
+      console.error("Firebase getUserById error:", error);
       return null;
     }
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
     try {
-      const q = query(collection(db, 'users'), where('email', '==', email), limit(1));
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", email),
+        limit(1),
+      );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0];
@@ -268,75 +281,80 @@ export class FirebaseService {
           id: userDoc.id,
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as User;
       }
       return null;
     } catch (error) {
-      console.error('Firebase getUserByEmail error:', error);
+      console.error("Firebase getUserByEmail error:", error);
       return null;
     }
   }
 
-  async updateUser(userId: string, updateData: Partial<User>): Promise<User | null> {
+  async updateUser(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
     try {
-      const userRef = doc(db, 'users', userId);
+      const userRef = doc(db, "users", userId);
       await updateDoc(userRef, {
         ...updateData,
-        updatedAt: Timestamp.now()
+        updatedAt: Timestamp.now(),
       });
       return this.getUserById(userId);
     } catch (error) {
-      console.error('Firebase updateUser error:', error);
+      console.error("Firebase updateUser error:", error);
       return null;
     }
   }
 
   // Product operations
-  async getProducts(filters: {
-    category?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    search?: string;
-    featured?: boolean;
-    limit?: number;
-    page?: number;
-  } = {}): Promise<{ products: Product[]; total: number }> {
+  async getProducts(
+    filters: {
+      category?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      search?: string;
+      featured?: boolean;
+      limit?: number;
+      page?: number;
+    } = {},
+  ): Promise<{ products: Product[]; total: number }> {
     try {
-      let q = query(collection(db, 'products'));
-      
+      let q = query(collection(db, "products"));
+
       // Always filter for active products first
-      q = query(q, where('status', '==', 'active'));
-      
+      q = query(q, where("status", "==", "active"));
+
       // Apply other filters
       if (filters.category) {
-        q = query(q, where('category', '==', filters.category));
+        q = query(q, where("category", "==", filters.category));
       }
       if (filters.featured !== undefined) {
-        q = query(q, where('isFeatured', '==', filters.featured));
+        q = query(q, where("isFeatured", "==", filters.featured));
       }
       if (filters.minPrice !== undefined) {
-        q = query(q, where('price', '>=', filters.minPrice));
+        q = query(q, where("price", ">=", filters.minPrice));
       }
       if (filters.maxPrice !== undefined) {
-        q = query(q, where('price', '<=', filters.maxPrice));
+        q = query(q, where("price", "<=", filters.maxPrice));
       }
 
       // Order by createdAt for consistent results
-      q = query(q, orderBy('createdAt', 'desc'));
+      q = query(q, orderBy("createdAt", "desc"));
 
       if (filters.limit) {
         q = query(q, limit(filters.limit));
       }
 
       const querySnapshot = await getDocs(q);
-      const products: Product[] = querySnapshot.docs.map(doc => {
+      const products: Product[] = querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as Product;
       });
 
@@ -344,150 +362,161 @@ export class FirebaseService {
       let filteredProducts = products;
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
-        filteredProducts = products.filter(product =>
-          product.name.toLowerCase().includes(searchLower) ||
-          product.description.toLowerCase().includes(searchLower) ||
-          product.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+        filteredProducts = products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchLower) ||
+            product.description.toLowerCase().includes(searchLower) ||
+            product.tags?.some((tag) =>
+              tag.toLowerCase().includes(searchLower),
+            ),
         );
       }
 
       return {
         products: filteredProducts,
-        total: filteredProducts.length
+        total: filteredProducts.length,
       };
     } catch (error) {
-      console.error('Firebase getProducts error:', error);
+      console.error("Firebase getProducts error:", error);
       return {
         products: [],
-        total: 0
+        total: 0,
       };
     }
   }
 
   async getProductById(productId: string): Promise<Product | null> {
     try {
-      const productDoc = await getDoc(doc(db, 'products', productId));
+      const productDoc = await getDoc(doc(db, "products", productId));
       if (productDoc.exists()) {
         const data = productDoc.data();
         return {
           id: productDoc.id,
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as Product;
       }
       return null;
     } catch (error) {
-      console.error('Firebase getProductById error:', error);
+      console.error("Firebase getProductById error:", error);
       return null;
     }
   }
 
   // Cart operations
-  async addToCart(userId: string, productId: string, quantity: number): Promise<CartItem | null> {
+  async addToCart(
+    userId: string,
+    productId: string,
+    quantity: number,
+  ): Promise<CartItem | null> {
     try {
       const cartItem = {
         userId,
         productId,
         quantity,
-        addedAt: Timestamp.now()
+        addedAt: Timestamp.now(),
       };
-      const docRef = await addDoc(collection(db, 'cart'), cartItem);
+      const docRef = await addDoc(collection(db, "cart"), cartItem);
       return {
         id: docRef.id,
         userId,
         productId,
         quantity,
-        addedAt: new Date()
+        addedAt: new Date(),
       };
     } catch (error) {
-      console.error('Firebase addToCart error:', error);
+      console.error("Firebase addToCart error:", error);
       return {
         id: `cart_${Date.now()}`,
         userId,
         productId,
         quantity,
-        addedAt: new Date()
+        addedAt: new Date(),
       };
     }
   }
 
   async getCartItems(userId: string): Promise<CartItem[]> {
     try {
-      const q = query(collection(db, 'cart'), where('userId', '==', userId));
+      const q = query(collection(db, "cart"), where("userId", "==", userId));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => {
+      return querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
           ...data,
-          addedAt: data.addedAt?.toDate() || new Date()
+          addedAt: data.addedAt?.toDate() || new Date(),
         } as CartItem;
       });
     } catch (error) {
-      console.error('Firebase getCartItems error:', error);
+      console.error("Firebase getCartItems error:", error);
       return [];
     }
   }
 
   async updateCartItem(cartItemId: string, quantity: number): Promise<boolean> {
     try {
-      const cartRef = doc(db, 'cart', cartItemId);
+      const cartRef = doc(db, "cart", cartItemId);
       await updateDoc(cartRef, { quantity });
       return true;
     } catch (error) {
-      console.error('Firebase updateCartItem error:', error);
+      console.error("Firebase updateCartItem error:", error);
       return false;
     }
   }
 
   async removeCartItem(cartItemId: string): Promise<boolean> {
     try {
-      await deleteDoc(doc(db, 'cart', cartItemId));
+      await deleteDoc(doc(db, "cart", cartItemId));
       return true;
     } catch (error) {
-      console.error('Firebase removeCartItem error:', error);
+      console.error("Firebase removeCartItem error:", error);
       return false;
     }
   }
 
   async clearCart(userId: string): Promise<boolean> {
     try {
-      const q = query(collection(db, 'cart'), where('userId', '==', userId));
+      const q = query(collection(db, "cart"), where("userId", "==", userId));
       const querySnapshot = await getDocs(q);
-      const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref),
+      );
       await Promise.all(deletePromises);
       return true;
     } catch (error) {
-      console.error('Firebase clearCart error:', error);
+      console.error("Firebase clearCart error:", error);
       return false;
     }
   }
 
   // Order operations
-  async createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<Order | null> {
+  async createOrder(
+    orderData: Omit<Order, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Order | null> {
     try {
       const order = {
         ...orderData,
         createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
+        updatedAt: Timestamp.now(),
       };
-      const docRef = await addDoc(collection(db, 'orders'), order);
+      const docRef = await addDoc(collection(db, "orders"), order);
       return {
         id: docRef.id,
         ...orderData,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
     } catch (error) {
-      console.error('Firebase createOrder error:', error);
+      console.error("Firebase createOrder error:", error);
       return null;
     }
   }
 
   async getOrderById(orderId: string): Promise<Order | null> {
     try {
-      const orderDoc = await getDoc(doc(db, 'orders', orderId));
+      const orderDoc = await getDoc(doc(db, "orders", orderId));
       if (orderDoc.exists()) {
         const data = orderDoc.data();
         return {
@@ -496,28 +525,28 @@ export class FirebaseService {
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
           estimatedDelivery: data.estimatedDelivery?.toDate(),
-          deliveredAt: data.deliveredAt?.toDate()
+          deliveredAt: data.deliveredAt?.toDate(),
         } as Order;
       }
       return null;
     } catch (error) {
-      console.error('Firebase getOrderById error:', error);
+      console.error("Firebase getOrderById error:", error);
       return null;
     }
   }
 
   async getUserOrders(userId: string, status?: string): Promise<Order[]> {
     try {
-      let q = query(collection(db, 'orders'), where('userId', '==', userId));
-      
-      if (status && status !== 'all') {
-        q = query(q, where('status', '==', status));
+      let q = query(collection(db, "orders"), where("userId", "==", userId));
+
+      if (status && status !== "all") {
+        q = query(q, where("status", "==", status));
       }
-      
-      q = query(q, orderBy('createdAt', 'desc'));
+
+      q = query(q, orderBy("createdAt", "desc"));
 
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => {
+      return querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
@@ -525,57 +554,59 @@ export class FirebaseService {
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
           estimatedDelivery: data.estimatedDelivery?.toDate(),
-          deliveredAt: data.deliveredAt?.toDate()
+          deliveredAt: data.deliveredAt?.toDate(),
         } as Order;
       });
     } catch (error) {
-      console.error('Firebase getUserOrders error:', error);
+      console.error("Firebase getUserOrders error:", error);
       return [];
     }
   }
 
   // Auction operations
-  async getAuctions(filters: {
-    status?: string;
-    category?: string;
-    limit?: number;
-  } = {}): Promise<Auction[]> {
+  async getAuctions(
+    filters: {
+      status?: string;
+      category?: string;
+      limit?: number;
+    } = {},
+  ): Promise<Auction[]> {
     try {
-      let q = query(collection(db, 'auctions'));
-      
-      if (filters.status && filters.status !== 'all') {
-        q = query(q, where('status', '==', filters.status));
+      let q = query(collection(db, "auctions"));
+
+      if (filters.status && filters.status !== "all") {
+        q = query(q, where("status", "==", filters.status));
       }
       if (filters.category) {
-        q = query(q, where('category', '==', filters.category));
+        q = query(q, where("category", "==", filters.category));
       }
 
-      q = query(q, orderBy('endTime', 'desc'));
+      q = query(q, orderBy("endTime", "desc"));
 
       if (filters.limit) {
         q = query(q, limit(filters.limit));
       }
 
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => {
+      return querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
           ...data,
           endTime: data.endTime?.toDate() || new Date(),
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as Auction;
       });
     } catch (error) {
-      console.error('Firebase getAuctions error:', error);
+      console.error("Firebase getAuctions error:", error);
       return [];
     }
   }
 
   async getAuctionById(auctionId: string): Promise<Auction | null> {
     try {
-      const auctionDoc = await getDoc(doc(db, 'auctions', auctionId));
+      const auctionDoc = await getDoc(doc(db, "auctions", auctionId));
       if (auctionDoc.exists()) {
         const data = auctionDoc.data();
         return {
@@ -583,17 +614,22 @@ export class FirebaseService {
           ...data,
           endTime: data.endTime?.toDate() || new Date(),
           createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         } as Auction;
       }
       return null;
     } catch (error) {
-      console.error('Firebase getAuctionById error:', error);
+      console.error("Firebase getAuctionById error:", error);
       return null;
     }
   }
 
-  async placeBid(auctionId: string, userId: string, userName: string, amount: number): Promise<Bid | null> {
+  async placeBid(
+    auctionId: string,
+    userId: string,
+    userName: string,
+    amount: number,
+  ): Promise<Bid | null> {
     try {
       const bid = {
         auctionId,
@@ -601,15 +637,15 @@ export class FirebaseService {
         userName,
         amount,
         timestamp: Timestamp.now(),
-        isWinning: true
+        isWinning: true,
       };
-      const docRef = await addDoc(collection(db, 'bids'), bid);
-      
+      const docRef = await addDoc(collection(db, "bids"), bid);
+
       // Update auction current bid
-      await updateDoc(doc(db, 'auctions', auctionId), {
+      await updateDoc(doc(db, "auctions", auctionId), {
         currentBid: amount,
-        bidCount: await this.getBidCount(auctionId) + 1,
-        updatedAt: Timestamp.now()
+        bidCount: (await this.getBidCount(auctionId)) + 1,
+        updatedAt: Timestamp.now(),
       });
 
       return {
@@ -619,17 +655,20 @@ export class FirebaseService {
         userName,
         amount,
         timestamp: new Date(),
-        isWinning: true
+        isWinning: true,
       };
     } catch (error) {
-      console.error('Firebase placeBid error:', error);
+      console.error("Firebase placeBid error:", error);
       return null;
     }
   }
 
   private async getBidCount(auctionId: string): Promise<number> {
     try {
-      const q = query(collection(db, 'bids'), where('auctionId', '==', auctionId));
+      const q = query(
+        collection(db, "bids"),
+        where("auctionId", "==", auctionId),
+      );
       const querySnapshot = await getDocs(q);
       return querySnapshot.size;
     } catch (error) {

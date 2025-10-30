@@ -138,7 +138,7 @@ export default function WhatsAppStyleImageEditor({
         y: e.clientY - position.y * (circleSize / 4),
       });
     },
-    [position, circleSize]
+    [position, circleSize],
   );
 
   // Handle mouse/touch move
@@ -161,7 +161,7 @@ export default function WhatsAppStyleImageEditor({
         y: clampedY,
       }));
     },
-    [isDragging, dragStart, circleSize]
+    [isDragging, dragStart, circleSize],
   );
 
   // Handle mouse/touch end
@@ -194,7 +194,7 @@ export default function WhatsAppStyleImageEditor({
         const touch2 = e.touches[1];
         initialDistance = Math.hypot(
           touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
+          touch2.clientY - touch1.clientY,
         );
         initialScale = position.scale;
       }
@@ -207,7 +207,7 @@ export default function WhatsAppStyleImageEditor({
         const touch2 = e.touches[1];
         const currentDistance = Math.hypot(
           touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
+          touch2.clientY - touch1.clientY,
         );
         const scale = (currentDistance / initialDistance) * initialScale;
         setPosition((prev) => ({

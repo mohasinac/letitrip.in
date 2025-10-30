@@ -16,7 +16,7 @@ class ErrorLogger {
   async logError(
     error: Error,
     errorInfo?: any,
-    additionalContext?: Record<string, any>
+    additionalContext?: Record<string, any>,
   ): Promise<void> {
     const logEntry: ErrorLogEntry = {
       error: {
@@ -27,7 +27,8 @@ class ErrorLogger {
       errorInfo,
       timestamp: new Date().toISOString(),
       url: typeof window !== "undefined" ? window.location.href : "",
-      userAgent: typeof window !== "undefined" ? window.navigator.userAgent : "",
+      userAgent:
+        typeof window !== "undefined" ? window.navigator.userAgent : "",
       componentStack: errorInfo?.componentStack,
       ...additionalContext,
     };
@@ -95,13 +96,13 @@ class ErrorLogger {
   logPerformanceIssue(
     operation: string,
     duration: number,
-    threshold: number = 1000
+    threshold: number = 1000,
   ): void {
     if (duration > threshold) {
       this.logError(
         new Error(`Performance issue: ${operation} took ${duration}ms`),
         undefined,
-        { operation, duration, threshold, type: "performance" }
+        { operation, duration, threshold, type: "performance" },
       );
     }
   }
@@ -120,13 +121,13 @@ export const errorLogger = new ErrorLogger();
 export function withPerformanceLogging<T>(
   operation: string,
   fn: () => T | Promise<T>,
-  threshold?: number
+  threshold?: number,
 ): T | Promise<T> {
   const start = performance.now();
-  
+
   try {
     const result = fn();
-    
+
     if (result instanceof Promise) {
       return result.finally(() => {
         const duration = performance.now() - start;
@@ -139,11 +140,11 @@ export function withPerformanceLogging<T>(
     }
   } catch (error) {
     const duration = performance.now() - start;
-    errorLogger.logError(
-      error as Error,
-      undefined,
-      { operation, duration, type: "operation_error" }
-    );
+    errorLogger.logError(error as Error, undefined, {
+      operation,
+      duration,
+      type: "operation_error",
+    });
     throw error;
   }
 }
@@ -151,16 +152,12 @@ export function withPerformanceLogging<T>(
 // Global error handler for unhandled errors
 if (typeof window !== "undefined") {
   window.addEventListener("error", (event) => {
-    errorLogger.logError(
-      new Error(event.message),
-      undefined,
-      {
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        type: "unhandled_error",
-      }
-    );
+    errorLogger.logError(new Error(event.message), undefined, {
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+      type: "unhandled_error",
+    });
   });
 
   window.addEventListener("unhandledrejection", (event) => {
@@ -170,7 +167,7 @@ if (typeof window !== "undefined") {
       {
         reason: event.reason,
         type: "unhandled_rejection",
-      }
+      },
     );
   });
 }

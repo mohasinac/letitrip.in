@@ -4,5 +4,8 @@ export { StorageService } from "./storage.service";
 export { BaseService } from "./base.service";
 
 // Types
-export type { StorageUploadRequest, StorageUploadResponse } from "./storage.service";
+export type {
+  StorageUploadRequest,
+  StorageUploadResponse,
+} from "./storage.service";
 export type { ServiceConfig } from "./base.service";

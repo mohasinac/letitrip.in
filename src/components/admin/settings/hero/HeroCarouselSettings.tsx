@@ -122,7 +122,7 @@ export default function HeroCarouselSettings() {
               displayName: formData.displayName,
               description: formData.description,
             }
-          : c
+          : c,
       );
     } else {
       updatedCarousels = [

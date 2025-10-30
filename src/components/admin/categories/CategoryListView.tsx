@@ -46,7 +46,7 @@ export default function CategoryListView({
 
   const categoryMap = useMemo(
     () => new Map(categories.map((cat) => [cat.id, cat])),
-    [categories]
+    [categories],
   );
 
   const filteredCategories = useMemo(
@@ -54,9 +54,9 @@ export default function CategoryListView({
       categories.filter(
         (cat) =>
           cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
+          cat.slug.toLowerCase().includes(searchTerm.toLowerCase()),
       ),
-    [categories, searchTerm]
+    [categories, searchTerm],
   );
 
   const sortedCategories = useMemo(
@@ -67,20 +67,20 @@ export default function CategoryListView({
         if (aMinLevel !== bMinLevel) return aMinLevel - bMinLevel;
         return a.sortOrder - b.sortOrder;
       }),
-    [filteredCategories]
+    [filteredCategories],
   );
 
   const paginatedCategories = useMemo(
     () =>
       sortedCategories.slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+        page * rowsPerPage + rowsPerPage,
       ),
-    [sortedCategories, page, rowsPerPage]
+    [sortedCategories, page, rowsPerPage],
   );
 
   const getParentInfo = (
-    category: Category
+    category: Category,
   ): { names: string[]; slugs: string[] } => {
     if (!category.parentIds || category.parentIds.length === 0) {
       return { names: ["—"], slugs: [] };
@@ -103,7 +103,7 @@ export default function CategoryListView({
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);

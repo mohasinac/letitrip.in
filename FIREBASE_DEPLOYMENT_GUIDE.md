@@ -361,13 +361,11 @@ Body: {
 Once deployment is complete and verified:
 
 1. **Test All Seller APIs** (17 endpoints):
-
    - Coupons: 6 endpoints
    - Sales: 6 endpoints
    - Products: 5 endpoints
 
 2. **Implement Multi-Step Product Form**:
-
    - Step 1: Product Details
    - Step 2: Pricing & Inventory
    - Step 3: Media Upload
@@ -375,7 +373,6 @@ Once deployment is complete and verified:
    - Step 5: SEO & Publishing
 
 3. **Create Additional APIs**:
-
    - `GET /api/seller/products/categories/leaf` - Leaf categories
    - `POST /api/seller/products/[id]/media` - Media upload
    - `GET /api/seller/shop/addresses` - Pickup addresses

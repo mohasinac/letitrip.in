@@ -16,7 +16,7 @@ export interface CookieConsentSettings {
 }
 
 export class StorageManager {
-  private static readonly CONSENT_COOKIE = 'cookie_consent';
+  private static readonly CONSENT_COOKIE = "cookie_consent";
   private static readonly CONSENT_EXPIRY = 365; // days
   private static consentSettings: CookieConsentSettings | null = null;
 
@@ -25,8 +25,8 @@ export class StorageManager {
    */
   static isLocalStorageAvailable(): boolean {
     try {
-      if (typeof window === 'undefined') return false;
-      const test = '__localStorage_test__';
+      if (typeof window === "undefined") return false;
+      const test = "__localStorage_test__";
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -42,8 +42,8 @@ export class StorageManager {
     if (this.consentSettings) return this.consentSettings;
 
     try {
-      if (typeof window === 'undefined') return null;
-      
+      if (typeof window === "undefined") return null;
+
       const consent = this.getCookie(this.CONSENT_COOKIE);
       if (!consent) return null;
 
@@ -62,7 +62,7 @@ export class StorageManager {
     this.setCookie(
       this.CONSENT_COOKIE,
       JSON.stringify(settings),
-      this.CONSENT_EXPIRY
+      this.CONSENT_EXPIRY,
     );
   }
 
@@ -146,19 +146,20 @@ export class StorageManager {
     try {
       if (this.isLocalStorageAvailable()) {
         // Get all localStorage keys that start with our app prefix
-        const keys = Object.keys(localStorage).filter(key => 
-          key.startsWith('auth_') || 
-          key.startsWith('guest_') || 
-          key.startsWith('test_') ||
-          key.startsWith('app_')
+        const keys = Object.keys(localStorage).filter(
+          (key) =>
+            key.startsWith("auth_") ||
+            key.startsWith("guest_") ||
+            key.startsWith("test_") ||
+            key.startsWith("app_"),
         );
-        keys.forEach(key => localStorage.removeItem(key));
+        keys.forEach((key) => localStorage.removeItem(key));
       }
 
       // Clear preference cookies
       this.getAllCookieKeys()
-        .filter(key => key.startsWith('ls_'))
-        .forEach(key => this.deleteCookie(key));
+        .filter((key) => key.startsWith("ls_"))
+        .forEach((key) => this.deleteCookie(key));
     } catch {
       // Silent fail
     }
@@ -168,13 +169,13 @@ export class StorageManager {
    * Set a cookie
    */
   private static setCookie(name: string, value: string, days: number): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    
+
     document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Strict${
-      window.location.protocol === 'https:' ? ';Secure' : ''
+      window.location.protocol === "https:" ? ";Secure" : ""
     }`;
   }
 
@@ -182,18 +183,18 @@ export class StorageManager {
    * Get a cookie value
    */
   private static getCookie(name: string): string | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
 
-    const nameEQ = name + '=';
-    const cookies = document.cookie.split(';');
-    
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(";");
+
     for (let cookie of cookies) {
       cookie = cookie.trim();
       if (cookie.indexOf(nameEQ) === 0) {
         return decodeURIComponent(cookie.substring(nameEQ.length));
       }
     }
-    
+
     return null;
   }
 
@@ -201,7 +202,7 @@ export class StorageManager {
    * Delete a cookie
    */
   private static deleteCookie(name: string): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
   }
 
@@ -209,11 +210,11 @@ export class StorageManager {
    * Get all cookie keys
    */
   private static getAllCookieKeys(): string[] {
-    if (typeof window === 'undefined') return [];
-    
+    if (typeof window === "undefined") return [];
+
     return document.cookie
-      .split(';')
-      .map(cookie => cookie.trim().split('=')[0])
+      .split(";")
+      .map((cookie) => cookie.trim().split("=")[0])
       .filter(Boolean);
   }
 
@@ -225,15 +226,15 @@ export class StorageManager {
 
     try {
       if (this.isLocalStorageAvailable()) {
-        Object.keys(localStorage).forEach(key => {
-          data[key] = localStorage.getItem(key) || '';
+        Object.keys(localStorage).forEach((key) => {
+          data[key] = localStorage.getItem(key) || "";
         });
       }
 
       // Add preference cookies
       this.getAllCookieKeys()
-        .filter(key => key.startsWith('ls_'))
-        .forEach(key => {
+        .filter((key) => key.startsWith("ls_"))
+        .forEach((key) => {
           const value = this.getCookie(key);
           if (value) {
             data[key.substring(3)] = value; // Remove 'ls_' prefix

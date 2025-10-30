@@ -98,7 +98,7 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
 
     socket.on("server-full", (data) => {
       setError(
-        `Server is full! ${data.currentPlayers}/${data.maxPlayers} players online. Please try again in a few minutes.`
+        `Server is full! ${data.currentPlayers}/${data.maxPlayers} players online. Please try again in a few minutes.`,
       );
       setStatus("name-entry");
     });

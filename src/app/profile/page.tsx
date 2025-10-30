@@ -88,7 +88,7 @@ function ProfileContent() {
 
   const handlePasswordChange = async (
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ) => {
     try {
       const response = await fetch("/api/auth/change-password", {
@@ -198,7 +198,7 @@ function ProfileContent() {
               <div className="flex items-center space-x-3">
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium border ${getRoleBadgeColor(
-                    user.role
+                    user.role,
                   )}`}
                 >
                   {formatRole(user.role)}
@@ -336,7 +336,7 @@ function ProfileContent() {
               <div className="flex items-center space-x-2">
                 <span
                   className={`px-3 py-2 rounded-lg text-sm font-medium border ${getRoleBadgeColor(
-                    user.role
+                    user.role,
                   )}`}
                 >
                   {formatRole(user.role)}

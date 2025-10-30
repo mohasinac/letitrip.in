@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { userId } = await params;
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
 
@@ -25,23 +25,23 @@ export async function POST(
 
       // Check if user is admin
       const db = getAdminDb();
-      const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
       const userData = userDoc.data();
 
-      if (!userData || userData.role !== 'admin') {
+      if (!userData || userData.role !== "admin") {
         return NextResponse.json(
-          { success: false, error: 'Admin access required' },
-          { status: 403 }
+          { success: false, error: "Admin access required" },
+          { status: 403 },
         );
       }
 
       // Create or update user document
       const userDocData = {
         uid: userId,
-        email: email || '',
-        name: name || 'User',
+        email: email || "",
+        name: name || "User",
         phone: phone || null,
-        role: role || 'user',
+        role: role || "user",
         isEmailVerified: false,
         isPhoneVerified: false,
         addresses: [],
@@ -52,25 +52,28 @@ export async function POST(
         lastLogin: new Date().toISOString(),
       };
 
-      await db.collection('users').doc(userId).set(userDocData, { merge: true });
+      await db
+        .collection("users")
+        .doc(userId)
+        .set(userDocData, { merge: true });
 
       return NextResponse.json({
         success: true,
-        message: 'User document created/updated successfully',
+        message: "User document created/updated successfully",
         data: userDocData,
       });
     } catch (error: any) {
-      console.error('Firebase token verification error:', error);
+      console.error("Firebase token verification error:", error);
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
   } catch (error: any) {
-    console.error('Create user document error:', error);
+    console.error("Create user document error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create user document' },
-      { status: 500 }
+      { success: false, error: "Failed to create user document" },
+      { status: 500 },
     );
   }
 }

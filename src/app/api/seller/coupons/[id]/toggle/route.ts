@@ -5,7 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 // POST /api/seller/coupons/[id]/toggle - Toggle coupon active/inactive status
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -19,7 +19,10 @@ export async function POST(
     const decodedToken = await adminAuth.verifyIdToken(token);
     const sellerId = decodedToken.uid;
 
-    const couponDoc = await adminDb.collection("seller_coupons").doc(params.id).get();
+    const couponDoc = await adminDb
+      .collection("seller_coupons")
+      .doc(params.id)
+      .get();
 
     if (!couponDoc.exists) {
       return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
@@ -46,7 +49,7 @@ export async function POST(
     console.error("Error toggling coupon:", error);
     return NextResponse.json(
       { error: error.message || "Failed to toggle coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -65,8 +65,8 @@ export default function BeybladeManagement() {
     // Update the beyblade in the list
     setBeyblades((prevBeyblades) =>
       prevBeyblades.map((b) =>
-        b.id === selectedBeyblade?.id ? { ...b, imageUrl } : b
-      )
+        b.id === selectedBeyblade?.id ? { ...b, imageUrl } : b,
+      ),
     );
     setImageUploadOpen(false);
   };

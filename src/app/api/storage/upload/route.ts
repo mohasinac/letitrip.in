@@ -4,7 +4,7 @@ import { getAdminStorage, getAdminDb } from "@/lib/database/admin";
 import { v4 as uuidv4 } from "uuid";
 
 // Next.js 13+ route configuration
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 export const maxDuration = 60; // Max execution time in seconds
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { success: false, error: "No file provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (!file.type.startsWith("image/")) {
       return NextResponse.json(
         { success: false, error: "File must be an image" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
         { success: false, error: "File size exceeds 10MB limit" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error.message || "Failed to upload image",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

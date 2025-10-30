@@ -1,6 +1,13 @@
-import { createApiHandler, successResponse, validationErrorResponse, errorResponse, getCorsHeaders, HTTP_STATUS } from '@/lib/api';
-import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
-import { z } from 'zod';
+import {
+  createApiHandler,
+  successResponse,
+  validationErrorResponse,
+  errorResponse,
+  getCorsHeaders,
+  HTTP_STATUS,
+} from "@/lib/api";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { z } from "zod";
 
 /**
  * Handle OPTIONS request for CORS preflight
@@ -11,9 +18,11 @@ export async function OPTIONS() {
 }
 
 const verifyOTPSchema = z.object({
-  verificationId: z.string().min(1, 'Verification ID required'),
-  otp: z.string().length(6, 'OTP must be 6 digits'),
-  phoneNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number format'),
+  verificationId: z.string().min(1, "Verification ID required"),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+  phoneNumber: z
+    .string()
+    .regex(/^\+[1-9]\d{1,14}$/, "Invalid phone number format"),
 });
 
 /**
@@ -22,7 +31,7 @@ const verifyOTPSchema = z.object({
  */
 export const POST = createApiHandler(async (request) => {
   const body = await request.json();
-  
+
   // Validate input
   const validation = verifyOTPSchema.safeParse(body);
   if (!validation.success) {
@@ -37,8 +46,11 @@ export const POST = createApiHandler(async (request) => {
   // 3. Validate against Firebase Auth
 
   // For demo purposes, we'll accept "123456" as valid OTP
-  if (otp !== '123456') {
-    return errorResponse('Invalid OTP. Please try again.', HTTP_STATUS.BAD_REQUEST);
+  if (otp !== "123456") {
+    return errorResponse(
+      "Invalid OTP. Please try again.",
+      HTTP_STATUS.BAD_REQUEST,
+    );
   }
 
   const adminAuth = getAdminAuth();
@@ -48,39 +60,42 @@ export const POST = createApiHandler(async (request) => {
   let userRecord;
   try {
     const users = await adminAuth.getUsers([]);
-    userRecord = users.users.find(user => user.phoneNumber === phoneNumber);
+    userRecord = users.users.find((user) => user.phoneNumber === phoneNumber);
   } catch (error) {
-    console.error('Error finding user:', error);
+    console.error("Error finding user:", error);
   }
 
   if (userRecord) {
     // User exists, update phone verification status
-    await adminDb.collection('users').doc(userRecord.uid).update({
+    await adminDb.collection("users").doc(userRecord.uid).update({
       isPhoneVerified: true,
       lastLogin: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
     // Get updated user data
-    const userDoc = await adminDb.collection('users').doc(userRecord.uid).get();
+    const userDoc = await adminDb.collection("users").doc(userRecord.uid).get();
     const userData = userDoc.data();
 
     // Generate custom token for auto-login
     const customToken = await adminAuth.createCustomToken(userRecord.uid);
 
-    return successResponse({
-      user: {
-        id: userRecord.uid,
-        uid: userRecord.uid,
-        email: userRecord.email,
-        name: userData?.name || userRecord.displayName,
-        phone: phoneNumber,
-        role: userData?.role || 'user',
-        isEmailVerified: userRecord.emailVerified,
-        isPhoneVerified: true,
+    return successResponse(
+      {
+        user: {
+          id: userRecord.uid,
+          uid: userRecord.uid,
+          email: userRecord.email,
+          name: userData?.name || userRecord.displayName,
+          phone: phoneNumber,
+          role: userData?.role || "user",
+          isEmailVerified: userRecord.emailVerified,
+          isPhoneVerified: true,
+        },
+        customToken,
       },
-      customToken,
-    }, 'Phone number verified successfully');
+      "Phone number verified successfully",
+    );
   } else {
     // Create new user with phone number
     const newUser = await adminAuth.createUser({
@@ -92,10 +107,10 @@ export const POST = createApiHandler(async (request) => {
     const now = new Date().toISOString();
     const userData = {
       id: newUser.uid,
-      name: phoneNumber.replace(/^\+\d+/, ''), // Use phone as temporary name
+      name: phoneNumber.replace(/^\+\d+/, ""), // Use phone as temporary name
       email: null,
       phone: phoneNumber,
-      role: 'user',
+      role: "user",
       isEmailVerified: false,
       isPhoneVerified: true,
       addresses: [],
@@ -112,26 +127,29 @@ export const POST = createApiHandler(async (request) => {
       },
     };
 
-    await adminDb.collection('users').doc(newUser.uid).set(userData);
+    await adminDb.collection("users").doc(newUser.uid).set(userData);
 
     // Set custom claims
-    await adminAuth.setCustomUserClaims(newUser.uid, { role: 'user' });
+    await adminAuth.setCustomUserClaims(newUser.uid, { role: "user" });
 
     // Generate custom token
     const customToken = await adminAuth.createCustomToken(newUser.uid);
 
-    return successResponse({
-      user: {
-        id: newUser.uid,
-        uid: newUser.uid,
-        email: null,
-        name: userData.name,
-        phone: phoneNumber,
-        role: 'user',
-        isEmailVerified: false,
-        isPhoneVerified: true,
+    return successResponse(
+      {
+        user: {
+          id: newUser.uid,
+          uid: newUser.uid,
+          email: null,
+          name: userData.name,
+          phone: phoneNumber,
+          role: "user",
+          isEmailVerified: false,
+          isPhoneVerified: true,
+        },
+        customToken,
       },
-      customToken,
-    }, 'Phone number verified and account created');
+      "Phone number verified and account created",
+    );
   }
 });

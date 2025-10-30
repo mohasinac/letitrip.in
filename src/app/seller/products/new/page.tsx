@@ -172,7 +172,7 @@ export default function NewProductPage() {
   const fetchLeafCategories = async () => {
     try {
       const response = await apiGet<any>(
-        "/api/seller/products/categories/leaf"
+        "/api/seller/products/categories/leaf",
       );
       if (response.success) {
         setCategories(response.data);
@@ -191,7 +191,7 @@ export default function NewProductPage() {
 
         // Auto-select default address if exists
         const defaultAddr = response.data.addresses?.find(
-          (addr: any) => addr.isDefault
+          (addr: any) => addr.isDefault,
         );
         if (defaultAddr && !formData.pickupAddressId) {
           updateFormData({ pickupAddressId: defaultAddr.id });
@@ -278,7 +278,7 @@ export default function NewProductPage() {
 
       const response = await apiPost<any>(
         "/api/seller/products",
-        finalFormData
+        finalFormData,
       );
 
       if (response.success) {
@@ -349,7 +349,7 @@ export default function NewProductPage() {
         // Upload to API
         const responseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          formDataUpload
+          formDataUpload,
         );
 
         // Parse JSON response
@@ -378,7 +378,7 @@ export default function NewProductPage() {
       } catch (error: any) {
         console.error(`Failed to upload image ${i + 1}:`, error);
         throw new Error(
-          `Failed to upload image ${i + 1}: ${error.message || "Network error"}`
+          `Failed to upload image ${i + 1}: ${error.message || "Network error"}`,
         );
       }
     }
@@ -429,7 +429,7 @@ export default function NewProductPage() {
 
         const videoResponseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          videoFormData
+          videoFormData,
         );
 
         // Parse JSON response
@@ -459,14 +459,14 @@ export default function NewProductPage() {
         thumbnailFormData.append(
           "files",
           video.thumbnailBlob,
-          `${videoData.name}-thumb.jpg`
+          `${videoData.name}-thumb.jpg`,
         );
         thumbnailFormData.append("slug", formData.seo.slug);
         thumbnailFormData.append("type", "image");
 
         const thumbnailResponseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          thumbnailFormData
+          thumbnailFormData,
         );
 
         // Parse JSON response
@@ -485,7 +485,7 @@ export default function NewProductPage() {
             "Unknown error";
           console.error(
             `Thumbnail upload failed for video ${i + 1}:`,
-            errorMsg
+            errorMsg,
           );
           throw new Error(`Video ${i + 1} thumbnail: ${errorMsg}`);
         }
@@ -508,7 +508,7 @@ export default function NewProductPage() {
       } catch (error: any) {
         console.error(`Failed to upload video ${i + 1}:`, error);
         throw new Error(
-          `Failed to upload video ${i + 1}: ${error.message || "Network error"}`
+          `Failed to upload video ${i + 1}: ${error.message || "Network error"}`,
         );
       }
     }

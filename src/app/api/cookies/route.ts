@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,39 +9,39 @@ export async function GET(request: NextRequest) {
         required: true,
         preferences: true,
         analytics: false,
-        marketing: false
+        marketing: false,
       },
       security: {
         httpOnly: false, // Client-side cookies for our use case
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
       },
       expiration: {
-        auth_token: '30 days',
-        user_data: '30 days',
-        cart_data: '7 days',
-        preferences: '1 year'
+        auth_token: "30 days",
+        user_data: "30 days",
+        cart_data: "7 days",
+        preferences: "1 year",
       },
       cookies: {
-        essential: ['auth_token', 'user_data'],
-        functional: ['cart_data', 'preferences'],
+        essential: ["auth_token", "user_data"],
+        functional: ["cart_data", "preferences"],
         analytics: [],
-        marketing: []
-      }
+        marketing: [],
+      },
     };
 
     return NextResponse.json({
       success: true,
-      data: cookieInfo
+      data: cookieInfo,
     });
   } catch (error) {
-    console.error('Cookie info error:', error);
+    console.error("Cookie info error:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to get cookie information' 
+      {
+        success: false,
+        error: "Failed to get cookie information",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -52,40 +52,40 @@ export async function POST(request: NextRequest) {
     const { action, key, value, options } = body;
 
     switch (action) {
-      case 'set':
+      case "set":
         if (!key || value === undefined) {
           return NextResponse.json(
-            { success: false, error: 'Key and value are required' },
-            { status: 400 }
+            { success: false, error: "Key and value are required" },
+            { status: 400 },
           );
         }
         // This would typically be handled client-side, but we can provide server-side support
         return NextResponse.json({
           success: true,
-          message: 'Cookie setting acknowledged'
+          message: "Cookie setting acknowledged",
         });
 
-      case 'consent':
+      case "consent":
         // Handle cookie consent updates
         return NextResponse.json({
           success: true,
-          message: 'Cookie consent updated'
+          message: "Cookie consent updated",
         });
 
       default:
         return NextResponse.json(
-          { success: false, error: 'Invalid action' },
-          { status: 400 }
+          { success: false, error: "Invalid action" },
+          { status: 400 },
         );
     }
   } catch (error) {
-    console.error('Cookie operation error:', error);
+    console.error("Cookie operation error:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to process cookie operation' 
+      {
+        success: false,
+        error: "Failed to process cookie operation",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

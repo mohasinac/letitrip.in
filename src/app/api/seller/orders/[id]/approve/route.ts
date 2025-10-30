@@ -8,7 +8,7 @@ import { FieldValue } from "firebase-admin/firestore";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -16,7 +16,7 @@ export async function POST(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function POST(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Access denied. Seller role required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(
     if (!orderDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(
     if (role !== "admin" && orderData?.sellerId !== sellerId) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function POST(
           success: false,
           error: "Only pending orders can be approved",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -101,7 +101,7 @@ export async function POST(
         success: false,
         error: error.message || "Failed to approve order",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

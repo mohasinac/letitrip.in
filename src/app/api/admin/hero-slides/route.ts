@@ -110,7 +110,7 @@ export async function GET() {
     console.error("Error fetching hero slides:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch hero slides" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -129,13 +129,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: newSlide },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating hero slide:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -149,7 +149,7 @@ export async function PUT(request: NextRequest) {
     if (index === -1) {
       return NextResponse.json(
         { success: false, error: "Hero slide not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -168,7 +168,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating hero slide:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -182,7 +182,7 @@ export async function DELETE(request: NextRequest) {
     if (index === -1) {
       return NextResponse.json(
         { success: false, error: "Hero slide not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -193,7 +193,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting hero slide:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

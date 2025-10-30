@@ -4,8 +4,8 @@
  * Server-side service for session persistence
  */
 
-import { getAdminDb } from './admin';
-import { DATABASE_CONSTANTS } from '@/constants/app';
+import { getAdminDb } from "./admin";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 interface UserSession {
   userId: string;
@@ -34,7 +34,8 @@ interface BrowsingHistory {
 export class SessionService {
   private readonly db = getAdminDb();
   private readonly sessionsCollection = DATABASE_CONSTANTS.COLLECTIONS.SESSIONS;
-  private readonly historyCollection = DATABASE_CONSTANTS.COLLECTIONS.BROWSING_HISTORY;
+  private readonly historyCollection =
+    DATABASE_CONSTANTS.COLLECTIONS.BROWSING_HISTORY;
 
   /**
    * Create or update user session
@@ -43,7 +44,7 @@ export class SessionService {
     userId: string,
     sessionId: string,
     data: Partial<UserSession> = {},
-    expiresInDays: number = 30
+    expiresInDays: number = 30,
   ): Promise<UserSession> {
     const now = new Date().toISOString();
     const expiresAt = new Date();
@@ -92,7 +93,7 @@ export class SessionService {
 
       return session;
     } catch (error) {
-      console.error('Error getting session:', error);
+      console.error("Error getting session:", error);
       return null;
     }
   }
@@ -103,14 +104,14 @@ export class SessionService {
   async updateLastVisitedPage(
     sessionId: string,
     userId: string,
-    page: string
+    page: string,
   ): Promise<void> {
     // Don't save auth pages or API routes
     if (
-      page.includes('/login') ||
-      page.includes('/register') ||
-      page.includes('/api/') ||
-      page.includes('/_next/')
+      page.includes("/login") ||
+      page.includes("/register") ||
+      page.includes("/api/") ||
+      page.includes("/_next/")
     ) {
       return;
     }
@@ -128,9 +129,7 @@ export class SessionService {
       });
 
       // Add to browsing history
-      const historyRef = this.db
-        .collection(this.historyCollection)
-        .doc();
+      const historyRef = this.db.collection(this.historyCollection).doc();
       batch.set(historyRef, {
         userId,
         page,
@@ -140,7 +139,7 @@ export class SessionService {
 
       await batch.commit();
     } catch (error) {
-      console.error('Error updating last visited page:', error);
+      console.error("Error updating last visited page:", error);
     }
   }
 
@@ -149,19 +148,19 @@ export class SessionService {
    */
   async getBrowsingHistory(
     userId: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<BrowsingHistory[]> {
     try {
       const snapshot = await this.db
         .collection(this.historyCollection)
-        .where('userId', '==', userId)
-        .orderBy('visitedAt', 'desc')
+        .where("userId", "==", userId)
+        .orderBy("visitedAt", "desc")
         .limit(limit)
         .get();
 
       return snapshot.docs.map((doc) => doc.data() as BrowsingHistory);
     } catch (error) {
-      console.error('Error getting browsing history:', error);
+      console.error("Error getting browsing history:", error);
       return [];
     }
   }
@@ -171,15 +170,12 @@ export class SessionService {
    */
   async updateCartCount(sessionId: string, count: number): Promise<void> {
     try {
-      await this.db
-        .collection(this.sessionsCollection)
-        .doc(sessionId)
-        .update({
-          cartItemCount: count,
-          updatedAt: new Date().toISOString(),
-        });
+      await this.db.collection(this.sessionsCollection).doc(sessionId).update({
+        cartItemCount: count,
+        updatedAt: new Date().toISOString(),
+      });
     } catch (error) {
-      console.error('Error updating cart count:', error);
+      console.error("Error updating cart count:", error);
     }
   }
 
@@ -188,12 +184,9 @@ export class SessionService {
    */
   async deleteSession(sessionId: string): Promise<void> {
     try {
-      await this.db
-        .collection(this.sessionsCollection)
-        .doc(sessionId)
-        .delete();
+      await this.db.collection(this.sessionsCollection).doc(sessionId).delete();
     } catch (error) {
-      console.error('Error deleting session:', error);
+      console.error("Error deleting session:", error);
     }
   }
 
@@ -205,7 +198,7 @@ export class SessionService {
       const now = new Date().toISOString();
       const snapshot = await this.db
         .collection(this.sessionsCollection)
-        .where('expiresAt', '<', now)
+        .where("expiresAt", "<", now)
         .limit(DATABASE_CONSTANTS.BATCH_SIZE)
         .get();
 
@@ -220,7 +213,7 @@ export class SessionService {
 
       return snapshot.docs.length;
     } catch (error) {
-      console.error('Error cleaning up expired sessions:', error);
+      console.error("Error cleaning up expired sessions:", error);
       return 0;
     }
   }
@@ -233,14 +226,14 @@ export class SessionService {
       const now = new Date().toISOString();
       const snapshot = await this.db
         .collection(this.sessionsCollection)
-        .where('userId', '==', userId)
-        .where('expiresAt', '>', now)
-        .orderBy('expiresAt', 'desc')
+        .where("userId", "==", userId)
+        .where("expiresAt", ">", now)
+        .orderBy("expiresAt", "desc")
         .get();
 
       return snapshot.docs.map((doc) => doc.data() as UserSession);
     } catch (error) {
-      console.error('Error getting user sessions:', error);
+      console.error("Error getting user sessions:", error);
       return [];
     }
   }
@@ -252,7 +245,7 @@ export class SessionService {
     try {
       const snapshot = await this.db
         .collection(this.sessionsCollection)
-        .where('userId', '==', userId)
+        .where("userId", "==", userId)
         .get();
 
       const batch = this.db.batch();
@@ -264,7 +257,7 @@ export class SessionService {
         await batch.commit();
       }
     } catch (error) {
-      console.error('Error invalidating user sessions:', error);
+      console.error("Error invalidating user sessions:", error);
     }
   }
 }

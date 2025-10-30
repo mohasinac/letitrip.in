@@ -85,7 +85,7 @@ function AdminUsersContent() {
     try {
       setSearching(true);
       const response = await apiClient.get(
-        `/admin/users/search?q=${searchQuery}`
+        `/admin/users/search?q=${searchQuery}`,
       );
       setUsers(response || []);
     } catch (error: any) {
@@ -115,7 +115,7 @@ function AdminUsersContent() {
             isBanned: !selectedUser.isBanned,
           });
           toast.success(
-            `User ${selectedUser.isBanned ? "unbanned" : "banned"} successfully`
+            `User ${selectedUser.isBanned ? "unbanned" : "banned"} successfully`,
           );
           break;
 
@@ -127,7 +127,7 @@ function AdminUsersContent() {
               name: selectedUser.name,
               phone: selectedUser.phone,
               role: selectedUser.role,
-            }
+            },
           );
           toast.success("User document created successfully");
           break;
@@ -157,7 +157,7 @@ function AdminUsersContent() {
   const filteredUsers = users.filter(
     (user) =>
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -258,8 +258,8 @@ function AdminUsersContent() {
                             user.role === "admin"
                               ? "bg-purple-100 text-purple-800"
                               : user.role === "seller"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-gray-100 text-gray-800"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
                           }`}
                         >
                           {user.role}

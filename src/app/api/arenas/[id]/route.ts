@@ -2,8 +2,8 @@
  * API Route: Individual Arena - GET, PUT, DELETE
  */
 
-import { createApiHandler, successResponse } from '@/lib/api';
-import { arenaService } from '@/lib/database/arenaService';
+import { createApiHandler, successResponse } from "@/lib/api";
+import { arenaService } from "@/lib/database/arenaService";
 import { ArenaConfig } from "@/types/arenaConfig";
 
 export const GET = createApiHandler(async (request, { params }) => {
@@ -11,7 +11,7 @@ export const GET = createApiHandler(async (request, { params }) => {
   const arena = await arenaService.getArenaById(id);
 
   if (!arena) {
-    throw new Error('Arena not found');
+    throw new Error("Arena not found");
   }
 
   return successResponse(arena);

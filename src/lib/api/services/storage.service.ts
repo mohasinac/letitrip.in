@@ -32,7 +32,7 @@ export class StorageService {
    * @returns Upload response with file path and URL
    */
   static async uploadImage(
-    request: StorageUploadRequest
+    request: StorageUploadRequest,
   ): Promise<StorageUploadResponse> {
     try {
       const { file, folder, slug, onProgress } = request;
@@ -61,12 +61,12 @@ export class StorageService {
           onUploadProgress: (progressEvent) => {
             if (onProgress && progressEvent.total) {
               const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+                (progressEvent.loaded * 100) / progressEvent.total,
               );
               onProgress(progress);
             }
           },
-        }
+        },
       );
 
       if (!response.success) {
@@ -123,7 +123,7 @@ export class StorageService {
   static async downloadFile(path: string): Promise<Blob> {
     try {
       const response = await fetch(
-        `/api/storage/get?path=${encodeURIComponent(path)}`
+        `/api/storage/get?path=${encodeURIComponent(path)}`,
       );
 
       if (!response.ok) {
@@ -143,7 +143,9 @@ export class StorageService {
    */
   static async deleteFile(path: string): Promise<void> {
     try {
-      await apiClient.delete(`/storage/delete?path=${encodeURIComponent(path)}`);
+      await apiClient.delete(
+        `/storage/delete?path=${encodeURIComponent(path)}`,
+      );
     } catch (error) {
       console.error("StorageService.deleteFile error:", error);
       throw error;

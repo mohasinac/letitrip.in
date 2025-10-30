@@ -1,6 +1,7 @@
 # GitHub Actions & Vercel Setup
 
 ## Overview
+
 This repository is configured with automatic Vercel deployment through GitHub Actions. Every push to any branch will trigger a deployment.
 
 ## GitHub Secrets Configuration
@@ -20,7 +21,7 @@ To set up automatic deployments, you need to configure the following secrets in 
    - Add this to GitHub Secrets
 
 3. **VERCEL_PROJECT_ID**
-   - Run `vercel link` in your project locally  
+   - Run `vercel link` in your project locally
    - Check `.vercel/project.json` for the `projectId`
    - Add this to GitHub Secrets
 

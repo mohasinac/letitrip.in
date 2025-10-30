@@ -3,9 +3,9 @@
  * Used by a few remaining API routes - consider migrating to @/lib/api/middleware
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, JWTPayload } from './jwt';
-import { ZodSchema } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken, JWTPayload } from "./jwt";
+import { ZodSchema } from "zod";
 
 /**
  * API Response helper
@@ -17,7 +17,7 @@ export class ApiResponse {
         success: true,
         data,
       },
-      { status }
+      { status },
     );
   }
 
@@ -28,23 +28,23 @@ export class ApiResponse {
         error: message,
         errors,
       },
-      { status }
+      { status },
     );
   }
 
-  static unauthorized(message = 'Unauthorized') {
+  static unauthorized(message = "Unauthorized") {
     return this.error(message, 401);
   }
 
-  static forbidden(message = 'Forbidden') {
+  static forbidden(message = "Forbidden") {
     return this.error(message, 403);
   }
 
-  static notFound(message = 'Not found') {
+  static notFound(message = "Not found") {
     return this.error(message, 404);
   }
 
-  static serverError(message = 'Internal server error') {
+  static serverError(message = "Internal server error") {
     return this.error(message, 500);
   }
 }
@@ -66,7 +66,9 @@ class RateLimiter {
   check(identifier: string): boolean {
     const now = Date.now();
     const userRequests = this.requests.get(identifier) || [];
-    const validRequests = userRequests.filter((timestamp) => now - timestamp < this.window);
+    const validRequests = userRequests.filter(
+      (timestamp) => now - timestamp < this.window,
+    );
 
     if (validRequests.length >= this.limit) {
       return false;
@@ -84,20 +86,24 @@ const rateLimiter = new RateLimiter();
  * Rate limiting middleware wrapper
  */
 export function withRateLimit(
-  handler: (request: NextRequest) => Promise<NextResponse>
+  handler: (request: NextRequest) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {
     // Skip rate limiting in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       return handler(request);
     }
 
-    const identifier = request.headers.get('x-forwarded-for') || 
-                      request.headers.get('x-real-ip') || 
-                      'unknown';
+    const identifier =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
 
     if (!rateLimiter.check(identifier)) {
-      return ApiResponse.error('Too many requests. Please try again later.', 429);
+      return ApiResponse.error(
+        "Too many requests. Please try again later.",
+        429,
+      );
     }
 
     return handler(request);
@@ -107,14 +113,16 @@ export function withRateLimit(
 /**
  * Authenticate user from JWT token in cookies or Authorization header
  */
-export async function authenticateUser(request: NextRequest): Promise<JWTPayload | null> {
+export async function authenticateUser(
+  request: NextRequest,
+): Promise<JWTPayload | null> {
   // Try to get token from cookie first
-  let token = request.cookies.get('auth_token')?.value;
+  let token = request.cookies.get("auth_token")?.value;
 
   // If not in cookie, try Authorization header
   if (!token) {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader?.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
       token = authHeader.substring(7);
     }
   }
@@ -131,7 +139,7 @@ export async function authenticateUser(request: NextRequest): Promise<JWTPayload
  */
 export async function validateBody<T>(
   request: NextRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): Promise<{ data: T; error: null } | { data: null; error: NextResponse }> {
   try {
     const body = await request.json();
@@ -140,8 +148,11 @@ export async function validateBody<T>(
   } catch (error: any) {
     return {
       data: null,
-      error: ApiResponse.error('Validation failed', 400, error.errors || error.message),
+      error: ApiResponse.error(
+        "Validation failed",
+        400,
+        error.errors || error.message,
+      ),
     };
   }
 }
-

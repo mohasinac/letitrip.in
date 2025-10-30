@@ -7,7 +7,7 @@ import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -15,7 +15,7 @@ export async function GET(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -31,19 +31,22 @@ export async function GET(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Access denied. Seller role required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const adminDb = getAdminDb();
 
     // Get order document
-    const orderDoc = await adminDb.collection("seller_orders").doc(orderId).get();
+    const orderDoc = await adminDb
+      .collection("seller_orders")
+      .doc(orderId)
+      .get();
 
     if (!orderDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +56,7 @@ export async function GET(
     if (role !== "admin" && orderData?.sellerId !== sellerId) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -71,7 +74,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch order",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

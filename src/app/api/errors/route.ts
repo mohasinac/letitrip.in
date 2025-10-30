@@ -1,4 +1,9 @@
-import { createApiHandler, successResponse, errorResponse, HTTP_STATUS } from '@/lib/api';
+import {
+  createApiHandler,
+  successResponse,
+  errorResponse,
+  HTTP_STATUS,
+} from "@/lib/api";
 import type { ErrorLogEntry } from "@/lib/utils/errorLogger";
 
 /**
@@ -18,7 +23,7 @@ export const POST = createApiHandler(async (request) => {
   // 1. Store the error in a database
   // 2. Send alerts for critical errors
   // 3. Forward to external monitoring services
-  
+
   console.error("API Error Log:", {
     timestamp: errorEntry.timestamp,
     error: errorEntry.error.message,
@@ -51,9 +56,10 @@ function isCriticalError(errorEntry: ErrorLogEntry): boolean {
     /unauthorized/i,
   ];
 
-  return criticalPatterns.some(pattern => 
-    pattern.test(errorEntry.error.message) || 
-    pattern.test(errorEntry.error.name)
+  return criticalPatterns.some(
+    (pattern) =>
+      pattern.test(errorEntry.error.message) ||
+      pattern.test(errorEntry.error.name),
   );
 }
 

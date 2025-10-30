@@ -240,7 +240,7 @@ function BarrierShape({
   for (let i = 0; i < 6; i++) {
     const angle = (i / 6) * Math.PI * 2;
     points.push(
-      `${x + Math.cos(angle) * radius},${y + Math.sin(angle) * radius}`
+      `${x + Math.cos(angle) * radius},${y + Math.sin(angle) * radius}`,
     );
   }
 

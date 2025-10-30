@@ -4,7 +4,7 @@
  * Works for both authenticated and guest users
  */
 
-import { cookieStorage } from './cookieStorage';
+import { cookieStorage } from "./cookieStorage";
 
 export interface SessionData {
   lastVisitedPage?: string;
@@ -14,7 +14,7 @@ export interface SessionData {
   referrer?: string;
 }
 
-const SESSION_COOKIE_KEY = 'user_session';
+const SESSION_COOKIE_KEY = "user_session";
 const MAX_HISTORY_LENGTH = 10;
 
 export const sessionStorage = {
@@ -37,7 +37,7 @@ export const sessionStorage = {
     };
     cookieStorage.set(SESSION_COOKIE_KEY, updatedSession, {
       expires: 30, // 30 days
-      sameSite: 'lax',
+      sameSite: "lax",
     });
   },
 
@@ -47,17 +47,17 @@ export const sessionStorage = {
   saveLastVisitedPage(url: string): void {
     // Don't save auth pages or API routes
     if (
-      url.includes('/login') ||
-      url.includes('/register') ||
-      url.includes('/api/') ||
-      url.includes('/_next/')
+      url.includes("/login") ||
+      url.includes("/register") ||
+      url.includes("/api/") ||
+      url.includes("/_next/")
     ) {
       return;
     }
 
     const currentSession = this.getSession() || {};
     const history = currentSession.browsing_history || [];
-    
+
     // Add to history if not already the last page
     if (history[history.length - 1] !== url) {
       history.push(url);
@@ -118,19 +118,19 @@ export const sessionStorage = {
    */
   getRedirectAfterLogin(): string {
     const lastPage = this.getLastVisitedPage();
-    
+
     // Don't redirect to auth pages
     if (
       lastPage &&
-      !lastPage.includes('/login') &&
-      !lastPage.includes('/register') &&
-      !lastPage.includes('/forgot-password')
+      !lastPage.includes("/login") &&
+      !lastPage.includes("/register") &&
+      !lastPage.includes("/forgot-password")
     ) {
       return lastPage;
     }
 
     // Default to account dashboard
-    return '/account/dashboard';
+    return "/account/dashboard";
   },
 
   /**
@@ -142,10 +142,10 @@ export const sessionStorage = {
     if (!session) return;
 
     try {
-      await fetch('/api/user/session', {
-        method: 'POST',
+      await fetch("/api/user/session", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,

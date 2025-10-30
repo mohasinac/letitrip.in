@@ -42,7 +42,7 @@ export default function MediaUpload({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [previewType, setPreviewType] = useState<"image" | "video" | null>(
-    null
+    null,
   );
 
   // Cleanup preview URL on unmount
@@ -145,7 +145,7 @@ export default function MediaUpload({
   };
 
   const handleCameraCapture = async (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -372,7 +372,7 @@ export default function MediaUpload({
       {/* File Size Info */}
       <Chip
         label={`Max file size: ${maxSize}MB | Accepted: ${acceptedTypes.join(
-          ", "
+          ", ",
         )}`}
         size="small"
         variant="outlined"

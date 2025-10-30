@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { userId } = await params;
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
 
@@ -25,26 +25,26 @@ export async function PUT(
 
       // Check if user is admin
       const db = getAdminDb();
-      const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
       const userData = userDoc.data();
 
-      if (!userData || userData.role !== 'admin') {
+      if (!userData || userData.role !== "admin") {
         return NextResponse.json(
-          { success: false, error: 'Admin access required' },
-          { status: 403 }
+          { success: false, error: "Admin access required" },
+          { status: 403 },
         );
       }
 
       // Validate role
-      if (!['user', 'seller', 'admin'].includes(role)) {
+      if (!["user", "seller", "admin"].includes(role)) {
         return NextResponse.json(
-          { success: false, error: 'Invalid role' },
-          { status: 400 }
+          { success: false, error: "Invalid role" },
+          { status: 400 },
         );
       }
 
       // Update user role
-      await db.collection('users').doc(userId).update({
+      await db.collection("users").doc(userId).update({
         role,
         updatedAt: new Date().toISOString(),
       });
@@ -54,17 +54,17 @@ export async function PUT(
         message: `User role updated to ${role}`,
       });
     } catch (error: any) {
-      console.error('Firebase token verification error:', error);
+      console.error("Firebase token verification error:", error);
       return NextResponse.json(
-        { success: false, error: 'Not authenticated' },
-        { status: 401 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 },
       );
     }
   } catch (error: any) {
-    console.error('Update user role error:', error);
+    console.error("Update user role error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update user role' },
-      { status: 500 }
+      { success: false, error: "Failed to update user role" },
+      { status: 500 },
     );
   }
 }

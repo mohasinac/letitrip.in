@@ -24,7 +24,7 @@ export default function AuthDemoPage() {
 
   // Demo states
   const [activeTab, setActiveTab] = useState<"overview" | "actions" | "roles">(
-    "overview"
+    "overview",
   );
   const [demoEmail, setDemoEmail] = useState("demo@example.com");
   const [demoPassword, setDemoPassword] = useState("demo123456");
@@ -316,7 +316,7 @@ export default function AuthDemoPage() {
                         <div className="flex items-center space-x-2">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(
-                              user?.role || "user"
+                              user?.role || "user",
                             )}`}
                           >
                             {user?.role?.toUpperCase()}

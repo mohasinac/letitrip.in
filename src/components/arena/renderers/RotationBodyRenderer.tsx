@@ -47,12 +47,12 @@ export default function RotationBodyRenderer({
       sides === 5
         ? "pentagon"
         : sides === 6
-        ? "hexagon"
-        : sides === 8
-        ? "octagon"
-        : "hexagon",
+          ? "hexagon"
+          : sides === 8
+            ? "octagon"
+            : "hexagon",
       { x, y },
-      radius
+      radius,
     );
   }
 
@@ -60,17 +60,17 @@ export default function RotationBodyRenderer({
   const radius = rotationBody.radius
     ? rotationBody.radius * scale
     : rotationBody.width
-    ? Math.min(
-        (rotationBody.width || 10) * scale,
-        (rotationBody.height || 10) * scale
-      ) / 2
-    : 5 * scale;
+      ? Math.min(
+          (rotationBody.width || 10) * scale,
+          (rotationBody.height || 10) * scale,
+        ) / 2
+      : 5 * scale;
 
   const arrows = generateRotationArrows(
     { x, y },
     radius,
     rotationBody.direction,
-    8
+    8,
   );
 
   return (

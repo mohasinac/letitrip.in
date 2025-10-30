@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -39,9 +39,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Build query
-    let query = adminDb
-      .collection("seller_sales")
-      .where("sellerId", "==", uid);
+    let query = adminDb.collection("seller_sales").where("sellerId", "==", uid);
 
     // Filter by status
     if (status) {
@@ -71,7 +69,7 @@ export async function GET(request: NextRequest) {
       filteredSales = sales.filter(
         (sale: any) =>
           sale.name?.toLowerCase().includes(searchLower) ||
-          sale.description?.toLowerCase().includes(searchLower)
+          sale.description?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -83,7 +81,7 @@ export async function GET(request: NextRequest) {
     console.error("Error listing sales:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to list sales" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -99,7 +97,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -113,7 +111,7 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -127,7 +125,7 @@ export async function POST(request: NextRequest) {
       if (!body[field]) {
         return NextResponse.json(
           { success: false, error: `Missing required field: ${field}` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -139,14 +137,14 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Invalid discount type. Must be 'percentage' or 'fixed'",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate applyTo
     if (
       !["all", "specific_products", "specific_categories"].includes(
-        body.applyTo
+        body.applyTo,
       )
     ) {
       return NextResponse.json(
@@ -155,28 +153,36 @@ export async function POST(request: NextRequest) {
           error:
             "Invalid applyTo value. Must be 'all', 'specific_products', or 'specific_categories'",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate that products/categories are provided when needed
-    if (body.applyTo === "specific_products" && !body.applicableProducts?.length) {
+    if (
+      body.applyTo === "specific_products" &&
+      !body.applicableProducts?.length
+    ) {
       return NextResponse.json(
         {
           success: false,
-          error: "Products must be specified when applyTo is 'specific_products'",
+          error:
+            "Products must be specified when applyTo is 'specific_products'",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (body.applyTo === "specific_categories" && !body.applicableCategories?.length) {
+    if (
+      body.applyTo === "specific_categories" &&
+      !body.applicableCategories?.length
+    ) {
       return NextResponse.json(
         {
           success: false,
-          error: "Categories must be specified when applyTo is 'specific_categories'",
+          error:
+            "Categories must be specified when applyTo is 'specific_categories'",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -193,7 +199,9 @@ export async function POST(request: NextRequest) {
       applicableCategories: body.applicableCategories || [],
       enableFreeShipping: body.enableFreeShipping || false,
       isPermanent: body.isPermanent || false,
-      startDate: body.startDate ? Timestamp.fromDate(new Date(body.startDate)) : now,
+      startDate: body.startDate
+        ? Timestamp.fromDate(new Date(body.startDate))
+        : now,
       endDate: body.endDate ? Timestamp.fromDate(new Date(body.endDate)) : null,
       status: body.status || "active",
       stats: {
@@ -224,13 +232,13 @@ export async function POST(request: NextRequest) {
         data: createdSale,
         message: "Sale created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating sale:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to create sale" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

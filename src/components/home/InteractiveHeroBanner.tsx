@@ -55,7 +55,7 @@ const InteractiveHeroBanner: React.FC = () => {
 
           if (allProductIds.size > 0) {
             const productsRes = await fetch(
-              `/api/admin/products?ids=${Array.from(allProductIds).join(",")}`
+              `/api/admin/products?ids=${Array.from(allProductIds).join(",")}`,
             );
             const productsData = await productsRes.json();
 

@@ -30,7 +30,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -57,7 +57,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               leftIcon && "pl-10",
               rightIcon && "pr-10",
               error && "border-error focus:ring-error",
-              className
+              className,
             )}
             {...props}
           />
@@ -73,7 +73,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {helperText && !error && <p className="form-help mt-1">{helperText}</p>}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

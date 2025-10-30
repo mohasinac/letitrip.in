@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -81,14 +81,14 @@ export async function GET(request: NextRequest) {
     if (error.code === "auth/id-token-expired") {
       return NextResponse.json(
         { success: false, error: "Token expired - Please login again" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (error.code === "auth/argument-error") {
       return NextResponse.json(
         { success: false, error: "Invalid token format" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch shop data",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -146,7 +146,8 @@ export async function POST(request: NextRequest) {
 
     // Update only provided fields
     if (body.shopName !== undefined) updateData.shopName = body.shopName;
-    if (body.description !== undefined) updateData.description = body.description;
+    if (body.description !== undefined)
+      updateData.description = body.description;
     if (body.logo !== undefined) updateData.logo = body.logo;
     if (body.coverImage !== undefined) updateData.coverImage = body.coverImage;
     if (body.addresses !== undefined) updateData.addresses = body.addresses;
@@ -163,12 +164,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to Firestore
-    await db.collection("sellers").doc(sellerId).set(updateData, { merge: true });
+    await db
+      .collection("sellers")
+      .doc(sellerId)
+      .set(updateData, { merge: true });
 
     return NextResponse.json({
       success: true,
       data: updateData,
-      message: shopDoc.exists ? "Shop updated successfully" : "Shop created successfully",
+      message: shopDoc.exists
+        ? "Shop updated successfully"
+        : "Shop created successfully",
     });
   } catch (error: any) {
     console.error("Error saving shop data:", error);
@@ -179,7 +185,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to save shop data",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

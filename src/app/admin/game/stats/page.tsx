@@ -63,7 +63,7 @@ export default function GameStatsPage() {
         defense: acc.defense + bey.typeDistribution.defense,
         stamina: acc.stamina + bey.typeDistribution.stamina,
       }),
-      { attack: 0, defense: 0, stamina: 0 }
+      { attack: 0, defense: 0, stamina: 0 },
     );
 
     return {
@@ -74,10 +74,13 @@ export default function GameStatsPage() {
   };
 
   const stats = calculateAverageStats();
-  const typeCount = beyblades.reduce((acc, bey) => {
-    acc[bey.type] = (acc[bey.type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const typeCount = beyblades.reduce(
+    (acc, bey) => {
+      acc[bey.type] = (acc[bey.type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   const arenaStats = {
     total: arenas.length,
@@ -264,7 +267,7 @@ export default function GameStatsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${getTypeColor(
-                              beyblade.type
+                              beyblade.type,
                             )}`}
                           >
                             {beyblade.type}

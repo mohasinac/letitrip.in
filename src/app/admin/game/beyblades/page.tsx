@@ -59,19 +59,19 @@ export default function BeybladesPage() {
 
   const handleImageUploaded = (beybladeId: string, imageUrl: string) => {
     setBeyblades((prev) =>
-      prev.map((b) => (b.id === beybladeId ? { ...b, imageUrl } : b))
+      prev.map((b) => (b.id === beybladeId ? { ...b, imageUrl } : b)),
     );
     setEditingImageFor(null);
   };
 
   const handlePointsOfContactUpdated = (
     beybladeId: string,
-    points: BeybladeStats["pointsOfContact"]
+    points: BeybladeStats["pointsOfContact"],
   ) => {
     setBeyblades((prev) =>
       prev.map((b) =>
-        b.id === beybladeId ? { ...b, pointsOfContact: points } : b
-      )
+        b.id === beybladeId ? { ...b, pointsOfContact: points } : b,
+      ),
     );
   };
 
@@ -191,7 +191,7 @@ export default function BeybladesPage() {
                       <div className="flex items-center gap-2 mt-1">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${getTypeColor(
-                            beyblade.type
+                            beyblade.type,
                           )}`}
                         >
                           {beyblade.type}
@@ -218,7 +218,7 @@ export default function BeybladesPage() {
                         // Open preview modal or navigate to preview page
                         window.open(
                           `/preview/beyblade/${beyblade.id}`,
-                          "_blank"
+                          "_blank",
                         );
                       }}
                       className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
@@ -391,8 +391,8 @@ export default function BeybladesPage() {
                       Max Damage:{" "}
                       {Math.max(
                         ...beyblade.pointsOfContact.map(
-                          (p) => p.damageMultiplier
-                        )
+                          (p) => p.damageMultiplier,
+                        ),
                       ).toFixed(1)}
                       x
                     </div>

@@ -38,7 +38,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <div
@@ -47,14 +47,14 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           variantClasses[variant],
           paddingClasses[padding],
           hover && "card-hover",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </div>
     );
-  }
+  },
 );
 
 Card.displayName = "Card";
@@ -68,7 +68,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
 CardHeader.displayName = "CardHeader";
@@ -83,7 +83,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
         {children}
       </h3>
     );
-  }
+  },
 );
 
 CardTitle.displayName = "CardTitle";
@@ -114,7 +114,7 @@ export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
 CardContent.displayName = "CardContent";
@@ -132,7 +132,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
 CardFooter.displayName = "CardFooter";

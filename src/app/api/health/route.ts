@@ -1,4 +1,4 @@
-import { createApiHandler, successResponse } from '@/lib/api';
+import { createApiHandler, successResponse } from "@/lib/api";
 
 /**
  * Health Check Endpoint
@@ -7,9 +7,9 @@ import { createApiHandler, successResponse } from '@/lib/api';
  */
 export const GET = createApiHandler(async (request) => {
   return successResponse({
-    status: 'healthy',
+    status: "healthy",
     timestamp: new Date().toISOString(),
-    service: 'beyblade-battle',
-    version: '1.0.0',
+    service: "beyblade-battle",
+    version: "1.0.0",
   });
 });

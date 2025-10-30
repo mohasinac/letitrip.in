@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -55,22 +55,25 @@ export async function POST(request: NextRequest) {
     if (!files || files.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!slug) {
       return NextResponse.json(
         { success: false, error: "Product slug is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate slug format (must start with 'buy-')
     if (!slug.startsWith("buy-")) {
       return NextResponse.json(
-        { success: false, error: "Invalid slug format - must start with 'buy-'" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Invalid slug format - must start with 'buy-'",
+        },
+        { status: 400 },
       );
     }
 
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
     // Upload each file
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      
+
       console.log(`Processing file ${i + 1}/${files.length}:`, {
         name: file?.name,
         size: file?.size,
@@ -94,7 +97,7 @@ export async function POST(request: NextRequest) {
         hasTypeProperty: "type" in file,
         allProperties: Object.getOwnPropertyNames(file || {}),
       });
-      
+
       // Validate file size
       const maxSize = type === "video" ? 20 * 1024 * 1024 : 5 * 1024 * 1024; // 20MB for videos, 5MB for images
       if (file.size > maxSize) {
@@ -103,7 +106,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: `File ${file.name} exceeds maximum size of ${type === "video" ? "20MB" : "5MB"}`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -111,24 +114,25 @@ export async function POST(request: NextRequest) {
       if (type === "image" && file.type && !file.type.startsWith("image/")) {
         return NextResponse.json(
           { success: false, error: `File ${file.name} is not an image` },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       if (type === "video" && file.type && !file.type.startsWith("video/")) {
         return NextResponse.json(
           { success: false, error: `File ${file.name} is not a video` },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       // Generate file path
       const timestamp = Date.now();
       const extension = file.name.split(".").pop();
-      const fileName = type === "image" 
-        ? `img${i + 1}-${timestamp}.${extension}`
-        : `v${i + 1}-${timestamp}.${extension}`;
-      
+      const fileName =
+        type === "image"
+          ? `img${i + 1}-${timestamp}.${extension}`
+          : `v${i + 1}-${timestamp}.${extension}`;
+
       const filePath = `sellers/${sellerId}/products/${slug}/${fileName}`;
 
       // Convert File to Buffer
@@ -175,14 +179,14 @@ export async function POST(request: NextRequest) {
     if (error.code === "auth/id-token-expired") {
       return NextResponse.json(
         { success: false, error: "Token expired - Please login again" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (error.code === "auth/argument-error") {
       return NextResponse.json(
         { success: false, error: "Invalid token format" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -192,7 +196,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to upload media",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

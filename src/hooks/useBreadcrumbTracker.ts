@@ -16,7 +16,7 @@ interface UseBreadcrumbTrackerOptions {
  */
 export const useBreadcrumbTracker = (
   breadcrumbItems: BreadcrumbItem[],
-  options: UseBreadcrumbTrackerOptions = {}
+  options: UseBreadcrumbTrackerOptions = {},
 ) => {
   const {
     enabled = true,
@@ -43,9 +43,15 @@ export const useBreadcrumbTracker = (
     items.push(...breadcrumbItems);
 
     return items;
-  }, [breadcrumbItems.length, enabled, includeHome, homeLabel, homeHref, 
-      // Stringify items to compare by value, not reference
-      JSON.stringify(breadcrumbItems)]);
+  }, [
+    breadcrumbItems.length,
+    enabled,
+    includeHome,
+    homeLabel,
+    homeHref,
+    // Stringify items to compare by value, not reference
+    JSON.stringify(breadcrumbItems),
+  ]);
 
   useEffect(() => {
     if (!enabled || memoizedItems.length === 0) return;
@@ -59,7 +65,7 @@ export const useBreadcrumbTracker = (
  */
 export const buildCategoryBreadcrumb = (
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): BreadcrumbItem[] => {
   const breadcrumb: BreadcrumbItem[] = [];
   let current: Category | undefined = category;
@@ -87,7 +93,7 @@ export const buildCategoryBreadcrumb = (
 export const buildProductBreadcrumb = (
   productName: string,
   category: Category | undefined,
-  allCategories: Category[]
+  allCategories: Category[],
 ): BreadcrumbItem[] => {
   const breadcrumb: BreadcrumbItem[] = [];
 
@@ -131,9 +137,7 @@ export const buildPathBreadcrumb = (pathname: string): BreadcrumbItem[] => {
     return [];
   }
 
-  const segments = pathname
-    .split("/")
-    .filter((segment) => segment.length > 0);
+  const segments = pathname.split("/").filter((segment) => segment.length > 0);
 
   return segments.map((segment, index) => {
     const href = "/" + segments.slice(0, index + 1).join("/");

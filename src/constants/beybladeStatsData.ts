@@ -3,15 +3,15 @@
  * Each Beyblade has unique characteristics, special moves, and type distributions
  */
 
-import { BeybladeStats } from '@/types/beybladeStats';
+import { BeybladeStats } from "@/types/beybladeStats";
 
 export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
-  'dragoon-gt': {
-    id: 'dragoon-gt',
-    displayName: 'Dragoon GT',
-    fileName: 'dragoon GT.svg',
-    type: 'attack',
-    spinDirection: 'left',
+  "dragoon-gt": {
+    id: "dragoon-gt",
+    displayName: "Dragoon GT",
+    fileName: "dragoon GT.svg",
+    type: "attack",
+    spinDirection: "left",
     mass: 18,
     radius: 42,
     actualSize: 40,
@@ -30,9 +30,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 240, damageMultiplier: 1.5, width: 25 },
     ],
     specialMove: {
-      id: 'dragon-storm',
-      name: 'Dragon Storm',
-      description: 'Unleash a devastating spinning storm with 1.5x damage and increased speed for 3 seconds',
+      id: "dragon-storm",
+      name: "Dragon Storm",
+      description:
+        "Unleash a devastating spinning storm with 1.5x damage and increased speed for 3 seconds",
       powerCost: 100,
       flags: {
         damageMultiplier: 1.5,
@@ -44,12 +45,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1.5,
   },
 
-  'dran-buster': {
-    id: 'dran-buster',
-    displayName: 'Dran Buster',
-    fileName: 'dran buster.svg',
-    type: 'attack',
-    spinDirection: 'right',
+  "dran-buster": {
+    id: "dran-buster",
+    displayName: "Dran Buster",
+    fileName: "dran buster.svg",
+    type: "attack",
+    spinDirection: "right",
     mass: 22,
     radius: 44,
     actualSize: 42,
@@ -69,9 +70,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 270, damageMultiplier: 1.6, width: 30 },
     ],
     specialMove: {
-      id: 'buster-crash',
-      name: 'Buster Crash',
-      description: 'Massive impact attack dealing 2x damage with knockback immunity for 2.5 seconds',
+      id: "buster-crash",
+      name: "Buster Crash",
+      description:
+        "Massive impact attack dealing 2x damage with knockback immunity for 2.5 seconds",
       powerCost: 100,
       flags: {
         damageMultiplier: 2.0,
@@ -84,12 +86,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1,
   },
 
-  'dranzer-gt': {
-    id: 'dranzer-gt',
-    displayName: 'Dranzer GT',
-    fileName: 'dranzer GT.svg',
-    type: 'balanced',
-    spinDirection: 'right',
+  "dranzer-gt": {
+    id: "dranzer-gt",
+    displayName: "Dranzer GT",
+    fileName: "dranzer GT.svg",
+    type: "balanced",
+    spinDirection: "right",
     mass: 20,
     radius: 40,
     actualSize: 38,
@@ -109,9 +111,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 315, damageMultiplier: 1.4, width: 25 },
     ],
     specialMove: {
-      id: 'flame-shield',
-      name: 'Flame Shield',
-      description: 'Creates a fiery barrier reflecting 30% damage back and reducing incoming damage by 40% for 4 seconds',
+      id: "flame-shield",
+      name: "Flame Shield",
+      description:
+        "Creates a fiery barrier reflecting 30% damage back and reducing incoming damage by 40% for 4 seconds",
       powerCost: 100,
       flags: {
         damageReduction: 0.4,
@@ -123,12 +126,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1,
   },
 
-  'hells-hammer': {
-    id: 'hells-hammer',
-    displayName: 'Hells Hammer',
-    fileName: 'hells hammer.svg',
-    type: 'defense',
-    spinDirection: 'right',
+  "hells-hammer": {
+    id: "hells-hammer",
+    displayName: "Hells Hammer",
+    fileName: "hells hammer.svg",
+    type: "defense",
+    spinDirection: "right",
     mass: 25, // Heaviest
     radius: 46,
     actualSize: 44,
@@ -146,9 +149,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 180, damageMultiplier: 1.7, width: 40 },
     ],
     specialMove: {
-      id: 'iron-fortress',
-      name: 'Iron Fortress',
-      description: 'Become an immovable fortress taking 50% less damage and immune to all knockbacks for 5 seconds',
+      id: "iron-fortress",
+      name: "Iron Fortress",
+      description:
+        "Become an immovable fortress taking 50% less damage and immune to all knockbacks for 5 seconds",
       powerCost: 100,
       flags: {
         damageReduction: 0.5,
@@ -160,12 +164,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1,
   },
 
-  'meteo': {
-    id: 'meteo',
-    displayName: 'Meteo L-Drago',
-    fileName: 'meteo.svg',
-    type: 'stamina',
-    spinDirection: 'left',
+  meteo: {
+    id: "meteo",
+    displayName: "Meteo L-Drago",
+    fileName: "meteo.svg",
+    type: "stamina",
+    spinDirection: "left",
     mass: 17,
     radius: 41,
     actualSize: 39,
@@ -184,9 +188,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 300, damageMultiplier: 1.3, width: 40 },
     ],
     specialMove: {
-      id: 'absorb-mode',
-      name: 'Absorb Mode',
-      description: 'Activate rubber absorption increasing spin steal by 2x and healing 15 spin/sec for 3 seconds',
+      id: "absorb-mode",
+      name: "Absorb Mode",
+      description:
+        "Activate rubber absorption increasing spin steal by 2x and healing 15 spin/sec for 3 seconds",
       powerCost: 100,
       flags: {
         spinStealMultiplier: 2.0,
@@ -198,12 +203,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1,
   },
 
-  'pegasus': {
-    id: 'pegasus',
-    displayName: 'Storm Pegasus',
-    fileName: 'pegasus.svg',
-    type: 'attack',
-    spinDirection: 'right',
+  pegasus: {
+    id: "pegasus",
+    displayName: "Storm Pegasus",
+    fileName: "pegasus.svg",
+    type: "attack",
+    spinDirection: "right",
     mass: 19,
     radius: 40,
     actualSize: 38,
@@ -224,9 +229,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 288, damageMultiplier: 1.5, width: 25 },
     ],
     specialMove: {
-      id: 'pegasus-rush',
-      name: 'Pegasus Star Blast',
-      description: 'Lightning-fast rush attack with 1.6x damage and 1.5x speed for 3 seconds',
+      id: "pegasus-rush",
+      name: "Pegasus Star Blast",
+      description:
+        "Lightning-fast rush attack with 1.6x damage and 1.5x speed for 3 seconds",
       powerCost: 100,
       flags: {
         damageMultiplier: 1.6,
@@ -238,12 +244,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1.5,
   },
 
-  'spriggan': {
-    id: 'spriggan',
-    displayName: 'Legend Spriggan',
-    fileName: 'spriggan.svg',
-    type: 'balanced',
-    spinDirection: 'left',
+  spriggan: {
+    id: "spriggan",
+    displayName: "Legend Spriggan",
+    fileName: "spriggan.svg",
+    type: "balanced",
+    spinDirection: "left",
     mass: 21,
     radius: 43,
     actualSize: 41,
@@ -265,9 +271,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 330, damageMultiplier: 1.7, width: 32 },
     ],
     specialMove: {
-      id: 'counter-break',
-      name: 'Counter Break',
-      description: 'After taking a hit, become invincible and perform a devastating loop counter-attack for 2 seconds',
+      id: "counter-break",
+      name: "Counter Break",
+      description:
+        "After taking a hit, become invincible and perform a devastating loop counter-attack for 2 seconds",
       powerCost: 100,
       flags: {
         damageImmune: true,
@@ -281,12 +288,12 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
     speed: 1,
   },
 
-  'valkyrie': {
-    id: 'valkyrie',
-    displayName: 'Victory Valkyrie',
-    fileName: 'valkyrie.svg',
-    type: 'attack',
-    spinDirection: 'right',
+  valkyrie: {
+    id: "valkyrie",
+    displayName: "Victory Valkyrie",
+    fileName: "valkyrie.svg",
+    type: "attack",
+    spinDirection: "right",
     mass: 20,
     radius: 41,
     actualSize: 39,
@@ -305,9 +312,10 @@ export const DEFAULT_BEYBLADE_STATS: Record<string, BeybladeStats> = {
       { angle: 240, damageMultiplier: 1.7, width: 28 },
     ],
     specialMove: {
-      id: 'victory-rush',
-      name: 'Victory Rush',
-      description: 'Unleash maximum power dealing 2.2x damage with extreme speed boost for 2.5 seconds',
+      id: "victory-rush",
+      name: "Victory Rush",
+      description:
+        "Unleash maximum power dealing 2.2x damage with extreme speed boost for 2.5 seconds",
       powerCost: 100, // Requires full power bar
       flags: {
         damageMultiplier: 2.2,
@@ -337,6 +345,10 @@ export function getAllBeybladeIds(): string[] {
 /**
  * Get Beyblades by type
  */
-export function getBeybladesByType(type: 'attack' | 'defense' | 'stamina' | 'balanced'): BeybladeStats[] {
-  return Object.values(DEFAULT_BEYBLADE_STATS).filter(bey => bey.type === type);
+export function getBeybladesByType(
+  type: "attack" | "defense" | "stamina" | "balanced",
+): BeybladeStats[] {
+  return Object.values(DEFAULT_BEYBLADE_STATS).filter(
+    (bey) => bey.type === type,
+  );
 }

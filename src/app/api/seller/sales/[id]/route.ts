@@ -8,7 +8,7 @@ import { Timestamp } from "firebase-admin/firestore";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -16,7 +16,7 @@ export async function GET(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function GET(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function GET(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Sale not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(
     if (role !== "admin" && saleData?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your sale" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function GET(
     console.error("Error fetching sale:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch sale" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -88,7 +88,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -96,7 +96,7 @@ export async function PUT(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -110,7 +110,7 @@ export async function PUT(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -126,7 +126,7 @@ export async function PUT(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Sale not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -136,7 +136,7 @@ export async function PUT(
     if (role !== "admin" && existingSale?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your sale" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -147,7 +147,8 @@ export async function PUT(
 
     // Only update fields that are provided
     if (body.name !== undefined) updateData.name = body.name;
-    if (body.description !== undefined) updateData.description = body.description;
+    if (body.description !== undefined)
+      updateData.description = body.description;
     if (body.discountType !== undefined) {
       if (!["percentage", "fixed"].includes(body.discountType)) {
         return NextResponse.json(
@@ -155,7 +156,7 @@ export async function PUT(
             success: false,
             error: "Invalid discount type. Must be 'percentage' or 'fixed'",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       updateData.discountType = body.discountType;
@@ -166,7 +167,7 @@ export async function PUT(
     if (body.applyTo !== undefined) {
       if (
         !["all", "specific_products", "specific_categories"].includes(
-          body.applyTo
+          body.applyTo,
         )
       ) {
         return NextResponse.json(
@@ -175,7 +176,7 @@ export async function PUT(
             error:
               "Invalid applyTo value. Must be 'all', 'specific_products', or 'specific_categories'",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       updateData.applyTo = body.applyTo;
@@ -229,7 +230,7 @@ export async function PUT(
     console.error("Error updating sale:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update sale" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -240,7 +241,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // Verify authentication
@@ -248,7 +249,7 @@ export async function DELETE(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -262,7 +263,7 @@ export async function DELETE(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -277,7 +278,7 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Sale not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -287,7 +288,7 @@ export async function DELETE(
     if (role !== "admin" && saleData?.sellerId !== uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized: Not your sale" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -302,7 +303,7 @@ export async function DELETE(
     console.error("Error deleting sale:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to delete sale" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

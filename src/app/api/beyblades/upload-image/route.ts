@@ -3,35 +3,44 @@
  * POST /api/beyblades/upload-image
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { storageService } from '@/lib/storage/firebase';
+import { NextRequest, NextResponse } from "next/server";
+import { storageService } from "@/lib/storage/firebase";
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const beybladeId = formData.get('beybladeId') as string;
+    const file = formData.get("file") as File;
+    const beybladeId = formData.get("beybladeId") as string;
 
     if (!file) {
       return NextResponse.json(
-        { success: false, error: 'No file provided' },
-        { status: 400 }
+        { success: false, error: "No file provided" },
+        { status: 400 },
       );
     }
 
     if (!beybladeId) {
       return NextResponse.json(
-        { success: false, error: 'No Beyblade ID provided' },
-        { status: 400 }
+        { success: false, error: "No Beyblade ID provided" },
+        { status: 400 },
       );
     }
 
     // Validate file type
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'];
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/svg+xml",
+      "image/webp",
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid file type. Only PNG, JPG, SVG, and WebP are allowed.' },
-        { status: 400 }
+        {
+          success: false,
+          error: "Invalid file type. Only PNG, JPG, SVG, and WebP are allowed.",
+        },
+        { status: 400 },
       );
     }
 
@@ -39,8 +48,8 @@ export async function POST(request: NextRequest) {
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
-        { success: false, error: 'File size exceeds 10MB limit' },
-        { status: 400 }
+        { success: false, error: "File size exceeds 10MB limit" },
+        { status: 400 },
       );
     }
 
@@ -50,16 +59,16 @@ export async function POST(request: NextRequest) {
 
     // Upload to Firebase Storage
     const filename = `beyblade-${beybladeId}-${Date.now()}.png`;
-    const folder = 'beyblades';
-    const userId = 'admin'; // TODO: Get from session/auth
+    const folder = "beyblades";
+    const userId = "admin"; // TODO: Get from session/auth
 
     const metadata = await storageService.uploadFile(
       buffer,
       filename,
       folder,
       userId,
-      'image/png',
-      true // Make public
+      "image/png",
+      true, // Make public
     );
 
     return NextResponse.json({
@@ -68,13 +77,14 @@ export async function POST(request: NextRequest) {
       metadata,
     });
   } catch (error) {
-    console.error('Error uploading Beyblade image:', error);
+    console.error("Error uploading Beyblade image:", error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to upload image',
+        error:
+          error instanceof Error ? error.message : "Failed to upload image",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

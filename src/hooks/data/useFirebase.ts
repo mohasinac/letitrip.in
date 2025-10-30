@@ -3,27 +3,29 @@
  * Custom hooks for real-time data fetching with fallbacks
  */
 
-import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+import { useState, useEffect } from "react";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
   onSnapshot,
   doc,
   getDoc,
-  getDocs
-} from 'firebase/firestore';
-import { db } from '@/lib/database/config';
-import { Product, Auction, User } from '@/lib/database/services';
+  getDocs,
+} from "firebase/firestore";
+import { db } from "@/lib/database/config";
+import { Product, Auction, User } from "@/lib/database/services";
 
 // Products Hook
-export function useProducts(filters: {
-  category?: string;
-  featured?: boolean;
-  limit?: number;
-} = {}) {
+export function useProducts(
+  filters: {
+    category?: string;
+    featured?: boolean;
+    limit?: number;
+  } = {},
+) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,17 +36,21 @@ export function useProducts(filters: {
         setLoading(true);
         setError(null);
 
-        let q = query(collection(db, 'products'));
+        let q = query(collection(db, "products"));
 
         // Apply filters
         if (filters.category) {
-          q = query(q, where('category', '==', filters.category));
+          q = query(q, where("category", "==", filters.category));
         }
         if (filters.featured !== undefined) {
-          q = query(q, where('isFeatured', '==', filters.featured));
+          q = query(q, where("isFeatured", "==", filters.featured));
         }
 
-        q = query(q, where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+        q = query(
+          q,
+          where("status", "==", "active"),
+          orderBy("createdAt", "desc"),
+        );
 
         if (filters.limit) {
           q = query(q, limit(filters.limit));
@@ -54,30 +60,30 @@ export function useProducts(filters: {
         const unsubscribe = onSnapshot(
           q,
           (snapshot) => {
-            const productsData = snapshot.docs.map(doc => {
+            const productsData = snapshot.docs.map((doc) => {
               const data = doc.data();
               return {
                 id: doc.id,
                 ...data,
                 createdAt: data.createdAt?.toDate() || new Date(),
-                updatedAt: data.updatedAt?.toDate() || new Date()
+                updatedAt: data.updatedAt?.toDate() || new Date(),
               } as Product;
             });
             setProducts(productsData);
             setLoading(false);
           },
           (err) => {
-            console.error('Firebase products error:', err);
-            setError('Failed to load products from database');
+            console.error("Firebase products error:", err);
+            setError("Failed to load products from database");
             setProducts([]);
             setLoading(false);
-          }
+          },
         );
 
         return unsubscribe;
       } catch (err) {
-        console.error('Products hook error:', err);
-        setError('Failed to load products');
+        console.error("Products hook error:", err);
+        setError("Failed to load products");
         setLoading(false);
       }
     };
@@ -110,7 +116,7 @@ export function useProduct(productId: string) {
         setLoading(true);
         setError(null);
 
-        const productRef = doc(db, 'products', productId);
+        const productRef = doc(db, "products", productId);
         const unsubscribe = onSnapshot(
           productRef,
           (doc) => {
@@ -120,7 +126,7 @@ export function useProduct(productId: string) {
                 id: doc.id,
                 ...data,
                 createdAt: data.createdAt?.toDate() || new Date(),
-                updatedAt: data.updatedAt?.toDate() || new Date()
+                updatedAt: data.updatedAt?.toDate() || new Date(),
               } as Product);
             } else {
               setProduct(null);
@@ -128,17 +134,17 @@ export function useProduct(productId: string) {
             setLoading(false);
           },
           (err) => {
-            console.error('Firebase product error:', err);
-            setError('Failed to load product from database');
+            console.error("Firebase product error:", err);
+            setError("Failed to load product from database");
             setProduct(null);
             setLoading(false);
-          }
+          },
         );
 
         return unsubscribe;
       } catch (err) {
-        console.error('Product hook error:', err);
-        setError('Failed to load product');
+        console.error("Product hook error:", err);
+        setError("Failed to load product");
         setLoading(false);
       }
     };
@@ -155,11 +161,13 @@ export function useProduct(productId: string) {
 }
 
 // Auctions Hook
-export function useAuctions(filters: {
-  status?: string;
-  category?: string;
-  limit?: number;
-} = {}) {
+export function useAuctions(
+  filters: {
+    status?: string;
+    category?: string;
+    limit?: number;
+  } = {},
+) {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -170,17 +178,17 @@ export function useAuctions(filters: {
         setLoading(true);
         setError(null);
 
-        let q = query(collection(db, 'auctions'));
+        let q = query(collection(db, "auctions"));
 
         // Apply filters
-        if (filters.status && filters.status !== 'all') {
-          q = query(q, where('status', '==', filters.status));
+        if (filters.status && filters.status !== "all") {
+          q = query(q, where("status", "==", filters.status));
         }
         if (filters.category) {
-          q = query(q, where('category', '==', filters.category));
+          q = query(q, where("category", "==", filters.category));
         }
 
-        q = query(q, orderBy('endTime', 'desc'));
+        q = query(q, orderBy("endTime", "desc"));
 
         if (filters.limit) {
           q = query(q, limit(filters.limit));
@@ -190,31 +198,31 @@ export function useAuctions(filters: {
         const unsubscribe = onSnapshot(
           q,
           (snapshot) => {
-            const auctionsData = snapshot.docs.map(doc => {
+            const auctionsData = snapshot.docs.map((doc) => {
               const data = doc.data();
               return {
                 id: doc.id,
                 ...data,
                 endTime: data.endTime?.toDate() || new Date(),
                 createdAt: data.createdAt?.toDate() || new Date(),
-                updatedAt: data.updatedAt?.toDate() || new Date()
+                updatedAt: data.updatedAt?.toDate() || new Date(),
               } as Auction;
             });
             setAuctions(auctionsData);
             setLoading(false);
           },
           (err) => {
-            console.error('Firebase auctions error:', err);
-            setError('Failed to load auctions from database');
+            console.error("Firebase auctions error:", err);
+            setError("Failed to load auctions from database");
             setAuctions([]);
             setLoading(false);
-          }
+          },
         );
 
         return unsubscribe;
       } catch (err) {
-        console.error('Auctions hook error:', err);
-        setError('Failed to load auctions');
+        console.error("Auctions hook error:", err);
+        setError("Failed to load auctions");
         setLoading(false);
       }
     };
@@ -247,7 +255,7 @@ export function useAuction(auctionId: string) {
         setLoading(true);
         setError(null);
 
-        const auctionRef = doc(db, 'auctions', auctionId);
+        const auctionRef = doc(db, "auctions", auctionId);
         const unsubscribe = onSnapshot(
           auctionRef,
           (doc) => {
@@ -258,7 +266,7 @@ export function useAuction(auctionId: string) {
                 ...data,
                 endTime: data.endTime?.toDate() || new Date(),
                 createdAt: data.createdAt?.toDate() || new Date(),
-                updatedAt: data.updatedAt?.toDate() || new Date()
+                updatedAt: data.updatedAt?.toDate() || new Date(),
               } as Auction);
             } else {
               setAuction(null);
@@ -266,16 +274,16 @@ export function useAuction(auctionId: string) {
             setLoading(false);
           },
           (err) => {
-            console.error('Firebase auction error:', err);
-            setError('Failed to load auction');
+            console.error("Firebase auction error:", err);
+            setError("Failed to load auction");
             setLoading(false);
-          }
+          },
         );
 
         return unsubscribe;
       } catch (err) {
-        console.error('Auction hook error:', err);
-        setError('Failed to load auction');
+        console.error("Auction hook error:", err);
+        setError("Failed to load auction");
         setLoading(false);
       }
     };
@@ -308,18 +316,18 @@ export function useCart(userId: string) {
         setLoading(true);
         setError(null);
 
-        const q = query(collection(db, 'cart'), where('userId', '==', userId));
+        const q = query(collection(db, "cart"), where("userId", "==", userId));
         const unsubscribe = onSnapshot(
           q,
           async (snapshot) => {
-            const cartData = snapshot.docs.map(doc => {
+            const cartData = snapshot.docs.map((doc) => {
               const data = doc.data();
               return {
                 id: doc.id,
                 userId: data.userId,
                 productId: data.productId,
                 quantity: data.quantity,
-                addedAt: data.addedAt?.toDate() || new Date()
+                addedAt: data.addedAt?.toDate() || new Date(),
               };
             });
 
@@ -327,7 +335,9 @@ export function useCart(userId: string) {
             const cartWithProducts = await Promise.all(
               cartData.map(async (item) => {
                 try {
-                  const productDoc = await getDoc(doc(db, 'products', item.productId));
+                  const productDoc = await getDoc(
+                    doc(db, "products", item.productId),
+                  );
                   if (productDoc.exists()) {
                     const productData = productDoc.data();
                     return {
@@ -335,34 +345,36 @@ export function useCart(userId: string) {
                       product: {
                         id: productDoc.id,
                         ...productData,
-                        createdAt: productData.createdAt?.toDate() || new Date(),
-                        updatedAt: productData.updatedAt?.toDate() || new Date()
-                      }
+                        createdAt:
+                          productData.createdAt?.toDate() || new Date(),
+                        updatedAt:
+                          productData.updatedAt?.toDate() || new Date(),
+                      },
                     };
                   }
                   return item;
                 } catch (err) {
-                  console.error('Error fetching product for cart item:', err);
+                  console.error("Error fetching product for cart item:", err);
                   return item;
                 }
-              })
+              }),
             );
 
             setCartItems(cartWithProducts);
             setLoading(false);
           },
           (err) => {
-            console.error('Firebase cart error:', err);
-            setError('Failed to load cart');
+            console.error("Firebase cart error:", err);
+            setError("Failed to load cart");
             setCartItems([]);
             setLoading(false);
-          }
+          },
         );
 
         return unsubscribe;
       } catch (err) {
-        console.error('Cart hook error:', err);
-        setError('Failed to load cart');
+        console.error("Cart hook error:", err);
+        setError("Failed to load cart");
         setLoading(false);
       }
     };

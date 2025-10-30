@@ -37,7 +37,7 @@ export default function ModernFeaturedCategories({
 
   // Filter only featured categories
   const featuredCategories = categories.filter(
-    (cat) => cat.featured && cat.isActive
+    (cat) => cat.featured && cat.isActive,
   );
 
   // If no featured categories, don't render the section
@@ -158,7 +158,7 @@ export default function ModernFeaturedCategories({
                       ? `url(${category.image})`
                       : `linear-gradient(135deg, ${alpha(
                           categoryColor,
-                          0.15
+                          0.15,
                         )} 0%, ${alpha(categoryColor, 0.05)} 100%)`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
@@ -172,7 +172,7 @@ export default function ModernFeaturedCategories({
                       inset: 0,
                       background: `radial-gradient(circle at center, ${alpha(
                         categoryColor,
-                        0.2
+                        0.2,
                       )} 0%, transparent 70%)`,
                     },
                   }}

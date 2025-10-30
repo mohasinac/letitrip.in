@@ -144,12 +144,12 @@ export default function HeroProductSettings() {
                 formData.badge === "Sale"
                   ? ("error" as BadgeColorType)
                   : formData.badge === "New"
-                  ? ("success" as BadgeColorType)
-                  : formData.badge === "Popular"
-                  ? ("warning" as BadgeColorType)
-                  : undefined,
+                    ? ("success" as BadgeColorType)
+                    : formData.badge === "Popular"
+                      ? ("warning" as BadgeColorType)
+                      : undefined,
             }
-          : p
+          : p,
       );
     } else {
       updatedProducts = [
@@ -164,10 +164,10 @@ export default function HeroProductSettings() {
             formData.badge === "Sale"
               ? ("error" as BadgeColorType)
               : formData.badge === "New"
-              ? ("success" as BadgeColorType)
-              : formData.badge === "Popular"
-              ? ("warning" as BadgeColorType)
-              : undefined,
+                ? ("success" as BadgeColorType)
+                : formData.badge === "Popular"
+                  ? ("warning" as BadgeColorType)
+                  : undefined,
         },
       ];
     }

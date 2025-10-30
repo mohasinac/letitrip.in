@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { COOKIE_CONSTANTS } from '@/constants/app';
+import { useEffect, useState, useCallback } from "react";
+import { COOKIE_CONSTANTS } from "@/constants/app";
 
 interface CookieSessionData {
   sessionId: string;
@@ -24,9 +24,9 @@ export const useSession = () => {
   // Fetch session data from API
   const fetchSession = useCallback(async () => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'GET',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "GET",
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -34,7 +34,7 @@ export const useSession = () => {
         setSession(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch session:', error);
+      console.error("Failed to fetch session:", error);
     } finally {
       setLoading(false);
     }
@@ -48,84 +48,86 @@ export const useSession = () => {
   // Update last visited page
   const updateLastVisitedPage = useCallback(async (page: string) => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'update_page',
+          action: "update_page",
           data: { page },
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setSession(prev => prev ? { ...prev, lastVisitedPage: page } : null);
+        setSession((prev) =>
+          prev ? { ...prev, lastVisitedPage: page } : null,
+        );
       }
     } catch (error) {
-      console.error('Failed to update last visited page:', error);
+      console.error("Failed to update last visited page:", error);
     }
   }, []);
 
   // Update cart count
   const updateCartCount = useCallback(async (count: number) => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'update_cart',
+          action: "update_cart",
           data: { count },
         }),
       });
 
       if (response.ok) {
-        setSession(prev => prev ? { ...prev, cartItemCount: count } : null);
+        setSession((prev) => (prev ? { ...prev, cartItemCount: count } : null));
       }
     } catch (error) {
-      console.error('Failed to update cart count:', error);
+      console.error("Failed to update cart count:", error);
     }
   }, []);
 
   // Set user in session
   const setUserInSession = useCallback(async (userId: string) => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'set_user',
+          action: "set_user",
           data: { userId },
         }),
       });
 
       if (response.ok) {
-        setSession(prev => prev ? { ...prev, userId } : null);
+        setSession((prev) => (prev ? { ...prev, userId } : null));
       }
     } catch (error) {
-      console.error('Failed to set user in session:', error);
+      console.error("Failed to set user in session:", error);
     }
   }, []);
 
   // Get last visited page
   const getLastVisitedPage = useCallback(async () => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'get_last_page',
+          action: "get_last_page",
         }),
       });
 
@@ -134,7 +136,7 @@ export const useSession = () => {
         return data.data?.lastVisitedPage || null;
       }
     } catch (error) {
-      console.error('Failed to get last visited page:', error);
+      console.error("Failed to get last visited page:", error);
     }
     return null;
   }, []);
@@ -142,14 +144,14 @@ export const useSession = () => {
   // Get cart count
   const getCartCount = useCallback(async () => {
     try {
-      const response = await fetch('/api/sessions', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'get_cart_count',
+          action: "get_cart_count",
         }),
       });
 
@@ -158,7 +160,7 @@ export const useSession = () => {
         return data.data?.cartCount || 0;
       }
     } catch (error) {
-      console.error('Failed to get cart count:', error);
+      console.error("Failed to get cart count:", error);
     }
     return 0;
   }, []);
@@ -166,13 +168,13 @@ export const useSession = () => {
   // Clear session (logout)
   const clearSession = useCallback(async () => {
     try {
-      await fetch('/api/sessions', {
-        method: 'DELETE',
-        credentials: 'include',
+      await fetch("/api/sessions", {
+        method: "DELETE",
+        credentials: "include",
       });
       setSession(null);
     } catch (error) {
-      console.error('Failed to clear session:', error);
+      console.error("Failed to clear session:", error);
     }
   }, []);
 

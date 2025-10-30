@@ -79,7 +79,7 @@ export default async function CategoriesPage({ params }: PageProps) {
         ({
           id: doc.id,
           ...doc.data(),
-        } as Category)
+        }) as Category,
     );
 
     // If slug provided, find the current category
@@ -111,7 +111,7 @@ export default async function CategoriesPage({ params }: PageProps) {
 
         // Get child categories product count
         const childCategories = allCategories.filter((cat) =>
-          cat.parentIds?.includes(category.id)
+          cat.parentIds?.includes(category.id),
         );
 
         let childProductCount = 0;
@@ -132,7 +132,7 @@ export default async function CategoriesPage({ params }: PageProps) {
           totalProductCount: directProductCount + childProductCount,
           subcategoryCount: childCategories.length,
         };
-      })
+      }),
     );
 
     return (

@@ -1,8 +1,8 @@
 "use server";
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/database/admin';
-import { DATABASE_CONSTANTS } from '@/constants/app';
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminDb } from "@/lib/database/admin";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const CONSENT_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
 
@@ -13,16 +13,20 @@ const CONSENT_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
 export async function GET(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
-      return NextResponse.json({
-        success: false,
-        error: 'No session found',
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No session found",
+        },
+        { status: 404 },
+      );
     }
 
-    const doc = await db.collection(CONSENT_COLLECTION)
+    const doc = await db
+      .collection(CONSENT_COLLECTION)
       .doc(`consent_${sessionId}`)
       .get();
 
@@ -38,11 +42,14 @@ export async function GET(request: NextRequest) {
       data: doc.data(),
     });
   } catch (error) {
-    console.error('Error fetching consent:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch consent',
-    }, { status: 500 });
+    console.error("Error fetching consent:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch consent",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -53,13 +60,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
-      return NextResponse.json({
-        success: false,
-        error: 'No session found',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No session found",
+        },
+        { status: 400 },
+      );
     }
 
     const body = await request.json();
@@ -68,12 +78,14 @@ export async function POST(request: NextRequest) {
     const consentData = {
       sessionId,
       consentGiven,
-      analyticsStorage: analyticsStorage || (consentGiven ? 'granted' : 'denied'),
+      analyticsStorage:
+        analyticsStorage || (consentGiven ? "granted" : "denied"),
       consentDate: consentDate || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    await db.collection(CONSENT_COLLECTION)
+    await db
+      .collection(CONSENT_COLLECTION)
       .doc(`consent_${sessionId}`)
       .set(consentData, { merge: true });
 
@@ -82,11 +94,14 @@ export async function POST(request: NextRequest) {
       data: consentData,
     });
   } catch (error) {
-    console.error('Error saving consent:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to save consent',
-    }, { status: 500 });
+    console.error("Error saving consent:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to save consent",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -97,28 +112,35 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const db = getAdminDb();
-    const sessionId = request.cookies.get('app_session')?.value;
+    const sessionId = request.cookies.get("app_session")?.value;
 
     if (!sessionId) {
-      return NextResponse.json({
-        success: false,
-        error: 'No session found',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No session found",
+        },
+        { status: 400 },
+      );
     }
 
-    await db.collection(CONSENT_COLLECTION)
+    await db
+      .collection(CONSENT_COLLECTION)
       .doc(`consent_${sessionId}`)
       .delete();
 
     return NextResponse.json({
       success: true,
-      message: 'Consent deleted',
+      message: "Consent deleted",
     });
   } catch (error) {
-    console.error('Error deleting consent:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to delete consent',
-    }, { status: 500 });
+    console.error("Error deleting consent:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to delete consent",
+      },
+      { status: 500 },
+    );
   }
 }

@@ -48,7 +48,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       // Detect mobile device
       const isMobile =
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
+          navigator.userAgent,
         );
 
       // Create PixiJS application with WebGL renderer and mobile optimizations
@@ -91,19 +91,19 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       const texturePromises = gameState.beyblades.map(async (beyblade) => {
         try {
           const texture = await Assets.load(
-            `/assets/svg/beyblades/${beyblade.config.fileName}`
+            `/assets/svg/beyblades/${beyblade.config.fileName}`,
           );
           const sprite = new Sprite(texture);
           sprite.anchor.set(0.5);
           beybladeLayer.addChild(sprite);
           beybladeSpritesRef.current.set(
             beyblade.config.fileName.replace(".svg", ""),
-            sprite
+            sprite,
           );
         } catch (error) {
           console.error(
             `Failed to load texture for ${beyblade.config.fileName}:`,
-            error
+            error,
           );
         }
       });
@@ -136,7 +136,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
         y: (clientY - rect.top) * scale,
       };
     },
-    []
+    [],
   );
 
   const handleMouseMove = useCallback(
@@ -145,7 +145,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       const position = getPositionFromEvent(event.clientX, event.clientY);
       if (position) onMouseMove(position);
     },
-    [onMouseMove, getPositionFromEvent]
+    [onMouseMove, getPositionFromEvent],
   );
 
   const handleTouchStart = useCallback(
@@ -156,7 +156,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       const position = getPositionFromEvent(touch.clientX, touch.clientY);
       if (position) onTouchStart(position);
     },
-    [onTouchStart, getPositionFromEvent]
+    [onTouchStart, getPositionFromEvent],
   );
 
   const handleTouchMove = useCallback(
@@ -167,7 +167,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       const position = getPositionFromEvent(touch.clientX, touch.clientY);
       if (position) onTouchMove(position);
     },
-    [onTouchMove, getPositionFromEvent]
+    [onTouchMove, getPositionFromEvent],
   );
 
   const handleTouchEnd = useCallback(
@@ -175,7 +175,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       event.preventDefault();
       if (onTouchEnd) onTouchEnd();
     },
-    [onTouchEnd]
+    [onTouchEnd],
   );
 
   // Render loop
@@ -198,7 +198,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
     // Update beyblade positions and effects
     gameState.beyblades.forEach((beyblade) => {
       const sprite = beybladeSpritesRef.current.get(
-        beyblade.config.fileName.replace(".svg", "")
+        beyblade.config.fileName.replace(".svg", ""),
       );
       if (sprite) {
         sprite.x = beyblade.position.x;
@@ -213,7 +213,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
           graphicsRef.current.effects!,
           beyblade,
           currentTime,
-          theme.palette
+          theme.palette,
         );
       }
     });
@@ -223,7 +223,7 @@ const GameArenaPixi: React.FC<GameArenaProps> = ({
       graphicsRef.current.stadium!,
       gameState,
       theme.palette,
-      currentTime
+      currentTime,
     );
 
     // Draw UI
@@ -284,7 +284,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       graphics.arc(
         stadium.center.x,
@@ -292,7 +292,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.innerRadius,
         endAngle,
         startAngle,
-        true
+        true,
       );
       graphics.fill({ color: 0xfbbf24 });
 
@@ -303,7 +303,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       graphics.arc(
         stadium.center.x,
@@ -311,7 +311,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.outerRadius - wallThickness,
         endAngle,
         startAngle,
-        true
+        true,
       );
       graphics.fill({ color: 0x000000 });
     } else {
@@ -321,7 +321,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       graphics.arc(
         stadium.center.x,
@@ -329,7 +329,7 @@ function drawStadium(container: Container, stadium: any, colors: any) {
         stadium.innerRadius,
         endAngle,
         startAngle,
-        true
+        true,
       );
       graphics.fill({ color: 0xef4444 });
     }
@@ -343,7 +343,7 @@ function drawDynamicStadiumElements(
   container: Container,
   gameState: GameState,
   colors: any,
-  currentTime: number
+  currentTime: number,
 ) {
   container.removeChildren();
 
@@ -356,14 +356,14 @@ function drawDynamicStadiumElements(
       !b.isDead &&
       !b.isOutOfBounds &&
       (!b.normalLoopCooldownEnd ||
-        gameState.gameTime >= b.normalLoopCooldownEnd)
+        gameState.gameTime >= b.normalLoopCooldownEnd),
   );
 
   if (canNormalLoop) {
     graphics.circle(
       stadium.center.x,
       stadium.center.y,
-      stadium.normalLoopRadius
+      stadium.normalLoopRadius,
     );
     graphics.stroke({ width: 3, color: 0x3b82f6, alpha: 0.6 });
   }
@@ -373,14 +373,14 @@ function drawDynamicStadiumElements(
     (b) =>
       !b.isDead &&
       !b.isOutOfBounds &&
-      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd)
+      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd),
   );
 
   if (canChargeDash) {
     graphics.circle(
       stadium.center.x,
       stadium.center.y,
-      stadium.chargeDashRadius
+      stadium.chargeDashRadius,
     );
     graphics.stroke({ width: 4, color: 0x3b82f6, alpha: 0.6 });
   }
@@ -411,7 +411,7 @@ function drawBeybladeEffects(
   container: Container,
   beyblade: GameBeyblade,
   currentTime: number,
-  colors: any
+  colors: any,
 ) {
   const graphics = new Graphics();
 
@@ -424,7 +424,7 @@ function drawBeybladeEffects(
       graphics.circle(
         beyblade.position.x - i * 15,
         beyblade.position.y,
-        beyblade.radius * 0.8
+        beyblade.radius * 0.8,
       );
       graphics.fill({ color: 0x22c55e, alpha: dodgeOpacity * (0.3 / i) });
     }
@@ -439,7 +439,7 @@ function drawBeybladeEffects(
     graphics.circle(
       beyblade.position.x,
       beyblade.position.y,
-      beyblade.radius + 10 + attackProgress * 15
+      beyblade.radius + 10 + attackProgress * 15,
     );
     graphics.stroke({ width: 4, color: 0xfb923c, alpha: attackOpacity * 0.8 });
   }
@@ -463,7 +463,7 @@ function drawUI(
   container: Container,
   gameState: GameState,
   colors: any,
-  currentTime: number
+  currentTime: number,
 ) {
   // Time display
   const timeText = new Text({
@@ -550,7 +550,7 @@ function drawCornerStatsPixi(
   x: number,
   y: number,
   colors: any,
-  isPlayer: boolean
+  isPlayer: boolean,
 ) {
   const width = 100;
   const height = 80;

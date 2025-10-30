@@ -204,7 +204,7 @@ function CouponFormContent() {
       type === "allowed" ? "allowedUserEmails" : "excludedUserEmails";
     handleRestrictionChange(
       field,
-      formData.restrictions[field].filter((e) => e !== email)
+      formData.restrictions[field].filter((e) => e !== email),
     );
   };
 
@@ -471,7 +471,7 @@ function CouponFormContent() {
                     onChange={(e) =>
                       handleChange(
                         "minimumAmount",
-                        parseFloat(e.target.value) || 0
+                        parseFloat(e.target.value) || 0,
                       )
                     }
                     helperText="Minimum cart value required"
@@ -493,7 +493,7 @@ function CouponFormContent() {
                       onChange={(e) =>
                         handleChange(
                           "maximumAmount",
-                          parseFloat(e.target.value) || 0
+                          parseFloat(e.target.value) || 0,
                         )
                       }
                       helperText="Cap the discount amount"
@@ -587,7 +587,7 @@ function CouponFormContent() {
                     onChange={(e) =>
                       handleChange(
                         "maxUsesPerUser",
-                        parseInt(e.target.value) || 0
+                        parseInt(e.target.value) || 0,
                       )
                     }
                     helperText="Times each customer can use this (0 = unlimited)"
@@ -620,12 +620,12 @@ function CouponFormContent() {
                     options={mockProducts}
                     getOptionLabel={(option) => option.name}
                     value={mockProducts.filter((p) =>
-                      formData.applicableProducts.includes(p.id)
+                      formData.applicableProducts.includes(p.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "applicableProducts",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -640,12 +640,12 @@ function CouponFormContent() {
                     options={mockCategories}
                     getOptionLabel={(option) => option.name}
                     value={mockCategories.filter((c) =>
-                      formData.applicableCategories.includes(c.id)
+                      formData.applicableCategories.includes(c.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "applicableCategories",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -667,12 +667,12 @@ function CouponFormContent() {
                     options={mockProducts}
                     getOptionLabel={(option) => option.name}
                     value={mockProducts.filter((p) =>
-                      formData.excludeProducts.includes(p.id)
+                      formData.excludeProducts.includes(p.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "excludeProducts",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -687,12 +687,12 @@ function CouponFormContent() {
                     options={mockCategories}
                     getOptionLabel={(option) => option.name}
                     value={mockCategories.filter((c) =>
-                      formData.excludeCategories.includes(c.id)
+                      formData.excludeCategories.includes(c.id),
                     )}
                     onChange={(e, value) =>
                       handleChange(
                         "excludeCategories",
-                        value.map((v) => v.id)
+                        value.map((v) => v.id),
                       )
                     }
                     renderInput={(params) => (
@@ -720,7 +720,7 @@ function CouponFormContent() {
                           onChange={(e) =>
                             handleRestrictionChange(
                               "firstTimeOnly",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -734,7 +734,7 @@ function CouponFormContent() {
                           onChange={(e) =>
                             handleRestrictionChange(
                               "newCustomersOnly",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -748,7 +748,7 @@ function CouponFormContent() {
                           onChange={(e) =>
                             handleRestrictionChange(
                               "existingCustomersOnly",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -774,7 +774,7 @@ function CouponFormContent() {
                     onChange={(e) =>
                       handleRestrictionChange(
                         "minQuantity",
-                        parseInt(e.target.value) || 0
+                        parseInt(e.target.value) || 0,
                       )
                     }
                     helperText="Minimum items in cart"
@@ -790,7 +790,7 @@ function CouponFormContent() {
                     onChange={(e) =>
                       handleRestrictionChange(
                         "maxQuantity",
-                        parseInt(e.target.value) || 0
+                        parseInt(e.target.value) || 0,
                       )
                     }
                     helperText="Maximum items in cart"
@@ -807,7 +807,7 @@ function CouponFormContent() {
                       control={
                         <Checkbox
                           checked={formData.restrictions.allowedPaymentMethods?.includes(
-                            "cod"
+                            "cod",
                           )}
                           onChange={(e) => {
                             const methods =
@@ -816,7 +816,7 @@ function CouponFormContent() {
                               "allowedPaymentMethods",
                               e.target.checked
                                 ? [...methods, "cod"]
-                                : methods.filter((m) => m !== "cod")
+                                : methods.filter((m) => m !== "cod"),
                             );
                           }}
                         />
@@ -827,7 +827,7 @@ function CouponFormContent() {
                       control={
                         <Checkbox
                           checked={formData.restrictions.allowedPaymentMethods?.includes(
-                            "prepaid"
+                            "prepaid",
                           )}
                           onChange={(e) => {
                             const methods =
@@ -836,7 +836,7 @@ function CouponFormContent() {
                               "allowedPaymentMethods",
                               e.target.checked
                                 ? [...methods, "prepaid"]
-                                : methods.filter((m) => m !== "prepaid")
+                                : methods.filter((m) => m !== "prepaid"),
                             );
                           }}
                         />

@@ -2,7 +2,13 @@
  * Navigation utilities for the refactored route structure
  */
 
-import { ACCOUNT_ROUTES, SHOP_ROUTES, PUBLIC_ROUTES, SELLER_ROUTES, ADMIN_ROUTES } from "@/constants/routes";
+import {
+  ACCOUNT_ROUTES,
+  SHOP_ROUTES,
+  PUBLIC_ROUTES,
+  SELLER_ROUTES,
+  ADMIN_ROUTES,
+} from "@/constants/routes";
 
 export interface NavigationItem {
   label: string;
@@ -315,15 +321,13 @@ export const getAdminNavigation = (): NavigationItem[] => [
 // Breadcrumb generation
 export const generateBreadcrumbs = (pathname: string): NavigationItem[] => {
   const segments = pathname.split("/").filter(Boolean);
-  const breadcrumbs: NavigationItem[] = [
-    { label: "Home", href: "/" }
-  ];
+  const breadcrumbs: NavigationItem[] = [{ label: "Home", href: "/" }];
 
   let currentPath = "";
-  
+
   for (const segment of segments) {
     currentPath += `/${segment}`;
-    
+
     // Handle route groups
     if (segment.startsWith("(") && segment.endsWith(")")) {
       const group = segment.slice(1, -1);
@@ -348,7 +352,7 @@ export const generateBreadcrumbs = (pathname: string): NavigationItem[] => {
       // Convert segment to readable label
       const label = segment
         .split("-")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
       breadcrumbs.push({ label, href: currentPath });
     }

@@ -606,8 +606,8 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                           beyblade.spin > 1000
                             ? "#22C55E"
                             : beyblade.spin > 400
-                            ? "#F59E0B"
-                            : "#EF4444",
+                              ? "#F59E0B"
+                              : "#EF4444",
                       }}
                     >
                       {Math.floor(beyblade.spin)}/
@@ -652,19 +652,19 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                         color: beyblade.isDead
                           ? "#EF4444"
                           : beyblade.isOutOfBounds
-                          ? "#F59E0B"
-                          : beyblade.isInBlueLoop
-                          ? "#3B82F6"
-                          : "#22C55E",
+                            ? "#F59E0B"
+                            : beyblade.isInBlueLoop
+                              ? "#3B82F6"
+                              : "#22C55E",
                       }}
                     >
                       {beyblade.isDead
                         ? "💀 Eliminated"
                         : beyblade.isOutOfBounds
-                        ? "🚫 Out of Bounds"
-                        : beyblade.isInBlueLoop
-                        ? "🔄 Speed Loop"
-                        : "⚡ Active"}
+                          ? "🚫 Out of Bounds"
+                          : beyblade.isInBlueLoop
+                            ? "🔄 Speed Loop"
+                            : "⚡ Active"}
                     </Typography>
                   </Box>
                 </Box>

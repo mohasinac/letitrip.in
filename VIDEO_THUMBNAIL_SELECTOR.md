@@ -110,7 +110,7 @@ VideoThumbnailSelector/
        setThumbnailPreview(url);
      },
      "image/jpeg",
-     0.85
+     0.85,
    );
    ```
 
@@ -151,7 +151,7 @@ canvas.toBlob(
     }
   },
   "image/jpeg",
-  0.85
+  0.85,
 );
 ```
 
