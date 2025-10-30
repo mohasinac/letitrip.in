@@ -468,17 +468,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await apiClient.put("/user/profile", updates);
 
-      // Update the user state with the new data
-      if (state.user && data.success && data.data) {
-        const updatedUser = { ...state.user, ...data.data };
+      // Immediately update the user state with the merged data
+      if (state.user) {
+        const updatedUser = {
+          ...state.user,
+          ...updates, // Apply the updates immediately
+          ...(data.success && data.data ? data.data : {}), // Merge server response if available
+        };
         dispatch({ type: "SET_USER", payload: updatedUser });
-      } else {
-        // Refresh auth state to get the latest data from server
-        await checkAuth();
       }
     } catch (error: any) {
       dispatch({ type: "SET_ERROR", payload: error.message });
       throw error;
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 

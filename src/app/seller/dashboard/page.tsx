@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Container, Typography, Card, CardContent, Grid, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Button,
+} from "@mui/material";
 import {
   ShoppingCart,
   TrendingUp,
@@ -49,7 +57,13 @@ const StatCard = ({
       <Typography variant="h5" fontWeight={700} gutterBottom>
         {value}
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="caption" color="success.main">
           {change}
         </Typography>
@@ -115,12 +129,20 @@ function SellerDashboardContent() {
             Seller Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Welcome to your seller panel. Manage your store, products, and orders from here.
+            Welcome to your seller panel. Manage your store, products, and
+            orders from here.
           </Typography>
         </Box>
 
         {/* Quick Setup Guide */}
-        <Card sx={{ mb: 4, bgcolor: "primary.50", borderLeft: 4, borderColor: "primary.main" }}>
+        <Card
+          sx={{
+            mb: 4,
+            bgcolor: "primary.50",
+            borderLeft: 4,
+            borderColor: "primary.main",
+          }}
+        >
           <CardContent>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               🚀 Quick Setup Guide
@@ -130,24 +152,45 @@ function SellerDashboardContent() {
             </Typography>
             <Box component="ol" sx={{ pl: 2, "& li": { mb: 1 } }}>
               <li>
-                <Link href={SELLER_ROUTES.SHOP_SETUP} style={{ textDecoration: "none" }}>
-                  <Typography component="span" color="primary" sx={{ fontWeight: 600 }}>
+                <Link
+                  href={SELLER_ROUTES.SHOP_SETUP}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography
+                    component="span"
+                    color="primary"
+                    sx={{ fontWeight: 600 }}
+                  >
                     Setup your shop →
                   </Typography>
                 </Link>{" "}
                 Configure shop name, pickup addresses, and SEO
               </li>
               <li>
-                <Link href={SELLER_ROUTES.PRODUCTS_NEW} style={{ textDecoration: "none" }}>
-                  <Typography component="span" color="primary" sx={{ fontWeight: 600 }}>
+                <Link
+                  href={SELLER_ROUTES.PRODUCTS_NEW}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography
+                    component="span"
+                    color="primary"
+                    sx={{ fontWeight: 600 }}
+                  >
                     Add your first product →
                   </Typography>
                 </Link>{" "}
                 Upload products with images and details
               </li>
               <li>
-                <Link href={SELLER_ROUTES.SALES} style={{ textDecoration: "none" }}>
-                  <Typography component="span" color="primary" sx={{ fontWeight: 600 }}>
+                <Link
+                  href={SELLER_ROUTES.SALES}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography
+                    component="span"
+                    color="primary"
+                    sx={{ fontWeight: 600 }}
+                  >
                     Create a sale or coupon →
                   </Typography>
                 </Link>{" "}
@@ -183,7 +226,12 @@ function SellerDashboardContent() {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 2 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{ mb: 2 }}
+                >
                   Quick Actions
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>

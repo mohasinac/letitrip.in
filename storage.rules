@@ -93,7 +93,27 @@ service firebase.storage {
     
     // ==================== SELLER STORE ASSETS ====================
     // Sellers: /sellers/{sellerId}/store/{assetType}/{fileName}
-    // Assets include: logo, banner, certificates, etc.
+    // Sellers: /sellers/{sellerId}/products/buy-{slug}/{fileName}
+    // Assets include: logo, banner, certificates, product images, videos
+    
+    match /sellers/{sellerId}/shop/{fileName} {
+      allow read: if true; // Public shop assets (logo, cover)
+      
+      allow create, update: if (isOwner(sellerId) || isAdmin()) &&
+                               isValidImage() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isOwner(sellerId) || isAdmin();
+    }
+    
+    match /sellers/{sellerId}/products/{productSlug}/{fileName} {
+      allow read: if true; // Public product images
+      
+      allow create, update: if (isOwner(sellerId) || isAdmin()) &&
+                               isWithinSizeLimit(20); // 20MB for videos
+      
+      allow delete: if isOwner(sellerId) || isAdmin();
+    }
     
     match /sellers/{sellerId}/store/{assetType}/{fileName} {
       allow read: if true; // Public store assets
@@ -118,6 +138,17 @@ service firebase.storage {
     
     // ==================== USER PROFILE ASSETS ====================
     // Users: /users/{userId}/profile/{fileName}
+    // Avatars: /avatars/{userId}.{ext}
+    
+    match /avatars/{fileName} {
+      allow read: if true; // Public profile images
+      
+      allow create, update: if isAuthenticated() &&
+                               isValidImage() &&
+                               isWithinSizeLimit(5); // 5MB limit
+      
+      allow delete: if isAuthenticated() || isAdmin();
+    }
     
     match /users/{userId}/profile/{fileName} {
       allow read: if true; // Public profile images

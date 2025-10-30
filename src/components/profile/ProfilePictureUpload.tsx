@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { uploadWithAuth } from "@/lib/api/seller";
 
 interface ProfilePictureUploadProps {
   currentAvatar?: string;
@@ -56,12 +57,7 @@ export default function ProfilePictureUpload({
       formData.append("file", file);
       formData.append("folder", "avatars");
 
-      const response = await fetch("/api/storage/upload", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
+      const response = await uploadWithAuth("/api/storage/upload", formData);
       const data = await response.json();
 
       if (!response.ok || !data.success) {
@@ -96,17 +92,27 @@ export default function ProfilePictureUpload({
 
   const displayAvatar = preview || currentAvatar;
 
+  // Add cache-busting query parameter to force reload of new images
+  const avatarUrl =
+    displayAvatar && !preview && displayAvatar.includes("firebase")
+      ? `${displayAvatar}${
+          displayAvatar.includes("?") ? "&" : "?"
+        }t=${Date.now()}`
+      : displayAvatar;
+
   return (
     <div className="flex flex-col items-center space-y-4">
       <div className="relative">
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 bg-gray-100">
-          {displayAvatar ? (
+          {avatarUrl ? (
             <Image
-              src={displayAvatar}
+              src={avatarUrl}
               alt="Profile"
               width={128}
               height={128}
               className="w-full h-full object-cover"
+              unoptimized={avatarUrl.includes("firebase")}
+              key={avatarUrl} // Force re-render when URL changes
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">

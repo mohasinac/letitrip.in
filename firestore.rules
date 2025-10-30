@@ -118,11 +118,66 @@ service cloud.firestore {
       allow read, write: if request.auth != null && isAdmin();
     }
     
+    // Seller Products collection - sellers can manage their own products
+    match /seller_products/{productId} {
+      allow read: if true; // Anyone can read products
+      allow create: if request.auth != null && 
+                       isSeller() &&
+                       request.resource.data.sellerId == request.auth.uid &&
+                       validateSellerProduct();
+      allow update: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+    }
+    
+    // Seller Coupons collection - sellers can manage their own coupons
+    match /seller_coupons/{couponId} {
+      allow read: if request.auth != null && 
+                     (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+                       isSeller() &&
+                       request.resource.data.sellerId == request.auth.uid &&
+                       validateCoupon();
+      allow update: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+    }
+    
+    // Seller Sales collection - sellers can manage their own sales
+    match /seller_sales/{saleId} {
+      allow read: if request.auth != null && 
+                     (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+                       isSeller() &&
+                       request.resource.data.sellerId == request.auth.uid &&
+                       validateSale();
+      allow update: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && 
+                       (resource.data.sellerId == request.auth.uid || isAdmin());
+    }
+    
+    // Seller Shops collection - sellers can manage their own shops
+    match /sellers/{sellerId} {
+      allow read: if true; // Anyone can read shop info
+      allow write: if request.auth != null && 
+                      (request.auth.uid == sellerId || isAdmin());
+    }
+    
     // Helper functions
     function isAdmin() {
       return request.auth != null && 
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isSeller() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'seller' ||
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
     
     function validateReview() {
@@ -205,6 +260,45 @@ service cloud.firestore {
              data.level <= 10 &&
              (data.sortOrder is int || !data.keys().hasAny(['sortOrder'])) &&
              (data.description is string || !data.keys().hasAny(['description']));
+    }
+    
+    function validateSellerProduct() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'sellerId', 'categoryId', 'pricing', 'inventory', 'seo']) &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() <= 200 &&
+             data.pricing.price is number &&
+             data.pricing.price > 0 &&
+             data.inventory.quantity is int &&
+             data.inventory.quantity >= 0 &&
+             data.seo.slug is string &&
+             data.seo.slug.size() > 0 &&
+             data.seo.slug.matches('^buy-[a-z0-9-]+$');
+    }
+    
+    function validateCoupon() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['code', 'name', 'sellerId', 'type', 'value']) &&
+             data.code is string &&
+             data.code.size() > 0 &&
+             data.code.size() <= 50 &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.type in ['percentage', 'fixed', 'free_shipping', 'bogo', 'cart_discount'] &&
+             data.value is number &&
+             data.value > 0;
+    }
+    
+    function validateSale() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'sellerId', 'discountType', 'discountValue', 'applyTo']) &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.discountType in ['percentage', 'fixed'] &&
+             data.discountValue is number &&
+             data.discountValue > 0 &&
+             data.applyTo in ['all', 'specific_products', 'specific_categories'];
     }
   }
 }

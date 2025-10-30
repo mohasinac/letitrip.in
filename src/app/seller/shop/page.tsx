@@ -75,18 +75,18 @@ function ShopSetupContent() {
     storeImage: "",
     coverImage: "",
     isActive: true,
-    
+
     // SEO
     seoTitle: "",
     seoDescription: "",
     seoKeywords: [] as string[],
-    
+
     // Business Info
     businessName: "",
     businessType: "individual" as "individual" | "company" | "partnership",
     gstNumber: "",
     panNumber: "",
-    
+
     // Settings
     enableCOD: true,
     freeShippingThreshold: 0,
@@ -119,7 +119,7 @@ function ShopSetupContent() {
 
   const handleChange = (field: string, value: any) => {
     setShopData((prev) => ({ ...prev, [field]: value }));
-    
+
     // Auto-generate slug from store name
     if (field === "storeName") {
       const slug = value
@@ -131,7 +131,10 @@ function ShopSetupContent() {
   };
 
   const handleAddKeyword = () => {
-    if (keywordInput.trim() && !shopData.seoKeywords.includes(keywordInput.trim())) {
+    if (
+      keywordInput.trim() &&
+      !shopData.seoKeywords.includes(keywordInput.trim())
+    ) {
       setShopData((prev) => ({
         ...prev,
         seoKeywords: [...prev.seoKeywords, keywordInput.trim()],
@@ -174,9 +177,7 @@ function ShopSetupContent() {
 
   const handleAddressChange = (id: string, field: string, value: any) => {
     setPickupAddresses((prev) =>
-      prev.map((addr) =>
-        addr.id === id ? { ...addr, [field]: value } : addr
-      )
+      prev.map((addr) => (addr.id === id ? { ...addr, [field]: value } : addr))
     );
   };
 
@@ -231,7 +232,7 @@ function ShopSetupContent() {
                     helperText="This will be displayed on your store page"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -242,19 +243,21 @@ function ShopSetupContent() {
                     helperText="URL-friendly name (auto-generated from store name)"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Store Description"
                     value={shopData.description}
-                    onChange={(e) => handleChange("description", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description", e.target.value)
+                    }
                     multiline
                     rows={4}
                     helperText="Describe what your store sells"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <Box>
                     <Typography variant="subtitle2" gutterBottom>
@@ -269,7 +272,7 @@ function ShopSetupContent() {
                     </Button>
                   </Box>
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <Box>
                     <Typography variant="subtitle2" gutterBottom>
@@ -284,13 +287,15 @@ function ShopSetupContent() {
                     </Button>
                   </Box>
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <FormControlLabel
                     control={
                       <Switch
                         checked={shopData.isActive}
-                        onChange={(e) => handleChange("isActive", e.target.checked)}
+                        onChange={(e) =>
+                          handleChange("isActive", e.target.checked)
+                        }
                       />
                     }
                     label="Store is Active"
@@ -304,17 +309,29 @@ function ShopSetupContent() {
           <TabPanel value={tabValue} index={1}>
             <CardContent>
               <Alert severity="info" sx={{ mb: 3 }}>
-                Add at least one pickup address. This is where customers' orders will be
-                shipped from. The first address is mandatory and will be used as default.
+                Add at least one pickup address. This is where customers' orders
+                will be shipped from. The first address is mandatory and will be
+                used as default.
               </Alert>
 
               {pickupAddresses.map((address, index) => (
                 <Card key={address.id} sx={{ mb: 3, p: 2, bgcolor: "grey.50" }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 2,
+                    }}
+                  >
                     <Typography variant="subtitle1" fontWeight={600}>
                       Pickup Address #{index + 1}
                       {address.isDefault && (
-                        <Chip label="Default" size="small" color="primary" sx={{ ml: 1 }} />
+                        <Chip
+                          label="Default"
+                          size="small"
+                          color="primary"
+                          sx={{ ml: 1 }}
+                        />
                       )}
                     </Typography>
                     <Box>
@@ -338,7 +355,7 @@ function ShopSetupContent() {
                       )}
                     </Box>
                   </Box>
-                  
+
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <TextField
@@ -346,7 +363,11 @@ function ShopSetupContent() {
                         label="Address Label"
                         value={address.label}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "label", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "label",
+                            e.target.value
+                          )
                         }
                         placeholder="e.g., Main Warehouse, Store Location"
                         size="small"
@@ -358,7 +379,11 @@ function ShopSetupContent() {
                         label="Contact Name"
                         value={address.name}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "name", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "name",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -370,7 +395,11 @@ function ShopSetupContent() {
                         label="Phone"
                         value={address.phone}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "phone", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "phone",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -382,7 +411,11 @@ function ShopSetupContent() {
                         label="Address Line 1"
                         value={address.addressLine1}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "addressLine1", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "addressLine1",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -394,7 +427,11 @@ function ShopSetupContent() {
                         label="Address Line 2"
                         value={address.addressLine2}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "addressLine2", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "addressLine2",
+                            e.target.value
+                          )
                         }
                         size="small"
                       />
@@ -405,7 +442,11 @@ function ShopSetupContent() {
                         label="City"
                         value={address.city}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "city", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "city",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -417,7 +458,11 @@ function ShopSetupContent() {
                         label="State"
                         value={address.state}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "state", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "state",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -429,7 +474,11 @@ function ShopSetupContent() {
                         label="Pincode"
                         value={address.pincode}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "pincode", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "pincode",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -441,7 +490,11 @@ function ShopSetupContent() {
                         label="Country"
                         value={address.country}
                         onChange={(e) =>
-                          handleAddressChange(address.id, "country", e.target.value)
+                          handleAddressChange(
+                            address.id,
+                            "country",
+                            e.target.value
+                          )
                         }
                         required
                         size="small"
@@ -471,17 +524,21 @@ function ShopSetupContent() {
                     fullWidth
                     label="Business Name"
                     value={shopData.businessName}
-                    onChange={(e) => handleChange("businessName", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("businessName", e.target.value)
+                    }
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <FormControl fullWidth>
                     <InputLabel>Business Type</InputLabel>
                     <Select
                       value={shopData.businessType}
                       label="Business Type"
-                      onChange={(e) => handleChange("businessType", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("businessType", e.target.value)
+                      }
                     >
                       <MenuItem value="individual">Individual</MenuItem>
                       <MenuItem value="company">Company</MenuItem>
@@ -489,7 +546,7 @@ function ShopSetupContent() {
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -498,7 +555,7 @@ function ShopSetupContent() {
                     onChange={(e) => handleChange("gstNumber", e.target.value)}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -517,7 +574,7 @@ function ShopSetupContent() {
               <Alert severity="info" sx={{ mb: 3 }}>
                 These details will help your store rank better in search engines
               </Alert>
-              
+
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
@@ -528,19 +585,21 @@ function ShopSetupContent() {
                     helperText="55-60 characters recommended"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="SEO Description"
                     value={shopData.seoDescription}
-                    onChange={(e) => handleChange("seoDescription", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("seoDescription", e.target.value)
+                    }
                     multiline
                     rows={3}
                     helperText="150-160 characters recommended"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" gutterBottom>
                     SEO Keywords
@@ -586,13 +645,15 @@ function ShopSetupContent() {
                     control={
                       <Switch
                         checked={shopData.enableCOD}
-                        onChange={(e) => handleChange("enableCOD", e.target.checked)}
+                        onChange={(e) =>
+                          handleChange("enableCOD", e.target.checked)
+                        }
                       />
                     }
                     label="Enable Cash on Delivery (COD)"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -600,12 +661,15 @@ function ShopSetupContent() {
                     label="Free Shipping Threshold (₹)"
                     value={shopData.freeShippingThreshold}
                     onChange={(e) =>
-                      handleChange("freeShippingThreshold", parseFloat(e.target.value) || 0)
+                      handleChange(
+                        "freeShippingThreshold",
+                        parseFloat(e.target.value) || 0
+                      )
                     }
                     helperText="Orders above this amount get free shipping (0 to disable)"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -613,30 +677,37 @@ function ShopSetupContent() {
                     label="Processing Time (days)"
                     value={shopData.processingTime}
                     onChange={(e) =>
-                      handleChange("processingTime", parseInt(e.target.value) || 0)
+                      handleChange(
+                        "processingTime",
+                        parseInt(e.target.value) || 0
+                      )
                     }
                     helperText="Number of days to process an order before shipping"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Return Policy"
                     value={shopData.returnPolicy}
-                    onChange={(e) => handleChange("returnPolicy", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("returnPolicy", e.target.value)
+                    }
                     multiline
                     rows={4}
                     helperText="Describe your return/refund policy"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Shipping Policy"
                     value={shopData.shippingPolicy}
-                    onChange={(e) => handleChange("shippingPolicy", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("shippingPolicy", e.target.value)
+                    }
                     multiline
                     rows={4}
                     helperText="Describe your shipping policy and delivery times"
@@ -647,7 +718,7 @@ function ShopSetupContent() {
           </TabPanel>
 
           <Divider />
-          
+
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
               <Button variant="outlined">Cancel</Button>

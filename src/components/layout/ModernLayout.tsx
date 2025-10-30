@@ -138,17 +138,20 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        flexDirection: (isAdminRoute || isSellerRoute) ? "row" : "column",
+        flexDirection: isAdminRoute || isSellerRoute ? "row" : "column",
       }}
     >
       {/* Admin Sidebar - Only show on admin routes */}
       {isAdminRoute && (
         <AdminSidebar open={adminSidebarOpen} onToggle={setAdminSidebarOpen} />
       )}
-      
+
       {/* Seller Sidebar - Only show on seller routes */}
       {isSellerRoute && (
-        <SellerSidebar open={sellerSidebarOpen} onToggle={setSellerSidebarOpen} />
+        <SellerSidebar
+          open={sellerSidebarOpen}
+          onToggle={setSellerSidebarOpen}
+        />
       )}
 
       <Box
