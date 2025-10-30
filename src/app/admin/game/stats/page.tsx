@@ -1,30 +1,39 @@
 /**
- * Admin Page: Game Stats
- * View game statistics and analytics
+ * Admin Page: Game Stats Overview
+ * View statistics and analytics for Beyblades and Stadiums
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { BeybladeStats } from "@/types/beybladeStats";
+import { ArenaConfig } from "@/types/arenaConfig";
 
 export default function GameStatsPage() {
+  const router = useRouter();
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
+  const [arenas, setArenas] = useState<ArenaConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBeyblades();
+    fetchData();
   }, []);
 
-  const fetchBeyblades = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch("/api/beyblades");
-      const data = await response.json();
-      if (data.success) {
-        setBeyblades(data.data);
-      }
+      const [beybladeRes, arenaRes] = await Promise.all([
+        fetch("/api/beyblades"),
+        fetch("/api/arenas"),
+      ]);
+
+      const beybladeData = await beybladeRes.json();
+      const arenaData = await arenaRes.json();
+
+      if (beybladeData.success) setBeyblades(beybladeData.data);
+      if (arenaData.success) setArenas(arenaData.data);
     } catch (error) {
-      console.error("Error fetching Beyblades:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -53,16 +62,14 @@ export default function GameStatsPage() {
         attack: acc.attack + bey.typeDistribution.attack,
         defense: acc.defense + bey.typeDistribution.defense,
         stamina: acc.stamina + bey.typeDistribution.stamina,
-        maxSpin: acc.maxSpin + bey.maxSpin,
       }),
-      { attack: 0, defense: 0, stamina: 0, maxSpin: 0 }
+      { attack: 0, defense: 0, stamina: 0 }
     );
 
     return {
       attack: Math.round(total.attack / beyblades.length),
       defense: Math.round(total.defense / beyblades.length),
       stamina: Math.round(total.stamina / beyblades.length),
-      maxSpin: Math.round(total.maxSpin / beyblades.length),
     };
   };
 
@@ -71,6 +78,14 @@ export default function GameStatsPage() {
     acc[bey.type] = (acc[bey.type] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+
+  const arenaStats = {
+    total: arenas.length,
+    shapes: [...new Set(arenas.map((a) => a.shape))].length,
+    withObstacles: arenas.filter((a) => a.obstacles && a.obstacles.length > 0)
+      .length,
+    withLoops: arenas.filter((a) => a.loops && a.loops.length > 0).length,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -120,9 +135,17 @@ export default function GameStatsPage() {
 
             {/* Type Distribution */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Type Distribution
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Beyblade Type Distribution
+                </h2>
+                <button
+                  onClick={() => router.push("/admin/game/beyblades")}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Manage Beyblades →
+                </button>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(typeCount).map(([type, count]) => (
                   <div
@@ -135,6 +158,49 @@ export default function GameStatsPage() {
                     <p className="text-2xl font-bold">{count}</p>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Stadium Stats */}
+            <div className="bg-white rounded-lg shadow p-6 mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Stadium Statistics
+                </h2>
+                <button
+                  onClick={() => router.push("/admin/game/stadiums")}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Manage Stadiums →
+                </button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">Total Stadiums</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {arenaStats.total}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 rounded-lg p-4">
+                  <p className="text-sm text-indigo-600 mb-1">
+                    Unique Shapes
+                  </p>
+                  <p className="text-3xl font-bold text-indigo-600">
+                    {arenaStats.shapes}
+                  </p>
+                </div>
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <p className="text-sm text-orange-600 mb-1">With Obstacles</p>
+                  <p className="text-3xl font-bold text-orange-600">
+                    {arenaStats.withObstacles}
+                  </p>
+                </div>
+                <div className="bg-cyan-50 rounded-lg p-4">
+                  <p className="text-sm text-cyan-600 mb-1">With Loops</p>
+                  <p className="text-3xl font-bold text-cyan-600">
+                    {arenaStats.withLoops}
+                  </p>
+                </div>
               </div>
             </div>
 
