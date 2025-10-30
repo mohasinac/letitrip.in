@@ -67,3 +67,16 @@ export const authApi = {
     await authAPI.changePassword({ currentPassword, newPassword });
   },
 };
+
+/**
+ * API Module Exports
+ * Central export point for all API-related utilities and services
+ */
+
+// ===== NEW REFACTORED UTILITIES =====
+// Export all new API infrastructure
+export * from './constants';
+export * from './cors';
+export * from './response';
+export * from './middleware';
+export * from './validation';

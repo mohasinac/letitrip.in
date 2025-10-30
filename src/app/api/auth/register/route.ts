@@ -1,20 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { createApiHandler, successResponse, errorResponse, validationErrorResponse, getCorsHeaders, HTTP_STATUS } from '@/lib/api';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/database/config';
 import { getAdminAuth, getAdminDb } from '@/lib/database/admin';
 import { z } from 'zod';
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-// Handle OPTIONS request for CORS preflight
+/**
+ * Handle OPTIONS request for CORS preflight
+ * REFACTORED: Uses standardized CORS utilities
+ */
 export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+  return new Response(null, { headers: getCorsHeaders() });
 }
 
 const registerSchema = z.object({
@@ -25,10 +21,20 @@ const registerSchema = z.object({
   role: z.enum(['admin', 'seller', 'user']).default('user'),
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const validatedData = registerSchema.parse(body);
+/**
+ * POST /api/auth/register
+ * REFACTORED: Uses standardized API utilities
+ */
+export const POST = createApiHandler(async (request) => {
+  const body = await request.json();
+  
+  // Validate input
+  const validation = registerSchema.safeParse(body);
+  if (!validation.success) {
+    return validationErrorResponse(validation.error);
+  }
+  
+  const validatedData = validation.data;
     
     const { name, email, password, phone, role } = validatedData;
 
@@ -36,19 +42,16 @@ export async function POST(request: NextRequest) {
     const adminAuth = getAdminAuth();
     const adminDb = getAdminDb();
 
-    // Check if user already exists
-    try {
-      await adminAuth.getUserByEmail(email);
-      return NextResponse.json(
-        { success: false, error: 'User already exists with this email' },
-        { status: 400, headers: corsHeaders }
-      );
-    } catch (error: any) {
-      // User doesn't exist, continue with registration
-      if (error.code !== 'auth/user-not-found') {
-        throw error;
-      }
+  // Check if user already exists
+  try {
+    await adminAuth.getUserByEmail(email);
+    return errorResponse('User already exists with this email', HTTP_STATUS.BAD_REQUEST);
+  } catch (error: any) {
+    // User doesn't exist, continue with registration
+    if (error.code !== 'auth/user-not-found') {
+      throw error;
     }
+  }
 
     // Create user with Firebase Admin
     const createUserParams: any = {
@@ -94,62 +97,17 @@ export async function POST(request: NextRequest) {
     // Set custom claims for role-based access
     await adminAuth.setCustomUserClaims(userRecord.uid, { role });
 
-    // Return user data (excluding sensitive info)
-    const responseData = {
-      id: userRecord.uid,
-      name,
-      email,
-      phone: phone || null,
-      role,
-      isEmailVerified: false,
-      isPhoneVerified: false,
-      createdAt: new Date(),
-    };
+  // Return user data (excluding sensitive info)
+  const responseData = {
+    id: userRecord.uid,
+    name,
+    email,
+    phone: phone || null,
+    role,
+    isEmailVerified: false,
+    isPhoneVerified: false,
+    createdAt: new Date(),
+  };
 
-    return NextResponse.json({
-      success: true,
-      message: 'User registered successfully',
-      data: { user: responseData },
-    }, { headers: corsHeaders });
-
-  } catch (error: any) {
-    console.error('Registration error:', error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Validation failed',
-          details: error.errors 
-        },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    if (error.code === 'auth/email-already-exists') {
-      return NextResponse.json(
-        { success: false, error: 'User already exists with this email' },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    if (error.code === 'auth/invalid-email') {
-      return NextResponse.json(
-        { success: false, error: 'Invalid email format' },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    if (error.code === 'auth/weak-password') {
-      return NextResponse.json(
-        { success: false, error: 'Password is too weak' },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: 'Registration failed. Please try again.' },
-      { status: 500, headers: corsHeaders }
-    );
-  }
-}
+  return successResponse({ user: responseData }, 'User registered successfully');
+});

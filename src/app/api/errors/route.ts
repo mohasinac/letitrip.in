@@ -1,51 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
+import { createApiHandler, successResponse, errorResponse, HTTP_STATUS } from '@/lib/api';
 import type { ErrorLogEntry } from "@/lib/utils/errorLogger";
 
-export async function POST(request: NextRequest) {
-  try {
-    const errorEntry: ErrorLogEntry = await request.json();
+/**
+ * POST /api/errors
+ * Error logging endpoint
+ * REFACTORED: Uses standardized API utilities
+ */
+export const POST = createApiHandler(async (request) => {
+  const errorEntry: ErrorLogEntry = await request.json();
 
-    // Validate the error entry
-    if (!errorEntry.error || !errorEntry.timestamp) {
-      return NextResponse.json(
-        { error: "Invalid error log entry" },
-        { status: 400 }
-      );
-    }
-
-    // In a real application, you would:
-    // 1. Store the error in a database
-    // 2. Send alerts for critical errors
-    // 3. Forward to external monitoring services
-    
-    console.error("API Error Log:", {
-      timestamp: errorEntry.timestamp,
-      error: errorEntry.error.message,
-      url: errorEntry.url,
-      userAgent: errorEntry.userAgent,
-      stack: errorEntry.error.stack,
-    });
-
-    // Example: Save to database
-    // await saveErrorToDatabase(errorEntry);
-
-    // Example: Send to external service
-    // await sendToMonitoringService(errorEntry);
-
-    // Example: Send critical error alerts
-    // if (isCriticalError(errorEntry)) {
-    //   await sendAlert(errorEntry);
-    // }
-
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error("Failed to process error log:", error);
-    return NextResponse.json(
-      { error: "Failed to process error log" },
-      { status: 500 }
-    );
+  // Validate the error entry
+  if (!errorEntry.error || !errorEntry.timestamp) {
+    return errorResponse("Invalid error log entry", HTTP_STATUS.BAD_REQUEST);
   }
-}
+
+  // In a real application, you would:
+  // 1. Store the error in a database
+  // 2. Send alerts for critical errors
+  // 3. Forward to external monitoring services
+  
+  console.error("API Error Log:", {
+    timestamp: errorEntry.timestamp,
+    error: errorEntry.error.message,
+    url: errorEntry.url,
+    userAgent: errorEntry.userAgent,
+    stack: errorEntry.error.stack,
+  });
+
+  // Example: Save to database
+  // await saveErrorToDatabase(errorEntry);
+
+  // Example: Send to external service
+  // await sendToMonitoringService(errorEntry);
+
+  // Example: Send critical error alerts
+  // if (isCriticalError(errorEntry)) {
+  //   await sendAlert(errorEntry);
+  // }
+
+  return successResponse({ logged: true });
+});
 
 // Helper function to determine if an error is critical
 function isCriticalError(errorEntry: ErrorLogEntry): boolean {

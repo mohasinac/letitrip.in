@@ -1,10 +1,16 @@
 "use client";
 
+/**
+ * Cookie Consent Banner
+ * REFACTORED: Uses theme variables instead of hardcoded colors
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   StorageManager,
   CookieConsentSettings,
 } from "@/lib/storage/cookieConsent";
+import { Button } from "@/components/ui";
 
 interface CookieConsentBannerProps {
   onConsentGiven?: (settings: CookieConsentSettings) => void;
@@ -64,16 +70,16 @@ export default function CookieConsentBanner({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-lg">
       <div className="max-w-7xl mx-auto p-4">
         {!showDetails ? (
           // Simple banner
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 We Value Your Privacy
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Your browser doesn't support local storage. We need your consent
                 to use cookies to store your preferences and provide you with
                 the best experience. You can customize your preferences or
@@ -81,36 +87,31 @@ export default function CookieConsentBanner({
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={handleRejectAll}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-              >
+              <Button onClick={handleRejectAll} variant="secondary" size="sm">
                 Reject All
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowDetails(true)}
-                className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Customize
-              </button>
-              <button
-                onClick={handleAcceptAll}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-              >
+              </Button>
+              <Button onClick={handleAcceptAll} variant="primary" size="sm">
                 Accept All
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
           // Detailed settings
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-foreground">
                 Cookie Preferences
               </h3>
               <button
                 onClick={() => setShowDetails(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -130,17 +131,17 @@ export default function CookieConsentBanner({
 
             <div className="grid gap-4 max-h-60 overflow-y-auto">
               {/* Necessary Cookies */}
-              <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-start justify-between p-3 bg-muted rounded-lg">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900">
+                    <h4 className="font-medium text-foreground">
                       Necessary Cookies
                     </h4>
-                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                    <span className="text-xs bg-destructive/10 text-destructive px-2 py-1 rounded">
                       Required
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Essential for the website to function properly. These
                     cookies enable basic features like authentication and cannot
                     be disabled.
@@ -151,18 +152,18 @@ export default function CookieConsentBanner({
                     type="checkbox"
                     checked={true}
                     disabled
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                    className="w-4 h-4 accent-primary rounded cursor-not-allowed opacity-50"
                   />
                 </div>
               </div>
 
               {/* Preferences Cookies */}
-              <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-start justify-between p-3 bg-muted rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1">
+                  <h4 className="font-medium text-foreground mb-1">
                     Preference Cookies
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Remember your settings and preferences to provide a
                     personalized experience, including language preferences and
                     user interface customizations.
@@ -178,18 +179,18 @@ export default function CookieConsentBanner({
                         preferences: e.target.checked,
                       }))
                     }
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 accent-primary rounded cursor-pointer"
                   />
                 </div>
               </div>
 
               {/* Analytics Cookies */}
-              <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-start justify-between p-3 bg-muted rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1">
+                  <h4 className="font-medium text-foreground mb-1">
                     Analytics Cookies
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Help us understand how visitors interact with our website by
                     collecting and reporting information anonymously.
                   </p>
@@ -204,18 +205,18 @@ export default function CookieConsentBanner({
                         analytics: e.target.checked,
                       }))
                     }
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 accent-primary rounded cursor-pointer"
                   />
                 </div>
               </div>
 
               {/* Marketing Cookies */}
-              <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-start justify-between p-3 bg-muted rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1">
+                  <h4 className="font-medium text-foreground mb-1">
                     Marketing Cookies
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Used to track visitors across websites to display relevant
                     advertisements and measure the effectiveness of advertising
                     campaigns.
@@ -231,31 +232,31 @@ export default function CookieConsentBanner({
                         marketing: e.target.checked,
                       }))
                     }
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 accent-primary rounded cursor-pointer"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-              <button
-                onClick={handleRejectAll}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-              >
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+              <Button onClick={handleRejectAll} variant="secondary" size="sm">
                 Reject All
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAcceptSelected}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+                variant="primary"
+                size="sm"
               >
                 Save Preferences
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAcceptAll}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
+                variant="primary"
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 Accept All
-              </button>
+              </Button>
             </div>
           </div>
         )}
