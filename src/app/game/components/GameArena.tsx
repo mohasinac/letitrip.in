@@ -525,6 +525,9 @@ const GameArena: React.FC<GameArenaProps> = ({
             borderColor: theme.palette.primary.main,
             boxShadow: `0 0 30px ${theme.palette.primary.main}40`,
             aspectRatio: "1/1", // Force square aspect ratio
+            // Stadium scaling: 100cm = 100vmin
+            // On 400x400px screen: 100vmin = 400px, so 1cm = 4px
+            // Beyblade radius in cm maps directly to pixels (no 10x scaling)
             width: "100vmin", // Stadium is 100cm = 100vmin
             minWidth: "400px", // Minimum size (4px per cm)
             height: "100vmin",
@@ -605,7 +608,7 @@ const drawDynamicBlueCircles = (
     ctx.setLineDash([]);
   }
 
-  // Draw charge points on blue circle at 30°, 150°, 270°
+  // Draw 3 charge points on blue circle at 30°, 150°, 270°
   const chargePointAngles = [30, 150, 270];
   const activeBey = gameState.beyblades.find((b) => b.isInBlueLoop);
   const selectedChargePoint = activeBey?.selectedChargePointAngle;
@@ -863,7 +866,7 @@ const drawGameZones = (
     }
   }
 
-  // Draw charge points on blue circle at 90°, 210°, 330°
+  // Draw 3 charge points on blue circle at 30°, 150°, 270°
   const chargePointAngles = [30, 150, 270];
 
   // Check if any beyblade is in a blue loop to highlight selected charge point
@@ -1063,7 +1066,8 @@ const drawBeyblade = (
   if (imagesLoaded && beybladeImage) {
     const opacity = beyblade.isOutOfBounds ? 0.4 : 1.0;
     ctx.globalAlpha = opacity;
-    // Beyblade radius represents cm, display at 1:1 scale (1cm = 1vmin)
+    // Beyblade radius is in cm, display at 1:1 scale (1cm = 1vmin = 4px on 400x400 screen)
+    // No 10x scaling - direct mapping
     const size = beyblade.radius * 2;
     // Draw as perfect square to prevent distortion
     ctx.drawImage(beybladeImage, -size / 2, -size / 2, size, size);

@@ -193,7 +193,7 @@ export default function MultiStepBeybladeEditor({
   };
 
   const handleNext = () => {
-    if (currentStep < 2) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -243,8 +243,12 @@ export default function MultiStepBeybladeEditor({
               {beyblade ? "Edit Beyblade" : "Create New Beyblade"}
             </h2>
             <p className="text-gray-600 mt-1">
-              Step {currentStep} of 2:{" "}
-              {currentStep === 1 ? "Name & Image" : "Physical Properties"}
+              Step {currentStep} of 3:{" "}
+              {currentStep === 1
+                ? "Basic Info & Physical Properties"
+                : currentStep === 2
+                ? "Type Distribution & Stats"
+                : "Contact Points"}
             </p>
           </div>
           <button
@@ -258,7 +262,7 @@ export default function MultiStepBeybladeEditor({
         {/* Step Indicator */}
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
           <div className="flex items-center justify-center gap-4">
-            {[1, 2].map((step) => (
+            {[1, 2, 3].map((step) => (
               <React.Fragment key={step}>
                 <div
                   className={`flex items-center justify-center w-10 h-10 rounded-full font-bold ${
@@ -271,7 +275,7 @@ export default function MultiStepBeybladeEditor({
                 >
                   {step < currentStep ? "✓" : step}
                 </div>
-                {step < 2 && (
+                {step < 3 && (
                   <div
                     className={`w-24 h-1 ${
                       step < currentStep ? "bg-green-600" : "bg-gray-300"
@@ -287,7 +291,7 @@ export default function MultiStepBeybladeEditor({
         <div className="flex-1 overflow-y-auto flex flex-col lg:flex-row">
           {/* Left Side - Form Steps */}
           <div className="flex-1 p-6 overflow-y-auto">
-            {/* Step 1: Name & Image */}
+            {/* Step 1: Name, Image, Mass & Radius */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
@@ -344,6 +348,54 @@ export default function MultiStepBeybladeEditor({
                       <option value="right">Right</option>
                       <option value="left">Left</option>
                     </select>
+                  </div>
+                </div>
+
+                {/* Physical Properties - Mass & Radius */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Mass (grams) *
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.mass}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          mass: parseFloat(e.target.value),
+                        })
+                      }
+                      min={10}
+                      max={2000}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Affects collision physics (real beyblades: 40-60g)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Radius (cm) *
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.radius}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          radius: parseFloat(e.target.value),
+                        })
+                      }
+                      min={3}
+                      max={50}
+                      step={0.1}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Physical radius (real beyblades: 3.5-4.5cm)
+                    </p>
                   </div>
                 </div>
 
@@ -440,54 +492,286 @@ export default function MultiStepBeybladeEditor({
               </div>
             )}
 
-            {/* Step 2: Physical Properties */}
+            {/* Step 2: Type Distribution & Stats */}
             {currentStep === 2 && (
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Mass (grams) *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.mass}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          mass: parseFloat(e.target.value),
-                        })
-                      }
-                      min={10}
-                      max={2000}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Affects collision physics (real beyblades: 40-60g)
-                    </p>
-                  </div>
+                {/* Type Distribution */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Type Distribution (Total:{" "}
+                    {formData.typeDistribution?.total || 0}/360)
+                  </label>
+                  <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-blue-50 p-3 rounded border border-blue-200 mb-4">
+                      <p className="text-xs font-semibold text-blue-900 mb-1">
+                        📊 Base Stats & Bonuses (360 points total, max 150
+                        each):
+                      </p>
+                      <ul className="text-xs text-blue-800 space-y-0.5">
+                        <li>
+                          • <strong>Base:</strong> 100 dmg, 10 speed, 10
+                          rotation, 10 knockback, 1x dmg taken, 10% invuln, 1000
+                          HP, 10% steal, 10 decay/sec
+                        </li>
+                        <li>
+                          • <strong>Attack:</strong> +1% per point
+                          (multiplicative) - 150pts = 2.5x all stats
+                        </li>
+                        <li>
+                          • <strong>Defense:</strong> At 150pts: 50% dmg taken,
+                          7.5 knockback, 20% invuln (multiplicative)
+                        </li>
+                        <li>
+                          • <strong>Stamina:</strong> At 150pts: 3000 HP, 50%
+                          steal (1 in 2), 7.5 decay (multiplicative)
+                        </li>
+                      </ul>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Radius (cm) *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.radius}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          radius: parseFloat(e.target.value),
-                        })
-                      }
-                      min={3}
-                      max={50}
-                      step={0.1}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Physical radius (real beyblades: 3.5-4.5cm, display size =
-                      radius × 10px)
-                    </p>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-red-600">
+                          Attack{" "}
+                          {calculatedStats &&
+                            `(+${calculatedStats.damagePerHit.toFixed(
+                              1
+                            )} dmg, +${calculatedStats.speedPerSecond.toFixed(
+                              1
+                            )} speed)`}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="150"
+                            value={formData.typeDistribution?.attack || 0}
+                            onChange={(e) => {
+                              const newAttack = Math.min(
+                                150,
+                                Math.max(0, parseInt(e.target.value) || 0)
+                              );
+                              const defense =
+                                formData.typeDistribution?.defense || 0;
+                              const stamina =
+                                formData.typeDistribution?.stamina || 0;
+                              const currentTotal = defense + stamina;
+                              const availablePoints = 360 - currentTotal;
+                              const finalAttack = Math.min(
+                                newAttack,
+                                availablePoints
+                              );
+
+                              setFormData({
+                                ...formData,
+                                typeDistribution: {
+                                  ...formData.typeDistribution!,
+                                  attack: finalAttack,
+                                  total: finalAttack + currentTotal,
+                                },
+                              });
+                            }}
+                            className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                          />
+                          <span className="text-sm font-bold text-gray-700">
+                            /150
+                          </span>
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="150"
+                        value={formData.typeDistribution?.attack || 0}
+                        onChange={(e) => {
+                          const newAttack = parseInt(e.target.value);
+                          const defense =
+                            formData.typeDistribution?.defense || 0;
+                          const stamina =
+                            formData.typeDistribution?.stamina || 0;
+                          const currentTotal = defense + stamina;
+                          const availablePoints = 360 - currentTotal;
+                          const finalAttack = Math.min(
+                            newAttack,
+                            availablePoints
+                          );
+
+                          setFormData({
+                            ...formData,
+                            typeDistribution: {
+                              ...formData.typeDistribution!,
+                              attack: finalAttack,
+                              total: finalAttack + currentTotal,
+                            },
+                          });
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-blue-600">
+                          Defense{" "}
+                          {calculatedStats &&
+                            `(${calculatedStats.damageReduction.toFixed(
+                              2
+                            )}x reduction, +${calculatedStats.knockbackDistance.toFixed(
+                              1
+                            )} knockback)`}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="150"
+                            value={formData.typeDistribution?.defense || 0}
+                            onChange={(e) => {
+                              const newDefense = Math.min(
+                                150,
+                                Math.max(0, parseInt(e.target.value) || 0)
+                              );
+                              const attack =
+                                formData.typeDistribution?.attack || 0;
+                              const stamina =
+                                formData.typeDistribution?.stamina || 0;
+                              const currentTotal = attack + stamina;
+                              const availablePoints = 360 - currentTotal;
+                              const finalDefense = Math.min(
+                                newDefense,
+                                availablePoints
+                              );
+
+                              setFormData({
+                                ...formData,
+                                typeDistribution: {
+                                  ...formData.typeDistribution!,
+                                  defense: finalDefense,
+                                  total: attack + finalDefense + stamina,
+                                },
+                              });
+                            }}
+                            className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                          />
+                          <span className="text-sm font-bold text-gray-700">
+                            /150
+                          </span>
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="150"
+                        value={formData.typeDistribution?.defense || 0}
+                        onChange={(e) => {
+                          const newDefense = parseInt(e.target.value);
+                          const attack = formData.typeDistribution?.attack || 0;
+                          const stamina =
+                            formData.typeDistribution?.stamina || 0;
+                          const currentTotal = attack + stamina;
+                          const availablePoints = 360 - currentTotal;
+                          const finalDefense = Math.min(
+                            newDefense,
+                            availablePoints
+                          );
+
+                          setFormData({
+                            ...formData,
+                            typeDistribution: {
+                              ...formData.typeDistribution!,
+                              defense: finalDefense,
+                              total: attack + finalDefense + stamina,
+                            },
+                          });
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-green-600">
+                          Stamina{" "}
+                          {calculatedStats &&
+                            `(${
+                              calculatedStats.maxStamina
+                            } HP, +${calculatedStats.spinStealAmount.toFixed(
+                              1
+                            )} steal)`}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="150"
+                            value={formData.typeDistribution?.stamina || 0}
+                            onChange={(e) => {
+                              const newStamina = Math.min(
+                                150,
+                                Math.max(0, parseInt(e.target.value) || 0)
+                              );
+                              const attack =
+                                formData.typeDistribution?.attack || 0;
+                              const defense =
+                                formData.typeDistribution?.defense || 0;
+                              const currentTotal = attack + defense;
+                              const availablePoints = 360 - currentTotal;
+                              const finalStamina = Math.min(
+                                newStamina,
+                                availablePoints
+                              );
+
+                              setFormData({
+                                ...formData,
+                                typeDistribution: {
+                                  ...formData.typeDistribution!,
+                                  stamina: finalStamina,
+                                  total: attack + defense + finalStamina,
+                                },
+                              });
+                            }}
+                            className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                          />
+                          <span className="text-sm font-bold text-gray-700">
+                            /150
+                          </span>
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="150"
+                        value={formData.typeDistribution?.stamina || 0}
+                        onChange={(e) => {
+                          const newStamina = parseInt(e.target.value);
+                          const attack = formData.typeDistribution?.attack || 0;
+                          const defense =
+                            formData.typeDistribution?.defense || 0;
+                          const currentTotal = attack + defense;
+                          const availablePoints = 360 - currentTotal;
+                          const finalStamina = Math.min(
+                            newStamina,
+                            availablePoints
+                          );
+
+                          setFormData({
+                            ...formData,
+                            typeDistribution: {
+                              ...formData.typeDistribution!,
+                              stamina: finalStamina,
+                              total: attack + defense + finalStamina,
+                            },
+                          });
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+
+                    {formData.typeDistribution?.total !== 360 && (
+                      <div className="text-sm text-amber-600 font-medium">
+                        ⚠️ Total must equal 360 (currently:{" "}
+                        {formData.typeDistribution?.total})
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -511,7 +795,8 @@ export default function MultiStepBeybladeEditor({
                           {calculatedStats.damagePerHit.toFixed(1)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          damage per hit
+                          damage per hit (
+                          {calculatedStats.damageMultiplier.toFixed(2)}x)
                         </div>
                       </div>
 
@@ -527,25 +812,49 @@ export default function MultiStepBeybladeEditor({
 
                       <div className="bg-white p-3 rounded-lg">
                         <div className="text-xs text-gray-600 mb-1">
-                          Defense
+                          Rotation Speed
                         </div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {calculatedStats.damageReduction.toFixed(2)}x
+                        <div className="text-2xl font-bold text-pink-600">
+                          {calculatedStats.rotationSpeed.toFixed(1)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          damage reduction
+                          spins/second
                         </div>
                       </div>
 
                       <div className="bg-white p-3 rounded-lg">
                         <div className="text-xs text-gray-600 mb-1">
-                          Knockback Resistance
+                          Damage Taken
+                        </div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          {(calculatedStats.damageTaken * 100).toFixed(0)}%
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          of incoming damage (
+                          {calculatedStats.damageReduction.toFixed(2)}x
+                          reduction)
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-3 rounded-lg">
+                        <div className="text-xs text-gray-600 mb-1">
+                          Knockback Distance
                         </div>
                         <div className="text-2xl font-bold text-indigo-600">
                           {calculatedStats.knockbackDistance.toFixed(1)}
                         </div>
+                        <div className="text-xs text-gray-500">units</div>
+                      </div>
+
+                      <div className="bg-white p-3 rounded-lg">
+                        <div className="text-xs text-gray-600 mb-1">
+                          Invulnerability
+                        </div>
+                        <div className="text-2xl font-bold text-cyan-600">
+                          {calculatedStats.invulnerabilityChance.toFixed(1)}%
+                        </div>
                         <div className="text-xs text-gray-500">
-                          resistance units
+                          chance (1.5s duration)
                         </div>
                       </div>
 
@@ -566,10 +875,10 @@ export default function MultiStepBeybladeEditor({
                           Spin Steal
                         </div>
                         <div className="text-2xl font-bold text-purple-600">
-                          {calculatedStats.spinStealAmount.toFixed(1)}
+                          {calculatedStats.spinStealPercent.toFixed(1)}%
                         </div>
                         <div className="text-xs text-gray-500">
-                          points per hit
+                          of damage taken
                         </div>
                       </div>
 
@@ -587,150 +896,12 @@ export default function MultiStepBeybladeEditor({
                     </div>
                   </div>
                 )}
+              </div>
+            )}
 
-                {/* Type Distribution */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Type Distribution (Total:{" "}
-                    {formData.typeDistribution?.total || 0}/360)
-                  </label>
-                  <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                    <div className="bg-blue-50 p-3 rounded border border-blue-200 mb-4">
-                      <p className="text-xs font-semibold text-blue-900 mb-1">
-                        💡 Stat Bonuses (360 points total, max 150 each):
-                      </p>
-                      <ul className="text-xs text-blue-800 space-y-0.5">
-                        <li>• Attack: +1 damage, +1 speed per point</li>
-                        <li>
-                          • Defense: +1% damage reduction, +1 knockback
-                          resistance per point
-                        </li>
-                        <li>
-                          • Stamina: +20 max health, +1 spin steal per point
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm font-medium text-red-600">
-                          Attack{" "}
-                          {calculatedStats &&
-                            `(+${calculatedStats.damagePerHit.toFixed(
-                              1
-                            )} dmg, +${calculatedStats.speedPerSecond.toFixed(
-                              1
-                            )} speed)`}
-                        </span>
-                        <span className="text-sm font-bold">
-                          {formData.typeDistribution?.attack}/150
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="150"
-                        value={formData.typeDistribution?.attack || 0}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            typeDistribution: {
-                              ...formData.typeDistribution!,
-                              attack: parseInt(e.target.value),
-                              total:
-                                parseInt(e.target.value) +
-                                (formData.typeDistribution?.defense || 0) +
-                                (formData.typeDistribution?.stamina || 0),
-                            },
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm font-medium text-blue-600">
-                          Defense{" "}
-                          {calculatedStats &&
-                            `(${calculatedStats.damageReduction.toFixed(
-                              2
-                            )}x reduction, +${calculatedStats.knockbackDistance.toFixed(
-                              1
-                            )} knockback)`}
-                        </span>
-                        <span className="text-sm font-bold">
-                          {formData.typeDistribution?.defense}/150
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="150"
-                        value={formData.typeDistribution?.defense || 0}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            typeDistribution: {
-                              ...formData.typeDistribution!,
-                              defense: parseInt(e.target.value),
-                              total:
-                                (formData.typeDistribution?.attack || 0) +
-                                parseInt(e.target.value) +
-                                (formData.typeDistribution?.stamina || 0),
-                            },
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm font-medium text-green-600">
-                          Stamina{" "}
-                          {calculatedStats &&
-                            `(${
-                              calculatedStats.maxStamina
-                            } HP, +${calculatedStats.spinStealAmount.toFixed(
-                              1
-                            )} steal)`}
-                        </span>
-                        <span className="text-sm font-bold">
-                          {formData.typeDistribution?.stamina}/150
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="150"
-                        value={formData.typeDistribution?.stamina || 0}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            typeDistribution: {
-                              ...formData.typeDistribution!,
-                              stamina: parseInt(e.target.value),
-                              total:
-                                (formData.typeDistribution?.attack || 0) +
-                                (formData.typeDistribution?.defense || 0) +
-                                parseInt(e.target.value),
-                            },
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-
-                    {formData.typeDistribution?.total !== 360 && (
-                      <div className="text-sm text-amber-600 font-medium">
-                        ⚠️ Total must equal 360 (currently:{" "}
-                        {formData.typeDistribution?.total})
-                      </div>
-                    )}
-                  </div>
-                </div>
-
+            {/* Step 3: Contact Points (Spikes) */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
                 {/* Contact Points (Spikes) - Enhanced */}
                 <div className="space-y-4 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
                   <div className="flex items-center justify-between">
@@ -1029,7 +1200,7 @@ export default function MultiStepBeybladeEditor({
               Cancel
             </button>
 
-            {currentStep < 2 ? (
+            {currentStep < 3 ? (
               <button
                 onClick={handleNext}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

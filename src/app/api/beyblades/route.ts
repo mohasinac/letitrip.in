@@ -60,18 +60,14 @@ export const POST = createApiHandler(async (request) => {
     fileName,
     type: beybladeData.type,
     spinDirection: beybladeData.spinDirection || 'right',
-    mass: beybladeData.mass || 45,
-    radius: beybladeData.radius || 40,
-    actualSize: beybladeData.actualSize || 80,
-    maxSpin: beybladeData.maxSpin || 100,
-    speed: beybladeData.speed || 1.0,
-    spinDecayRate: beybladeData.spinDecayRate || 1.5,
-    spinStealFactor: beybladeData.spinStealFactor || 0.15,
+    mass: beybladeData.mass || 50, // grams
+    radius: beybladeData.radius || 4, // cm
+    actualSize: (beybladeData.radius || 4) * 10, // pixels = radius * 10
     typeDistribution: beybladeData.typeDistribution || {
-      attack: 100,
-      defense: 110,
-      stamina: 110,
-      total: 320
+      attack: 120,
+      defense: 120,
+      stamina: 120,
+      total: 360
     },
     pointsOfContact: beybladeData.pointsOfContact || [
       { angle: 0, damageMultiplier: 1.2, width: 45 },
@@ -79,20 +75,8 @@ export const POST = createApiHandler(async (request) => {
       { angle: 180, damageMultiplier: 1.2, width: 45 },
       { angle: 270, damageMultiplier: 1.0, width: 45 }
     ],
-    specialMove: beybladeData.specialMove || {
-      id: 'balanced_move',
-      name: 'Balanced Strike',
-      description: 'Moderate speed and power boost',
-      powerCost: 15,
-      flags: {
-        speedBoost: 1.5,
-        damageMultiplier: 1.3,
-        duration: 5,
-        cooldown: 15
-      },
-      category: 'offensive'
-    },
-    imageUrl: beybladeData.imageUrl || undefined
+    imageUrl: beybladeData.imageUrl,
+    imagePosition: beybladeData.imagePosition || { x: 0, y: 0, scale: 1, rotation: 0 }
   };
 
   // Save to database (userId can be 'admin' for now)

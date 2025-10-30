@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ArenaConfigurator from "@/components/admin/ArenaConfigurator";
 import { ArenaConfig } from "@/types/arenaConfig";
@@ -13,19 +13,20 @@ import { ArenaConfig } from "@/types/arenaConfig";
 export default function EditStadiumPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const { id } = use(params);
   const [arena, setArena] = useState<ArenaConfig | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchArena();
-  }, [params.id]);
+  }, [id]);
 
   const fetchArena = async () => {
     try {
-      const response = await fetch(`/api/arenas/${params.id}`);
+      const response = await fetch(`/api/arenas/${id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -45,7 +46,7 @@ export default function EditStadiumPage({
 
   const handleSave = async (updatedArena: ArenaConfig) => {
     try {
-      const response = await fetch(`/api/arenas/${params.id}`, {
+      const response = await fetch(`/api/arenas/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedArena),

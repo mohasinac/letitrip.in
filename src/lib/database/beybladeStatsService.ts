@@ -97,22 +97,22 @@ export class BeybladeStatsService {
     try {
       // Validate type distribution
       if (!validateTypeDistribution(stats.typeDistribution)) {
-        throw new Error('Invalid type distribution. Must sum to 320 with max 150 per stat.');
+        throw new Error('Invalid type distribution. Must sum to 360 with max 150 per stat.');
       }
 
-      // Validate mass
-      if (stats.mass < 10 || stats.mass > 30) {
-        throw new Error('Mass must be between 10 and 30 kg');
+      // Validate mass (in grams)
+      if (stats.mass < 10 || stats.mass > 2000) {
+        throw new Error('Mass must be between 10 and 2000 grams');
       }
 
-      // Validate radius
-      if (stats.radius < 25 || stats.radius > 55) {
-        throw new Error('Radius must be between 25 and 55 pixels');
+      // Validate radius (in cm)
+      if (stats.radius < 3 || stats.radius > 50) {
+        throw new Error('Radius must be between 3 and 50 cm');
       }
 
-      // Validate spin steal factor
-      if (stats.spinStealFactor < 0 || stats.spinStealFactor > 1) {
-        throw new Error('Spin steal factor must be between 0 and 1');
+      // Validate spin steal factor (percentage, optional field)
+      if (stats.spinStealFactor !== undefined && (stats.spinStealFactor < 0 || stats.spinStealFactor > 100)) {
+        throw new Error('Spin steal factor must be between 0 and 100%');
       }
 
       const now = new Date().toISOString();
@@ -189,7 +189,7 @@ export class BeybladeStatsService {
       
       const searchLower = query.toLowerCase();
       return allBeyblades.filter(bey => 
-        bey.name.toLowerCase().includes(searchLower) ||
+        (bey.name?.toLowerCase().includes(searchLower)) ||
         bey.displayName.toLowerCase().includes(searchLower)
       );
     } catch (error) {

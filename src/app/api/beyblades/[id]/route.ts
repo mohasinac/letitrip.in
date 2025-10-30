@@ -11,10 +11,10 @@ import { BeybladeStats } from '@/types/beybladeStats';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const beyblade = await beybladeStatsService.getBeybladeStats(id);
 
     if (!beyblade) {
@@ -45,10 +45,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.text();
 
     // Check if body is empty
@@ -117,10 +117,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Check if beyblade exists
     const beyblade = await beybladeStatsService.getBeybladeStats(id);

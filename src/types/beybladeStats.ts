@@ -17,15 +17,20 @@ export interface PointOfContact {
 
 /**
  * Type Distribution - 360 total points, max 150 per category
- * Each point provides specific bonuses:
- * - Attack: +0.01 damage, +0.01 speed
- * - Defense: -0.01 damage taken, +0.01 knockback resistance
- * - Stamina: +0.01 max stamina, +0.01 spin steal
+ * 
+ * Base Stats (0 points): 100 damage, 10 speed, 10 rotation, 10 knockback,
+ *                        1x damage taken, 10% invulnerability, 1000 HP, 
+ *                        10% spin steal, 10 decay/sec
+ * 
+ * Each point provides multiplicative bonuses:
+ * - Attack: +1% to all stats (150pts = 2.5x all)
+ * - Defense: -0.33% dmg taken, -0.167% knockback, +0.667% invuln (150pts = 50% dmg, 7.5 knockback, 20% invuln)
+ * - Stamina: +1.333% HP, +2.667% steal, -0.167% decay (150pts = 3000 HP, 50% steal, 7.5 decay)
  */
 export interface TypeDistribution {
-  attack: number; // 0-150, each point: +0.01 damage, +0.01 speed
-  defense: number; // 0-150, each point: -0.01 damage taken, +0.01 knockback resistance
-  stamina: number; // 0-150, each point: +0.01 max stamina, +0.01 spin steal
+  attack: number; // 0-150, multiplicative: base * (1 + points * 0.01)
+  defense: number; // 0-150, multiplicative: varies by stat (see formulas above)
+  stamina: number; // 0-150, multiplicative: varies by stat (see formulas above)
   total: number; // Must equal 360
 }
 
@@ -57,14 +62,31 @@ export interface BeybladeStats {
   actualSize?: number; // CALCULATED: pixels, visual display size = radius * 10
   
   // Calculated Stats (from typeDistribution, DO NOT SET MANUALLY)
-  // Base values: stamina=2000, attack=100, defense=100, speed=100, spinSteal=100, knockback=100
-  // Attack points: +1 damage, +1 speed per point (base 10 units/sec, 10 damage)
-  // Defense points: -1% damage taken, +1 knockback resistance per point (base 10 units)
-  // Stamina points: +20 max stamina, +1 spin steal per point (base 10 points)
-  stamina?: number; // CALCULATED: 2000 + (stamina points * 20)
-  spinStealFactor?: number; // CALCULATED: 100 + stamina points
-  spinDecayRate?: number; // CALCULATED: Based on stamina distribution (lower = better)
-  speed?: number; // CALCULATED: 100 + attack points (base 10 units/sec)
+  // Base values (0 points): 100 damage, 10 speed, 10 rotation, 10 knockback,
+  //                         1x damage taken, 10% invulnerability, 1000 HP,
+  //                         10% spin steal, 10 decay/sec
+  // 
+  // ATTACK (multiplicative):
+  // - Each point: +1% to all attack stats
+  // - Formula: base * (1 + points * 0.01)
+  // - 150 points: 250 damage (2.5x), 25 speed, 25 rotation
+  // 
+  // DEFENSE (multiplicative):
+  // - Damage taken: base * (1 - points * 0.00333) → 150pts = 50% damage taken
+  // - Knockback: base * (1 - points * 0.00167) → 150pts = 7.5 units
+  // - Invulnerability: base * (1 + points * 0.00667) → 150pts = 20% chance
+  // 
+  // STAMINA (multiplicative):
+  // - Max HP: base * (1 + points * 0.01333) → 150pts = 3000 HP
+  // - Spin steal: base * (1 + points * 0.02667) → 150pts = 50% (25% same spin)
+  // - Decay: base * (1 - points * 0.00167) → 150pts = 7.5/sec
+  stamina?: number; // CALCULATED: 1000 * (1 + stamina_points * 0.01333), rounded up
+  spinStealFactor?: number; // CALCULATED: 10 * (1 + stamina_points * 0.02667) % of damage
+  spinDecayRate?: number; // CALCULATED: 10 * (1 - stamina_points * 0.00167) per sec
+  speed?: number; // CALCULATED: 10 * (1 + attack_points * 0.01) units/sec
+  rotationSpeed?: number; // CALCULATED: 10 * (1 + attack_points * 0.01) spins/sec
+  invulnerabilityChance?: number; // CALCULATED: 10 * (1 + defense_points * 0.00667) %
+  damageReduction?: number; // CALCULATED: 1 / damageTaken for display
   
   // Type Distribution (360 points total)
   typeDistribution: TypeDistribution;
@@ -140,63 +162,126 @@ export function validateTypeDistribution(distribution: TypeDistribution): boolea
 
 /**
  * Calculate all derived stats from type distribution
- * Base values: stamina=2000, attack=100, defense=100, speed=100, spinSteal=100, knockback=100
- * - Attack points: +1 damage multiplier, +1 speed multiplier per point
- * - Defense points: +1 defense multiplier, +1 knockback resistance per point  
- * - Stamina points: +20 max stamina, +1 spin steal per point
+ * 
+ * BASE STATS (0 distribution points):
+ * - 100 base damage
+ * - 10 base speed (units/sec)
+ * - 10 base rotation (spins/sec)
+ * - 10 unit knockback distance
+ * - 1x damage taken (take damage as is)
+ * - 10% chance to become invulnerable for 1.5 sec
+ * - 1000 base stamina (HP)
+ * - 10% base spin steal
+ * - 10 base spin decay per second
+ * 
+ * ATTACK (0-150 range):
+ * - Each point: +1% to all attack stats (multiplicative)
+ * - 0 points = 100 damage (1.0x), 10 speed, 10 rotation
+ * - 150 points = 250 damage (2.5x), 25 speed, 25 rotation
+ * - Formula: base * (1 + points * 0.01)
+ * 
+ * DEFENSE (0-150 range):
+ * - Each point: -0.33% damage taken, -0.167% knockback, +0.667% invulnerability (multiplicative)
+ * - 0 points = 100% damage taken (1.0x), 10 knockback, 10% invulnerability
+ * - 150 points = 50% damage taken (0.5x), 7.5 knockback, 20% invulnerability
+ * - Formula: base * (1 - points * 0.00333) for damage, base * (1 - points * 0.00167) for knockback, base * (1 + points * 0.00667) for invuln
+ * 
+ * STAMINA (0-150 range):
+ * - Each point: +1.333% HP, +2.667% spin steal, -0.167% decay (multiplicative)
+ * - 0 points = 1000 HP, 10% steal, 10 decay/sec
+ * - 150 points = 3000 HP, 50% steal, 7.5 decay/sec
+ * - Formula: base * (1 + points * 0.01333) for HP, base * (1 + points * 0.02667) for steal, base * (1 - points * 0.00167) for decay
  */
 export interface CalculatedStats {
-  // Core stats (all start at 100 = 1x multiplier)
-  attackPower: number; // 100 + attack points (base damage = 10)
-  defensePower: number; // 100 + defense points (damage reduction)
-  speedMultiplier: number; // 100 + attack points (base speed = 10 units/sec)
-  knockbackResistance: number; // 100 + defense points (base = 10 units)
+  // Attack stats
+  attackPower: number; // Legacy compatibility (100-250)
+  damageMultiplier: number; // 1.0x - 2.5x (multiplicative)
+  damagePerHit: number; // 100 - 250 damage (base * multiplier)
+  speedPerSecond: number; // 10 - 25 units/sec (multiplicative)
+  rotationSpeed: number; // 10 - 25 spins/sec (multiplicative)
+  
+  // Defense stats
+  defensePower: number; // Legacy compatibility (100-250)
+  damageTaken: number; // 1.0x - 0.5x (100% - 50%, multiplicative)
+  damageReduction: number; // 1.0x - 2.0x (inverse of damageTaken for display)
+  knockbackDistance: number; // 10 - 7.5 units (multiplicative)
+  invulnerabilityChance: number; // 10% - 20% (multiplicative)
   
   // Stamina stats
-  maxStamina: number; // 2000 + (stamina points * 20)
-  spinStealPower: number; // 100 + stamina points (base = 10 points per hit)
-  spinDecayRate: number; // Higher stamina = slower decay
+  staminaPower: number; // Legacy compatibility (100-250)
+  maxStamina: number; // 1000 - 3000 HP (multiplicative, rounded up)
+  spinStealPercent: number; // 10% - 50% (multiplicative, 50% in opposite spin, 25% in same spin)
+  spinStealAmount: number; // For display: same as spinStealPercent
+  spinDecayRate: number; // 10 - 7.5 per sec (multiplicative)
   
-  // Actual game values (for 800x800 arena)
-  damagePerHit: number; // attackPower * 0.1 (so 100 = 10 damage)
-  speedPerSecond: number; // speedMultiplier * 0.1 (so 100 = 10 units/sec)
-  knockbackDistance: number; // knockbackResistance * 0.1 (so 100 = 10 units)
-  spinStealAmount: number; // spinStealPower * 0.1 (so 100 = 10 points)
-  damageReduction: number; // defensePower * 0.01 (so 100 = 1.0x, 150 = 1.5x reduction)
+  // Legacy/compatibility
+  speedMultiplier: number; // Same as attackPower
+  knockbackResistance: number; // Same as defensePower
+  spinStealPower: number; // Same as staminaPower
 }
 
 export function calculateStats(distribution: TypeDistribution): CalculatedStats {
-  // Base values (all at 100 = 1x multiplier)
-  const baseValue = 100;
-  const baseStamina = 2000;
+  // Base stats (at 0 distribution points)
+  const baseDamage = 100;
+  const baseSpeed = 10;
+  const baseRotation = 10;
+  const baseKnockback = 10;
+  const baseDamageTaken = 1.0; // 1x = 100% damage taken
+  const baseInvulnerability = 10; // 10% chance
+  const baseStamina = 1000;
+  const baseSpinSteal = 10; // 10%
+  const baseSpinDecay = 10; // 10 per second
   
-  // Calculate multipliers
-  const attackPower = baseValue + distribution.attack;
-  const defensePower = baseValue + distribution.defense;
-  const speedMultiplier = baseValue + distribution.attack; // Attack also increases speed
-  const knockbackResistance = baseValue + distribution.defense; // Defense also increases knockback resistance
+  // Store distribution points for calculations
+  const attackPower = distribution.attack; // 0-150
+  const defensePower = distribution.defense; // 0-150
+  const staminaPower = distribution.stamina; // 0-150
+  
+  // Attack calculations
+  // Each point: +0.01x damage, +0.1 speed, +0.1 rotation
+  const damageMultiplier = 1.0 + (attackPower * 0.01); // 1.0x - 2.5x
+  const damagePerHit = baseDamage * damageMultiplier; // 100 - 250 damage
+  const speedPerSecond = baseSpeed * (1.0 + attackPower * 0.01); // 10 - 25 units/sec
+  const rotationSpeed = baseRotation * (1.0 + attackPower * 0.01); // 10 - 25 spins/sec
+  
+  // Defense calculations
+  // At 150 points: 50% damage taken (0.5x), 7.5 knockback (25% reduction), 20% invulnerability (2x)
+  const damageTaken = Math.max(0.01, baseDamageTaken * (1.0 - defensePower * 0.00333)); // 1.0x - 0.5x (100% - 50%)
+  const damageReduction = 1 / damageTaken; // Display as effective reduction (1.0x - 2.0x)
+  const knockbackDistance = Math.max(0, baseKnockback * (1.0 - defensePower * 0.00167)); // 10 - 7.5 units (25% reduction)
+  const invulnerabilityChance = Math.min(100, baseInvulnerability * (1.0 + defensePower * 0.00667)); // 10% - 20%
   
   // Stamina calculations
-  const maxStamina = baseStamina + (distribution.stamina * 20); // +20 per point
-  const spinStealPower = baseValue + distribution.stamina;
-  
-  // Spin decay rate: inverse of stamina (more stamina = slower decay)
-  // Base decay at 60 stamina points = ~1.67/sec, at 150 = ~0.67/sec
-  const spinDecayRate = 100 / (distribution.stamina + 60);
+  // At 150 points: 3000 HP (3x), 50% spin steal (5x), 7.5 decay (25% reduction)
+  const maxStamina = Math.ceil(baseStamina * (1.0 + staminaPower * 0.01333)); // 1000 - 3000 HP (rounded up)
+  const spinStealPercent = baseSpinSteal * (1.0 + staminaPower * 0.02667); // 10% - 50%
+  const spinDecayRate = Math.max(0.5, baseSpinDecay * (1.0 - staminaPower * 0.00167)); // 10 - 7.5 per sec
   
   return {
-    attackPower,
-    defensePower,
-    speedMultiplier,
-    knockbackResistance,
+    // Attack
+    attackPower: attackPower + 100, // For legacy compatibility (100-250)
+    damageMultiplier,
+    damagePerHit,
+    speedPerSecond,
+    rotationSpeed,
+    
+    // Defense
+    defensePower: defensePower + 100, // For legacy compatibility (100-250)
+    damageTaken,
+    damageReduction,
+    knockbackDistance,
+    invulnerabilityChance,
+    
+    // Stamina
+    staminaPower: staminaPower + 100, // For legacy compatibility (100-250)
     maxStamina,
-    spinStealPower,
+    spinStealPercent,
+    spinStealAmount: spinStealPercent, // For display
     spinDecayRate,
-    // Actual game values (multiply by 0.1 to get base = 10)
-    damagePerHit: attackPower * 0.1,
-    speedPerSecond: speedMultiplier * 0.1,
-    knockbackDistance: knockbackResistance * 0.1,
-    spinStealAmount: spinStealPower * 0.1,
-    damageReduction: defensePower * 0.01,
+    
+    // Legacy compatibility
+    speedMultiplier: attackPower + 100,
+    knockbackResistance: defensePower + 100,
+    spinStealPower: staminaPower + 100,
   };
 }

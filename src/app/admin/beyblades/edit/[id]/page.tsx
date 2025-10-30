@@ -6,26 +6,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import MultiStepBeybladeEditor from "@/components/admin/MultiStepBeybladeEditor";
 import { BeybladeStats } from "@/types/beybladeStats";
 
 export default function EditBeybladePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const { id } = use(params);
   const [beyblade, setBeyblade] = useState<BeybladeStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchBeyblade();
-  }, [params.id]);
+  }, [id]);
 
   const fetchBeyblade = async () => {
     try {
-      const response = await fetch(`/api/beyblades/${params.id}`);
+      const response = await fetch(`/api/beyblades/${id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -45,7 +46,7 @@ export default function EditBeybladePage({
 
   const handleSave = async (updatedBeyblade: Partial<BeybladeStats>) => {
     try {
-      const response = await fetch(`/api/beyblades/${params.id}`, {
+      const response = await fetch(`/api/beyblades/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedBeyblade),
