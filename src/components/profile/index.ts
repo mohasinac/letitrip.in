@@ -1,1 +1,2 @@
-export { default as AddressManager } from './AddressManager';
+// Profile component exports
+export { default as SellerSidebar } from "../seller/SellerSidebar";

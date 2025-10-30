@@ -550,6 +550,439 @@ export interface SellerProfile {
   updatedAt: string;
 }
 
+// Enhanced Seller Shop Configuration
+export interface SellerShop {
+  id: string;
+  sellerId: string;
+  storeName: string;
+  storeSlug: string;
+  description: string;
+  storeImage?: string;
+  coverImage?: string;
+  pickupAddresses: PickupAddress[];
+  defaultPickupAddressId?: string;
+  isActive: boolean;
+  isVerified: boolean;
+  seo: {
+    title: string;
+    description: string;
+    keywords: string[];
+    og_image?: string;
+  };
+  socialMedia?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    whatsapp?: string;
+  };
+  businessInfo: {
+    businessName?: string;
+    businessType?: 'individual' | 'company' | 'partnership';
+    gstNumber?: string;
+    panNumber?: string;
+    bankDetails?: {
+      accountNumber: string;
+      ifscCode: string;
+      accountHolderName: string;
+      bankName: string;
+      branchName?: string;
+    };
+  };
+  settings: {
+    freeShippingThreshold?: number;
+    enableCOD: boolean;
+    processingTime: number; // in days
+    returnPolicy: string;
+    shippingPolicy: string;
+  };
+  stats: {
+    totalProducts: number;
+    activeProducts: number;
+    totalOrders: number;
+    totalRevenue: number;
+    rating: number;
+    reviewCount: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PickupAddress {
+  id: string;
+  label: string; // e.g., "Main Warehouse", "Store Location"
+  name: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+// Enhanced Product Types for Sellers
+export interface SellerProduct {
+  id: string;
+  sellerId: string;
+  slug: string; // with "buy-" prefix
+  name: string;
+  description: string;
+  shortDescription?: string;
+  
+  // Pricing
+  price: number;
+  compareAtPrice?: number;
+  cost?: number;
+  
+  // Inventory
+  sku: string;
+  quantity: number;
+  lowStockThreshold: number;
+  
+  // Category (only leaf categories allowed)
+  categoryId: string;
+  categorySlug: string;
+  tags: string[];
+  
+  // Media
+  images: ProductMediaImage[];
+  videos: ProductMediaVideo[];
+  
+  // Pickup & Shipping
+  pickupAddressId: string;
+  weight: number;
+  weightUnit: 'kg' | 'g' | 'lb' | 'oz';
+  dimensions?: {
+    length: number;
+    width: number;
+    height: number;
+    unit: 'cm' | 'in';
+  };
+  freeShipping: boolean;
+  shippingMethod: 'seller' | 'shiprocket' | 'pickup';
+  
+  // Condition & Features
+  condition: 'new' | 'used-mint' | 'used-good' | 'used-fair' | 'damaged';
+  returnable: boolean;
+  returnPeriod?: number; // days
+  features: string[];
+  specifications: { [key: string]: string };
+  
+  // SEO
+  seo: {
+    title: string;
+    description: string;
+    keywords: string[];
+    slug: string; // Auto-generated with "buy-" prefix
+  };
+  
+  // Dates
+  startDate: string;
+  expirationDate?: string; // null means permanent
+  
+  // Status
+  status: 'active' | 'draft' | 'archived' | 'expired';
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductMediaImage {
+  id: string;
+  url: string;
+  alt: string;
+  order: number;
+  storage_path: string; // seller/products/{slug}/img1-img5
+  whatsappEdit?: {
+    originalUrl: string;
+    editedUrl: string;
+    frameData?: any; // 800x800 frame data
+  };
+}
+
+export interface ProductMediaVideo {
+  id: string;
+  url: string;
+  title: string;
+  thumbnail?: string;
+  duration?: number;
+  order: number;
+  storage_path: string; // seller/products/{slug}/v1 or v2
+}
+
+// Seller Coupon System (WooCommerce-style)
+export interface SellerCoupon {
+  id: string;
+  sellerId: string;
+  code: string;
+  name: string;
+  description?: string;
+  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo' | 'cart_discount';
+  value: number;
+  
+  // Usage Restrictions
+  minimumAmount?: number;
+  maximumAmount?: number;
+  maxUses?: number;
+  maxUsesPerUser?: number;
+  usedCount: number;
+  
+  // Dates
+  startDate: string;
+  endDate: string;
+  isPermanent: boolean;
+  
+  // Applicability
+  applicableProducts?: string[];
+  applicableCategories?: string[];
+  excludeProducts?: string[];
+  excludeCategories?: string[];
+  
+  // Restrictions
+  restrictions: {
+    firstTimeOnly?: boolean;
+    newCustomersOnly?: boolean;
+    existingCustomersOnly?: boolean;
+    minQuantity?: number;
+    maxQuantity?: number;
+    allowedPaymentMethods?: ('cod' | 'prepaid')[];
+    allowedUserEmails?: string[];
+    excludedUserEmails?: string[];
+  };
+  
+  // Stacking
+  combinable: boolean;
+  priority: number;
+  
+  // Status
+  status: 'active' | 'inactive' | 'expired' | 'scheduled';
+  
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Seller Sale System
+export interface SellerSale {
+  id: string;
+  sellerId: string;
+  name: string;
+  description?: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  
+  // Applicability
+  applyTo: 'all_products' | 'specific_products' | 'specific_categories';
+  productIds?: string[];
+  categoryIds?: string[];
+  
+  // Shipping
+  enableFreeShipping: boolean;
+  
+  // Dates
+  startDate: string;
+  endDate?: string;
+  isPermanent: boolean;
+  
+  // Status
+  status: 'active' | 'inactive' | 'scheduled' | 'expired';
+  
+  // Stats
+  stats: {
+    ordersCount: number;
+    revenue: number;
+    productsAffected: number;
+  };
+  
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Seller Orders
+export interface SellerOrder {
+  id: string;
+  orderNumber: string;
+  sellerId: string;
+  userId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  
+  // Items
+  items: SellerOrderItem[];
+  
+  // Pricing
+  subtotal: number;
+  discount: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  
+  // Coupon Used
+  couponId?: string;
+  couponCode?: string;
+  couponDiscount?: number;
+  
+  // Sale Applied
+  saleId?: string;
+  saleDiscount?: number;
+  
+  // Addresses
+  shippingAddress: Address;
+  billingAddress: Address;
+  pickupAddress: PickupAddress;
+  
+  // Payment
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentMethod: 'razorpay' | 'cod';
+  paymentId?: string;
+  
+  // Order Status
+  status: 'pending' | 'approved' | 'rejected' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  autoApprovedAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
+  
+  // Shipping
+  shippingMethod: 'seller' | 'shiprocket';
+  trackingNumber?: string;
+  shiprocketOrderId?: string;
+  shippingLabel?: string;
+  
+  // Transaction Snapshot (immutable copy)
+  transactionSnapshot: {
+    products: SellerOrderItem[];
+    pricing: {
+      subtotal: number;
+      discount: number;
+      shipping: number;
+      tax: number;
+      total: number;
+    };
+    coupon?: {
+      code: string;
+      discount: number;
+      type: string;
+    };
+    sale?: {
+      name: string;
+      discount: number;
+    };
+    timestamp: string;
+  };
+  
+  // Notes
+  sellerNotes?: string;
+  customerNotes?: string;
+  internalNotes?: string;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  deliveredAt?: string;
+}
+
+export interface SellerOrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  productImage: string;
+  sku: string;
+  price: number;
+  quantity: number;
+  total: number;
+  
+  // Product snapshot at time of order
+  snapshot: {
+    name: string;
+    description: string;
+    image: string;
+    price: number;
+    sku: string;
+    condition: string;
+  };
+}
+
+// Shipments
+export interface SellerShipment {
+  id: string;
+  sellerId: string;
+  orderId: string;
+  orderNumber: string;
+  
+  // Shipping details
+  carrier: string;
+  trackingNumber: string;
+  shiprocketOrderId?: string;
+  shiprocketShipmentId?: string;
+  
+  // Addresses
+  fromAddress: PickupAddress;
+  toAddress: Address;
+  
+  // Package details
+  weight: number;
+  dimensions: {
+    length: number;
+    width: number;
+    height: number;
+    unit: 'cm' | 'in';
+  };
+  
+  // Status
+  status: 'pending' | 'pickup_scheduled' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed' | 'returned';
+  
+  // Tracking
+  trackingHistory: ShipmentTrackingEvent[];
+  
+  // Labels & Documents
+  shippingLabel?: string;
+  invoiceUrl?: string;
+  manifestUrl?: string;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+}
+
+export interface ShipmentTrackingEvent {
+  status: string;
+  location?: string;
+  description: string;
+  timestamp: string;
+}
+
+// Seller Alerts/Notifications
+export interface SellerAlert {
+  id: string;
+  sellerId: string;
+  type: 'new_order' | 'pending_approval' | 'pending_shipment' | 'low_stock' | 'order_delivered' | 'return_request' | 'review' | 'system';
+  title: string;
+  message: string;
+  severity: 'info' | 'warning' | 'error' | 'success';
+  
+  // Related entities
+  orderId?: string;
+  productId?: string;
+  shipmentId?: string;
+  
+  // Actions
+  actionUrl?: string;
+  actionLabel?: string;
+  
+  // Status
+  isRead: boolean;
+  readAt?: string;
+  
+  createdAt: string;
+}
+
 export interface SellerAnalytics {
   totalRevenue: number;
   totalOrders: number;
@@ -567,17 +1000,4 @@ export interface SellerAnalytics {
     orders: number;
   }>;
   recentOrders: Order[];
-}
-
-export interface SellerNotification {
-  id: string;
-  sellerId: string;
-  type: 'order' | 'product' | 'review' | 'payment' | 'system';
-  title: string;
-  message: string;
-  orderId?: string;
-  productId?: string;
-  data?: any;
-  isRead: boolean;
-  createdAt: string;
 }

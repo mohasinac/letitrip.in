@@ -35,7 +35,9 @@ import { useState } from "react";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import AdminSidebar from "@/components/layout/AdminSidebar";
+import SellerSidebar from "@/components/seller/SellerSidebar";
 import { useIsAdminRoute } from "@/hooks/useIsAdminRoute";
+import { usePathname } from "next/navigation";
 
 interface ModernLayoutProps {
   children: React.ReactNode;
@@ -51,11 +53,14 @@ const navigation = [
 export default function ModernLayout({ children }: ModernLayoutProps) {
   const { mode, toggleTheme } = useModernTheme();
   const { user, logout, loading } = useAuth();
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] =
     useState<null | HTMLElement>(null);
   const [adminSidebarOpen, setAdminSidebarOpen] = useState(true);
+  const [sellerSidebarOpen, setSellerSidebarOpen] = useState(true);
   const isAdminRoute = useIsAdminRoute();
+  const isSellerRoute = pathname?.startsWith("/seller") || false;
 
   const handleDrawerToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -98,6 +103,11 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 <ListItemText primary="Admin Panel" />
               </ListItem>
             )}
+            {(user.role === "seller" || user.role === "admin") && (
+              <ListItem component={Link} href="/seller/dashboard">
+                <ListItemText primary="Seller Panel" />
+              </ListItem>
+            )}
             <ListItem
               component="button"
               onClick={handleLogout}
@@ -128,12 +138,17 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        flexDirection: isAdminRoute ? "row" : "column",
+        flexDirection: (isAdminRoute || isSellerRoute) ? "row" : "column",
       }}
     >
       {/* Admin Sidebar - Only show on admin routes */}
       {isAdminRoute && (
         <AdminSidebar open={adminSidebarOpen} onToggle={setAdminSidebarOpen} />
+      )}
+      
+      {/* Seller Sidebar - Only show on seller routes */}
+      {isSellerRoute && (
+        <SellerSidebar open={sellerSidebarOpen} onToggle={setSellerSidebarOpen} />
       )}
 
       <Box
@@ -298,6 +313,12 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                           <MenuItem component={Link} href="/admin">
                             <AccountCircle sx={{ mr: 2 }} />
                             Admin Panel
+                          </MenuItem>
+                        )}
+                        {(user.role === "seller" || user.role === "admin") && (
+                          <MenuItem component={Link} href="/seller/dashboard">
+                            <AccountCircle sx={{ mr: 2 }} />
+                            Seller Panel
                           </MenuItem>
                         )}
                         <Divider />

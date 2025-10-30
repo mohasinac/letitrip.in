@@ -26,6 +26,7 @@ interface AuthUser {
   displayName?: string | null;
   name?: string;
   phone?: string;
+  avatar?: string;
   role: "admin" | "seller" | "user";
   addresses?: any[];
   createdAt?: Date | string;

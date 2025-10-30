@@ -13,11 +13,16 @@ import {
   X,
   LogOut,
   MapPin,
+  Settings,
+  AlertTriangle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import AddressManager from "@/components/profile/AddressManager";
+import ProfilePictureUpload from "@/components/profile/ProfilePictureUpload";
+import PasswordChangeForm from "@/components/profile/PasswordChangeForm";
+import AccountDeletion from "@/components/profile/AccountDeletion";
 import { Address } from "@/types";
 
 export default function ProfilePage() {
@@ -73,6 +78,61 @@ function ProfileContent() {
     }
   };
 
+  const handleAvatarUpload = async (avatarUrl: string) => {
+    try {
+      await updateProfile({ avatar: avatarUrl });
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const handlePasswordChange = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
+    try {
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to change password");
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch("/api/user/account", {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to delete account");
+      }
+
+      // Logout after deletion
+      await logout();
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
   const handleCancel = () => {
     setName(user?.name || "");
     setEmail(user?.email || "");
@@ -123,10 +183,11 @@ function ProfileContent() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-white" />
-                </div>
+              <div className="flex items-center space-x-4">
+                <ProfilePictureUpload
+                  currentAvatar={user.avatar}
+                  onUpload={handleAvatarUpload}
+                />
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
                     {user.name}
@@ -350,10 +411,12 @@ function ProfileContent() {
 
         {/* Actions */}
         <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Account Actions
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Settings className="w-5 h-5 mr-2" />
+            Account Security
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <PasswordChangeForm onPasswordChange={handlePasswordChange} />
             {!user.isEmailVerified && (
               <button className="flex items-center justify-center px-4 py-2 border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">
                 <Mail className="w-4 h-4 mr-2" />
@@ -366,11 +429,20 @@ function ProfileContent() {
                 Verify Phone
               </button>
             )}
-            <button className="flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-              <Shield className="w-4 h-4 mr-2" />
-              Change Password
-            </button>
           </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="mt-6 bg-white rounded-lg shadow-sm border border-red-200 p-6">
+          <h3 className="text-lg font-semibold text-red-900 mb-2 flex items-center">
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            Danger Zone
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Once you delete your account, there is no going back. Please be
+            certain.
+          </p>
+          <AccountDeletion onDeleteAccount={handleDeleteAccount} />
         </div>
       </div>
     </div>
