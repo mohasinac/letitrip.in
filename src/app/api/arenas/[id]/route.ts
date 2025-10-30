@@ -7,7 +7,7 @@ import { arenaService } from '@/lib/database/arenaService';
 import { ArenaConfig } from "@/types/arenaConfig";
 
 export const GET = createApiHandler(async (request, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   const arena = await arenaService.getArenaById(id);
 
   if (!arena) {
@@ -18,7 +18,7 @@ export const GET = createApiHandler(async (request, { params }) => {
 });
 
 export const PUT = createApiHandler(async (request, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   const updates: Partial<ArenaConfig> = await request.json();
 
   const updated = await arenaService.updateArena(id, updates);
@@ -26,7 +26,7 @@ export const PUT = createApiHandler(async (request, { params }) => {
 });
 
 export const DELETE = createApiHandler(async (request, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   await arenaService.deleteArena(id);
   return successResponse({ id }, "Arena deleted successfully");
 });
