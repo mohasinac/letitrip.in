@@ -40,61 +40,15 @@ const GameArena: React.FC<GameArenaProps> = ({
     imagesLoadedRef.current = imagesLoaded;
   }, [imagesLoaded]);
 
-  // Load game assets
-  useEffect(() => {
-    const loadImages = async () => {
-      try {
-        const imageMap = new Map<string, HTMLImageElement>();
-        const loadPromises: Promise<void>[] = [];
-
-        // Load beyblade images
-        gameState.beyblades.forEach((beyblade) => {
-          const promise = new Promise<void>((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-              const key = beyblade.config.fileName.replace(".svg", "");
-              imageMap.set(key, img);
-              resolve();
-            };
-            img.onerror = reject;
-            img.src = `/assets/svg/beyblades/${beyblade.config.fileName}`;
-          });
-          loadPromises.push(promise);
-        });
-
-        // Load stadium image
-        const stadiumPromise = new Promise<void>((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            stadiumImageRef.current = img;
-            resolve();
-          };
-          img.onerror = reject;
-          img.src = `/assets/svg/beyblades/stadium.svg`;
-        });
-        loadPromises.push(stadiumPromise);
-
-        await Promise.all(loadPromises);
-        beybladeImagesRef.current = imageMap;
-        setImagesLoaded(true);
-
-        // Pre-render static stadium to offscreen canvas
-        renderStadiumToCache();
-      } catch (error) {
-        console.error("Failed to load game images:", error);
-        setImagesLoaded(true); // Continue with fallback rendering
-      }
-    };
-
-    loadImages();
-  }, [gameState.beyblades]);
-
   // Pre-render static stadium elements to offscreen canvas
   const renderStadiumToCache = useCallback(() => {
     const offscreenCanvas = document.createElement("canvas");
     offscreenCanvas.width = 800;
     offscreenCanvas.height = 800;
-    const ctx = offscreenCanvas.getContext("2d", { alpha: false });
+    const ctx = offscreenCanvas.getContext("2d", {
+      alpha: false,
+      willReadFrequently: false,
+    });
     if (!ctx) return;
 
     // Draw static stadium elements
@@ -252,6 +206,72 @@ const GameArena: React.FC<GameArenaProps> = ({
     stadiumCacheRef.current = offscreenCanvas;
   }, [gameState.stadium, theme.palette.background.default]);
 
+  // Eagerly build stadium cache on mount (before images load)
+  useEffect(() => {
+    // Build stadium cache immediately to eliminate lag
+    renderStadiumToCache();
+  }, [renderStadiumToCache]); // Run once on mount and when dependencies change
+
+  // Load game assets
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const imageMap = new Map<string, HTMLImageElement>();
+        const loadPromises: Promise<void>[] = [];
+
+        // Load beyblade images with higher priority
+        gameState.beyblades.forEach((beyblade) => {
+          const promise = new Promise<void>((resolve, reject) => {
+            const img = new Image();
+            // Set decoding mode for better performance
+            img.decoding = "async";
+            img.onload = () => {
+              const key = beyblade.config.fileName.replace(".svg", "");
+              imageMap.set(key, img);
+              resolve();
+            };
+            img.onerror = () => {
+              console.warn(
+                `Failed to load beyblade image: ${beyblade.config.fileName}`
+              );
+              resolve(); // Continue even if one image fails
+            };
+            img.src = `/assets/svg/beyblades/${beyblade.config.fileName}`;
+          });
+          loadPromises.push(promise);
+        });
+
+        // Load stadium image
+        const stadiumPromise = new Promise<void>((resolve, reject) => {
+          const img = new Image();
+          img.decoding = "async";
+          img.onload = () => {
+            stadiumImageRef.current = img;
+            resolve();
+          };
+          img.onerror = () => {
+            console.warn("Failed to load stadium image");
+            resolve(); // Continue with fallback rendering
+          };
+          img.src = `/assets/svg/beyblades/stadium.svg`;
+        });
+        loadPromises.push(stadiumPromise);
+
+        await Promise.all(loadPromises);
+        beybladeImagesRef.current = imageMap;
+        setImagesLoaded(true);
+
+        // Update stadium cache with loaded images if needed
+        renderStadiumToCache();
+      } catch (error) {
+        console.error("Failed to load game images:", error);
+        setImagesLoaded(true); // Continue with fallback rendering
+      }
+    };
+
+    loadImages();
+  }, [gameState.beyblades, renderStadiumToCache]);
+
   // Handle canvas scaling for different screen sizes
   useEffect(() => {
     const updateCanvasScale = () => {
@@ -362,8 +382,13 @@ const GameArena: React.FC<GameArenaProps> = ({
     const ctx = canvas.getContext("2d", {
       alpha: false, // Performance: no transparency needed
       desynchronized: true, // Performance: allow async rendering
+      willReadFrequently: false, // Performance: optimize for writing
     });
     if (!ctx) return;
+
+    // Performance optimization: use image smoothing only when needed
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
     const currentTime = Date.now();
     const currentGameState = gameStateRef.current;
