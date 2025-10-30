@@ -543,20 +543,23 @@ export default function EditProductPage() {
 
               <Box sx={{ flex: "1 1 auto" }} />
 
-              {activeStep === steps.length - 1 ? (
+              {/* Always show Finish button */}
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleSubmit}
+                disabled={saving}
+                startIcon={
+                  saving ? <CircularProgress size={20} /> : <Check />
+                }
+              >
+                {saving ? "Saving..." : "Finish & Save Changes"}
+              </Button>
+
+              {/* Show Next button if not on last step */}
+              {activeStep < steps.length - 1 && (
                 <Button
-                  variant="contained"
-                  onClick={handleSubmit}
-                  disabled={saving}
-                  startIcon={
-                    saving ? <CircularProgress size={20} /> : <Check />
-                  }
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
+                  variant="outlined"
                   onClick={handleNext}
                   endIcon={<ArrowForward />}
                 >
