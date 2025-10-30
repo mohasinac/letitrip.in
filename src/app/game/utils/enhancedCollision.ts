@@ -6,6 +6,7 @@
 import { GameBeyblade, Vector2D } from '../types/game';
 import { BeybladeStats, PointOfContact, calculateTypeBonuses } from '@/types/beybladeStats';
 import { vectorLength, vectorSubtract, vectorNormalize, vectorDot } from './vectorUtils';
+import { calculateDamageAtAngle, getBaseDamage } from '@/lib/utils/contactPointsBalance';
 
 /**
  * Check if two Beyblades are colliding
@@ -40,29 +41,20 @@ function getCollisionAngle(
 }
 
 /**
- * Find the damage multiplier based on point of contact
+ * Find the damage multiplier based on point of contact using balanced formula
  */
 function getContactDamageMultiplier(
   relativeAngle: number,
   pointsOfContact: PointOfContact[]
-): number {
-  let maxMultiplier = 1.0; // Default multiplier
+): { damageMultiplier: number; isHit: boolean; hitPointIndex: number | null } {
+  // Use the balanced damage calculator
+  const result = calculateDamageAtAngle(pointsOfContact, relativeAngle);
   
-  for (const contact of pointsOfContact) {
-    // Calculate angular difference
-    let angleDiff = Math.abs(relativeAngle - contact.angle);
-    if (angleDiff > 180) angleDiff = 360 - angleDiff;
-    
-    // Check if within contact width
-    if (angleDiff <= contact.width / 2) {
-      // Linear interpolation for smoother damage
-      const factor = 1 - (angleDiff / (contact.width / 2));
-      const multiplier = 1.0 + (contact.damageMultiplier - 1.0) * factor;
-      maxMultiplier = Math.max(maxMultiplier, multiplier);
-    }
-  }
-  
-  return maxMultiplier;
+  return {
+    damageMultiplier: result.damageMultiplier,
+    isHit: result.isHit,
+    hitPointIndex: result.hitPointIndex,
+  };
 }
 
 /**
@@ -123,14 +115,17 @@ export function resolveEnhancedCollision(
   const bey2CollisionAngle = getCollisionAngle(bey2.position, bey2.rotation, collisionPoint);
   
   // Get contact damage multipliers
-  const bey1ContactMultiplier = getContactDamageMultiplier(
+  const bey1ContactResult = getContactDamageMultiplier(
     bey1CollisionAngle,
     bey1Stats.pointsOfContact
   );
-  const bey2ContactMultiplier = getContactDamageMultiplier(
+  const bey2ContactResult = getContactDamageMultiplier(
     bey2CollisionAngle,
     bey2Stats.pointsOfContact
   );
+  
+  const bey1ContactMultiplier = bey1ContactResult.damageMultiplier;
+  const bey2ContactMultiplier = bey2ContactResult.damageMultiplier;
   
   // Calculate relative velocity
   const relativeVelocity = vectorSubtract(bey1.velocity, bey2.velocity);

@@ -910,11 +910,11 @@ h6 {
   .badge-success {
     @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300;
   }
-
+  
   .badge-warning {
     @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300;
   }
-
+  
   .badge-error {
     background-color: hsl(var(--destructive));
     color: hsl(var(--destructive-foreground));
@@ -2449,5 +2449,37 @@ h6 {
 
   .dark .theme-bg-force {
     background-color: var(--theme-background) !important;
+  }
+
+  /* Custom slider styling for image scale control */
+  .slider-thumb-blue::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #2563eb;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider-thumb-blue::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #2563eb;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider-thumb-blue::-webkit-slider-thumb:hover {
+    background: #1d4ed8;
+    transform: scale(1.1);
+  }
+
+  .slider-thumb-blue::-moz-range-thumb:hover {
+    background: #1d4ed8;
+    transform: scale(1.1);
   }
 }

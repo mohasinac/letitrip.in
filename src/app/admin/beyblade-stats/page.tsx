@@ -97,6 +97,35 @@ export default function BeybladeStatsAdmin() {
     setEditingImageFor(null);
   };
 
+  const handlePointsOfContactUpdated = async (
+    beybladeId: string,
+    points: any[]
+  ) => {
+    try {
+      // Update the beyblade with new points of contact
+      const response = await fetch(`/api/beyblades/${beybladeId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pointsOfContact: points,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setBeyblades((prev) =>
+          prev.map((bey) =>
+            bey.id === beybladeId ? { ...bey, pointsOfContact: points } : bey
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating points of contact:", error);
+    }
+  };
+
   const handleSaveBeyblade = async (beyblade: Partial<BeybladeStats>) => {
     try {
       const url = editingBeyblade
@@ -265,6 +294,18 @@ export default function BeybladeStatsAdmin() {
                           onImageUploaded={(url) =>
                             handleImageUploaded(beyblade.id, url)
                           }
+                          onPointsOfContactUpdated={(points) =>
+                            handlePointsOfContactUpdated(beyblade.id, points)
+                          }
+                          initialPointsOfContact={beyblade.pointsOfContact}
+                          beybladeData={{
+                            displayName: beyblade.displayName,
+                            type: beyblade.type,
+                            spinDirection: beyblade.spinDirection,
+                            radius: beyblade.radius,
+                            mass: beyblade.mass,
+                            actualSize: beyblade.actualSize,
+                          }}
                         />
                       </div>
                     </div>
