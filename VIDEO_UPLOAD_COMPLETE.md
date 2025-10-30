@@ -3,7 +3,33 @@
 ## Final Feature: Video Upload with Thumbnail Generation ⭐
 
 **Date:** October 31, 2025  
-**Status:** ✅ COMPLETE
+**Status:** ✅ COMPLETE  
+**Updated:** October 31, 2025 - **Delayed Upload Strategy**
+
+---
+
+## 🔄 IMPORTANT UPDATE: Delayed Upload
+
+**Video uploads are now delayed until form submission** - just like images!
+
+### Why This Change?
+
+The original immediate upload approach caused issues:
+
+- ❌ Upload errors during video selection
+- ❌ Required slug to exist before upload
+- ❌ Network overhead from premature uploads
+- ❌ Inconsistent with image upload behavior
+
+### New Behavior
+
+✅ Videos are stored locally with blob URLs  
+✅ Thumbnails generated locally (no upload)  
+✅ Upload only happens when clicking "Finish" button  
+✅ Consistent with image upload UX  
+✅ Better error handling at submission
+
+**See:** `VIDEO_UPLOAD_DELAYED.md` for full details
 
 ---
 

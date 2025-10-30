@@ -41,7 +41,6 @@ export default function MediaUploadStep({
   onChange,
 }: MediaUploadStepProps) {
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [whatsAppEditorOpen, setWhatsAppEditorOpen] = useState(false);
   const [selectedImageForEdit, setSelectedImageForEdit] = useState<{
@@ -261,16 +260,8 @@ export default function MediaUploadStep({
 
     setUploadingVideo(true);
     setError(null);
-    setUploadProgress(0);
 
     try {
-      // Validate slug exists
-      if (!data.seo.slug) {
-        setError("Please enter a product name first to generate a slug");
-        setUploadingVideo(false);
-        return;
-      }
-
       // Validate file size (20MB limit per video)
       for (const file of Array.from(files)) {
         if (file.size > 20 * 1024 * 1024) {
@@ -280,79 +271,41 @@ export default function MediaUploadStep({
         }
       }
 
-      const uploadedVideos = [];
+      const newVideos = [];
 
       for (const videoFile of Array.from(files)) {
-        // Generate thumbnail
-        const { blob: thumbnailBlob } = await generateVideoThumbnail(videoFile);
+        // Generate thumbnail preview
+        const { blob: thumbnailBlob, url: thumbnailUrl } =
+          await generateVideoThumbnail(videoFile);
 
-        // Create FormData for video
-        const videoFormData = new FormData();
-        videoFormData.append("files", videoFile);
-        videoFormData.append("slug", data.seo.slug);
-        videoFormData.append("type", "video");
+        // Create preview URL for video
+        const videoPreviewUrl = URL.createObjectURL(videoFile);
 
-        // Upload video
-        const videoResponse: any = await uploadWithAuth(
-          "/api/seller/products/media",
-          videoFormData
-        );
-
-        if (!videoResponse.success) {
-          throw new Error(videoResponse.error || "Failed to upload video");
-        }
-
-        const videoData = videoResponse.data[0];
-
-        // Create FormData for thumbnail
-        const thumbnailFormData = new FormData();
-        thumbnailFormData.append(
-          "files",
-          thumbnailBlob,
-          `${videoData.name}-thumb.jpg`
-        );
-        thumbnailFormData.append("slug", data.seo.slug);
-        thumbnailFormData.append("type", "image");
-
-        // Upload thumbnail
-        const thumbnailResponse: any = await uploadWithAuth(
-          "/api/seller/products/media",
-          thumbnailFormData
-        );
-
-        if (!thumbnailResponse.success) {
-          throw new Error(
-            thumbnailResponse.error || "Failed to upload thumbnail"
-          );
-        }
-
-        const thumbnailData = thumbnailResponse.data[0];
-
-        uploadedVideos.push({
-          url: videoData.url,
-          thumbnail: thumbnailData.url,
-          order: data.media.videos.length + uploadedVideos.length,
-          path: videoData.path,
-          name: videoData.name,
-          size: videoData.size,
+        // Store video locally with thumbnail - don't upload yet
+        newVideos.push({
+          file: videoFile, // Store the actual video file for later upload
+          thumbnailBlob: thumbnailBlob, // Store thumbnail blob for later upload
+          url: videoPreviewUrl, // Temporary preview URL
+          thumbnail: thumbnailUrl, // Temporary thumbnail URL
+          order: data.media.videos.length + newVideos.length,
+          name: videoFile.name,
+          size: videoFile.size,
+          isNew: true, // Flag to indicate this needs to be uploaded
         });
       }
 
-      // Add uploaded videos to state
+      // Add videos to state
       onChange({
         media: {
           ...data.media,
-          videos: [...data.media.videos, ...uploadedVideos],
+          videos: [...data.media.videos, ...newVideos],
         },
       });
-
-      setUploadProgress(100);
     } catch (err: any) {
-      console.error("Video upload error:", err);
-      setError(err.message || "Failed to upload videos");
+      console.error("Video selection error:", err);
+      setError(err.message || "Failed to select videos");
     } finally {
       setUploadingVideo(false);
-      setTimeout(() => setUploadProgress(0), 2000);
     }
 
     // Reset input
@@ -634,7 +587,7 @@ export default function MediaUploadStep({
         {uploadingVideo && (
           <Box sx={{ width: "100%", mb: 2 }}>
             <Typography variant="caption" gutterBottom>
-              Uploading video and generating thumbnail...
+              Processing video and generating thumbnail...
             </Typography>
             <LinearProgress variant="indeterminate" />
           </Box>
@@ -648,7 +601,7 @@ export default function MediaUploadStep({
           }
           disabled={data.media.videos.length >= 2 || uploadingVideo}
         >
-          {uploadingVideo ? "Uploading..." : "Upload Videos"}
+          {uploadingVideo ? "Processing..." : "Add Videos"}
           <input
             type="file"
             hidden
@@ -659,7 +612,7 @@ export default function MediaUploadStep({
           />
         </Button>
         <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-          {data.media.videos.length} / 2 videos uploaded
+          {data.media.videos.length} / 2 videos • Saved locally until you submit
         </Typography>
 
         {/* Video Grid */}

@@ -63,7 +63,17 @@ interface ProductFormData {
       path?: string;
       name?: string;
     }>;
-    videos: Array<{ url: string; thumbnail: string; order: number }>;
+    videos: Array<{
+      url: string;
+      thumbnail: string;
+      order: number;
+      file?: File; // Optional file for new uploads
+      thumbnailBlob?: Blob; // Thumbnail blob for upload
+      isNew?: boolean; // Flag to indicate needs upload
+      path?: string;
+      name?: string;
+      size?: number;
+    }>;
   };
 
   // Step 4: Condition & Features
@@ -251,12 +261,16 @@ export default function NewProductPage() {
       // Upload new images to Firebase Storage
       const uploadedImages = await uploadPendingImages();
 
-      // Prepare form data with uploaded image URLs
+      // Upload new videos to Firebase Storage
+      const uploadedVideos = await uploadPendingVideos();
+
+      // Prepare form data with uploaded image and video URLs
       const finalFormData = {
         ...formData,
         media: {
           ...formData.media,
           images: uploadedImages,
+          videos: uploadedVideos,
         },
       };
 
@@ -270,6 +284,12 @@ export default function NewProductPage() {
         formData.media.images.forEach((img: any) => {
           if (img.isNew && img.url.startsWith("blob:")) {
             URL.revokeObjectURL(img.url);
+          }
+        });
+        formData.media.videos.forEach((video: any) => {
+          if (video.isNew && video.url.startsWith("blob:")) {
+            URL.revokeObjectURL(video.url);
+            URL.revokeObjectURL(video.thumbnail);
           }
         });
 
@@ -325,10 +345,13 @@ export default function NewProductPage() {
         });
 
         // Upload to API
-        const response: any = await uploadWithAuth(
+        const responseRaw = await uploadWithAuth(
           "/api/seller/products/media",
           formDataUpload
         );
+
+        // Parse JSON response
+        const response: any = await responseRaw.json();
 
         console.log(`Upload response for image ${i + 1}:`, response);
 
@@ -359,6 +382,136 @@ export default function NewProductPage() {
     }
 
     return uploadedImages;
+  };
+
+  const uploadPendingVideos = async () => {
+    const videos = formData.media.videos;
+    const uploadedVideos = [];
+
+    // If no videos, return empty array
+    if (videos.length === 0) {
+      return [];
+    }
+
+    for (let i = 0; i < videos.length; i++) {
+      const video = videos[i];
+
+      // Skip already uploaded videos
+      if (!video.isNew || !video.file) {
+        // Keep existing uploaded videos
+        if (!video.isNew) {
+          uploadedVideos.push({
+            url: video.url,
+            thumbnail: video.thumbnail,
+            order: i,
+            path: video.path,
+            name: video.name,
+            size: video.size,
+          });
+        }
+        continue;
+      }
+
+      try {
+        console.log(`Uploading video ${i + 1}:`, {
+          fileName: video.file.name,
+          fileSize: video.file.size,
+          slug: formData.seo.slug,
+        });
+
+        // Upload video file
+        const videoFormData = new FormData();
+        videoFormData.append("files", video.file);
+        videoFormData.append("slug", formData.seo.slug);
+        videoFormData.append("type", "video");
+
+        const videoResponseRaw = await uploadWithAuth(
+          "/api/seller/products/media",
+          videoFormData
+        );
+
+        // Parse JSON response
+        const videoResponse: any = await videoResponseRaw.json();
+
+        console.log(`Video upload response ${i + 1}:`, videoResponse);
+
+        if (
+          !videoResponse.success ||
+          !videoResponse.data ||
+          videoResponse.data.length === 0
+        ) {
+          const errorMsg =
+            videoResponse.error || videoResponse.details || "Unknown error";
+          console.error(`Video upload failed for video ${i + 1}:`, errorMsg);
+          throw new Error(`Video ${i + 1}: ${errorMsg}`);
+        }
+
+        const videoData = videoResponse.data[0];
+
+        // Upload thumbnail
+        if (!video.thumbnailBlob) {
+          throw new Error(`Video ${i + 1}: Thumbnail not generated`);
+        }
+
+        const thumbnailFormData = new FormData();
+        thumbnailFormData.append(
+          "files",
+          video.thumbnailBlob,
+          `${videoData.name}-thumb.jpg`
+        );
+        thumbnailFormData.append("slug", formData.seo.slug);
+        thumbnailFormData.append("type", "image");
+
+        const thumbnailResponseRaw = await uploadWithAuth(
+          "/api/seller/products/media",
+          thumbnailFormData
+        );
+
+        // Parse JSON response
+        const thumbnailResponse: any = await thumbnailResponseRaw.json();
+
+        console.log(`Thumbnail upload response ${i + 1}:`, thumbnailResponse);
+
+        if (
+          !thumbnailResponse.success ||
+          !thumbnailResponse.data ||
+          thumbnailResponse.data.length === 0
+        ) {
+          const errorMsg =
+            thumbnailResponse.error ||
+            thumbnailResponse.details ||
+            "Unknown error";
+          console.error(
+            `Thumbnail upload failed for video ${i + 1}:`,
+            errorMsg
+          );
+          throw new Error(`Video ${i + 1} thumbnail: ${errorMsg}`);
+        }
+
+        const thumbnailData = thumbnailResponse.data[0];
+
+        // Use the uploaded URLs
+        uploadedVideos.push({
+          url: videoData.url,
+          thumbnail: thumbnailData.url,
+          order: i,
+          path: videoData.path,
+          name: videoData.name,
+          size: videoData.size,
+        });
+
+        // Clean up blob URLs
+        URL.revokeObjectURL(video.url);
+        URL.revokeObjectURL(video.thumbnail);
+      } catch (error: any) {
+        console.error(`Failed to upload video ${i + 1}:`, error);
+        throw new Error(
+          `Failed to upload video ${i + 1}: ${error.message || "Network error"}`
+        );
+      }
+    }
+
+    return uploadedVideos;
   };
 
   const updateFormData = (updates: Partial<ProductFormData>) => {
