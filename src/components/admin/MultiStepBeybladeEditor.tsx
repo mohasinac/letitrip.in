@@ -284,7 +284,7 @@ export default function MultiStepBeybladeEditor({
         </div>
 
         {/* Content Area with Fixed Preview */}
-        <div className="flex-1 overflow-y-auto flex">
+        <div className="flex-1 overflow-y-auto flex flex-col lg:flex-row">
           {/* Left Side - Form Steps */}
           <div className="flex-1 p-6 overflow-y-auto">
             {/* Step 1: Name & Image */}
