@@ -7,20 +7,41 @@ Welcome to the refactored justforview.in codebase! This guide will help you get 
 ## ⚡ Quick Start (5 Minutes)
 
 ### 1. Read This First
+
 - ⏱️ **2 min:** Read this file
 - ⏱️ **3 min:** Skim `QUICK_REFERENCE.md`
 
-### 2. Start Coding
+### 2. Run the Project
+
+```bash
+# Install dependencies (if not already done)
+npm install
+
+# Run development server (uses Turbopack by default - faster!)
+npm run dev
+
+# Or run Next.js only
+npm run dev:next
+
+# Or use webpack (if needed)
+npm run dev:next-webpack
+```
+
+> **Note:** Next.js 16 uses Turbopack by default for 10x faster development. See `TURBOPACK_FIX.md` for details.
+
+### 3. Start Coding
+
 ```typescript
 // Import what you need
-import { Button, Card } from '@/components/ui';
-import { createApiHandler, successResponse } from '@/lib/api';
-import { useIsMobile } from '@/hooks';
+import { Button, Card } from "@/components/ui";
+import { createApiHandler, successResponse } from "@/lib/api";
+import { useIsMobile } from "@/hooks";
 
 // Start using immediately!
 ```
 
-### 3. Check Examples
+### 4. Check Examples
+
 - See `EXAMPLE_REFACTORED_API.ts` for API routes
 - See `src/components/ui/` for component examples
 
@@ -28,47 +49,50 @@ import { useIsMobile } from '@/hooks';
 
 ## 📚 Documentation Files (Pick What You Need)
 
-| File | When to Read | Time |
-|------|-------------|------|
-| **QUICK_REFERENCE.md** | Right now - common patterns | 5 min |
-| **PROJECT_SUMMARY.md** | Overview and metrics | 10 min |
-| **REFACTORING_GUIDE.md** | Detailed implementation | 30 min |
-| **MIGRATION_CHECKLIST.md** | When migrating code | As needed |
-| **REFACTORING_COMPLETE.md** | Full feature list | 20 min |
+| File                        | When to Read                | Time      |
+| --------------------------- | --------------------------- | --------- |
+| **QUICK_REFERENCE.md**      | Right now - common patterns | 5 min     |
+| **PROJECT_SUMMARY.md**      | Overview and metrics        | 10 min    |
+| **REFACTORING_GUIDE.md**    | Detailed implementation     | 30 min    |
+| **MIGRATION_CHECKLIST.md**  | When migrating code         | As needed |
+| **REFACTORING_COMPLETE.md** | Full feature list           | 20 min    |
 
 ---
 
 ## 🎯 What Problem Does This Solve?
 
 ### Before Refactoring:
+
 ❌ CORS errors everywhere  
 ❌ Hardcoded colors (hard to change theme)  
 ❌ Duplicate code in many places  
 ❌ Inconsistent API responses  
 ❌ Poor mobile experience  
-❌ Slow performance  
+❌ Slow performance
 
 ### After Refactoring:
+
 ✅ Zero CORS issues  
 ✅ Complete theme system  
 ✅ No code duplication  
 ✅ Consistent APIs  
 ✅ Excellent mobile support  
-✅ 40% faster  
+✅ 40% faster
 
 ---
 
 ## 💻 Usage Examples
 
 ### Example 1: Create an API Route
+
 ```typescript
 // src/app/api/my-route/route.ts
-import { NextRequest } from 'next/server';
-import { createApiHandler, successResponse } from '@/lib/api';
+import { NextRequest } from "next/server";
+import { createApiHandler, successResponse } from "@/lib/api";
 
 async function GET(request: NextRequest) {
-  const data = { message: 'Hello' };
-  return successResponse(data, 'Success', 200, request);
+  const data = { message: "Hello" };
+  return successResponse(data, "Success", 200, request);
 }
 
 export const GET_HANDLER = createApiHandler(GET);
@@ -76,8 +100,9 @@ export { GET_HANDLER as GET };
 ```
 
 ### Example 2: Create a Component
+
 ```typescript
-import { Button, Card } from '@/components/ui';
+import { Button, Card } from "@/components/ui";
 
 export function MyComponent() {
   return (
@@ -90,6 +115,7 @@ export function MyComponent() {
 ```
 
 ### Example 3: Use Theme Colors
+
 ```typescript
 // Tailwind classes (preferred)
 <div className="bg-theme-primary text-theme-text">
@@ -101,12 +127,13 @@ export function MyComponent() {
 ```
 
 ### Example 4: Make It Mobile-Friendly
+
 ```typescript
-import { useIsMobile } from '@/hooks';
+import { useIsMobile } from "@/hooks";
 
 export function ResponsiveComponent() {
   const isMobile = useIsMobile();
-  
+
   return (
     <div className="container mx-auto p-4">
       {isMobile ? <MobileView /> : <DesktopView />}
@@ -120,34 +147,36 @@ export function ResponsiveComponent() {
 ## 🗂️ What's New?
 
 ### New Utilities (Import & Use)
+
 ```typescript
 // API utilities
-import { createApiHandler, successResponse } from '@/lib/api';
+import { createApiHandler, successResponse } from "@/lib/api";
 
 // Common utilities
-import { cn, formatCurrency, slugify } from '@/lib/utils';
+import { cn, formatCurrency, slugify } from "@/lib/utils";
 
 // Performance utilities
-import { debounce, throttle, memoize } from '@/utils/performance';
+import { debounce, throttle, memoize } from "@/utils/performance";
 
 // Theme utilities
-import { getThemeColor, applyTheme } from '@/utils/theme';
+import { getThemeColor, applyTheme } from "@/utils/theme";
 
 // Responsive utilities
-import { isMobile, useBreakpoint } from '@/utils/responsive';
+import { isMobile, useBreakpoint } from "@/utils/responsive";
 
 // Custom hooks
-import { useIsMobile, useDebounce, useLocalStorage } from '@/hooks';
+import { useIsMobile, useDebounce, useLocalStorage } from "@/hooks";
 ```
 
 ### New Components
+
 ```typescript
-import { 
-  Button,    // Themed button
-  Card,      // Themed card
-  Input,     // Themed input
-  Spinner    // Loading spinner
-} from '@/components/ui';
+import {
+  Button, // Themed button
+  Card, // Themed card
+  Input, // Themed input
+  Spinner, // Loading spinner
+} from "@/components/ui";
 ```
 
 ---
@@ -155,6 +184,7 @@ import {
 ## 🎨 Theme System
 
 ### Available Colors (Use These!)
+
 ```typescript
 // Background colors
 .bg-theme-primary       // Main brand color
@@ -173,6 +203,7 @@ import {
 ```
 
 ### Typography Classes
+
 ```typescript
 .heading-xl    // Extra large heading
 .heading-lg    // Large heading
@@ -186,6 +217,7 @@ import {
 ## 📱 Mobile Support
 
 ### Responsive Breakpoints
+
 ```typescript
 xs: 0px      // Mobile
 sm: 640px    // Large mobile
@@ -196,8 +228,9 @@ xl: 1280px   // Large desktop
 ```
 
 ### Mobile Utilities
+
 ```typescript
-import { isMobile, isTablet, isDesktop } from '@/utils/responsive';
+import { isMobile, isTablet, isDesktop } from "@/utils/responsive";
 
 if (isMobile()) {
   // Mobile-specific code
@@ -209,33 +242,39 @@ if (isMobile()) {
 ## ⚡ Performance Tips
 
 ### Do This:
+
 ✅ Use `React.memo` for expensive components  
 ✅ Use `useMemo` for calculations  
 ✅ Use `useCallback` for handlers  
 ✅ Debounce inputs  
 ✅ Lazy load images  
-✅ Use CSS transforms for animations  
+✅ Use CSS transforms for animations
 
 ### Don't Do This:
+
 ❌ Animate `width`, `height`, `margin`  
 ❌ Create functions inside render  
 ❌ Use inline objects in props  
-❌ Render large lists without virtualization  
+❌ Render large lists without virtualization
 
 ---
 
 ## 🐛 Common Issues & Solutions
 
 ### Issue: CORS Error
+
 **Solution:** API routes now handle CORS automatically. Just use `createApiHandler`.
 
 ### Issue: Colors Not Showing
+
 **Solution:** Use theme classes like `bg-theme-primary` instead of hardcoded colors.
 
 ### Issue: Slow Performance
+
 **Solution:** Use `debounce`, `throttle`, and `React.memo`.
 
 ### Issue: Mobile Layout Broken
+
 **Solution:** Use responsive utilities and test on mobile viewport.
 
 ---
@@ -252,12 +291,14 @@ if (isMobile()) {
 ## ✅ Ready to Start?
 
 ### For New Features:
+
 1. Use new utilities and components
 2. Follow patterns in examples
 3. Test on mobile
 4. Check performance
 
 ### For Existing Code:
+
 1. Check `MIGRATION_CHECKLIST.md`
 2. Migrate gradually
 3. Test thoroughly

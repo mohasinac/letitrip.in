@@ -5,6 +5,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 📋 API Routes Migration
 
 ### Routes to Update:
+
 - [ ] `/api/auth/send-otp`
 - [ ] `/api/auth/verify-otp`
 - [ ] `/api/admin/users`
@@ -34,6 +35,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] `/api/upload`
 
 ### Migration Steps per Route:
+
 1. [ ] Import new utilities (`createApiHandler`, `successResponse`, etc.)
 2. [ ] Add validation schemas using Zod
 3. [ ] Wrap handler with `createApiHandler`
@@ -47,6 +49,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 🎨 Components Migration
 
 ### Components with Hardcoded Colors:
+
 - [ ] `src/components/layout/ModernLayout.tsx`
 - [ ] `src/components/home/ModernHeroBanner.tsx`
 - [ ] `src/components/home/ModernWhyChooseUs.tsx`
@@ -56,6 +59,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] (Add more components as you find them)
 
 ### Migration Steps per Component:
+
 1. [ ] Identify all hardcoded colors
 2. [ ] Replace with theme variables:
    - `#0095f6` → `var(--theme-primary)` or `bg-theme-primary`
@@ -71,6 +75,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 📱 Mobile Optimization
 
 ### Pages to Optimize:
+
 - [ ] Home page
 - [ ] Category pages
 - [ ] Product pages
@@ -80,6 +85,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Auth pages
 
 ### Optimization Checklist per Page:
+
 1. [ ] Add responsive utilities (`useIsMobile`, etc.)
 2. [ ] Test on mobile viewport (375px width)
 3. [ ] Test on tablet viewport (768px width)
@@ -95,6 +101,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## ⚡ Performance Optimization
 
 ### Components to Optimize:
+
 - [ ] Large lists (implement virtualization)
 - [ ] Image galleries (lazy loading)
 - [ ] Heavy calculations (memoization)
@@ -104,6 +111,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Animation-heavy components
 
 ### Optimization Checklist:
+
 1. [ ] Identify performance bottlenecks
 2. [ ] Add React.memo where appropriate
 3. [ ] Use useMemo for expensive calculations
@@ -120,6 +128,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 🔧 Environment Configuration
 
 ### Tasks:
+
 - [ ] Create `.env.local` file
 - [ ] Add all required variables:
   - [ ] `NEXT_PUBLIC_APP_URL`
@@ -146,6 +155,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 🎯 Testing
 
 ### API Tests:
+
 - [ ] Test all API routes return correct format
 - [ ] Test CORS headers on all routes
 - [ ] Test error handling
@@ -154,6 +164,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Test authentication
 
 ### Component Tests:
+
 - [ ] Test theme switching
 - [ ] Test responsive behavior
 - [ ] Test mobile interactions
@@ -162,6 +173,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Test error states
 
 ### Performance Tests:
+
 - [ ] Run Lighthouse audit
 - [ ] Check bundle size
 - [ ] Test load times
@@ -174,6 +186,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 📚 Documentation
 
 ### Tasks:
+
 - [ ] Read `REFACTORING_GUIDE.md`
 - [ ] Read `REFACTORING_COMPLETE.md`
 - [ ] Read `QUICK_REFERENCE.md`
@@ -187,6 +200,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 🚀 Deployment
 
 ### Pre-deployment Checklist:
+
 - [ ] All tests passing
 - [ ] No console errors
 - [ ] Environment variables set
@@ -198,6 +212,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Dark mode tested
 
 ### Deployment Steps:
+
 - [ ] Deploy to staging
 - [ ] Test on staging
 - [ ] Review analytics
@@ -210,6 +225,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 🎉 Post-Migration
 
 ### Cleanup:
+
 - [ ] Remove old unused utilities
 - [ ] Remove duplicate code
 - [ ] Clean up comments
@@ -218,6 +234,7 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 - [ ] Format code
 
 ### Documentation:
+
 - [ ] Update API documentation
 - [ ] Update component documentation
 - [ ] Update README
@@ -229,12 +246,14 @@ Use this checklist to gradually migrate existing code to use the new refactored 
 ## 📊 Progress Tracking
 
 ### Overall Progress:
+
 - API Routes: 0 / 27 (0%)
 - Components: 0 / TBD (0%)
 - Pages: 0 / TBD (0%)
 - Tests: 0 / TBD (0%)
 
 ### Notes:
+
 - Start with high-priority routes/components
 - Test thoroughly after each migration
 - Document any issues encountered

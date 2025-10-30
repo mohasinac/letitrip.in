@@ -23,9 +23,6 @@ const nextConfig = {
   // Enable compression
   compress: true,
   
-  // Production optimizations
-  swcMinify: true,
-  
   // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '/api',

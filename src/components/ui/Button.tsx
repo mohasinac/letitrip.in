@@ -2,14 +2,15 @@
  * Reusable Button Component with Theme Support
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "destructive";
+  size?: "sm" | "md" | "lg" | "xl";
   loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -17,26 +18,26 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses = {
-  primary: 'btn-primary',
-  secondary: 'btn-secondary',
-  outline: 'btn-outline',
-  ghost: 'btn-ghost',
-  destructive: 'btn-destructive',
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  outline: "btn-outline",
+  ghost: "btn-ghost",
+  destructive: "btn-destructive",
 };
 
 const sizeClasses = {
-  sm: 'btn-sm',
-  md: '',
-  lg: 'btn-lg',
-  xl: 'btn-xl',
+  sm: "btn-sm",
+  md: "",
+  lg: "btn-lg",
+  xl: "btn-xl",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
-      variant = 'primary',
-      size = 'md',
+      variant = "primary",
+      size = "md",
       loading = false,
       leftIcon,
       rightIcon,
@@ -52,10 +53,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          'btn-base',
+          "btn-base",
           variantClasses[variant],
           sizeClasses[size],
-          fullWidth && 'w-full',
+          fullWidth && "w-full",
           className
         )}
         {...props}
@@ -82,15 +83,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             />
           </svg>
         )}
-        
+
         {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
-        
+
         <span>{children}</span>
-        
+
         {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
     );
   }
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";

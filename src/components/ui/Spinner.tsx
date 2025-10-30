@@ -2,31 +2,31 @@
  * Reusable Loading Spinner Component
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 export interface SpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
   label?: string;
 }
 
 const sizeClasses = {
-  sm: 'spinner-sm',
-  md: 'spinner-md',
-  lg: 'spinner-lg',
+  sm: "spinner-sm",
+  md: "spinner-md",
+  lg: "spinner-lg",
 };
 
-export const Spinner: React.FC<SpinnerProps> = ({ 
-  size = 'md', 
+export const Spinner: React.FC<SpinnerProps> = ({
+  size = "md",
   className,
-  label 
+  label,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      <div className={cn('spinner', sizeClasses[size], className)} />
+      <div className={cn("spinner", sizeClasses[size], className)} />
       {label && <p className="text-sm text-muted">{label}</p>}
     </div>
   );
