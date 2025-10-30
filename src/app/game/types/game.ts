@@ -83,6 +83,7 @@ export interface Stadium {
 export interface GameState {
   beyblades: GameBeyblade[];
   stadium: Stadium;
+  arenaConfig?: any; // Full arena configuration from database (ArenaConfig type)
   isPlaying: boolean;
   winner: GameBeyblade | null;
   gameTime: number;

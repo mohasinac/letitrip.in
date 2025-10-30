@@ -3,6 +3,28 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import { GameState, GameBeyblade, Vector2D } from "../types/game";
+import {
+  renderArenaBackground,
+  renderArenaFloor,
+  renderWallsAndExits,
+  renderLoops,
+  renderObstacles,
+} from "../utils/arenaRenderer";
+
+// Helper function to lighten/darken colors
+function adjustColor(color: string, amount: number): string {
+  const usePound = color[0] === "#";
+  const col = usePound ? color.slice(1) : color;
+  const num = parseInt(col, 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00ff) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0x0000ff) + amount));
+  return (
+    (usePound ? "#" : "") +
+    ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")
+  );
+}
+
 interface GameArenaProps {
   gameState: GameState;
   onMouseMove?: (position: Vector2D) => void;
@@ -64,160 +86,180 @@ const GameArena: React.FC<GameArenaProps> = ({
     });
     if (!ctx) return;
 
-    // Draw static stadium elements
-    ctx.fillStyle = theme.palette.background.default;
-    ctx.fillRect(0, 0, 800, 800);
-
     const stadium = gameState.stadium;
+    const arenaConfig = gameState.arenaConfig;
 
-    // Draw main arena floor
-    const floorGradient = ctx.createRadialGradient(
-      stadium.center.x,
-      stadium.center.y,
-      0,
-      stadium.center.x,
-      stadium.center.y,
-      stadium.innerRadius
-    );
-    floorGradient.addColorStop(0, "#1a1a1a");
-    floorGradient.addColorStop(0.7, "#2a2a2a");
-    floorGradient.addColorStop(1, "#3a3a3a");
-    ctx.fillStyle = floorGradient;
-    ctx.beginPath();
-    ctx.arc(
-      stadium.center.x,
-      stadium.center.y,
-      stadium.innerRadius,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+    // Log arena config for debugging
+    if (arenaConfig) {
+      console.log("Rendering arena:", arenaConfig.name, arenaConfig);
 
-    // Draw angle-based zones (walls and exits)
-    const angleRanges = [
-      { start: 0, end: 60, isWall: true },
-      { start: 60, end: 120, isWall: false },
-      { start: 120, end: 180, isWall: true },
-      { start: 180, end: 240, isWall: false },
-      { start: 240, end: 300, isWall: true },
-      { start: 300, end: 360, isWall: false },
-    ];
+      // Use new arena rendering system
+      renderArenaBackground(ctx, arenaConfig, stadium);
+      renderArenaFloor(ctx, arenaConfig, stadium);
+      renderWallsAndExits(ctx, arenaConfig, stadium);
+      renderLoops(ctx, arenaConfig, stadium);
+      renderObstacles(ctx, arenaConfig, stadium);
+    } else {
+      // Fallback to default rendering
+      console.log("Using default arena rendering");
 
-    for (const range of angleRanges) {
-      const startAngle = (range.start * Math.PI) / 180;
-      const endAngle = (range.end * Math.PI) / 180;
+      // Background
+      ctx.fillStyle = theme.palette.background.default;
+      ctx.fillRect(0, 0, 800, 800);
 
-      if (range.isWall) {
-        // Yellow wall zones
-        ctx.fillStyle = "#FBBF24";
-        ctx.beginPath();
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.outerRadius,
-          startAngle,
-          endAngle
-        );
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.innerRadius,
-          endAngle,
-          startAngle,
-          true
-        );
-        ctx.closePath();
-        ctx.fill();
+      // Default floor
+      const floorGradient = ctx.createRadialGradient(
+        stadium.center.x,
+        stadium.center.y,
+        0,
+        stadium.center.x,
+        stadium.center.y,
+        stadium.innerRadius
+      );
+      floorGradient.addColorStop(0, "#1a1a1a");
+      floorGradient.addColorStop(0.7, "#2a2a2a");
+      floorGradient.addColorStop(1, "#3a3a3a");
+      ctx.fillStyle = floorGradient;
+      ctx.beginPath();
+      ctx.arc(
+        stadium.center.x,
+        stadium.center.y,
+        stadium.innerRadius,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
 
-        // Black wall pattern
-        const wallThickness = 15;
-        ctx.fillStyle = "#000000";
-        ctx.beginPath();
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.outerRadius,
-          startAngle,
-          endAngle
-        );
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.outerRadius - wallThickness,
-          endAngle,
-          startAngle,
-          true
-        );
-        ctx.closePath();
-        ctx.fill();
+      // Default walls and exits
+      const angleRanges = [
+        { start: 0, end: 60, isWall: true },
+        { start: 60, end: 120, isWall: false },
+        { start: 120, end: 180, isWall: true },
+        { start: 180, end: 240, isWall: false },
+        { start: 240, end: 300, isWall: true },
+        { start: 300, end: 360, isWall: false },
+      ];
 
-        // Brick pattern
-        const numBricks = 8;
-        const angleStep = (endAngle - startAngle) / numBricks;
-        ctx.strokeStyle = "#333333";
-        ctx.lineWidth = 2;
-        for (let i = 1; i < numBricks; i++) {
-          const brickAngle = startAngle + angleStep * i;
-          const innerR = stadium.outerRadius - wallThickness;
-          const outerR = stadium.outerRadius;
+      for (const range of angleRanges) {
+        const startAngle = (range.start * Math.PI) / 180;
+        const endAngle = (range.end * Math.PI) / 180;
+
+        if (range.isWall) {
+          // Yellow wall zones
+          ctx.fillStyle = "#FBBF24";
           ctx.beginPath();
-          ctx.moveTo(
-            stadium.center.x + Math.cos(brickAngle) * innerR,
-            stadium.center.y + Math.sin(brickAngle) * innerR
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.outerRadius,
+            startAngle,
+            endAngle
           );
-          ctx.lineTo(
-            stadium.center.x + Math.cos(brickAngle) * outerR,
-            stadium.center.y + Math.sin(brickAngle) * outerR
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.innerRadius,
+            endAngle,
+            startAngle,
+            true
+          );
+          ctx.closePath();
+          ctx.fill();
+
+          // Black wall pattern
+          const wallThickness = 15;
+          ctx.fillStyle = "#000000";
+          ctx.beginPath();
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.outerRadius,
+            startAngle,
+            endAngle
+          );
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.outerRadius - wallThickness,
+            endAngle,
+            startAngle,
+            true
+          );
+          ctx.closePath();
+          ctx.fill();
+
+          // Brick pattern
+          const numBricks = 8;
+          const angleStep = (endAngle - startAngle) / numBricks;
+          ctx.strokeStyle = "#333333";
+          ctx.lineWidth = 2;
+          for (let i = 1; i < numBricks; i++) {
+            const brickAngle = startAngle + angleStep * i;
+            const innerR = stadium.outerRadius - wallThickness;
+            const outerR = stadium.outerRadius;
+            ctx.beginPath();
+            ctx.moveTo(
+              stadium.center.x + Math.cos(brickAngle) * innerR,
+              stadium.center.y + Math.sin(brickAngle) * innerR
+            );
+            ctx.lineTo(
+              stadium.center.x + Math.cos(brickAngle) * outerR,
+              stadium.center.y + Math.sin(brickAngle) * outerR
+            );
+            ctx.stroke();
+          }
+          const midRadius = stadium.outerRadius - wallThickness / 2;
+          ctx.beginPath();
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            midRadius,
+            startAngle,
+            endAngle
           );
           ctx.stroke();
-        }
-        const midRadius = stadium.outerRadius - wallThickness / 2;
-        ctx.beginPath();
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          midRadius,
-          startAngle,
-          endAngle
-        );
-        ctx.stroke();
-      } else {
-        // Red exit zones
-        ctx.fillStyle = "#EF4444";
-        ctx.beginPath();
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.outerRadius,
-          startAngle,
-          endAngle
-        );
-        ctx.arc(
-          stadium.center.x,
-          stadium.center.y,
-          stadium.innerRadius,
-          endAngle,
-          startAngle,
-          true
-        );
-        ctx.closePath();
-        ctx.fill();
+        } else {
+          // Red exit zones
+          ctx.fillStyle = "#EF4444";
+          ctx.beginPath();
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.outerRadius,
+            startAngle,
+            endAngle
+          );
+          ctx.arc(
+            stadium.center.x,
+            stadium.center.y,
+            stadium.innerRadius,
+            endAngle,
+            startAngle,
+            true
+          );
+          ctx.closePath();
+          ctx.fill();
 
-        // Warning icon
-        const centerAngle = (startAngle + endAngle) / 2;
-        const iconRadius = (stadium.outerRadius + stadium.innerRadius) / 2;
-        const iconX = stadium.center.x + Math.cos(centerAngle) * iconRadius;
-        const iconY = stadium.center.y + Math.sin(centerAngle) * iconRadius;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "bold 24px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("⚠️", iconX, iconY);
+          // Warning icon
+          const centerAngle = (startAngle + endAngle) / 2;
+          const iconRadius = (stadium.outerRadius + stadium.innerRadius) / 2;
+          const iconX = stadium.center.x + Math.cos(centerAngle) * iconRadius;
+          const iconY = stadium.center.y + Math.sin(centerAngle) * iconRadius;
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "bold 24px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("⚠️", iconX, iconY);
+        }
       }
     }
 
     stadiumCacheRef.current = offscreenCanvas;
-  }, [gameState.stadium, theme.palette.background.default]);
+  }, [
+    gameState.stadium,
+    gameState.arenaConfig,
+    theme.palette.background.default,
+  ]);
 
   // Eagerly build stadium cache on mount (before images load)
   useEffect(() => {

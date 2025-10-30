@@ -3,14 +3,17 @@
 import React from "react";
 import { Box, Button, useTheme } from "@mui/material";
 import BeybladeSelect from "@/components/game/BeybladeSelect";
+import ArenaSelect from "@/components/game/ArenaSelect";
 
 interface GameControlsProps {
   isPlaying: boolean;
   isLoading?: boolean;
   playerBeyblade: string;
   aiBeyblade: string;
+  arena?: string;
   onPlayerBeybladeChange: (beyblade: string) => void;
   onAIBeybladeChange: (beyblade: string) => void;
+  onArenaChange?: (arena: string) => void;
   onRestart: () => void;
   availableBeyblades: Record<string, { name: string }>;
   className?: string;
@@ -22,8 +25,10 @@ const GameControls: React.FC<GameControlsProps> = ({
   isLoading = false,
   playerBeyblade,
   aiBeyblade,
+  arena = "",
   onPlayerBeybladeChange,
   onAIBeybladeChange,
+  onArenaChange,
   onRestart,
   availableBeyblades,
   className = "",
@@ -107,6 +112,27 @@ const GameControls: React.FC<GameControlsProps> = ({
           disabled={isPlaying}
         />
       </Box>
+
+      {/* Arena Selection */}
+      {onArenaChange && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            minWidth: { xs: "100%", sm: 300 },
+            maxWidth: { xs: "100%", sm: 350 },
+          }}
+        >
+          <ArenaSelect
+            value={arena}
+            onChange={onArenaChange}
+            label="Battle Arena"
+            disabled={isPlaying}
+            showRandomButton={true}
+          />
+        </Box>
+      )}
 
       {/* Restart Button */}
       <Box

@@ -12,10 +12,13 @@ import {
   Save,
   X,
   LogOut,
+  MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
+import AddressManager from "@/components/profile/AddressManager";
+import { Address } from "@/types";
 
 export default function ProfilePage() {
   return (
@@ -59,6 +62,14 @@ function ProfileContent() {
       toast.error(error.message || "Failed to update profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateAddresses = async (addresses: Address[]) => {
+    try {
+      await updateProfile({ addresses });
+    } catch (error: any) {
+      throw error;
     }
   };
 
@@ -326,6 +337,15 @@ function ProfileContent() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Address Management */}
+        <div className="mt-6">
+          <AddressManager
+            addresses={user.addresses || []}
+            onUpdate={handleUpdateAddresses}
+            maxAddresses={5}
+          />
         </div>
 
         {/* Actions */}

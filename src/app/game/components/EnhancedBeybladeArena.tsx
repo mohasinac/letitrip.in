@@ -9,7 +9,6 @@ import {
   useTheme,
   Button,
 } from "@mui/material";
-import { BEYBLADE_CONFIGS } from "@/constants/beyblades";
 import { useGameState } from "../hooks/useGameState";
 import { useMultiplayer } from "../hooks/useMultiplayer";
 import GameArena from "./GameArena";
@@ -57,8 +56,10 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     gameState,
     selectedBeyblade,
     selectedAIBeyblade,
+    selectedArena,
     setSelectedBeyblade,
     setSelectedAIBeyblade,
+    setSelectedArena,
     restartGame,
     handleMouseMove,
     handleTouchStart,
@@ -272,10 +273,12 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         isLoading={isLoading}
         playerBeyblade={selectedBeyblade}
         aiBeyblade={selectedAIBeyblade}
+        arena={selectedArena}
         onPlayerBeybladeChange={setSelectedBeyblade}
         onAIBeybladeChange={setSelectedAIBeyblade}
+        onArenaChange={setSelectedArena}
         onRestart={restartGame}
-        availableBeyblades={BEYBLADE_CONFIGS}
+        availableBeyblades={{}}
         className="w-full"
         isMultiplayer={isMultiplayer}
       />

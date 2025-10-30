@@ -1,0 +1,370 @@
+You are an expert AI coding assistant working on **JustForView.in** - a hybrid e-commerce platform with an integrated real-time Beyblade battle game.
+
+## 🚨 CRITICAL RULES
+
+⚠️ **DO NOT create markdown documentation files (.md) automatically**
+
+- Only create .md files if explicitly asked by the user
+- Focus on code implementation, not documentation
+- Update existing docs instead of creating new ones
+
+## 🎯 Project Overview
+
+**JustForView.in** is a Next.js-based platform combining:
+
+1. **E-commerce Store** - Full-featured online store with categories, products, cart, orders
+2. **Beyblade Battle Game** - Real-time multiplayer game with Socket.IO
+3. **Admin Panel** - Complete CMS for managing products, categories, orders, game configs
+
+## 🛠️ Tech Stack
+
+### Core Framework
+
+- **Next.js 16** (App Router) with Turbopack/Webpack
+- **React 18** with TypeScript (strict mode)
+- **Node.js** with Express for Socket.IO server
+
+### UI & Styling
+
+- **Material-UI (MUI)** v7 - Primary component library
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Animations
+- **Radix UI** - Headless components (dialogs, selects, switches)
+- **Lucide React** & **Heroicons** - Icon libraries
+
+### Backend & Database
+
+- **Firebase/Firestore** - Primary database
+- **Firebase Admin SDK** - Server-side operations
+- **Firebase Authentication** - User auth (custom token system)
+- **Firebase Storage** - Image/file uploads
+
+### Game Engine
+
+- **PixiJS v8** - WebGL-based 2D rendering for game arena
+- **Socket.IO** - Real-time multiplayer synchronization
+- Standalone Socket.IO server (server.js) for Render deployment
+
+### Payment & Integration
+
+- **Razorpay** - Payment gateway integration
+- **SWR** - Data fetching and caching
+
+### State Management
+
+- **React Context API** - AuthContext, ThemeContext, BreadcrumbContext
+- **React Hook Form** - Form management with Zod validation
+- **React Hot Toast** - Toast notifications
+
+## 📁 Project Structure
+
+```
+/src/app/              # Next.js App Router pages & API routes
+  /api/                # REST API endpoints
+    /admin/            # Admin operations (categories, products, etc.)
+    /auth/             # Authentication (login, register, verify)
+    /beyblades/        # Beyblade CRUD operations
+    /categories/       # Category management
+    /orders/           # Order management
+    /arenas/           # Game arena configurations
+  /game/               # Game pages
+    /beyblade-battle/  # Main battle game page
+    /components/       # Game-specific components (Arena, Controls)
+  /admin/              # Admin dashboard pages
+  /profile/            # User profile pages
+  /categories/        # E-commerce category pages
+
+/src/components/       # Reusable React components
+  /game/               # Game components (ArenaSelect, BeybladeCard)
+  /ui/                 # UI components (buttons, inputs, dialogs)
+
+/src/contexts/         # React Context providers
+  AuthContext.tsx      # User authentication state
+  ModernThemeContext.tsx # Theme (dark/light mode)
+  BreadcrumbContext.tsx # Breadcrumb navigation
+
+/src/lib/              # Library code & utilities
+  /auth/               # Auth utilities (Firebase, JWT)
+  /database/           # Firestore operations
+  /storage/            # Firebase Storage operations
+  /api/                # API client utilities
+  /validations/        # Zod schemas
+
+/src/types/            # TypeScript type definitions
+  index.ts             # Main types (User, Product, Order, Category, etc.)
+
+/src/hooks/            # Custom React hooks
+/src/utils/            # Utility functions
+/src/constants/        # App constants
+
+/server.js             # Standalone Socket.IO server for multiplayer
+/middleware.ts         # Next.js middleware (auth, session)
+```
+
+## 🎮 Game System Architecture
+
+### Single Player
+
+- Physics-based collision system
+- AI opponent with difficulty levels
+- Power system (0-25 power meter)
+- Special abilities and dodge mechanics
+- Mobile-optimized controls (joystick + buttons)
+
+### Multiplayer
+
+- **Socket.IO** server handles all game logic (server.js)
+- Room-based matchmaking (max 10 concurrent games)
+- Real-time state synchronization
+- Server-authoritative collision detection
+- Automatic cleanup and disconnect handling
+
+### Game Components
+
+- `EnhancedBeybladeArena` - Main game component with PixiJS
+- `GameControls` - Beyblade/Arena selection UI
+- `GameArena` - Canvas rendering logic
+- Server calculates all physics in multiplayer mode
+
+## 🔐 Authentication System
+
+### Firebase Auth Integration
+
+- Custom JWT token system
+- Cookie-based session management
+- Middleware protection for routes
+- Role-based access (user, admin, seller)
+
+### Protected Routes
+
+- `/profile` - User dashboard
+- `/admin/*` - Admin panel (admin only)
+- `/orders` - Order history
+- `/cart/checkout` - Checkout flow
+
+### Auth Context
+
+- Provides: `user`, `loading`, `login`, `logout`, `register`
+- Auto-refreshes tokens
+- Persistent sessions with cookies
+
+## 🛍️ E-commerce Features
+
+### Product Management
+
+- Full CRUD operations
+- Image uploads to Firebase Storage
+- Category hierarchy with parent-child relationships
+- Stock management
+- Featured categories
+- SEO metadata per category
+
+### Order System
+
+- Shopping cart with Firestore persistence
+- Razorpay payment integration
+- Order status tracking
+- Order history for users and admins
+
+### Admin Panel
+
+- Product/Category management
+- Order fulfillment
+- User management
+- Game configuration (Beyblades, Arenas)
+- Analytics dashboard
+
+## 💻 Development Guidelines
+
+### TypeScript Rules
+
+- **Always use TypeScript strict mode**
+- Import types from `/src/types/index.ts`
+- Define interfaces for all component props
+- Use type inference where appropriate
+- Avoid `any` type - use `unknown` if needed
+
+### React Best Practices
+
+- Use functional components with hooks
+- Implement proper error boundaries
+- Use `useCallback` and `useMemo` for performance
+- Keep components under 300 lines (split if larger)
+- Use Context sparingly - prefer prop drilling for 1-2 levels
+
+### Firebase/Firestore
+
+- **Always validate data before Firestore operations**
+- Use `async/await` for all database calls
+- Implement proper error handling with try-catch
+- Use Firebase Admin SDK for server-side operations (API routes)
+- Use Firebase Client SDK for client-side (components)
+
+### API Routes
+
+- Located in `/src/app/api/`
+- Use Next.js Route Handlers (GET, POST, PUT, DELETE)
+- Validate request bodies with Zod schemas
+- Return consistent JSON responses
+- Implement proper HTTP status codes
+
+### Styling
+
+- **Primary**: Material-UI components with `sx` prop
+- **Utility**: Tailwind classes for spacing/layout
+- Use theme from `ModernThemeContext` for colors
+- Responsive design: mobile-first approach
+- Dark mode support via MUI theme
+
+### State Management
+
+- **Local state**: `useState` for component state
+- **Global state**: Context API (Auth, Theme, Breadcrumb)
+- **Server state**: SWR for API data fetching
+- **Form state**: React Hook Form + Zod
+
+### Performance
+
+- Lazy load heavy components (`React.lazy`, `Suspense`)
+- Optimize images with Next.js `<Image>` component
+- Use `getServerSideProps` sparingly (prefer client-side fetch)
+- Implement proper loading states
+- Debounce search inputs
+
+## 🧪 Testing & Validation
+
+### Before Committing
+
+1. Run `npm run type-check` to verify TypeScript
+2. Check for ESLint errors (`npm run lint`)
+3. Test affected features in both light/dark mode
+4. Test on mobile viewport for responsive design
+5. Verify Firebase rules haven't been broken
+
+### Common Pitfalls to Avoid
+
+- ❌ Don't use `console.log` in production (use proper logging)
+- ❌ Don't store sensitive data in client state
+- ❌ Don't make Firestore calls in render functions
+- ❌ Don't forget to unsubscribe from Firestore listeners
+- ❌ Don't bypass middleware auth checks
+
+## 🚀 Deployment
+
+### Architecture
+
+- **Vercel** - Next.js app deployment
+- **Render** - Socket.IO server deployment (server.js)
+- **Firebase** - Firestore, Auth, Storage, Hosting (optional)
+
+### Environment Variables
+
+Required in `.env.local` and Vercel:
+
+- `NEXT_PUBLIC_FIREBASE_*` - Firebase config (8 vars)
+- `NEXT_PUBLIC_RAZORPAY_KEY_ID` - Payment gateway
+- `NEXT_PUBLIC_API_URL` - API endpoint
+- `NEXT_PUBLIC_SOCKET_URL` - Socket.IO server URL
+- Firebase Admin SDK credentials (server-side)
+
+### Build Commands
+
+- **Dev**: `npm run dev` (runs Next.js + Socket.IO concurrently)
+- **Build**: `npm run build`
+- **Start**: `npm start` (production server)
+- **Deploy**: `npm run deploy` (Vercel)
+
+## 📝 When Making Changes
+
+### For New Features
+
+1. Check if existing components can be reused
+2. Create types in `/src/types/index.ts` first
+3. Implement validation schemas in `/src/lib/validations/`
+4. Build API endpoints in `/src/app/api/`
+5. Create UI components with proper TypeScript props
+6. Update Context providers if needed
+7. Test thoroughly before committing
+
+### For Bug Fixes
+
+1. Reproduce the issue in dev environment
+2. Check browser console and network tab
+3. Verify Firestore rules aren't blocking operations
+4. Check middleware.ts for route protection issues
+5. Review recent git changes with `git diff`
+6. Fix root cause, not symptoms
+7. Test edge cases
+
+### For Game Changes
+
+1. Update single-player mode first
+2. Update server.js for multiplayer sync
+3. Test collision physics thoroughly
+4. Verify mobile controls work properly
+5. Check performance on low-end devices
+6. Update game documentation if mechanics change
+
+## 📚 Documentation
+
+### Existing Docs (Read Before Changing)
+
+- `docs/INDEX.md` - Documentation navigation
+- `docs/GAME_SYSTEM_COMPLETE.md` - Complete game mechanics
+- `docs/architecture/API_ENDPOINTS.md` - API reference
+- `docs/DEPLOYMENT_COMPLETE.md` - Deployment guide
+
+### When to Update Docs
+
+- ✅ Major architectural changes
+- ✅ New API endpoints
+- ✅ Game mechanics modifications
+- ❌ Minor bug fixes (code comments sufficient)
+- ❌ Incremental changes (update existing docs)
+
+## 🎨 Code Style
+
+- **Indentation**: 2 spaces
+- **Quotes**: Single quotes for strings
+- **Semicolons**: Yes (enforce with ESLint)
+- **Line length**: 100 characters max
+- **Comments**: Use JSDoc for complex functions
+- **Naming**: camelCase for variables, PascalCase for components
+
+## 🔍 Quick Reference
+
+### Common Tasks
+
+| Task                    | Command/Path                               |
+| ----------------------- | ------------------------------------------ |
+| Add new product type    | Update `src/types/index.ts`                |
+| Create new API endpoint | Add to `src/app/api/*/route.ts`            |
+| Add game feature        | Update `src/app/game/components/`          |
+| Modify auth flow        | Check `src/contexts/AuthContext.tsx`       |
+| Change theme colors     | Edit `src/contexts/ModernThemeContext.tsx` |
+| Add Firebase rule       | Edit `firestore.rules`                     |
+| Update Socket.IO logic  | Modify `server.js`                         |
+| Add validation          | Create schema in `src/lib/validations/`    |
+
+### Important Files
+
+- `middleware.ts` - Route protection
+- `server.js` - Multiplayer game server
+- `src/types/index.ts` - All TypeScript types
+- `src/contexts/AuthContext.tsx` - Auth state management
+- `next.config.js` - Next.js configuration
+
+## 💡 Pro Tips
+
+1. **Use existing utilities** - Check `/src/utils/` before writing new helpers
+2. **Follow established patterns** - Look at similar components for consistency
+3. **Think mobile-first** - 60%+ users are on mobile devices
+4. **Optimize images** - Always use Next.js Image component
+5. **Test multiplayer locally** - Open multiple browser tabs for testing
+6. **Use TypeScript inference** - Don't over-annotate obvious types
+7. **Keep bundle size low** - Use dynamic imports for heavy libraries
+8. **Cache API responses** - Use SWR for better UX
+
+---
+
+**Remember**: This is a production e-commerce + gaming platform. Prioritize stability, performance, and user experience in all changes.

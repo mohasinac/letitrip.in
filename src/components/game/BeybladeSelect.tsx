@@ -79,8 +79,48 @@ export default function BeybladeSelect({
 
   if (error) {
     return (
-      <Box sx={{ p: 2, color: "error.main" }}>
-        <Typography>Error: {error}</Typography>
+      <Box sx={{ p: 2, bgcolor: "error.light", borderRadius: 2 }}>
+        <Typography color="error.dark" fontWeight="bold">
+          ⚠️ Error Loading Beyblades
+        </Typography>
+        <Typography variant="body2" color="error.dark" sx={{ mt: 1 }}>
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (beyblades.length === 0) {
+    return (
+      <Box
+        sx={{
+          p: 3,
+          bgcolor: "warning.light",
+          borderRadius: 2,
+          border: "2px solid",
+          borderColor: "warning.main",
+          textAlign: "center",
+        }}
+      >
+        <Typography
+          variant="h6"
+          color="warning.dark"
+          fontWeight="bold"
+          sx={{ mb: 1 }}
+        >
+          🎮 No Beyblades Available
+        </Typography>
+        <Typography variant="body2" color="warning.dark" sx={{ mb: 2 }}>
+          No beyblades found in the database. Please ask the admin to add
+          beyblades before starting a battle.
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: "block", fontStyle: "italic" }}
+        >
+          Admin: Go to Admin → Game → Beyblades to create beyblades
+        </Typography>
       </Box>
     );
   }

@@ -214,6 +214,19 @@ export default function BeybladesPage() {
                       Edit
                     </button>
                     <button
+                      onClick={() => {
+                        // Open preview modal or navigate to preview page
+                        window.open(
+                          `/preview/beyblade/${beyblade.id}`,
+                          "_blank"
+                        );
+                      }}
+                      className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                      title="Preview Beyblade"
+                    >
+                      👁️ Preview
+                    </button>
+                    <button
                       onClick={() => handleDeleteBeyblade(beyblade.id)}
                       className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
                     >

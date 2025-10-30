@@ -10,6 +10,7 @@ import {
 } from "../utils/gamePhysics";
 import { checkCollision } from "../utils/collisionUtils";
 import { resolvePhysicsCollision } from "../utils/physicsCollision";
+import { arenaConfigToStadium } from "../utils/arenaRenderer";
 import {
   activateBarrageOfAttacks,
   activateTimeSkip,
@@ -81,8 +82,9 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     return createInitialGameState();
   });
 
-  const [selectedBeyblade, setSelectedBeyblade] = useState("dragoon-gt");
-  const [selectedAIBeyblade, setSelectedAIBeyblade] = useState("spriggan");
+  const [selectedBeyblade, setSelectedBeyblade] = useState<string>("");
+  const [selectedAIBeyblade, setSelectedAIBeyblade] = useState<string>("");
+  const [selectedArena, setSelectedArena] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Create initial game state
@@ -832,81 +834,139 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   }, [gameLoop, gameState.isPlaying, gameState.countdownActive]);
 
   // Restart game function
-  const restartGame = useCallback(() => {
+  const restartGame = useCallback(async () => {
+    // Validate selections
+    if (!selectedBeyblade || !selectedAIBeyblade) {
+      alert('Please select both beyblades before starting the battle!');
+      return;
+    }
+
     // Set loading state
     setIsLoading(true);
     
-    const stadium: Stadium = {
-      center: { x: 400, y: 400 }, // Centered in square canvas (800x800)
-      innerRadius: 360, // Outer playing area boundary
-      outerRadius: 380, // Wall/exit zone boundary
-      exitRadius: 380,
-      chargeDashRadius: 300, // Blue circle for charge dash with charge points
-      normalLoopRadius: 200, // Blue circle for normal loop (center)
-      width: 800,
-      height: 800, // Square canvas
-    };
+    try {
+      // Fetch selected beyblades from database
+      const [playerBeyRes, aiBeyRes] = await Promise.all([
+        fetch(`/api/beyblades/${selectedBeyblade}`),
+        fetch(`/api/beyblades/${selectedAIBeyblade}`)
+      ]);
 
-    const playerBey = createBeyblade("player", selectedBeyblade, { x: 320, y: 400 }, true);
-    playerBey.spin = 3500; // Increased from 2000 for longer gameplay
-    playerBey.currentMaxAcceleration = 15; // Start with normal max acceleration
-    playerBey.accelerationDecayStartTime = 0; // Start decay immediately
-    playerBey.power = 0; // Initialize power system (0-25 max)
+      const playerBeyData = await playerBeyRes.json();
+      const aiBeyData = await aiBeyRes.json();
 
-    const randomAngle = Math.random() * Math.PI * 2;
-    const randomRadius = 100 + Math.random() * 80;
-    const aiX = stadium.center.x + Math.cos(randomAngle) * randomRadius;
-    const aiY = stadium.center.y + Math.sin(randomAngle) * randomRadius;
+      if (!playerBeyData.success || !aiBeyData.success) {
+        alert('Failed to load beyblade data. Please try again.');
+        setIsLoading(false);
+        return;
+      }
 
-    const aiBey = createBeyblade("ai", selectedAIBeyblade, { x: aiX, y: aiY }, false);
-    aiBey.spin = 2800; // Increased from 2000, but less than player for easier gameplay
-    aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
-    aiBey.accelerationDecayStartTime = 0; // Start decay immediately
-    aiBey.power = 0; // Initialize power system (0-25 max)
-
-    // Skip loading screen - start game with countdown immediately
-    // Set the game state with countdown and start the game loop
-    setGameState({
-      beyblades: [playerBey, aiBey],
-      stadium,
-      isPlaying: false, // Will be set to true after countdown
-      winner: null,
-      gameTime: 0,
-      countdownActive: true,
-      countdownValue: 3,
-    });
-    
-    // End loading screen immediately
-    setIsLoading(false);
-
-    // Start countdown sequence - game will animate during countdown
-    let countValue = 3;
-    const countdownInterval = setInterval(() => {
-      countValue--;
-      if (countValue > 0) {
-        setGameState(prev => ({
-          ...prev,
-          countdownValue: countValue,
-        }));
-      } else {
-        // Show "LET IT RIP!" for 0.5 seconds then start game
-        setGameState(prev => ({
-          ...prev,
-          countdownValue: 0,
-        }));
+      // Load arena if selected, otherwise use default
+      let stadium: Stadium;
+      let arenaConfig: any = null;
+      if (selectedArena) {
+        const arenaRes = await fetch(`/api/arenas/${selectedArena}`);
+        const arenaData = await arenaRes.json();
         
-        setTimeout(() => {
+        if (arenaData.success && arenaData.data) {
+          const arena = arenaData.data;
+          arenaConfig = arena; // Store full arena configuration
+          
+          // Use arena renderer utility to convert config to stadium
+          stadium = arenaConfigToStadium(arena);
+        } else {
+          // Fallback to default stadium
+          stadium = {
+            center: { x: 400, y: 400 },
+            innerRadius: 360,
+            outerRadius: 380,
+            exitRadius: 380,
+            chargeDashRadius: 300,
+            normalLoopRadius: 200,
+            width: 800,
+            height: 800,
+          };
+        }
+      } else {
+        // Default stadium
+        stadium = {
+          center: { x: 400, y: 400 },
+          innerRadius: 360,
+          outerRadius: 380,
+          exitRadius: 380,
+          chargeDashRadius: 300,
+          normalLoopRadius: 200,
+          width: 800,
+          height: 800,
+        };
+      }
+
+      // Use the actual beyblade names from the database data
+      const playerBey = createBeyblade("player", playerBeyData.data.name, { x: 320, y: 400 }, true);
+      playerBey.spin = 3500; // Increased from 2000 for longer gameplay
+      playerBey.currentMaxAcceleration = 15; // Start with normal max acceleration
+      playerBey.accelerationDecayStartTime = 0; // Start decay immediately
+      playerBey.power = 0; // Initialize power system (0-25 max)
+
+      const randomAngle = Math.random() * Math.PI * 2;
+      const randomRadius = 100 + Math.random() * 80;
+      const aiX = stadium.center.x + Math.cos(randomAngle) * randomRadius;
+      const aiY = stadium.center.y + Math.sin(randomAngle) * randomRadius;
+
+      const aiBey = createBeyblade("ai", aiBeyData.data.name, { x: aiX, y: aiY }, false);
+      aiBey.spin = 2800; // Increased from 2000, but less than player for easier gameplay
+      aiBey.currentMaxAcceleration = 15; // Start with normal max acceleration
+      aiBey.accelerationDecayStartTime = 0; // Start decay immediately
+      aiBey.power = 0; // Initialize power system (0-25 max)
+
+      // Skip loading screen - start game with countdown immediately
+      // Set the game state with countdown and start the game loop
+      setGameState({
+        beyblades: [playerBey, aiBey],
+        stadium,
+        arenaConfig, // Include full arena configuration
+        isPlaying: false, // Will be set to true after countdown
+        winner: null,
+        gameTime: 0,
+        countdownActive: true,
+        countdownValue: 3,
+      });
+      
+      // End loading screen immediately
+      setIsLoading(false);
+
+      // Start countdown sequence - game will animate during countdown
+      let countValue = 3;
+      const countdownInterval = setInterval(() => {
+        countValue--;
+        if (countValue > 0) {
           setGameState(prev => ({
             ...prev,
-            isPlaying: true,
-            countdownActive: false,
+            countdownValue: countValue,
           }));
-        }, 500);
-        
-        clearInterval(countdownInterval);
-      }
-    }, 1000); // 1 second per countdown number
-  }, [selectedBeyblade, selectedAIBeyblade]);
+        } else {
+          // Show "LET IT RIP!" for 0.5 seconds then start game
+          setGameState(prev => ({
+            ...prev,
+            countdownValue: 0,
+          }));
+          
+          setTimeout(() => {
+            setGameState(prev => ({
+              ...prev,
+              isPlaying: true,
+              countdownActive: false,
+            }));
+          }, 500);
+          
+          clearInterval(countdownInterval);
+        }
+      }, 1000); // 1 second per countdown number
+    } catch (error) {
+      console.error('Error starting game:', error);
+      alert('Failed to start game. Please try again.');
+      setIsLoading(false);
+    }
+  }, [selectedBeyblade, selectedAIBeyblade, selectedArena]);
 
   // Functions to receive opponent input in multiplayer
   const setOpponentInput = useCallback((input: Vector2D) => {
@@ -1038,8 +1098,10 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     gameState,
     selectedBeyblade,
     selectedAIBeyblade,
+    selectedArena,
     setSelectedBeyblade,
     setSelectedAIBeyblade,
+    setSelectedArena,
     restartGame,
     handleMouseMove,
     handleTouchStart,
