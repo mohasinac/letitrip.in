@@ -1,12 +1,28 @@
 /**
  * Arena Preview Component
- * Renders a live preview of an arena configuration on canvas
+ * Renders a live preview of an arena configuration using SVG
  */
 
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { ArenaConfig, LoopConfig } from "@/types/arenaConfig";
+import React from "react";
+import {
+  ArenaConfig,
+  WaterBodyConfig,
+  PitConfig,
+  GoalObjectConfig,
+  ExitConfig,
+  WallConfig,
+  LaserGunConfig,
+  ArenaShape as ArenaShapeType,
+  ArenaTheme,
+} from "@/types/arenaConfig";
+import LoopRenderer from "@/components/arena/renderers/LoopRenderer";
+import ChargePointRenderer from "@/components/arena/renderers/ChargePointRenderer";
+import ObstacleRenderer from "@/components/arena/renderers/ObstacleRenderer";
+import PortalRenderer from "@/components/arena/renderers/PortalRenderer";
+import RotationBodyRenderer from "@/components/arena/renderers/RotationBodyRenderer";
+import { generateShapePath, generateArc } from "@/utils/pathGeneration";
 
 interface ArenaPreviewProps {
   arena: ArenaConfig;
@@ -19,103 +35,170 @@ export default function ArenaPreview({
   width = 400,
   height = 400,
 }: ArenaPreviewProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Calculate scale (arena is 50em, canvas is width pixels)
+  const scale = Math.min(width, height) / (arena.width * 1.1);
+  const centerX = width / 2;
+  const centerY = height / 2;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-
-    // Set up coordinate system (center origin)
-    ctx.save();
-    ctx.translate(width / 2, height / 2);
-
-    // Calculate scale (arena is 50em, canvas is width pixels)
-    const scale = Math.min(width, height) / (arena.width * 1.1);
-
-    // Draw background
-    const bgGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, width / 2);
-    bgGradient.addColorStop(0, getThemeColor(arena.theme, 0.3));
-    bgGradient.addColorStop(1, getThemeColor(arena.theme, 0.1));
-    ctx.fillStyle = bgGradient;
-    ctx.fillRect(-width / 2, -height / 2, width, height);
-
-    // Draw arena shape (main boundary)
-    drawArenaShape(ctx, arena.shape, arena.width, arena.height, scale);
-
-    // Draw water body (if enabled)
-    if (arena.waterBody?.enabled && arena.waterBody.type === "center") {
-      drawWater(ctx, arena.waterBody.radius || 10, scale);
-    }
-
-    // Draw loops (speed zones)
-    arena.loops.forEach((loop, index) => {
-      drawLoop(ctx, loop, scale, index);
-    });
-
-    // Draw obstacles
-    arena.obstacles.forEach((obstacle) => {
-      drawObstacle(
-        ctx,
-        obstacle.x * scale,
-        obstacle.y * scale,
-        obstacle.radius * scale,
-        obstacle.type
-      );
-    });
-
-    // Draw pits
-    arena.pits.forEach((pit) => {
-      drawPit(ctx, pit.x * scale, pit.y * scale, pit.radius * scale);
-    });
-
-    // Draw laser guns
-    arena.laserGuns.forEach((laser) => {
-      drawLaserGun(ctx, laser.x * scale, laser.y * scale);
-    });
-
-    // Draw goal objects
-    arena.goalObjects.forEach((goal) => {
-      drawGoal(
-        ctx,
-        goal.x * scale,
-        goal.y * scale,
-        goal.radius * scale,
-        goal.type
-      );
-    });
-
-    // Draw exits
-    if (arena.wall.enabled) {
-      arena.exits.forEach((exit) => {
-        if (exit.enabled) {
-          drawExit(ctx, exit.angle, exit.width, arena.width, scale);
-        }
-      });
-    }
-
-    ctx.restore();
-  }, [arena, width, height]);
+  // Arena boundary dimensions
+  const arenaRadius = (arena.width / 2) * scale;
 
   return (
-    <canvas
-      ref={canvasRef}
+    <svg
       width={width}
       height={height}
+      viewBox={`0 0 ${width} ${height}`}
       className="rounded-lg"
       style={{ maxWidth: "100%", height: "auto" }}
-    />
+    >
+      {/* 1. Floor/Background */}
+      <defs>
+        <radialGradient id={`bg-gradient-${arena.id}`}>
+          <stop offset="0%" stopColor={getThemeColor(arena.theme, 0.3)} />
+          <stop offset="100%" stopColor={getThemeColor(arena.theme, 0.1)} />
+        </radialGradient>
+      </defs>
+      <rect
+        width={width}
+        height={height}
+        fill={`url(#bg-gradient-${arena.id})`}
+      />
+
+      {/* 2. Arena boundary/shape */}
+      <ArenaShape
+        shape={arena.shape}
+        centerX={centerX}
+        centerY={centerY}
+        width={arena.width}
+        height={arena.height}
+        scale={scale}
+        theme={arena.theme}
+      />
+
+      {/* 3. Water bodies */}
+      {arena.waterBody?.enabled && (
+        <WaterBodyRenderer
+          config={arena.waterBody}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+        />
+      )}
+
+      {/* 4. Pits */}
+      {arena.pits.map((pit, idx) => (
+        <PitRenderer
+          key={idx}
+          pit={pit}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+        />
+      ))}
+
+      {/* 4.5 Rotation Bodies */}
+      {arena.rotationBodies?.map((rotationBody, idx) => (
+        <g key={idx} transform={`translate(${centerX}, ${centerY})`}>
+          <RotationBodyRenderer rotationBody={rotationBody} scale={scale} />
+        </g>
+      ))}
+
+      {/* 5. Loops (PATH LINES only) */}
+      {arena.loops.map((loop, idx) => (
+        <LoopRenderer
+          key={idx}
+          loop={loop}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+        />
+      ))}
+
+      {/* 6. Charge points on loops */}
+      {arena.loops.map((loop, loopIdx) =>
+        loop.chargePoints?.map((cp, cpIdx) => (
+          <ChargePointRenderer
+            key={`${loopIdx}-${cpIdx}`}
+            chargePoint={cp}
+            loop={loop}
+            centerX={centerX}
+            centerY={centerY}
+            scale={scale}
+          />
+        ))
+      )}
+
+      {/* 7. Obstacles */}
+      {arena.obstacles.map((obstacle, idx) => (
+        <g key={idx} transform={`translate(${centerX}, ${centerY})`}>
+          <ObstacleRenderer
+            obstacle={obstacle}
+            theme={arena.theme}
+            scale={scale}
+          />
+        </g>
+      ))}
+
+      {/* 8. Goal objects */}
+      {arena.goalObjects.map((goal, idx) => (
+        <GoalRenderer
+          key={idx}
+          goal={goal}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+          theme={arena.theme}
+        />
+      ))}
+
+      {/* 9. Portals */}
+      {arena.portals?.map((portal) => (
+        <g key={portal.id} transform={`translate(${centerX}, ${centerY})`}>
+          <PortalRenderer portal={portal} scale={scale} />
+        </g>
+      ))}
+
+      {/* 10. Walls and exits */}
+      {arena.wall.enabled ? (
+        <WallsRenderer
+          exits={arena.exits}
+          wall={arena.wall}
+          centerX={centerX}
+          centerY={centerY}
+          arenaRadius={arenaRadius}
+          shape={arena.shape}
+        />
+      ) : (
+        arena.exits.map((exit, idx) =>
+          exit.enabled ? (
+            <ExitRenderer
+              key={idx}
+              exit={exit}
+              centerX={centerX}
+              centerY={centerY}
+              arenaRadius={arenaRadius}
+            />
+          ) : null
+        )
+      )}
+
+      {/* 11. Laser guns */}
+      {arena.laserGuns.map((laser, idx) => (
+        <LaserGunRenderer
+          key={idx}
+          laser={laser}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+        />
+      ))}
+    </svg>
   );
 }
 
 // Helper function to get theme colors
-function getThemeColor(theme: string, alpha: number = 1): string {
-  const colors: Record<string, string> = {
+function getThemeColor(theme: ArenaTheme, alpha: number = 1): string {
+  const colors: Record<ArenaTheme, string> = {
     forest: `rgba(34, 139, 34, ${alpha})`,
     mountains: `rgba(112, 128, 144, ${alpha})`,
     grasslands: `rgba(124, 252, 0, ${alpha})`,
@@ -130,390 +213,305 @@ function getThemeColor(theme: string, alpha: number = 1): string {
   return colors[theme] || `rgba(128, 128, 128, ${alpha})`;
 }
 
-// Draw arena main shape
-function drawArenaShape(
-  ctx: CanvasRenderingContext2D,
-  shape: string,
-  arenaWidth: number,
-  arenaHeight: number,
-  scale: number
-) {
-  const radius = (arenaWidth / 2) * scale;
+// Arena Shape Component
+function ArenaShape({
+  shape,
+  centerX,
+  centerY,
+  width,
+  height,
+  scale,
+  theme,
+}: {
+  shape: ArenaShapeType;
+  centerX: number;
+  centerY: number;
+  width: number;
+  height: number;
+  scale: number;
+  theme: ArenaTheme;
+}) {
+  const radius = (width / 2) * scale;
+  const shapePath = generateShapePath(
+    shape,
+    { x: centerX, y: centerY },
+    radius,
+    width * scale,
+    height * scale
+  );
 
-  ctx.beginPath();
-  ctx.strokeStyle = "#333";
-  ctx.lineWidth = 3;
-  ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-
-  switch (shape) {
-    case "circle":
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-      break;
-
-    case "rectangle":
-      const w = arenaWidth * scale;
-      const h = arenaHeight * scale;
-      ctx.rect(-w / 2, -h / 2, w, h);
-      break;
-
-    case "pentagon":
-      drawPolygon(ctx, 0, 0, radius, 5);
-      break;
-
-    case "hexagon":
-      drawPolygon(ctx, 0, 0, radius, 6);
-      break;
-
-    case "octagon":
-      drawPolygon(ctx, 0, 0, radius, 8);
-      break;
-
-    case "star":
-      drawStar(ctx, 0, 0, radius, radius * 0.5, 5);
-      break;
-
-    case "oval":
-      ctx.ellipse(0, 0, radius, radius * 0.7, 0, 0, Math.PI * 2);
-      break;
-
-    case "loop":
-      // Double circle for loop shape
-      ctx.arc(0, 0, radius * 0.8, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(0, 0, radius * 0.4, 0, Math.PI * 2);
-      break;
-
-    default:
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-  }
-
-  ctx.fill();
-  ctx.stroke();
+  return (
+    <path
+      d={shapePath}
+      fill="rgba(255, 255, 255, 0.1)"
+      stroke="#333"
+      strokeWidth={3}
+    />
+  );
 }
 
-// Draw loop (speed zone)
-function drawLoop(
-  ctx: CanvasRenderingContext2D,
-  loop: LoopConfig,
-  scale: number,
-  index: number
-) {
-  const radius = loop.radius * scale;
-
-  ctx.save();
-  if (loop.rotation) {
-    ctx.rotate((loop.rotation * Math.PI) / 180);
-  }
-
-  ctx.beginPath();
-  ctx.strokeStyle = loop.color || `hsl(${index * 60}, 70%, 50%)`;
-  ctx.lineWidth = 2;
-  ctx.setLineDash([5, 5]);
-
-  switch (loop.shape) {
-    case "circle":
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-      break;
-
-    case "rectangle":
-      const w = (loop.width || loop.radius * 2) * scale;
-      const h = (loop.height || loop.radius * 2) * scale;
-      ctx.rect(-w / 2, -h / 2, w, h);
-      break;
-
-    case "pentagon":
-      drawPolygon(ctx, 0, 0, radius, 5);
-      break;
-
-    case "hexagon":
-      drawPolygon(ctx, 0, 0, radius, 6);
-      break;
-
-    case "octagon":
-      drawPolygon(ctx, 0, 0, radius, 8);
-      break;
-
-    case "star":
-      drawStar(ctx, 0, 0, radius, radius * 0.5, 5);
-      break;
-
-    case "oval":
-      ctx.ellipse(0, 0, radius, radius * 0.7, 0, 0, Math.PI * 2);
-      break;
-
-    default:
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-  }
-
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Draw speed boost indicator
-  ctx.fillStyle = loop.color || `hsl(${index * 60}, 70%, 50%)`;
-  ctx.globalAlpha = 0.1;
-  ctx.fill();
-  ctx.globalAlpha = 1;
-
-  ctx.restore();
-}
-
-// Draw water body
-function drawWater(
-  ctx: CanvasRenderingContext2D,
-  radius: number,
-  scale: number
-) {
-  const r = radius * scale;
-
-  ctx.beginPath();
-  ctx.fillStyle = "rgba(79, 195, 247, 0.5)";
-  ctx.arc(0, 0, r, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Water wave lines
-  ctx.strokeStyle = "rgba(33, 150, 243, 0.7)";
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 3; i++) {
-    ctx.beginPath();
-    ctx.arc(0, 0, r * 0.3 + i * r * 0.2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-}
-
-// Draw obstacle
-function drawObstacle(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius: number,
-  type: string
-) {
-  ctx.save();
-  ctx.translate(x, y);
-
-  ctx.fillStyle = "#8b4513";
-  ctx.strokeStyle = "#654321";
-  ctx.lineWidth = 2;
-
-  switch (type) {
-    case "rock":
-      // Irregular rock shape
-      ctx.beginPath();
-      for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI * 2;
-        const r = radius * (0.8 + Math.random() * 0.4);
-        ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
-      }
-      ctx.closePath();
-      break;
-
-    case "pillar":
-      // Square pillar
-      ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
-      ctx.strokeRect(-radius, -radius, radius * 2, radius * 2);
-      ctx.restore();
-      return;
-
-    case "barrier":
-      // Hexagonal barrier
-      drawPolygon(ctx, 0, 0, radius, 6);
-      break;
-
-    default:
-      ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-  }
-
-  ctx.fill();
-  ctx.stroke();
-  ctx.restore();
-}
-
-// Draw pit
-function drawPit(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius: number
-) {
-  ctx.save();
-  ctx.translate(x, y);
-
-  // Pit gradient (dark center)
-  const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-  gradient.addColorStop(0, "#000");
-  gradient.addColorStop(0.6, "#222");
-  gradient.addColorStop(1, "#444");
-
-  ctx.beginPath();
-  ctx.fillStyle = gradient;
-  ctx.arc(0, 0, radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Swirl lines
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 3; i++) {
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.3 + i * radius * 0.2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-// Draw laser gun
-function drawLaserGun(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  ctx.save();
-  ctx.translate(x, y);
-
-  // Gun base
-  ctx.fillStyle = "#555";
-  ctx.beginPath();
-  ctx.arc(0, 0, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Gun barrel
-  ctx.fillStyle = "#ff3333";
-  ctx.fillRect(-2, -12, 4, 12);
-
-  // Warning light
-  ctx.fillStyle = "#ffff00";
-  ctx.beginPath();
-  ctx.arc(0, 0, 3, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-// Draw goal object
-function drawGoal(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius: number,
-  type: string
-) {
-  ctx.save();
-  ctx.translate(x, y);
-
-  const colors: Record<string, string> = {
-    target: "#ff6b6b",
-    crystal: "#4ecdc4",
-    tower: "#ffd93d",
-    relic: "#a29bfe",
+// Water Body Renderer
+function WaterBodyRenderer({
+  config,
+  centerX,
+  centerY,
+  scale,
+}: {
+  config: WaterBodyConfig;
+  centerX: number;
+  centerY: number;
+  scale: number;
+}) {
+  const liquidColors: Record<string, string> = {
+    water: "#4fc3f7",
+    blood: "#c62828",
+    lava: "#ff6f00",
+    acid: "#76ff03",
+    oil: "#424242",
+    ice: "#00e5ff",
   };
 
-  ctx.fillStyle = colors[type] || "#888";
-  ctx.strokeStyle = "#333";
-  ctx.lineWidth = 2;
+  const color = config.color || liquidColors[config.liquidType] || "#4fc3f7";
+  const radius = (config.radius || 10) * scale;
 
-  switch (type) {
-    case "tower":
-      // Tower shape
-      ctx.fillRect(-radius * 0.6, -radius, radius * 1.2, radius * 2);
-      ctx.fillRect(-radius * 0.4, -radius * 1.5, radius * 0.8, radius * 0.5);
-      break;
+  const shapePath = generateShapePath(
+    config.shape,
+    { x: centerX, y: centerY },
+    radius
+  );
 
-    case "crystal":
-      // Diamond shape
-      ctx.beginPath();
-      ctx.moveTo(0, -radius);
-      ctx.lineTo(radius * 0.6, 0);
-      ctx.lineTo(0, radius);
-      ctx.lineTo(-radius * 0.6, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      break;
-
-    default:
-      // Circle for target and relic
-      ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      // Target rings
-      if (type === "target") {
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(0, 0, radius * 0.6, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0, 0, radius * 0.3, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-  }
-
-  ctx.restore();
+  return (
+    <g className="water-body">
+      <path d={shapePath} fill={color} opacity={0.5} />
+      {/* Wave lines */}
+      {[0.3, 0.5, 0.7].map((factor, idx) => (
+        <path
+          key={idx}
+          d={generateShapePath(
+            config.shape === "circle" ? "circle" : config.shape,
+            { x: centerX, y: centerY },
+            radius * factor
+          )}
+          fill="none"
+          stroke={color}
+          strokeWidth={1}
+          opacity={0.7}
+        />
+      ))}
+    </g>
+  );
 }
 
-// Draw exit
-function drawExit(
-  ctx: CanvasRenderingContext2D,
-  angle: number,
-  width: number,
-  arenaWidth: number,
-  scale: number
-) {
-  const radius = (arenaWidth / 2) * scale;
-  const startAngle = ((angle - width / 2) * Math.PI) / 180;
-  const endAngle = ((angle + width / 2) * Math.PI) / 180;
+// Pit Renderer
+function PitRenderer({
+  pit,
+  centerX,
+  centerY,
+  scale,
+}: {
+  pit: PitConfig;
+  centerX: number;
+  centerY: number;
+  scale: number;
+}) {
+  const x = centerX + pit.x * scale;
+  const y = centerY + pit.y * scale;
+  const radius = pit.radius * scale;
 
-  ctx.save();
-  ctx.strokeStyle = "#00ff00";
-  ctx.lineWidth = 4;
-  ctx.setLineDash([10, 5]);
-
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, startAngle, endAngle);
-  ctx.stroke();
-
-  ctx.setLineDash([]);
-  ctx.restore();
+  return (
+    <g className="pit">
+      <defs>
+        <radialGradient id={`pit-gradient-${pit.x}-${pit.y}`}>
+          <stop offset="0%" stopColor="#000" stopOpacity={0.9} />
+          <stop offset="60%" stopColor="#222" stopOpacity={0.8} />
+          <stop offset="100%" stopColor="#444" stopOpacity={0.6} />
+        </radialGradient>
+      </defs>
+      
+      {/* Main pit */}
+      <circle
+        cx={x}
+        cy={y}
+        r={radius}
+        fill={`url(#pit-gradient-${pit.x}-${pit.y})`}
+      />
+      
+      {/* Depth rings */}
+      {Array.from({ length: pit.visualDepth || 3 }).map((_, i) => (
+        <circle
+          key={i}
+          cx={x}
+          cy={y}
+          r={radius * (1 - (i + 1) * 0.15)}
+          fill="none"
+          stroke="rgba(50,50,50,0.4)"
+          strokeWidth={1}
+        />
+      ))}
+    </g>
+  );
 }
 
-// Helper: Draw polygon
-function drawPolygon(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius: number,
-  sides: number
-) {
-  ctx.beginPath();
-  for (let i = 0; i <= sides; i++) {
-    const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
-    const px = x + Math.cos(angle) * radius;
-    const py = y + Math.sin(angle) * radius;
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
-  }
-  ctx.closePath();
+// Goal Object Renderer
+function GoalRenderer({
+  goal,
+  centerX,
+  centerY,
+  scale,
+  theme,
+}: {
+  goal: GoalObjectConfig;
+  centerX: number;
+  centerY: number;
+  scale: number;
+  theme: ArenaTheme;
+}) {
+  const x = centerX + goal.x * scale;
+  const y = centerY + goal.y * scale;
+  const radius = goal.radius * scale;
+
+  const goalIcons: Record<string, string> = {
+    star: "⭐",
+    crystal: "💎",
+    coin: "🪙",
+    gem: "💠",
+    relic: "🏺",
+    trophy: "🏆",
+  };
+
+  const icon = goalIcons[goal.type] || "⭐";
+
+  return (
+    <g className="goal-object">
+      {/* Glow effect */}
+      <circle
+        cx={x}
+        cy={y}
+        r={radius * 2}
+        fill={goal.color || "#fbbf24"}
+        opacity={0.2}
+        className="animate-pulse"
+      />
+      
+      {/* Icon */}
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={radius * 2}
+      >
+        {icon}
+      </text>
+    </g>
+  );
 }
 
-// Helper: Draw star
-function drawStar(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  outerRadius: number,
-  innerRadius: number,
-  points: number
-) {
-  ctx.beginPath();
-  for (let i = 0; i < points * 2; i++) {
-    const angle = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
-    const radius = i % 2 === 0 ? outerRadius : innerRadius;
-    const px = x + Math.cos(angle) * radius;
-    const py = y + Math.sin(angle) * radius;
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
-  }
-  ctx.closePath();
+// Walls Renderer
+function WallsRenderer({
+  exits,
+  wall,
+  centerX,
+  centerY,
+  arenaRadius,
+  shape,
+}: {
+  exits: ExitConfig[];
+  wall: WallConfig;
+  centerX: number;
+  centerY: number;
+  arenaRadius: number;
+  shape: ArenaShapeType;
+}) {
+  // Simple implementation: draw full boundary in black, then exits in red
+  const fullCircle = `
+    M ${centerX - arenaRadius} ${centerY}
+    A ${arenaRadius} ${arenaRadius} 0 1 0 ${centerX + arenaRadius} ${centerY}
+    A ${arenaRadius} ${arenaRadius} 0 1 0 ${centerX - arenaRadius} ${centerY}
+  `;
+
+  return (
+    <g className="walls">
+      {/* Wall boundary */}
+      <path
+        d={fullCircle}
+        fill="none"
+        stroke="#000"
+        strokeWidth={wall.thickness * 10 || 4}
+      />
+      
+      {/* Exits overlay */}
+      {exits.map(
+        (exit, idx) =>
+          exit.enabled && (
+            <ExitRenderer
+              key={idx}
+              exit={exit}
+              centerX={centerX}
+              centerY={centerY}
+              arenaRadius={arenaRadius}
+            />
+          )
+      )}
+    </g>
+  );
+}
+
+// Exit Renderer
+function ExitRenderer({
+  exit,
+  centerX,
+  centerY,
+  arenaRadius,
+}: {
+  exit: ExitConfig;
+  centerX: number;
+  centerY: number;
+  arenaRadius: number;
+}) {
+  const arcPath = generateArc(
+    { x: centerX, y: centerY },
+    arenaRadius,
+    exit.angle - exit.width / 2,
+    exit.angle + exit.width / 2
+  );
+
+  return (
+    <path
+      d={arcPath}
+      fill="none"
+      stroke="#ef4444"
+      strokeWidth={6}
+      strokeDasharray="10,5"
+    />
+  );
+}
+
+// Laser Gun Renderer
+function LaserGunRenderer({
+  laser,
+  centerX,
+  centerY,
+  scale,
+}: {
+  laser: LaserGunConfig;
+  centerX: number;
+  centerY: number;
+  scale: number;
+}) {
+  const x = centerX + laser.x * scale;
+  const y = centerY + laser.y * scale;
+
+  return (
+    <g className="laser-gun">
+      {/* Base */}
+      <circle cx={x} cy={y} r={8} fill="#555" />
+      
+      {/* Barrel */}
+      <rect x={x - 2} y={y - 12} width={4} height={12} fill="#ff3333" />
+      
+      {/* Warning light */}
+      <circle cx={x} cy={y} r={3} fill="#ffff00" className="animate-pulse" />
+    </g>
+  );
 }

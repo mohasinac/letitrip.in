@@ -9,13 +9,15 @@ export type GameMode = 'player-vs-ai' | 'player-vs-player' | 'single-player-test
 
 /**
  * Charge Point Configuration
- * Points on loops that restore spin energy
+ * Interactive points on loops where players can trigger early exit dash
  */
 export interface ChargePointConfig {
   angle: number; // Angle in degrees (0-360) on the loop
-  rechargeRate: number; // Spin recovery per second when on this point
+  target: 'center' | 'opponent'; // Dash target: center or opponent (fallback to center if no opponent)
+  dashSpeed?: number; // Speed multiplier for the dash (default: 2.0)
   radius?: number; // Visual size of the charge point (default 1em)
   color?: string; // Visual color (default: yellow/gold)
+  buttonId?: 1 | 2 | 3; // Gamepad button to trigger (1, 2, or 3)
 }
 
 /**
@@ -33,8 +35,11 @@ export interface LoopConfig {
   rotation?: number; // Rotation angle in degrees
   color?: string; // Visual color for the loop
   ringThickness?: number; // For ring shape - thickness of the ring (em units)
-  chargePoints?: ChargePointConfig[]; // Charge points distributed on the loop
+  chargePoints?: ChargePointConfig[]; // Interactive dash points
   chargePointCount?: number; // Number of evenly distributed charge points
+  minLoopDuration?: number; // Minimum time beyblade stays in loop (2-5 seconds, default: 2)
+  maxLoopDuration?: number; // Maximum time before forced exit (2-5 seconds, default: 5)
+  renderStyle?: 'outline' | 'filled'; // Render as outline circle or filled (default: outline)
 }
 
 /**
@@ -104,14 +109,14 @@ export interface ObstacleConfig {
  */
 export interface WaterBodyConfig {
   enabled: boolean;
-  type: 'center' | 'loop' | 'ring'; // Center shape, follows loop path (moat), or ring at edges
+  type: 'center' | 'loop' | 'ring'; // Center shape, follows center loop path (moat), or ring at edges
   shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'ring'; // Shape of water body
   radius?: number; // For circular shapes (em units)
   width?: number; // For rectangular shapes (em units)
   height?: number; // For rectangular shapes (em units)
   rotation?: number; // Rotation angle in degrees
   ringThickness?: number; // For ring shape - thickness of the ring (em units)
-  loopIndex?: number; // Which loop to follow (for loop type)
+  loopIndex?: number; // Always 0 for center loop (when type is 'loop')
   innerRadius?: number; // For loop type - inner radius of moat (em units)
   outerRadius?: number; // For loop type - outer radius of moat (em units)
   liquidType: 'water' | 'blood' | 'lava' | 'acid' | 'oil' | 'ice'; // Type of liquid
@@ -173,6 +178,30 @@ export interface GoalObjectConfig {
 }
 
 /**
+ * Rotation Body Configuration
+ * 2D area objects that apply rotational force to beyblades
+ */
+export interface RotationBodyConfig {
+  id: string;
+  position: { x: number; y: number }; // Position in em units
+  shape: 'circle' | 'rectangle' | 'star' | 'polygon'; // Shape of rotation body
+  radius?: number; // For circle/star/polygon (em units)
+  width?: number; // For rectangle (em units)
+  height?: number; // For rectangle (em units)
+  sides?: number; // For polygon (default: 6)
+  
+  // Rotation properties
+  rotationForce: number; // Force applied (0.1-5.0)
+  direction: 'clockwise' | 'counter-clockwise'; // Direction of rotation
+  falloff: number; // How force decreases with beyblade velocity (0.0-1.0)
+  
+  // Visual
+  color?: string; // Default: red (#ef4444)
+  opacity?: number; // Default: 0.5
+  rotationAnimation?: boolean; // Visual spinning effect
+}
+
+/**
  * Arena Background Layer
  * For parallax and theme effects
  */
@@ -217,6 +246,7 @@ export interface ArenaConfig {
   waterBody?: WaterBodyConfig;
   pits: PitConfig[];
   laserGuns: LaserGunConfig[];
+  rotationBodies?: RotationBodyConfig[]; // Rotation force fields
   
   // Goal objects (optional objective mode)
   goalObjects: GoalObjectConfig[];

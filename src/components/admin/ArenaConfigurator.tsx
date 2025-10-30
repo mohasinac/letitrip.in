@@ -378,7 +378,10 @@ export default function ArenaConfigurator({
                         onChange={(e) =>
                           setConfig({
                             ...config,
-                            wall: { ...config.wall, allExits: e.target.checked },
+                            wall: {
+                              ...config.wall,
+                              allExits: e.target.checked,
+                            },
                           })
                         }
                         className="w-5 h-5"
@@ -494,7 +497,9 @@ export default function ArenaConfigurator({
                             }
                             className="w-4 h-4"
                           />
-                          <label className="text-sm">Springs (1.5x recoil)</label>
+                          <label className="text-sm">
+                            Springs (1.5x recoil)
+                          </label>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -700,8 +705,12 @@ export default function ArenaConfigurator({
                     {/* Charge Points Configuration */}
                     <div className="mt-3 bg-yellow-50 p-3 rounded border border-yellow-200">
                       <h5 className="text-sm font-semibold text-yellow-900 mb-2">
-                        ⚡ Charge Points (Spin Recovery)
+                        ⚡ Charge Points (Dash Exit Points)
                       </h5>
+                      <p className="text-xs text-yellow-700 mb-3">
+                        Interactive points where players can press gamepad
+                        button (1, 2, or 3) to dash out of loop early
+                      </p>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs text-yellow-700 mb-1">
@@ -712,14 +721,17 @@ export default function ArenaConfigurator({
                             value={loop.chargePointCount || 0}
                             onChange={(e) => {
                               const count = parseInt(e.target.value);
-                              const points = count > 0
-                                ? Array.from({ length: count }, (_, i) => ({
-                                    angle: (360 / count) * i,
-                                    rechargeRate: 5,
-                                    radius: 1,
-                                    color: "#fbbf24",
-                                  }))
-                                : undefined;
+                              const points =
+                                count > 0
+                                  ? Array.from({ length: count }, (_, i) => ({
+                                      angle: (360 / count) * i,
+                                      target: "center" as const,
+                                      dashSpeed: 2.0,
+                                      radius: 1,
+                                      color: "#fbbf24",
+                                      buttonId: ((i % 3) + 1) as 1 | 2 | 3,
+                                    }))
+                                  : undefined;
                               handleUpdateLoop(index, {
                                 chargePointCount: count,
                                 chargePoints: points,
@@ -735,30 +747,118 @@ export default function ArenaConfigurator({
                         </div>
 
                         {(loop.chargePointCount || 0) > 0 && (
-                          <div>
-                            <label className="block text-xs text-yellow-700 mb-1">
-                              Recharge Rate (%/sec)
-                            </label>
-                            <input
-                              type="number"
-                              value={loop.chargePoints?.[0]?.rechargeRate || 5}
-                              onChange={(e) => {
-                                const rate = parseFloat(e.target.value);
-                                const updatedPoints = loop.chargePoints?.map(p => ({
-                                  ...p,
-                                  rechargeRate: rate,
-                                }));
-                                handleUpdateLoop(index, {
-                                  chargePoints: updatedPoints,
-                                });
-                              }}
-                              min={1}
-                              max={20}
-                              step="0.5"
-                              className="w-full px-3 py-2 border border-yellow-300 rounded"
-                            />
-                          </div>
+                          <>
+                            <div>
+                              <label className="block text-xs text-yellow-700 mb-1">
+                                Dash Target
+                              </label>
+                              <select
+                                value={
+                                  loop.chargePoints?.[0]?.target || "center"
+                                }
+                                onChange={(e) => {
+                                  const target = e.target.value as
+                                    | "center"
+                                    | "opponent";
+                                  const updatedPoints = loop.chargePoints?.map(
+                                    (p) => ({
+                                      ...p,
+                                      target,
+                                    })
+                                  );
+                                  handleUpdateLoop(index, {
+                                    chargePoints: updatedPoints,
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-yellow-300 rounded"
+                              >
+                                <option value="center">Center (Arena)</option>
+                                <option value="opponent">
+                                  Opponent (or Center)
+                                </option>
+                              </select>
+                              <p className="text-xs text-yellow-600 mt-1">
+                                Dash towards center or opponent
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-yellow-700 mb-1">
+                                Dash Speed Multiplier
+                              </label>
+                              <input
+                                type="number"
+                                value={loop.chargePoints?.[0]?.dashSpeed || 2.0}
+                                onChange={(e) => {
+                                  const speed = parseFloat(e.target.value);
+                                  const updatedPoints = loop.chargePoints?.map(
+                                    (p) => ({
+                                      ...p,
+                                      dashSpeed: speed,
+                                    })
+                                  );
+                                  handleUpdateLoop(index, {
+                                    chargePoints: updatedPoints,
+                                  });
+                                }}
+                                min={1}
+                                max={5}
+                                step="0.5"
+                                className="w-full px-3 py-2 border border-yellow-300 rounded"
+                              />
+                              <p className="text-xs text-yellow-600 mt-1">
+                                Speed during dash (1-5x)
+                              </p>
+                            </div>
+                          </>
                         )}
+                      </div>
+
+                      {/* Loop Duration Controls */}
+                      <div className="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                          <label className="block text-xs text-yellow-700 mb-1">
+                            Min Loop Duration (sec)
+                          </label>
+                          <input
+                            type="number"
+                            value={loop.minLoopDuration || 2}
+                            onChange={(e) =>
+                              handleUpdateLoop(index, {
+                                minLoopDuration: parseFloat(e.target.value),
+                              })
+                            }
+                            min={2}
+                            max={5}
+                            step="0.5"
+                            className="w-full px-3 py-2 border border-yellow-300 rounded"
+                          />
+                          <p className="text-xs text-yellow-600 mt-1">
+                            Minimum time in loop (2-5s)
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-yellow-700 mb-1">
+                            Max Loop Duration (sec)
+                          </label>
+                          <input
+                            type="number"
+                            value={loop.maxLoopDuration || 5}
+                            onChange={(e) =>
+                              handleUpdateLoop(index, {
+                                maxLoopDuration: parseFloat(e.target.value),
+                              })
+                            }
+                            min={2}
+                            max={5}
+                            step="0.5"
+                            className="w-full px-3 py-2 border border-yellow-300 rounded"
+                          />
+                          <p className="text-xs text-yellow-600 mt-1">
+                            Maximum time before forced exit (2-5s)
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1440,6 +1540,72 @@ export default function ArenaConfigurator({
                               Width of the ring band
                             </p>
                           </div>
+                        )}
+
+                        {/* Loop Moat Controls - for loop type */}
+                        {config.waterBody.type === "loop" && (
+                          <>
+                            <div className="col-span-2">
+                              <div className="bg-blue-100 p-2 rounded text-xs text-blue-800">
+                                ℹ️ Loop moat always follows the center position
+                                (first loop if available)
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-blue-700 mb-1">
+                                Inner Radius (em)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={config.waterBody.innerRadius || 12}
+                                onChange={(e) =>
+                                  setConfig({
+                                    ...config,
+                                    waterBody: {
+                                      ...config.waterBody!,
+                                      innerRadius: parseFloat(e.target.value),
+                                      loopIndex: 0, // Always 0 for center
+                                    },
+                                  })
+                                }
+                                min={5}
+                                max={30}
+                                className="w-full px-3 py-2 border border-blue-300 rounded"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">
+                                Inner edge of moat
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-blue-700 mb-1">
+                                Outer Radius (em)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={config.waterBody.outerRadius || 18}
+                                onChange={(e) =>
+                                  setConfig({
+                                    ...config,
+                                    waterBody: {
+                                      ...config.waterBody!,
+                                      outerRadius: parseFloat(e.target.value),
+                                      loopIndex: 0, // Always 0 for center
+                                    },
+                                  })
+                                }
+                                min={5}
+                                max={35}
+                                className="w-full px-3 py-2 border border-blue-300 rounded"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">
+                                Outer edge of moat
+                              </p>
+                            </div>
+                          </>
                         )}
                       </div>
 
