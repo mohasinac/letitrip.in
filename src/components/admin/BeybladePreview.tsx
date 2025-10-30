@@ -28,6 +28,13 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
   const [isSpinning, setIsSpinning] = useState(true);
   const [zoom, setZoom] = useState(100);
 
+  // Auto-pause spinning when in click mode (placing contact points)
+  useEffect(() => {
+    if (clickMode) {
+      setIsSpinning(false);
+    }
+  }, [clickMode]);
+
   // Handle canvas click for spike placement
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!clickMode || !onCanvasClick) return;
@@ -328,7 +335,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
         />
         {clickMode && (
           <p className="text-xs text-blue-600 mt-2 text-center font-medium">
-            📍 Click on the canvas to place a spike
+            📍 Click on the canvas to place a spike (Spinning paused)
           </p>
         )}
       </div>
