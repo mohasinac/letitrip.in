@@ -363,20 +363,90 @@ All product management features are now fully implemented and production-ready!
 - ✅ Live preview panel
 - ✅ Edit button in products list table
 
-### Phase 4: Orders System
+### Phase 4: Orders System ✅ IN PROGRESS
 
-#### `/seller/orders` - Orders List
+**Status:** API routes created, orders list page updated with authentication
+
+#### Store Setup Configuration Required
+
+Before processing orders, sellers must complete their shop setup:
+
+1. **Basic Shop Information** (`/seller/shop` - Tab 1)
+
+   - ✅ Store name
+   - ✅ Store description
+   - ✅ Store logo
+   - ✅ Store cover image
+
+2. **Pickup Addresses** (`/seller/shop` - Tab 2)
+
+   - ✅ At least one pickup address required
+   - ✅ Default pickup address selection
+   - ✅ Multiple warehouse support
+
+3. **Business Details** (`/seller/shop` - Tab 3)
+
+   - ✅ GST number
+   - ✅ PAN number
+   - ✅ Business type
+
+4. **Store Settings** (`/seller/shop` - Tab 5)
+   - ✅ COD availability toggle
+   - ✅ Free shipping threshold
+   - ✅ Processing time
+   - ✅ Return/refund policies
+
+**Orders will be disabled until shop setup is complete**
+
+#### `/seller/orders` - Orders List ✅
 
 **Features:**
 
-- Tabbed view: All | Pending Approval | Processing | Shipped | Delivered | Cancelled
-- Auto-approve in 3 days for pending orders
-- Search by order number, customer name, email
-- Filter by status, date range, payment method
-- Columns: Order #, Customer, Items, Total, Status, Payment, Date
-- Quick actions: Approve, Reject, View Details, Print Invoice
+- ✅ Tabbed view: All | Pending Approval | Processing | Shipped | Delivered | Cancelled
+- ✅ Real-time stats dashboard (total, pending, processing, delivered)
+- ✅ Search by order number, customer name, email
+- ✅ Filter by status tabs
+- ✅ Columns: Order #, Customer, Items, Total, Status, Payment, Date
+- ✅ Quick actions menu: View Details, Approve, Reject, Print Invoice
+- ✅ **API Integration with Firebase**
+- ✅ **Authentication check with useAuth**
+- ✅ Success/error notifications with Snackbar
+- ✅ Approve/Reject confirmation dialogs
+- ✅ Rejection reason input field
+
+**Orders API Routes** (`src/app/api/seller/orders/`)
+
+- ✅ `GET /api/seller/orders` - List all orders with filtering and stats
+- ✅ `GET /api/seller/orders/[id]` - Get specific order details
+- ✅ `POST /api/seller/orders/[id]/approve` - Approve pending order
+- ✅ `POST /api/seller/orders/[id]/reject` - Reject pending order (with reason)
+- ✅ `POST /api/seller/orders/[id]/cancel` - Cancel order
+- ⏳ `POST /api/seller/orders/[id]/invoice` - Generate invoice PDF (pending)
+- ⏳ `POST /api/seller/orders/[id]/initiate-shipment` - Start shipment (pending)
+
+**Firebase Integration:**
+
+- ✅ seller_orders collection queries with composite indexes
+- ✅ Admin authentication with Firebase Admin SDK
+- ✅ Real-time order statistics calculation
+- ✅ Seller alerts creation on order actions
+- ✅ Order status updates with timestamps
 
 **Order Status Flow:**
+
+1. ✅ Pending → Manual approve/reject
+2. ✅ Approved → Processing
+3. ⏳ Processing → Ready to ship (generate shipping label)
+4. ⏳ Shipped → In transit
+5. ⏳ Delivered → Complete
+6. ✅ Cancelled (at any non-delivered stage)
+
+**Auto-Approval Feature:** ⏳ Pending
+
+- Orders auto-approve in 3 days if not manually processed
+- Cloud Function or scheduled task required
+
+#### `/seller/orders/[id]` - Order Detail ⏳ PENDING
 
 1. Pending → Auto-approve in 3 days or manual approve/reject
 2. Approved → Processing
@@ -384,24 +454,24 @@ All product management features are now fully implemented and production-ready!
 4. Shipped → In transit
 5. Delivered → Complete
 
-#### `/seller/orders/[id]` - Order Detail
+#### `/seller/orders/[id]` - Order Detail ⏳ PENDING
 
 **Sections:**
 
-1. **Order Summary**
+1. **Order Summary** ⏳
 
    - Order number, date, status
    - Customer info (name, email, phone)
    - Shipping & billing addresses
    - Payment status & method
 
-2. **Order Items**
+2. **Order Items** ⏳
 
    - Product snapshot (immutable copy from transactionSnapshot)
    - Name, image, SKU, price, quantity, total
    - Cannot delete products from here (snapshot preserved)
 
-3. **Pricing Breakdown**
+3. **Pricing Breakdown** ⏳
 
    - Subtotal
    - Coupon discount (if applied, show coupon code & details)
@@ -410,7 +480,7 @@ All product management features are now fully implemented and production-ready!
    - Tax
    - Total
 
-4. **Timeline**
+4. **Timeline** ⏳
 
    - Order placed
    - Payment received/pending
@@ -419,7 +489,7 @@ All product management features are now fully implemented and production-ready!
    - Shipped (with tracking)
    - Delivered
 
-5. **Actions**
+5. **Actions** ⏳
    - Approve order (if pending)
    - Reject order (with reason)
    - Generate invoice (PDF)
@@ -427,6 +497,15 @@ All product management features are now fully implemented and production-ready!
    - Cancel order
    - Add seller notes
    - Add internal notes
+
+**Next Steps for Phase 4:**
+
+1. Create order detail page component
+2. Implement invoice generation API
+3. Add shipment initiation flow
+4. Create auto-approval Cloud Function
+5. Add order timeline component
+6. Implement seller notes functionality
 
 ### Phase 5: Shipments System
 

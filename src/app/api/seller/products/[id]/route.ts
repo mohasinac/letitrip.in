@@ -8,7 +8,7 @@ import { Timestamp } from "firebase-admin/firestore";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -35,7 +35,7 @@ export async function GET(
     }
 
     const adminDb = getAdminDb();
-    const { id } = params;
+    const { id } = await params; // Await params
 
     // Get product document
     const docRef = adminDb.collection("seller_products").doc(id);
@@ -88,7 +88,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -115,7 +115,7 @@ export async function PUT(
     }
 
     const adminDb = getAdminDb();
-    const { id } = params;
+    const { id } = await params; // Await params
     const body = await request.json();
 
     // Get existing product
@@ -279,7 +279,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -306,7 +306,7 @@ export async function DELETE(
     }
 
     const adminDb = getAdminDb();
-    const { id } = params;
+    const { id } = await params; // Await params
 
     // Get product document
     const docRef = adminDb.collection("seller_products").doc(id);

@@ -28,10 +28,21 @@ export default function PricingInventoryStep({
   onChange,
 }: PricingInventoryStepProps) {
   const generateSKU = () => {
-    const sku = `SKU-${Date.now()}-${Math.random()
-      .toString(36)
-      .substr(2, 9)
-      .toUpperCase()}`;
+    // Smart SKU generation with category and product name
+    const productName = data.name || "PRODUCT";
+    const categoryName = data.categoryId ? "CAT" : "GEN"; // We'll improve this with actual category data
+
+    // Extract first letters and numbers from product name
+    const productCode = productName
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .substr(0, 4)
+      .padEnd(4, "X");
+
+    const timestamp = Date.now().toString().substr(-6);
+    const random = Math.random().toString(36).substr(2, 3).toUpperCase();
+
+    const sku = `${categoryName}-${productCode}-${timestamp}-${random}`;
     onChange({ inventory: { ...data.inventory, sku } });
   };
 

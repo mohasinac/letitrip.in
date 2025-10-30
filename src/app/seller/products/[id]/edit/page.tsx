@@ -26,20 +26,19 @@ import {
   Delete,
   Archive,
 } from "@mui/icons-material";
-import { apiGet, apiPut, apiDelete } from "@/lib/api/seller";
-import ProductDetailsStep from "@/components/seller/products/ProductDetailsStep";
-import PricingInventoryStep from "@/components/seller/products/PricingInventoryStep";
+import { useAuth } from "@/contexts/AuthContext";
+import { apiGet, apiPut, apiDelete, uploadWithAuth } from "@/lib/api/seller";
+import BasicInfoPricingStep from "@/components/seller/products/BasicInfoPricingStep";
 import MediaUploadStep from "@/components/seller/products/MediaUploadStep";
 import ConditionFeaturesStep from "@/components/seller/products/ConditionFeaturesStep";
 import SeoPublishingStep from "@/components/seller/products/SeoPublishingStep";
 import ProductPreview from "@/components/seller/products/ProductPreview";
 
 const steps = [
-  "Product Details",
-  "Pricing & Inventory",
+  "Basic Info & Pricing",
   "Media Upload",
-  "Condition & Features",
   "SEO & Publishing",
+  "Condition & Features",
 ];
 
 interface ProductFormData {
@@ -109,6 +108,7 @@ export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
   const productId = params?.id as string;
+  const { user, loading: authLoading } = useAuth();
 
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -163,17 +163,20 @@ export default function EditProductPage() {
     status: "draft",
   });
 
-  // Fetch product data, categories, and addresses on mount
+  // Fetch product data, categories, and addresses on mount (after auth is ready)
   useEffect(() => {
-    fetchProductData();
-    fetchLeafCategories();
-    fetchAddresses();
-  }, [productId]);
+    // Only fetch data when user is authenticated and not loading
+    if (user && !authLoading) {
+      fetchProductData();
+      fetchLeafCategories();
+      fetchAddresses();
+    }
+  }, [productId, user, authLoading]);
 
   const fetchProductData = async () => {
     try {
       setLoading(true);
-      const response = await apiGet(`/api/seller/products/${productId}`);
+      const response = await apiGet<any>(`/api/seller/products/${productId}`);
 
       if (response.success && response.data) {
         const product = response.data;
@@ -245,7 +248,9 @@ export default function EditProductPage() {
 
   const fetchLeafCategories = async () => {
     try {
-      const response = await apiGet("/api/seller/products/categories/leaf");
+      const response = await apiGet<any>(
+        "/api/seller/products/categories/leaf"
+      );
       if (response.success) {
         setCategories(response.data);
       }
@@ -266,11 +271,9 @@ export default function EditProductPage() {
   };
 
   const handleNext = () => {
-    // Validate current step before proceeding
-    if (validateStep(activeStep)) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      setError(null);
-    }
+    // Allow free navigation - no validation required
+    setActiveStep((prevActiveStep) => Math.min(prevActiveStep + 1, steps.length - 1));
+    setError(null);
   };
 
   const handleBack = () => {
@@ -278,62 +281,45 @@ export default function EditProductPage() {
     setError(null);
   };
 
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 0: // Product Details
-        if (!formData.name.trim()) {
-          setError("Product name is required");
-          return false;
-        }
-        if (!formData.categoryId) {
-          setError("Please select a category");
-          return false;
-        }
-        return true;
+  const handleStepClick = (step: number) => {
+    // Allow direct navigation to any step
+    setActiveStep(step);
+    setError(null);
+  };
 
-      case 1: // Pricing & Inventory
-        if (formData.pricing.price <= 0) {
-          setError("Price must be greater than 0");
-          return false;
-        }
-        if (!formData.inventory.sku.trim()) {
-          setError("SKU is required");
-          return false;
-        }
-        if (formData.inventory.quantity < 0) {
-          setError("Quantity cannot be negative");
-          return false;
-        }
-        return true;
-
-      case 2: // Media Upload
-        if (formData.media.images.length === 0) {
-          setError("Please upload at least one product image");
-          return false;
-        }
-        return true;
-
-      case 3: // Condition & Features
-        return true; // All optional
-
-      case 4: // SEO
-        if (!formData.seo.slug.trim()) {
-          setError("SEO slug is required");
-          return false;
-        }
-        if (!formData.seo.slug.startsWith("buy-")) {
-          setError("SEO slug must start with 'buy-'");
-          return false;
-        }
-        return true;
-
-      default:
-        return true;
+  const validateBeforeSubmit = (): boolean => {
+    // Only validate when submitting the form
+    if (!formData.name.trim()) {
+      setError("Product name is required");
+      setActiveStep(0);
+      return false;
     }
+    if (!formData.categoryId) {
+      setError("Please select a category");
+      setActiveStep(0);
+      return false;
+    }
+    if (formData.pricing.price <= 0) {
+      setError("Price must be greater than 0");
+      setActiveStep(0);
+      return false;
+    }
+    // SKU and images are now optional
+    if (!formData.seo.slug.trim()) {
+      setError("SEO slug is required");
+      setActiveStep(2); // SEO is now step 2
+      return false;
+    }
+    if (!formData.seo.slug.startsWith("buy-")) {
+      setError("SEO slug must start with 'buy-'");
+      setActiveStep(2); // SEO is now step 2
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(activeStep)) {
+    if (!validateBeforeSubmit()) {
       return;
     }
 
@@ -376,7 +362,7 @@ export default function EditProductPage() {
         status: formData.status,
       };
 
-      const response = await apiPut(
+      const response = await apiPut<any>(
         `/api/seller/products/${productId}`,
         updatePayload
       );
@@ -396,7 +382,9 @@ export default function EditProductPage() {
   const handleDelete = async () => {
     try {
       setSaving(true);
-      const response = await apiDelete(`/api/seller/products/${productId}`);
+      const response = await apiDelete<any>(
+        `/api/seller/products/${productId}`
+      );
 
       if (response.success) {
         router.push("/seller/products");
@@ -414,7 +402,7 @@ export default function EditProductPage() {
   const handleArchive = async () => {
     try {
       setSaving(true);
-      const response = await apiPut(`/api/seller/products/${productId}`, {
+      const response = await apiPut<any>(`/api/seller/products/${productId}`, {
         status: "archived",
       });
 
@@ -441,28 +429,21 @@ export default function EditProductPage() {
     switch (step) {
       case 0:
         return (
-          <ProductDetailsStep
+          <BasicInfoPricingStep
             data={formData}
             categories={categories}
-            onChange={updateFormData}
-          />
-        );
-      case 1:
-        return (
-          <PricingInventoryStep
-            data={formData}
             addresses={addresses}
             onChange={updateFormData}
           />
         );
-      case 2:
+      case 1:
         return <MediaUploadStep data={formData} onChange={updateFormData} />;
+      case 2:
+        return <SeoPublishingStep data={formData} onChange={updateFormData} />;
       case 3:
         return (
           <ConditionFeaturesStep data={formData} onChange={updateFormData} />
         );
-      case 4:
-        return <SeoPublishingStep data={formData} onChange={updateFormData} />;
       default:
         return "Unknown step";
     }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -45,6 +44,8 @@ import {
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
+import { useAuth } from "@/contexts/AuthContext";
+import { apiGet, apiPost } from "@/lib/api/seller";
 import Link from "next/link";
 
 interface Order {
@@ -61,6 +62,7 @@ interface Order {
 }
 
 function OrdersListContent() {
+  const { user, loading: authLoading } = useAuth();
   useBreadcrumbTracker([
     {
       label: "Seller",
@@ -79,6 +81,15 @@ function OrdersListContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    pendingApproval: 0,
+    processing: 0,
+    shipped: 0,
+    delivered: 0,
+    cancelled: 0,
+    totalRevenue: 0,
+  });
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -92,31 +103,44 @@ function OrdersListContent() {
     open: boolean;
     type: "approve" | "reject" | null;
     order: Order | null;
+    reason?: string;
   }>({
     open: false,
     type: null,
     order: null,
+    reason: "",
   });
 
   const tabs = [
-    { label: "All", value: "all", count: 0 },
-    { label: "Pending Approval", value: "pending_approval", count: 0 },
-    { label: "Processing", value: "processing", count: 0 },
-    { label: "Shipped", value: "shipped", count: 0 },
-    { label: "Delivered", value: "delivered", count: 0 },
-    { label: "Cancelled", value: "cancelled", count: 0 },
+    { label: "All", value: "all", count: stats.total },
+    {
+      label: "Pending Approval",
+      value: "pending",
+      count: stats.pendingApproval,
+    },
+    { label: "Processing", value: "processing", count: stats.processing },
+    { label: "Shipped", value: "shipped", count: stats.shipped },
+    { label: "Delivered", value: "delivered", count: stats.delivered },
+    { label: "Cancelled", value: "cancelled", count: stats.cancelled },
   ];
 
   // Fetch orders from API
   const fetchOrders = async () => {
+    if (!user || authLoading) return;
+
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const response = await apiGet("/api/seller/orders", { status: tabs[activeTab].value });
+      const statusFilter = tabs[activeTab].value;
+      const response = await apiGet<any>(
+        `/api/seller/orders?status=${statusFilter}&search=${searchQuery}`
+      );
 
-      // Mock data for now
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setOrders([]);
+      if (response.success) {
+        setOrders(response.data || []);
+        if (response.stats) {
+          setStats(response.stats);
+        }
+      }
     } catch (error: any) {
       setSnackbar({
         open: true,
@@ -129,8 +153,10 @@ function OrdersListContent() {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, [activeTab]);
+    if (user && !authLoading) {
+      fetchOrders();
+    }
+  }, [activeTab, user, authLoading]);
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -159,14 +185,44 @@ function OrdersListContent() {
     if (!actionDialog.order || !actionDialog.type) return;
 
     try {
-      // TODO: Implement API call
-      // const response = await apiPost(`/api/seller/orders/${actionDialog.order.id}/${actionDialog.type}`);
+      setLoading(true);
 
-      setSnackbar({
-        open: true,
-        message: `Order ${actionDialog.type}d successfully`,
-        severity: "success",
-      });
+      if (actionDialog.type === "approve") {
+        const response = await apiPost<any>(
+          `/api/seller/orders/${actionDialog.order.id}/approve`,
+          {}
+        );
+
+        if (response.success) {
+          setSnackbar({
+            open: true,
+            message: "Order approved successfully",
+            severity: "success",
+          });
+        }
+      } else if (actionDialog.type === "reject") {
+        if (!actionDialog.reason || actionDialog.reason.trim().length === 0) {
+          setSnackbar({
+            open: true,
+            message: "Please provide a rejection reason",
+            severity: "error",
+          });
+          return;
+        }
+
+        const response = await apiPost<any>(
+          `/api/seller/orders/${actionDialog.order.id}/reject`,
+          { reason: actionDialog.reason }
+        );
+
+        if (response.success) {
+          setSnackbar({
+            open: true,
+            message: "Order rejected successfully",
+            severity: "success",
+          });
+        }
+      }
 
       fetchOrders();
     } catch (error: any) {
@@ -176,7 +232,8 @@ function OrdersListContent() {
         severity: "error",
       });
     } finally {
-      setActionDialog({ open: false, type: null, order: null });
+      setLoading(false);
+      setActionDialog({ open: false, type: null, order: null, reason: "" });
     }
   };
 
@@ -221,7 +278,8 @@ function OrdersListContent() {
     return matchesSearch;
   });
 
-  const stats = {
+  // Calculate stats from orders
+  const calculatedStats = {
     total: orders.length,
     pendingApproval: orders.filter((o) => o.status === "pending_approval")
       .length,
@@ -232,12 +290,12 @@ function OrdersListContent() {
   };
 
   // Update tab counts
-  tabs[0].count = stats.total;
-  tabs[1].count = stats.pendingApproval;
-  tabs[2].count = stats.processing;
-  tabs[3].count = stats.shipped;
-  tabs[4].count = stats.delivered;
-  tabs[5].count = stats.cancelled;
+  tabs[0].count = calculatedStats.total;
+  tabs[1].count = calculatedStats.pendingApproval;
+  tabs[2].count = calculatedStats.processing;
+  tabs[3].count = calculatedStats.shipped;
+  tabs[4].count = calculatedStats.delivered;
+  tabs[5].count = calculatedStats.cancelled;
 
   return (
     <Box sx={{ py: 4 }}>
@@ -499,7 +557,12 @@ function OrdersListContent() {
         <Dialog
           open={actionDialog.open}
           onClose={() =>
-            setActionDialog({ open: false, type: null, order: null })
+            setActionDialog({
+              open: false,
+              type: null,
+              order: null,
+              reason: "",
+            })
           }
         >
           <DialogTitle>
@@ -513,11 +576,32 @@ function OrdersListContent() {
                 ? `Are you sure you want to approve order ${actionDialog.order?.orderNumber}? This will move it to processing.`
                 : `Are you sure you want to reject order ${actionDialog.order?.orderNumber}? The customer will be notified.`}
             </DialogContentText>
+            {actionDialog.type === "reject" && (
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Rejection Reason"
+                fullWidth
+                multiline
+                rows={3}
+                value={actionDialog.reason || ""}
+                onChange={(e) =>
+                  setActionDialog({ ...actionDialog, reason: e.target.value })
+                }
+                placeholder="Please provide a reason for rejecting this order..."
+                required
+              />
+            )}
           </DialogContent>
           <DialogActions>
             <Button
               onClick={() =>
-                setActionDialog({ open: false, type: null, order: null })
+                setActionDialog({
+                  open: false,
+                  type: null,
+                  order: null,
+                  reason: "",
+                })
               }
             >
               Cancel

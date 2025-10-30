@@ -16,20 +16,18 @@ import {
 } from "@mui/material";
 import { ArrowBack, ArrowForward, Check } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
-import { apiGet, apiPost } from "@/lib/api/seller";
-import ProductDetailsStep from "@/components/seller/products/ProductDetailsStep";
-import PricingInventoryStep from "@/components/seller/products/PricingInventoryStep";
+import { apiGet, apiPost, uploadWithAuth } from "@/lib/api/seller";
+import BasicInfoPricingStep from "@/components/seller/products/BasicInfoPricingStep";
 import MediaUploadStep from "@/components/seller/products/MediaUploadStep";
 import ConditionFeaturesStep from "@/components/seller/products/ConditionFeaturesStep";
 import SeoPublishingStep from "@/components/seller/products/SeoPublishingStep";
 import ProductPreview from "@/components/seller/products/ProductPreview";
 
 const steps = [
-  "Product Details",
-  "Pricing & Inventory",
+  "Basic Info & Pricing",
   "Media Upload",
-  "Condition & Features",
   "SEO & Publishing",
+  "Condition & Features",
 ];
 
 interface ProductFormData {
@@ -56,7 +54,15 @@ interface ProductFormData {
 
   // Step 3: Media
   media: {
-    images: Array<{ url: string; altText: string; order: number }>;
+    images: Array<{
+      url: string;
+      altText: string;
+      order: number;
+      file?: File; // Optional file for new uploads
+      isNew?: boolean; // Flag to indicate needs upload
+      path?: string;
+      name?: string;
+    }>;
     videos: Array<{ url: string; thumbnail: string; order: number }>;
   };
 
@@ -153,7 +159,9 @@ export default function NewProductPage() {
 
   const fetchLeafCategories = async () => {
     try {
-      const response = await apiGet<any>("/api/seller/products/categories/leaf");
+      const response = await apiGet<any>(
+        "/api/seller/products/categories/leaf"
+      );
       if (response.success) {
         setCategories(response.data);
       }
@@ -183,11 +191,9 @@ export default function NewProductPage() {
   };
 
   const handleNext = () => {
-    // Validate current step before proceeding
-    if (validateStep(activeStep)) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      setError(null);
-    }
+    // Allow free navigation - no validation required
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setError(null);
   };
 
   const handleBack = () => {
@@ -195,62 +201,46 @@ export default function NewProductPage() {
     setError(null);
   };
 
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 0: // Product Details
-        if (!formData.name.trim()) {
-          setError("Product name is required");
-          return false;
-        }
-        if (!formData.categoryId) {
-          setError("Please select a category");
-          return false;
-        }
-        return true;
+  const handleStepClick = (step: number) => {
+    // Allow direct navigation to any step
+    setActiveStep(step);
+    setError(null);
+  };
 
-      case 1: // Pricing & Inventory
-        if (formData.pricing.price <= 0) {
-          setError("Price must be greater than 0");
-          return false;
-        }
-        if (!formData.inventory.sku.trim()) {
-          setError("SKU is required");
-          return false;
-        }
-        if (formData.inventory.quantity < 0) {
-          setError("Quantity cannot be negative");
-          return false;
-        }
-        return true;
-
-      case 2: // Media Upload
-        if (formData.media.images.length === 0) {
-          setError("Please upload at least one product image");
-          return false;
-        }
-        return true;
-
-      case 3: // Condition & Features
-        return true; // All optional
-
-      case 4: // SEO
-        if (!formData.seo.slug.trim()) {
-          setError("SEO slug is required");
-          return false;
-        }
-        if (!formData.seo.slug.startsWith("buy-")) {
-          setError("SEO slug must start with 'buy-'");
-          return false;
-        }
-        return true;
-
-      default:
-        return true;
+  const validateBeforeSubmit = (): boolean => {
+    // Only validate when submitting the form
+    if (!formData.name.trim()) {
+      setError("Product name is required");
+      setActiveStep(0);
+      return false;
     }
+    if (!formData.categoryId) {
+      setError("Please select a category");
+      setActiveStep(0);
+      return false;
+    }
+    if (formData.pricing.price <= 0) {
+      setError("Price must be greater than 0");
+      setActiveStep(0);
+      return false;
+    }
+    // SKU and images are now optional
+    if (!formData.seo.slug.trim()) {
+      setError("SEO slug is required");
+      setActiveStep(2); // SEO is now step 2
+      return false;
+    }
+    if (!formData.seo.slug.startsWith("buy-")) {
+      setError("SEO slug must start with 'buy-'");
+      setActiveStep(2); // SEO is now step 2
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(activeStep)) {
+    // Validate entire form before submission
+    if (!validateBeforeSubmit()) {
       return;
     }
 
@@ -258,9 +248,31 @@ export default function NewProductPage() {
     setError(null);
 
     try {
-      const response = await apiPost<any>("/api/seller/products", formData);
+      // Upload new images to Firebase Storage
+      const uploadedImages = await uploadPendingImages();
+
+      // Prepare form data with uploaded image URLs
+      const finalFormData = {
+        ...formData,
+        media: {
+          ...formData.media,
+          images: uploadedImages,
+        },
+      };
+
+      const response = await apiPost<any>(
+        "/api/seller/products",
+        finalFormData
+      );
 
       if (response.success) {
+        // Clean up blob URLs
+        formData.media.images.forEach((img: any) => {
+          if (img.isNew && img.url.startsWith("blob:")) {
+            URL.revokeObjectURL(img.url);
+          }
+        });
+
         router.push("/seller/products");
       } else {
         setError(response.error || "Failed to create product");
@@ -272,6 +284,83 @@ export default function NewProductPage() {
     }
   };
 
+  const uploadPendingImages = async () => {
+    const images = formData.media.images;
+    const uploadedImages = [];
+
+    // If no images, return empty array
+    if (images.length === 0) {
+      return [];
+    }
+
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+
+      // Skip already uploaded images
+      if (!img.isNew || !img.file) {
+        // Keep existing uploaded images
+        if (!img.isNew) {
+          uploadedImages.push({
+            url: img.url,
+            altText: img.altText,
+            order: i,
+            path: img.path,
+            name: img.name,
+          });
+        }
+        continue;
+      }
+
+      try {
+        // Create FormData for upload
+        const formDataUpload = new FormData();
+        formDataUpload.append("files", img.file);
+        formDataUpload.append("slug", formData.seo.slug);
+        formDataUpload.append("type", "image");
+
+        console.log(`Uploading image ${i + 1}:`, {
+          fileName: img.file.name,
+          fileSize: img.file.size,
+          slug: formData.seo.slug,
+        });
+
+        // Upload to API
+        const response: any = await uploadWithAuth(
+          "/api/seller/products/media",
+          formDataUpload
+        );
+
+        console.log(`Upload response for image ${i + 1}:`, response);
+
+        if (response.success && response.data && response.data.length > 0) {
+          // Use the uploaded URL
+          uploadedImages.push({
+            url: response.data[0].url,
+            altText: img.altText,
+            order: i,
+            path: response.data[0].path,
+            name: response.data[0].name,
+          });
+
+          // Clean up blob URL
+          URL.revokeObjectURL(img.url);
+        } else {
+          const errorMsg =
+            response.error || response.details || "Unknown error";
+          console.error(`Upload failed for image ${i + 1}:`, errorMsg);
+          throw new Error(`Image ${i + 1}: ${errorMsg}`);
+        }
+      } catch (error: any) {
+        console.error(`Failed to upload image ${i + 1}:`, error);
+        throw new Error(
+          `Failed to upload image ${i + 1}: ${error.message || "Network error"}`
+        );
+      }
+    }
+
+    return uploadedImages;
+  };
+
   const updateFormData = (updates: Partial<ProductFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
   };
@@ -280,28 +369,21 @@ export default function NewProductPage() {
     switch (step) {
       case 0:
         return (
-          <ProductDetailsStep
+          <BasicInfoPricingStep
             data={formData}
             categories={categories}
-            onChange={updateFormData}
-          />
-        );
-      case 1:
-        return (
-          <PricingInventoryStep
-            data={formData}
             addresses={addresses}
             onChange={updateFormData}
           />
         );
-      case 2:
+      case 1:
         return <MediaUploadStep data={formData} onChange={updateFormData} />;
+      case 2:
+        return <SeoPublishingStep data={formData} onChange={updateFormData} />;
       case 3:
         return (
           <ConditionFeaturesStep data={formData} onChange={updateFormData} />
         );
-      case 4:
-        return <SeoPublishingStep data={formData} onChange={updateFormData} />;
       default:
         return "Unknown step";
     }
@@ -321,8 +403,12 @@ export default function NewProductPage() {
             </Typography>
 
             <Stepper activeStep={activeStep} sx={{ my: 4 }}>
-              {steps.map((label) => (
-                <Step key={label}>
+              {steps.map((label, index) => (
+                <Step
+                  key={label}
+                  onClick={() => handleStepClick(index)}
+                  sx={{ cursor: "pointer" }}
+                >
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}
@@ -341,7 +427,12 @@ export default function NewProductPage() {
             <Box sx={{ minHeight: 400 }}>{getStepContent(activeStep)}</Box>
 
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: 4,
+                gap: 2,
+              }}
             >
               <Button
                 disabled={activeStep === 0}
@@ -353,20 +444,21 @@ export default function NewProductPage() {
 
               <Box sx={{ flex: "1 1 auto" }} />
 
-              {activeStep === steps.length - 1 ? (
+              {/* Always show Finish button */}
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleSubmit}
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} /> : <Check />}
+              >
+                {loading ? "Creating..." : "Finish & Create Product"}
+              </Button>
+
+              {/* Show Next button if not on last step */}
+              {activeStep < steps.length - 1 && (
                 <Button
-                  variant="contained"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  startIcon={
-                    loading ? <CircularProgress size={20} /> : <Check />
-                  }
-                >
-                  {loading ? "Creating..." : "Create Product"}
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
+                  variant="outlined"
                   onClick={handleNext}
                   endIcon={<ArrowForward />}
                 >

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -11,6 +11,10 @@ import {
   Alert,
   CircularProgress,
   LinearProgress,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   CloudUpload,
@@ -19,6 +23,9 @@ import {
   CropSquare,
   PlayCircle,
   VideoLibrary,
+  CameraAlt,
+  Photo,
+  ArrowDropDown,
 } from "@mui/icons-material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { uploadWithAuth } from "@/lib/api/seller";
@@ -42,8 +49,14 @@ export default function MediaUploadStep({
     url: string;
   } | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -54,59 +67,34 @@ export default function MediaUploadStep({
       return;
     }
 
-    setUploading(true);
     setError(null);
-    setUploadProgress(0);
 
     try {
-      // Validate slug exists
-      if (!data.seo.slug) {
-        setError("Please enter a product name first to generate a slug");
-        setUploading(false);
-        return;
-      }
+      // Store images as File objects with preview URLs - don't upload yet
+      const newImages = await Promise.all(
+        Array.from(files).map(async (file, index) => {
+          // Create preview URL
+          const previewUrl = URL.createObjectURL(file);
 
-      // Create FormData
-      const formData = new FormData();
-      Array.from(files).forEach((file) => {
-        formData.append("files", file);
-      });
-      formData.append("slug", data.seo.slug);
-      formData.append("type", "image");
-
-      // Upload to API
-      const response: any = await uploadWithAuth(
-        "/api/seller/products/media",
-        formData
+          return {
+            file: file, // Store the actual file for later upload
+            url: previewUrl, // Temporary preview URL
+            altText: data.name || "Product image",
+            order: data.media.images.length + index,
+            isNew: true, // Flag to indicate this needs to be uploaded
+          };
+        })
       );
 
-      if (response.success) {
-        // Add uploaded images to state
-        const newImages = response.data.map((file: any, index: number) => ({
-          url: file.url,
-          altText: data.name || "Product image",
-          order: data.media.images.length + index,
-          path: file.path,
-          name: file.name,
-        }));
-
-        onChange({
-          media: {
-            ...data.media,
-            images: [...data.media.images, ...newImages],
-          },
-        });
-
-        setUploadProgress(100);
-      } else {
-        setError(response.error || "Failed to upload images");
-      }
+      onChange({
+        media: {
+          ...data.media,
+          images: [...data.media.images, ...newImages],
+        },
+      });
     } catch (err: any) {
-      console.error("Upload error:", err);
-      setError(err.message || "Failed to upload images");
-    } finally {
-      setUploading(false);
-      setTimeout(() => setUploadProgress(0), 2000);
+      console.error("Image selection error:", err);
+      setError(err.message || "Failed to select images");
     }
 
     // Reset input
@@ -404,28 +392,72 @@ export default function MediaUploadStep({
         </Box>
       )}
 
-      {/* Image Upload */}
-      <Box>
+      {/* Image Upload with Camera Support */}
+      <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
         <Button
           variant="contained"
-          component="label"
-          startIcon={
-            uploading ? <CircularProgress size={20} /> : <CloudUpload />
-          }
+          onClick={(e) => setUploadMenuAnchor(e.currentTarget)}
+          endIcon={<ArrowDropDown />}
+          sx={{
+            py: 1.5,
+            px: 3,
+          }}
           disabled={data.media.images.length >= 5 || uploading}
         >
-          {uploading ? "Uploading..." : "Upload Images"}
-          <input
-            type="file"
-            hidden
-            multiple
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={data.media.images.length >= 5 || uploading}
-          />
+          {uploading ? "Processing..." : "Add Images"}
         </Button>
-        <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-          {data.media.images.length} / 5 images uploaded
+
+        <Menu
+          anchorEl={uploadMenuAnchor}
+          open={Boolean(uploadMenuAnchor)}
+          onClose={() => setUploadMenuAnchor(null)}
+        >
+          <MenuItem
+            onClick={() => {
+              setUploadMenuAnchor(null);
+              fileInputRef.current?.click();
+            }}
+          >
+            <ListItemIcon>
+              <Photo />
+            </ListItemIcon>
+            <ListItemText>Choose from Gallery</ListItemText>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setUploadMenuAnchor(null);
+              cameraInputRef.current?.click();
+            }}
+          >
+            <ListItemIcon>
+              <CameraAlt />
+            </ListItemIcon>
+            <ListItemText>Take Photo</ListItemText>
+          </MenuItem>
+        </Menu>
+
+        {/* Hidden file inputs */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          multiple
+          accept="image/*"
+          onChange={handleImageSelect}
+          disabled={data.media.images.length >= 5 || uploading}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          hidden
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageSelect}
+          disabled={data.media.images.length >= 5 || uploading}
+        />
+
+        <Typography variant="caption" color="text.secondary">
+          {data.media.images.length} / 5 images • Saved locally until you submit
         </Typography>
       </Box>
 
