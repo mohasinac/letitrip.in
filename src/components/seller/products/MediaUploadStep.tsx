@@ -29,7 +29,7 @@ import {
 } from "@mui/icons-material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { uploadWithAuth } from "@/lib/api/seller";
-import WhatsAppImageEditor from "./WhatsAppImageEditor";
+import WhatsAppImageEditor, { WhatsAppCropData } from "./WhatsAppImageEditor";
 
 interface MediaUploadStepProps {
   data: any;
@@ -46,6 +46,7 @@ export default function MediaUploadStep({
   const [selectedImageForEdit, setSelectedImageForEdit] = useState<{
     index: number;
     url: string;
+    currentCrop?: WhatsAppCropData;
   } | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(
@@ -130,55 +131,37 @@ export default function MediaUploadStep({
   };
 
   const openWhatsAppEditor = (index: number, url: string) => {
-    setSelectedImageForEdit({ index, url });
+    const img = data.media.images[index];
+    setSelectedImageForEdit({
+      index,
+      url,
+      currentCrop: img.whatsappCrop,
+    });
     setWhatsAppEditorOpen(true);
   };
 
-  const handleWhatsAppSave = async (croppedImageBlob: Blob) => {
+  const handleWhatsAppSave = async (cropData: WhatsAppCropData) => {
     if (!selectedImageForEdit) return;
 
     try {
-      setUploading(true);
-      setError(null);
+      // Just save the crop data to the image object
+      const newImages = [...data.media.images];
+      newImages[selectedImageForEdit.index] = {
+        ...newImages[selectedImageForEdit.index],
+        whatsappCrop: cropData, // Store crop settings
+        whatsappEdited: true,
+      };
 
-      // Create FormData with cropped image
-      const formData = new FormData();
-      formData.append("files", croppedImageBlob, `whatsapp-${Date.now()}.jpg`);
-      formData.append("slug", data.seo.slug);
-      formData.append("type", "image");
-
-      // Upload to API
-      const response: any = await uploadWithAuth(
-        "/api/seller/products/media",
-        formData
-      );
-
-      if (response.success && response.data.length > 0) {
-        // Update the specific image with WhatsApp version
-        const newImages = [...data.media.images];
-        const whatsappUrl = response.data[0].url;
-
-        // Add WhatsApp edited indicator to image
-        newImages[selectedImageForEdit.index] = {
-          ...newImages[selectedImageForEdit.index],
-          url: whatsappUrl,
-          whatsappEdited: true,
-        };
-
-        onChange({
-          media: {
-            ...data.media,
-            images: newImages,
-          },
-        });
-      } else {
-        setError(response.error || "Failed to save WhatsApp image");
-      }
+      onChange({
+        media: {
+          ...data.media,
+          images: newImages,
+        },
+      });
     } catch (err: any) {
       console.error("WhatsApp save error:", err);
-      setError(err.message || "Failed to save WhatsApp image");
+      setError(err.message || "Failed to save WhatsApp settings");
     } finally {
-      setUploading(false);
       setSelectedImageForEdit(null);
     }
   };
@@ -740,6 +723,8 @@ export default function MediaUploadStep({
         <WhatsAppImageEditor
           open={whatsAppEditorOpen}
           imageUrl={selectedImageForEdit.url}
+          initialCrop={selectedImageForEdit.currentCrop?.crop}
+          initialZoom={selectedImageForEdit.currentCrop?.zoom}
           onClose={() => {
             setWhatsAppEditorOpen(false);
             setSelectedImageForEdit(null);

@@ -36,6 +36,22 @@ export async function POST(request: NextRequest) {
     const slug = formData.get("slug") as string;
     const type = formData.get("type") as string; // 'image' or 'video'
 
+    console.log("Media upload request received:", {
+      filesCount: files.length,
+      slug,
+      type,
+      fileDetails: files.map((f, idx) => ({
+        index: idx,
+        name: f?.name,
+        size: f?.size,
+        type: f?.type,
+        isFile: f instanceof File,
+        isBlob: f instanceof Blob,
+        constructor: f?.constructor?.name,
+        keys: Object.keys(f || {}),
+      })),
+    });
+
     if (!files || files.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files provided" },
@@ -71,6 +87,14 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       
+      console.log(`Processing file ${i + 1}/${files.length}:`, {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        hasTypeProperty: "type" in file,
+        allProperties: Object.getOwnPropertyNames(file || {}),
+      });
+      
       // Validate file size
       const maxSize = type === "video" ? 20 * 1024 * 1024 : 5 * 1024 * 1024; // 20MB for videos, 5MB for images
       if (file.size > maxSize) {
@@ -84,14 +108,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Validate file type
-      if (type === "image" && !file.type.startsWith("image/")) {
+      if (type === "image" && file.type && !file.type.startsWith("image/")) {
         return NextResponse.json(
           { success: false, error: `File ${file.name} is not an image` },
           { status: 400 }
         );
       }
 
-      if (type === "video" && !file.type.startsWith("video/")) {
+      if (type === "video" && file.type && !file.type.startsWith("video/")) {
         return NextResponse.json(
           { success: false, error: `File ${file.name} is not a video` },
           { status: 400 }

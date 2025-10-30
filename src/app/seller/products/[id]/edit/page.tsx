@@ -193,6 +193,12 @@ export default function EditProductPage() {
       if (response.success && response.data) {
         const product = response.data;
 
+        console.log("Product loaded:", {
+          productId,
+          mediaImages: product.media?.images,
+          mediaVideos: product.media?.videos,
+        });
+
         // Map API response to form structure
         setFormData({
           name: product.name || "",
@@ -360,6 +366,12 @@ export default function EditProductPage() {
       }
 
       try {
+        // Validate file exists
+        if (!img.file) {
+          console.error(`Image ${i + 1} has no file object:`, img);
+          throw new Error(`Image ${i + 1}: File object is missing`);
+        }
+
         // Create FormData for upload
         const formDataUpload = new FormData();
         formDataUpload.append("files", img.file);
@@ -369,7 +381,9 @@ export default function EditProductPage() {
         console.log(`Uploading image ${i + 1}:`, {
           fileName: img.file.name,
           fileSize: img.file.size,
+          fileType: img.file.type,
           slug: formData.seo.slug,
+          isFile: img.file instanceof File,
         });
 
         // Upload to API
