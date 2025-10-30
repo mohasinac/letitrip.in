@@ -1,16 +1,8 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, useTheme } from "@mui/material";
+import BeybladeSelect from "@/components/game/BeybladeSelect";
 
 interface GameControlsProps {
   isPlaying: boolean;
@@ -104,35 +96,16 @@ const GameControls: React.FC<GameControlsProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minWidth: { xs: "100%", sm: 200 },
-          maxWidth: { xs: "100%", sm: 250 },
+          minWidth: { xs: "100%", sm: 300 },
+          maxWidth: { xs: "100%", sm: 350 },
         }}
       >
-        <FormControl fullWidth disabled={isPlaying}>
-          <InputLabel>Your Beyblade</InputLabel>
-          <Select
-            value={playerBeyblade}
-            onChange={(e) => onPlayerBeybladeChange(e.target.value)}
-            label="Your Beyblade"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderWidth: 2,
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "primary.main",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "primary.main",
-                },
-              },
-            }}
-          >
-            {Object.entries(availableBeyblades).map(([key, config]) => (
-              <MenuItem key={key} value={key}>
-                {config.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <BeybladeSelect
+          value={playerBeyblade}
+          onChange={onPlayerBeybladeChange}
+          label="Your Beyblade"
+          disabled={isPlaying}
+        />
       </Box>
 
       {/* Restart Button */}
@@ -188,35 +161,16 @@ const GameControls: React.FC<GameControlsProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minWidth: { xs: "100%", sm: 200 },
-          maxWidth: { xs: "100%", sm: 250 },
+          minWidth: { xs: "100%", sm: 300 },
+          maxWidth: { xs: "100%", sm: 350 },
         }}
       >
-        <FormControl fullWidth disabled={isPlaying}>
-          <InputLabel>AI Opponent</InputLabel>
-          <Select
-            value={aiBeyblade}
-            onChange={(e) => onAIBeybladeChange(e.target.value)}
-            label="AI Opponent"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderWidth: 2,
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "secondary.main",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "secondary.main",
-                },
-              },
-            }}
-          >
-            {Object.entries(availableBeyblades).map(([key, config]) => (
-              <MenuItem key={key} value={key}>
-                {config.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <BeybladeSelect
+          value={aiBeyblade}
+          onChange={onAIBeybladeChange}
+          label="AI Opponent"
+          disabled={isPlaying}
+        />
       </Box>
     </Box>
   );

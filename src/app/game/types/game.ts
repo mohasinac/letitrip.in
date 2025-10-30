@@ -49,6 +49,12 @@ export interface BeybladePhysics {
   isDodging: boolean; // Track if currently in dodge animation (immune to dash triggers)
   selectedChargePoint?: 1 | 2 | 3 | null; // Player-selected charge point (1, 2, or 3)
   lastNetworkUpdate?: number; // Timestamp of last network state update (for multiplayer sync)
+  
+  // Special Move Effects
+  isFrozen?: boolean; // Cannot move when frozen by special move
+  isPhasing?: boolean; // Phases through collisions (no collision detection)
+  baseRadius?: number; // Original radius (stored before radius multiplier)
+  visualScale?: number; // Visual scale multiplier for rendering (1.0 = normal)
 }
 
 export interface GameBeyblade extends BeybladePhysics {

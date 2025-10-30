@@ -20,6 +20,7 @@ import GameInstructions from "./GameInstructions";
 import SpecialControlsHelp from "./SpecialControlsHelp";
 import MatchResultScreen from "./MatchResultScreen";
 import MultiplayerGameOverlay from "./MultiplayerGameOverlay";
+import BeybladeSelect from "@/components/game/BeybladeSelect";
 
 interface EnhancedBeybladeArenaProps {
   gameMode?: "1p" | "2p";

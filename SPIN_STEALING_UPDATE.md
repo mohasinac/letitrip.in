@@ -3,24 +3,28 @@
 ## Changes Made
 
 ### 1. **Normalized Damage to 1-1000 Range**
+
 - ❌ **Old:** Damage was capped at 120
 - ✅ **New:** Damage is normalized to 1-1000 using **logarithmic scaling**
 
 **Why Logarithmic?**
+
 - Provides smooth, natural scaling across all collision intensities
 - Low-speed collisions: 1-100 damage
-- Medium-speed collisions: 100-500 damage  
+- Medium-speed collisions: 100-500 damage
 - High-speed collisions: 500-1000 damage
 - No artificial caps - scales infinitely but smoothly
 
 **Formula:**
+
 ```typescript
 damage_normalized = (log(1 + damage_raw) / log(1 + max_expected_raw)) × 1000
 
 where max_expected_raw = 150,000
 ```
 
-**Impact:** 
+**Impact:**
+
 - Gentle collisions deal 10-50 damage
 - Normal collisions deal 100-300 damage
 - Powerful collisions deal 500-800 damage
@@ -54,11 +58,13 @@ if (spinDifference > 0) {
 ### 3. **Example Scenarios**
 
 #### **Scenario 1: Low Spin vs High Spin**
+
 - **Meteo (Left):** 100 spin
 - **Dranzer GT (Right):** 1000 spin
 - **Spin difference:** 900
 
 **Result:**
+
 - Meteo GAINS: 900 × 0.15 = **+135 spin** → 235 spin
 - Dranzer LOSES: 900 × 0.075 = **-67.5 spin** → 932.5 spin
 
@@ -67,21 +73,25 @@ if (spinDifference > 0) {
 ---
 
 #### **Scenario 2: Equal Spin**
+
 - **Meteo (Left):** 1000 spin
 - **Dranzer GT (Right):** 1000 spin
 - **Spin difference:** 0
 
 **Result:**
+
 - No spin stealing occurs
 - Both take damage based on collision force
 
 ---
 
 #### **Scenario 3: Same Spin Direction**
+
 - **Meteo (Left):** 100 spin
 - **Spriggan (Left):** 1000 spin
 
 **Result:**
+
 - ❌ **No spin stealing** (same direction)
 - Only collision damage applies
 
@@ -100,6 +110,7 @@ if (spinDifference > 0) {
 ### 5. **Updated Files**
 
 1. **`src/app/game/utils/physicsCollision.ts`**
+
    - Removed damage cap (line ~260)
    - Added spin stealing logic (lines ~245-258)
    - Updated return type to include `spinSteal1` and `spinSteal2`
@@ -120,6 +131,7 @@ if (spinDifference > 0) {
 **Min Spin Floor:** Beyblades cannot go below 0 spin
 
 **Formula:**
+
 ```
 Final Spin = clamp(0, maxSpin, currentSpin - damage + spinSteal)
 ```
@@ -129,9 +141,11 @@ Final Spin = clamp(0, maxSpin, currentSpin - damage + spinSteal)
 ### 7. **Gameplay Impact**
 
 **Before:**
+
 - Low spin bey (100) vs High spin bey (1000) = Unfair, low spin bey dies quickly
 
 **After:**
+
 - Low spin bey steals ~135 spin per collision
 - After 3-4 collisions, spins equalize
 - Battle becomes more competitive and realistic
@@ -141,6 +155,7 @@ Final Spin = clamp(0, maxSpin, currentSpin - damage + spinSteal)
 ## Testing
 
 To test spin stealing, create a battle with:
+
 1. **Meteo (Left spin)** at 100 spin
 2. **Dranzer GT (Right spin)** at 1000 spin
 
@@ -151,6 +166,7 @@ Watch Meteo steal spin from Dranzer with each collision!
 ## Configuration
 
 To adjust spin stealing behavior, modify `spinTransferRate` in:
+
 - `src/app/game/utils/physicsCollision.ts` (line ~246)
 - `server.js` (line ~142)
 

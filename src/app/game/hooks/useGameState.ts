@@ -25,6 +25,7 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
   const { onGameEnd, gameMode = "1p", multiplayerData, onCollision } = options;
   
   const gameLoopRef = useRef<number>();
+  const gameLoopFunctionRef = useRef<((time: number) => void) | null>(null);
   const lastTimeRef = useRef<number>(0);
   const mouseRef = useRef<Vector2D>({ x: 0, y: 0 });
   const keysRef = useRef<Set<string>>(new Set());
@@ -287,8 +288,11 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     lastTimeRef.current = currentTime;
 
     setGameState((prevState) => {
-      // Allow game loop to run during countdown for animation
-      if (!prevState.isPlaying && !prevState.countdownActive) return prevState;
+      // Stop loop if not playing and no countdown
+      if (!prevState.isPlaying && !prevState.countdownActive) {
+        // Don't schedule next frame
+        return prevState;
+      }
 
       const newState = { ...prevState };
       
@@ -719,25 +723,40 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
       }
 
       newState.gameTime += deltaTime;
+      
+      // Schedule next frame if still playing or in countdown
+      if (newState.isPlaying || newState.countdownActive) {
+        if (gameLoopFunctionRef.current) {
+          gameLoopRef.current = requestAnimationFrame(gameLoopFunctionRef.current);
+        }
+      }
+      
       return newState;
     });
+  }, [getMovementDirection, onGameEnd, isMultiplayer, onCollision]);
+  
+  // Store the game loop function in ref for self-calling
+  useEffect(() => {
+    gameLoopFunctionRef.current = gameLoop;
+  }, [gameLoop]);
 
-    // Continue game loop if playing OR if countdown is active
-    if (gameState.isPlaying || gameState.countdownActive) {
-      gameLoopRef.current = requestAnimationFrame(gameLoop);
-    }
-  }, [gameState.isPlaying, gameState.countdownActive, getMovementDirection, onGameEnd, isMultiplayer, onCollision]);
-
-  // Start game loop when playing or countdown is active
+  // Start/stop game loop when playing or countdown state changes
   useEffect(() => {
     if (gameState.isPlaying || gameState.countdownActive) {
       lastTimeRef.current = performance.now();
       gameLoopRef.current = requestAnimationFrame(gameLoop);
+    } else {
+      // Stop game loop when not playing and no countdown
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+        gameLoopRef.current = undefined;
+      }
     }
 
     return () => {
       if (gameLoopRef.current) {
         cancelAnimationFrame(gameLoopRef.current);
+        gameLoopRef.current = undefined;
       }
     };
   }, [gameLoop, gameState.isPlaying, gameState.countdownActive]);

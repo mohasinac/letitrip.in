@@ -249,7 +249,7 @@ const { content, metadata } = await response.json();
 
 ### 🎯 Beyblades Assets API
 
-**Endpoint:** `/api/beyblades/[filename]`
+**Endpoint:** `/api/beyblades/svg/[filename]`
 
 #### **GET** - Serve Beyblade SVG Assets
 
@@ -266,8 +266,8 @@ interface BeybladeAssetParams {
 **Example Requests:**
 
 ```
-GET /api/beyblades/burst-valkyrie.svg
-GET /api/beyblades/dragoon.svg
+GET /api/beyblades/svg/burst-valkyrie.svg
+GET /api/beyblades/svg/dragoon.svg
 ```
 
 **Response (200 OK):**

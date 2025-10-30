@@ -1,5 +1,7 @@
 import { GameBeyblade, Stadium, Vector2D } from '../types/game';
 import { BEYBLADE_CONFIGS } from '@/constants/beyblades';
+import { getBeybladeStats } from '@/constants/beybladeStatsData';
+import { calculateTypeBonuses } from '@/types/beybladeStats';
 import { vectorLength, vectorSubtract, vectorAdd, vectorMultiply } from './vectorUtils';
 
 /**
@@ -13,6 +15,13 @@ export const createBeyblade = (
   isPlayer: boolean = false
 ): GameBeyblade => {
   const config = BEYBLADE_CONFIGS[name] || BEYBLADE_CONFIGS['dragoon-gt'];
+  const stats = getBeybladeStats(name);
+  
+  // Use stats if available, otherwise use defaults
+  const mass = stats?.mass || 20;
+  const radius = stats?.radius || 40;
+  const maxSpin = stats?.maxSpin || 2000;
+  const spinDecayRate = stats?.spinDecayRate || 5;
   
   return {
     id,
@@ -21,17 +30,18 @@ export const createBeyblade = (
     position,
     velocity: { x: 0, y: 0 },
     rotation: 20,
-    spin: 2000,
-    maxSpin: 2000,
-    spinDecayRate: 5, // Reduced from 10 to 5 for slower decay
-    mass: 20,
-    radius: 40, // Reduced from 45 to 35 for smaller size
+    spin: maxSpin,
+    maxSpin,
+    spinDecayRate,
+    mass,
+    radius,
     acceleration: 0,
     isCharging: false,
     chargeLevel: 0,
     isOutOfBounds: false,
     isDead: false,
     isPlayer,
+    power: 0, // Initialize power system (0-25 max)
     isInBlueLoop: false,
     blueLoopAngle: 0,
     blueCircleLoopStartTime: undefined,
@@ -41,13 +51,13 @@ export const createBeyblade = (
     normalLoopStartTime: undefined,
     normalLoopAngle: undefined,
     normalLoopStartAngle: undefined,
-    isChargingToPoint: false, // New property for charge point mechanic
-    chargePoint: null, // Target charge point
-    isChargeDashing: false, // Track charge dash mode
-    chargeDashEndTime: undefined, // Track charge dash timing
-    currentMaxAcceleration: 15, // Start with enhanced acceleration cap (normal max: 20, charge dash max: 40)
-    accelerationDecayStartTime: undefined, // Track gradual decay timing
-    selectedChargePointAngle: undefined, // Randomly selected charge point for current loop
+    isChargingToPoint: false,
+    chargePoint: null,
+    isChargeDashing: false,
+    chargeDashEndTime: undefined,
+    currentMaxAcceleration: 15,
+    accelerationDecayStartTime: undefined,
+    selectedChargePointAngle: undefined,
     
     // Special Attacks & Dodges
     heavyAttackActive: false,
@@ -64,12 +74,14 @@ export const createBeyblade = (
 export const updateBeyblade = (beyblade: GameBeyblade, deltaTime: number, stadium: Stadium): void => {
   if (beyblade.isDead || beyblade.isOutOfBounds) return;
   
+  const stats = getBeybladeStats(beyblade.name);
+  
   // Apply friction/air resistance (reduced for faster movement)
-  const friction = 0.985; // Slightly less friction for faster movement
+  const friction = 0.985;
   beyblade.velocity = vectorMultiply(beyblade.velocity, friction);
   
   // Enhanced movement based on acceleration and velocity
-  const accelerationMultiplier = 1 + (beyblade.acceleration / 20); // Scale movement with acceleration
+  const accelerationMultiplier = 1 + (beyblade.acceleration / 20);
   const enhancedVelocity = vectorMultiply(beyblade.velocity, accelerationMultiplier);
   
   // Update position with enhanced velocity
@@ -79,11 +91,17 @@ export const updateBeyblade = (beyblade: GameBeyblade, deltaTime: number, stadiu
   );
   
   // Update rotation based on spin and direction (enhanced rotation speed)
-  const rotationSpeed = (beyblade.spin / 80) * beyblade.config.speed * 0.15; // Increased rotation speed
+  const rotationSpeed = (beyblade.spin / 80) * beyblade.config.speed * 0.15;
   beyblade.rotation += (beyblade.config.direction === 'right' ? rotationSpeed : -rotationSpeed) * deltaTime;
   
-  // Decay spin (slightly slower decay)
-  beyblade.spin = Math.max(0, beyblade.spin - beyblade.spinDecayRate * deltaTime);
+  // Decay spin with stamina bonus
+  let decayRate = beyblade.spinDecayRate;
+  if (stats) {
+    const bonuses = calculateTypeBonuses(stats.typeDistribution);
+    // Higher stamina = slower decay (invert the multiplier)
+    decayRate = decayRate / bonuses.staminaMultiplier;
+  }
+  beyblade.spin = Math.max(0, beyblade.spin - decayRate * deltaTime);
   
   // Check if beyblade dies
   if (beyblade.spin <= 0) {

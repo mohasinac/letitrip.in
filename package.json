@@ -25,7 +25,8 @@
     "deploy": "npm run build && vercel --prod",
     "deploy:vercel": "vercel --prod",
     "vercel:env-sync": "node scripts/sync-vercel-env.js",
-    "vercel:setup": "npm run vercel:env-sync && vercel --prod"
+    "vercel:setup": "npm run vercel:env-sync && vercel --prod",
+    "beyblade:init": "node scripts/init-beyblade-stats.js"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
