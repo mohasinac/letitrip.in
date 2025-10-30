@@ -142,6 +142,13 @@ function ShopSetupContent() {
   const fetchShopData = async () => {
     try {
       setLoading(true);
+      
+      // Check if user is authenticated
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       const response: any = await apiGet("/api/seller/shop");
 
       if (response.success && response.data.exists !== false) {
@@ -188,13 +195,17 @@ function ShopSetupContent() {
           );
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching shop data:", error);
-      setSnackbar({
-        open: true,
-        message: "Failed to load shop data",
-        severity: "error",
-      });
+      
+      // Only show error if it's not an authentication issue
+      if (error.message !== "Invalid token") {
+        setSnackbar({
+          open: true,
+          message: "Failed to load shop data",
+          severity: "error",
+        });
+      }
     } finally {
       setLoading(false);
     }
