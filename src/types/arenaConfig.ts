@@ -3,9 +3,20 @@
  * Supports loops, obstacles, hazards, themes, and various arena shapes
  */
 
-export type ArenaShape = 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'loop';
+export type ArenaShape = 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'loop' | 'racetrack';
 export type ArenaTheme = 'forest' | 'mountains' | 'grasslands' | 'metrocity' | 'safari' | 'prehistoric' | 'futuristic' | 'desert' | 'sea' | 'riverbank';
 export type GameMode = 'player-vs-ai' | 'player-vs-player' | 'single-player-test';
+
+/**
+ * Charge Point Configuration
+ * Points on loops that restore spin energy
+ */
+export interface ChargePointConfig {
+  angle: number; // Angle in degrees (0-360) on the loop
+  rechargeRate: number; // Spin recovery per second when on this point
+  radius?: number; // Visual size of the charge point (default 1em)
+  color?: string; // Visual color (default: yellow/gold)
+}
 
 /**
  * Loop Configuration
@@ -13,7 +24,7 @@ export type GameMode = 'player-vs-ai' | 'player-vs-player' | 'single-player-test
  */
 export interface LoopConfig {
   radius: number; // em units from center (or size for non-circular shapes)
-  shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval'; // Loop shape
+  shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'ring'; // Loop shape
   speedBoost: number; // Multiplier (e.g., 1.5 = 50% faster)
   spinBoost?: number; // Optional spin recovery per second
   frictionMultiplier?: number; // Lower = less friction (default: 1.0)
@@ -21,6 +32,9 @@ export interface LoopConfig {
   height?: number; // Height for rectangular loops (em units)
   rotation?: number; // Rotation angle in degrees
   color?: string; // Visual color for the loop
+  ringThickness?: number; // For ring shape - thickness of the ring (em units)
+  chargePoints?: ChargePointConfig[]; // Charge points distributed on the loop
+  chargePointCount?: number; // Number of evenly distributed charge points
 }
 
 /**
@@ -34,11 +48,28 @@ export interface ExitConfig {
 }
 
 /**
+ * Portal Configuration
+ * Teleportation points (max 2 portals)
+ */
+export interface PortalConfig {
+  id: string; // 'portal1' or 'portal2'
+  inPoint: { x: number; y: number }; // Entry point (em units)
+  outPoint: { x: number; y: number }; // Exit point (em units)
+  radius: number; // Visual size (em units)
+  cooldown?: number; // Seconds before can be used again (default: 0)
+  color?: string; // Visual color (default: purple/blue)
+  bidirectional?: boolean; // Can travel both ways (default: true)
+}
+
+/**
  * Wall Configuration
  * Arena boundaries with damage and recoil
  */
 export interface WallConfig {
   enabled: boolean; // If false, beyblades can exit anywhere
+  allExits?: boolean; // If true and walls disabled, entire boundary is an exit; if false, closed boundary
+  wallCount?: number; // Number of wall segments (for polygonal arenas, default based on shape)
+  exitsBetweenWalls?: boolean; // If true, create exits between wall segments
   baseDamage: number; // Damage taken when hitting wall
   recoilDistance: number; // Distance bounced back (em units)
   hasSpikes: boolean; // Spikes increase damage
@@ -62,6 +93,9 @@ export interface ObstacleConfig {
   recoil: number; // Knockback force
   destructible: boolean; // Can be destroyed?
   health?: number; // Health if destructible
+  themeIcon?: string; // Theme-based visual representation (tree, rock, crystal, etc.)
+  canBeOnLoopPath?: boolean; // If true, can be placed on loop paths (default: false)
+  canBeInsideLoop?: boolean; // If true, can be inside loop areas (default: true)
 }
 
 /**
@@ -70,13 +104,21 @@ export interface ObstacleConfig {
  */
 export interface WaterBodyConfig {
   enabled: boolean;
-  type: 'center' | 'loop'; // Center circle or follows a loop path
-  radius?: number; // For center type (em units)
+  type: 'center' | 'loop' | 'ring'; // Center shape, follows loop path (moat), or ring at edges
+  shape: 'circle' | 'rectangle' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'oval' | 'ring'; // Shape of water body
+  radius?: number; // For circular shapes (em units)
+  width?: number; // For rectangular shapes (em units)
+  height?: number; // For rectangular shapes (em units)
+  rotation?: number; // Rotation angle in degrees
+  ringThickness?: number; // For ring shape - thickness of the ring (em units)
   loopIndex?: number; // Which loop to follow (for loop type)
+  innerRadius?: number; // For loop type - inner radius of moat (em units)
+  outerRadius?: number; // For loop type - outer radius of moat (em units)
+  liquidType: 'water' | 'blood' | 'lava' | 'acid' | 'oil' | 'ice'; // Type of liquid
   spinDrainRate: number; // Spin loss per second (percentage)
   speedMultiplier: number; // Movement speed reduction (e.g., 0.6 = 40% slower)
   viscosity: number; // 0-1, affects acceleration/deceleration
-  color?: string; // Visual color
+  color?: string; // Visual color (auto-determined from liquidType if not set)
   waveAnimation?: boolean; // Animated waves
 }
 
@@ -114,7 +156,7 @@ export interface LaserGunConfig {
 
 /**
  * Goal Object Configuration
- * Destructible objectives that must be destroyed to win
+ * Collectible objectives (stars, crystals, etc.) based on theme
  */
 export interface GoalObjectConfig {
   id: string;
@@ -122,10 +164,12 @@ export interface GoalObjectConfig {
   y: number; // Position Y (em units)
   radius: number; // Size (em units)
   health: number; // Health points
-  scoreValue: number; // Points awarded on destruction
-  type: 'target' | 'crystal' | 'tower' | 'relic';
+  scoreValue: number; // Points awarded on collection/destruction
+  type: 'star' | 'crystal' | 'coin' | 'gem' | 'relic' | 'trophy'; // Collectible types
+  themeVariant?: string; // Theme-based appearance (e.g., 'forest-star', 'futuristic-crystal')
   color?: string;
   shieldHealth?: number; // Optional shield that must be broken first
+  isCollectible?: boolean; // If true, collect on touch; if false, must destroy
 }
 
 /**
@@ -154,16 +198,16 @@ export interface ArenaConfig {
   height: number; // Default: 50em (800px)
   shape: ArenaShape;
   theme: ArenaTheme;
-  
-  // Game mode
-  gameMode: GameMode;
-  aiDifficulty?: 'easy' | 'medium' | 'hard' | 'extreme'; // For AI mode
+  rotation?: number; // Rotation angle for the entire arena in degrees (0-360)
   
   // Loops (speed boost zones)
   loops: LoopConfig[];
   
   // Exits (where beyblades can leave the arena)
   exits: ExitConfig[];
+  
+  // Portals (teleportation, max 2)
+  portals?: PortalConfig[];
   
   // Wall configuration
   wall: WallConfig;
@@ -180,6 +224,8 @@ export interface ArenaConfig {
   
   // Visual and theme
   backgroundColor?: string;
+  floorColor?: string; // Custom floor color
+  floorTexture?: string; // URL to floor texture image
   backgroundLayers: BackgroundLayer[];
   ambientSound?: string; // Background music/sound
   
@@ -285,7 +331,9 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     waterBody: {
       enabled: true,
       type: 'center',
+      shape: 'circle',
       radius: 10,
+      liquidType: 'water',
       spinDrainRate: 2,
       speedMultiplier: 0.6,
       viscosity: 0.8,
@@ -358,7 +406,8 @@ export function generateRandomObstacles(
 export function generateRandomPits(
   count: number,
   arenaRadius: number,
-  placement: 'edges' | 'center' | 'random' = 'random'
+  placement: 'edges' | 'center' | 'random' = 'random',
+  pitRadius: number = 1.5 // Default pit radius
 ): PitConfig[] {
   const pits: PitConfig[] = [];
   
@@ -383,7 +432,7 @@ export function generateRandomPits(
     pits.push({
       x,
       y,
-      radius: 1.5 + Math.random() * 1.5, // 1.5-3 em
+      radius: pitRadius + Math.random() * 0.5, // Use provided radius with small variation
       damagePerSecond: 10,
       escapeChance: 0.5,
       visualDepth: 2 + Math.floor(Math.random() * 3),

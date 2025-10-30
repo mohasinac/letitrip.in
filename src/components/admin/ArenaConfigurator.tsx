@@ -6,11 +6,11 @@
 "use client";
 
 import React, { useState } from "react";
+import ArenaPreview from "./ArenaPreview";
 import {
   ArenaConfig,
   ArenaShape,
   ArenaTheme,
-  GameMode,
   LoopConfig,
   ExitConfig,
   WallConfig,
@@ -40,6 +40,13 @@ export default function ArenaConfigurator({
     "basic" | "loops" | "hazards" | "goals" | "theme" | "preview"
   >("basic");
 
+  // Pit generation configuration
+  const [pitConfig, setPitConfig] = useState({
+    count: 4,
+    radius: 1.5,
+    placement: "edges" as "edges" | "center" | "random",
+  });
+
   const [config, setConfig] = useState<ArenaConfig>(
     arena || {
       name: "New Arena",
@@ -48,8 +55,6 @@ export default function ArenaConfigurator({
       height: 50,
       shape: "circle",
       theme: "metrocity",
-      gameMode: "player-vs-ai",
-      aiDifficulty: "medium",
       loops: [],
       exits: [],
       wall: {
@@ -133,8 +138,12 @@ export default function ArenaConfigurator({
   };
 
   const handleGeneratePits = (placement: "edges" | "center" | "random") => {
-    const count = Math.floor(Math.random() * 4) + 2; // 2-6 pits
-    const pits = generateRandomPits(count, config.width / 2, placement);
+    const pits = generateRandomPits(
+      pitConfig.count,
+      config.width / 2,
+      placement,
+      pitConfig.radius
+    );
     setConfig({ ...config, pits });
   };
 
@@ -155,6 +164,7 @@ export default function ArenaConfigurator({
     "octagon",
     "star",
     "oval",
+    "racetrack",
   ];
   const themes: ArenaTheme[] = [
     "forest",
@@ -167,11 +177,6 @@ export default function ArenaConfigurator({
     "desert",
     "sea",
     "riverbank",
-  ];
-  const gameModes: GameMode[] = [
-    "player-vs-ai",
-    "player-vs-player",
-    "single-player-test",
   ];
 
   return (
@@ -224,699 +229,1233 @@ export default function ArenaConfigurator({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Basic Tab */}
-          {currentTab === "basic" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Arena Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={config.name}
-                    onChange={(e) =>
-                      setConfig({ ...config, name: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  />
-                </div>
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+          {/* Left Side - Form Content */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {/* Basic Tab */}
+            {currentTab === "basic" && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Arena Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={config.name}
+                      onChange={(e) =>
+                        setConfig({ ...config, name: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Shape *
-                  </label>
-                  <select
-                    value={config.shape}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        shape: e.target.value as ArenaShape,
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  >
-                    {shapes.map((shape) => (
-                      <option key={shape} value={shape}>
-                        {shape.charAt(0).toUpperCase() + shape.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Theme *
-                  </label>
-                  <select
-                    value={config.theme}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        theme: e.target.value as ArenaTheme,
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  >
-                    {themes.map((theme) => (
-                      <option key={theme} value={theme}>
-                        {theme.charAt(0).toUpperCase() + theme.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Game Mode *
-                  </label>
-                  <select
-                    value={config.gameMode}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        gameMode: e.target.value as GameMode,
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  >
-                    {gameModes.map((mode) => (
-                      <option key={mode} value={mode}>
-                        {mode
-                          .split("-")
-                          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                          .join(" ")}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={config.description || ""}
-                  onChange={(e) =>
-                    setConfig({ ...config, description: e.target.value })
-                  }
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
-              </div>
-
-              {/* Preset Loader */}
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-semibold text-blue-900 mb-3">
-                  Load Preset Arena
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  {Object.keys(ARENA_PRESETS).map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => handleLoadPreset(key)}
-                      className="px-4 py-2 bg-white border border-blue-300 rounded-lg hover:bg-blue-100"
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Shape *
+                    </label>
+                    <select
+                      value={config.shape}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          shape: e.target.value as ArenaShape,
+                        })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                     >
-                      {ARENA_PRESETS[key].name}
-                    </button>
-                  ))}
+                      {shapes.map((shape) => (
+                        <option key={shape} value={shape}>
+                          {shape.charAt(0).toUpperCase() + shape.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Theme *
+                    </label>
+                    <select
+                      value={config.theme}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          theme: e.target.value as ArenaTheme,
+                        })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    >
+                      {themes.map((theme) => (
+                        <option key={theme} value={theme}>
+                          {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Arena Rotation (°)
+                    </label>
+                    <input
+                      type="number"
+                      value={config.rotation || 0}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          rotation: parseFloat(e.target.value),
+                        })
+                      }
+                      min={0}
+                      max={360}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Rotate the entire stadium (0-360°)
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={config.description || ""}
+                    onChange={(e) =>
+                      setConfig({ ...config, description: e.target.value })
+                    }
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  />
+                </div>
+
+                {/* Preset Loader */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h3 className="font-semibold text-blue-900 mb-3">
+                    Load Preset Arena
+                  </h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {Object.keys(ARENA_PRESETS).map((key) => (
+                      <button
+                        key={key}
+                        onClick={() => handleLoadPreset(key)}
+                        className="px-4 py-2 bg-white border border-blue-300 rounded-lg hover:bg-blue-100"
+                      >
+                        {ARENA_PRESETS[key].name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Wall Configuration */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Wall Settings
+                  </h3>
+
+                  <div className="flex items-center gap-3 mb-4">
+                    <input
+                      type="checkbox"
+                      checked={config.wall.enabled}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          wall: { ...config.wall, enabled: e.target.checked },
+                        })
+                      }
+                      className="w-5 h-5"
+                    />
+                    <label className="text-sm font-medium">Enable Walls</label>
+                  </div>
+
+                  {config.wall.enabled && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">
+                          Wall Count
+                        </label>
+                        <input
+                          type="number"
+                          value={config.wall.wallCount || 8}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              wall: {
+                                ...config.wall,
+                                wallCount: parseInt(e.target.value),
+                              },
+                            })
+                          }
+                          min={3}
+                          max={20}
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Number of wall segments (3-20)
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">
+                          Base Damage
+                        </label>
+                        <input
+                          type="number"
+                          value={config.wall.baseDamage}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              wall: {
+                                ...config.wall,
+                                baseDamage: parseFloat(e.target.value),
+                              },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">
+                          Recoil Distance (em)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={config.wall.recoilDistance}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              wall: {
+                                ...config.wall,
+                                recoilDistance: parseFloat(e.target.value),
+                              },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={config.wall.hasSpikes}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              wall: {
+                                ...config.wall,
+                                hasSpikes: e.target.checked,
+                              },
+                            })
+                          }
+                          className="w-4 h-4"
+                        />
+                        <label className="text-sm">Spikes (2x damage)</label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={config.wall.hasSprings}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              wall: {
+                                ...config.wall,
+                                hasSprings: e.target.checked,
+                              },
+                            })
+                          }
+                          className="w-4 h-4"
+                        />
+                        <label className="text-sm">Springs (1.5x recoil)</label>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
 
-              {/* Wall Configuration */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Wall Settings
-                </h3>
-
-                <div className="flex items-center gap-3 mb-4">
-                  <input
-                    type="checkbox"
-                    checked={config.wall.enabled}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        wall: { ...config.wall, enabled: e.target.checked },
-                      })
-                    }
-                    className="w-5 h-5"
-                  />
-                  <label className="text-sm font-medium">Enable Walls</label>
+            {/* Loops Tab */}
+            {currentTab === "loops" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold">
+                    Loops ({config.loops.length})
+                  </h3>
+                  <button
+                    onClick={handleAddLoop}
+                    disabled={config.loops.length >= 10}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    + Add Loop
+                  </button>
                 </div>
 
-                {config.wall.enabled && (
-                  <div className="grid grid-cols-2 gap-4">
+                {config.loops.map((loop, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-300"
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold">Loop {index + 1}</h4>
+                      <button
+                        onClick={() => handleRemoveLoop(index)}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Shape
+                        </label>
+                        <select
+                          value={loop.shape}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              shape: e.target.value as any,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        >
+                          <option value="circle">⭕ Circle</option>
+                          <option value="rectangle">▭ Rectangle</option>
+                          <option value="pentagon">⬠ Pentagon</option>
+                          <option value="hexagon">⬡ Hexagon</option>
+                          <option value="octagon">⯃ Octagon</option>
+                          <option value="star">⭐ Star</option>
+                          <option value="oval">⬭ Oval</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Radius/Size (em)
+                        </label>
+                        <input
+                          type="number"
+                          value={loop.radius}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              radius: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+                    </div>
+
+                    {loop.shape === "rectangle" && (
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <label className="block text-xs text-gray-700 mb-1">
+                            Width (em)
+                          </label>
+                          <input
+                            type="number"
+                            value={loop.width || loop.radius * 2}
+                            onChange={(e) =>
+                              handleUpdateLoop(index, {
+                                width: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-700 mb-1">
+                            Height (em)
+                          </label>
+                          <input
+                            type="number"
+                            value={loop.height || loop.radius * 2}
+                            onChange={(e) =>
+                              handleUpdateLoop(index, {
+                                height: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Speed Boost
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={loop.speedBoost}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              speedBoost: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Spin Boost
+                        </label>
+                        <input
+                          type="number"
+                          value={loop.spinBoost || 0}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              spinBoost: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Rotation (°)
+                        </label>
+                        <input
+                          type="number"
+                          value={loop.rotation || 0}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              rotation: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">
+                          Color
+                        </label>
+                        <input
+                          type="color"
+                          value={loop.color || "#3b82f6"}
+                          onChange={(e) =>
+                            handleUpdateLoop(index, {
+                              color: e.target.value,
+                            })
+                          }
+                          className="w-full h-10 border border-gray-300 rounded"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {config.loops.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No loops yet. Click "Add Loop" to create speed boost zones.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Hazards Tab */}
+            {currentTab === "hazards" && (
+              <div className="space-y-6">
+                {/* Obstacles */}
+                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-semibold text-orange-900">
+                      🪨 Obstacles ({config.obstacles.length})
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleGenerateObstacles}
+                        className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                      >
+                        🎲 Generate Random
+                      </button>
+                      {config.obstacles.length > 0 && (
+                        <button
+                          onClick={() =>
+                            setConfig({ ...config, obstacles: [] })
+                          }
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        >
+                          🗑️ Clear All
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-sm text-orange-700 mb-3">
+                    Rocks, pillars, and barriers scattered in the arena
+                  </p>
+
+                  {config.obstacles.length > 0 && (
+                    <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                      {config.obstacles.map((obstacle, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-2 rounded border border-orange-200 flex justify-between items-center"
+                        >
+                          <div className="text-sm">
+                            <span className="font-semibold">
+                              {obstacle.type}
+                            </span>{" "}
+                            at ({obstacle.x.toFixed(1)}, {obstacle.y.toFixed(1)}
+                            ) - Size: {obstacle.radius}em
+                          </div>
+                          <button
+                            onClick={() => {
+                              const newObstacles = config.obstacles.filter(
+                                (_, i) => i !== index
+                              );
+                              setConfig({ ...config, obstacles: newObstacles });
+                            }}
+                            className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Pits */}
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-semibold text-purple-900">
+                      🕳️ Pits ({config.pits.length})
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleGeneratePits("edges")}
+                        className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                      >
+                        Edges
+                      </button>
+                      <button
+                        onClick={() => handleGeneratePits("center")}
+                        className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                      >
+                        Center
+                      </button>
+                      <button
+                        onClick={() => handleGeneratePits("random")}
+                        className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                      >
+                        Random
+                      </button>
+                      {config.pits.length > 0 && (
+                        <button
+                          onClick={() => setConfig({ ...config, pits: [] })}
+                          className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                        >
+                          🗑️ Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pit Generation Controls */}
+                  <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Base Damage
+                      <label className="block text-xs text-purple-700 mb-1">
+                        Number of Pits
                       </label>
                       <input
                         type="number"
-                        value={config.wall.baseDamage}
+                        value={pitConfig.count}
                         onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            wall: {
-                              ...config.wall,
-                              baseDamage: parseFloat(e.target.value),
-                            },
+                          setPitConfig({
+                            ...pitConfig,
+                            count: parseInt(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                        min={1}
+                        max={20}
+                        className="w-full px-3 py-2 border border-purple-300 rounded"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Recoil Distance (em)
+                      <label className="block text-xs text-purple-700 mb-1">
+                        Pit Radius (em)
                       </label>
                       <input
                         type="number"
                         step="0.5"
-                        value={config.wall.recoilDistance}
+                        value={pitConfig.radius}
                         onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            wall: {
-                              ...config.wall,
-                              recoilDistance: parseFloat(e.target.value),
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={config.wall.hasSpikes}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            wall: {
-                              ...config.wall,
-                              hasSpikes: e.target.checked,
-                            },
-                          })
-                        }
-                        className="w-4 h-4"
-                      />
-                      <label className="text-sm">Spikes (2x damage)</label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={config.wall.hasSprings}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            wall: {
-                              ...config.wall,
-                              hasSprings: e.target.checked,
-                            },
-                          })
-                        }
-                        className="w-4 h-4"
-                      />
-                      <label className="text-sm">Springs (1.5x recoil)</label>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Loops Tab */}
-          {currentTab === "loops" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-bold">
-                  Loops ({config.loops.length})
-                </h3>
-                <button
-                  onClick={handleAddLoop}
-                  disabled={config.loops.length >= 10}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  + Add Loop
-                </button>
-              </div>
-
-              {config.loops.map((loop, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-50 p-4 rounded-lg border border-gray-300"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-semibold">Loop {index + 1}</h4>
-                    <button
-                      onClick={() => handleRemoveLoop(index)}
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Shape
-                      </label>
-                      <select
-                        value={loop.shape}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
-                            shape: e.target.value as any,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                      >
-                        <option value="circle">⭕ Circle</option>
-                        <option value="rectangle">▭ Rectangle</option>
-                        <option value="pentagon">⬠ Pentagon</option>
-                        <option value="hexagon">⬡ Hexagon</option>
-                        <option value="octagon">⯃ Octagon</option>
-                        <option value="star">⭐ Star</option>
-                        <option value="oval">⬭ Oval</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Radius/Size (em)
-                      </label>
-                      <input
-                        type="number"
-                        value={loop.radius}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
+                          setPitConfig({
+                            ...pitConfig,
                             radius: parseFloat(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                        min={0.5}
+                        max={5}
+                        className="w-full px-3 py-2 border border-purple-300 rounded"
                       />
                     </div>
                   </div>
 
-                  {loop.shape === "rectangle" && (
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div>
-                        <label className="block text-xs text-gray-700 mb-1">
-                          Width (em)
-                        </label>
-                        <input
-                          type="number"
-                          value={loop.width || loop.radius * 2}
-                          onChange={(e) =>
-                            handleUpdateLoop(index, {
-                              width: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
+                  <p className="text-sm text-purple-700 mb-3">
+                    Traps that drain spin (10%/sec) with 50% escape chance. Set
+                    count and radius, then click placement button.
+                  </p>
+
+                  {config.pits.length > 0 && (
+                    <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                      {config.pits.map((pit, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-2 rounded border border-purple-200 flex justify-between items-center"
+                        >
+                          <div className="text-sm">
+                            Pit at ({pit.x.toFixed(1)}, {pit.y.toFixed(1)}) -
+                            Radius: {pit.radius}em - Drain:{" "}
+                            {pit.damagePerSecond}%/s
+                          </div>
+                          <button
+                            onClick={() => {
+                              const newPits = config.pits.filter(
+                                (_, i) => i !== index
+                              );
+                              setConfig({ ...config, pits: newPits });
+                            }}
+                            className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Water Body */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <input
+                      type="checkbox"
+                      checked={config.waterBody?.enabled || false}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          waterBody: e.target.checked
+                            ? {
+                                enabled: true,
+                                type: "center",
+                                shape: "circle",
+                                radius: 10,
+                                liquidType: "water",
+                                spinDrainRate: 2,
+                                speedMultiplier: 0.6,
+                                viscosity: 0.8,
+                                color: "#4fc3f7",
+                                waveAnimation: true,
+                              }
+                            : undefined,
+                        })
+                      }
+                      className="w-5 h-5"
+                    />
+                    <h3 className="font-semibold text-blue-900">
+                      💧 Liquid Body
+                    </h3>
+                  </div>
+
+                  {config.waterBody?.enabled && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-blue-700 mb-1">
+                            Position Type
+                          </label>
+                          <select
+                            value={config.waterBody.type}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                waterBody: {
+                                  ...config.waterBody!,
+                                  type: e.target.value as
+                                    | "center"
+                                    | "loop"
+                                    | "ring",
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-blue-300 rounded"
+                          >
+                            <option value="center">Center</option>
+                            <option value="loop">Loop Path</option>
+                            <option value="ring">Ring</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-blue-700 mb-1">
+                            Shape
+                          </label>
+                          <select
+                            value={config.waterBody.shape}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                waterBody: {
+                                  ...config.waterBody!,
+                                  shape: e.target.value as any,
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-blue-300 rounded"
+                          >
+                            <option value="circle">Circle</option>
+                            <option value="rectangle">Rectangle</option>
+                            <option value="pentagon">Pentagon</option>
+                            <option value="hexagon">Hexagon</option>
+                            <option value="octagon">Octagon</option>
+                            <option value="star">Star</option>
+                            <option value="oval">Oval</option>
+                            <option value="ring">Ring</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-blue-700 mb-1">
+                            Liquid Type
+                          </label>
+                          <select
+                            value={config.waterBody.liquidType}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                waterBody: {
+                                  ...config.waterBody!,
+                                  liquidType: e.target.value as any,
+                                  color:
+                                    e.target.value === "water"
+                                      ? "#4fc3f7"
+                                      : e.target.value === "blood"
+                                      ? "#c62828"
+                                      : e.target.value === "lava"
+                                      ? "#ff6f00"
+                                      : e.target.value === "acid"
+                                      ? "#76ff03"
+                                      : e.target.value === "oil"
+                                      ? "#424242"
+                                      : "#00e5ff", // ice
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-blue-300 rounded"
+                          >
+                            <option value="water">💧 Water</option>
+                            <option value="blood">🩸 Blood</option>
+                            <option value="lava">🌋 Lava</option>
+                            <option value="acid">☢️ Acid</option>
+                            <option value="oil">🛢️ Oil</option>
+                            <option value="ice">❄️ Ice</option>
+                          </select>
+                        </div>
+
+                        {config.waterBody.type === "center" && (
+                          <>
+                            {config.waterBody.shape === "circle" ||
+                            config.waterBody.shape === "oval" ? (
+                              <div>
+                                <label className="block text-xs text-blue-700 mb-1">
+                                  Radius (em)
+                                </label>
+                                <input
+                                  type="number"
+                                  value={config.waterBody.radius || 10}
+                                  onChange={(e) =>
+                                    setConfig({
+                                      ...config,
+                                      waterBody: {
+                                        ...config.waterBody!,
+                                        radius: parseFloat(e.target.value),
+                                      },
+                                    })
+                                  }
+                                  min={5}
+                                  max={25}
+                                  className="w-full px-3 py-2 border border-blue-300 rounded"
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <div>
+                                  <label className="block text-xs text-blue-700 mb-1">
+                                    Width (em)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={config.waterBody.width || 15}
+                                    onChange={(e) =>
+                                      setConfig({
+                                        ...config,
+                                        waterBody: {
+                                          ...config.waterBody!,
+                                          width: parseFloat(e.target.value),
+                                        },
+                                      })
+                                    }
+                                    min={5}
+                                    max={30}
+                                    className="w-full px-3 py-2 border border-blue-300 rounded"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-blue-700 mb-1">
+                                    Height (em)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={config.waterBody.height || 15}
+                                    onChange={(e) =>
+                                      setConfig({
+                                        ...config,
+                                        waterBody: {
+                                          ...config.waterBody!,
+                                          height: parseFloat(e.target.value),
+                                        },
+                                      })
+                                    }
+                                    min={5}
+                                    max={30}
+                                    className="w-full px-3 py-2 border border-blue-300 rounded"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            <div>
+                              <label className="block text-xs text-blue-700 mb-1">
+                                Rotation (°)
+                              </label>
+                              <input
+                                type="number"
+                                value={config.waterBody.rotation || 0}
+                                onChange={(e) =>
+                                  setConfig({
+                                    ...config,
+                                    waterBody: {
+                                      ...config.waterBody!,
+                                      rotation: parseFloat(e.target.value),
+                                    },
+                                  })
+                                }
+                                min={0}
+                                max={360}
+                                className="w-full px-3 py-2 border border-blue-300 rounded"
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        {/* Ring Thickness Control - for ring type or ring shape */}
+                        {config.waterBody.shape === "ring" && (
+                          <div>
+                            <label className="block text-xs text-blue-700 mb-1">
+                              Ring Thickness (em)
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={config.waterBody.ringThickness || 3}
+                              onChange={(e) =>
+                                setConfig({
+                                  ...config,
+                                  waterBody: {
+                                    ...config.waterBody!,
+                                    ringThickness: parseFloat(e.target.value),
+                                  },
+                                })
+                              }
+                              min={1}
+                              max={10}
+                              className="w-full px-3 py-2 border border-blue-300 rounded"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Width of the ring band
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <label className="block text-xs text-gray-700 mb-1">
-                          Height (em)
-                        </label>
-                        <input
-                          type="number"
-                          value={loop.height || loop.radius * 2}
-                          onChange={(e) =>
-                            handleUpdateLoop(index, {
-                              height: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-blue-700 mb-1">
+                            Spin Drain Rate (%/sec)
+                          </label>
+                          <input
+                            type="number"
+                            value={config.waterBody.spinDrainRate}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                waterBody: {
+                                  ...config.waterBody!,
+                                  spinDrainRate: parseFloat(e.target.value),
+                                },
+                              })
+                            }
+                            step="0.1"
+                            min={0}
+                            max={10}
+                            className="w-full px-3 py-2 border border-blue-300 rounded"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-blue-700 mb-1">
+                            Speed Multiplier
+                          </label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={config.waterBody.speedMultiplier}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                waterBody: {
+                                  ...config.waterBody!,
+                                  speedMultiplier: parseFloat(e.target.value),
+                                },
+                              })
+                            }
+                            min={0.1}
+                            max={2}
+                            className="w-full px-3 py-2 border border-blue-300 rounded"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
-
-                  <div className="grid grid-cols-4 gap-3">
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Speed Boost
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={loop.speedBoost}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
-                            speedBoost: parseFloat(e.target.value),
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Spin Boost
-                      </label>
-                      <input
-                        type="number"
-                        value={loop.spinBoost || 0}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
-                            spinBoost: parseFloat(e.target.value),
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Rotation (°)
-                      </label>
-                      <input
-                        type="number"
-                        value={loop.rotation || 0}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
-                            rotation: parseFloat(e.target.value),
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">
-                        Color
-                      </label>
-                      <input
-                        type="color"
-                        value={loop.color || "#3b82f6"}
-                        onChange={(e) =>
-                          handleUpdateLoop(index, {
-                            color: e.target.value,
-                          })
-                        }
-                        className="w-full h-10 border border-gray-300 rounded"
-                      />
-                    </div>
-                  </div>
                 </div>
-              ))}
 
-              {config.loops.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No loops yet. Click "Add Loop" to create speed boost zones.
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Hazards Tab */}
-          {currentTab === "hazards" && (
-            <div className="space-y-6">
-              {/* Obstacles */}
-              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-orange-900">
-                    Obstacles ({config.obstacles.length})
+                {/* Laser Guns */}
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <h3 className="font-semibold text-red-900 mb-2">
+                    Laser Guns ({config.laserGuns.length})
                   </h3>
-                  <button
-                    onClick={handleGenerateObstacles}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-                  >
-                    🎲 Generate Random
-                  </button>
+                  <p className="text-sm text-red-700">
+                    Coming soon: Auto-targeting turrets that fire at beyblades
+                  </p>
                 </div>
-                <p className="text-sm text-orange-700">
-                  Rocks, pillars, and barriers scattered in the arena
-                </p>
               </div>
+            )}
 
-              {/* Pits */}
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-purple-900">
-                    Pits ({config.pits.length})
+            {/* Goals Tab */}
+            {currentTab === "goals" && (
+              <div className="space-y-6">
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h3 className="font-semibold text-yellow-900 mb-2">
+                    Goal Objects ({config.goalObjects.length})
                   </h3>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleGeneratePits("edges")}
-                      className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
-                    >
-                      Edges
-                    </button>
-                    <button
-                      onClick={() => handleGeneratePits("center")}
-                      className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
-                    >
-                      Center
-                    </button>
-                    <button
-                      onClick={() => handleGeneratePits("random")}
-                      className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
-                    >
-                      Random
-                    </button>
-                  </div>
+                  <p className="text-sm text-yellow-700">
+                    Destructible objectives - destroy all to win!
+                  </p>
                 </div>
-                <p className="text-sm text-purple-700">
-                  Traps that drain spin (10%/sec) with 50% escape chance
-                </p>
-              </div>
 
-              {/* Water Body */}
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    checked={config.waterBody?.enabled || false}
+                    checked={config.requireAllGoalsDestroyed}
                     onChange={(e) =>
                       setConfig({
                         ...config,
-                        waterBody: e.target.checked
-                          ? {
-                              enabled: true,
-                              type: "center",
-                              radius: 10,
-                              spinDrainRate: 2,
-                              speedMultiplier: 0.6,
-                              viscosity: 0.8,
-                              color: "#4fc3f7",
-                              waveAnimation: true,
-                            }
-                          : undefined,
+                        requireAllGoalsDestroyed: e.target.checked,
                       })
                     }
                     className="w-5 h-5"
                   />
-                  <h3 className="font-semibold text-blue-900">Water Body</h3>
+                  <label className="text-sm font-medium">
+                    Require All Goals Destroyed to Win
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* Theme Tab */}
+            {currentTab === "theme" && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3">
+                    Arena Theme
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    {themes.map((theme) => (
+                      <button
+                        key={theme}
+                        onClick={() => setConfig({ ...config, theme })}
+                        className={`p-6 rounded-lg border-2 transition-all ${
+                          config.theme === theme
+                            ? "border-blue-600 bg-blue-50"
+                            : "border-gray-300 hover:border-blue-400"
+                        }`}
+                      >
+                        <div className="text-4xl mb-2">
+                          {theme === "forest" && "🌲"}
+                          {theme === "mountains" && "⛰️"}
+                          {theme === "grasslands" && "🌾"}
+                          {theme === "metrocity" && "🏙️"}
+                          {theme === "safari" && "🦁"}
+                          {theme === "prehistoric" && "🦕"}
+                          {theme === "futuristic" && "🚀"}
+                          {theme === "desert" && "🏜️"}
+                          {theme === "sea" && "🌊"}
+                          {theme === "riverbank" && "🏞️"}
+                        </div>
+                        <div className="font-semibold capitalize">{theme}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {config.waterBody?.enabled && (
-                  <div className="grid grid-cols-2 gap-3">
+                {/* Floor Customization */}
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg border-2 border-gray-300">
+                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span>🎨</span> Floor Customization
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs text-blue-700 mb-1">
-                        Type
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Floor Color
                       </label>
-                      <select
-                        value={config.waterBody.type}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            waterBody: {
-                              ...config.waterBody!,
-                              type: e.target.value as "center" | "loop",
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-blue-300 rounded"
-                      >
-                        <option value="center">Center Circle</option>
-                        <option value="loop">Loop Path</option>
-                      </select>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={config.floorColor || "#8b7355"}
+                          onChange={(e) =>
+                            setConfig({ ...config, floorColor: e.target.value })
+                          }
+                          className="w-16 h-10 rounded border border-gray-300 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={config.floorColor || "#8b7355"}
+                          onChange={(e) =>
+                            setConfig({ ...config, floorColor: e.target.value })
+                          }
+                          placeholder="#8b7355"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        {config.floorColor && (
+                          <button
+                            onClick={() =>
+                              setConfig({ ...config, floorColor: undefined })
+                            }
+                            className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                            title="Reset to default"
+                          >
+                            ↺
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Custom floor color (overrides theme default)
+                      </p>
                     </div>
 
-                    {config.waterBody.type === "center" && (
-                      <div>
-                        <label className="block text-xs text-blue-700 mb-1">
-                          Radius (em)
-                        </label>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Floor Texture (Image URL)
+                      </label>
+                      <div className="flex gap-2">
                         <input
-                          type="number"
-                          value={config.waterBody.radius || 10}
+                          type="text"
+                          value={config.floorTexture || ""}
                           onChange={(e) =>
                             setConfig({
                               ...config,
-                              waterBody: {
-                                ...config.waterBody!,
-                                radius: parseFloat(e.target.value),
-                              },
+                              floorTexture: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border border-blue-300 rounded"
+                          placeholder="https://example.com/texture.jpg"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                         />
+                        {config.floorTexture && (
+                          <button
+                            onClick={() =>
+                              setConfig({ ...config, floorTexture: undefined })
+                            }
+                            className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                            title="Remove texture"
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
-                    )}
-
-                    <div>
-                      <label className="block text-xs text-blue-700 mb-1">
-                        Spin Drain Rate (%/sec)
-                      </label>
-                      <input
-                        type="number"
-                        value={config.waterBody.spinDrainRate}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            waterBody: {
-                              ...config.waterBody!,
-                              spinDrainRate: parseFloat(e.target.value),
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-blue-300 rounded"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-blue-700 mb-1">
-                        Speed Multiplier
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={config.waterBody.speedMultiplier}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            waterBody: {
-                              ...config.waterBody!,
-                              speedMultiplier: parseFloat(e.target.value),
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-blue-300 rounded"
-                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Optional texture image (repeating pattern)
+                      </p>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Laser Guns */}
-              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                <h3 className="font-semibold text-red-900 mb-2">
-                  Laser Guns ({config.laserGuns.length})
-                </h3>
-                <p className="text-sm text-red-700">
-                  Coming soon: Auto-targeting turrets that fire at beyblades
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Goals Tab */}
-          {currentTab === "goals" && (
-            <div className="space-y-6">
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h3 className="font-semibold text-yellow-900 mb-2">
-                  Goal Objects ({config.goalObjects.length})
-                </h3>
-                <p className="text-sm text-yellow-700">
-                  Destructible objectives - destroy all to win!
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={config.requireAllGoalsDestroyed}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      requireAllGoalsDestroyed: e.target.checked,
-                    })
-                  }
-                  className="w-5 h-5"
-                />
-                <label className="text-sm font-medium">
-                  Require All Goals Destroyed to Win
-                </label>
-              </div>
-            </div>
-          )}
-
-          {/* Theme Tab */}
-          {currentTab === "theme" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                {themes.map((theme) => (
-                  <button
-                    key={theme}
-                    onClick={() => setConfig({ ...config, theme })}
-                    className={`p-6 rounded-lg border-2 transition-all ${
-                      config.theme === theme
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400"
-                    }`}
-                  >
-                    <div className="text-4xl mb-2">
-                      {theme === "forest" && "🌲"}
-                      {theme === "mountains" && "⛰️"}
-                      {theme === "grasslands" && "🌾"}
-                      {theme === "metrocity" && "🏙️"}
-                      {theme === "safari" && "🦁"}
-                      {theme === "prehistoric" && "🦕"}
-                      {theme === "futuristic" && "🚀"}
-                      {theme === "desert" && "🏜️"}
-                      {theme === "sea" && "🌊"}
-                      {theme === "riverbank" && "🏞️"}
+                  {/* Preview */}
+                  {(config.floorColor || config.floorTexture) && (
+                    <div className="mt-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Preview
+                      </label>
+                      <div
+                        className="w-full h-32 rounded border-2 border-gray-400"
+                        style={{
+                          backgroundColor: config.floorColor || "#8b7355",
+                          backgroundImage: config.floorTexture
+                            ? `url(${config.floorTexture})`
+                            : undefined,
+                          backgroundSize: "cover",
+                          backgroundRepeat: "repeat",
+                        }}
+                      />
                     </div>
-                    <div className="font-semibold capitalize">{theme}</div>
-                  </button>
-                ))}
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Preview Tab */}
-          {currentTab === "preview" && (
-            <div className="space-y-4">
-              <div className="bg-gray-900 rounded-lg p-8 text-white">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold mb-4">Arena Preview</h3>
-                  <div className="bg-gray-800 rounded-lg p-8 inline-block">
-                    <div className="text-6xl mb-4">🏟️</div>
-                    <div className="text-left space-y-2 text-sm">
-                      <div>
-                        📏 Size: {config.width}em × {config.height}em
+            {/* Preview Tab */}
+            {currentTab === "preview" && (
+              <div className="space-y-4">
+                {/* Actual Arena Rendering */}
+                <div className="bg-gray-900 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-white mb-4 text-center">
+                    🏟️ Live Arena Preview
+                  </h3>
+                  <div className="flex justify-center bg-gray-800 rounded-lg p-8">
+                    <ArenaPreview arena={config} width={600} height={600} />
+                  </div>
+                </div>
+
+                {/* Stats Summary */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border-2 border-blue-300">
+                    <h4 className="font-semibold text-blue-900 mb-3">
+                      📊 Arena Stats
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Size:</span>
+                        <span className="font-bold">
+                          {config.width}em × {config.height}em
+                        </span>
                       </div>
-                      <div>🔷 Shape: {config.shape}</div>
-                      <div>🎨 Theme: {config.theme}</div>
-                      <div>🔄 Loops: {config.loops.length}</div>
-                      <div>🪨 Obstacles: {config.obstacles.length}</div>
-                      <div>🕳️ Pits: {config.pits.length}</div>
-                      <div>
-                        💧 Water: {config.waterBody?.enabled ? "Yes" : "No"}
+                      <div className="flex justify-between">
+                        <span>Shape:</span>
+                        <span className="font-bold capitalize">
+                          {config.shape}
+                        </span>
                       </div>
-                      <div>🎯 Goals: {config.goalObjects.length}</div>
+                      <div className="flex justify-between">
+                        <span>Theme:</span>
+                        <span className="font-bold capitalize">
+                          {config.theme}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border-2 border-purple-300">
+                    <h4 className="font-semibold text-purple-900 mb-3">
+                      ⚔️ Hazards & Features
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>🔄 Loops:</span>
+                        <span className="font-bold">{config.loops.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>🪨 Obstacles:</span>
+                        <span className="font-bold">
+                          {config.obstacles.length}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>🕳️ Pits:</span>
+                        <span className="font-bold">{config.pits.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>💧 Liquid:</span>
+                        <span className="font-bold">
+                          {config.waterBody?.enabled
+                            ? `${config.waterBody.liquidType} (${config.waterBody.shape})`
+                            : "None"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>🎯 Goals:</span>
+                        <span className="font-bold">
+                          {config.goalObjects.length}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Configuration JSON */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-blue-900 mb-2 flex items-center justify-between">
+                    <span>📝 Configuration JSON</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          JSON.stringify(config, null, 2)
+                        );
+                        alert("Configuration copied to clipboard!");
+                      }}
+                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                    >
+                      📋 Copy
+                    </button>
+                  </h4>
+                  <pre className="text-xs bg-white p-3 rounded overflow-auto max-h-96 font-mono">
+                    {JSON.stringify(config, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Side - Live Preview (Desktop Only) */}
+          <div className="hidden lg:flex lg:w-96 bg-gray-900 p-6 flex-col border-l border-gray-700 sticky top-0 self-start max-h-screen">
+            <h3 className="text-white text-lg font-bold mb-4">Live Preview</h3>
+            <div className="flex-1 bg-gray-800 rounded-lg p-4 overflow-auto flex items-center justify-center">
+              <ArenaPreview arena={config} width={350} height={350} />
+            </div>
+            <div className="mt-4 text-sm text-white space-y-2">
+              <div className="bg-gray-700 p-3 rounded space-y-1">
+                <div>
+                  📏 Size: {config.width}em × {config.height}em
+                </div>
+                <div>🔷 Shape: {config.shape}</div>
+                <div>🎨 Theme: {config.theme}</div>
               </div>
 
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-2">
-                  Configuration Summary
-                </h4>
-                <pre className="text-xs bg-white p-3 rounded overflow-auto max-h-96">
-                  {JSON.stringify(config, null, 2)}
-                </pre>
+              <div className="bg-gray-700 p-3 rounded space-y-1">
+                <div>🔄 Loops: {config.loops.length}</div>
+                <div>🪨 Obstacles: {config.obstacles.length}</div>
+                <div>🕳️ Pits: {config.pits.length}</div>
+                <div>
+                  💧 Liquid:{" "}
+                  {config.waterBody?.enabled
+                    ? config.waterBody.liquidType
+                    : "None"}
+                </div>
+                <div>🎯 Goals: {config.goalObjects.length}</div>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Footer */}
