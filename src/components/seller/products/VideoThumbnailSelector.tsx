@@ -95,41 +95,73 @@ export default function VideoThumbnailSelector({
     }
   };
 
-  const captureCurrentFrame = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+  const captureCurrentFrame = async () => {
+    if (!videoRef.current) return;
 
     const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-    if (!ctx) return;
 
     try {
-      // Set canvas size to video dimensions
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Create a temporary canvas for this capture
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = video.videoWidth;
+      tempCanvas.height = video.videoHeight;
+      
+      const ctx = tempCanvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) {
+        alert("Failed to get canvas context");
+        return;
+      }
 
       // Draw current frame
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
 
-      // Use toBlob instead of toDataURL to avoid CORS issues
-      canvas.toBlob(
-        (blob) => {
+      // Convert to blob using a Promise wrapper
+      const blob = await new Promise<Blob | null>((resolve) => {
+        tempCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+      });
+
+      if (blob) {
+        const previewUrl = URL.createObjectURL(blob);
+        setThumbnailPreview(previewUrl);
+      } else {
+        console.error("Failed to create blob from canvas");
+        alert("Failed to capture frame. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error capturing frame:", error);
+      
+      // Fallback: Try with MediaRecorder API or direct blob creation
+      try {
+        // Alternative: Use ImageCapture API if available
+        const stream = (video as any).captureStream?.();
+        if (stream) {
+          const track = stream.getVideoTracks()[0];
+          const imageCapture = new (window as any).ImageCapture(track);
+          const bitmap = await imageCapture.grabFrame();
+          
+          // Create canvas from bitmap
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = bitmap.width;
+          tempCanvas.height = bitmap.height;
+          const ctx = tempCanvas.getContext("2d");
+          ctx?.drawImage(bitmap, 0, 0);
+          
+          const blob = await new Promise<Blob | null>((resolve) => {
+            tempCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+          });
+          
           if (blob) {
             const previewUrl = URL.createObjectURL(blob);
             setThumbnailPreview(previewUrl);
-          } else {
-            console.error("Failed to create blob from canvas");
-            alert("Failed to capture frame. Please try again.");
+            return;
           }
-        },
-        "image/jpeg",
-        0.85
-      );
-    } catch (error) {
-      console.error("Error capturing frame:", error);
+        }
+      } catch (fallbackError) {
+        console.error("Fallback capture failed:", fallbackError);
+      }
+      
       alert(
-        "Failed to capture frame. Please try a different moment in the video."
+        "Unable to capture frame from this video. This may be due to browser security restrictions."
       );
     }
   };
