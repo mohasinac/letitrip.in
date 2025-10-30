@@ -50,6 +50,15 @@ export default function VideoThumbnailSelector({
     }
   }, [open, videoUrl]);
 
+  // Cleanup blob URL on unmount or when thumbnail changes
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
+
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
@@ -91,20 +100,38 @@ export default function VideoThumbnailSelector({
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
     if (!ctx) return;
 
-    // Set canvas size to video dimensions
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    try {
+      // Set canvas size to video dimensions
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-    // Draw current frame
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Draw current frame
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Create preview URL
-    const previewUrl = canvas.toDataURL("image/jpeg", 0.85);
-    setThumbnailPreview(previewUrl);
+      // Use toBlob instead of toDataURL to avoid CORS issues
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const previewUrl = URL.createObjectURL(blob);
+            setThumbnailPreview(previewUrl);
+          } else {
+            console.error("Failed to create blob from canvas");
+            alert("Failed to capture frame. Please try again.");
+          }
+        },
+        "image/jpeg",
+        0.85
+      );
+    } catch (error) {
+      console.error("Error capturing frame:", error);
+      alert(
+        "Failed to capture frame. Please try a different moment in the video."
+      );
+    }
   };
 
   const handleSave = async () => {
@@ -116,7 +143,7 @@ export default function VideoThumbnailSelector({
     try {
       setSaving(true);
 
-      // Convert data URL to blob
+      // Convert blob URL to blob
       const response = await fetch(thumbnailPreview);
       const blob = await response.blob();
 
@@ -124,6 +151,7 @@ export default function VideoThumbnailSelector({
       onClose();
     } catch (error) {
       console.error("Error saving thumbnail:", error);
+      alert("Failed to save thumbnail. Please try again.");
     } finally {
       setSaving(false);
     }

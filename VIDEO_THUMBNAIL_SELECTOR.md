@@ -101,17 +101,85 @@ VideoThumbnailSelector/
    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
    ```
 
-3. **Export as JPEG**
+3. **Export as Blob** (Avoids CORS issues)
 
    ```typescript
-   canvas.toDataURL("image/jpeg", 0.85);
+   canvas.toBlob(
+     (blob) => {
+       const url = URL.createObjectURL(blob);
+       setThumbnailPreview(url);
+     },
+     "image/jpeg",
+     0.85
+   );
    ```
 
-4. **Convert to Blob**
+4. **Save Blob**
    ```typescript
-   const response = await fetch(dataUrl);
+   const response = await fetch(blobUrl);
    const blob = await response.blob();
+   onSave(blob, blobUrl, timestamp);
    ```
+
+**Note**: Uses `canvas.toBlob()` instead of `toDataURL()` to avoid CORS/security errors when capturing from blob URLs.
+
+## Security & CORS Handling
+
+### Issue: Canvas toDataURL() Security Error
+
+**Problem**: When capturing frames from videos loaded as blob URLs, `canvas.toDataURL()` can throw a SecurityError due to CORS restrictions.
+
+**Solution**: Use `canvas.toBlob()` instead, which:
+
+- Works with blob URLs without CORS issues
+- Creates blob URLs directly
+- More efficient than data URLs
+- Avoids "The operation is insecure" error
+
+### Implementation
+
+```typescript
+// ❌ Old approach (caused SecurityError)
+const previewUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+// ✅ New approach (works with blob URLs)
+canvas.toBlob(
+  (blob) => {
+    if (blob) {
+      const previewUrl = URL.createObjectURL(blob);
+      setThumbnailPreview(previewUrl);
+    }
+  },
+  "image/jpeg",
+  0.85
+);
+```
+
+### Memory Management
+
+Blob URLs are cleaned up automatically:
+
+```typescript
+useEffect(() => {
+  return () => {
+    if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+  };
+}, [thumbnailPreview]);
+```
+
+### Error Handling
+
+```typescript
+try {
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob(/* ... */);
+} catch (error) {
+  console.error("Error capturing frame:", error);
+  alert("Failed to capture frame. Please try again.");
+}
+```
 
 ## Files Created
 
@@ -199,71 +267,14 @@ handleThumbnailSave(blob, url, timestamp);
 
 ### Thumbnail Selector Dialog
 
-```
+````
 ┌────────────────────────────────────┐
 │  Select Video Thumbnail            │
 │  Scrub through the video...        │
 ├────────────────────────────────────┤
 │  ┌──────────────────────────────┐  │
 │  │                              │  │
-│  │    Video Player              │  │
-│  │        ▶️                    │  │
-│  │                              │  │
-│  └──────────────────────────────┘  │
-│                                    │
-│  [▶️] 0:05 [━━━━━|━━━━━━━] 0:45   │
-│                                    │
-│  [📷 Capture Current Frame]        │
-│                                    │
-│  ┌─ Selected Thumbnail Preview ─┐  │
-│  │  ┌────────────────────────┐  │  │
-│  │  │                        │  │  │
-│  │  │   Captured Frame       │  │  │
-│  │  │                        │  │  │
-│  │  └────────────────────────┘  │  │
-│  │  Frame at 0:05              │  │
-│  └────────────────────────────┘  │
-│                                    │
-│  Tip: Use the slider to scrub...  │
-├────────────────────────────────────┤
-│         [Cancel] [Use Thumbnail]   │
-└────────────────────────────────────┘
-```
-
-## Key Features in Detail
-
-### 1. Timeline Scrubbing
-
-```typescript
-<Slider
-  value={currentTime}
-  min={0}
-  max={duration}
-  step={0.1}
-  onChange={(e, val) => {
-    videoRef.current.currentTime = val;
-  }}
-/>
-```
-
-**Benefits:**
-
-- 0.1 second precision
-- Real-time seeking
-- Visual feedback
-- Time display on both ends
-
-### 2. Play/Pause Control
-
-```typescript
-const togglePlayPause = () => {
-  if (isPlaying) {
-    video.pause();
-  } else {
-    video.play();
-  }
-};
-```
+│  │    Video Player
 
 **UI States:**
 
@@ -282,7 +293,7 @@ const captureCurrentFrame = () => {
   const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
   setThumbnailPreview(dataUrl);
 };
-```
+````
 
 **Quality:**
 
