@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the unified component library for JustForView. All components are designed to be:
+This is the unified component library for HobbiesSpot. All components are designed to be:
 
 - **Reusable**: Single source of truth for each component type
 - **Accessible**: WCAG 2.1 AA compliant

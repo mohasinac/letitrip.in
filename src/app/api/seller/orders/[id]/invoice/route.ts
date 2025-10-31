@@ -403,7 +403,7 @@ function generateInvoiceHtml(data: InvoiceData): string {
 </head>
 <body>
   <div class="invoice-header">
-    <div class="logo">JUSTFORVIEW.IN</div>
+    <div class="logo">HOBBIESSPOT.COM</div>
     <div class="invoice-title">
       <h1>INVOICE</h1>
       <p>${data.invoiceNumber}</p>
@@ -521,7 +521,7 @@ function generateInvoiceHtml(data: InvoiceData): string {
 
   <div class="footer">
     <p>This is a computer-generated invoice and does not require a signature.</p>
-    <p>© ${new Date().getFullYear()} justforview.in - All rights reserved</p>
+    <p>© ${new Date().getFullYear()} hobbiesspot.com - All rights reserved</p>
   </div>
 </body>
 </html>

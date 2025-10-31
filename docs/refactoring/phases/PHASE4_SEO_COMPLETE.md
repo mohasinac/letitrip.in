@@ -298,7 +298,7 @@ const metadata = generateMetadata({
 - Priority scores
 - Last modified dates
 
-**Access**: `https://justforview.in/sitemap.xml`
+**Access**: `https://www.hobbiesspot.com/sitemap.xml`
 
 ---
 
@@ -527,5 +527,5 @@ export default function FAQPage({ faqs }) {
 ---
 
 _Generated: October 31, 2025_  
-_Project: JustForView.in Refactoring Initiative_  
+_Project: HobbiesSpot.com Refactoring Initiative_  
 _Phase: 4 of 7 - SEO Implementation_

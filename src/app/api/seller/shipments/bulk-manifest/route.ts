@@ -197,7 +197,7 @@ function generateManifestHtml(shipments: any[]): string {
   <div class="header">
     <h1>BULK SHIPMENT MANIFEST</h1>
     <p>Generated on ${manifestDate}</p>
-    <p>JUSTFORVIEW.IN</p>
+    <p>HOBBIESSPOT.COM</p>
   </div>
 
   <div class="summary">
@@ -254,7 +254,7 @@ function generateManifestHtml(shipments: any[]): string {
 
   <div class="footer">
     <p>This is a computer-generated manifest. No signature required.</p>
-    <p>© ${now.getFullYear()} justforview.in - All rights reserved</p>
+    <p>© ${now.getFullYear()} hobbiesspot.com - All rights reserved</p>
   </div>
 </body>
 </html>

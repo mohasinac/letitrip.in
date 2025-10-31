@@ -1,6 +1,6 @@
-# 📚 JustForView.in Documentation
+# 📚 HobbiesSpot.com Documentation
 
-**Complete documentation for the JustForView.in Beyblade Ecommerce Platform**
+**Complete documentation for the HobbiesSpot.com Beyblade Ecommerce Platform**
 
 ---
 

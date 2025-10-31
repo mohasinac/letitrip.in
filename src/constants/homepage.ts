@@ -107,7 +107,7 @@ export const CONTACT_INFO: ContactInfo = {
   title: "Get in Touch",
   description:
     "Have questions about products, auctions, or need help with your order? We're here to help!",
-  email: "support@justforview.in",
+  email: "support@hobbiesspot.com",
   phone: "+91 98765 43210",
   address: {
     street: "123 Marketplace Avenue",
@@ -124,7 +124,7 @@ export const CONTACT_INFO: ContactInfo = {
 
 // Meta Information
 export const HOMEPAGE_META = {
-  title: "JustForView - Discover Amazing Products & Auctions",
+  title: "HobbiesSpot - Discover Amazing Products & Auctions",
   description:
     "Find rare items, participate in live auctions, and connect with sellers worldwide. Your gateway to unique collections and authentic products.",
   keywords: [

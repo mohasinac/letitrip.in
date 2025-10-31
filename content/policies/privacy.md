@@ -4,7 +4,7 @@
 
 ## Introduction
 
-At JustForView ("we," "our," or "us"), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
+At HobbiesSpot ("we," "our," or "us"), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
 
 ## Information We Collect
 
@@ -65,6 +65,6 @@ You have the right to:
 
 If you have any questions about this Privacy Policy, please contact us at:
 
-- Email: privacy@justforview.in
+- Email: privacy@hobbiesspot.com
 - Phone: +91 98765 43210
 - Address: 123 Business District, Mumbai, Maharashtra 400001, India

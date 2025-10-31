@@ -184,7 +184,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 href="/"
                 className="font-bold text-gray-900 dark:text-white no-underline text-xl md:text-2xl flex-grow md:flex-grow-0 text-center md:text-left"
               >
-                JustForView
+                HobbiesSpot
               </Link>
 
               {/* Desktop Navigation */}
@@ -326,7 +326,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               {/* Company Info */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                  JustForView
+                  HobbiesSpot
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Your premium destination for authentic Beyblades and hobby
@@ -400,7 +400,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
             <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                © 2025 JustForView. All rights reserved.
+                © 2025 HobbiesSpot. All rights reserved.
               </p>
             </div>
           </div>

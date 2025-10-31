@@ -63,7 +63,7 @@ export default function ModernWhyChooseUs() {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-text to-primary bg-clip-text text-transparent">
-            Why Choose JustForView?
+            Why Choose HobbiesSpot?
           </h2>
           <p className="text-lg text-textSecondary max-w-2xl mx-auto leading-relaxed">
             We're committed to providing the best Beyblade shopping experience

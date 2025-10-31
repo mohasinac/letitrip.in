@@ -5,7 +5,7 @@
 
 ## Overview
 
-Complete refactoring of the JustForView.in codebase to improve:
+Complete refactoring of the HobbiesSpot.com codebase to improve:
 
 - Component reusability and consistency
 - Performance and bundle size

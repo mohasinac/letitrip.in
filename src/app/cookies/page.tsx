@@ -27,7 +27,7 @@ export default function CookiePolicyPage() {
             </h1>
             <p className="text-xl text-white/90 max-w-3xl mx-auto">
               Learn about how we use cookies to improve your experience on
-              JustForView.
+              HobbiesSpot.
             </p>
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function CookiePolicyPage() {
             <div className="rounded-2xl bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
               <div className="p-8">
                 <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                  This Cookie Policy explains how JustForView uses cookies and
+                  This Cookie Policy explains how HobbiesSpot uses cookies and
                   similar technologies to recognize you when you visit our
                   website.
                 </p>

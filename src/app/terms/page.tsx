@@ -41,7 +41,7 @@ export default function TermsPage() {
                 title: "1. Acceptance of Terms",
                 content: (
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    By accessing and using JustForView.in (the "Service"), you
+                    By accessing and using HobbiesSpot.com (the "Service"), you
                     accept and agree to be bound by the terms and provision of
                     this agreement. If you do not agree to abide by the above,
                     please do not use this service.
@@ -54,7 +54,7 @@ export default function TermsPage() {
                   <div>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                       Permission is granted to temporarily download one copy of
-                      the materials on JustForView.in for personal,
+                      the materials on HobbiesSpot.com for personal,
                       non-commercial transitory viewing only. This is the grant
                       of a license, not a transfer of title, and under this
                       license you may not:
@@ -67,7 +67,7 @@ export default function TermsPage() {
                       </li>
                       <li>
                         attempt to decompile or reverse engineer any software
-                        contained on JustForView.in
+                        contained on HobbiesSpot.com
                       </li>
                       <li>
                         remove any copyright or other proprietary notations from

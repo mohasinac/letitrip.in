@@ -459,5 +459,5 @@ export function useProducts() {
 ---
 
 _Generated: October 31, 2025_  
-_Project: JustForView.in Refactoring Initiative_  
+_Project: HobbiesSpot.com Refactoring Initiative_  
 _Phase: 6 of 7 - API/Utils Consolidation_

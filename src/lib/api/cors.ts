@@ -23,8 +23,8 @@ const getAllowedOrigins = (): string[] => {
   return [
     process.env.NEXT_PUBLIC_APP_URL || "",
     process.env.NEXT_PUBLIC_SITE_URL || "",
-    "https://justforview.in",
-    "https://www.justforview.in",
+    "https://www.hobbiesspot.com",
+    "https://hobbiesspot.com",
   ].filter(Boolean);
 };
 

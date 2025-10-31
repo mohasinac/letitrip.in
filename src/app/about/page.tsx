@@ -27,7 +27,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
-              About JustForView
+              About HobbiesSpot
             </h1>
             <p className="text-lg md:text-xl max-w-2xl mx-auto text-white/90">
               Your trusted destination for authentic hobby products, rare
@@ -47,7 +47,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4">
                 <p className="text-base text-gray-600 dark:text-gray-400">
-                  JustForView was born from a passion for authentic hobby
+                  HobbiesSpot was born from a passion for authentic hobby
                   products and the frustration of finding genuine items in the
                   market. What started as a small collection grew into India's
                   premier destination for Beyblades, collectibles, and gaming

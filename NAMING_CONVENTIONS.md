@@ -1,6 +1,6 @@
 # 📝 Naming Conventions
 
-**JustForView.in** - Beyblade Ecommerce Platform
+**HobbiesSpot.com** - Beyblade Ecommerce Platform
 
 ---
 

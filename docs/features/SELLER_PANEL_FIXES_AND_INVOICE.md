@@ -80,7 +80,7 @@ Retrieves previously generated invoice details
 
 **Professional Layout:**
 
-- ✅ Company branding (JUSTFORVIEW.IN logo)
+- ✅ Company branding (HOBBIESSPOT.COM logo)
 - ✅ Invoice title and number
 - ✅ Order reference number
 - ✅ Two-column party details (Seller & Customer)
@@ -240,22 +240,27 @@ interface InvoiceData {
 Implement 6 API routes:
 
 1. **GET /api/seller/shipments**
+
    - List all shipments with filtering
    - Return stats (total, in transit, delivered, etc.)
 
 2. **GET /api/seller/shipments/[id]**
+
    - Get single shipment details
    - Include tracking history
 
 3. **POST /api/seller/shipments/[id]/track**
+
    - Add tracking update
    - Update shipment status
 
 4. **POST /api/seller/shipments/[id]/cancel**
+
    - Cancel shipment
    - Provide cancellation reason
 
 5. **GET /api/seller/shipments/[id]/label**
+
    - Generate/download shipping label
    - Return label URL
 
@@ -289,6 +294,7 @@ Implement 6 API routes:
 ## 🐛 Known Issues Fixed
 
 1. ✅ **Breadcrumb Runtime Error**
+
    - Error: "can't access property 'length', breadcrumbItems is undefined"
    - Root cause: useBreadcrumbTracker() called without parameters
    - Fix: Added breadcrumb items array to all affected pages
@@ -332,20 +338,24 @@ Implement 6 API routes:
 ### Invoice System:
 
 1. **PDF Generation**
+
    - Use puppeteer/playwright to generate PDF
    - Store PDFs in Firebase Storage
    - Return download URLs
 
 2. **Invoice Customization**
+
    - Allow sellers to add logo
    - Customize color scheme
    - Add terms & conditions
 
 3. **Email Integration**
+
    - Auto-send invoice to customer
    - Email copy to seller
 
 4. **Invoice History**
+
    - Store invoice metadata in Firestore
    - List all generated invoices
    - Regenerate previous invoices

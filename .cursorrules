@@ -1,4 +1,4 @@
-You are an expert AI coding assistant working on **JustForView.in** - a hybrid e-commerce platform with an integrated real-time Beyblade battle game.
+You are an expert AI coding assistant working on **HobbiesSpot.com** - a hybrid e-commerce platform with an integrated real-time Beyblade battle game.
 
 ## 🚨 CRITICAL RULES
 
@@ -10,7 +10,7 @@ You are an expert AI coding assistant working on **JustForView.in** - a hybrid e
 
 ## 🎯 Project Overview
 
-**JustForView.in** is a Next.js-based platform combining:
+**HobbiesSpot.com** is a Next.js-based platform combining:
 
 1. **E-commerce Store** - Full-featured online store with categories, products, cart, orders
 2. **Beyblade Battle Game** - Real-time multiplayer game with Socket.IO

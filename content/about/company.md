@@ -1,8 +1,8 @@
-# About JustForView
+# About HobbiesSpot
 
 ## Our Story
 
-Founded in 2025, JustForView emerged from a simple vision: to create a digital platform that prioritizes user experience, security, and community above all else. We believe that technology should serve people, not the other way around.
+Founded in 2025, HobbiesSpot emerged from a simple vision: to create a digital platform that prioritizes user experience, security, and community above all else. We believe that technology should serve people, not the other way around.
 
 Our journey began when our founders recognized the need for a platform that combines cutting-edge technology with genuine human connection. We set out to build something different – a space where users feel valued, heard, and empowered.
 
@@ -36,7 +36,7 @@ We continuously invest in new technologies and approaches to improve our platfor
 
 We foster a culture of respect, inclusion, and collaboration both within our team and among our users.
 
-## Why Choose JustForView?
+## Why Choose HobbiesSpot?
 
 ### Security First
 

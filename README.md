@@ -1,4 +1,4 @@
-# JustForView.in
+# HobbiesSpot.com
 
 ## AI Assistant Instructions
 

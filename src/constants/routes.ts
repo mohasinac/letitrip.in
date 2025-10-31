@@ -1,5 +1,5 @@
 /**
- * Route Constants for JustForView Application
+ * Route Constants for HobbiesSpot Application
  * Centralized route definitions for the refactored UI structure
  */
 

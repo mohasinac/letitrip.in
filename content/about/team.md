@@ -4,7 +4,7 @@
 
 ### Rajesh Kumar - Founder & CEO
 
-With over 15 years of experience in technology and business development, Rajesh leads JustForView's vision and strategy. He previously worked at leading tech companies in Silicon Valley before returning to India to build something meaningful.
+With over 15 years of experience in technology and business development, Rajesh leads HobbiesSpot's vision and strategy. He previously worked at leading tech companies in Silicon Valley before returning to India to build something meaningful.
 
 **Background:**
 
@@ -173,4 +173,4 @@ We work together across teams and departments, sharing knowledge and supporting 
 
 ## Join Our Team
 
-We're always looking for talented individuals who share our values and want to help build the future of digital experiences. Check our careers page for current openings or reach out to us at careers@justforview.in.
+We're always looking for talented individuals who share our values and want to help build the future of digital experiences. Check our careers page for current openings or reach out to us at careers@hobbiesspot.com.

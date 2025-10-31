@@ -71,7 +71,7 @@ Phase 5 created a comprehensive mobile-first, responsive experience across all p
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="JustForView" />
+<meta name="apple-mobile-web-app-title" content="HobbiesSpot" />
 
 // Theme colors for light/dark mode
 <meta name="theme-color" content="#0095f6" media="(prefers-color-scheme: light)" />
@@ -626,5 +626,5 @@ export default function FullScreenPage() {
 ---
 
 _Generated: October 31, 2025_  
-_Project: JustForView.in Refactoring Initiative_  
+_Project: HobbiesSpot.com Refactoring Initiative_  
 _Phase: 5 of 7 - Mobile Optimization_

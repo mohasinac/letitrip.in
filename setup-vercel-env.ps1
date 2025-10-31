@@ -1,7 +1,7 @@
 # Script to set up Vercel environment variables for Windows
 # Usage: .\setup-vercel-env.ps1
 
-Write-Host "🚀 Setting up Vercel Environment Variables for JustForView.in" -ForegroundColor Cyan
+Write-Host "🚀 Setting up Vercel Environment Variables for HobbiesSpot.com" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Make sure you have:" -ForegroundColor Yellow
@@ -55,7 +55,7 @@ Add-VercelEnv -Key "JWT_EXPIRES_IN" -Value "7d"
 
 Write-Host ""
 Write-Host "🌐 Adding App Configuration" -ForegroundColor Cyan
-Add-VercelEnv -Key "NEXT_PUBLIC_APP_URL" -Value "https://justforview.in"
+Add-VercelEnv -Key "NEXT_PUBLIC_APP_URL" -Value "https://www.hobbiesspot.com"
 Add-VercelEnv -Key "NEXT_PUBLIC_API_URL" -Value "/api"
 
 Write-Host ""

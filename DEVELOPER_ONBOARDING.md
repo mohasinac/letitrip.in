@@ -1,6 +1,6 @@
 # 🚀 Developer Onboarding Guide
 
-**Welcome to JustForView.in!** - Beyblade Ecommerce Platform
+**Welcome to HobbiesSpot.com!** - Beyblade Ecommerce Platform
 
 ---
 
@@ -75,7 +75,7 @@ npm run dev
 
 ## 🎯 Project Overview
 
-### What is JustForView.in?
+### What is HobbiesSpot.com?
 
 A modern ecommerce platform for Beyblade products with:
 
@@ -352,7 +352,7 @@ import { Metadata } from "next";
 import { ComponentName } from "@/components/feature/ComponentName";
 
 export const metadata: Metadata = {
-  title: "Page Title | JustForView.in",
+  title: "Page Title | HobbiesSpot.com",
   description: "Page description for SEO",
 };
 
@@ -640,7 +640,7 @@ npm run type-check
 
 ## 🎉 Welcome Aboard!
 
-You're now ready to start contributing to JustForView.in!
+You're now ready to start contributing to HobbiesSpot.com!
 
 **Remember**:
 

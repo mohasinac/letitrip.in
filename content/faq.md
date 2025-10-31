@@ -2,19 +2,19 @@
 
 ## General Questions
 
-### What is JustForView?
+### What is HobbiesSpot?
 
-JustForView is a premium digital platform designed to provide users with an exceptional online experience. We focus on community, security, and user satisfaction.
+HobbiesSpot is a premium digital platform designed to provide users with an exceptional online experience. We focus on community, security, and user satisfaction.
 
 ### How do I get started?
 
 Getting started is easy! Simply click the "Get Started" button on our homepage to create your free account. You'll be up and running in minutes.
 
-### Is JustForView free to use?
+### Is HobbiesSpot free to use?
 
 Yes, we offer a free tier with access to basic features. We also provide premium plans with additional benefits and features.
 
-### What makes JustForView different?
+### What makes HobbiesSpot different?
 
 We prioritize user experience, security, and community. Our platform is built with modern technology, ensuring fast performance and reliable service.
 
@@ -62,7 +62,7 @@ Try refreshing the page, clearing your browser cache, or checking your internet 
 
 ### I'm experiencing technical issues. How can I get help?
 
-Contact our support team through the "Contact" page or email us at support@justforview.in. We're here to help 24/7.
+Contact our support team through the "Contact" page or email us at support@hobbiesspot.com. We're here to help 24/7.
 
 ### Which browsers are supported?
 
@@ -78,7 +78,7 @@ Currently, we offer a mobile-optimized website. A dedicated mobile app is in dev
 
 You can reach us through:
 
-- Email: support@justforview.in
+- Email: support@hobbiesspot.com
 - Phone: +91 98765 43210
 - Contact form on our website
 
@@ -105,11 +105,11 @@ We expect all users to be respectful, honest, and constructive. Harassment, spam
 
 ### How do I report inappropriate content or behavior?
 
-You can report issues through our contact form or by emailing abuse@justforview.in. We take all reports seriously.
+You can report issues through our contact form or by emailing abuse@hobbiesspot.com. We take all reports seriously.
 
 ### Can I suggest new features?
 
-Absolutely! We love hearing from our users. Send your suggestions to feedback@justforview.in or through our contact form.
+Absolutely! We love hearing from our users. Send your suggestions to feedback@hobbiesspot.com or through our contact form.
 
 ### How can I stay updated on new features?
 

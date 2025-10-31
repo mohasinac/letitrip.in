@@ -58,7 +58,7 @@ export default function PrivacyPage() {
                       color="text.secondary"
                       sx={{ lineHeight: 1.7, mb: 2 }}
                     >
-                      JustForView.in ("we," "our," or "us") is committed to
+                      HobbiesSpot.com ("we," "our," or "us") is committed to
                       protecting your privacy. This Privacy Policy explains how
                       we collect, use, disclose, and safeguard your information
                       when you visit our website and use our services.

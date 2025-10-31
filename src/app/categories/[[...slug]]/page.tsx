@@ -20,7 +20,7 @@ export async function generateMetadata({
 
   if (!slug) {
     return {
-      title: "Shop by Category | JustForView Store",
+      title: "Shop by Category | HobbiesSpot Store",
       description:
         "Browse all product categories and find what you're looking for.",
     };
@@ -47,16 +47,16 @@ export async function generateMetadata({
     } as Category;
 
     return {
-      title: `${category.name} | JustForView Store`,
+      title: `${category.name} | HobbiesSpot Store`,
       description:
         category.description ||
-        `Shop ${category.name} products at JustForView Store`,
+        `Shop ${category.name} products at HobbiesSpot Store`,
       keywords: category.seo?.keywords || [category.name],
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
-      title: "Category | JustForView Store",
+      title: "Category | HobbiesSpot Store",
     };
   }
 }
@@ -79,7 +79,7 @@ export default async function CategoriesPage({ params }: PageProps) {
         ({
           id: doc.id,
           ...doc.data(),
-        }) as Category,
+        } as Category)
     );
 
     // If slug provided, find the current category
@@ -111,7 +111,7 @@ export default async function CategoriesPage({ params }: PageProps) {
 
         // Get child categories product count
         const childCategories = allCategories.filter((cat) =>
-          cat.parentIds?.includes(category.id),
+          cat.parentIds?.includes(category.id)
         );
 
         let childProductCount = 0;
@@ -132,7 +132,7 @@ export default async function CategoriesPage({ params }: PageProps) {
           totalProductCount: directProductCount + childProductCount,
           subcategoryCount: childCategories.length,
         };
-      }),
+      })
     );
 
     return (

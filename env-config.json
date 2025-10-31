@@ -21,7 +21,7 @@
   "SHIPROCKET_BASE_URL": "https://apiv2.shiprocket.in/v1",
   "API_RATE_LIMIT": "100",
   "API_RATE_WINDOW": "900000",
-  "NEXT_PUBLIC_SITE_NAME": "JustForView Store",
+  "NEXT_PUBLIC_SITE_NAME": "HobbiesSpot Store",
   "NEXTAUTH_SECRET": "jfv_nextauth_2025_secure_secret_key_minimum_32_chars",
   "NEXTAUTH_URL": "https://justforview-lso27xgmb-mohasin-ahamed-chinnapattans-projects.vercel.app",
   "NODE_ENV": "production",

@@ -8,7 +8,7 @@
 
 ## 📚 Overview
 
-The Unified Components Library is a complete set of production-ready, accessible React components built with TypeScript and Tailwind CSS. These components replace MUI dependencies, reduce bundle size, and provide a consistent design system across justforview.in.
+The Unified Components Library is a complete set of production-ready, accessible React components built with TypeScript and Tailwind CSS. These components replace MUI dependencies, reduce bundle size, and provide a consistent design system across hobbiesspot.com.
 
 ### Key Benefits
 

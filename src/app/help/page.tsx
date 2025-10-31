@@ -457,7 +457,7 @@ export default function HelpPage() {
                             Email
                           </h4>
                           <p className="text-gray-600 dark:text-gray-400">
-                            support@justforview.in
+                            support@hobbiesspot.com
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                             We typically respond within 24 hours

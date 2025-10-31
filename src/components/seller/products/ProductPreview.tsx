@@ -145,7 +145,7 @@ export default function ProductPreview({ data }: ProductPreviewProps) {
                   {data.seo.title}
                 </p>
                 <p className="text-xs text-success">
-                  justforview.in › {data.seo.slug}
+                  hobbiesspot.com › {data.seo.slug}
                 </p>
                 <p className="text-xs text-textSecondary mt-1">
                   {data.seo.description}

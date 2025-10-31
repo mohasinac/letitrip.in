@@ -8,7 +8,7 @@
 
 ## 🎉 WE DID IT! 🎉
 
-After an incredible journey through **7 comprehensive phases**, the **JustForView.in** refactoring is officially **COMPLETE**!
+After an incredible journey through **7 comprehensive phases**, the **HobbiesSpot.com** refactoring is officially **COMPLETE**!
 
 ```
  ██████╗ ███████╗██╗   ██╗███████╗ █████╗  ██████╗████████╗ ██████╗ ██████╗
@@ -377,7 +377,7 @@ After:   Path aliases everywhere  @/
 
 ### To the Codebase
 
-**JustForView.in**, you are now:
+**HobbiesSpot.com**, you are now:
 
 - ✅ More maintainable
 - ✅ More performant

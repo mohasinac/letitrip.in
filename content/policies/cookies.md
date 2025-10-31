@@ -88,6 +88,6 @@ We may update this Cookie Policy from time to time. Any changes will be posted o
 
 If you have any questions about our Cookie Policy, please contact us at:
 
-- Email: privacy@justforview.in
+- Email: privacy@hobbiesspot.com
 - Phone: +91 98765 43210
 - Address: 123 Business District, Mumbai, Maharashtra 400001, India

@@ -2,7 +2,7 @@
 # Script to set up Vercel environment variables
 # Usage: ./setup-vercel-env.sh
 
-echo "🚀 Setting up Vercel Environment Variables for JustForView.in"
+echo "🚀 Setting up Vercel Environment Variables for HobbiesSpot.com"
 echo "============================================================"
 echo ""
 echo "Make sure you have:"
@@ -51,7 +51,7 @@ add_env "JWT_EXPIRES_IN" "7d"
 
 echo ""
 echo "🌐 Adding App Configuration"
-add_env "NEXT_PUBLIC_APP_URL" "https://justforview.in"
+add_env "NEXT_PUBLIC_APP_URL" "https://www.hobbiesspot.com"
 add_env "NEXT_PUBLIC_API_URL" "/api"
 
 echo ""

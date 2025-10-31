@@ -9,7 +9,13 @@ import {
   UnifiedTextarea,
   UnifiedSelect,
 } from "@/components/ui/unified";
-import { CheckCircle, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { CheckCircle, MapPin, Phone, Mail, Clock }                                       href="mailto:hello@hobbiesspot.com"
+                            className="text-blue-600 hover:underline"
+                          >
+                            hello@hobbiesspot.com              href="mailto:support@hobbiesspot.com"
+                            className="text-blue-600 hover:underline"
+                          >
+                            support@hobbiesspot.com "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import toast from "react-hot-toast";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
@@ -240,17 +246,17 @@ export default function ContactPage() {
                         <h3 className="text-lg font-semibold mb-1">Email Us</h3>
                         <p className="text-sm text-muted-foreground">
                           <a
-                            href="mailto:support@justforview.in"
+                            href="mailto:support@hobbiesspot.com"
                             className="text-primary hover:underline"
                           >
-                            support@justforview.in
+                            support@hobbiesspot.com
                           </a>
                           <br />
                           <a
-                            href="mailto:hello@justforview.in"
+                            href="mailto:hello@hobbiesspot.com"
                             className="text-primary hover:underline"
                           >
-                            hello@justforview.in
+                            hello@hobbiesspot.com
                           </a>
                         </p>
                       </div>

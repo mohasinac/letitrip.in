@@ -51,7 +51,7 @@ const handleStepClick = (step: number) => {
 **Solution**: Added comprehensive SEO section showing:
 
 - Full SEO title
-- URL slug with justforview.in domain
+- URL slug with hobbiesspot.com domain
 - Meta description
 - Feature chips (Free Shipping, Returns, Condition)
 - Stock and SKU information
@@ -65,7 +65,7 @@ const handleStepClick = (step: number) => {
 ```typescript
 ✅ SEO Preview Box
   - Title: {seo.title}
-  - URL: https://justforview.in/{seo.slug}
+  - URL: https://www.hobbiesspot.com/{seo.slug}
   - Description: {seo.description}
 
 ✅ Feature Chips with Icons
@@ -166,7 +166,7 @@ const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         order: data.media.images.length + index,
         isNew: true, // Flag for upload
       };
-    }),
+    })
   );
 
   onChange({
@@ -190,7 +190,7 @@ const uploadPendingImages = async () => {
 
     const response = await uploadWithAuth(
       "/api/seller/products/media",
-      formData,
+      formData
     );
 
     if (response.success) {

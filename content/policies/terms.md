@@ -66,6 +66,6 @@ We reserve the right to modify these terms at any time. We will notify you of an
 
 If you have any questions about these Terms of Service, please contact us at:
 
-- Email: legal@justforview.in
+- Email: legal@hobbiesspot.com
 - Phone: +91 98765 43210
 - Address: 123 Business District, Mumbai, Maharashtra 400001, India

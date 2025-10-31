@@ -27,8 +27,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "JustForView - Premium Beyblade Store",
-    template: "%s | JustForView",
+    default: "HobbiesSpot - Premium Beyblade Store",
+    template: "%s | HobbiesSpot",
   },
   description:
     "Your premium destination for authentic Beyblades, collectibles, and accessories. Shop the best Beyblade products in India with fast shipping and great prices.",
@@ -41,9 +41,9 @@ export const metadata: Metadata = {
     "beyblade accessories",
     "authentic beyblades",
   ],
-  authors: [{ name: "JustForView" }],
-  creator: "JustForView",
-  publisher: "JustForView",
+  authors: [{ name: "HobbiesSpot" }],
+  creator: "HobbiesSpot",
+  publisher: "HobbiesSpot",
   formatDetection: {
     email: false,
     address: false,
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    siteName: "JustForView",
-    title: "JustForView - Premium Beyblade Store",
+    siteName: "HobbiesSpot",
+    title: "HobbiesSpot - Premium Beyblade Store",
     description:
       "Your premium destination for authentic Beyblades, collectibles, and accessories",
     images: [
@@ -62,17 +62,17 @@ export const metadata: Metadata = {
         url: "/assets/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "JustForView - Premium Beyblade Store",
+        alt: "HobbiesSpot - Premium Beyblade Store",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "JustForView - Premium Beyblade Store",
+    title: "HobbiesSpot - Premium Beyblade Store",
     description:
       "Your premium destination for authentic Beyblades, collectibles, and accessories",
     images: ["/assets/og-image.jpg"],
-    creator: "@justforview",
+    creator: "@hobbiesspot",
   },
   robots: {
     index: true,
@@ -114,7 +114,7 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
-        <meta name="apple-mobile-web-app-title" content="JustForView" />
+        <meta name="apple-mobile-web-app-title" content="HobbiesSpot" />
         <meta
           name="theme-color"
           content="#0095f6"

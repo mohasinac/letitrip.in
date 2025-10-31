@@ -165,7 +165,7 @@ export default function SeoPublishingStep({
             {data.seo.title || "Product Title"}
           </h3>
           <p className="text-xs text-green-600 mb-2">
-            justforview.in/{data.seo.slug || "buy-product"}
+            hobbiesspot.com/{data.seo.slug || "buy-product"}
           </p>
           <p className="text-sm text-muted-foreground">
             {data.seo.description || "Product description appears here..."}

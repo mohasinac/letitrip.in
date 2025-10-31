@@ -44,7 +44,7 @@ export default function FAQPage() {
           {
             question: "How can I contact customer support?",
             answer:
-              "You can reach us through our contact form, email us at support@justforview.in, or call us during business hours at +91 98765 43210.",
+              "You can reach us through our contact form, email us at support@hobbiesspot.com, or call us during business hours at +91 98765 43210.",
             category: "Support",
           },
           {
@@ -98,7 +98,7 @@ export default function FAQPage() {
           {
             question: "Do you offer bulk discounts?",
             answer:
-              "Yes, we offer special pricing for bulk orders and retailers. Please contact our sales team at sales@justforview.in for bulk pricing information.",
+              "Yes, we offer special pricing for bulk orders and retailers. Please contact our sales team at sales@hobbiesspot.com for bulk pricing information.",
             category: "Pricing",
           },
         ];
@@ -281,7 +281,7 @@ export default function FAQPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <a
-                href="mailto:support@justforview.in"
+                href="mailto:support@hobbiesspot.com"
                 className="p-8 text-center rounded-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 no-underline"
               >
                 <div className="w-16 h-16 rounded-lg bg-blue-600 flex items-center justify-center mx-auto mb-4">
