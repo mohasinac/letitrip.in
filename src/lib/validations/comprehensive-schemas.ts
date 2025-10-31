@@ -269,6 +269,8 @@ export const createProductSchema = z
       .optional(),
 
     // Categorization
+    // Note: category must be a leaf category ID (categories without sub-categories)
+    // This validation is enforced in the API endpoint
     category: z.string().min(1, "Category is required"),
     subcategory: z.string().optional(),
     tags: z

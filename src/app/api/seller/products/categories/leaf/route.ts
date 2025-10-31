@@ -69,6 +69,7 @@ export async function GET(request: NextRequest) {
       let current: any = cat;
 
       // Build path from leaf to root
+      // Note: For many-to-many relationships, we use the first parent in the path
       while (current) {
         path.unshift({
           id: current.id,
@@ -76,10 +77,11 @@ export async function GET(request: NextRequest) {
           slug: current.slug,
         });
 
-        // Get parent
-        const parentId = current.parentId;
-        if (parentId) {
-          current = categoryMap.get(parentId);
+        // Get first parent (categories can have multiple parents)
+        const parentIds = current.parentIds || [];
+        const firstParentId = parentIds[0];
+        if (firstParentId) {
+          current = categoryMap.get(firstParentId);
         } else {
           current = null;
         }

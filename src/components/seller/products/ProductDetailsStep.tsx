@@ -124,7 +124,8 @@ export default function ProductDetailsStep({
       {/* Category Selector */}
       <div>
         <label className="block text-sm font-medium mb-2">
-          Category <span className="text-red-500">*</span>
+          Category (Leaf Categories Only){" "}
+          <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <div
@@ -183,7 +184,8 @@ export default function ProductDetailsStep({
           )}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Select the most specific category for your product
+          Only leaf categories (without sub-categories) can be selected for
+          products
         </p>
       </div>
 

@@ -627,6 +627,101 @@ export default function CategoryForm({
                       </div>
                     )}
                   />
+
+                  <Controller
+                    name="seo.keywords"
+                    control={control}
+                    render={({ field }) => {
+                      const [inputValue, setInputValue] = React.useState("");
+                      const keywords = field.value || [];
+
+                      const handleAddKeywords = () => {
+                        const input = inputValue.trim();
+                        if (!input) return;
+
+                        // Split by commas and process each keyword
+                        const newKeywords = input
+                          .split(",")
+                          .map((kw) => kw.trim())
+                          .filter((kw) => kw.length > 0);
+
+                        // Add only unique keywords
+                        const uniqueKeywords = [
+                          ...new Set([...keywords, ...newKeywords]),
+                        ];
+                        field.onChange(uniqueKeywords);
+                        setInputValue("");
+                      };
+
+                      const handleRemoveKeyword = (indexToRemove: number) => {
+                        field.onChange(
+                          keywords.filter(
+                            (_: string, index: number) =>
+                              index !== indexToRemove
+                          )
+                        );
+                      };
+
+                      const handleKeyPress = (
+                        e: React.KeyboardEvent<HTMLInputElement>
+                      ) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddKeywords();
+                        }
+                      };
+
+                      return (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            SEO Keywords
+                          </label>
+                          <div className="flex gap-2 mb-2">
+                            <input
+                              type="text"
+                              value={inputValue}
+                              onChange={(e) => setInputValue(e.target.value)}
+                              onKeyPress={handleKeyPress}
+                              placeholder="Enter keywords separated by commas (e.g., beyblades, metal fusion, toys)"
+                              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleAddKeywords}
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            >
+                              Add
+                            </button>
+                          </div>
+                          {keywords.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {keywords.map(
+                                (keyword: string, index: number) => (
+                                  <span
+                                    key={index}
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                                  >
+                                    {keyword}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveKeyword(index)}
+                                      className="ml-1 hover:text-red-600 dark:hover:text-red-400"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                )
+                              )}
+                            </div>
+                          )}
+                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Separate multiple keywords with commas for bulk
+                            entry. Duplicates will be automatically removed.
+                          </p>
+                        </div>
+                      );
+                    }}
+                  />
                 </FormSection>
               </>
             )}

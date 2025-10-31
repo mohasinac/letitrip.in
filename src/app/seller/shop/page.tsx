@@ -2,37 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Switch,
-  FormControlLabel,
-  Chip,
-  IconButton,
-  Alert,
-  Divider,
-  Tab,
-  Tabs,
-  CircularProgress,
-  Snackbar,
-  Avatar,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Save as SaveIcon,
-  Image as ImageIcon,
-  CloudUpload as UploadIcon,
-} from "@mui/icons-material";
+  Plus,
+  Trash2,
+  Save,
+  Upload,
+  Loader2,
+  AlertCircle,
+  X,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";

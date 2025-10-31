@@ -210,6 +210,9 @@ export async function POST(request: NextRequest) {
       categoryMap,
     );
 
+    // Convert paths to JSON string to avoid nested array issues in Firestore
+    const pathsAsStrings = paths.map(path => path.join('/'));
+
     const newCategory: Category = {
       id: categoryId,
       name: formData.name,
@@ -219,7 +222,7 @@ export async function POST(request: NextRequest) {
       icon: formData.icon,
       ...(parentIds.length > 0 && { parentIds }),
       ...(parentSlugs.length > 0 && { parentSlugs }),
-      paths,
+      paths: pathsAsStrings as any, // Store as array of strings instead of nested arrays
       minLevel,
       maxLevel,
       isActive: formData.isActive,
@@ -400,6 +403,9 @@ export async function PATCH(request: NextRequest) {
         categoryMap,
       );
 
+      // Convert paths to JSON string to avoid nested array issues in Firestore
+      const pathsAsStrings = paths.map(path => path.join('/'));
+
       if (newParentIds.length > 0) {
         updatedCategory.parentIds = newParentIds;
         updatedCategory.parentSlugs = parentSlugs;
@@ -408,7 +414,7 @@ export async function PATCH(request: NextRequest) {
         delete updatedCategory.parentSlugs;
       }
 
-      updatedCategory.paths = paths;
+      updatedCategory.paths = pathsAsStrings as any;
       updatedCategory.minLevel = minLevel;
       updatedCategory.maxLevel = maxLevel;
 
@@ -469,8 +475,37 @@ export async function PATCH(request: NextRequest) {
 }
 
 /**
+ * Helper function to recursively find all subcategories
+ */
+function findAllSubcategories(
+  categoryId: string,
+  allCategories: Category[],
+): string[] {
+  const subcategoryIds: string[] = [];
+  const queue = [categoryId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+    
+    // Find all direct children of the current category
+    const children = allCategories.filter((cat) =>
+      cat.parentIds?.includes(currentId),
+    );
+
+    for (const child of children) {
+      if (!subcategoryIds.includes(child.id)) {
+        subcategoryIds.push(child.id);
+        queue.push(child.id);
+      }
+    }
+  }
+
+  return subcategoryIds;
+}
+
+/**
  * DELETE /api/admin/categories/[id]
- * Delete a category
+ * Delete a category along with all its subcategories and update affected products
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -507,7 +542,7 @@ export async function DELETE(request: NextRequest) {
 
     const category = categoryDoc.data() as Category;
 
-    // Get all categories to check for children
+    // Get all categories
     const allCatsSnapshot = await db.collection(CATEGORIES_COLLECTION).get();
     const allCats = allCatsSnapshot.docs.map(
       (doc) =>
@@ -517,37 +552,52 @@ export async function DELETE(request: NextRequest) {
         }) as Category,
     );
 
-    // Check if category has children
-    const hasChildren = allCats.some((cat) =>
-      cat.parentIds?.includes(categoryId),
+    // Find all subcategories recursively
+    const subcategoryIds = findAllSubcategories(categoryId, allCats);
+    const allCategoriesToDelete = [categoryId, ...subcategoryIds];
+
+    console.log(
+      `Deleting category ${categoryId} and ${subcategoryIds.length} subcategories`,
     );
-    if (hasChildren) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Cannot delete category with subcategories. Please delete or reassign subcategories first.",
-        },
-        { status: 400 },
-      );
+
+    // Update products that use any of these categories
+    // Set their categoryId to null and categoryName to empty string
+    const productsSnapshot = await db
+      .collection("seller_products")
+      .where("categoryId", "in", allCategoriesToDelete.slice(0, 10)) // Firestore 'in' query limit is 10
+      .get();
+
+    // If there are more than 10 categories to delete, we need multiple queries
+    const productUpdatePromises = [];
+    for (let i = 0; i < allCategoriesToDelete.length; i += 10) {
+      const batch = allCategoriesToDelete.slice(i, i + 10);
+      const snapshot = await db
+        .collection("seller_products")
+        .where("categoryId", "in", batch)
+        .get();
+
+      for (const doc of snapshot.docs) {
+        productUpdatePromises.push(
+          doc.ref.update({
+            categoryId: "",
+            categoryName: "",
+            updatedAt: new Date().toISOString(),
+          }),
+        );
+      }
     }
 
-    // Check if category has products
-    if (category.productCount && category.productCount > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Cannot delete category with products. Please move or delete products first.",
-        },
-        { status: 400 },
-      );
-    }
+    await Promise.all(productUpdatePromises);
+    console.log(`Updated ${productUpdatePromises.length} products`);
 
-    // Delete the category
-    await db.collection(CATEGORIES_COLLECTION).doc(categoryId).delete();
+    // Delete all subcategories
+    const deleteCategoryPromises = allCategoriesToDelete.map((catId) =>
+      db.collection(CATEGORIES_COLLECTION).doc(catId).delete(),
+    );
 
-    // Update all parents' childIds
+    await Promise.all(deleteCategoryPromises);
+
+    // Update all parents' childIds to remove the deleted category
     if (category.parentIds && category.parentIds.length > 0) {
       for (const parentId of category.parentIds) {
         const parentDoc = await db
@@ -574,7 +624,12 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { id: categoryId },
+      data: {
+        id: categoryId,
+        deletedCategoriesCount: allCategoriesToDelete.length,
+        updatedProductsCount: productUpdatePromises.length,
+      },
+      message: `Successfully deleted ${allCategoriesToDelete.length} categories and updated ${productUpdatePromises.length} products`,
     });
   } catch (error) {
     console.error("Error deleting category:", error);

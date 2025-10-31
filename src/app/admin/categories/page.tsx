@@ -122,17 +122,47 @@ function AdminCategoriesContent() {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) {
+    // Find the category to check if it has children
+    const categoryToDelete = categories.find((cat) => cat.id === categoryId);
+    const hasChildren = categories.some((cat) =>
+      cat.parentIds?.includes(categoryId)
+    );
+
+    const confirmMessage = hasChildren
+      ? "⚠️ WARNING: This category has subcategories!\n\n" +
+        "Deleting this category will:\n" +
+        "• Delete ALL subcategories recursively\n" +
+        "• Remove category assignment from all affected products\n\n" +
+        "This action CANNOT be undone!\n\n" +
+        "Are you absolutely sure you want to proceed?"
+      : "Are you sure you want to delete this category?\n\n" +
+        "This will also remove the category assignment from all products using it.";
+
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 
     try {
       setError(null);
-      await apiClient.delete(`/admin/categories?id=${categoryId}`);
+      const response = await apiClient.delete<{
+        success: boolean;
+        message?: string;
+        data?: {
+          id: string;
+          deletedCategoriesCount: number;
+          updatedProductsCount: number;
+        };
+      }>(`/admin/categories?id=${categoryId}`);
 
-      setSuccess("Category deleted successfully");
+      const message =
+        response.message ||
+        (response.data
+          ? `Successfully deleted ${response.data.deletedCategoriesCount} categories and updated ${response.data.updatedProductsCount} products`
+          : "Category deleted successfully");
+
+      setSuccess(message);
       fetchCategories();
-      setTimeout(() => setSuccess(null), 3000);
+      setTimeout(() => setSuccess(null), 5000);
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to delete category");
       console.error(err);

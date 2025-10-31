@@ -9,13 +9,7 @@ import {
   UnifiedTextarea,
   UnifiedSelect,
 } from "@/components/ui/unified";
-import { CheckCircle, MapPin, Phone, Mail, Clock }                                       href="mailto:hello@hobbiesspot.com"
-                            className="text-blue-600 hover:underline"
-                          >
-                            hello@hobbiesspot.com              href="mailto:support@hobbiesspot.com"
-                            className="text-blue-600 hover:underline"
-                          >
-                            support@hobbiesspot.com "lucide-react";
+import { CheckCircle, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import toast from "react-hot-toast";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";

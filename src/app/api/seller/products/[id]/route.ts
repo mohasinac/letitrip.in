@@ -307,6 +307,45 @@ export async function PUT(
       }
     }
 
+    // Validate that categoryId is a leaf category if being updated
+    if (body.categoryId && body.categoryId !== existingProduct?.categoryId) {
+      const categoryDoc = await adminDb
+        .collection("categories")
+        .doc(body.categoryId)
+        .get();
+
+      if (!categoryDoc.exists) {
+        return NextResponse.json(
+          { success: false, error: "Invalid category. Category not found." },
+          { status: 400 },
+        );
+      }
+
+      const categoryData = categoryDoc.data();
+      const childIds = categoryData?.childIds || [];
+
+      if (childIds.length > 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Invalid category. Products can only be assigned to leaf categories (categories without sub-categories).",
+          },
+          { status: 400 },
+        );
+      }
+
+      if (!categoryData?.isActive) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid category. Selected category is not active.",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     // Prepare update data
     const updateData: any = {
       updatedAt: Timestamp.now(),

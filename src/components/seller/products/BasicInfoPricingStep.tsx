@@ -92,15 +92,16 @@ export default function BasicInfoPricingStep({
 
           <div className="relative">
             <UnifiedSelect
-              label="Category"
+              label="Category (Leaf Categories Only)"
               required
               value={data.categoryId}
               onChange={(e) => onChange({ categoryId: e.target.value })}
+              helperText="Only leaf categories (without sub-categories) can be selected for products"
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.name}
+                  {cat.pathString || cat.name}
                 </option>
               ))}
             </UnifiedSelect>
