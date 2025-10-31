@@ -1,57 +1,27 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  Button,
-  TextField,
-  Chip,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Menu,
-  MenuItem,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Avatar,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  MoreVert as MoreVertIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  ContentCopy as DuplicateIcon,
-  Archive as ArchiveIcon,
-  Search as SearchIcon,
-  Inventory as InventoryIcon,
-  FilterList as FilterIcon,
-} from "@mui/icons-material";
+import { Plus, Edit, Trash2, Copy, Archive, Package } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { SellerProduct } from "@/types";
 import { apiGet, apiDelete } from "@/lib/api/seller";
+import {
+  ModernDataTable,
+  PageHeader,
+  type TableColumn,
+} from "@/components/ui/admin-seller";
+import { UnifiedButton } from "@/components/ui/unified/Button";
+import { UnifiedBadge } from "@/components/ui/unified/Badge";
+import { UnifiedCard } from "@/components/ui/unified/Card";
+import { UnifiedModal } from "@/components/ui/unified/Modal";
+import { UnifiedAlert } from "@/components/ui/unified/Alert";
 
 function ProductsListContent() {
+  const router = useRouter();
+
   useBreadcrumbTracker([
     {
       label: "Seller",
@@ -68,21 +38,22 @@ function ProductsListContent() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [selectedProduct, setSelectedProduct] = useState<SellerProduct | null>(
-    null,
+    null
   );
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-  const [deleteDialog, setDeleteDialog] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState(false);
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error" | "warning";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
 
   // Fetch products from API
   const fetchProducts = async () => {
@@ -102,17 +73,17 @@ function ProductsListContent() {
       }>(
         `/api/seller/products${
           params.toString() ? `?${params.toString()}` : ""
-        }`,
+        }`
       );
 
       if (response.success && response.data) {
         setProducts(response.data);
       }
     } catch (error: any) {
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: error.message || "Failed to load products",
-        severity: "error",
+        type: "error",
       });
     } finally {
       setLoading(false);
@@ -123,22 +94,9 @@ function ProductsListContent() {
     fetchProducts();
   }, [statusFilter]);
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    product: SellerProduct,
-  ) => {
-    setAnchorEl(event.currentTarget);
+  const handleDeleteClick = (product: SellerProduct) => {
     setSelectedProduct(product);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedProduct(null);
-  };
-
-  const handleDeleteClick = () => {
-    handleMenuClose();
-    setDeleteDialog(true);
+    setDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
@@ -147,34 +105,34 @@ function ProductsListContent() {
     try {
       setDeletingProduct(true);
       const response = await apiDelete<{ success: boolean; message?: string }>(
-        `/api/seller/products/${selectedProduct.id}`,
+        `/api/seller/products/${selectedProduct.id}`
       );
 
       if (response.success) {
         // Remove from local state
         setProducts(products.filter((p) => p.id !== selectedProduct.id));
 
-        setSnackbar({
-          open: true,
+        setAlert({
+          show: true,
           message: "Product deleted successfully",
-          severity: "success",
+          type: "success",
         });
 
         setSelectedProduct(null);
       }
     } catch (error: any) {
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: error.message || "Failed to delete product",
-        severity: "error",
+        type: "error",
       });
     } finally {
       setDeletingProduct(false);
-      setDeleteDialog(false);
+      setDeleteDialogOpen(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case "active":
         return "success";
@@ -190,355 +148,347 @@ function ProductsListContent() {
   };
 
   const getStockStatus = (stock: number, lowStockThreshold: number) => {
-    if (stock === 0) return { label: "Out of Stock", color: "error" };
+    if (stock === 0)
+      return { label: "Out of Stock", variant: "error" as const };
     if (stock <= lowStockThreshold)
-      return { label: "Low Stock", color: "warning" };
-    return { label: "In Stock", color: "success" };
+      return { label: "Low Stock", variant: "warning" as const };
+    return { label: "In Stock", variant: "success" as const };
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || product.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
+  // Calculate stats
   const stats = {
     total: products.length,
     active: products.filter((p) => p.status === "active").length,
-    outOfStock: products.filter((p) => p.inventory.quantity === 0).length,
+    outOfStock: products.filter((p) => p.quantity === 0).length,
     lowStock: products.filter(
-      (p) =>
-        p.inventory.quantity > 0 &&
-        p.inventory.quantity <= (p.inventory.lowStockThreshold || 10),
+      (p) => p.quantity > 0 && p.quantity <= p.lowStockThreshold
     ).length,
   };
 
+  // Table columns configuration
+  const columns: TableColumn<SellerProduct>[] = [
+    {
+      key: "name",
+      label: "Product",
+      sortable: true,
+      render: (_, product) => (
+        <div className="flex items-center gap-3">
+          <img
+            src={product.images[0]?.url || "/placeholder-product.png"}
+            alt={product.name}
+            className="w-12 h-12 rounded-lg object-cover"
+          />
+          <div className="min-w-0">
+            <p className="font-medium text-text truncate">{product.name}</p>
+            <p className="text-xs text-textSecondary truncate">
+              {product.slug}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "sku",
+      label: "SKU",
+      render: (_, product) => (
+        <span className="text-sm text-text">{product.sku || "—"}</span>
+      ),
+    },
+    {
+      key: "pricing",
+      label: "Price",
+      align: "right",
+      sortable: true,
+      render: (_, product) => (
+        <div className="text-right">
+          <p className="font-semibold text-text">
+            ₹{product.price.toLocaleString()}
+          </p>
+          {product.compareAtPrice && (
+            <p className="text-xs text-textSecondary line-through">
+              ₹{product.compareAtPrice.toLocaleString()}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "inventory",
+      label: "Stock",
+      sortable: true,
+      render: (_, product) => {
+        const stockStatus = getStockStatus(
+          product.quantity,
+          product.lowStockThreshold
+        );
+        return (
+          <div>
+            <p className="font-semibold text-text mb-1">{product.quantity}</p>
+            <UnifiedBadge size="sm" variant={stockStatus.variant}>
+              {stockStatus.label}
+            </UnifiedBadge>
+          </div>
+        );
+      },
+    },
+    {
+      key: "category",
+      label: "Category",
+      render: (_, product) => (
+        <span className="text-sm text-text">{product.categorySlug || "—"}</span>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (_, product) => (
+        <UnifiedBadge variant={getStatusVariant(product.status) as any}>
+          {product.status.replace("_", " ")}
+        </UnifiedBadge>
+      ),
+    },
+  ];
+
+  // Row actions
+  const rowActions = [
+    {
+      label: "Edit",
+      icon: <Edit className="w-4 h-4" />,
+      onClick: (product: SellerProduct) => {
+        router.push(SELLER_ROUTES.PRODUCTS_EDIT(product.id));
+      },
+    },
+    {
+      label: "Duplicate",
+      icon: <Copy className="w-4 h-4" />,
+      onClick: (product: SellerProduct) => {
+        // TODO: Implement duplicate functionality
+        setAlert({
+          show: true,
+          message: "Duplicate functionality coming soon",
+          type: "warning",
+        });
+      },
+    },
+    {
+      label: "Archive",
+      icon: <Archive className="w-4 h-4" />,
+      onClick: (product: SellerProduct) => {
+        // TODO: Implement archive functionality
+        setAlert({
+          show: true,
+          message: "Archive functionality coming soon",
+          type: "warning",
+        });
+      },
+    },
+    {
+      label: "Delete",
+      icon: <Trash2 className="w-4 h-4" />,
+      onClick: (product: SellerProduct) => handleDeleteClick(product),
+    },
+  ];
+
+  // Bulk actions
+  const bulkActions = [
+    {
+      label: "Delete Selected",
+      variant: "destructive" as const,
+      icon: <Trash2 className="w-4 h-4" />,
+      onClick: (ids: string[]) => {
+        // TODO: Implement bulk delete
+        setAlert({
+          show: true,
+          message: `Bulk delete ${ids.length} products - Coming soon`,
+          type: "warning",
+        });
+      },
+    },
+    {
+      label: "Archive Selected",
+      variant: "secondary" as const,
+      icon: <Archive className="w-4 h-4" />,
+      onClick: (ids: string[]) => {
+        // TODO: Implement bulk archive
+        setAlert({
+          show: true,
+          message: `Bulk archive ${ids.length} products - Coming soon`,
+          type: "warning",
+        });
+      },
+    },
+  ];
+
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="xl">
-        {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
+    <div className="space-y-6 animate-fadeIn">
+      {/* Alert */}
+      {alert.show && (
+        <UnifiedAlert
+          variant={alert.type}
+          onClose={() => setAlert({ ...alert, show: false })}
         >
-          <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
-              Products
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage your product catalog
-            </Typography>
-          </Box>
-          <Button
-            component={Link}
-            href={SELLER_ROUTES.PRODUCTS_NEW}
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{ textTransform: "none" }}
+          {alert.message}
+        </UnifiedAlert>
+      )}
+
+      {/* Page Header */}
+      <PageHeader
+        title="Products"
+        description="Manage your product catalog"
+        breadcrumbs={[
+          { label: "Seller", href: SELLER_ROUTES.DASHBOARD },
+          { label: "Products" },
+        ]}
+        badge={{ text: `${stats.total} items`, variant: "primary" }}
+        actions={
+          <UnifiedButton
+            variant="primary"
+            icon={<Plus />}
+            onClick={() => router.push(SELLER_ROUTES.PRODUCTS_NEW)}
           >
             Add Product
-          </Button>
-        </Box>
+          </UnifiedButton>
+        }
+      />
 
-        {/* Stats */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Products
-              </Typography>
-              <Typography variant="h4" fontWeight={700}>
-                {stats.total}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Active
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="success.main">
-                {stats.active}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Out of Stock
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="error.main">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slideUp">
+        <UnifiedCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-primary/10 rounded-lg">
+              <Package className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm text-textSecondary">Total Products</p>
+              <p className="text-2xl font-bold text-text">{stats.total}</p>
+            </div>
+          </div>
+        </UnifiedCard>
+
+        <UnifiedCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-success/10 rounded-lg">
+              <Package className="w-6 h-6 text-success" />
+            </div>
+            <div>
+              <p className="text-sm text-textSecondary">Active</p>
+              <p className="text-2xl font-bold text-success">{stats.active}</p>
+            </div>
+          </div>
+        </UnifiedCard>
+
+        <UnifiedCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-error/10 rounded-lg">
+              <Package className="w-6 h-6 text-error" />
+            </div>
+            <div>
+              <p className="text-sm text-textSecondary">Out of Stock</p>
+              <p className="text-2xl font-bold text-error">
                 {stats.outOfStock}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Low Stock
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="warning.main">
+              </p>
+            </div>
+          </div>
+        </UnifiedCard>
+
+        <UnifiedCard className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-warning/10 rounded-lg">
+              <Package className="w-6 h-6 text-warning" />
+            </div>
+            <div>
+              <p className="text-sm text-textSecondary">Low Stock</p>
+              <p className="text-2xl font-bold text-warning">
                 {stats.lowStock}
-              </Typography>
-            </Card>
-          </Grid>
-        </Grid>
+              </p>
+            </div>
+          </div>
+        </UnifiedCard>
+      </div>
 
-        {/* Filters */}
-        <Card sx={{ mb: 3, p: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search products by name or SKU..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={statusFilter}
-                  label="Status"
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <MenuItem value="all">All Status</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="draft">Draft</MenuItem>
-                  <MenuItem value="out_of_stock">Out of Stock</MenuItem>
-                  <MenuItem value="archived">Archived</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Card>
+      {/* Filters */}
+      <UnifiedCard className="p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search products by name or SKU..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  fetchProducts();
+                }
+              }}
+              className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-text placeholder:text-textSecondary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            />
+          </div>
+          <div className="w-full md:w-48">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-text focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="out_of_stock">Out of Stock</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <UnifiedButton variant="outline" onClick={fetchProducts}>
+            Search
+          </UnifiedButton>
+        </div>
+      </UnifiedCard>
 
-        {/* Products Table */}
-        <Card>
-          {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : filteredProducts.length === 0 ? (
-            <Box sx={{ p: 4, textAlign: "center" }}>
-              <InventoryIcon
-                sx={{ fontSize: 64, color: "text.disabled", mb: 2 }}
-              />
-              <Typography variant="body1" color="text.secondary" gutterBottom>
-                No products found
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Start adding products to your catalog
-              </Typography>
-              <Button
-                component={Link}
-                href={SELLER_ROUTES.PRODUCTS_NEW}
-                variant="outlined"
-                startIcon={<AddIcon />}
-                sx={{ textTransform: "none" }}
-              >
-                Add Your First Product
-              </Button>
-            </Box>
-          ) : (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Product</TableCell>
-                    <TableCell>SKU</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Stock</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredProducts.map((product) => {
-                    const stockStatus = getStockStatus(
-                      product.inventory.quantity,
-                      product.inventory.lowStockThreshold || 10,
-                    );
-                    return (
-                      <TableRow key={product.id} hover>
-                        <TableCell>
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Avatar
-                              src={product.media.images[0]?.url || ""}
-                              alt={product.name}
-                              sx={{ mr: 2, width: 50, height: 50 }}
-                              variant="rounded"
-                            >
-                              {product.name.charAt(0)}
-                            </Avatar>
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                {product.name}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                              >
-                                {product.seo.slug}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
-                            {product.sku || "—"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              ₹{product.pricing.price.toLocaleString()}
-                            </Typography>
-                            {product.pricing.compareAtPrice && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ textDecoration: "line-through" }}
-                              >
-                                ₹
-                                {product.pricing.compareAtPrice.toLocaleString()}
-                              </Typography>
-                            )}
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              {product.inventory.quantity}
-                            </Typography>
-                            <Chip
-                              label={stockStatus.label}
-                              size="small"
-                              color={stockStatus.color as any}
-                              sx={{ mt: 0.5 }}
-                            />
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
-                            {product.categoryName || "—"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={product.status.replace("_", " ")}
-                            color={getStatusColor(product.status) as any}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell align="right">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleMenuOpen(e, product)}
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Card>
+      {/* Products Table */}
+      <ModernDataTable
+        data={products}
+        columns={columns}
+        loading={loading}
+        selectable
+        searchable={false} // We have custom search above
+        bulkActions={bulkActions}
+        rowActions={rowActions}
+        currentPage={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+        emptyMessage="No products found. Start by adding your first product!"
+        getRowId={(product) => product.id}
+      />
 
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem
-            component={Link}
-            href={
-              selectedProduct
-                ? SELLER_ROUTES.PRODUCTS_EDIT(selectedProduct.id)
-                : "#"
-            }
-            onClick={handleMenuClose}
-          >
-            <EditIcon sx={{ mr: 1, fontSize: 20 }} />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={handleMenuClose}>
-            <DuplicateIcon sx={{ mr: 1, fontSize: 20 }} />
-            Duplicate
-          </MenuItem>
-          <MenuItem onClick={handleMenuClose}>
-            <ArchiveIcon sx={{ mr: 1, fontSize: 20 }} />
-            Archive
-          </MenuItem>
-          <MenuItem onClick={handleDeleteClick} sx={{ color: "error.main" }}>
-            <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
-            Delete
-          </MenuItem>
-        </Menu>
-
-        {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
-          <DialogTitle>Delete Product?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete "{selectedProduct?.name}"? This
-              action cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setDeleteDialog(false)}
+      {/* Delete Confirmation Modal */}
+      <UnifiedModal
+        open={deleteDialogOpen}
+        onClose={() => !deletingProduct && setDeleteDialogOpen(false)}
+        title="Delete Product?"
+        footer={
+          <div className="flex gap-2 justify-end">
+            <UnifiedButton
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
               disabled={deletingProduct}
             >
               Cancel
-            </Button>
-            <Button
+            </UnifiedButton>
+            <UnifiedButton
+              variant="destructive"
               onClick={handleDeleteConfirm}
-              color="error"
-              variant="contained"
-              disabled={deletingProduct}
+              loading={deletingProduct}
             >
               {deletingProduct ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Snackbar for notifications */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
-    </Box>
+            </UnifiedButton>
+          </div>
+        }
+      >
+        <p className="text-textSecondary">
+          Are you sure you want to delete "{selectedProduct?.name}"? This action
+          cannot be undone.
+        </p>
+      </UnifiedModal>
+    </div>
   );
 }
 
