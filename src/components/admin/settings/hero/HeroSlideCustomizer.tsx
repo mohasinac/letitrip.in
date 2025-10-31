@@ -2,52 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Button,
-  TextField,
-  Stack,
-  Typography,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Chip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tabs,
-  Tab,
-  Switch,
-} from "@mui/material";
-import {
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
+  Trash2,
+  Edit,
+  Plus,
+} from "lucide-react";
 import MediaUpload from "./MediaUpload";
 import { HeroBannerSlide } from "@/types/heroBanner";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
-  <div hidden={value !== index}>
-    {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
-  </div>
-);
 
 const DEFAULT_THEME = {
   primary: "#4A90E2",
@@ -228,211 +188,276 @@ export default function HeroSlideCustomizer() {
   };
 
   return (
-    <Card>
-      <CardHeader
-        title="Hero Banner Slides"
-        subheader="Manage carousel slides with products"
-        action={
-          <Button
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
-            variant="contained"
-          >
-            Add Slide
-          </Button>
-        }
-      />
-      <CardContent>
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Hero Banner Slides
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Manage carousel slides with products
+          </p>
+        </div>
+        <button
+          onClick={() => handleOpenDialog()}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+        >
+          <Plus className="w-4 h-4" />
+          Add Slide
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
         {slides.length === 0 ? (
-          <Typography color="text.secondary">
+          <p className="text-gray-500 text-center py-8">
             No slides. Create one to get started.
-          </Typography>
+          </p>
         ) : (
-          <List>
+          <div className="space-y-4">
             {slides.map((slide) => (
-              <ListItem
+              <div
                 key={slide.id}
-                sx={{
-                  mb: 2,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  p: 2,
-                }}
+                className="border border-gray-200 rounded-lg p-4 flex items-start justify-between"
               >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="h6" fontWeight={600}>
-                        {slide.title}
-                      </Typography>
-                      <Chip
-                        label={slide.isActive ? "Active" : "Inactive"}
-                        size="small"
-                        color={slide.isActive ? "success" : "default"}
-                      />
-                      <Chip
-                        label={`${slide.featuredProductIds.length} products`}
-                        size="small"
-                      />
-                    </Box>
-                  }
-                  secondary={slide.description}
-                />
-                <ListItemSecondaryAction>
-                  <Switch
-                    checked={slide.isActive}
-                    onChange={() => toggleActive(slide.id)}
-                  />
-                  <IconButton
-                    edge="end"
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {slide.title}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded ${
+                        slide.isActive
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {slide.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                      {slide.featuredProductIds.length} products
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{slide.description}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={slide.isActive}
+                      onChange={() => toggleActive(slide.id)}
+                      className="w-10 h-5 appearance-none bg-gray-300 rounded-full relative cursor-pointer transition-colors checked:bg-green-600 before:content-[''] before:absolute before:w-4 before:h-4 before:rounded-full before:bg-white before:top-0.5 before:left-0.5 before:transition-transform checked:before:translate-x-5"
+                    />
+                  </label>
+                  <button
                     onClick={() => handleOpenDialog(slide)}
-                    sx={{ mr: 1 }}
+                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
                   >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    color="error"
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => handleDelete(slide.id)}
+                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             ))}
-          </List>
+          </div>
         )}
-      </CardContent>
+      </div>
 
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>{editingId ? "Edit Slide" : "Create Slide"}</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
-            <Tab label="Basic" />
-            <Tab label="Media" />
-            <Tab label="Products" />
-            <Tab label="SEO" />
-          </Tabs>
+      {/* Dialog */}
+      {openDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {editingId ? "Edit Slide" : "Create Slide"}
+              </h2>
+            </div>
 
-          <TabPanel value={tabValue} index={0}>
-            <Stack spacing={2}>
-              <TextField
-                fullWidth
-                label="Title"
-                value={formData.title || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-              />
-              <TextField
-                fullWidth
-                label="Description"
-                multiline
-                rows={3}
-                value={formData.description || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-              />
-              <TextField
-                fullWidth
-                label="Background Color"
-                type="color"
-                value={formData.backgroundColor || "#1a1a1a"}
-                onChange={(e) =>
-                  setFormData({ ...formData, backgroundColor: e.target.value })
-                }
-              />
-            </Stack>
-          </TabPanel>
-
-          <TabPanel value={tabValue} index={1}>
-            <MediaUpload
-              onImageSelected={(url) =>
-                setFormData({ ...formData, backgroundImage: url })
-              }
-              onVideoSelected={(url) =>
-                setFormData({ ...formData, backgroundVideo: url })
-              }
-              currentImage={formData.backgroundImage}
-              currentVideo={formData.backgroundVideo}
-            />
-          </TabPanel>
-
-          <TabPanel value={tabValue} index={2}>
-            <FormControl fullWidth>
-              <InputLabel>Featured Products</InputLabel>
-              <Select
-                multiple
-                value={formData.featuredProductIds || []}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    featuredProductIds: e.target.value as string[],
-                  })
-                }
-                label="Featured Products"
-              >
-                {products.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    {p.name} - ₹{p.price}
-                  </MenuItem>
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200 px-6">
+              <div className="flex gap-4">
+                {["Basic", "Media", "Products", "SEO"].map((tab, index) => (
+                  <button
+                    key={tab}
+                    onClick={() => setTabValue(index)}
+                    className={`py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+                      tabValue === index
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    {tab}
+                  </button>
                 ))}
-              </Select>
-            </FormControl>
-          </TabPanel>
+              </div>
+            </div>
 
-          <TabPanel value={tabValue} index={3}>
-            <Stack spacing={2}>
-              <TextField
-                fullWidth
-                label="Meta Title"
-                size="small"
-                value={formData.seoMeta?.metaTitle || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    seoMeta: {
-                      ...formData.seoMeta!,
-                      metaTitle: e.target.value,
-                    },
-                  })
-                }
-              />
-              <TextField
-                fullWidth
-                label="Meta Description"
-                size="small"
-                multiline
-                rows={2}
-                value={formData.seoMeta?.metaDescription || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    seoMeta: {
-                      ...formData.seoMeta!,
-                      metaDescription: e.target.value,
-                    },
-                  })
-                }
-              />
-            </Stack>
-          </TabPanel>
-        </DialogContent>
+            <div className="p-6">
+              {/* Basic Tab */}
+              {tabValue === 0 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.title || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={formData.description || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Background Color
+                    </label>
+                    <input
+                      type="color"
+                      value={formData.backgroundColor || "#1a1a1a"}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          backgroundColor: e.target.value,
+                        })
+                      }
+                      className="w-full h-10 px-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
 
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Card>
+              {/* Media Tab */}
+              {tabValue === 1 && (
+                <MediaUpload
+                  onImageSelected={(url) =>
+                    setFormData({ ...formData, backgroundImage: url })
+                  }
+                  onVideoSelected={(url) =>
+                    setFormData({ ...formData, backgroundVideo: url })
+                  }
+                  currentImage={formData.backgroundImage}
+                  currentVideo={formData.backgroundVideo}
+                />
+              )}
+
+              {/* Products Tab */}
+              {tabValue === 2 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Featured Products
+                  </label>
+                  <select
+                    multiple
+                    value={formData.featuredProductIds || []}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        featuredProductIds: Array.from(
+                          e.target.selectedOptions,
+                          (option) => option.value
+                        ),
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64"
+                  >
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} - ₹{p.price}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Hold Ctrl/Cmd to select multiple products
+                  </p>
+                </div>
+              )}
+
+              {/* SEO Tab */}
+              {tabValue === 3 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Meta Title
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.seoMeta?.metaTitle || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          seoMeta: {
+                            ...formData.seoMeta!,
+                            metaTitle: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Meta Description
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={formData.seoMeta?.metaDescription || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          seoMeta: {
+                            ...formData.seoMeta!,
+                            metaDescription: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                onClick={() => setOpenDialog(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -2,36 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Button,
-  TextField,
-  Stack,
-  Typography,
-  Alert,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Grid,
-} from "@mui/material";
-import {
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
+  Trash2,
+  Edit,
+  Plus,
+  AlertCircle,
+} from "lucide-react";
 
 type BadgeType = "Popular" | "New" | "Sale";
 type BadgeColorType = "warning" | "success" | "error";
@@ -185,235 +160,209 @@ export default function HeroProductSettings() {
     }
   };
 
-  const getBadgeColor = (badge: string | undefined) => {
+  const getBadgeStyle = (badge: string | undefined) => {
     switch (badge) {
       case "Sale":
-        return "error";
+        return "bg-red-100 text-red-700 border-red-300";
       case "New":
-        return "success";
+        return "bg-green-100 text-green-700 border-green-300";
       case "Popular":
-        return "warning";
+        return "bg-amber-100 text-amber-700 border-amber-300";
       default:
-        return "default";
+        return "bg-gray-100 text-gray-700 border-gray-300";
     }
   };
 
   return (
-    <Card>
-      <CardHeader
-        title="Featured Products"
-        subheader="Manage the products displayed in the hero carousel"
-        action={
-          <Button
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
-            variant="contained"
-          >
-            Add Product
-          </Button>
-        }
-      />
-      <CardContent>
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Select up to 6 featured products to display on your homepage hero
-          carousel. These products will be shown dynamically.
-        </Alert>
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Featured Products
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Manage the products displayed in the hero carousel
+          </p>
+        </div>
+        <button
+          onClick={() => handleOpenDialog()}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+        >
+          <Plus className="w-4 h-4" />
+          Add Product
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-blue-800">
+            Select up to 6 featured products to display on your homepage hero
+            carousel. These products will be shown dynamically.
+          </p>
+        </div>
 
         {products.length === 0 ? (
-          <Typography color="text.secondary">
+          <p className="text-gray-500 text-center py-8">
             No products configured. Add featured products to get started.
-          </Typography>
+          </p>
         ) : (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm: "repeat(2, 1fr)",
-                md: "repeat(3, 1fr)",
-              },
-              gap: 2,
-            }}
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {products.map((product) => (
-              <Card
+              <div
                 key={product.id}
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "relative",
-                }}
+                className="border border-gray-200 rounded-lg overflow-hidden flex flex-col h-full bg-white"
               >
-                <Box
-                  sx={{
-                    position: "relative",
-                    paddingTop: "100%",
-                    overflow: "hidden",
-                    backgroundColor: "background.paper",
-                  }}
-                >
-                  <Box
-                    component="img"
+                <div className="relative pt-[100%] bg-gray-100">
+                  <img
                     src={product.image}
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    alt={product.name}
+                    className="absolute top-0 left-0 w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
                   {product.badge && (
-                    <Chip
-                      label={product.badge}
-                      size="small"
-                      color={
-                        getBadgeColor(product.badge) as
-                          | "default"
-                          | "primary"
-                          | "secondary"
-                          | "error"
-                          | "warning"
-                          | "info"
-                          | "success"
-                      }
-                      sx={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        fontWeight: 600,
-                      }}
-                    />
+                    <span
+                      className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded border ${getBadgeStyle(product.badge)}`}
+                    >
+                      {product.badge}
+                    </span>
                   )}
-                </Box>
-                <CardContent sx={{ flex: 1, pb: 1 }}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                </div>
+                <div className="flex-1 p-4 pb-2">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
                     {product.name}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    color="primary"
-                    fontWeight={700}
-                    sx={{ mb: 2 }}
-                  >
+                  </h3>
+                  <p className="text-lg font-bold text-blue-600 mb-2">
                     ₹{product.price}
-                  </Typography>
-                </CardContent>
-                <Box sx={{ display: "flex", gap: 1, p: 1 }}>
-                  <Button
-                    size="small"
-                    startIcon={<EditIcon />}
+                  </p>
+                </div>
+                <div className="flex gap-2 p-2">
+                  <button
                     onClick={() => handleOpenDialog(product)}
-                    variant="outlined"
-                    sx={{ flex: 1 }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50"
                   >
+                    <Edit className="w-4 h-4" />
                     Edit
-                  </Button>
-                  <IconButton
-                    size="small"
+                  </button>
+                  <button
                     onClick={() => handleDelete(product.id)}
-                    color="error"
+                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </Card>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
-      </CardContent>
+      </div>
 
       {/* Dialog for Add/Edit */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {editingId ? "Edit Product" : "Add New Product"}
-        </DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Stack spacing={2}>
-            <TextField
-              fullWidth
-              label="Product Name"
-              placeholder="e.g., Dragoon GT"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
-            <TextField
-              fullWidth
-              label="Price"
-              placeholder="e.g., 2499"
-              type="number"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
-              helperText="Price in rupees"
-            />
-            <TextField
-              fullWidth
-              label="Product Image URL"
-              placeholder="https://example.com/product.jpg"
-              value={formData.image}
-              onChange={(e) =>
-                setFormData({ ...formData, image: e.target.value })
-              }
-              helperText="Full URL to the product image"
-            />
-            <FormControl fullWidth>
-              <InputLabel>Badge (Optional)</InputLabel>
-              <Select
-                value={formData.badge}
-                label="Badge (Optional)"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    badge: (e.target.value as BadgeType | "") || "",
-                  })
-                }
+      {openDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {editingId ? "Edit Product" : "Add New Product"}
+              </h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Dragoon GT"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Price
+                </label>
+                <input
+                  type="number"
+                  placeholder="e.g., 2499"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Price in rupees</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Image URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/product.jpg"
+                  value={formData.image}
+                  onChange={(e) =>
+                    setFormData({ ...formData, image: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Full URL to the product image
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Badge (Optional)
+                </label>
+                <select
+                  value={formData.badge}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      badge: (e.target.value as BadgeType | "") || "",
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">None</option>
+                  <option value="Popular">Popular</option>
+                  <option value="New">New</option>
+                  <option value="Sale">Sale</option>
+                </select>
+              </div>
+              {formData.image && (
+                <div
+                  className="w-full h-52 bg-cover bg-center rounded-lg border border-gray-200"
+                  style={{
+                    backgroundImage: `url(${formData.image})`,
+                  }}
+                />
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                onClick={handleCloseDialog}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="Popular">Popular</MenuItem>
-                <MenuItem value="New">New</MenuItem>
-                <MenuItem value="Sale">Sale</MenuItem>
-              </Select>
-            </FormControl>
-            {formData.image && (
-              <Box
-                sx={{
-                  width: "100%",
-                  height: 200,
-                  backgroundImage: `url(${formData.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  borderRadius: 1,
-                  border: "1px solid",
-                  borderColor: "divider",
-                }}
-                onError={() => {
-                  // Handle image load errors
-                }}
-              />
-            )}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained">
-            {editingId ? "Update" : "Add"}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Card>
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                {editingId ? "Update" : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
