@@ -2,35 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-} from "@mui/material";
-import {
-  TrendingUp as TrendingUpIcon,
-  ShoppingCart as OrdersIcon,
-  AttachMoney as RevenueIcon,
-  People as CustomersIcon,
-  Download as DownloadIcon,
-} from "@mui/icons-material";
+  TrendingUp,
+  ShoppingCart,
+  DollarSign,
+  Users,
+  Download,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -93,7 +72,7 @@ export default function AnalyticsPage() {
     try {
       setLoading(true);
       const response: any = await apiGet(
-        `/api/seller/analytics/overview?period=${period}`,
+        `/api/seller/analytics/overview?period=${period}`
       );
       if (response.success) {
         setData(response.data);
@@ -127,19 +106,25 @@ export default function AnalyticsPage() {
     });
   };
 
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      pending: "bg-yellow-100 text-yellow-800",
+      processing: "bg-blue-100 text-blue-800",
+      shipped: "bg-purple-100 text-purple-800",
+      delivered: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+    };
+    return colors[status.toLowerCase()] || "bg-gray-100 text-gray-800";
+  };
+
   if (loading) {
     return (
       <RoleGuard requiredRole="seller">
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <CircularProgress />
-          </Box>
-        </Container>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        </div>
       </RoleGuard>
     );
   }
@@ -148,18 +133,13 @@ export default function AnalyticsPage() {
   if (!user) {
     return (
       <RoleGuard requiredRole="seller">
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <Typography variant="h6" color="text.secondary">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="text-lg text-gray-600">
               Please log in to view analytics
-            </Typography>
-          </Box>
-        </Container>
+            </p>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
@@ -168,372 +148,321 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <RoleGuard requiredRole="seller">
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box mb={4}>
-            <Typography variant="h4" gutterBottom>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Analytics Dashboard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+            </h1>
+            <p className="text-sm text-gray-600">
               Track your store performance
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="40vh"
-          >
-            <Card>
-              <CardContent sx={{ p: 4, textAlign: "center" }}>
-                <Typography variant="h6" gutterBottom>
-                  No data available
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Analytics will appear here once you have orders
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </Container>
+            </p>
+          </div>
+          <div className="flex justify-center items-center min-h-[40vh]">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                No data available
+              </h2>
+              <p className="text-sm text-gray-600">
+                Analytics will appear here once you have orders
+              </p>
+            </div>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
   return (
     <RoleGuard requiredRole="seller">
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header */}
-        <Box
-          mb={4}
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Box>
-            <Typography variant="h4" gutterBottom>
-              Analytics Dashboard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Track your store performance
-            </Typography>
-          </Box>
-
-          <Box display="flex" gap={2} alignItems="center">
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Period</InputLabel>
-              <Select
-                value={period}
-                label="Period"
-                onChange={(e) => setPeriod(e.target.value)}
-              >
-                <MenuItem value="7days">Last 7 Days</MenuItem>
-                <MenuItem value="30days">Last 30 Days</MenuItem>
-                <MenuItem value="90days">Last 90 Days</MenuItem>
-                <MenuItem value="1year">Last Year</MenuItem>
-                <MenuItem value="alltime">All Time</MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={handleExport}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Snackbar */}
+        {snackbar.open && (
+          <div className="fixed top-4 right-4 z-50 max-w-md">
+            <div
+              className={`p-4 rounded-lg shadow-lg flex items-start gap-3 ${
+                snackbar.severity === "error"
+                  ? "bg-red-50 border border-red-200"
+                  : snackbar.severity === "success"
+                  ? "bg-green-50 border border-green-200"
+                  : snackbar.severity === "warning"
+                  ? "bg-amber-50 border border-amber-200"
+                  : "bg-blue-50 border border-blue-200"
+              }`}
             >
+              <AlertCircle
+                className={`w-5 h-5 flex-shrink-0 ${
+                  snackbar.severity === "error"
+                    ? "text-red-600"
+                    : snackbar.severity === "success"
+                    ? "text-green-600"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-600"
+                    : "text-blue-600"
+                }`}
+              />
+              <p
+                className={`text-sm flex-1 ${
+                  snackbar.severity === "error"
+                    ? "text-red-800"
+                    : snackbar.severity === "success"
+                    ? "text-green-800"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-800"
+                    : "text-blue-800"
+                }`}
+              >
+                {snackbar.message}
+              </p>
+              <button
+                onClick={() => setSnackbar({ ...snackbar, open: false })}
+                className={`${
+                  snackbar.severity === "error"
+                    ? "text-red-600 hover:text-red-800"
+                    : snackbar.severity === "success"
+                    ? "text-green-600 hover:text-green-800"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-600 hover:text-amber-800"
+                    : "text-blue-600 hover:text-blue-800"
+                }`}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Analytics Dashboard
+            </h1>
+            <p className="text-sm text-gray-600">
+              Track your store performance
+            </p>
+          </div>
+
+          <div className="flex gap-3 items-center">
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="7days">Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+              <option value="90days">Last 90 Days</option>
+              <option value="1year">Last Year</option>
+              <option value="alltime">All Time</option>
+            </select>
+
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              <Download className="w-4 h-4" />
               Export
-            </Button>
-          </Box>
-        </Box>
+            </button>
+          </div>
+        </div>
 
         {/* Overview Cards */}
-        <Grid container spacing={3} mb={4}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ₹{data?.overview.totalRevenue.toLocaleString() || 0}
+                </p>
+              </div>
+              <DollarSign className="w-10 h-10 text-green-600" />
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Orders</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {data?.overview.totalOrders.toLocaleString() || 0}
+                </p>
+              </div>
+              <ShoppingCart className="w-10 h-10 text-blue-600" />
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Avg. Order Value</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ₹{data?.overview.averageOrderValue.toLocaleString() || 0}
+                </p>
+              </div>
+              <TrendingUp className="w-10 h-10 text-purple-600" />
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Customers</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {data?.overview.totalCustomers.toLocaleString() || 0}
+                </p>
+              </div>
+              <Users className="w-10 h-10 text-orange-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Top Products */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Top Products
+              </h2>
+            </div>
+            <div className="p-6">
+              {data?.topProducts && data.topProducts.length > 0 ? (
+                <div className="space-y-4">
+                  {data.topProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between"
                     >
-                      Total Revenue
-                    </Typography>
-                    <Typography variant="h4">
-                      ₹{data?.overview.totalRevenue.toLocaleString() || 0}
-                    </Typography>
-                  </Box>
-                  <RevenueIcon sx={{ fontSize: 40, color: "success.main" }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          {product.name}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {product.sales} sales
+                        </p>
+                      </div>
+                      <p className="font-semibold text-gray-900">
+                        ₹{product.revenue.toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-600 text-center py-8">
+                  No top products yet
+                </p>
+              )}
+            </div>
+          </div>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
+          {/* Low Stock Products */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Low Stock Alerts
+              </h2>
+            </div>
+            <div className="p-6">
+              {data?.lowStockProducts && data.lowStockProducts.length > 0 ? (
+                <div className="space-y-4">
+                  {data.lowStockProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between"
                     >
-                      Total Orders
-                    </Typography>
-                    <Typography variant="h4">
-                      {data?.overview.totalOrders.toLocaleString() || 0}
-                    </Typography>
-                  </Box>
-                  <OrdersIcon sx={{ fontSize: 40, color: "primary.main" }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          {product.name}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Threshold: {product.threshold}
+                        </p>
+                      </div>
+                      <span className="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
+                        {product.stock} left
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-600 text-center py-8">
+                  All products well stocked
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      Avg Order Value
-                    </Typography>
-                    <Typography variant="h4">
-                      ₹{data?.overview.averageOrderValue.toLocaleString() || 0}
-                    </Typography>
-                  </Box>
-                  <TrendingUpIcon
-                    sx={{ fontSize: 40, color: "warning.main" }}
-                  />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      Total Customers
-                    </Typography>
-                    <Typography variant="h4">
-                      {data?.overview.totalCustomers.toLocaleString() || 0}
-                    </Typography>
-                  </Box>
-                  <CustomersIcon sx={{ fontSize: 40, color: "info.main" }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={3}>
-          {/* Top Selling Products */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Top Selling Products
-                </Typography>
-                {data?.topProducts && data.topProducts.length > 0 ? (
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Product</TableCell>
-                          <TableCell align="right">Sales</TableCell>
-                          <TableCell align="right">Revenue</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {data.topProducts.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell>{product.name}</TableCell>
-                            <TableCell align="right">{product.sales}</TableCell>
-                            <TableCell align="right">
-                              ₹{product.revenue.toLocaleString()}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    textAlign="center"
-                    py={4}
-                  >
-                    No data available
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Recent Orders */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Recent Orders
-                </Typography>
-                {data?.recentOrders && data.recentOrders.length > 0 ? (
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Order #</TableCell>
-                          <TableCell>Customer</TableCell>
-                          <TableCell align="right">Total</TableCell>
-                          <TableCell>Status</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {data.recentOrders.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell>
-                              <Typography
-                                component={Link}
-                                href={`/seller/orders/${order.id}`}
-                                variant="body2"
-                                color="primary"
-                                sx={{ textDecoration: "none" }}
-                              >
-                                #{order.orderNumber}
-                              </Typography>
-                            </TableCell>
-                            <TableCell>{order.customerName}</TableCell>
-                            <TableCell align="right">
-                              ₹{order.total.toLocaleString()}
-                            </TableCell>
-                            <TableCell>
-                              <Chip label={order.status} size="small" />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    textAlign="center"
-                    py={4}
-                  >
-                    No orders yet
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Low Stock Alerts */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="error">
-                  Low Stock Alerts
-                </Typography>
-                {data?.lowStockProducts && data.lowStockProducts.length > 0 ? (
-                  <TableContainer>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Product</TableCell>
-                          <TableCell align="right">Current Stock</TableCell>
-                          <TableCell align="right">Threshold</TableCell>
-                          <TableCell>Action</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {data.lowStockProducts.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell>{product.name}</TableCell>
-                            <TableCell align="right">
-                              <Chip
-                                label={product.stock}
-                                color="error"
-                                size="small"
-                              />
-                            </TableCell>
-                            <TableCell align="right">
-                              {product.threshold}
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                component={Link}
-                                href={`/seller/products/${product.id}/edit`}
-                                size="small"
-                                variant="outlined"
-                              >
-                                Update Stock
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    textAlign="center"
-                    py={4}
-                  >
-                    All products are well stocked
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            variant="filled"
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+        {/* Recent Orders */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Orders
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            {data?.recentOrders && data.recentOrders.length > 0 ? (
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Order Number
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Customer
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.recentOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link
+                          href={`/seller/orders/${order.id}`}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          {order.orderNumber}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {order.customerName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        ₹{order.total.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                            order.status
+                          )}`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="p-8 text-center">
+                <p className="text-sm text-gray-600">No recent orders</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </RoleGuard>
   );
 }

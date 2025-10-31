@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Trash2,
-  Edit,
-  Plus,
-  AlertCircle,
-} from "lucide-react";
+import { Trash2, Edit, Plus, AlertCircle } from "lucide-react";
 
 type BadgeType = "Popular" | "New" | "Sale";
 type BadgeColorType = "warning" | "success" | "error";
@@ -119,12 +114,12 @@ export default function HeroProductSettings() {
                 formData.badge === "Sale"
                   ? ("error" as BadgeColorType)
                   : formData.badge === "New"
-                    ? ("success" as BadgeColorType)
-                    : formData.badge === "Popular"
-                      ? ("warning" as BadgeColorType)
-                      : undefined,
+                  ? ("success" as BadgeColorType)
+                  : formData.badge === "Popular"
+                  ? ("warning" as BadgeColorType)
+                  : undefined,
             }
-          : p,
+          : p
       );
     } else {
       updatedProducts = [
@@ -139,10 +134,10 @@ export default function HeroProductSettings() {
             formData.badge === "Sale"
               ? ("error" as BadgeColorType)
               : formData.badge === "New"
-                ? ("success" as BadgeColorType)
-                : formData.badge === "Popular"
-                  ? ("warning" as BadgeColorType)
-                  : undefined,
+              ? ("success" as BadgeColorType)
+              : formData.badge === "Popular"
+              ? ("warning" as BadgeColorType)
+              : undefined,
         },
       ];
     }
@@ -226,7 +221,9 @@ export default function HeroProductSettings() {
                   />
                   {product.badge && (
                     <span
-                      className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded border ${getBadgeStyle(product.badge)}`}
+                      className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded border ${getBadgeStyle(
+                        product.badge
+                      )}`}
                     >
                       {product.badge}
                     </span>

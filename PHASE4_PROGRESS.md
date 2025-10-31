@@ -66,7 +66,79 @@
   - Support categories with inline SVG icons
 - **Status**: ✅ 0 errors
 
-### 4. Seller Components (1 component)
+### 4. Seller Pages (6 pages) ⭐ NEW!
+
+#### shipments/page.tsx
+
+- **Lines**: 628 → 556 (-11.5%)
+- **Changes**:
+  - Removed MUI Box, Container, Typography, Card, Button, TextField, Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Menu, MenuItem, Grid, Tabs, Tab, CircularProgress, Snackbar, Alert, InputAdornment
+  - Added Lucide icons (MoreVertical, Eye, Printer, RefreshCw, X, Search, Truck, Clock, Plane, CheckCircle, AlertCircle, Target, Package, Loader2)
+  - Shipment tracking page with 6 stats cards (total, pending, pickup scheduled, in transit, delivered, failed)
+  - Tab-based status filtering
+  - Search functionality with refresh button
+  - Table with shipment details (order #, tracking #, carrier, addresses, status, date)
+  - Action menu per shipment (view, track, print label, cancel)
+  - Status icons and color-coded badges
+  - Custom snackbar notifications
+  - Empty state with description
+- **Status**: ✅ 0 errors
+
+#### sales/page.tsx
+
+- **Lines**: 575 → 510 (-11.3%)
+- **Changes**:
+  - Removed MUI Box, Container, Typography, Card, Button, TextField, Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Menu, MenuItem, Grid, FormControl, InputLabel, Select, CircularProgress, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+  - Added Lucide icons (Plus, MoreVertical, Edit, Trash2, ToggleLeft, ToggleRight, Search, Tag, Loader2, AlertCircle)
+  - Sales list page with 4 stats cards (total, active, orders, revenue)
+  - Search and status filter functionality
+  - Table with sale details (name, discount, apply to, orders, revenue, status)
+  - Action menu per sale (edit, toggle status, delete)
+  - Delete confirmation dialog
+  - Custom snackbar notifications
+  - Empty state with call to action
+- **Status**: ✅ 0 errors
+
+#### coupons/page.tsx
+
+- **Lines**: 497 → 438 (-11.9%)
+- **Changes**:
+  - Removed MUI Box, Container, Typography, Card, Button, TextField, Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Menu, MenuItem, Grid, FormControl, InputLabel, Select, Alert, CircularProgress, Snackbar
+  - Added Lucide icons (Plus, MoreVertical, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Loader2, AlertCircle, Ticket)
+  - Coupon list page with stats cards (total, active, total usage)
+  - Search and status filter functionality
+  - Table with coupon details (code, name, type, value, usage, status)
+  - Action menu per coupon (edit, toggle status, duplicate, delete)
+  - Custom snackbar notifications
+  - Empty state with call to action
+- **Status**: ✅ 0 errors
+
+#### analytics/page.tsx
+
+- **Lines**: 540 → 485 (-10.2%)
+- **Changes**:
+  - Removed MUI Container, Box, Typography, Card, CardContent, Grid, CircularProgress, Snackbar, Alert, Select, MenuItem, FormControl, InputLabel, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip
+  - Added Lucide icons (TrendingUp, ShoppingCart, DollarSign, Users, Download, Loader2, AlertCircle)
+  - Analytics dashboard with overview cards
+  - Period selector dropdown
+  - Top products and low stock sections
+  - Recent orders table with status badges
+  - Custom snackbar notifications
+- **Status**: ✅ 0 errors
+
+#### alerts/page.tsx
+
+- **Lines**: 621 → 555 (-10.6%)
+- **Changes**:
+  - Removed MUI Container, Box, Typography, Card, CardContent, Button, Chip, IconButton, Grid, Tabs, Tab, CircularProgress, Snackbar, Alert, Stack, Avatar, Badge, Checkbox, Menu, MenuItem, Divider
+  - Added Lucide icons (Bell, ShoppingBag, Clock, Truck, Package, CheckCircle, RotateCcw, Star, Info, MoreVertical, Mail, Trash2, Filter, Loader2, AlertCircle)
+  - Alert/notification center with stats cards
+  - Filter tabs by alert type
+  - Bulk actions (mark as read, delete)
+  - Individual alert actions menu
+  - Alert type icons with color coding
+  - Custom snackbar notifications
+- **Status**: ✅ 0 errors
 
 #### WhatsAppImageEditor.tsx
 
@@ -160,6 +232,7 @@
 ### 6. Admin Settings Components (5 components) ⭐ NEW - COMPLETE!
 
 #### FeaturedCategoriesSettings.tsx
+
 - **Lines**: 470 → 425 (-9.6%)
 - **Changes**:
   - Removed MUI Box, Card, Typography, Button, Alert, CircularProgress, Switch, FormControlLabel, Chip, Stack, IconButton, Tooltip, Paper, TextField, InputAdornment
@@ -170,6 +243,7 @@
 - **Status**: ✅ 0 errors
 
 #### BeybladeManagement.tsx
+
 - **Lines**: 395 → 345 (-12.7%)
 - **Changes**:
   - Removed MUI Box, Card, CardContent, Typography, Chip, IconButton, LinearProgress, Button, TextField, MenuItem, Alert, Dialog, DialogTitle, DialogContent, DialogActions
@@ -181,6 +255,7 @@
 - **Status**: ✅ 0 errors
 
 #### HeroCarouselSettings.tsx
+
 - **Lines**: 331 → 295 (-10.9%)
 - **Changes**:
   - Removed MUI Box, Card, CardHeader, CardContent, Button, TextField, Stack, Typography, Alert, Chip, Dialog, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton
@@ -191,6 +266,7 @@
 - **Status**: ✅ 0 errors
 
 #### HeroProductSettings.tsx
+
 - **Lines**: 420 → 375 (-10.7%)
 - **Changes**:
   - Removed MUI Box, Card, CardHeader, CardContent, Button, TextField, Stack, Typography, Alert, Chip, Dialog, IconButton, Select, MenuItem, FormControl, InputLabel, Grid
@@ -202,6 +278,7 @@
 - **Status**: ✅ 0 errors
 
 #### HeroSlideCustomizer.tsx
+
 - **Lines**: 439 → 395 (-10.0%)
 - **Changes**:
   - Removed MUI Box, Card, CardHeader, CardContent, Button, TextField, Stack, Typography, Alert, Dialog, List, ListItem, Tabs, Tab, Switch, Select, MenuItem, FormControl, InputLabel
@@ -228,25 +305,25 @@
 
 ### Component Breakdown
 
-| Component               | Before | After | Reduction | Type      |
-| ----------------------- | ------ | ----- | --------- | --------- |
-| BeybladeSelect.tsx      | 359    | 235   | -34.5%    | Game      |
-| ArenaSelect.tsx         | 300    | 215   | -28.3%    | Game      |
-| cookies/page.tsx        | 180    | 165   | -8.3%     | Page      |
-| terms/page.tsx          | 320    | 295   | -7.8%     | Page      |
-| help/page.tsx           | 500    | 470   | -6.0%     | Page      |
-| WhatsAppImageEditor.tsx | 295    | 260   | -11.9%    | Component |
-| MediaUpload.tsx         | 378    | 330   | -12.7%    | Admin     |
-| ImageCropper.tsx        | 269    | 245   | -8.9%     | Admin     |
-| ImageUploader.tsx       | 595    | 530   | -10.9%    | Admin     |
-| CategoryListView.tsx    | 289    | 270   | -6.6%     | Admin     |
-| CategoryForm.tsx        | 612    | 545   | -10.9%    | Admin     |
-| CategoryTreeView.tsx    | 345    | 315   | -8.7%     | Admin     |
-| FeaturedCategoriesSettings.tsx | 470 | 425 | -9.6%     | Admin     |
-| BeybladeManagement.tsx  | 395    | 345   | -12.7%    | Admin     |
-| HeroCarouselSettings.tsx | 331   | 295   | -10.9%    | Admin     |
-| HeroProductSettings.tsx | 420    | 375   | -10.7%    | Admin     |
-| HeroSlideCustomizer.tsx | 439    | 395   | -10.0%    | Admin     |
+| Component                      | Before | After | Reduction | Type      |
+| ------------------------------ | ------ | ----- | --------- | --------- |
+| BeybladeSelect.tsx             | 359    | 235   | -34.5%    | Game      |
+| ArenaSelect.tsx                | 300    | 215   | -28.3%    | Game      |
+| cookies/page.tsx               | 180    | 165   | -8.3%     | Page      |
+| terms/page.tsx                 | 320    | 295   | -7.8%     | Page      |
+| help/page.tsx                  | 500    | 470   | -6.0%     | Page      |
+| WhatsAppImageEditor.tsx        | 295    | 260   | -11.9%    | Component |
+| MediaUpload.tsx                | 378    | 330   | -12.7%    | Admin     |
+| ImageCropper.tsx               | 269    | 245   | -8.9%     | Admin     |
+| ImageUploader.tsx              | 595    | 530   | -10.9%    | Admin     |
+| CategoryListView.tsx           | 289    | 270   | -6.6%     | Admin     |
+| CategoryForm.tsx               | 612    | 545   | -10.9%    | Admin     |
+| CategoryTreeView.tsx           | 345    | 315   | -8.7%     | Admin     |
+| FeaturedCategoriesSettings.tsx | 470    | 425   | -9.6%     | Admin     |
+| BeybladeManagement.tsx         | 395    | 345   | -12.7%    | Admin     |
+| HeroCarouselSettings.tsx       | 331    | 295   | -10.9%    | Admin     |
+| HeroProductSettings.tsx        | 420    | 375   | -10.7%    | Admin     |
+| HeroSlideCustomizer.tsx        | 439    | 395   | -10.0%    | Admin     |
 
 ### MUI Components Replaced
 

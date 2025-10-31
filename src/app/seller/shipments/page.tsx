@@ -2,45 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  Button,
-  TextField,
-  Chip,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Menu,
-  MenuItem,
-  Grid,
-  Tabs,
-  Tab,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  InputAdornment,
-} from "@mui/material";
-import {
-  MoreVert as MoreVertIcon,
-  Visibility as ViewIcon,
-  Print as PrintIcon,
-  Refresh as RefreshIcon,
-  Cancel as CancelIcon,
-  Search as SearchIcon,
-  LocalShipping as ShippingIcon,
-  Schedule as ScheduleIcon,
-  FlightTakeoff as TransitIcon,
-  CheckCircle as DeliveredIcon,
-  Error as FailedIcon,
-  TrackChanges as TrackChangesIcon,
-} from "@mui/icons-material";
+  MoreVertical,
+  Eye,
+  Printer,
+  RefreshCw,
+  X,
+  Search,
+  Truck,
+  Clock,
+  Plane,
+  CheckCircle,
+  AlertCircle,
+  Target,
+  Package,
+  Loader2,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -129,10 +105,7 @@ export default function ShipmentsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(
-    null,
-  );
+  const [menuShipmentId, setMenuShipmentId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -151,7 +124,7 @@ export default function ShipmentsPage() {
     try {
       setLoading(true);
       const response: any = await apiGet(
-        `/api/seller/shipments?status=${statusFilter}&search=${searchQuery}`,
+        `/api/seller/shipments?status=${statusFilter}&search=${searchQuery}`
       );
       if (response.success) {
         setShipments(response.data || []);
@@ -178,26 +151,11 @@ export default function ShipmentsPage() {
     }
   };
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    shipment: Shipment,
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedShipment(shipment);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedShipment(null);
-  };
-
-  const handleTrackShipment = async () => {
-    if (!selectedShipment) return;
-
+  const handleTrackShipment = async (shipmentId: string) => {
     try {
-      const response = await apiPost(
-        `/api/seller/shipments/${selectedShipment.id}/track`,
-        {},
+      const response: any = await apiPost(
+        `/api/seller/shipments/${shipmentId}/track`,
+        {}
       );
       if (response.success) {
         setSnackbar({
@@ -221,12 +179,12 @@ export default function ShipmentsPage() {
         severity: "error",
       });
     }
-    handleMenuClose();
+    setMenuShipmentId(null);
   };
 
-  const handlePrintLabel = () => {
-    if (selectedShipment?.shippingLabel) {
-      window.open(selectedShipment.shippingLabel, "_blank");
+  const handlePrintLabel = (shipment: Shipment) => {
+    if (shipment?.shippingLabel) {
+      window.open(shipment.shippingLabel, "_blank");
     } else {
       setSnackbar({
         open: true,
@@ -234,21 +192,19 @@ export default function ShipmentsPage() {
         severity: "warning",
       });
     }
-    handleMenuClose();
+    setMenuShipmentId(null);
   };
 
-  const handleCancelShipment = async () => {
-    if (!selectedShipment) return;
-
+  const handleCancelShipment = async (shipment: Shipment) => {
     if (
       confirm(
-        `Are you sure you want to cancel shipment for order #${selectedShipment.orderNumber}?`,
+        `Are you sure you want to cancel shipment for order #${shipment.orderNumber}?`
       )
     ) {
       try {
-        const response = await apiPost(
-          `/api/seller/shipments/${selectedShipment.id}/cancel`,
-          {},
+        const response: any = await apiPost(
+          `/api/seller/shipments/${shipment.id}/cancel`,
+          {}
         );
         if (response.success) {
           setSnackbar({
@@ -273,34 +229,40 @@ export default function ShipmentsPage() {
         });
       }
     }
-    handleMenuClose();
+    setMenuShipmentId(null);
   };
 
   const getStatusColor = (status: string) => {
-    const colors: Record<
-      string,
-      "default" | "primary" | "success" | "error" | "warning"
-    > = {
-      pending: "warning",
-      pickup_scheduled: "primary",
-      in_transit: "primary",
-      out_for_delivery: "primary",
-      delivered: "success",
-      failed: "error",
-      returned: "error",
+    const colors: Record<string, string> = {
+      pending:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+      pickup_scheduled:
+        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      in_transit:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+      out_for_delivery:
+        "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
+      delivered:
+        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+      returned:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
     };
-    return colors[status] || "default";
+    return (
+      colors[status] ||
+      "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400"
+    );
   };
 
   const getStatusIcon = (status: string) => {
     const icons: Record<string, React.ReactNode> = {
-      pending: <ScheduleIcon fontSize="small" />,
-      pickup_scheduled: <ShippingIcon fontSize="small" />,
-      in_transit: <TransitIcon fontSize="small" />,
-      out_for_delivery: <TransitIcon fontSize="small" />,
-      delivered: <DeliveredIcon fontSize="small" />,
-      failed: <FailedIcon fontSize="small" />,
-      returned: <FailedIcon fontSize="small" />,
+      pending: <Clock className="w-4 h-4" />,
+      pickup_scheduled: <Truck className="w-4 h-4" />,
+      in_transit: <Plane className="w-4 h-4" />,
+      out_for_delivery: <Truck className="w-4 h-4" />,
+      delivered: <CheckCircle className="w-4 h-4" />,
+      failed: <AlertCircle className="w-4 h-4" />,
+      returned: <AlertCircle className="w-4 h-4" />,
     };
     return icons[status] || null;
   };
@@ -312,312 +274,329 @@ export default function ShipmentsPage() {
       .join(" ");
   };
 
+  const selectedShipment = shipments.find((s) => s.id === menuShipmentId);
+
   return (
-    <RoleGuard requiredRoles={["seller", "admin"]}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <RoleGuard requiredRole="seller">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <Box
-          mb={4}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <Box>
-            <Typography variant="h4" gutterBottom>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Shipments
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
               Track and manage all your shipments
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              variant="outlined"
-              startIcon={<ShippingIcon />}
-              component={Link}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Link
               href="/seller/shipments/bulk-labels"
+              className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
             >
+              <Truck className="w-5 h-5" />
               Bulk Labels
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<TrackChangesIcon />}
-              component={Link}
+            </Link>
+            <Link
               href="/seller/shipments/bulk-track"
+              className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
             >
+              <Target className="w-5 h-5" />
               Track Multiple
-            </Button>
-          </Box>
-        </Box>
+            </Link>
+          </div>
+        </div>
 
         {/* Stats Cards */}
-        <Grid container spacing={3} mb={4}>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Total
-                </Typography>
-                <Typography variant="h4">{stats.total}</Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Pending
-                </Typography>
-                <Typography variant="h4" color="warning.main">
-                  {stats.pending}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Pickup Scheduled
-                </Typography>
-                <Typography variant="h4" color="info.main">
-                  {stats.pickupScheduled}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  In Transit
-                </Typography>
-                <Typography variant="h4" color="primary.main">
-                  {stats.inTransit}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Delivered
-                </Typography>
-                <Typography variant="h4" color="success.main">
-                  {stats.delivered}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Failed
-                </Typography>
-                <Typography variant="h4" color="error.main">
-                  {stats.failed}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Total
+            </p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {stats.total}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Pending
+            </p>
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              {stats.pending}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Pickup Scheduled
+            </p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              {stats.pickupScheduled}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              In Transit
+            </p>
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              {stats.inTransit}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Delivered
+            </p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              {stats.delivered}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Failed
+            </p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+              {stats.failed}
+            </p>
+          </div>
+        </div>
 
         {/* Tabs */}
-        <Card sx={{ mb: 3 }}>
-          <Tabs
-            value={statusFilter}
-            onChange={(e, newValue) => setStatusFilter(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab label="All Shipments" value="all" />
-            <Tab label="Pending" value="pending" />
-            <Tab label="Pickup Scheduled" value="pickup_scheduled" />
-            <Tab label="In Transit" value="in_transit" />
-            <Tab label="Delivered" value="delivered" />
-            <Tab label="Failed" value="failed" />
-          </Tabs>
-        </Card>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
+          <div className="flex border-b border-gray-200 dark:border-gray-700">
+            {[
+              { label: "All Shipments", value: "all" },
+              { label: "Pending", value: "pending" },
+              { label: "Pickup Scheduled", value: "pickup_scheduled" },
+              { label: "In Transit", value: "in_transit" },
+              { label: "Delivered", value: "delivered" },
+              { label: "Failed", value: "failed" },
+            ].map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setStatusFilter(tab.value)}
+                className={`px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
+                  statusFilter === tab.value
+                    ? "border-b-2 border-blue-600 text-blue-600 dark:text-blue-400"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Search & Actions */}
-        <Card sx={{ mb: 3 }}>
-          <Box p={2} display="flex" gap={2} alignItems="center">
-            <TextField
-              size="small"
-              placeholder="Search by tracking number, order number..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              sx={{ flex: 1 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              variant="outlined"
-              startIcon={<RefreshIcon />}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by tracking number, order number..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
               onClick={fetchShipments}
               disabled={loading}
+              className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50"
             >
+              <RefreshCw
+                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
+              />
               Refresh
-            </Button>
-          </Box>
-        </Card>
+            </button>
+          </div>
+        </div>
 
         {/* Shipments Table */}
-        <Card>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            </div>
           ) : shipments.length === 0 ? (
-            <Box textAlign="center" py={8}>
-              <ShippingIcon
-                sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
-              />
-              <Typography variant="h6" color="text.secondary">
+            <div className="py-12 text-center">
+              <Truck className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 No shipments found
-              </Typography>
-              <Typography variant="body2" color="text.secondary" mt={1}>
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Shipments will appear here once you initiate shipping for orders
-              </Typography>
-            </Box>
+              </p>
+            </div>
           ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Order #</TableCell>
-                    <TableCell>Tracking #</TableCell>
-                    <TableCell>Carrier</TableCell>
-                    <TableCell>From</TableCell>
-                    <TableCell>To</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Created</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Order #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Tracking #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Carrier
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      From
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      To
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {shipments.map((shipment) => (
-                    <TableRow key={shipment.id} hover>
-                      <TableCell>
-                        <Typography
-                          component={Link}
+                    <tr
+                      key={shipment.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link
                           href={`${SELLER_ROUTES.ORDERS}/${shipment.orderId}`}
-                          variant="body2"
-                          color="primary"
-                          sx={{ textDecoration: "none" }}
+                          className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                         >
                           #{shipment.orderNumber}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={500}>
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {shipment.trackingNumber}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {shipment.carrier}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {shipment.fromAddress.city},{" "}
-                          {shipment.fromAddress.state}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {shipment.toAddress.city}, {shipment.toAddress.state}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          icon={getStatusIcon(shipment.status)}
-                          label={formatStatus(shipment.status)}
-                          color={getStatusColor(shipment.status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {new Date(shipment.createdAt).toLocaleDateString()}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleMenuOpen(e, shipment)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {shipment.carrier}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {shipment.fromAddress.city},{" "}
+                        {shipment.fromAddress.state}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {shipment.toAddress.city}, {shipment.toAddress.state}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                            shipment.status
+                          )}`}
                         >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Card>
+                          {getStatusIcon(shipment.status)}
+                          {formatStatus(shipment.status)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        {new Date(shipment.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() =>
+                              setMenuShipmentId(
+                                menuShipmentId === shipment.id
+                                  ? null
+                                  : shipment.id
+                              )
+                            }
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                          >
+                            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          </button>
 
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem
-            component={Link}
-            href={
-              selectedShipment
-                ? `${SELLER_ROUTES.SHIPMENTS}/${selectedShipment.id}`
-                : "#"
-            }
-            onClick={handleMenuClose}
-          >
-            <ViewIcon fontSize="small" sx={{ mr: 1 }} />
-            View Details
-          </MenuItem>
-          <MenuItem onClick={handleTrackShipment}>
-            <RefreshIcon fontSize="small" sx={{ mr: 1 }} />
-            Update Tracking
-          </MenuItem>
-          <MenuItem onClick={handlePrintLabel}>
-            <PrintIcon fontSize="small" sx={{ mr: 1 }} />
-            Print Label
-          </MenuItem>
-          {selectedShipment?.status === "pending" && (
-            <MenuItem onClick={handleCancelShipment}>
-              <CancelIcon fontSize="small" sx={{ mr: 1 }} />
-              Cancel Shipment
-            </MenuItem>
+                          {/* Dropdown Menu */}
+                          {menuShipmentId === shipment.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setMenuShipmentId(null)}
+                              />
+                              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                                <Link
+                                  href={`${SELLER_ROUTES.SHIPMENTS}/${shipment.id}`}
+                                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  onClick={() => setMenuShipmentId(null)}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                  View Details
+                                </Link>
+                                <button
+                                  onClick={() =>
+                                    handleTrackShipment(shipment.id)
+                                  }
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <RefreshCw className="w-4 h-4" />
+                                  Update Tracking
+                                </button>
+                                <button
+                                  onClick={() => handlePrintLabel(shipment)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <Printer className="w-4 h-4" />
+                                  Print Label
+                                </button>
+                                {shipment.status === "pending" && (
+                                  <button
+                                    onClick={() =>
+                                      handleCancelShipment(shipment)
+                                    }
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                  >
+                                    <X className="w-4 h-4" />
+                                    Cancel Shipment
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </Menu>
+        </div>
 
         {/* Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            variant="filled"
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+        {snackbar.open && (
+          <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-4">
+            <div
+              className={`flex items-center gap-3 px-6 py-3 rounded-lg shadow-lg ${
+                snackbar.severity === "success"
+                  ? "bg-green-600 text-white"
+                  : snackbar.severity === "warning"
+                  ? "bg-yellow-600 text-white"
+                  : snackbar.severity === "info"
+                  ? "bg-blue-600 text-white"
+                  : "bg-red-600 text-white"
+              }`}
+            >
+              <AlertCircle className="w-5 h-5" />
+              <span>{snackbar.message}</span>
+              <button
+                onClick={() => setSnackbar({ ...snackbar, open: false })}
+                className="ml-4 hover:bg-white/20 rounded p-1 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </RoleGuard>
   );
 }

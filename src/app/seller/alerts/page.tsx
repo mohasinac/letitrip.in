@@ -2,43 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  IconButton,
-  Grid,
-  Tabs,
-  Tab,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Stack,
-  Avatar,
-  Badge,
-  Checkbox,
-  Menu,
-  MenuItem,
-  Divider,
-} from "@mui/material";
-import {
-  Notifications as NotificationsIcon,
-  ShoppingBag as OrderIcon,
-  Schedule as PendingIcon,
-  LocalShipping as ShipmentIcon,
-  Inventory as StockIcon,
-  CheckCircle as DeliveredIcon,
-  Assignment as ReturnIcon,
-  Star as ReviewIcon,
-  Info as InfoIcon,
-  MoreVert as MoreVertIcon,
-  MarkEmailRead as MarkReadIcon,
-  Delete as DeleteIcon,
-  FilterList as FilterIcon,
-} from "@mui/icons-material";
+  Bell,
+  ShoppingBag,
+  Clock,
+  Truck,
+  Package,
+  CheckCircle,
+  RotateCcw,
+  Star,
+  Info,
+  MoreVertical,
+  Mail,
+  Trash2,
+  Filter,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -96,8 +75,7 @@ export default function AlertsPage() {
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedAlerts, setSelectedAlerts] = useState<string[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedAlert, setSelectedAlert] = useState<SellerAlert | null>(null);
+  const [menuAlertId, setMenuAlertId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -116,7 +94,7 @@ export default function AlertsPage() {
     try {
       setLoading(true);
       const response: any = await apiGet(
-        `/api/seller/alerts?type=${typeFilter}`,
+        `/api/seller/alerts?type=${typeFilter}`
       );
       if (response.success) {
         setAlerts(response.data || []);
@@ -145,7 +123,10 @@ export default function AlertsPage() {
 
   const handleMarkAsRead = async (alertId: string) => {
     try {
-      const response = await apiPut(`/api/seller/alerts/${alertId}/read`, {});
+      const response: any = await apiPut(
+        `/api/seller/alerts/${alertId}/read`,
+        {}
+      );
       if (response.success) {
         setSnackbar({
           open: true,
@@ -181,7 +162,7 @@ export default function AlertsPage() {
     }
 
     try {
-      const response = await apiPost("/api/seller/alerts/bulk-read", {
+      const response: any = await apiPost("/api/seller/alerts/bulk-read", {
         alertIds: selectedAlerts,
       });
       if (response.success) {
@@ -200,7 +181,7 @@ export default function AlertsPage() {
         });
       }
     } catch (error) {
-      console.error("Error marking alerts as read:", error);
+      console.error("Error bulk marking alerts:", error);
       setSnackbar({
         open: true,
         message: "Failed to mark alerts as read",
@@ -209,13 +190,52 @@ export default function AlertsPage() {
     }
   };
 
-  const handleDeleteAlert = async (alertId: string) => {
-    if (!confirm("Are you sure you want to delete this alert?")) {
+  const handleBulkDelete = async () => {
+    if (selectedAlerts.length === 0) {
+      setSnackbar({
+        open: true,
+        message: "No alerts selected",
+        severity: "warning",
+      });
       return;
     }
 
+    if (!confirm(`Delete ${selectedAlerts.length} selected alerts?`)) return;
+
     try {
-      const response = await apiDelete(`/api/seller/alerts/${alertId}`);
+      const response: any = await apiPost("/api/seller/alerts/bulk-delete", {
+        alertIds: selectedAlerts,
+      });
+      if (response.success) {
+        setSnackbar({
+          open: true,
+          message: `${selectedAlerts.length} alerts deleted`,
+          severity: "success",
+        });
+        setSelectedAlerts([]);
+        fetchAlerts();
+      } else {
+        setSnackbar({
+          open: true,
+          message: response.error || "Failed to delete alerts",
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error bulk deleting alerts:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to delete alerts",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDeleteAlert = async (alertId: string) => {
+    if (!confirm("Delete this alert?")) return;
+
+    try {
+      const response: any = await apiDelete(`/api/seller/alerts/${alertId}`);
       if (response.success) {
         setSnackbar({
           open: true,
@@ -240,27 +260,6 @@ export default function AlertsPage() {
     }
   };
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    alert: SellerAlert,
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedAlert(alert);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedAlert(null);
-  };
-
-  const handleSelectAlert = (alertId: string) => {
-    setSelectedAlerts((prev) =>
-      prev.includes(alertId)
-        ? prev.filter((id) => id !== alertId)
-        : [...prev, alertId],
-    );
-  };
-
   const handleSelectAll = () => {
     if (selectedAlerts.length === alerts.length) {
       setSelectedAlerts([]);
@@ -269,352 +268,362 @@ export default function AlertsPage() {
     }
   };
 
-  const getAlertIcon = (type: string, severity: string) => {
-    const iconProps = { fontSize: "medium" as const };
-    switch (type) {
-      case "new_order":
-        return <OrderIcon {...iconProps} />;
-      case "pending_approval":
-        return <PendingIcon {...iconProps} />;
-      case "pending_shipment":
-        return <ShipmentIcon {...iconProps} />;
-      case "low_stock":
-        return <StockIcon {...iconProps} />;
-      case "order_delivered":
-        return <DeliveredIcon {...iconProps} />;
-      case "return_request":
-        return <ReturnIcon {...iconProps} />;
-      case "review":
-        return <ReviewIcon {...iconProps} />;
-      default:
-        return <InfoIcon {...iconProps} />;
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    const colors: Record<
-      string,
-      "default" | "primary" | "success" | "error" | "warning"
-    > = {
-      info: "primary",
-      success: "success",
-      warning: "warning",
-      error: "error",
+  const getAlertIcon = (type: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      new_order: <ShoppingBag className="w-6 h-6" />,
+      pending_approval: <Clock className="w-6 h-6" />,
+      pending_shipment: <Truck className="w-6 h-6" />,
+      low_stock: <Package className="w-6 h-6" />,
+      order_delivered: <CheckCircle className="w-6 h-6" />,
+      return_request: <RotateCcw className="w-6 h-6" />,
+      review: <Star className="w-6 h-6" />,
+      system: <Info className="w-6 h-6" />,
     };
-    return colors[severity] || "default";
+    return icons[type] || <Bell className="w-6 h-6" />;
   };
 
-  const formatType = (type: string) => {
-    return type
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const getAlertColor = (severity: string) => {
+    const colors: Record<string, string> = {
+      info: "text-blue-600 bg-blue-50",
+      warning: "text-amber-600 bg-amber-50",
+      error: "text-red-600 bg-red-50",
+      success: "text-green-600 bg-green-50",
+    };
+    return colors[severity] || "text-gray-600 bg-gray-50";
   };
+
+  const filteredAlerts = alerts;
+
+  if (loading) {
+    return (
+      <RoleGuard requiredRole="seller">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        </div>
+      </RoleGuard>
+    );
+  }
+
+  if (!user) {
+    return (
+      <RoleGuard requiredRole="seller">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="text-lg text-gray-600">
+              Please log in to view alerts
+            </p>
+          </div>
+        </div>
+      </RoleGuard>
+    );
+  }
 
   return (
     <RoleGuard requiredRole="seller">
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header */}
-        <Box mb={4}>
-          <Typography variant="h4" gutterBottom>
-            Alerts & Notifications
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Stay updated with your store activities
-          </Typography>
-        </Box>
-
-        {/* Stats Cards */}
-        <Grid container spacing={3} mb={4}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Total Alerts
-                </Typography>
-                <Typography variant="h4">{stats.total}</Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Unread
-                </Typography>
-                <Typography variant="h4" color="warning.main">
-                  {stats.unread}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  New Orders
-                </Typography>
-                <Typography variant="h4" color="primary.main">
-                  {stats.newOrders}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <Box p={2}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Low Stock
-                </Typography>
-                <Typography variant="h4" color="error.main">
-                  {stats.lowStock}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Tabs */}
-        <Card sx={{ mb: 3 }}>
-          <Tabs
-            value={typeFilter}
-            onChange={(e, newValue) => setTypeFilter(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab label="All Alerts" value="all" />
-            <Tab label="New Orders" value="new_order" />
-            <Tab label="Pending Approval" value="pending_approval" />
-            <Tab label="Pending Shipment" value="pending_shipment" />
-            <Tab label="Low Stock" value="low_stock" />
-            <Tab label="Delivered" value="order_delivered" />
-            <Tab label="Returns" value="return_request" />
-            <Tab label="Reviews" value="review" />
-            <Tab label="System" value="system" />
-          </Tabs>
-        </Card>
-
-        {/* Bulk Actions */}
-        {selectedAlerts.length > 0 && (
-          <Card sx={{ mb: 3 }}>
-            <Box p={2} display="flex" alignItems="center" gap={2}>
-              <Typography variant="body2">
-                {selectedAlerts.length} alert
-                {selectedAlerts.length !== 1 ? "s" : ""} selected
-              </Typography>
-              <Button
-                size="small"
-                startIcon={<MarkReadIcon />}
-                onClick={handleBulkMarkAsRead}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Snackbar */}
+        {snackbar.open && (
+          <div className="fixed top-4 right-4 z-50 max-w-md">
+            <div
+              className={`p-4 rounded-lg shadow-lg flex items-start gap-3 ${
+                snackbar.severity === "error"
+                  ? "bg-red-50 border border-red-200"
+                  : snackbar.severity === "success"
+                  ? "bg-green-50 border border-green-200"
+                  : snackbar.severity === "warning"
+                  ? "bg-amber-50 border border-amber-200"
+                  : "bg-blue-50 border border-blue-200"
+              }`}
+            >
+              <AlertCircle
+                className={`w-5 h-5 flex-shrink-0 ${
+                  snackbar.severity === "error"
+                    ? "text-red-600"
+                    : snackbar.severity === "success"
+                    ? "text-green-600"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-600"
+                    : "text-blue-600"
+                }`}
+              />
+              <p
+                className={`text-sm flex-1 ${
+                  snackbar.severity === "error"
+                    ? "text-red-800"
+                    : snackbar.severity === "success"
+                    ? "text-green-800"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-800"
+                    : "text-blue-800"
+                }`}
               >
-                Mark as Read
-              </Button>
-              <Button
-                size="small"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => {
-                  if (confirm(`Delete ${selectedAlerts.length} alerts?`)) {
-                    selectedAlerts.forEach((id) => handleDeleteAlert(id));
-                  }
-                }}
+                {snackbar.message}
+              </p>
+              <button
+                onClick={() => setSnackbar({ ...snackbar, open: false })}
+                className={`${
+                  snackbar.severity === "error"
+                    ? "text-red-600 hover:text-red-800"
+                    : snackbar.severity === "success"
+                    ? "text-green-600 hover:text-green-800"
+                    : snackbar.severity === "warning"
+                    ? "text-amber-600 hover:text-amber-800"
+                    : "text-blue-600 hover:text-blue-800"
+                }`}
               >
-                Delete
-              </Button>
-            </Box>
-          </Card>
+                ×
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* Alerts List */}
-        <Card>
-          {loading ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : alerts.length === 0 ? (
-            <Box textAlign="center" py={8}>
-              <NotificationsIcon
-                sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
-              />
-              <Typography variant="h6" color="text.secondary">
-                No alerts
-              </Typography>
-              <Typography variant="body2" color="text.secondary" mt={1}>
-                You're all caught up!
-              </Typography>
-            </Box>
-          ) : (
-            <Box>
-              {/* Select All */}
-              <Box
-                p={2}
-                display="flex"
-                alignItems="center"
-                borderBottom="1px solid #e0e0e0"
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Alerts & Notifications
+          </h1>
+          <p className="text-sm text-gray-600">
+            Stay updated with your store activities
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <p className="text-sm text-gray-600 mb-1">Total Alerts</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <p className="text-sm text-gray-600 mb-1">Unread</p>
+            <p className="text-2xl font-bold text-blue-600">{stats.unread}</p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <p className="text-sm text-gray-600 mb-1">New Orders</p>
+            <p className="text-2xl font-bold text-green-600">
+              {stats.newOrders}
+            </p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <p className="text-sm text-gray-600 mb-1">Pending</p>
+            <p className="text-2xl font-bold text-amber-600">
+              {stats.pendingApproval}
+            </p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <p className="text-sm text-gray-600 mb-1">Low Stock</p>
+            <p className="text-2xl font-bold text-red-600">{stats.lowStock}</p>
+          </div>
+        </div>
+
+        {/* Filters and Actions */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+          <div className="p-4 flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setTypeFilter("all")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  typeFilter === "all"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                <Checkbox
+                All
+              </button>
+              <button
+                onClick={() => setTypeFilter("new_order")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  typeFilter === "new_order"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Orders
+              </button>
+              <button
+                onClick={() => setTypeFilter("low_stock")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  typeFilter === "low_stock"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Low Stock
+              </button>
+              <button
+                onClick={() => setTypeFilter("review")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  typeFilter === "review"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Reviews
+              </button>
+            </div>
+
+            {selectedAlerts.length > 0 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleBulkMarkAsRead}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100"
+                >
+                  <Mail className="w-4 h-4" />
+                  Mark Read ({selectedAlerts.length})
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete ({selectedAlerts.length})
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Alerts List */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          {filteredAlerts.length > 0 ? (
+            <div>
+              {/* Select All */}
+              <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+                <input
+                  type="checkbox"
                   checked={
                     selectedAlerts.length === alerts.length && alerts.length > 0
                   }
-                  indeterminate={
-                    selectedAlerts.length > 0 &&
-                    selectedAlerts.length < alerts.length
-                  }
                   onChange={handleSelectAll}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                 />
-                <Typography variant="body2" color="text.secondary">
-                  Select All
-                </Typography>
-              </Box>
+                <span className="text-sm text-gray-600">
+                  {selectedAlerts.length > 0
+                    ? `${selectedAlerts.length} selected`
+                    : "Select all"}
+                </span>
+              </div>
 
               {/* Alert Items */}
-              {alerts.map((alert) => (
-                <Box
-                  key={alert.id}
-                  sx={{
-                    p: 2,
-                    borderBottom: "1px solid #e0e0e0",
-                    backgroundColor: alert.isRead
-                      ? "transparent"
-                      : "rgba(25, 118, 210, 0.04)",
-                    "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.02)" },
-                  }}
-                >
-                  <Box display="flex" alignItems="flex-start" gap={2}>
-                    <Checkbox
+              <div className="divide-y divide-gray-200">
+                {filteredAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`p-4 flex items-start gap-4 hover:bg-gray-50 ${
+                      !alert.isRead ? "bg-blue-50/30" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
                       checked={selectedAlerts.includes(alert.id)}
-                      onChange={() => handleSelectAlert(alert.id)}
+                      onChange={() => {
+                        if (selectedAlerts.includes(alert.id)) {
+                          setSelectedAlerts(
+                            selectedAlerts.filter((id) => id !== alert.id)
+                          );
+                        } else {
+                          setSelectedAlerts([...selectedAlerts, alert.id]);
+                        }
+                      }}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mt-1"
                     />
 
-                    <Avatar
-                      sx={{
-                        bgcolor: `${getSeverityColor(alert.severity)}.main`,
-                        width: 48,
-                        height: 48,
-                      }}
+                    <div
+                      className={`p-3 rounded-lg ${getAlertColor(
+                        alert.severity
+                      )}`}
                     >
-                      {getAlertIcon(alert.type, alert.severity)}
-                    </Avatar>
+                      {getAlertIcon(alert.type)}
+                    </div>
 
-                    <Box flex={1}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <Typography
-                          variant="subtitle1"
-                          fontWeight={alert.isRead ? 400 : 600}
-                        >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-semibold text-gray-900">
                           {alert.title}
-                        </Typography>
+                        </h3>
                         {!alert.isRead && (
-                          <Chip
-                            label="NEW"
-                            color="primary"
-                            size="small"
-                            sx={{ height: 20 }}
-                          />
+                          <span className="px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full whitespace-nowrap">
+                            New
+                          </span>
                         )}
-                        <Chip
-                          label={formatType(alert.type)}
-                          size="small"
-                          sx={{ height: 20 }}
-                        />
-                      </Box>
-
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        paragraph
-                      >
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">
                         {alert.message}
-                      </Typography>
-
-                      <Box display="flex" alignItems="center" gap={2}>
-                        <Typography variant="caption" color="text.secondary">
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>
                           {new Date(alert.createdAt).toLocaleString()}
-                        </Typography>
-
+                        </span>
                         {alert.actionUrl && alert.actionLabel && (
-                          <Button
-                            component={Link}
+                          <Link
                             href={alert.actionUrl}
-                            size="small"
-                            variant="text"
+                            className="text-blue-600 hover:text-blue-800 font-medium"
                           >
-                            {alert.actionLabel}
-                          </Button>
+                            {alert.actionLabel} →
+                          </Link>
                         )}
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleMenuOpen(e, alert)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          )}
-        </Card>
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setMenuAlertId(
+                            menuAlertId === alert.id ? null : alert.id
+                          )
+                        }
+                        className="p-2 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
 
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          {selectedAlert && !selectedAlert.isRead && (
-            <MenuItem
-              onClick={() => {
-                handleMarkAsRead(selectedAlert.id);
-                handleMenuClose();
-              }}
-            >
-              <MarkReadIcon fontSize="small" sx={{ mr: 1 }} />
-              Mark as Read
-            </MenuItem>
+                      {menuAlertId === alert.id && (
+                        <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-[160px]">
+                          {!alert.isRead && (
+                            <button
+                              onClick={() => {
+                                handleMarkAsRead(alert.id);
+                                setMenuAlertId(null);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                            >
+                              <Mail className="w-4 h-4" />
+                              Mark as read
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              handleDeleteAlert(alert.id);
+                              setMenuAlertId(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No alerts yet
+              </h3>
+              <p className="text-sm text-gray-600">
+                {typeFilter === "all"
+                  ? "You're all caught up! New alerts will appear here."
+                  : "No alerts of this type."}
+              </p>
+            </div>
           )}
-          {selectedAlert?.actionUrl && (
-            <MenuItem
-              component={Link}
-              href={selectedAlert.actionUrl}
-              onClick={handleMenuClose}
-            >
-              <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-              {selectedAlert.actionLabel || "View Details"}
-            </MenuItem>
-          )}
-          <Divider />
-          <MenuItem
-            onClick={() => {
-              if (selectedAlert) {
-                handleDeleteAlert(selectedAlert.id);
-              }
-              handleMenuClose();
-            }}
-          >
-            <DeleteIcon fontSize="small" sx={{ mr: 1 }} color="error" />
-            Delete
-          </MenuItem>
-        </Menu>
-
-        {/* Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            variant="filled"
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+        </div>
+      </div>
     </RoleGuard>
   );
 }

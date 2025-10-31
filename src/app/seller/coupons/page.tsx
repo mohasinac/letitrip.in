@@ -2,41 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  Button,
-  TextField,
-  Chip,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Menu,
-  MenuItem,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  Alert,
-  CircularProgress,
-  Snackbar,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  MoreVert as MoreVertIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  ContentCopy as CopyIcon,
-  ToggleOn,
-  ToggleOff,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Copy,
+  ToggleLeft,
+  ToggleRight,
+  Search,
+  Loader2,
+  AlertCircle,
+  Ticket,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -61,10 +38,7 @@ function CouponsListContent() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedCoupon, setSelectedCoupon] = useState<SellerCoupon | null>(
-    null,
-  );
+  const [menuCouponId, setMenuCouponId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -87,9 +61,10 @@ function CouponsListContent() {
         params.append("search", searchQuery);
       }
 
-      const response = await apiGet<{ coupons: SellerCoupon[]; total: number }>(
-        `/api/seller/coupons?${params.toString()}`,
-      );
+      const response: any = await apiGet<{
+        coupons: SellerCoupon[];
+        total: number;
+      }>(`/api/seller/coupons?${params.toString()}`);
       setCoupons(response.coupons);
     } catch (error: any) {
       console.error("Error fetching coupons:", error);
@@ -107,22 +82,12 @@ function CouponsListContent() {
     fetchCoupons();
   }, [statusFilter]);
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    coupon: SellerCoupon,
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedCoupon(coupon);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedCoupon(null);
-  };
-
   const handleToggleStatus = async (couponId: string) => {
     try {
-      await apiPost(`/api/seller/coupons/${couponId}/toggle`, {});
+      const response: any = await apiPost(
+        `/api/seller/coupons/${couponId}/toggle`,
+        {}
+      );
 
       // Update local state
       setCoupons(
@@ -132,8 +97,8 @@ function CouponsListContent() {
                 ...c,
                 status: c.status === "active" ? "inactive" : ("active" as any),
               }
-            : c,
-        ),
+            : c
+        )
       );
 
       setSnackbar({
@@ -149,13 +114,13 @@ function CouponsListContent() {
         severity: "error",
       });
     }
-    handleMenuClose();
+    setMenuCouponId(null);
   };
 
   const handleDuplicate = (couponId: string) => {
     // TODO: Implement duplicate functionality
     console.log("Duplicate coupon:", couponId);
-    handleMenuClose();
+    setMenuCouponId(null);
   };
 
   const handleDelete = async (couponId: string) => {
@@ -164,7 +129,7 @@ function CouponsListContent() {
     }
 
     try {
-      await apiDelete(`/api/seller/coupons/${couponId}`);
+      const response: any = await apiDelete(`/api/seller/coupons/${couponId}`);
 
       // Update local state
       setCoupons(coupons.filter((c) => c.id !== couponId));
@@ -182,21 +147,21 @@ function CouponsListContent() {
         severity: "error",
       });
     }
-    handleMenuClose();
+    setMenuCouponId(null);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "success";
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "inactive":
-        return "default";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
       case "expired":
-        return "error";
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
       case "scheduled":
-        return "info";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
       default:
-        return "default";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
     }
   };
 
@@ -232,277 +197,283 @@ function CouponsListContent() {
     totalUsage: coupons.reduce((sum, c) => sum + c.usedCount, 0),
   };
 
+  const selectedCoupon = coupons.find((c) => c.id === menuCouponId);
+
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
+    <div className="py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Coupons
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
               Manage discount coupons and promotional codes
-            </Typography>
-          </Box>
-          <Button
-            component={Link}
+            </p>
+          </div>
+          <Link
             href={SELLER_ROUTES.COUPONS_NEW}
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{ textTransform: "none" }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
+            <Plus className="w-5 h-5" />
             Create Coupon
-          </Button>
-        </Box>
+          </Link>
+        </div>
 
         {/* Stats */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={4}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Coupons
-              </Typography>
-              <Typography variant="h4" fontWeight={700}>
-                {stats.total}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Active Coupons
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="success.main">
-                {stats.active}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Usage
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="primary.main">
-                {stats.totalUsage}
-              </Typography>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Total Coupons
+            </p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              {stats.total}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Active Coupons
+            </p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              {stats.active}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Total Usage
+            </p>
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              {stats.totalUsage}
+            </p>
+          </div>
+        </div>
 
         {/* Filters */}
-        <Card sx={{ mb: 3, p: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
                 placeholder="Search coupons..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />
-                  ),
-                }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={statusFilter}
-                  label="Status"
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <MenuItem value="all">All Status</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
-                  <MenuItem value="scheduled">Scheduled</MenuItem>
-                  <MenuItem value="expired">Expired</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Card>
+            </div>
+            <div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         {/* Coupons Table */}
-        <Card>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress />
-            </Box>
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            </div>
           ) : filteredCoupons.length === 0 ? (
-            <Box sx={{ p: 4, textAlign: "center" }}>
-              <Typography variant="body1" color="text.secondary" gutterBottom>
+            <div className="py-12 text-center">
+              <Ticket className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 No coupons found
-              </Typography>
-              <Button
-                component={Link}
+              </p>
+              <Link
                 href={SELLER_ROUTES.COUPONS_NEW}
-                variant="outlined"
-                startIcon={<AddIcon />}
-                sx={{ mt: 2, textTransform: "none" }}
+                className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               >
+                <Plus className="w-5 h-5" />
                 Create Your First Coupon
-              </Button>
-            </Box>
+              </Link>
+            </div>
           ) : (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Code</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Value</TableCell>
-                    <TableCell>Usage</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Code
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Value
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Usage
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredCoupons.map((coupon) => (
-                    <TableRow key={coupon.id} hover>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          fontFamily="monospace"
-                        >
+                    <tr
+                      key={coupon.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="font-mono font-semibold text-gray-900 dark:text-white">
                           {coupon.code}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={500}>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {coupon.name}
-                        </Typography>
+                        </div>
                         {coupon.description && (
-                          <Typography variant="caption" color="text.secondary">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {coupon.description}
-                          </Typography>
+                          </div>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Chip label={getTypeLabel(coupon.type)} size="small" />
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                          {getTypeLabel(coupon.type)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {coupon.type === "percentage"
                           ? `${coupon.value}%`
                           : coupon.type === "fixed"
-                            ? `₹${coupon.value}`
-                            : "Free Shipping"}
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {coupon.usedCount}
-                          {coupon.maxUses && ` / ${coupon.maxUses}`}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={coupon.status}
-                          color={getStatusColor(coupon.status) as any}
-                          size="small"
-                        />
-                        {coupon.isPermanent && (
-                          <Chip
-                            label="Permanent"
-                            size="small"
-                            sx={{ ml: 0.5 }}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleMenuOpen(e, coupon)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Card>
+                          ? `₹${coupon.value}`
+                          : "Free Shipping"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {coupon.usedCount}
+                        {coupon.maxUses && ` / ${coupon.maxUses}`}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                              coupon.status
+                            )}`}
+                          >
+                            {coupon.status}
+                          </span>
+                          {coupon.isPermanent && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                              Permanent
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() =>
+                              setMenuCouponId(
+                                menuCouponId === coupon.id ? null : coupon.id
+                              )
+                            }
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                          >
+                            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          </button>
 
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem
-            component={Link}
-            href={
-              selectedCoupon
-                ? SELLER_ROUTES.COUPONS_EDIT(selectedCoupon.id)
-                : "#"
-            }
-            onClick={handleMenuClose}
-          >
-            <EditIcon sx={{ mr: 1, fontSize: 20 }} />
-            Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() =>
-              selectedCoupon && handleToggleStatus(selectedCoupon.id)
-            }
-          >
-            {selectedCoupon?.status === "active" ? (
-              <>
-                <ToggleOff sx={{ mr: 1, fontSize: 20 }} />
-                Disable
-              </>
-            ) : (
-              <>
-                <ToggleOn sx={{ mr: 1, fontSize: 20 }} />
-                Enable
-              </>
-            )}
-          </MenuItem>
-          <MenuItem
-            onClick={() => selectedCoupon && handleDuplicate(selectedCoupon.id)}
-          >
-            <CopyIcon sx={{ mr: 1, fontSize: 20 }} />
-            Duplicate
-          </MenuItem>
-          <MenuItem
-            onClick={() => selectedCoupon && handleDelete(selectedCoupon.id)}
-            sx={{ color: "error.main" }}
-          >
-            <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
-            Delete
-          </MenuItem>
-        </Menu>
+                          {/* Dropdown Menu */}
+                          {menuCouponId === coupon.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setMenuCouponId(null)}
+                              />
+                              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                                <Link
+                                  href={SELLER_ROUTES.COUPONS_EDIT(coupon.id)}
+                                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  onClick={() => setMenuCouponId(null)}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                  Edit
+                                </Link>
+                                <button
+                                  onClick={() => handleToggleStatus(coupon.id)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  {coupon.status === "active" ? (
+                                    <>
+                                      <ToggleLeft className="w-4 h-4" />
+                                      Disable
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ToggleRight className="w-4 h-4" />
+                                      Enable
+                                    </>
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => handleDuplicate(coupon.id)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <Copy className="w-4 h-4" />
+                                  Duplicate
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(coupon.id)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {/* Success/Error Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
-    </Box>
+        {snackbar.open && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4">
+            <div
+              className={`flex items-center gap-3 px-6 py-3 rounded-lg shadow-lg ${
+                snackbar.severity === "success"
+                  ? "bg-green-600 text-white"
+                  : "bg-red-600 text-white"
+              }`}
+            >
+              <AlertCircle className="w-5 h-5" />
+              <span>{snackbar.message}</span>
+              <button
+                onClick={() => setSnackbar({ ...snackbar, open: false })}
+                className="ml-4 hover:bg-white/20 rounded p-1 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

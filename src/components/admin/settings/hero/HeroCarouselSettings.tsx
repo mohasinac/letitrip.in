@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Trash2,
-  Edit,
-  Plus,
-  AlertCircle,
-} from "lucide-react";
+import { Trash2, Edit, Plus, AlertCircle } from "lucide-react";
 
 interface CarouselBackground {
   id: string;
@@ -102,7 +97,7 @@ export default function HeroCarouselSettings() {
               displayName: formData.displayName,
               description: formData.description,
             }
-          : c,
+          : c
       );
     } else {
       updatedCarousels = [

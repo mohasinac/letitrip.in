@@ -50,8 +50,8 @@ export default function BeybladeManagement() {
     // Update the beyblade in the list
     setBeyblades((prevBeyblades) =>
       prevBeyblades.map((b) =>
-        b.id === selectedBeyblade?.id ? { ...b, imageUrl } : b,
-      ),
+        b.id === selectedBeyblade?.id ? { ...b, imageUrl } : b
+      )
     );
     setImageUploadOpen(false);
   };
@@ -80,7 +80,8 @@ export default function BeybladeManagement() {
     const matchesType = filterType === "all" || bey.type === filterType;
     const matchesSearch =
       searchQuery === "" ||
-      (bey.name && bey.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (bey.name &&
+        bey.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
       bey.id.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
@@ -243,8 +244,8 @@ export default function BeybladeManagement() {
                     {(beyblade as any).specialMove.name}
                   </p>
                   <p className="text-xs text-gray-600">
-                    Cost: {(beyblade as any).specialMove.powerCost} ⚡ | Duration:{" "}
-                    {(beyblade as any).specialMove.flags.duration}s
+                    Cost: {(beyblade as any).specialMove.powerCost} ⚡ |
+                    Duration: {(beyblade as any).specialMove.flags.duration}s
                   </p>
                 </div>
               )}

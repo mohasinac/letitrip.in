@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Trash2,
-  Edit,
-  Plus,
-} from "lucide-react";
+import { Trash2, Edit, Plus } from "lucide-react";
 import MediaUpload from "./MediaUpload";
 import { HeroBannerSlide } from "@/types/heroBanner";
 

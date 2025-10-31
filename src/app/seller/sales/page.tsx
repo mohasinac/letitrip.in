@@ -2,46 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  Button,
-  TextField,
-  Chip,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Menu,
-  MenuItem,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  MoreVert as MoreVertIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  ToggleOn,
-  ToggleOff,
-  Search as SearchIcon,
-  LocalOffer as OfferIcon,
-} from "@mui/icons-material";
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+  Search,
+  Tag,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -66,8 +37,7 @@ function SalesListContent() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedSale, setSelectedSale] = useState<SellerSale | null>(null);
+  const [menuSaleId, setMenuSaleId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -92,8 +62,11 @@ function SalesListContent() {
         params.append("search", searchQuery);
       }
 
-      const response = await apiGet<{ success: boolean; data: SellerSale[] }>(
-        `/api/seller/sales${params.toString() ? `?${params.toString()}` : ""}`,
+      const response: any = await apiGet<{
+        success: boolean;
+        data: SellerSale[];
+      }>(
+        `/api/seller/sales${params.toString() ? `?${params.toString()}` : ""}`
       );
 
       if (response.success && response.data) {
@@ -114,37 +87,20 @@ function SalesListContent() {
     fetchSales();
   }, [statusFilter]);
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    sale: SellerSale,
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedSale(sale);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedSale(null);
-  };
-
-  const handleToggleStatus = async () => {
-    if (!selectedSale) return;
-
+  const handleToggleStatus = async (saleId: string) => {
     try {
-      const response = await apiPost<{
+      const response: any = await apiPost<{
         success: boolean;
         data: { status: string };
         message?: string;
-      }>(`/api/seller/sales/${selectedSale.id}/toggle`, {});
+      }>(`/api/seller/sales/${saleId}/toggle`, {});
 
       if (response.success) {
         // Update local state
         setSales(
           sales.map((s) =>
-            s.id === selectedSale.id
-              ? { ...s, status: response.data.status as any }
-              : s,
-          ),
+            s.id === saleId ? { ...s, status: response.data.status as any } : s
+          )
         );
 
         setSnackbar({
@@ -164,23 +120,25 @@ function SalesListContent() {
         severity: "error",
       });
     } finally {
-      handleMenuClose();
+      setMenuSaleId(null);
     }
   };
 
-  const handleDeleteClick = () => {
-    handleMenuClose();
+  const handleDeleteClick = (saleId: string) => {
+    setMenuSaleId(null);
     setDeleteDialog(true);
   };
 
   const handleDeleteConfirm = async () => {
+    const selectedSale = sales.find((s) => s.id === menuSaleId);
     if (!selectedSale) return;
 
     try {
       setDeletingSale(true);
-      const response = await apiDelete<{ success: boolean; message?: string }>(
-        `/api/seller/sales/${selectedSale.id}`,
-      );
+      const response: any = await apiDelete<{
+        success: boolean;
+        message?: string;
+      }>(`/api/seller/sales/${selectedSale.id}`);
 
       if (response.success) {
         // Remove from local state
@@ -191,8 +149,6 @@ function SalesListContent() {
           message: "Sale deleted successfully",
           severity: "success",
         });
-
-        setSelectedSale(null);
       }
     } catch (error: any) {
       setSnackbar({
@@ -203,21 +159,22 @@ function SalesListContent() {
     } finally {
       setDeletingSale(false);
       setDeleteDialog(false);
+      setMenuSaleId(null);
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "success";
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "inactive":
-        return "default";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
       case "expired":
-        return "error";
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
       case "scheduled":
-        return "info";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
       default:
-        return "default";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
     }
   };
 
@@ -250,318 +207,332 @@ function SalesListContent() {
     totalOrders: sales.reduce((sum, s) => sum + s.stats.ordersCount, 0),
   };
 
+  const selectedSale = sales.find((s) => s.id === menuSaleId);
+
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
+    <div className="py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Sales
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
               Manage store-wide sales and promotions
-            </Typography>
-          </Box>
-          <Button
-            component={Link}
+            </p>
+          </div>
+          <Link
             href={SELLER_ROUTES.SALES_NEW}
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{ textTransform: "none" }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
+            <Plus className="w-5 h-5" />
             Create Sale
-          </Button>
-        </Box>
+          </Link>
+        </div>
 
         {/* Stats */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Sales
-              </Typography>
-              <Typography variant="h4" fontWeight={700}>
-                {stats.total}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Active Sales
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="success.main">
-                {stats.active}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Orders
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="primary.main">
-                {stats.totalOrders}
-              </Typography>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Revenue
-              </Typography>
-              <Typography variant="h4" fontWeight={700} color="success.main">
-                ₹{stats.totalRevenue.toLocaleString()}
-              </Typography>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Total Sales
+            </p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              {stats.total}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Active Sales
+            </p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              {stats.active}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Total Orders
+            </p>
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              {stats.totalOrders}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Total Revenue
+            </p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              ₹{stats.totalRevenue.toLocaleString()}
+            </p>
+          </div>
+        </div>
 
         {/* Filters */}
-        <Card sx={{ mb: 3, p: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
                 placeholder="Search sales..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />
-                  ),
-                }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={statusFilter}
-                  label="Status"
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <MenuItem value="all">All Status</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
-                  <MenuItem value="scheduled">Scheduled</MenuItem>
-                  <MenuItem value="expired">Expired</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Card>
+            </div>
+            <div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         {/* Sales Table */}
-        <Card>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress />
-            </Box>
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            </div>
           ) : filteredSales.length === 0 ? (
-            <Box sx={{ p: 4, textAlign: "center" }}>
-              <OfferIcon sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
-              <Typography variant="body1" color="text.secondary" gutterBottom>
+            <div className="py-12 text-center">
+              <Tag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-900 dark:text-white font-medium mb-2">
                 No sales found
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Create sales to offer flat discounts on your products
-              </Typography>
-              <Button
-                component={Link}
+              </p>
+              <Link
                 href={SELLER_ROUTES.SALES_NEW}
-                variant="outlined"
-                startIcon={<AddIcon />}
-                sx={{ textTransform: "none" }}
+                className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               >
+                <Plus className="w-5 h-5" />
                 Create Your First Sale
-              </Button>
-            </Box>
+              </Link>
+            </div>
           ) : (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Discount</TableCell>
-                    <TableCell>Apply To</TableCell>
-                    <TableCell>Orders</TableCell>
-                    <TableCell>Revenue</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Discount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Apply To
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Orders
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Revenue
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredSales.map((sale) => (
-                    <TableRow key={sale.id} hover>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={600}>
+                    <tr
+                      key={sale.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
                           {sale.name}
-                        </Typography>
+                        </div>
                         {sale.description && (
-                          <Typography variant="caption" color="text.secondary">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {sale.description}
-                          </Typography>
+                          </div>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">
                             {sale.discountType === "percentage"
                               ? `${sale.discountValue}%`
                               : `₹${sale.discountValue}`}
-                          </Typography>
+                          </div>
                           {sale.enableFreeShipping && (
-                            <Chip
-                              label="Free Shipping"
-                              size="small"
-                              color="info"
-                            />
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 mt-1">
+                              Free Shipping
+                            </span>
                           )}
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {getApplyToLabel(sale.applyTo)}
-                        </Typography>
+                        </div>
                         {sale.applyTo !== "all_products" && (
-                          <Typography variant="caption" color="text.secondary">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {sale.stats.productsAffected} products
-                          </Typography>
+                          </div>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {sale.stats.ordersCount}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          color="success.main"
-                        >
-                          ₹{sale.stats.revenue.toLocaleString()}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={sale.status}
-                          color={getStatusColor(sale.status) as any}
-                          size="small"
-                        />
-                        {sale.isPermanent && (
-                          <Chip
-                            label="Permanent"
-                            size="small"
-                            sx={{ ml: 0.5 }}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleMenuOpen(e, sale)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Card>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                        {sale.stats.ordersCount}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
+                        ₹{sale.stats.revenue.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                              sale.status
+                            )}`}
+                          >
+                            {sale.status}
+                          </span>
+                          {sale.isPermanent && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                              Permanent
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() =>
+                              setMenuSaleId(
+                                menuSaleId === sale.id ? null : sale.id
+                              )
+                            }
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                          >
+                            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          </button>
 
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem
-            component={Link}
-            href={
-              selectedSale ? SELLER_ROUTES.SALES_EDIT(selectedSale.id) : "#"
-            }
-            onClick={handleMenuClose}
-          >
-            <EditIcon sx={{ mr: 1, fontSize: 20 }} />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={() => selectedSale && handleToggleStatus()}>
-            {selectedSale?.status === "active" ? (
-              <>
-                <ToggleOff sx={{ mr: 1, fontSize: 20 }} />
-                Disable
-              </>
-            ) : (
-              <>
-                <ToggleOn sx={{ mr: 1, fontSize: 20 }} />
-                Enable
-              </>
-            )}
-          </MenuItem>
-          <MenuItem onClick={handleDeleteClick} sx={{ color: "error.main" }}>
-            <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
-            Delete
-          </MenuItem>
-        </Menu>
+                          {/* Dropdown Menu */}
+                          {menuSaleId === sale.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setMenuSaleId(null)}
+                              />
+                              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                                <Link
+                                  href={SELLER_ROUTES.SALES_EDIT(sale.id)}
+                                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  onClick={() => setMenuSaleId(null)}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                  Edit
+                                </Link>
+                                <button
+                                  onClick={() => handleToggleStatus(sale.id)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  {sale.status === "active" ? (
+                                    <>
+                                      <ToggleLeft className="w-4 h-4" />
+                                      Disable
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ToggleRight className="w-4 h-4" />
+                                      Enable
+                                    </>
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(sale.id)}
+                                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
-          <DialogTitle>Delete Sale?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete "{selectedSale?.name}"? This
-              action cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setDeleteDialog(false)}
-              disabled={deletingSale}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleDeleteConfirm}
-              color="error"
-              variant="contained"
-              disabled={deletingSale}
-            >
-              {deletingSale ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {deleteDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => !deletingSale && setDeleteDialog(false)}
+            />
+            <div className="relative bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-xl">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Delete Sale?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Are you sure you want to delete "{selectedSale?.name}"? This
+                action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteDialog(false)}
+                  disabled={deletingSale}
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={deletingSale}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+                >
+                  {deletingSale && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {deletingSale ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Snackbar for notifications */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
-    </Box>
+        {snackbar.open && (
+          <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-4">
+            <div
+              className={`flex items-center gap-3 px-6 py-3 rounded-lg shadow-lg ${
+                snackbar.severity === "success"
+                  ? "bg-green-600 text-white"
+                  : "bg-red-600 text-white"
+              }`}
+            >
+              <AlertCircle className="w-5 h-5" />
+              <span>{snackbar.message}</span>
+              <button
+                onClick={() => setSnackbar({ ...snackbar, open: false })}
+                className="ml-4 hover:bg-white/20 rounded p-1 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
