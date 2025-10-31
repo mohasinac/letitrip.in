@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile Optimization Utilities */
+@import "../styles/mobile.css";
+
 /* Modern CSS Reset */
 *,
 *::before,

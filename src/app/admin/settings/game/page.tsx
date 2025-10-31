@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Settings as SettingsIcon, Dices as BeybladeIcon } from "lucide-react";
-import BeybladeManagement from "../../../../components/admin/BeybladeManagement";
+import BeybladeManagement from "@/components/admin/BeybladeManagement";
 
 interface TabPanelProps {
   children?: React.ReactNode;

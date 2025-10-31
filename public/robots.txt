@@ -1,0 +1,41 @@
+# robots.txt for JustForView.in
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and private pages
+Disallow: /admin/
+Disallow: /seller/
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /_next/
+Disallow: /checkout/
+
+# Disallow search pages with parameters
+Disallow: /search?*
+Disallow: /*?*sort=*
+Disallow: /*?*filter=*
+
+# Allow specific important pages
+Allow: /api/og/*
+
+# Crawl-delay for bots (optional)
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://justforview.in/sitemap.xml
+Sitemap: https://justforview.in/sitemap-products.xml
+Sitemap: https://justforview.in/sitemap-categories.xml
+
+# Google-specific rules
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /seller/
+
+# Bing-specific rules
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /seller/
