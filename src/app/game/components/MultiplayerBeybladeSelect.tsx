@@ -1,15 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Alert,
-} from "@mui/material";
 import { getSocket } from "@/lib/socket";
 import BeybladeSelect from "@/components/game/BeybladeSelect";
 import { useBeyblades } from "@/hooks/useBeyblades";
@@ -87,85 +78,56 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
   const playerNumber = roomData?.playerNumber || 1;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 3,
-        p: 3,
-        minHeight: "60vh",
-      }}
-    >
+    <div className="flex flex-col items-center gap-6 p-6 min-h-[60vh]">
       {/* Header */}
-      <Box sx={{ textAlign: "center" }}>
-        <Typography variant="h4" sx={{ mb: 1, fontWeight: "bold" }}>
-          Select Your Beyblade
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
+      <div className="text-center">
+        <h4 className="text-3xl font-bold mb-2">Select Your Beyblade</h4>
+        <p className="text-gray-600 dark:text-gray-400">
           You are Player {playerNumber} • Room: {roomData?.roomId?.slice(-8)}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {/* Status Cards */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-          gap: 2,
-          maxWidth: 800,
-          width: "100%",
-        }}
-      >
-        <Card
-          sx={{
-            border: "2px solid",
-            borderColor: "primary.main",
-            bgcolor: "background.paper",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              You (Player {playerNumber})
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Beyblade: {getBeybladeNameById(selectedBeyblade)}
-            </Typography>
-            <Chip
-              label={isReady ? "Ready" : "Not Ready"}
-              color={isReady ? "success" : "default"}
-              sx={{ mt: 1 }}
-            />
-          </CardContent>
-        </Card>
-        <Card
-          sx={{
-            border: "2px solid",
-            borderColor: "secondary.main",
-            bgcolor: "background.paper",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Opponent (Player {playerNumber === 1 ? 2 : 1})
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Beyblade: {getBeybladeNameById(opponentBeyblade)}
-            </Typography>
-            <Chip
-              label={opponentReady ? "Ready" : "Not Ready"}
-              color={opponentReady ? "success" : "default"}
-              sx={{ mt: 1 }}
-            />
-          </CardContent>
-        </Card>
-      </Box>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl w-full">
+        <div className="border-2 border-blue-500 bg-white dark:bg-gray-800 rounded-lg p-4">
+          <h6 className="text-lg font-semibold mb-2">
+            You (Player {playerNumber})
+          </h6>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Beyblade: {getBeybladeNameById(selectedBeyblade)}
+          </p>
+          <span
+            className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+              isReady
+                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+            }`}
+          >
+            {isReady ? "Ready" : "Not Ready"}
+          </span>
+        </div>
+        <div className="border-2 border-purple-500 bg-white dark:bg-gray-800 rounded-lg p-4">
+          <h6 className="text-lg font-semibold mb-2">
+            Opponent (Player {playerNumber === 1 ? 2 : 1})
+          </h6>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Beyblade: {getBeybladeNameById(opponentBeyblade)}
+          </p>
+          <span
+            className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+              opponentReady
+                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+            }`}
+          >
+            {opponentReady ? "Ready" : "Not Ready"}
+          </span>
+        </div>
+      </div>
 
       {/* Beyblade Selection Dropdown */}
-      <Box sx={{ maxWidth: 600, width: "100%" }}>
-        <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-          Choose Your Beyblade:
-        </Typography>
+      <div className="max-w-2xl w-full">
+        <h6 className="text-xl font-semibold mb-4">Choose Your Beyblade:</h6>
         <BeybladeSelect
           value={selectedBeyblade || ""}
           onChange={handleSelectBeyblade}
@@ -173,41 +135,46 @@ const MultiplayerBeybladeSelect: React.FC<MultiplayerBeybladeSelectProps> = ({
           disabled={isReady || loading}
         />
         {isReady && (
-          <Alert severity="info" sx={{ mt: 2 }}>
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-800 dark:text-blue-200">
             Change your selection by clicking "Not Ready" first
-          </Alert>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Ready Button */}
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Button
-          variant={isReady ? "outlined" : "contained"}
+      <div className="flex gap-4">
+        <button
           onClick={handleToggleReady}
-          size="large"
           disabled={!selectedBeyblade}
-          sx={{ px: 4 }}
+          className={`px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
+            isReady
+              ? "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-900/20"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          } ${!selectedBeyblade ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {isReady ? "Not Ready" : "I'm Ready!"}
-        </Button>
-        <Button variant="outlined" onClick={onCancel} size="large">
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-8 py-3 rounded-lg font-medium text-lg border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
           Cancel
-        </Button>
-      </Box>
+        </button>
+      </div>
 
       {/* Info Alert */}
       {isReady && !opponentReady && (
-        <Alert severity="info" sx={{ maxWidth: 600 }}>
+        <div className="max-w-2xl p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-800 dark:text-blue-200">
           Waiting for opponent to be ready...
-        </Alert>
+        </div>
       )}
 
       {isReady && opponentReady && (
-        <Alert severity="success" sx={{ maxWidth: 600 }}>
+        <div className="max-w-2xl p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-800 dark:text-green-200">
           Both players ready! Starting game...
-        </Alert>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Loader2 } from "lucide-react";
 import { initSocket } from "@/lib/socket";
 import type { Socket } from "socket.io-client";
 
@@ -98,7 +87,7 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
 
     socket.on("server-full", (data) => {
       setError(
-        `Server is full! ${data.currentPlayers}/${data.maxPlayers} players online. Please try again in a few minutes.`,
+        `Server is full! ${data.currentPlayers}/${data.maxPlayers} players online. Please try again in a few minutes.`
       );
       setStatus("name-entry");
     });
@@ -159,104 +148,111 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        gap: 3,
-        p: 3,
-      }}
-    >
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 p-6">
       {status === "name-entry" && (
         <>
-          <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>
-            Enter Your Name
-          </Typography>
-          <TextField
-            label="Player Name"
-            variant="outlined"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") handleJoinRoom();
-            }}
-            sx={{ width: 300 }}
-            autoFocus
-            error={!!error}
-            helperText={error}
-          />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              variant="contained"
+          <h4 className="text-3xl font-bold mb-4">Enter Your Name</h4>
+          <div className="w-full max-w-sm">
+            <input
+              type="text"
+              placeholder="Player Name"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") handleJoinRoom();
+              }}
+              className={`w-full px-4 py-3 rounded-lg border-2 ${
+                error
+                  ? "border-red-500 focus:border-red-600"
+                  : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+              } bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none`}
+              autoFocus
+            />
+            {error && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                {error}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-4">
+            <button
               onClick={handleJoinRoom}
-              size="large"
-              sx={{ px: 4 }}
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-lg transition-colors"
             >
               Join Room
-            </Button>
-            <Button variant="outlined" onClick={handleCancel} size="large">
+            </button>
+            <button
+              onClick={handleCancel}
+              className="px-8 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg font-medium text-lg transition-colors"
+            >
               Back
-            </Button>
-          </Box>
+            </button>
+          </div>
         </>
       )}
 
       {status === "connecting" && (
         <>
-          <CircularProgress size={60} />
-          <Typography variant="h5">Connecting...</Typography>
+          <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
+          <h5 className="text-2xl">Connecting...</h5>
         </>
       )}
 
       {status === "waiting" && (
         <>
-          <CircularProgress size={60} />
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Waiting for opponent...
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
+          <h5 className="text-2xl mb-4">Waiting for opponent...</h5>
+          <p className="text-gray-600 dark:text-gray-400">
             Time remaining: {countdown}s
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Room ID: {roomData?.roomId}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             You are Player {roomData?.playerNumber}
-          </Typography>
-          <Button variant="outlined" onClick={handleCancel} sx={{ mt: 2 }}>
+          </p>
+          <button
+            onClick={handleCancel}
+            className="mt-4 px-6 py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
             Cancel
-          </Button>
+          </button>
         </>
       )}
 
       {error && (
-        <Alert severity="error" sx={{ mt: 2, width: "100%", maxWidth: 400 }}>
+        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-200 w-full max-w-md">
           {error}
-        </Alert>
+        </div>
       )}
 
       {/* Wait timeout dialog */}
-      <Dialog open={waitTimeout} onClose={() => {}}>
-        <DialogTitle>No Opponent Found</DialogTitle>
-        <DialogContent>
-          <Typography>
-            No opponent has joined yet. Would you like to wait for another 30
-            seconds?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} color="error">
-            No, Exit
-          </Button>
-          <Button onClick={handleExtendWait} variant="contained" autoFocus>
-            Yes, Wait 30s More
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {waitTimeout && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold mb-4">No Opponent Found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              No opponent has joined yet. Would you like to wait for another 30
+              seconds?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              >
+                No, Exit
+              </button>
+              <button
+                onClick={handleExtendWait}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                Yes, Wait 30s More
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

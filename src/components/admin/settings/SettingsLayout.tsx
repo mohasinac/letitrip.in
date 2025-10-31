@@ -1,28 +1,23 @@
 "use client";
 
-import { Box, Container, Typography, Tabs, Tab } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
-import {
-  Palette as PaletteIcon,
-  ViewCarousel as CarouselIcon,
-  Category as CategoryIcon,
-} from "@mui/icons-material";
+import { Palette, ImageIcon, Grid3x3 } from "lucide-react";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
 const settingsTabs = [
-  { label: "Theme", path: "/admin/settings/theme", icon: <PaletteIcon /> },
+  { label: "Theme", path: "/admin/settings/theme", icon: Palette },
   {
     label: "Hero Slides",
     path: "/admin/settings/hero",
-    icon: <CarouselIcon />,
+    icon: ImageIcon,
   },
   {
     label: "Featured Categories",
     path: "/admin/settings/featured-categories",
-    icon: <CategoryIcon />,
+    icon: Grid3x3,
   },
 ];
 
@@ -34,50 +29,47 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
   const currentTab = settingsTabs.findIndex((tab) => pathname === tab.path);
   const tabValue = currentTab >= 0 ? currentTab : 0;
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (newValue: number) => {
     router.push(settingsTabs[newValue].path);
   };
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-          Admin Settings
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+    <div className="py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <h4 className="text-3xl font-bold mb-2">Admin Settings</h4>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
           Configure all aspects of your application. Click on a tab to navigate
           to different settings.
-        </Typography>
+        </p>
 
         {/* Settings Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="admin settings tabs"
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {settingsTabs.map((tab, index) => (
-              <Tab
-                key={tab.path}
-                label={tab.label}
-                icon={tab.icon}
-                iconPosition="start"
-                id={`settings-tab-${index}`}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 600,
-                  minHeight: 48,
-                }}
-              />
-            ))}
-          </Tabs>
-        </Box>
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+          <div className="flex gap-2 overflow-x-auto">
+            {settingsTabs.map((tab, index) => {
+              const Icon = tab.icon;
+              const isActive = tabValue === index;
+              return (
+                <button
+                  key={tab.path}
+                  onClick={() => handleTabChange(index)}
+                  className={`flex items-center gap-2 px-4 py-3 font-semibold whitespace-nowrap transition-colors border-b-2 ${
+                    isActive
+                      ? "border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  }`}
+                  id={`settings-tab-${index}`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Content */}
-        <Box>{children}</Box>
-      </Container>
-    </Box>
+        <div>{children}</div>
+      </div>
+    </div>
   );
 }

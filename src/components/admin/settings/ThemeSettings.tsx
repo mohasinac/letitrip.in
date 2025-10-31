@@ -1,17 +1,6 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Button,
-  ButtonGroup,
-  Typography,
-  Divider,
-  Alert,
-} from "@mui/material";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 export default function ThemeSettings() {
@@ -40,188 +29,115 @@ export default function ThemeSettings() {
   };
 
   return (
-    <Card sx={{ borderRadius: 2, boxShadow: 2 }}>
-      <CardHeader
-        title="Theme Settings"
-        subheader="Select your preferred theme palette. Changes apply immediately across the entire application."
-        sx={{
-          backgroundColor: "background.paper",
-          borderBottom: "1px solid",
-          borderColor: "divider",
-        }}
-      />
-      <CardContent sx={{ p: 3 }}>
-        <Alert severity="info" sx={{ mb: 3 }}>
+    <div className="rounded-lg shadow-lg bg-white dark:bg-gray-800">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-800">
+        <h3 className="text-xl font-semibold mb-1">Theme Settings</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Select your preferred theme palette. Changes apply immediately across
+          the entire application.
+        </p>
+      </div>
+      <div className="p-6">
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-800 dark:text-blue-200">
           Your theme preference is saved and will persist across sessions. Admin
           can manage themes for all users.
-        </Alert>
+        </div>
 
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-          Choose Theme
-        </Typography>
+        <h6 className="text-lg font-semibold mb-4">Choose Theme</h6>
 
-        <Box sx={{ mb: 3 }}>
-          <ButtonGroup
-            variant="outlined"
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 1,
-              "& .MuiButtonGroup-grouped": {
-                flex: 1,
-                minHeight: "120px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                p: 2,
-              },
-            }}
-          >
-            {themeOptions.map((theme) => (
-              <Button
-                key={theme.id}
-                onClick={() => handleThemeChange(theme.id)}
-                variant={themeName === theme.id ? "contained" : "outlined"}
-                sx={{
-                  flex: 1,
-                  minHeight: "120px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  p: 2,
-                  textAlign: "left",
-                  backgroundColor:
-                    themeName === theme.id ? "primary.main" : "transparent",
-                  color: themeName === theme.id ? "white" : "text.primary",
-                  borderColor:
-                    themeName === theme.id ? "primary.main" : "divider",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    backgroundColor:
-                      themeName === theme.id ? "primary.dark" : "action.hover",
-                    borderColor: "primary.main",
-                  },
-                }}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          {themeOptions.map((theme) => (
+            <button
+              key={theme.id}
+              onClick={() => handleThemeChange(theme.id)}
+              className={`flex-1 min-h-[120px] flex flex-col items-start justify-start p-4 rounded-lg border-2 text-left transition-all ${
+                themeName === theme.id
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+            >
+              <h6
+                className={`font-bold mb-2 ${
+                  themeName === theme.id
+                    ? "text-white"
+                    : "text-gray-900 dark:text-white"
+                }`}
               >
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: 700,
-                    mb: 1,
-                    color: themeName === theme.id ? "white" : "text.primary",
-                  }}
-                >
-                  {theme.label}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color:
-                      themeName === theme.id
-                        ? "rgba(255,255,255,0.8)"
-                        : "text.secondary",
-                  }}
-                >
-                  {theme.description}
-                </Typography>
-                {themeName === theme.id && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: "auto",
-                      fontWeight: 600,
-                      color: "white",
-                    }}
-                  >
-                    ✓ Active
-                  </Typography>
-                )}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </Box>
+                {theme.label}
+              </h6>
+              <p
+                className={`text-sm ${
+                  themeName === theme.id
+                    ? "text-white/80"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {theme.description}
+              </p>
+              {themeName === theme.id && (
+                <p className="mt-auto font-semibold text-white text-sm">
+                  ✓ Active
+                </p>
+              )}
+            </button>
+          ))}
+        </div>
 
-        <Divider sx={{ my: 3 }} />
+        <hr className="my-6 border-gray-200 dark:border-gray-700" />
 
-        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-          Theme Details
-        </Typography>
+        <h6 className="text-base font-semibold mb-4">Theme Details</h6>
 
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-            gap: 2,
-            p: 2,
-            backgroundColor: "action.hover",
-            borderRadius: 1,
-          }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg">
           {themeName === "default" ? (
             <>
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                  Light Mode
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              <div>
+                <p className="text-sm font-semibold mb-1">Light Mode</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   • White background
                   <br />• Blue primary color
                   <br />• Clean, minimal design
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                  Dark Mode
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-1">Dark Mode</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   • Pure black background
                   <br />• Blue primary color
                   <br />• High contrast text
-                </Typography>
-              </Box>
+                </p>
+              </div>
             </>
           ) : (
             <>
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                  Light Mode
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              <div>
+                <p className="text-sm font-semibold mb-1">Light Mode</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   • White wind pattern
                   <br />• Royal blue & blood red
                   <br />• Dynamic geometric design
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                  Dark Mode
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-1">Dark Mode</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   • Galaxy starry background
                   <br />• Fire red & light green
                   <br />• Cosmic theme
-                </Typography>
-              </Box>
+                </p>
+              </div>
             </>
           )}
-        </Box>
+        </div>
 
-        <Box
-          sx={{ mt: 3, pt: 2, borderTop: "1px solid", borderColor: "divider" }}
-        >
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Selected Theme: <strong>{themeName.toUpperCase()}</strong>
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ display: "block", mt: 1, color: "text.secondary" }}
-          >
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             Current Mode: <strong>{mode.toUpperCase()}</strong>
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

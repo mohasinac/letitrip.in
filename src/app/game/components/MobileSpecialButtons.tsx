@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback } from "react";
-import { Box } from "@mui/material";
 import { GameBeyblade } from "../types/game";
 
 interface MobileSpecialButtonsProps {
@@ -29,6 +28,7 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
     const currentPower = playerBeyblade.power || 0;
     return currentPower >= powerRequirements[action];
   };
+
   // Optimized press handler with haptic feedback
   const handlePress = useCallback(
     (action: 1 | 2 | 3 | 4, e: React.TouchEvent | React.MouseEvent) => {
@@ -43,159 +43,101 @@ const MobileSpecialButtonsComponent: React.FC<MobileSpecialButtonsProps> = ({
         onActionButton(action);
       }
     },
-    [disabled, onActionButton, playerBeyblade],
+    [disabled, onActionButton, playerBeyblade]
   );
 
-  const buttonStyle = {
-    position: "absolute" as const,
-    width: { xs: "70px", sm: "75px", md: "80px" }, // Increased for better touch targets
-    height: { xs: "70px", sm: "75px", md: "80px" },
-    borderRadius: "50%",
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: { xs: "1.75rem", sm: "1.85rem", md: "2rem" }, // Slightly larger icons
-    fontWeight: "bold",
-    color: "white",
-    cursor: disabled ? "not-allowed" : "pointer",
-    userSelect: "none" as const,
-    WebkitUserSelect: "none" as const,
-    MozUserSelect: "none" as const,
-    WebkitTapHighlightColor: "transparent", // Remove tap highlight on iOS
-    touchAction: "manipulation" as const,
-    transition: "transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.1s", // Faster transitions
-    opacity: disabled ? 0.4 : 0.9, // Better visibility
-    willChange: "transform", // GPU acceleration hint
-    "&:active": {
-      transform: disabled ? "none" : "scale(0.9)", // Slightly less aggressive
-      opacity: disabled ? 0.4 : 1,
-    },
-  };
+  const baseButtonClass = `absolute w-[70px] h-[70px] sm:w-[75px] sm:h-[75px] md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white select-none transition-transform duration-100 border-4 border-white/40 shadow-lg ${
+    disabled
+      ? "cursor-not-allowed opacity-40"
+      : "cursor-pointer opacity-90 active:scale-90 active:opacity-100"
+  }`;
 
-  const labelStyle: React.CSSProperties = {
-    fontSize: "0.7rem",
-    marginTop: "2px",
-    opacity: 0.9,
-    fontWeight: 600,
-  };
+  const labelClass = "text-[0.7rem] sm:text-xs mt-0.5 opacity-90 font-semibold";
 
   return (
     <>
       {/* Top-Left: Dodge Left (Button 1) - Positioned below HUD */}
       {canPerformAction(1) && (
-        <Box
-          sx={{
-            ...buttonStyle,
-            top: { xs: "105px", sm: "115px", md: "125px" }, // Optimized positioning
-            left: { xs: "8px", sm: "12px", md: "16px" },
+        <div
+          className={`${baseButtonClass} top-[105px] sm:top-[115px] md:top-[125px] left-2 sm:left-3 md:left-4`}
+          style={{
             background:
-              "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))", // Slightly more opaque
-            border: "3px solid rgba(255, 255, 255, 0.4)", // Thicker border for visibility
+              "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))",
             boxShadow:
-              "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)", // Enhanced shadow
+              "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
+            WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation",
+            willChange: "transform",
           }}
           onTouchStart={(e) => handlePress(1, e)}
           onMouseDown={(e) => handlePress(1, e)}
         >
           <div>◄</div>
-          <Box
-            component="div"
-            sx={{
-              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-              ...labelStyle,
-            }}
-          >
-            DODGE L
-          </Box>
-        </Box>
+          <div className={labelClass}>DODGE L</div>
+        </div>
       )}
 
       {/* Top-Right: Dodge Right (Button 2) - Positioned below HUD */}
       {canPerformAction(2) && (
-        <Box
-          sx={{
-            ...buttonStyle,
-            top: { xs: "105px", sm: "115px", md: "125px" },
-            right: { xs: "8px", sm: "12px", md: "16px" },
+        <div
+          className={`${baseButtonClass} top-[105px] sm:top-[115px] md:top-[125px] right-2 sm:right-3 md:right-4`}
+          style={{
             background:
               "linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95))",
-            border: "3px solid rgba(255, 255, 255, 0.4)",
             boxShadow:
               "0 4px 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
+            WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation",
+            willChange: "transform",
           }}
           onTouchStart={(e) => handlePress(2, e)}
           onMouseDown={(e) => handlePress(2, e)}
         >
           <div>►</div>
-          <Box
-            component="div"
-            sx={{
-              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-              ...labelStyle,
-            }}
-          >
-            DODGE R
-          </Box>
-        </Box>
+          <div className={labelClass}>DODGE R</div>
+        </div>
       )}
 
       {/* Bottom-Left: Heavy Attack (Button 3) */}
       {canPerformAction(3) && (
-        <Box
-          sx={{
-            ...buttonStyle,
-            bottom: { xs: "8px", sm: "12px", md: "16px" },
-            left: { xs: "8px", sm: "12px", md: "16px" },
+        <div
+          className={`${baseButtonClass} bottom-2 sm:bottom-3 md:bottom-4 left-2 sm:left-3 md:left-4`}
+          style={{
             background:
               "linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95))",
-            border: "3px solid rgba(255, 255, 255, 0.4)",
             boxShadow:
               "0 4px 16px rgba(251, 146, 60, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
+            WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation",
+            willChange: "transform",
           }}
           onTouchStart={(e) => handlePress(3, e)}
           onMouseDown={(e) => handlePress(3, e)}
         >
           <div>⚔</div>
-          <Box
-            component="div"
-            sx={{
-              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-              ...labelStyle,
-            }}
-          >
-            HEAVY
-          </Box>
-        </Box>
+          <div className={labelClass}>HEAVY</div>
+        </div>
       )}
 
       {/* Bottom-Right: Special Move (Button 4) - Changed from ULTIMATE */}
       {canPerformAction(4) && (
-        <Box
-          sx={{
-            ...buttonStyle,
-            bottom: { xs: "8px", sm: "12px", md: "16px" },
-            right: { xs: "8px", sm: "12px", md: "16px" },
+        <div
+          className={`${baseButtonClass} bottom-2 sm:bottom-3 md:bottom-4 right-2 sm:right-3 md:right-4`}
+          style={{
             background:
-              "linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(126, 34, 206, 0.95))", // Changed to purple
-            border: "3px solid rgba(255, 255, 255, 0.4)",
+              "linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(126, 34, 206, 0.95))",
             boxShadow:
               "0 4px 16px rgba(147, 51, 234, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)",
+            WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation",
+            willChange: "transform",
           }}
           onTouchStart={(e) => handlePress(4, e)}
           onMouseDown={(e) => handlePress(4, e)}
         >
           <div>✨</div>
-          <Box
-            component="div"
-            sx={{
-              fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
-              ...labelStyle,
-            }}
-          >
-            SPECIAL
-          </Box>
-        </Box>
+          <div className={labelClass}>SPECIAL</div>
+        </div>
       )}
     </>
   );

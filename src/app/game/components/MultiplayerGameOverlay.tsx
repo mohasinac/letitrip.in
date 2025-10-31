@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Box, Button, Typography } from "@mui/material";
 
 interface MultiplayerGameOverlayProps {
   isMultiplayer: boolean;
@@ -30,135 +29,63 @@ const MultiplayerGameOverlay: React.FC<MultiplayerGameOverlayProps> = ({
   }
 
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.75)",
-        zIndex: 1000,
-        pointerEvents: "auto",
-      }}
-    >
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/75 z-[1000] pointer-events-auto">
       {/* Game Over Message */}
-      <Typography
-        variant="h3"
-        sx={{
-          color: isPlayerWinner ? "#4CAF50" : "#f44336",
-          fontWeight: 700,
-          textShadow: "0 4px 10px rgba(0, 0, 0, 0.5)",
-          mb: 2,
-          fontSize: { xs: "2rem", sm: "3rem" },
-        }}
+      <h3
+        className={`text-4xl sm:text-5xl font-bold mb-4 ${
+          isPlayerWinner ? "text-green-500" : "text-red-500"
+        }`}
+        style={{ textShadow: "0 4px 10px rgba(0, 0, 0, 0.5)" }}
       >
         {isPlayerWinner ? "🎉 Victory!" : "💥 Defeat"}
-      </Typography>
+      </h3>
 
       {/* Winner Name */}
-      <Typography
-        variant="h5"
-        sx={{
-          color: "white",
-          mb: 4,
-          fontSize: { xs: "1.25rem", sm: "1.5rem" },
-        }}
-      >
+      <h5 className="text-xl sm:text-2xl text-white mb-8">
         {winner.name} Wins!
-      </Typography>
+      </h5>
 
       {/* Rematch Status */}
       {(playerWantsRematch || opponentWantsRematch) && (
-        <Typography
-          variant="body1"
-          sx={{
-            color: "#FFD700",
-            mb: 3,
-            fontSize: { xs: "1rem", sm: "1.1rem" },
-            fontWeight: 600,
-          }}
-        >
+        <p className="text-lg sm:text-xl text-yellow-400 mb-6 font-semibold">
           {playerWantsRematch && opponentWantsRematch
             ? "⏳ Starting rematch..."
             : playerWantsRematch
-              ? "⏳ Waiting for opponent..."
-              : "⏳ Opponent wants a rematch!"}
-        </Typography>
+            ? "⏳ Waiting for opponent..."
+            : "⏳ Opponent wants a rematch!"}
+        </p>
       )}
 
       {/* Action Buttons */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 3,
-          flexDirection: { xs: "column", sm: "row" },
-          width: { xs: "80%", sm: "auto" },
-        }}
-      >
+      <div className="flex flex-col sm:flex-row gap-6 w-4/5 sm:w-auto">
         {/* Play Again Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
+        <button
           onClick={onRematch}
           disabled={playerWantsRematch}
-          sx={{
-            px: 5,
-            py: 1.5,
-            fontSize: { xs: "1rem", sm: "1.1rem" },
-            fontWeight: 700,
-            borderRadius: 2,
-            boxShadow: "0 4px 15px rgba(76, 175, 80, 0.4)",
-            transition: "all 0.2s ease",
-            backgroundColor: playerWantsRematch ? "#666" : "#4CAF50",
-            "&:hover": {
-              backgroundColor: playerWantsRematch ? "#666" : "#45a049",
-              transform: playerWantsRematch ? "none" : "scale(1.05)",
-              boxShadow: playerWantsRematch
-                ? "none"
-                : "0 6px 20px rgba(76, 175, 80, 0.6)",
-            },
-            "&:active": {
-              transform: playerWantsRematch ? "none" : "scale(0.95)",
-            },
+          className={`px-10 py-3 text-lg font-bold rounded-lg shadow-lg transition-all duration-200 ${
+            playerWantsRematch
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-green-500 hover:bg-green-600 hover:scale-105 hover:shadow-xl active:scale-95"
+          }`}
+          style={{
+            boxShadow: playerWantsRematch
+              ? "none"
+              : "0 4px 15px rgba(76, 175, 80, 0.4)",
           }}
         >
           {playerWantsRematch ? "✓ Ready for Rematch" : "🔄 Play Again"}
-        </Button>
+        </button>
 
         {/* Quit Button */}
-        <Button
-          variant="contained"
-          color="error"
-          size="large"
+        <button
           onClick={onQuit}
-          sx={{
-            px: 5,
-            py: 1.5,
-            fontSize: { xs: "1rem", sm: "1.1rem" },
-            fontWeight: 700,
-            borderRadius: 2,
-            boxShadow: "0 4px 15px rgba(244, 67, 54, 0.4)",
-            transition: "all 0.2s ease",
-            "&:hover": {
-              backgroundColor: "#d32f2f",
-              transform: "scale(1.05)",
-              boxShadow: "0 6px 20px rgba(244, 67, 54, 0.6)",
-            },
-            "&:active": {
-              transform: "scale(0.95)",
-            },
-          }}
+          className="px-10 py-3 text-lg font-bold rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200"
+          style={{ boxShadow: "0 4px 15px rgba(244, 67, 54, 0.4)" }}
         >
           🚪 Quit
-        </Button>
-      </Box>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 };
 
