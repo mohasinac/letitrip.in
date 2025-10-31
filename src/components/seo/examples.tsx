@@ -18,7 +18,7 @@ import {
 
 export async function generateHomepageMetadata(): Promise<Metadata> {
   return generateSEOMetadata({
-    title: "JustForView - Premium Beyblade Store",
+    title: "HobbiesSpot - Premium Beyblade Store",
     description:
       "Your premium destination for authentic Beyblades, collectibles, and accessories. Shop the latest Beyblade Burst, Metal Fight, and classic series.",
     keywords: [
@@ -207,3 +207,4 @@ export default {
   FAQStructuredData,
   GlobalSEOSchema,
 };
+

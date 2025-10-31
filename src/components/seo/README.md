@@ -1,4 +1,4 @@
-# 🎯 SEO Setup Guide for JustForView.in
+# 🎯 SEO Setup Guide for hobbiesspot.com
 
 **Complete guide to implementing SEO across your Next.js application**
 
@@ -91,7 +91,7 @@ import { generateSEOMetadata } from "@/components/seo/SEOHead";
 import { GlobalSEOSchema } from "@/components/seo/examples";
 
 export const metadata = generateSEOMetadata({
-  title: "JustForView - Premium Beyblade Store",
+  title: "HobbiesSpot - Premium Beyblade Store",
   description:
     "Your premium destination for authentic Beyblades, collectibles, and accessories",
   keywords: ["beyblade", "beyblade shop", "buy beyblade india"],
@@ -282,7 +282,7 @@ export const metadata = generateSEOMetadata({
 
 ```typescript
 // ✅ Good
-title: "Storm Pegasus Beyblade - Buy Online | JustForView";
+title: "Storm Pegasus Beyblade - Buy Online | HobbiesSpot";
 
 // ❌ Bad
 title: "beyblade storm pegasus beyblade burst beyblade buy beyblade shop";
@@ -325,7 +325,7 @@ keywords: [
 - Add alt text
 
 ```typescript
-ogImage: "https://justforview.in/images/products/storm-pegasus-og.jpg";
+ogImage: "https://hobbiesspot.com/images/products/storm-pegasus-og.jpg";
 ```
 
 ### 5. **Canonical URLs**
@@ -335,7 +335,7 @@ ogImage: "https://justforview.in/images/products/storm-pegasus-og.jpg";
 - Point to primary version
 
 ```typescript
-canonical: "https://justforview.in/products/storm-pegasus";
+canonical: "https://hobbiesspot.com/products/storm-pegasus";
 ```
 
 ---
@@ -436,4 +436,5 @@ Check `src/components/seo/examples.tsx` for complete implementation examples.
 ---
 
 **Last Updated**: October 31, 2025
-**Maintained By**: JustForView Development Team
+**Maintained By**: HobbiesSpot Development Team
+

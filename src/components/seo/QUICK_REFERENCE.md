@@ -66,7 +66,7 @@ return (
 
 ```typescript
 export const metadata = generateSEOMetadata({
-  title: "JustForView - Premium Beyblade Store",
+  title: "HobbiesSpot - Premium Beyblade Store",
   description: "Shop authentic Beyblades, accessories, and collectibles",
   keywords: ["beyblade", "beyblade shop", "india"],
   canonical: "/",
@@ -197,3 +197,4 @@ See examples: `src/components/seo/examples.tsx`
 ---
 
 **Last Updated**: October 31, 2025
+

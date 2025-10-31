@@ -41,7 +41,7 @@ export function generateMetadata(params: {
     keywords,
     type = "website",
   } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
 
   return {
     title,
@@ -57,7 +57,7 @@ export function generateMetadata(params: {
     twitterDescription: description,
     twitterImage: image,
     robots: "index, follow",
-    author: "JustForView",
+    author: "HobbiesSpot",
     viewport: "width=device-width, initial-scale=1.0",
     charset: "utf-8",
   };
@@ -176,7 +176,7 @@ export function generateOrganizationSchema(params: {
     "@context": "https://schema.org",
     "@type": "Organization",
     name,
-    url: process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com",
   };
 
   if (description) schema.description = description;

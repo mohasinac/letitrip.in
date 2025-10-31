@@ -7,7 +7,7 @@
 import { MetadataRoute } from "next";
 import { getAdminDb } from "@/lib/database/admin";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sitemapEntries: MetadataRoute.Sitemap = [];

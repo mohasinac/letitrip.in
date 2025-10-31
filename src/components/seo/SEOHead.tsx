@@ -31,10 +31,10 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     noindex = false,
   } = props;
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in";
-  const fullTitle = title.includes("JustForView")
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
+  const fullTitle = title.includes("HobbiesSpot")
     ? title
-    : `${title} | JustForView`;
+    : `${title} | HobbiesSpot`;
   const imageUrl = ogImage
     ? ogImage.startsWith("http")
       ? ogImage
@@ -45,9 +45,9 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     title: fullTitle,
     description,
     keywords: keywords.length > 0 ? keywords : undefined,
-    authors: [{ name: "JustForView" }],
-    creator: "JustForView",
-    publisher: "JustForView",
+    authors: [{ name: "HobbiesSpot" }],
+    creator: "HobbiesSpot",
+    publisher: "HobbiesSpot",
     robots: noindex ? "noindex, nofollow" : "index, follow",
     alternates: {
       canonical: canonical || baseUrl,
@@ -56,7 +56,7 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
       title: fullTitle,
       description,
       url: canonical || baseUrl,
-      siteName: "JustForView",
+      siteName: "HobbiesSpot",
       images: [
         {
           url: imageUrl,
@@ -73,8 +73,8 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
       title: fullTitle,
       description,
       images: [imageUrl],
-      creator: "@justforview",
-      site: "@justforview",
+      creator: "@hobbiesspot",
+      site: "@hobbiesspot",
     },
     icons: {
       icon: "/favicon.ico",

@@ -1,4 +1,4 @@
-# robots.txt for JustForView.in
+# robots.txt for HobbiesSpot.com
 
 # Allow all crawlers
 User-agent: *
@@ -24,9 +24,9 @@ Allow: /api/og/*
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://justforview.in/sitemap.xml
-Sitemap: https://justforview.in/sitemap-products.xml
-Sitemap: https://justforview.in/sitemap-categories.xml
+Sitemap: https://hobbiesspot.com/sitemap.xml
+Sitemap: https://hobbiesspot.com/sitemap-products.xml
+Sitemap: https://hobbiesspot.com/sitemap-categories.xml
 
 # Google-specific rules
 User-agent: Googlebot

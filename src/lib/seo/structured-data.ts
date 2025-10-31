@@ -3,7 +3,7 @@
  * Creates schema.org compliant structured data for rich results
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://justforview.in";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
 
 // ============================================================================
 // WEBSITE SCHEMA
@@ -13,7 +13,7 @@ export function generateWebsiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "JustForView",
+    name: "HobbiesSpot",
     description:
       "Premium Beyblade store offering authentic collectibles and accessories",
     url: BASE_URL,
@@ -36,14 +36,14 @@ export function generateOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "JustForView",
+    name: "HobbiesSpot",
     description:
       "Your premium destination for authentic Beyblades, collectibles, and accessories",
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
     image: `${BASE_URL}/assets/og-image.jpg`,
     foundingDate: "2024",
-    email: "support@justforview.in",
+    email: "support@hobbiesspot.com",
     telephone: "+91-98765-43210",
     address: {
       "@type": "PostalAddress",
@@ -54,17 +54,17 @@ export function generateOrganizationSchema() {
       addressCountry: "IN",
     },
     sameAs: [
-      "https://www.facebook.com/justforview",
-      "https://twitter.com/justforview",
-      "https://www.instagram.com/justforview",
-      "https://www.youtube.com/@justforview",
+      "https://www.facebook.com/hobbiesspot",
+      "https://twitter.com/hobbiesspot",
+      "https://www.instagram.com/hobbiesspot",
+      "https://www.youtube.com/@hobbiesspot",
     ],
     contactPoint: [
       {
         "@type": "ContactPoint",
         telephone: "+91-98765-43210",
         contactType: "Customer Service",
-        email: "support@justforview.in",
+        email: "support@hobbiesspot.com",
         areaServed: "IN",
         availableLanguage: ["English", "Hindi"],
         contactOption: "TollFree",
