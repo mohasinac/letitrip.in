@@ -1,29 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  FormControlLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Paper,
-  Typography,
-  Stack,
-  Alert,
-  Stepper,
-  Step,
-  StepLabel,
-  StepButton,
-} from "@mui/material";
+import { X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -239,366 +217,474 @@ export default function CategoryForm({
     return true;
   });
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {category ? "Edit Category" : "Create New Category"}
-      </DialogTitle>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {category ? "Edit Category" : "Create New Category"}
+          </h2>
+          <button
+            onClick={handleClose}
+            disabled={isSubmitting}
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-      <DialogContent sx={{ pt: 2 }}>
-        {submitError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {submitError}
-          </Alert>
-        )}
-
-        {/* Stepper */}
-        <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-          {steps.map((label, index) => (
-            <Step key={label}>
-              <StepButton onClick={() => handleStepClick(index)}>
-                {label}
-              </StepButton>
-            </Step>
-          ))}
-        </Stepper>
-
-        <Stack spacing={3}>
-          {/* Step 1: Basic Information (Mandatory) */}
-          {activeStep === 0 && (
-            <>
-              <FormSection
-                title="Basic Information"
-                subtitle="Required fields to create a category"
-              >
-                {/* Name */}
-                <Controller
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Category Name *"
-                      placeholder="e.g., Electronics"
-                      fullWidth
-                      size="small"
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                    />
-                  )}
-                />
-
-                {/* Slug */}
-                <Controller
-                  name="slug"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Slug *"
-                      placeholder="e.g., buy-electronics"
-                      fullWidth
-                      size="small"
-                      error={!!errors.slug}
-                      helperText={
-                        errors.slug?.message ||
-                        'URL-friendly identifier (must start with "buy-")'
-                      }
-                    />
-                  )}
-                />
-
-                {/* Description */}
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Description"
-                      placeholder="Brief category description"
-                      fullWidth
-                      multiline
-                      rows={3}
-                      size="small"
-                      error={!!errors.description}
-                      helperText={errors.description?.message}
-                    />
-                  )}
-                />
-
-                {/* Parent Categories */}
-                <Controller
-                  name="parentIds"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl
-                      fullWidth
-                      size="small"
-                      error={!!errors.parentIds}
-                    >
-                      <InputLabel>Parent Categories (Optional)</InputLabel>
-                      <Select
-                        {...field}
-                        multiple
-                        label="Parent Categories (Optional)"
-                        renderValue={(selected) => {
-                          const selectedIds = selected as string[];
-                          return selectedIds
-                            .map((id) => {
-                              const cat = availableParents.find(
-                                (c) => c.id === id,
-                              );
-                              return cat?.name;
-                            })
-                            .filter(Boolean)
-                            .join(", ");
-                        }}
-                      >
-                        {availableParents.map((cat) => (
-                          <MenuItem key={cat.id} value={cat.id}>
-                            {`${"—".repeat(cat.minLevel || 0)} ${cat.name}`}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.parentIds && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          sx={{ mt: 0.5 }}
-                        >
-                          {errors.parentIds.message}
-                        </Typography>
-                      )}
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ mt: 0.5 }}
-                      >
-                        Select one or more parent categories (supports multiple
-                        parents)
-                      </Typography>
-                    </FormControl>
-                  )}
-                />
-
-                {/* Status */}
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <Controller
-                    name="isActive"
-                    control={control}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        control={<Checkbox {...field} checked={field.value} />}
-                        label="Active"
-                      />
-                    )}
-                  />
-
-                  <Controller
-                    name="featured"
-                    control={control}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        control={<Checkbox {...field} checked={field.value} />}
-                        label="Featured"
-                      />
-                    )}
-                  />
-                </Box>
-
-                {/* Sort Order */}
-                <Controller
-                  name="sortOrder"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Sort Order"
-                      type="number"
-                      fullWidth
-                      size="small"
-                      error={!!errors.sortOrder}
-                      helperText={
-                        errors.sortOrder?.message ||
-                        "Lower numbers appear first"
-                      }
-                      inputProps={{ min: 0 }}
-                    />
-                  )}
-                />
-              </FormSection>
-            </>
+        {/* Content */}
+        <div className="px-6 py-4">
+          {submitError && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">
+                {submitError}
+              </p>
+            </div>
           )}
 
-          {/* Step 2: Optional Details */}
-          {activeStep === 1 && (
-            <>
-              <FormSection
-                title="Images & Icons"
-                subtitle="Optional media for the category"
-              >
-                {/* Image URL */}
-                <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Controller
-                      name="image"
-                      control={control}
-                      render={({ field }) => (
-                        <ImageUploader
-                          value={field.value}
-                          onChange={field.onChange}
-                          slug={watch("slug")}
-                          onError={(error) => {
-                            console.error("Image upload error:", error);
-                          }}
-                        />
-                      )}
-                    />
-                  </Box>
-                  <Box sx={{ pt: 1 }}>
-                    <ImagePreview imageUrl={imageValue} />
-                  </Box>
-                </Box>
+          {/* Stepper */}
+          <div className="mb-6">
+            <div className="flex items-center justify-center">
+              {steps.map((label, index) => (
+                <React.Fragment key={label}>
+                  <button
+                    onClick={() => handleStepClick(index)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                      activeStep === index
+                        ? "bg-blue-500 text-white"
+                        : activeStep > index
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    }`}
+                  >
+                    <span className="font-medium text-sm">{index + 1}</span>
+                    <span className="text-sm font-medium">{label}</span>
+                  </button>
+                  {index < steps.length - 1 && (
+                    <div className="h-0.5 w-12 bg-gray-200 dark:bg-gray-700" />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
 
-                {/* Icon */}
-                <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Controller
-                      name="icon"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
+          <div className="space-y-6">
+            {/* Step 1: Basic Information (Mandatory) */}
+            {activeStep === 0 && (
+              <>
+                <FormSection
+                  title="Basic Information"
+                  subtitle="Required fields to create a category"
+                >
+                  {/* Name */}
+                  <Controller
+                    name="name"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Category Name *
+                        </label>
+                        <input
                           {...field}
-                          label="Icon"
-                          placeholder="Material UI icon name or emoji"
-                          fullWidth
-                          size="small"
-                          error={!!errors.icon}
-                          helperText={errors.icon?.message}
+                          type="text"
+                          placeholder="e.g., Electronics"
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.name
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
                         />
+                        {errors.name && (
+                          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {errors.name.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+
+                  {/* Slug */}
+                  <Controller
+                    name="slug"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Slug *
+                        </label>
+                        <input
+                          {...field}
+                          type="text"
+                          placeholder="e.g., buy-electronics"
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.slug
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {errors.slug?.message ||
+                            'URL-friendly identifier (must start with "buy-")'}
+                        </p>
+                      </div>
+                    )}
+                  />
+
+                  {/* Description */}
+                  <Controller
+                    name="description"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Description
+                        </label>
+                        <textarea
+                          {...field}
+                          rows={3}
+                          placeholder="Brief category description"
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.description
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        {errors.description && (
+                          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {errors.description.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+
+                  {/* Parent Categories */}
+                  <Controller
+                    name="parentIds"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Parent Categories (Optional)
+                        </label>
+                        <select
+                          {...field}
+                          multiple
+                          value={field.value || []}
+                          onChange={(e) => {
+                            const selected = Array.from(
+                              e.target.selectedOptions,
+                              (option) => option.value,
+                            );
+                            field.onChange(selected);
+                          }}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.parentIds
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                          size={5}
+                        >
+                          {availableParents.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                              {"—".repeat(cat.minLevel || 0)} {cat.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.parentIds && (
+                          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {errors.parentIds.message}
+                          </p>
+                        )}
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          Hold Ctrl/Cmd to select multiple parent categories
+                        </p>
+                      </div>
+                    )}
+                  />
+
+                  {/* Status */}
+                  <div className="flex gap-4 flex-wrap">
+                    <Controller
+                      name="isActive"
+                      control={control}
+                      render={({ field }) => (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            Active
+                          </span>
+                        </label>
                       )}
                     />
-                  </Box>
-                  <Box sx={{ pt: 1 }}>
-                    <IconPreview iconName={iconValue} />
-                  </Box>
-                </Box>
-              </FormSection>
 
-              <FormSection
-                title="SEO Information"
-                subtitle="Optional SEO metadata"
-              >
-                <Controller
-                  name="seo.metaTitle"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Meta Title"
-                      placeholder="Page title for search engines"
-                      fullWidth
-                      size="small"
-                      error={!!errors.seo?.metaTitle}
-                      helperText={
-                        errors.seo?.metaTitle?.message ||
-                        `${(field.value || "").length}/60 characters`
-                      }
-                      inputProps={{ maxLength: 60 }}
+                    <Controller
+                      name="featured"
+                      control={control}
+                      render={({ field }) => (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            Featured
+                          </span>
+                        </label>
+                      )}
                     />
-                  )}
-                />
+                  </div>
 
-                <Controller
-                  name="seo.metaDescription"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Meta Description"
-                      placeholder="Page description for search engines"
-                      fullWidth
-                      multiline
-                      rows={2}
-                      size="small"
-                      error={!!errors.seo?.metaDescription}
-                      helperText={
-                        errors.seo?.metaDescription?.message ||
-                        `${(field.value || "").length}/160 characters`
-                      }
-                      inputProps={{ maxLength: 160 }}
-                    />
-                  )}
-                />
+                  {/* Sort Order */}
+                  <Controller
+                    name="sortOrder"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Sort Order
+                        </label>
+                        <input
+                          {...field}
+                          type="number"
+                          min="0"
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.sortOrder
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {errors.sortOrder?.message ||
+                            "Lower numbers appear first"}
+                        </p>
+                      </div>
+                    )}
+                  />
+                </FormSection>
+              </>
+            )}
 
-                <Controller
-                  name="seo.altText"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Image Alt Text"
-                      placeholder="Alternative text for category image"
-                      fullWidth
-                      size="small"
-                      error={!!errors.seo?.altText}
-                      helperText={
-                        errors.seo?.altText?.message ||
-                        `${(field.value || "").length}/125 characters`
-                      }
-                      inputProps={{ maxLength: 125 }}
-                    />
-                  )}
-                />
-              </FormSection>
-            </>
-          )}
-        </Stack>
-      </DialogContent>
+            {/* Step 2: Optional Details */}
+            {activeStep === 1 && (
+              <>
+                <FormSection
+                  title="Images & Icons"
+                  subtitle="Optional media for the category"
+                >
+                  {/* Image URL */}
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-1">
+                      <Controller
+                        name="image"
+                        control={control}
+                        render={({ field }) => (
+                          <ImageUploader
+                            value={field.value}
+                            onChange={field.onChange}
+                            slug={watch("slug")}
+                            onError={(error) => {
+                              console.error("Image upload error:", error);
+                            }}
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className="pt-2">
+                      <ImagePreview imageUrl={imageValue} />
+                    </div>
+                  </div>
 
-      <DialogActions sx={{ p: 2, justifyContent: "space-between" }}>
-        <Box>
-          <Button onClick={handleClose} disabled={isSubmitting}>
+                  {/* Icon */}
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-1">
+                      <Controller
+                        name="icon"
+                        control={control}
+                        render={({ field }) => (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              Icon
+                            </label>
+                            <input
+                              {...field}
+                              type="text"
+                              placeholder="Material UI icon name or emoji"
+                              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                                errors.icon
+                                  ? "border-red-500"
+                                  : "border-gray-300 dark:border-gray-600"
+                              }`}
+                            />
+                            {errors.icon && (
+                              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                                {errors.icon.message}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </div>
+                    <div className="pt-2">
+                      <IconPreview iconName={iconValue} />
+                    </div>
+                  </div>
+                </FormSection>
+
+                <FormSection
+                  title="SEO Information"
+                  subtitle="Optional SEO metadata"
+                >
+                  <Controller
+                    name="seo.metaTitle"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Meta Title
+                        </label>
+                        <input
+                          {...field}
+                          type="text"
+                          placeholder="Page title for search engines"
+                          maxLength={60}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.seo?.metaTitle
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {errors.seo?.metaTitle?.message ||
+                            `${(field.value || "").length}/60 characters`}
+                        </p>
+                      </div>
+                    )}
+                  />
+
+                  <Controller
+                    name="seo.metaDescription"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Meta Description
+                        </label>
+                        <textarea
+                          {...field}
+                          rows={2}
+                          placeholder="Page description for search engines"
+                          maxLength={160}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.seo?.metaDescription
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {errors.seo?.metaDescription?.message ||
+                            `${(field.value || "").length}/160 characters`}
+                        </p>
+                      </div>
+                    )}
+                  />
+
+                  <Controller
+                    name="seo.altText"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Image Alt Text
+                        </label>
+                        <input
+                          {...field}
+                          type="text"
+                          placeholder="Alternative text for category image"
+                          maxLength={125}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                            errors.seo?.altText
+                              ? "border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {errors.seo?.altText?.message ||
+                            `${(field.value || "").length}/125 characters`}
+                        </p>
+                      </div>
+                    )}
+                  />
+                </FormSection>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <button
+            onClick={handleClose}
+            disabled={isSubmitting}
+            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+          >
             Cancel
-          </Button>
-        </Box>
+          </button>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
-          {activeStep > 0 && (
-            <Button onClick={handleBack} disabled={isSubmitting}>
-              Back
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {activeStep > 0 && (
+              <button
+                onClick={handleBack}
+                disabled={isSubmitting}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+            )}
 
-          {activeStep < steps.length - 1 ? (
-            <>
-              <Button
-                variant="outlined"
+            {activeStep < steps.length - 1 ? (
+              <>
+                <button
+                  onClick={handleSubmit(handleFormSubmit)}
+                  disabled={isSubmitting || !isStep1Valid()}
+                  className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Finish
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={!isStep1Valid()}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  Next
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <button
                 onClick={handleSubmit(handleFormSubmit)}
                 disabled={isSubmitting || !isStep1Valid()}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Finish
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleNext}
-                disabled={!isStep1Valid()}
-              >
-                Next
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleSubmit(handleFormSubmit)}
-              disabled={isSubmitting || !isStep1Valid()}
-            >
-              {isSubmitting ? "Saving..." : "Finish"}
-            </Button>
-          )}
-        </Box>
-      </DialogActions>
-    </Dialog>
+                {isSubmitting ? "Saving..." : "Finish"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

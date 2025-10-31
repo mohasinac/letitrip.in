@@ -8,11 +8,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import {
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-} from "lucide-react";
+import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
 interface ImageCropperProps {
   imageUrl: string;
@@ -59,7 +55,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
 
       const scale = Math.max(
         targetWidth / image.width,
-        targetHeight / image.height,
+        targetHeight / image.height
       );
       setZoom(scale);
       setPosition({ x: 0, y: 0 });
@@ -172,7 +168,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
             }
           },
           "image/jpeg",
-          0.95,
+          0.95
         );
       });
     };
@@ -267,13 +263,14 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
             </div>
 
             <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-              Drag to reposition • Scroll or use slider to zoom • Click reset to center
+              Drag to reposition • Scroll or use slider to zoom • Click reset to
+              center
             </p>
           </div>
         </div>
       </div>
     );
-  },
+  }
 );
 
 ImageCropper.displayName = "ImageCropper";

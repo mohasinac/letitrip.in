@@ -2,31 +2,13 @@
 
 import React, { useMemo, useState } from "react";
 import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  IconButton,
-  Chip,
-  TextField,
-  InputAdornment,
-  Tooltip,
-  Badge,
-  TablePagination,
-} from "@mui/material";
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  Search as SearchIcon,
-  Storage as StorageIcon,
-} from "@mui/icons-material";
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  Search,
+  Database,
+} from "lucide-react";
 import type { Category } from "@/types";
 
 interface CategoryListViewProps {
@@ -98,277 +80,216 @@ export default function CategoryListView({
     };
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+  const handleChangeRowsPerPage = (value: number) => {
+    setRowsPerPage(value);
     setPage(0);
   };
 
+  const totalPages = Math.ceil(sortedCategories.length / rowsPerPage);
+
   return (
-    <Box>
+    <div className="space-y-4">
       {/* Search Bar */}
-      <Box sx={{ mb: 3 }}>
-        <TextField
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
           placeholder="Search categories by name or slug..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setPage(0);
           }}
-          fullWidth
-          size="small"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
-      </Box>
+      </div>
 
       {/* Table */}
-      <TableContainer
-        component={Paper}
-        sx={{
-          backgroundColor: "background.paper",
-          "& .MuiTableCell-head": {
-            backgroundColor: "action.hover",
-            color: "text.primary",
-            fontWeight: 600,
-          },
-          "& .MuiTableRow-root": {
-            backgroundColor: "background.paper",
-            "&:hover": {
-              backgroundColor: "action.hover",
-            },
-          },
-        }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "action.hover" }}>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   Name
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   Slug
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   Parent
-                </Typography>
-              </TableCell>
-              <TableCell align="center">
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
                   Level
-                </Typography>
-              </TableCell>
-              <TableCell align="center">
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
                   Products
-                </Typography>
-              </TableCell>
-              <TableCell align="center">
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
                   Status
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-semibold text-gray-900 dark:text-white">
                   Actions
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedCategories.map((category) => (
-              <TableRow key={category.id} hover>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {category.image && (
-                      <Box
-                        component="img"
-                        src={category.image}
-                        alt={category.name}
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 1,
-                          objectFit: "cover",
-                        }}
-                      />
-                    )}
-                    <Typography variant="body2" fontWeight={500}>
-                      {category.name}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontFamily: "monospace",
-                      backgroundColor: "action.hover",
-                      color: "text.primary",
-                      px: 1,
-                      py: 0.5,
-                      borderRadius: 0.5,
-                      display: "inline-block",
-                    }}
-                  >
-                    {category.slug}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box>
-                    {getParentInfo(category).names.map((name, idx) => (
-                      <Box
-                        key={idx}
-                        sx={{
-                          mb:
-                            idx < getParentInfo(category).names.length - 1
-                              ? 0.5
-                              : 0,
-                        }}
-                      >
-                        <Typography variant="body2">{name}</Typography>
-                        {getParentInfo(category).slugs[idx] && (
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              fontFamily: "monospace",
-                              color: "text.secondary",
-                              fontSize: "0.75rem",
-                            }}
-                          >
-                            {getParentInfo(category).slugs[idx]}
-                          </Typography>
-                        )}
-                      </Box>
-                    ))}
-                  </Box>
-                </TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={`${category.minLevel || 0}-${
-                      category.maxLevel || 0
-                    }`}
-                    size="small"
-                    variant="outlined"
-                    title={`Min Level: ${category.minLevel || 0}, Max Level: ${
-                      category.maxLevel || 0
-                    }`}
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip
-                    title={`${category.inStockCount || 0} in stock, ${
-                      category.outOfStockCount || 0
-                    } out of stock`}
-                  >
-                    <Badge
-                      badgeContent={category.productCount || 0}
-                      color="primary"
-                      sx={{ cursor: "pointer" }}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {paginatedCategories.map((category) => (
+                <tr
+                  key={category.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {category.image && (
+                        <img
+                          src={category.image}
+                          alt={category.name}
+                          className="w-8 h-8 rounded object-cover"
+                        />
+                      )}
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {category.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <code className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded">
+                      {category.slug}
+                    </code>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="space-y-1">
+                      {getParentInfo(category).names.map((name, idx) => (
+                        <div key={idx}>
+                          <div className="text-sm text-gray-900 dark:text-white">
+                            {name}
+                          </div>
+                          {getParentInfo(category).slugs[idx] && (
+                            <code className="text-xs text-gray-500 dark:text-gray-400">
+                              {getParentInfo(category).slugs[idx]}
+                            </code>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className="inline-block px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
+                      title={`Min Level: ${category.minLevel || 0}, Max Level: ${
+                        category.maxLevel || 0
+                      }`}
                     >
-                      <StorageIcon fontSize="small" />
-                    </Badge>
-                  </Tooltip>
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{ display: "flex", gap: 1, justifyContent: "center" }}
-                  >
-                    {category.featured && (
-                      <Chip
-                        label="Featured"
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    )}
-                    {category.isActive ? (
-                      <Tooltip title="Active">
-                        <VisibilityIcon
-                          fontSize="small"
-                          sx={{ color: "success.main" }}
-                        />
-                      </Tooltip>
-                    ) : (
-                      <Tooltip title="Inactive">
-                        <VisibilityOffIcon
-                          fontSize="small"
-                          sx={{ color: "text.disabled" }}
-                        />
-                      </Tooltip>
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell align="right">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 0.5,
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <Tooltip title="Edit">
-                      <IconButton
-                        size="small"
+                      {category.minLevel || 0}-{category.maxLevel || 0}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div
+                      className="inline-flex items-center justify-center relative cursor-pointer"
+                      title={`${category.inStockCount || 0} in stock, ${
+                        category.outOfStockCount || 0
+                      } out of stock`}
+                    >
+                      <Database className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      {(category.productCount || 0) > 0 && (
+                        <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {category.productCount}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2 items-center justify-center">
+                      {category.featured && (
+                        <span className="px-2 py-1 text-xs border border-blue-500 text-blue-600 dark:text-blue-400 rounded">
+                          Featured
+                        </span>
+                      )}
+                      {category.isActive ? (
+                        <span title="Active">
+                          <Eye className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        </span>
+                      ) : (
+                        <span title="Inactive">
+                          <EyeOff className="w-4 h-4 text-gray-400" />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1 justify-end">
+                      <button
                         onClick={() => onEdit(category)}
-                        sx={{ color: "primary.main" }}
+                        className="p-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors"
+                        title="Edit"
                       >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        size="small"
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => onDelete(category.id)}
-                        sx={{ color: "error.main" }}
+                        className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
+                        title="Delete"
                       >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Pagination */}
-      <Box sx={{ backgroundColor: "background.paper", mt: 2 }}>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          component="div"
-          count={sortedCategories.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            color: "text.primary",
-            "& .MuiTablePagination-toolbar": {
-              color: "text.primary",
-            },
-            "& .MuiSelect-icon": {
-              color: "text.primary",
-            },
-          }}
-        />
-      </Box>
-    </Box>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Rows per page:
+            </span>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => handleChangeRowsPerPage(Number(e.target.value))}
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              {page * rowsPerPage + 1}-
+              {Math.min((page + 1) * rowsPerPage, sortedCategories.length)} of{" "}
+              {sortedCategories.length}
+            </span>
+            <div className="flex gap-1">
+              <button
+                onClick={() => handleChangePage(page - 1)}
+                disabled={page === 0}
+                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm transition-colors"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => handleChangePage(page + 1)}
+                disabled={page >= totalPages - 1}
+                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

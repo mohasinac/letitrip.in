@@ -116,13 +116,13 @@ export default function ImageUploader({
       if (error.name === "NotAllowedError") {
         setCameraPermission("denied");
         handleError(
-          "Camera permission denied. You can still use file upload or provide a URL instead.",
+          "Camera permission denied. You can still use file upload or provide a URL instead."
         );
       } else if (error.name === "NotFoundError") {
         handleError("No camera device found on this device.");
       } else {
         handleError(
-          "Unable to access camera. Please check your browser settings.",
+          "Unable to access camera. Please check your browser settings."
         );
       }
       setShowPermissionDialog(false);
@@ -238,7 +238,7 @@ export default function ImageUploader({
       // Use the apiClient to upload, which will handle auth
       const response = await apiClient.upload<{ url: string }>(
         "/storage/upload",
-        formData,
+        formData
       );
 
       if (response.url) {
@@ -261,7 +261,7 @@ export default function ImageUploader({
       handleError(
         err.response?.data?.error ||
           err.message ||
-          "Failed to upload image to Firebase",
+          "Failed to upload image to Firebase"
       );
     } finally {
       setLoading(false);
@@ -270,7 +270,7 @@ export default function ImageUploader({
 
   // Handle file input change
   const handleFileInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -284,7 +284,7 @@ export default function ImageUploader({
 
   // Handle camera input change
   const handleCameraInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -302,7 +302,7 @@ export default function ImageUploader({
       cameraInputRef.current?.click();
     } else if (cameraPermission === "denied") {
       handleError(
-        "Camera access denied. Please enable camera permissions in your browser settings.",
+        "Camera access denied. Please enable camera permissions in your browser settings."
       );
     } else {
       // Permission is prompt or unknown, show dialog
@@ -353,7 +353,9 @@ export default function ImageUploader({
                   strokeWidth="4"
                   fill="none"
                   strokeDasharray={`${2 * Math.PI * 18}`}
-                  strokeDashoffset={`${2 * Math.PI * 18 * (1 - uploadProgress / 100)}`}
+                  strokeDashoffset={`${
+                    2 * Math.PI * 18 * (1 - uploadProgress / 100)
+                  }`}
                   className="text-blue-600 dark:text-blue-400 transition-all duration-300"
                 />
               </svg>
@@ -488,7 +490,8 @@ export default function ImageUploader({
               <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-start gap-2">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  Camera access is denied. Try using the Upload or URL options instead.
+                  Camera access is denied. Try using the Upload or URL options
+                  instead.
                 </p>
               </div>
             )}
@@ -541,7 +544,8 @@ export default function ImageUploader({
               targetHeight={targetHeight}
             />
             <p className="mt-2 text-xs text-center text-blue-600 dark:text-blue-400">
-              Adjust the image above. It will be uploaded when you save the form.
+              Adjust the image above. It will be uploaded when you save the
+              form.
             </p>
           </div>
         )}
