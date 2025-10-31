@@ -2,6 +2,8 @@
 
 **Complete documentation for the HobbiesSpot.com Beyblade Ecommerce Platform**
 
+> 📋 **See [INDEX.md](INDEX.md) for a complete, organized documentation index**
+
 ---
 
 ## 🎯 Quick Navigation
