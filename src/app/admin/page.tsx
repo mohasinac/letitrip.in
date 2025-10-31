@@ -1,7 +1,6 @@
 "use client";
 
-import { Box, Container, Typography, Card, CardContent } from "@mui/material";
-import { ShoppingCart, People, TrendingUp, Warning } from "@mui/icons-material";
+import { ShoppingCart, Users, TrendingUp, AlertTriangle } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
@@ -16,34 +15,18 @@ const StatCard = ({
   value: string;
   change: string;
 }) => (
-  <Card>
-    <CardContent>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-        <Box
-          sx={{
-            bgcolor: "primary.main",
-            p: 1.5,
-            borderRadius: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "primary.contrastText",
-          }}
-        >
-          <Icon />
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          {title}
-        </Typography>
-      </Box>
-      <Typography variant="h5" fontWeight={700} gutterBottom>
-        {value}
-      </Typography>
-      <Typography variant="caption" color="success.main">
-        {change}
-      </Typography>
-    </CardContent>
-  </Card>
+  <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="flex items-center gap-3 mb-4">
+      <div className="bg-blue-600 p-3 rounded-lg flex items-center justify-center text-white">
+        <Icon className="h-5 w-5" />
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
+    </div>
+    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      {value}
+    </h3>
+    <p className="text-sm text-green-600 dark:text-green-400">{change}</p>
+  </div>
 );
 
 function AdminDashboardContent() {
@@ -64,7 +47,7 @@ function AdminDashboardContent() {
       change: "+12% from last month",
     },
     {
-      icon: People,
+      icon: Users,
       title: "Total Users",
       value: "892",
       change: "+8% from last month",
@@ -76,7 +59,7 @@ function AdminDashboardContent() {
       change: "+22% from last month",
     },
     {
-      icon: Warning,
+      icon: AlertTriangle,
       title: "Pending Orders",
       value: "23",
       change: "3 needs attention",
@@ -84,42 +67,29 @@ function AdminDashboardContent() {
   ];
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 4 }}>
+    <div className="py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
           Dashboard
-        </Typography>
+        </h1>
 
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            },
-            gap: 3,
-            mb: 4,
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
-        </Box>
+        </div>
 
-        <Card>
-          <CardContent>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
-              Recent Activity
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Your admin dashboard is ready. Navigate using the sidebar to
-              manage products, orders, users, and more.
-            </Typography>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Recent Activity
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Your admin dashboard is ready. Navigate using the sidebar to
+            manage products, orders, users, and more.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 

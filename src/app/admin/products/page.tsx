@@ -1,18 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import { Plus } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
@@ -31,41 +19,26 @@ function AdminProductsContent() {
   ]);
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" fontWeight={700}>
+    <div className="py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Products
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              textTransform: "none",
-              fontWeight: 600,
-            }}
-          >
+          </h1>
+          <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="h-5 w-5" />
             Add Product
-          </Button>
-        </Box>
+          </button>
+        </div>
 
-        <Card>
-          <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              Products management interface coming soon. You'll be able to add,
-              edit, and delete products from here.
-            </Typography>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+          <p className="text-gray-600 dark:text-gray-400">
+            Products management interface coming soon. You'll be able to add,
+            edit, and delete products from here.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
