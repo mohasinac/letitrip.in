@@ -73,14 +73,20 @@ export default function AddressesTab({
             Add addresses where customers can pick up orders
           </p>
         </div>
-        <UnifiedButton onClick={handleAddAddress} icon={<Plus />} disabled={loading}>
+        <UnifiedButton
+          onClick={handleAddAddress}
+          icon={<Plus />}
+          disabled={loading}
+        >
           Add Address
         </UnifiedButton>
       </div>
 
       {addresses.length === 0 ? (
         <UnifiedCard className="p-12 text-center">
-          <p className="text-textSecondary mb-4">No pickup addresses added yet</p>
+          <p className="text-textSecondary mb-4">
+            No pickup addresses added yet
+          </p>
           <UnifiedButton onClick={handleAddAddress} icon={<Plus />}>
             Add Your First Address
           </UnifiedButton>
@@ -241,7 +247,9 @@ export default function AddressesTab({
                     type="text"
                     value={address.pincode}
                     onChange={(e) =>
-                      handleUpdateAddress(address.id, { pincode: e.target.value })
+                      handleUpdateAddress(address.id, {
+                        pincode: e.target.value,
+                      })
                     }
                     placeholder="123456"
                     disabled={loading}
@@ -252,7 +260,9 @@ export default function AddressesTab({
 
               {address.isDefault && (
                 <div className="mt-4 px-3 py-2 bg-primary/10 border border-primary/20 rounded-lg">
-                  <p className="text-sm text-primary font-medium">Default Pickup Address</p>
+                  <p className="text-sm text-primary font-medium">
+                    Default Pickup Address
+                  </p>
                 </div>
               )}
             </UnifiedCard>

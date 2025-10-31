@@ -20,6 +20,10 @@ import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedModal } from "@/components/ui/unified/Modal";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
 
+// Placeholder image data URL (gray box with package icon)
+const PLACEHOLDER_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='16' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 function ProductsListContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -59,9 +63,22 @@ function ProductsListContent() {
 
   // Fetch products from API
   const fetchProducts = async () => {
-    if (!user || authLoading) return;
+    console.log(
+      "fetchProducts called - user:",
+      !!user,
+      "authLoading:",
+      authLoading,
+      "loading:",
+      loading
+    );
+    // Prevent calls when not authenticated
+    if (!user || authLoading) {
+      console.log("fetchProducts returning early - no user or auth loading");
+      return;
+    }
 
     try {
+      console.log("fetchProducts - starting API call");
       setLoading(true);
       const params = new URLSearchParams();
       if (statusFilter !== "all") {
@@ -94,12 +111,30 @@ function ProductsListContent() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (user && !authLoading) {
-      fetchProducts();
-    }
-  }, [statusFilter, user, authLoading]);
+    let isMounted = true;
+
+    const loadData = async () => {
+      console.log(
+        "Products useEffect - user:",
+        !!user,
+        "authLoading:",
+        authLoading,
+        "isMounted:",
+        isMounted
+      );
+      if (user && !authLoading && isMounted) {
+        console.log("Calling fetchProducts...");
+        await fetchProducts();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [statusFilter, user, authLoading]); // Re-fetch when filter, user, or auth state changes
 
   const handleDeleteClick = (product: SellerProduct) => {
     setSelectedProduct(product);
@@ -181,11 +216,11 @@ function ProductsListContent() {
       render: (_, product) => (
         <div className="flex items-center gap-3">
           <img
-            src={product.images?.[0]?.url || "/placeholder-product.png"}
+            src={product.images?.[0]?.url || PLACEHOLDER_IMAGE}
             alt={product.name}
             className="w-12 h-12 rounded-lg object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder-product.png";
+              (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE;
             }}
           />
           <div className="min-w-0">

@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Eye, CheckCircle, XCircle, Printer, Receipt, ShoppingBag } from "lucide-react";
+import {
+  Eye,
+  CheckCircle,
+  XCircle,
+  Printer,
+  Receipt,
+  ShoppingBag,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -99,7 +106,11 @@ function OrdersListContent() {
 
   const tabs = [
     { id: "all", label: "All", count: stats.total },
-    { id: "pending_approval", label: "Pending Approval", count: stats.pendingApproval },
+    {
+      id: "pending_approval",
+      label: "Pending Approval",
+      count: stats.pendingApproval,
+    },
     { id: "processing", label: "Processing", count: stats.processing },
     { id: "shipped", label: "Shipped", count: stats.shipped },
     { id: "delivered", label: "Delivered", count: stats.delivered },
@@ -108,6 +119,7 @@ function OrdersListContent() {
 
   // Fetch orders from API
   const fetchOrders = async () => {
+    // Prevent calls when not authenticated
     if (!user || authLoading) return;
 
     try {
@@ -124,7 +136,9 @@ function OrdersListContent() {
         success: boolean;
         data: Order[];
         stats?: OrderStats;
-      }>(`/api/seller/orders${params.toString() ? `?${params.toString()}` : ""}`);
+      }>(
+        `/api/seller/orders${params.toString() ? `?${params.toString()}` : ""}`
+      );
 
       if (response.success) {
         setOrders(response.data || []);
@@ -143,12 +157,21 @@ function OrdersListContent() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (user && !authLoading) {
-      fetchOrders();
-    }
-  }, [activeTab, user, authLoading]);
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (user && !authLoading && isMounted) {
+        await fetchOrders();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, user, authLoading]); // Re-fetch when tab, user, or auth state changes
 
   const handleAction = (type: "approve" | "reject", order: Order) => {
     setActionDialog({
@@ -558,7 +581,9 @@ function OrdersListContent() {
               Cancel
             </UnifiedButton>
             <UnifiedButton
-              variant={actionDialog.type === "approve" ? "success" : "destructive"}
+              variant={
+                actionDialog.type === "approve" ? "success" : "destructive"
+              }
               onClick={confirmAction}
               loading={actionDialog.loading}
             >

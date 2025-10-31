@@ -34,7 +34,10 @@ export default function BasicInfoTab({
 
     try {
       setUploadingLogo(true);
-      const url = await uploadToFirebase(file, `shops/logos/${Date.now()}_${file.name}`);
+      const url = await uploadToFirebase(
+        file,
+        `shops/logos/${Date.now()}_${file.name}`
+      );
       onChange({ ...shopData, logo: url });
     } catch (error) {
       console.error("Logo upload failed:", error);
@@ -49,7 +52,10 @@ export default function BasicInfoTab({
 
     try {
       setUploadingCover(true);
-      const url = await uploadToFirebase(file, `shops/covers/${Date.now()}_${file.name}`);
+      const url = await uploadToFirebase(
+        file,
+        `shops/covers/${Date.now()}_${file.name}`
+      );
       onChange({ ...shopData, coverImage: url });
     } catch (error) {
       console.error("Cover upload failed:", error);
@@ -76,8 +82,10 @@ export default function BasicInfoTab({
   return (
     <div className="grid grid-cols-1 gap-6">
       <UnifiedCard className="p-6">
-        <h3 className="text-lg font-semibold text-text mb-4">Store Information</h3>
-        
+        <h3 className="text-lg font-semibold text-text mb-4">
+          Store Information
+        </h3>
+
         <div className="space-y-4">
           {/* Store Name */}
           <div>
@@ -100,12 +108,17 @@ export default function BasicInfoTab({
               Store URL Slug
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-textSecondary">justforview.in/shop/</span>
+              <span className="text-sm text-textSecondary">
+                justforview.in/shop/
+              </span>
               <input
                 type="text"
                 value={shopData.storeSlug}
                 onChange={(e) =>
-                  onChange({ ...shopData, storeSlug: generateSlug(e.target.value) })
+                  onChange({
+                    ...shopData,
+                    storeSlug: generateSlug(e.target.value),
+                  })
                 }
                 placeholder="my-awesome-store"
                 disabled={loading}
@@ -141,7 +154,7 @@ export default function BasicInfoTab({
         {/* Logo */}
         <UnifiedCard className="p-6">
           <h3 className="text-lg font-semibold text-text mb-4">Store Logo</h3>
-          
+
           <div className="space-y-4">
             {shopData.logo && (
               <div className="flex justify-center">
@@ -164,7 +177,13 @@ export default function BasicInfoTab({
               <div className="w-full">
                 <UnifiedButton
                   variant="outline"
-                  icon={uploadingLogo ? <Loader2 className="animate-spin" /> : <Upload />}
+                  icon={
+                    uploadingLogo ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Upload />
+                    )
+                  }
                   disabled={uploadingLogo || loading}
                   className="w-full pointer-events-none"
                   onClick={(e) => e.preventDefault()}
@@ -183,7 +202,7 @@ export default function BasicInfoTab({
         {/* Cover Image */}
         <UnifiedCard className="p-6">
           <h3 className="text-lg font-semibold text-text mb-4">Cover Image</h3>
-          
+
           <div className="space-y-4">
             {shopData.coverImage && (
               <div className="w-full h-32 rounded-lg overflow-hidden border-2 border-border">
@@ -206,7 +225,13 @@ export default function BasicInfoTab({
               <div className="w-full">
                 <UnifiedButton
                   variant="outline"
-                  icon={uploadingCover ? <Loader2 className="animate-spin" /> : <Upload />}
+                  icon={
+                    uploadingCover ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Upload />
+                    )
+                  }
                   disabled={uploadingCover || loading}
                   className="w-full pointer-events-none"
                   onClick={(e) => e.preventDefault()}
@@ -227,12 +252,14 @@ export default function BasicInfoTab({
       <UnifiedCard className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-text mb-1">Store Status</h3>
+            <h3 className="text-lg font-semibold text-text mb-1">
+              Store Status
+            </h3>
             <p className="text-sm text-textSecondary">
               Make your store visible to customers
             </p>
           </div>
-          
+
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"

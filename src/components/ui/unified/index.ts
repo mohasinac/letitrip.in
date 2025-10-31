@@ -51,6 +51,9 @@ export { default as Accordion } from "./Accordion";
 export * from "./Skeleton";
 export { default as Skeleton } from "./Skeleton";
 
+// Stepper
+export * from "./Stepper";
+
 // Progress & Avatar
 export * from "./Progress";
 export { default as Progress } from "./Progress";

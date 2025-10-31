@@ -2,19 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Box,
-  Paper,
-  Stepper,
-  Step,
-  StepLabel,
-  Button,
-  Typography,
-  Container,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
-import { ArrowBack, ArrowForward, Check } from "@mui/icons-material";
+import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiGet, apiPost, uploadWithAuth } from "@/lib/api/seller";
 import BasicInfoPricingStep from "@/components/seller/products/BasicInfoPricingStep";
@@ -22,6 +11,12 @@ import MediaUploadStep from "@/components/seller/products/MediaUploadStep";
 import ConditionFeaturesStep from "@/components/seller/products/ConditionFeaturesStep";
 import SeoPublishingStep from "@/components/seller/products/SeoPublishingStep";
 import ProductPreview from "@/components/seller/products/ProductPreview";
+import { UnifiedCard } from "@/components/ui/unified/Card";
+import { UnifiedButton } from "@/components/ui/unified/Button";
+import { UnifiedAlert } from "@/components/ui/unified/Alert";
+import { Stepper } from "@/components/ui/unified/Stepper";
+import { PageHeader } from "@/components/ui/admin-seller";
+import { SELLER_ROUTES } from "@/constants/routes";
 
 const steps = [
   "Basic Info & Pricing",
@@ -49,7 +44,7 @@ interface ProductFormData {
     quantity: number;
     lowStockThreshold: number;
     trackInventory: boolean;
-    isUnique: boolean; // True for one-of-a-kind items
+    isUnique: boolean;
   };
   pickupAddressId?: string;
 
@@ -59,8 +54,8 @@ interface ProductFormData {
       url: string;
       altText: string;
       order: number;
-      file?: File; // Optional file for new uploads
-      isNew?: boolean; // Flag to indicate needs upload
+      file?: File;
+      isNew?: boolean;
       path?: string;
       name?: string;
     }>;
@@ -68,9 +63,9 @@ interface ProductFormData {
       url: string;
       thumbnail: string;
       order: number;
-      file?: File; // Optional file for new uploads
-      thumbnailBlob?: Blob; // Thumbnail blob for upload
-      isNew?: boolean; // Flag to indicate needs upload
+      file?: File;
+      thumbnailBlob?: Blob;
+      isNew?: boolean;
       path?: string;
       name?: string;
       size?: number;
@@ -106,7 +101,7 @@ interface ProductFormData {
   status: "draft" | "active";
 }
 
-export default function NewProductPage() {
+function NewProductContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
@@ -131,7 +126,7 @@ export default function NewProductPage() {
       quantity: 1,
       lowStockThreshold: 10,
       trackInventory: true,
-      isUnique: true, // Default to unique item
+      isUnique: true,
     },
     pickupAddressId: undefined,
     media: {
@@ -160,9 +155,8 @@ export default function NewProductPage() {
     status: "draft",
   });
 
-  // Fetch leaf categories and addresses on mount (after auth is ready)
+  // Fetch leaf categories and addresses on mount
   useEffect(() => {
-    // Only fetch data when user is authenticated and not loading
     if (user && !authLoading) {
       fetchLeafCategories();
       fetchAddresses();
@@ -172,7 +166,7 @@ export default function NewProductPage() {
   const fetchLeafCategories = async () => {
     try {
       const response = await apiGet<any>(
-        "/api/seller/products/categories/leaf",
+        "/api/seller/products/categories/leaf"
       );
       if (response.success) {
         setCategories(response.data);
@@ -189,9 +183,8 @@ export default function NewProductPage() {
       if (response.success && response.data) {
         setAddresses(response.data.addresses || []);
 
-        // Auto-select default address if exists
         const defaultAddr = response.data.addresses?.find(
-          (addr: any) => addr.isDefault,
+          (addr: any) => addr.isDefault
         );
         if (defaultAddr && !formData.pickupAddressId) {
           updateFormData({ pickupAddressId: defaultAddr.id });
@@ -203,24 +196,21 @@ export default function NewProductPage() {
   };
 
   const handleNext = () => {
-    // Allow free navigation - no validation required
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setActiveStep((prev) => prev + 1);
     setError(null);
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep((prev) => prev - 1);
     setError(null);
   };
 
   const handleStepClick = (step: number) => {
-    // Allow direct navigation to any step
     setActiveStep(step);
     setError(null);
   };
 
   const validateBeforeSubmit = (): boolean => {
-    // Only validate when submitting the form
     if (!formData.name.trim()) {
       setError("Product name is required");
       setActiveStep(0);
@@ -236,22 +226,20 @@ export default function NewProductPage() {
       setActiveStep(0);
       return false;
     }
-    // SKU and images are now optional
     if (!formData.seo.slug.trim()) {
       setError("SEO slug is required");
-      setActiveStep(2); // SEO is now step 2
+      setActiveStep(2);
       return false;
     }
     if (!formData.seo.slug.startsWith("buy-")) {
       setError("SEO slug must start with 'buy-'");
-      setActiveStep(2); // SEO is now step 2
+      setActiveStep(2);
       return false;
     }
     return true;
   };
 
   const handleSubmit = async () => {
-    // Validate entire form before submission
     if (!validateBeforeSubmit()) {
       return;
     }
@@ -260,13 +248,9 @@ export default function NewProductPage() {
     setError(null);
 
     try {
-      // Upload new images to Firebase Storage
       const uploadedImages = await uploadPendingImages();
-
-      // Upload new videos to Firebase Storage
       const uploadedVideos = await uploadPendingVideos();
 
-      // Prepare form data with uploaded image and video URLs
       const finalFormData = {
         ...formData,
         media: {
@@ -278,7 +262,7 @@ export default function NewProductPage() {
 
       const response = await apiPost<any>(
         "/api/seller/products",
-        finalFormData,
+        finalFormData
       );
 
       if (response.success) {
@@ -310,17 +294,12 @@ export default function NewProductPage() {
     const images = formData.media.images;
     const uploadedImages = [];
 
-    // If no images, return empty array
-    if (images.length === 0) {
-      return [];
-    }
+    if (images.length === 0) return [];
 
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
 
-      // Skip already uploaded images
       if (!img.isNew || !img.file) {
-        // Keep existing uploaded images
         if (!img.isNew) {
           uploadedImages.push({
             url: img.url,
@@ -334,31 +313,19 @@ export default function NewProductPage() {
       }
 
       try {
-        // Create FormData for upload
         const formDataUpload = new FormData();
         formDataUpload.append("files", img.file);
         formDataUpload.append("slug", formData.seo.slug);
         formDataUpload.append("type", "image");
 
-        console.log(`Uploading image ${i + 1}:`, {
-          fileName: img.file.name,
-          fileSize: img.file.size,
-          slug: formData.seo.slug,
-        });
-
-        // Upload to API
         const responseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          formDataUpload,
+          formDataUpload
         );
 
-        // Parse JSON response
         const response: any = await responseRaw.json();
 
-        console.log(`Upload response for image ${i + 1}:`, response);
-
         if (response.success && response.data && response.data.length > 0) {
-          // Use the uploaded URL
           uploadedImages.push({
             url: response.data[0].url,
             altText: img.altText,
@@ -366,19 +333,15 @@ export default function NewProductPage() {
             path: response.data[0].path,
             name: response.data[0].name,
           });
-
-          // Clean up blob URL
           URL.revokeObjectURL(img.url);
         } else {
           const errorMsg =
             response.error || response.details || "Unknown error";
-          console.error(`Upload failed for image ${i + 1}:`, errorMsg);
           throw new Error(`Image ${i + 1}: ${errorMsg}`);
         }
       } catch (error: any) {
-        console.error(`Failed to upload image ${i + 1}:`, error);
         throw new Error(
-          `Failed to upload image ${i + 1}: ${error.message || "Network error"}`,
+          `Failed to upload image ${i + 1}: ${error.message || "Network error"}`
         );
       }
     }
@@ -390,17 +353,12 @@ export default function NewProductPage() {
     const videos = formData.media.videos;
     const uploadedVideos = [];
 
-    // If no videos, return empty array
-    if (videos.length === 0) {
-      return [];
-    }
+    if (videos.length === 0) return [];
 
     for (let i = 0; i < videos.length; i++) {
       const video = videos[i];
 
-      // Skip already uploaded videos
       if (!video.isNew || !video.file) {
-        // Keep existing uploaded videos
         if (!video.isNew) {
           uploadedVideos.push({
             url: video.url,
@@ -415,12 +373,6 @@ export default function NewProductPage() {
       }
 
       try {
-        console.log(`Uploading video ${i + 1}:`, {
-          fileName: video.file.name,
-          fileSize: video.file.size,
-          slug: formData.seo.slug,
-        });
-
         // Upload video file
         const videoFormData = new FormData();
         videoFormData.append("files", video.file);
@@ -429,23 +381,19 @@ export default function NewProductPage() {
 
         const videoResponseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          videoFormData,
+          videoFormData
         );
 
-        // Parse JSON response
         const videoResponse: any = await videoResponseRaw.json();
-
-        console.log(`Video upload response ${i + 1}:`, videoResponse);
 
         if (
           !videoResponse.success ||
           !videoResponse.data ||
           videoResponse.data.length === 0
         ) {
-          const errorMsg =
-            videoResponse.error || videoResponse.details || "Unknown error";
-          console.error(`Video upload failed for video ${i + 1}:`, errorMsg);
-          throw new Error(`Video ${i + 1}: ${errorMsg}`);
+          throw new Error(
+            `Video ${i + 1}: ${videoResponse.error || "Upload failed"}`
+          );
         }
 
         const videoData = videoResponse.data[0];
@@ -459,40 +407,32 @@ export default function NewProductPage() {
         thumbnailFormData.append(
           "files",
           video.thumbnailBlob,
-          `${videoData.name}-thumb.jpg`,
+          `${videoData.name}-thumb.jpg`
         );
         thumbnailFormData.append("slug", formData.seo.slug);
         thumbnailFormData.append("type", "image");
 
         const thumbnailResponseRaw = await uploadWithAuth(
           "/api/seller/products/media",
-          thumbnailFormData,
+          thumbnailFormData
         );
 
-        // Parse JSON response
         const thumbnailResponse: any = await thumbnailResponseRaw.json();
-
-        console.log(`Thumbnail upload response ${i + 1}:`, thumbnailResponse);
 
         if (
           !thumbnailResponse.success ||
           !thumbnailResponse.data ||
           thumbnailResponse.data.length === 0
         ) {
-          const errorMsg =
-            thumbnailResponse.error ||
-            thumbnailResponse.details ||
-            "Unknown error";
-          console.error(
-            `Thumbnail upload failed for video ${i + 1}:`,
-            errorMsg,
+          throw new Error(
+            `Video ${i + 1} thumbnail: ${
+              thumbnailResponse.error || "Upload failed"
+            }`
           );
-          throw new Error(`Video ${i + 1} thumbnail: ${errorMsg}`);
         }
 
         const thumbnailData = thumbnailResponse.data[0];
 
-        // Use the uploaded URLs
         uploadedVideos.push({
           url: videoData.url,
           thumbnail: thumbnailData.url,
@@ -502,13 +442,11 @@ export default function NewProductPage() {
           size: videoData.size,
         });
 
-        // Clean up blob URLs
         URL.revokeObjectURL(video.url);
         URL.revokeObjectURL(video.thumbnail);
       } catch (error: any) {
-        console.error(`Failed to upload video ${i + 1}:`, error);
         throw new Error(
-          `Failed to upload video ${i + 1}: ${error.message || "Network error"}`,
+          `Failed to upload video ${i + 1}: ${error.message || "Network error"}`
         );
       }
     }
@@ -540,102 +478,97 @@ export default function NewProductPage() {
           <ConditionFeaturesStep data={formData} onChange={updateFormData} />
         );
       default:
-        return "Unknown step";
+        return null;
     }
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: "flex", gap: 3 }}>
-        {/* Main Form Area - 70% */}
-        <Box sx={{ flex: "0 0 70%" }}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h5" gutterBottom>
-              Add New Product
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Create a new product listing for your shop
-            </Typography>
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title="Add New Product"
+        description="Create a new product listing for your shop"
+        breadcrumbs={[
+          { label: "Seller", href: SELLER_ROUTES.DASHBOARD },
+          { label: "Products", href: SELLER_ROUTES.PRODUCTS },
+          { label: "Add Product" },
+        ]}
+      />
 
-            <Stepper activeStep={activeStep} sx={{ my: 4 }}>
-              {steps.map((label, index) => (
-                <Step
-                  key={label}
-                  onClick={() => handleStepClick(index)}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+      {/* Error Alert */}
+      {error && (
+        <UnifiedAlert variant="error" onClose={() => setError(null)}>
+          {error}
+        </UnifiedAlert>
+      )}
 
-            {error && (
-              <Alert
-                severity="error"
-                sx={{ mb: 3 }}
-                onClose={() => setError(null)}
-              >
-                {error}
-              </Alert>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Form Area - 2/3 width */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Stepper */}
+          <UnifiedCard className="p-6">
+            <Stepper
+              steps={steps}
+              currentStep={activeStep}
+              onStepClick={handleStepClick}
+              allowJump={true}
+            />
+          </UnifiedCard>
 
-            <Box sx={{ minHeight: 400 }}>{getStepContent(activeStep)}</Box>
+          {/* Step Content */}
+          <UnifiedCard className="p-6">
+            <div className="min-h-[400px]">{getStepContent(activeStep)}</div>
+          </UnifiedCard>
 
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 4,
-                gap: 2,
-              }}
+          {/* Navigation Buttons */}
+          <div className="flex items-center justify-between gap-4">
+            <UnifiedButton
+              variant="outline"
+              onClick={handleBack}
+              disabled={activeStep === 0}
+              icon={<ArrowLeft />}
             >
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                startIcon={<ArrowBack />}
-              >
-                Back
-              </Button>
+              Back
+            </UnifiedButton>
 
-              <Box sx={{ flex: "1 1 auto" }} />
-
+            <div className="flex items-center gap-2">
               {/* Always show Finish button */}
-              <Button
-                variant="contained"
-                color="success"
+              <UnifiedButton
+                variant="success"
                 onClick={handleSubmit}
-                disabled={loading}
-                startIcon={loading ? <CircularProgress size={20} /> : <Check />}
+                loading={loading}
+                icon={
+                  loading ? <Loader2 className="animate-spin" /> : <Check />
+                }
               >
-                {loading ? "Creating..." : "Finish & Create Product"}
-              </Button>
+                {loading ? "Creating..." : "Finish & Create"}
+              </UnifiedButton>
 
               {/* Show Next button if not on last step */}
               {activeStep < steps.length - 1 && (
-                <Button
-                  variant="outlined"
-                  onClick={handleNext}
-                  endIcon={<ArrowForward />}
-                >
-                  Next
-                </Button>
+                <UnifiedButton variant="primary" onClick={handleNext}>
+                  Next <ArrowRight className="ml-2 w-4 h-4" />
+                </UnifiedButton>
               )}
-            </Box>
-          </Paper>
-        </Box>
+            </div>
+          </div>
+        </div>
 
-        {/* Preview Panel - 30% */}
-        <Box
-          sx={{
-            flex: "0 0 30%",
-            position: "sticky",
-            top: 80,
-            height: "fit-content",
-          }}
-        >
-          <ProductPreview data={formData} />
-        </Box>
-      </Box>
-    </Container>
+        {/* Preview Panel - 1/3 width, sticky on desktop */}
+        <div className="lg:col-span-1">
+          <div className="lg:sticky lg:top-24">
+            <ProductPreview data={formData} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function NewProductPage() {
+  return (
+    <RoleGuard requiredRole="seller">
+      <NewProductContent />
+    </RoleGuard>
   );
 }
