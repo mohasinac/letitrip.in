@@ -1,259 +1,144 @@
 "use client";
 
 import React from "react";
+import NextLink from "next/link";
+import { ShieldCheck, Truck, Star, Sparkles } from "lucide-react";
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Card,
-  CardContent,
+  UnifiedCard,
   CardMedia,
-  Chip,
-  useTheme,
-} from "@mui/material";
-import { TrendingUp, LocalShipping, Verified, Star } from "@mui/icons-material";
+  CardContent,
+  UnifiedBadge,
+  PrimaryButton,
+  OutlineButton,
+} from "@/components/ui/unified";
+import { cn } from "@/lib/utils";
 
 export default function ModernHeroBanner() {
-  const theme = useTheme();
-
   return (
-    <Box
-      sx={{
-        background:
-          theme.palette.mode === "dark"
-            ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 50%, ${theme.palette.background.default} 100%)`
-            : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.action.hover} 50%, ${theme.palette.background.paper} 100%)`,
-        py: { xs: 8, md: 12 },
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "70vh",
-      }}
-    >
+    <section className="relative min-h-[70vh] py-16 md:py-24 overflow-hidden bg-gradient-to-br from-surface via-surfaceVariant to-surface">
       {/* Background Pattern */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
           backgroundImage:
-            theme.palette.mode === "dark"
-              ? `radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.08) 1px, transparent 1px)`
-              : `radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.06) 1px, transparent 1px)`,
+            "radial-gradient(circle at 50% 50%, var(--color-primary) 1px, transparent 1px)",
           backgroundSize: "50px 50px",
         }}
       />
 
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-            gap: 4,
-            alignItems: "center",
-          }}
-        >
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* Left Content */}
-          <Box sx={{ maxWidth: 600 }}>
-            <Chip
-              label="✨ Premium Quality Guaranteed"
-              size="small"
-              sx={{
-                mb: 3,
-                backgroundColor: "primary.main",
-                color: "white",
-                fontWeight: 600,
-              }}
-            />
+          <div className="max-w-2xl">
+            <UnifiedBadge variant="primary" size="sm" rounded className="mb-6">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Premium Quality Guaranteed
+            </UnifiedBadge>
 
-            <Typography
-              variant="h1"
-              sx={{
-                fontWeight: 700,
-                mb: 3,
-                background:
-                  theme.palette.mode === "dark"
-                    ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-                    : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                lineHeight: 1.1,
-                textShadow:
-                  theme.palette.mode === "dark"
-                    ? "0 0 20px rgba(0, 149, 246, 0.3)"
-                    : "none",
-              }}
-            >
-              Authentic Beyblades
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-text to-primary bg-clip-text text-transparent">
+                Authentic Beyblades
+              </span>
               <br />
-              <span style={{ fontSize: "0.8em" }}>for True Bladers</span>
-            </Typography>
+              <span className="text-3xl md:text-4xl lg:text-5xl text-textSecondary">
+                for True Bladers
+              </span>
+            </h1>
 
-            <Typography
-              variant="h6"
-              sx={{
-                mb: 4,
-                lineHeight: 1.6,
-                color:
-                  theme.palette.mode === "dark"
-                    ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-                    : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-                opacity: 0.9,
-              }}
-            >
+            <p className="text-lg md:text-xl text-textSecondary mb-8 leading-relaxed opacity-90">
               Discover rare, authentic Beyblades from all generations. From
               classic Plastic Gen to the latest Beyblade X series - we have them
               all.
-            </Typography>
+            </p>
 
-            <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  backgroundColor: "primary.main",
-                  color: "white",
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
-                Shop Now
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                }}
-              >
-                View Collections
-              </Button>
-            </Box>
+            <div className="flex gap-3 mb-8 flex-wrap">
+              <NextLink href="/products">
+                <PrimaryButton size="lg">Shop Now</PrimaryButton>
+              </NextLink>
+              <NextLink href="/categories">
+                <OutlineButton size="lg">View Collections</OutlineButton>
+              </NextLink>
+            </div>
 
             {/* Features */}
-            <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+            <div className="flex gap-6 flex-wrap">
               {[
-                { icon: <Verified />, text: "100% Authentic" },
-                { icon: <LocalShipping />, text: "Fast Shipping" },
-                { icon: <Star />, text: "5-Star Rated" },
-              ].map((feature, index) => (
-                <Box
-                  key={index}
-                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                >
-                  <Box sx={{ color: "primary.main" }}>{feature.icon}</Box>
-                  <Typography variant="body2" fontWeight={500}>
-                    {feature.text}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
+                { icon: ShieldCheck, text: "100% Authentic" },
+                { icon: Truck, text: "Fast Shipping" },
+                { icon: Star, text: "5-Star Rated" },
+              ].map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="flex items-center gap-2">
+                    <Icon className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium text-text">
+                      {feature.text}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Right Content - Featured Products */}
-          <Box sx={{ position: "relative" }}>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 2,
-              }}
-            >
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-4">
               {/* Featured product cards */}
               {[
                 {
                   name: "Dragoon GT",
                   price: "₹2,499",
-                  image: "/api/placeholder/300/300",
                   badge: "Popular",
+                  badgeVariant: "warning" as const,
                 },
                 {
                   name: "Valkyrie X",
                   price: "₹1,899",
-                  image: "/api/placeholder/300/300",
                   badge: "New",
+                  badgeVariant: "success" as const,
                 },
                 {
                   name: "Spriggan Burst",
                   price: "₹1,699",
-                  image: "/api/placeholder/300/300",
                   badge: "Sale",
+                  badgeVariant: "error" as const,
                 },
               ].map((product, index) => (
-                <Card
+                <UnifiedCard
                   key={index}
-                  sx={{
-                    borderRadius: 3,
-                    overflow: "hidden",
-                    transition: "transform 0.3s ease",
-                    "&:hover": {
-                      transform: "translateY(-8px)",
-                    },
-                    position: "relative",
-                  }}
+                  variant="elevated"
+                  className="overflow-hidden transition-transform duration-300 hover:-translate-y-2 cursor-pointer"
                 >
-                  <Box sx={{ position: "relative" }}>
-                    <CardMedia
-                      component="div"
-                      sx={{
-                        height: 160,
-                        backgroundColor: "background.paper",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Typography color="text.secondary">
-                        {product.name}
-                      </Typography>
-                    </CardMedia>
-                    <Chip
-                      label={product.badge}
-                      size="small"
-                      sx={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        backgroundColor:
-                          product.badge === "Sale"
-                            ? "error.main"
-                            : product.badge === "New"
-                              ? "success.main"
-                              : "warning.main",
-                        color: "white",
-                        fontWeight: 600,
-                      }}
-                    />
-                  </Box>
-                  <CardContent sx={{ p: 2 }}>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                  {/* Image Placeholder */}
+                  <CardMedia className="h-40 bg-surfaceVariant flex items-center justify-center relative">
+                    <div className="text-textTertiary font-medium">
                       {product.name}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      color="primary.main"
-                      fontWeight={700}
-                    >
+                    </div>
+                    <div className="absolute top-2 right-2">
+                      <UnifiedBadge
+                        variant={product.badgeVariant}
+                        size="xs"
+                        rounded
+                      >
+                        {product.badge}
+                      </UnifiedBadge>
+                    </div>
+                  </CardMedia>
+
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-semibold mb-2 text-text">
+                      {product.name}
+                    </h3>
+                    <p className="text-xl font-bold text-primary">
                       {product.price}
-                    </Typography>
+                    </p>
                   </CardContent>
-                </Card>
+                </UnifiedCard>
               ))}
-            </Box>
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

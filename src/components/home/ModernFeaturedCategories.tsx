@@ -1,24 +1,16 @@
 "use client";
 import React from "react";
-import {
-  ArrowForward,
-  TrendingUp,
-  Category as CategoryIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-  Chip,
-  useTheme,
-  alpha,
-} from "@mui/material";
+import { ArrowRight, TrendingUp, Package } from "lucide-react";
 import NextLink from "next/link";
 import type { Category } from "@/types";
+import {
+  UnifiedCard,
+  CardMedia,
+  CardContent,
+  PrimaryButton,
+  UnifiedBadge,
+} from "@/components/ui/unified";
+import { cn } from "@/lib/utils";
 
 interface CategoryWithCount extends Category {
   productCount: number;
@@ -33,11 +25,9 @@ interface ModernFeaturedCategoriesProps {
 export default function ModernFeaturedCategories({
   categories,
 }: ModernFeaturedCategoriesProps) {
-  const theme = useTheme();
-
   // Filter only featured categories
   const featuredCategories = categories.filter(
-    (cat) => cat.featured && cat.isActive,
+    (cat) => cat.featured && cat.isActive
   );
 
   // If no featured categories, don't render the section
@@ -46,245 +36,123 @@ export default function ModernFeaturedCategories({
   }
 
   return (
-    <Box
-      component="section"
-      sx={{
-        py: { xs: 6, md: 10 },
-        backgroundColor: "background.default",
-      }}
-    >
-      <Container maxWidth="lg">
+    <section className="py-12 md:py-20 bg-surface">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: { xs: "2rem", md: "3rem" },
-            }}
-          >
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Featured Categories
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              color: "text.secondary",
-              maxWidth: "600px",
-              mx: "auto",
-              lineHeight: 1.6,
-            }}
-          >
+          </h2>
+          <p className="text-lg text-textSecondary max-w-2xl mx-auto leading-relaxed">
             Explore our curated collection of Beyblades across all generations
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Categories Grid */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              lg: "repeat(3, 1fr)",
-            },
-            gap: 4,
-          }}
-        >
-          {featuredCategories.map((category, index) => {
-            // Determine category color based on product availability
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredCategories.map((category) => {
             const hasProducts = (category.inStockCount || 0) > 0;
-            const categoryColor = hasProducts
-              ? theme.palette.primary.main
-              : theme.palette.grey[400];
 
             return (
-              <Card
+              <NextLink
                 key={category.id}
-                sx={{
-                  height: "100%",
-                  backgroundColor: hasProducts
-                    ? "background.paper"
-                    : alpha(theme.palette.grey[100], 0.5),
-                  borderRadius: 3,
-                  overflow: "hidden",
-                  transition: "all 0.3s ease",
-                  border: "1px solid",
-                  borderColor: hasProducts
-                    ? "divider"
-                    : theme.palette.grey[300],
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: `0 12px 40px ${alpha(categoryColor, 0.2)}`,
-                    borderColor: categoryColor,
-                  },
-                  cursor: "pointer",
-                  position: "relative",
-                  opacity: hasProducts ? 1 : 0.75,
-                }}
-              >
-                {/* Trending Badge */}
-                {category.featured && (
-                  <Chip
-                    icon={<TrendingUp />}
-                    label="Trending"
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 16,
-                      right: 16,
-                      zIndex: 2,
-                      backgroundColor: "warning.main",
-                      color: "common.white",
-                      fontWeight: 600,
-                      "&:hover": {
-                        backgroundColor: "warning.dark",
-                      },
-                    }}
-                  />
+                href={hasProducts ? `/products?category=${category.slug}` : "#"}
+                className={cn(
+                  "block transition-all",
+                  !hasProducts && "pointer-events-none"
                 )}
-
-                {/* Image */}
-                <CardMedia
-                  component="div"
-                  sx={{
-                    height: 200,
-                    background: category.image
-                      ? `url(${category.image})`
-                      : `linear-gradient(135deg, ${alpha(
-                          categoryColor,
-                          0.15,
-                        )} 0%, ${alpha(categoryColor, 0.05)} 100%)`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "relative",
-                    "&::before": {
-                      content: '""',
-                      position: "absolute",
-                      inset: 0,
-                      background: `radial-gradient(circle at center, ${alpha(
-                        categoryColor,
-                        0.2,
-                      )} 0%, transparent 70%)`,
-                    },
-                  }}
-                >
-                  {!category.image && (
-                    <CategoryIcon
-                      sx={{
-                        fontSize: 80,
-                        color: categoryColor,
-                        opacity: 0.8,
-                        zIndex: 1,
-                      }}
-                    />
+              >
+                <UnifiedCard
+                  variant="elevated"
+                  className={cn(
+                    "h-full transition-all duration-300 cursor-pointer",
+                    "hover:-translate-y-2 hover:shadow-xl",
+                    hasProducts
+                      ? "hover:border-primary/50"
+                      : "opacity-75 bg-surface/50"
                   )}
-                </CardMedia>
+                >
+                  {/* Trending Badge */}
+                  {category.featured && hasProducts && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <UnifiedBadge variant="warning" size="sm" rounded>
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        Trending
+                      </UnifiedBadge>
+                    </div>
+                  )}
 
-                {/* Content */}
-                <CardContent sx={{ p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      mb: 1,
-                      color: "text.primary",
-                    }}
-                  >
-                    {category.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mb: 2,
-                      lineHeight: 1.6,
-                      color: "text.secondary",
-                    }}
-                  >
-                    {category.description || "Explore this category"}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mt: 3,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: 600,
-                        color: categoryColor,
-                      }}
-                    >
-                      {category.productCount > 0
-                        ? `${category.productCount}+ Products`
-                        : "Coming Soon"}
-                    </Typography>
-
-                    {hasProducts && (
-                      <Button
-                        component={NextLink}
-                        href={`/products?category=${category.slug}`}
-                        endIcon={<ArrowForward />}
-                        sx={{
-                          color: categoryColor,
-                          fontWeight: 600,
-                          textTransform: "none",
-                          "&:hover": {
-                            backgroundColor: alpha(categoryColor, 0.1),
-                          },
-                        }}
-                      >
-                        Explore
-                      </Button>
+                  {/* Image */}
+                  <CardMedia
+                    className={cn(
+                      "h-48 flex items-center justify-center relative overflow-hidden",
+                      category.image
+                        ? "bg-cover bg-center"
+                        : "bg-gradient-to-br from-primary/10 to-primary/5"
                     )}
-                  </Box>
-                </CardContent>
-              </Card>
+                    style={
+                      category.image
+                        ? { backgroundImage: `url(${category.image})` }
+                        : undefined
+                    }
+                  >
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-radial-gradient from-primary/20 to-transparent" />
+
+                    {/* Icon if no image */}
+                    {!category.image && (
+                      <Package
+                        className={cn(
+                          "w-20 h-20 z-10",
+                          hasProducts ? "text-primary" : "text-textTertiary",
+                          "opacity-80"
+                        )}
+                      />
+                    )}
+                  </CardMedia>
+
+                  {/* Content */}
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-2 text-text">
+                      {category.name}
+                    </h3>
+                    <p className="text-sm text-textSecondary mb-4 line-clamp-2">
+                      {category.description || "Explore this category"}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-4">
+                      <span
+                        className={cn(
+                          "text-sm font-semibold",
+                          hasProducts ? "text-primary" : "text-textTertiary"
+                        )}
+                      >
+                        {category.productCount > 0
+                          ? `${category.productCount}+ Products`
+                          : "Coming Soon"}
+                      </span>
+
+                      {hasProducts && (
+                        <ArrowRight className="w-5 h-5 text-primary transition-transform group-hover:translate-x-1" />
+                      )}
+                    </div>
+                  </CardContent>
+                </UnifiedCard>
+              </NextLink>
             );
           })}
-        </Box>
+        </div>
 
         {/* View All Button */}
-        <Box sx={{ textAlign: "center", mt: 6 }}>
-          <Button
-            component={NextLink}
-            href="/categories"
-            variant="contained"
-            size="large"
-            endIcon={<ArrowForward />}
-            sx={{
-              backgroundColor: "primary.main",
-              color: "white",
-              fontWeight: 600,
-              px: 4,
-              py: 1.5,
-              borderRadius: 3,
-              textTransform: "none",
-              fontSize: "1.1rem",
-              "&:hover": {
-                backgroundColor: "primary.dark",
-                transform: "translateY(-2px)",
-                boxShadow: "0 8px 25px rgba(0, 149, 246, 0.3)",
-              },
-              transition: "all 0.3s ease",
-            }}
-          >
-            View All Categories
-          </Button>
-        </Box>
-      </Container>
-    </Box>
+        <div className="text-center mt-12">
+          <NextLink href="/categories">
+            <PrimaryButton size="lg" className="group">
+              View All Categories
+              <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+            </PrimaryButton>
+          </NextLink>
+        </div>
+      </div>
+    </section>
   );
 }

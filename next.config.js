@@ -116,10 +116,32 @@ const nextConfig = {
 
   // Experimental features for better performance
   experimental: {
-    // Disable optimizeCss temporarily to avoid critters issues
-    // Can be re-enabled once Turbopack fully supports it
-    optimizeCss: false,
-    optimizePackageImports: ["@mui/material", "@mui/icons-material"],
+    // Enable optimizeCss with critters for critical CSS inlining
+    optimizeCss: true,
+    optimizePackageImports: [
+      "@mui/material",
+      "@mui/icons-material",
+      "lucide-react",
+      "@heroicons/react",
+      "framer-motion",
+      "lodash",
+    ],
+    // Enable Server Actions
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
+
+  // Production optimizations
+  reactStrictMode: true,
+
+  // Performance improvements
+  poweredByHeader: false,
+  generateEtags: true,
+
+  // Compiler options (Next.js 16+ has swcMinify and optimizeFonts enabled by default)
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 };
 

@@ -142,7 +142,7 @@ function ShopSetupContent() {
   const fetchShopData = async () => {
     try {
       setLoading(true);
-      
+
       // Check if user is authenticated
       if (!user) {
         setLoading(false);
@@ -191,13 +191,13 @@ function ShopSetupContent() {
               pincode: addr.pincode || "",
               country: addr.country || "India",
               isDefault: addr.isDefault || false,
-            })),
+            }))
           );
         }
       }
     } catch (error: any) {
       console.error("Error fetching shop data:", error);
-      
+
       // Only show error if it's not an authentication issue
       if (error.message !== "Invalid token") {
         setSnackbar({
@@ -275,7 +275,7 @@ function ShopSetupContent() {
 
   const handleAddressChange = (id: string, field: string, value: any) => {
     setPickupAddresses((prev) =>
-      prev.map((addr) => (addr.id === id ? { ...addr, [field]: value } : addr)),
+      prev.map((addr) => (addr.id === id ? { ...addr, [field]: value } : addr))
     );
   };
 
@@ -284,7 +284,7 @@ function ShopSetupContent() {
       prev.map((addr) => ({
         ...addr,
         isDefault: addr.id === id,
-      })),
+      }))
     );
   };
 
@@ -537,8 +537,8 @@ function ShopSetupContent() {
                         {uploadingLogo
                           ? "Uploading..."
                           : shopData.logo
-                            ? "Change Logo"
-                            : "Upload Logo"}
+                          ? "Change Logo"
+                          : "Upload Logo"}
                         <input
                           type="file"
                           hidden
@@ -583,8 +583,8 @@ function ShopSetupContent() {
                         {uploadingCover
                           ? "Uploading..."
                           : shopData.coverImage
-                            ? "Change Cover"
-                            : "Upload Cover"}
+                          ? "Change Cover"
+                          : "Upload Cover"}
                         <input
                           type="file"
                           hidden
@@ -676,7 +676,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "label",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           placeholder="e.g., Main Warehouse, Store Location"
@@ -692,7 +692,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "name",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -708,7 +708,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "phone",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -724,7 +724,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "addressLine1",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -740,7 +740,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "addressLine2",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           size="small"
@@ -755,7 +755,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "city",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -771,7 +771,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "state",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -787,7 +787,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "pincode",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -803,7 +803,7 @@ function ShopSetupContent() {
                             handleAddressChange(
                               address.id,
                               "country",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           required
@@ -978,7 +978,7 @@ function ShopSetupContent() {
                       onChange={(e) =>
                         handleChange(
                           "freeShippingThreshold",
-                          parseFloat(e.target.value) || 0,
+                          parseFloat(e.target.value) || 0
                         )
                       }
                       helperText="Orders above this amount get free shipping (0 to disable)"
@@ -994,7 +994,7 @@ function ShopSetupContent() {
                       onChange={(e) =>
                         handleChange(
                           "processingTime",
-                          parseInt(e.target.value) || 0,
+                          parseInt(e.target.value) || 0
                         )
                       }
                       helperText="Number of days to process an order before shipping"

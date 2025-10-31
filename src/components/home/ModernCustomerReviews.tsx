@@ -1,18 +1,13 @@
 "use client";
 
 import React from "react";
+import { Quote, Star, CheckCircle } from "lucide-react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
+  UnifiedCard,
   CardContent,
-  Avatar,
-  Rating,
-  Chip,
-  useTheme,
-} from "@mui/material";
-import { FormatQuote } from "@mui/icons-material";
+  UnifiedBadge,
+} from "@/components/ui/unified";
+import { cn } from "@/lib/utils";
 
 const reviews = [
   {
@@ -58,188 +53,98 @@ const reviews = [
 ];
 
 export default function ModernCustomerReviews() {
-  const theme = useTheme();
-
   return (
-    <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
-      <Container maxWidth="xl">
+    <section className="py-16 bg-surface">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-text to-primary bg-clip-text text-transparent">
             What Our Customers Say
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
+          </h2>
+          <p className="text-lg text-textSecondary max-w-2xl mx-auto">
             Join thousands of satisfied customers who trust us for authentic
             Beyblades and exceptional service.
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Reviews Grid */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "repeat(2, 1fr)",
-              lg: "repeat(2, 1fr)",
-            },
-            gap: 4,
-          }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {reviews.map((review, index) => (
-            <Card
+            <UnifiedCard
               key={index}
-              sx={{
-                borderRadius: 3,
-                p: 3,
-                position: "relative",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: theme.shadows[8],
-                },
-                border: `1px solid ${theme.palette.divider}`,
-              }}
+              variant="elevated"
+              className="relative transition-all duration-300 hover:-translate-y-1"
             >
               {/* Quote Icon */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 16,
-                  right: 16,
-                  color: "primary.main",
-                  opacity: 0.3,
-                }}
-              >
-                <FormatQuote sx={{ fontSize: 32 }} />
-              </Box>
+              <div className="absolute top-4 right-4 text-primary opacity-30">
+                <Quote className="w-8 h-8" />
+              </div>
 
-              <CardContent sx={{ p: 0 }}>
+              <CardContent>
                 {/* Rating */}
-                <Box sx={{ mb: 2 }}>
-                  <Rating value={review.rating} readOnly size="small" />
-                </Box>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-warning text-warning"
+                    />
+                  ))}
+                </div>
 
                 {/* Review Text */}
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 3,
-                    lineHeight: 1.6,
-                    color: "text.primary",
-                    fontStyle: "italic",
-                  }}
-                >
+                <p className="text-text mb-6 leading-relaxed italic">
                   "{review.review}"
-                </Typography>
+                </p>
 
                 {/* Product Badge */}
-                <Chip
-                  label={review.product}
-                  size="small"
-                  sx={{
-                    mb: 3,
-                    backgroundColor: "primary.main",
-                    color: "white",
-                    fontWeight: 500,
-                  }}
-                />
+                <div className="mb-6">
+                  <UnifiedBadge variant="primary" size="sm">
+                    {review.product}
+                  </UnifiedBadge>
+                </div>
 
                 {/* Customer Info */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar
-                    sx={{
-                      bgcolor: "primary.main",
-                      width: 48,
-                      height: 48,
-                      fontWeight: 600,
-                    }}
-                  >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
                     {review.avatar}
-                  </Avatar>
-                  <Box sx={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="h6" fontWeight={600}>
-                        {review.name}
-                      </Typography>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-semibold text-text">{review.name}</h4>
                       {review.verified && (
-                        <Chip
-                          label="✓ Verified"
-                          size="small"
-                          sx={{
-                            height: 20,
-                            fontSize: "0.7rem",
-                            backgroundColor: "success.main",
-                            color: "white",
-                          }}
-                        />
+                        <UnifiedBadge variant="success" size="xs" rounded>
+                          <CheckCircle className="w-2.5 h-2.5 mr-0.5" />
+                          Verified
+                        </UnifiedBadge>
                       )}
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
+                    </div>
+                    <p className="text-sm text-textSecondary">
                       {review.location}
-                    </Typography>
-                  </Box>
-                </Box>
+                    </p>
+                  </div>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
           ))}
-        </Box>
+        </div>
 
         {/* Stats */}
-        <Box
-          sx={{
-            mt: 8,
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            },
-            gap: 4,
-            textAlign: "center",
-          }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             { number: "5000+", label: "Happy Customers" },
             { number: "4.9/5", label: "Average Rating" },
             { number: "2000+", label: "Products Sold" },
             { number: "99%", label: "Satisfaction Rate" },
           ].map((stat, index) => (
-            <Box key={index}>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 700,
-                  color: "primary.main",
-                  mb: 1,
-                }}
-              >
+            <div key={index}>
+              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 {stat.number}
-              </Typography>
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                fontWeight={500}
-              >
-                {stat.label}
-              </Typography>
-            </Box>
+              </div>
+              <div className="text-textSecondary font-medium">{stat.label}</div>
+            </div>
           ))}
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </section>
   );
 }

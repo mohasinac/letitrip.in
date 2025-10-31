@@ -2,7 +2,9 @@
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { errorLogger } from "@/lib/utils/errorLogger";
-// Using regular button elements instead of custom Button component
+import { PrimaryButton, OutlineButton } from "@/components/ui/unified";
+import { UnifiedCard, CardContent } from "@/components/ui/unified";
+import { UnifiedAlert } from "@/components/ui/unified";
 
 interface Props {
   children: ReactNode;
@@ -69,10 +71,10 @@ class ErrorBoundary extends Component<Props, State> {
       const showDetails = this.props.showDetails ?? isDevelopment;
 
       return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-surfaceVariant flex flex-col justify-center py-12 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <div className="text-center">
-              <div className="mx-auto h-24 w-24 text-red-500 mb-4">
+              <div className="mx-auto h-24 w-24 text-error mb-4">
                 <svg
                   fill="none"
                   stroke="currentColor"
@@ -87,10 +89,10 @@ class ErrorBoundary extends Component<Props, State> {
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-theme-text mb-2">
+              <h1 className="text-3xl font-bold text-text mb-2">
                 Something went wrong
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-textSecondary mb-8">
                 {isDevelopment
                   ? "An error occurred while rendering this component."
                   : "We're sorry, but something unexpected happened. Please try again."}
@@ -99,63 +101,63 @@ class ErrorBoundary extends Component<Props, State> {
           </div>
 
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-theme-background py-8 px-4 shadow sm:rounded-lg sm:px-10">
-              <div className="space-y-4">
-                <button
-                  onClick={this.handleReset}
-                  className="w-full bg-theme-primary hover:bg-theme-secondary text-theme-background py-2 px-4 rounded-md font-medium transition-colors"
-                >
-                  Try Again
-                </button>
+            <UnifiedCard variant="elevated">
+              <CardContent>
+                <div className="space-y-4">
+                  <PrimaryButton fullWidth onClick={this.handleReset}>
+                    Try Again
+                  </PrimaryButton>
 
-                <button
-                  onClick={this.handleReload}
-                  className="w-full border border-theme-primary hover:bg-theme-accent text-theme-text py-2 px-4 rounded-md font-medium transition-colors"
-                >
-                  Reload Page
-                </button>
+                  <OutlineButton fullWidth onClick={this.handleReload}>
+                    Reload Page
+                  </OutlineButton>
 
-                {showDetails && this.state.error && (
-                  <div className="mt-8">
-                    <details className="cursor-pointer">
-                      <summary className="text-sm font-medium text-theme-muted mb-2">
-                        Error Details (Development)
-                      </summary>
-                      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                        <div className="text-sm">
-                          <div className="font-medium text-red-800 mb-2">
-                            Error: {this.state.error.name}
-                          </div>
-                          <div className="text-red-700 mb-4">
-                            {this.state.error.message}
-                          </div>
-                          {this.state.error.stack && (
-                            <div>
-                              <div className="font-medium text-red-800 mb-2">
-                                Stack Trace:
-                              </div>
-                              <pre className="text-xs text-red-600 whitespace-pre-wrap bg-red-100 p-2 rounded overflow-auto max-h-32">
-                                {this.state.error.stack}
-                              </pre>
+                  {showDetails && this.state.error && (
+                    <div className="mt-8">
+                      <details className="cursor-pointer">
+                        <summary className="text-sm font-medium text-textSecondary mb-2">
+                          Error Details (Development)
+                        </summary>
+                        <UnifiedAlert
+                          variant="error"
+                          filled={false}
+                          className="mt-2"
+                        >
+                          <div className="text-sm">
+                            <div className="font-medium mb-2">
+                              Error: {this.state.error.name}
                             </div>
-                          )}
-                          {this.state.errorInfo && (
-                            <div className="mt-4">
-                              <div className="font-medium text-red-800 mb-2">
-                                Component Stack:
-                              </div>
-                              <pre className="text-xs text-red-600 whitespace-pre-wrap bg-red-100 p-2 rounded overflow-auto max-h-32">
-                                {this.state.errorInfo.componentStack}
-                              </pre>
+                            <div className="mb-4">
+                              {this.state.error.message}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    </details>
-                  </div>
-                )}
-              </div>
-            </div>
+                            {this.state.error.stack && (
+                              <div>
+                                <div className="font-medium mb-2">
+                                  Stack Trace:
+                                </div>
+                                <pre className="text-xs whitespace-pre-wrap bg-error/10 p-2 rounded overflow-auto max-h-32">
+                                  {this.state.error.stack}
+                                </pre>
+                              </div>
+                            )}
+                            {this.state.errorInfo && (
+                              <div className="mt-4">
+                                <div className="font-medium mb-2">
+                                  Component Stack:
+                                </div>
+                                <pre className="text-xs whitespace-pre-wrap bg-error/10 p-2 rounded overflow-auto max-h-32">
+                                  {this.state.errorInfo.componentStack}
+                                </pre>
+                              </div>
+                            )}
+                          </div>
+                        </UnifiedAlert>
+                      </details>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </UnifiedCard>
           </div>
         </div>
       );

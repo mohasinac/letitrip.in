@@ -2,231 +2,155 @@
 
 import React from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  InputAdornment,
-  useTheme,
-} from "@mui/material";
-import {
-  Email,
-  LocalShipping,
-  Security,
-  SupportAgent,
-  Verified,
+  ShieldCheck,
+  Truck,
+  Lock,
+  Headphones,
   TrendingUp,
-} from "@mui/icons-material";
+  Mail,
+} from "lucide-react";
+import {
+  UnifiedCard,
+  CardContent,
+  UnifiedInput,
+  PrimaryButton,
+} from "@/components/ui/unified";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
-    icon: <Verified />,
+    icon: ShieldCheck,
     title: "100% Authentic",
     description: "All products are genuine and verified for authenticity",
-    color: "#22c55e", // success.main
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
   {
-    icon: <LocalShipping />,
+    icon: Truck,
     title: "Fast Shipping",
     description: "Quick delivery across India with secure packaging",
-    color: "#4f46e5", // primary.main
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
-    icon: <Security />,
+    icon: Lock,
     title: "Secure Payment",
     description: "Safe and secure payment methods with buyer protection",
-    color: "#ec4899", // secondary.main
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
   {
-    icon: <SupportAgent />,
+    icon: Headphones,
     title: "Expert Support",
     description: "Dedicated customer support for all your queries",
-    color: "#ef4444", // error.main
+    color: "text-error",
+    bgColor: "bg-error/10",
   },
 ];
 
 export default function ModernWhyChooseUs() {
-  const theme = useTheme();
+  const [email, setEmail] = React.useState("");
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement newsletter subscription
+    console.log("Subscribe:", email);
+  };
 
   return (
-    <Box sx={{ py: 8, backgroundColor: "background.default" }}>
-      <Container maxWidth="xl">
+    <section className="py-16 bg-surface">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-text to-primary bg-clip-text text-transparent">
             Why Choose JustForView?
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
+          </h2>
+          <p className="text-lg text-textSecondary max-w-2xl mx-auto leading-relaxed">
             We're committed to providing the best Beyblade shopping experience
             with quality, authenticity, and service you can trust.
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Features Grid */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              lg: "repeat(4, 1fr)",
-            },
-            gap: 3,
-            mb: 8,
-          }}
-        >
-          {features.map((feature, index) => (
-            <Card
-              key={index}
-              sx={{
-                borderRadius: 3,
-                p: 3,
-                textAlign: "center",
-                transition: "all 0.3s ease",
-                border: `2px solid transparent`,
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: theme.shadows[8],
-                  borderColor: feature.color,
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 64,
-                  height: 64,
-                  borderRadius: "50%",
-                  backgroundColor: `${feature.color}20`,
-                  color: feature.color,
-                  mb: 2,
-                }}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <UnifiedCard
+                key={index}
+                variant="elevated"
+                className="text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group"
               >
-                {React.cloneElement(feature.icon, { sx: { fontSize: 32 } })}
-              </Box>
-              <Typography variant="h6" fontWeight={600} gutterBottom>
-                {feature.title}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                lineHeight={1.6}
-              >
-                {feature.description}
-              </Typography>
-            </Card>
-          ))}
-        </Box>
+                <CardContent className="flex flex-col items-center">
+                  <div
+                    className={cn(
+                      "w-16 h-16 rounded-full flex items-center justify-center mb-4",
+                      feature.bgColor
+                    )}
+                  >
+                    <Icon className={cn("w-8 h-8", feature.color)} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-text">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-textSecondary leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </UnifiedCard>
+            );
+          })}
+        </div>
 
         {/* Newsletter Section */}
-        <Card
-          sx={{
-            borderRadius: 4,
-            p: 4,
-            background: `linear-gradient(135deg, ${theme.palette.primary.main}20 0%, ${theme.palette.primary.main}10 100%)`,
-            border: `1px solid ${theme.palette.primary.main}30`,
-            textAlign: "center",
-          }}
+        <UnifiedCard
+          variant="outlined"
+          className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20"
         >
-          <Box sx={{ maxWidth: 500, mx: "auto" }}>
-            <Box
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 64,
-                height: 64,
-                borderRadius: "50%",
-                backgroundColor: "primary.main",
-                color: "white",
-                mb: 3,
-              }}
-            >
-              <TrendingUp sx={{ fontSize: 32 }} />
-            </Box>
+          <CardContent className="py-8 px-6 text-center">
+            <div className="max-w-2xl mx-auto">
+              {/* Icon */}
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-white mb-6">
+                <TrendingUp className="w-8 h-8" />
+              </div>
 
-            <Typography variant="h4" fontWeight={700} gutterBottom>
-              Stay Updated
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 4, lineHeight: 1.6 }}
-            >
-              Get notified about new arrivals, exclusive deals, and restocks of
-              rare Beyblades. Join our newsletter for the latest updates!
-            </Typography>
+              {/* Title & Description */}
+              <h3 className="text-3xl font-bold text-text mb-3">
+                Stay Updated
+              </h3>
+              <p className="text-textSecondary mb-8 leading-relaxed">
+                Get notified about new arrivals, exclusive deals, and restocks
+                of rare Beyblades. Join our newsletter for the latest updates!
+              </p>
 
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                flexDirection: { xs: "column", sm: "row" },
-                maxWidth: 400,
-                mx: "auto",
-              }}
-            >
-              <TextField
-                fullWidth
-                placeholder="Enter your email"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email color="action" />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                    backgroundColor: "background.paper",
-                  },
-                }}
-              />
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  px: 4,
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  minWidth: { xs: "100%", sm: "auto" },
-                }}
+              {/* Newsletter Form */}
+              <form
+                onSubmit={handleSubscribe}
+                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4"
               >
-                Subscribe
-              </Button>
-            </Box>
+                <UnifiedInput
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  fullWidth
+                  leftIcon={<Mail className="w-5 h-5" />}
+                  className="flex-1"
+                />
+                <PrimaryButton type="submit" size="md" className="sm:w-auto">
+                  Subscribe
+                </PrimaryButton>
+              </form>
 
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mt: 2, display: "block" }}
-            >
-              No spam, unsubscribe at any time. We respect your privacy.
-            </Typography>
-          </Box>
-        </Card>
-      </Container>
-    </Box>
+              {/* Privacy Note */}
+              <p className="text-xs text-textSecondary">
+                No spam, unsubscribe at any time. We respect your privacy.
+              </p>
+            </div>
+          </CardContent>
+        </UnifiedCard>
+      </div>
+    </section>
   );
 }

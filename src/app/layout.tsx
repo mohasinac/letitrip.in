@@ -26,9 +26,73 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "JustForView - Premium Beyblade Store",
+  title: {
+    default: "JustForView - Premium Beyblade Store",
+    template: "%s | JustForView",
+  },
   description:
-    "Your premium destination for authentic Beyblades, collectibles, and accessories",
+    "Your premium destination for authentic Beyblades, collectibles, and accessories. Shop the best Beyblade products in India with fast shipping and great prices.",
+  keywords: [
+    "beyblade",
+    "beyblade store",
+    "buy beyblades online",
+    "beyblade India",
+    "beyblade collectibles",
+    "beyblade accessories",
+    "authentic beyblades",
+  ],
+  authors: [{ name: "JustForView" }],
+  creator: "JustForView",
+  publisher: "JustForView",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    siteName: "JustForView",
+    title: "JustForView - Premium Beyblade Store",
+    description:
+      "Your premium destination for authentic Beyblades, collectibles, and accessories",
+    images: [
+      {
+        url: "/assets/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "JustForView - Premium Beyblade Store",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JustForView - Premium Beyblade Store",
+    description:
+      "Your premium destination for authentic Beyblades, collectibles, and accessories",
+    images: ["/assets/og-image.jpg"],
+    creator: "@justforview",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
+    // Add other verification codes as needed
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL,
+  },
+  category: "ecommerce",
 };
 
 export default function RootLayout({
