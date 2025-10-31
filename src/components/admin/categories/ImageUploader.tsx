@@ -2,27 +2,12 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  CircularProgress,
-  Alert,
-  Tabs,
-  Tab,
-  Paper,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import {
-  CloudUpload as CloudUploadIcon,
-  PhotoCamera as PhotoCameraIcon,
-  Link as LinkIcon,
-  WarningAmber as WarningAmberIcon,
-} from "@mui/icons-material";
+  CloudUpload,
+  Camera,
+  Link,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import ImageCropper, { type ImageCropperRef } from "./ImageCropper";
 
@@ -53,7 +38,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`image-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
+      {value === index && <div className="pt-4">{children}</div>}
     </div>
   );
 }
@@ -326,245 +311,256 @@ export default function ImageUploader({
   };
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Stack spacing={2}>
-        <Box>
-          <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-            Image Upload
-          </Typography>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+          Image Upload
+        </h3>
 
-          {error && (
-            <Alert
-              severity="error"
-              sx={{ mb: 2 }}
-              onClose={() => setError(null)}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start justify-between">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
             >
-              {error}
-            </Alert>
-          )}
+              ×
+            </button>
+          </div>
+        )}
 
-          {loading && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 2,
-                mb: 2,
-                p: 2,
-                backgroundColor: "action.hover",
-                borderRadius: 1,
-              }}
-            >
-              <CircularProgress
-                variant="determinate"
-                value={uploadProgress}
-                size={40}
-              />
-              <Typography variant="body2">
-                {uploadProgress > 0
-                  ? `Uploading... ${uploadProgress}%`
-                  : "Processing..."}
-              </Typography>
-            </Box>
-          )}
+        {loading && (
+          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center gap-3">
+            <div className="relative w-10 h-10">
+              <svg className="w-10 h-10 transform -rotate-90">
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                  className="text-gray-200 dark:text-gray-700"
+                />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeDasharray={`${2 * Math.PI * 18}`}
+                  strokeDashoffset={`${2 * Math.PI * 18 * (1 - uploadProgress / 100)}`}
+                  className="text-blue-600 dark:text-blue-400 transition-all duration-300"
+                />
+              </svg>
+            </div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              {uploadProgress > 0
+                ? `Uploading... ${uploadProgress}%`
+                : "Processing..."}
+            </span>
+          </div>
+        )}
 
-          <Tabs
-            value={tabValue}
-            onChange={(_, newValue) => setTabValue(newValue)}
-            aria-label="image upload options"
-            sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
-          >
-            <Tab
-              label="URL"
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-4">
+          <nav className="flex -mb-px">
+            <button
+              onClick={() => setTabValue(0)}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 text-sm font-medium transition-colors ${
+                tabValue === 0
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+              }`}
               id="image-tab-0"
               aria-controls="image-tabpanel-0"
-              icon={<LinkIcon sx={{ mr: 1 }} />}
-              iconPosition="start"
-            />
-            <Tab
-              label="Upload"
+            >
+              <Link className="w-4 h-4" />
+              URL
+            </button>
+            <button
+              onClick={() => setTabValue(1)}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 text-sm font-medium transition-colors ${
+                tabValue === 1
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+              }`}
               id="image-tab-1"
               aria-controls="image-tabpanel-1"
-              icon={<CloudUploadIcon sx={{ mr: 1 }} />}
-              iconPosition="start"
-            />
-            <Tab
-              label="Camera"
+            >
+              <CloudUpload className="w-4 h-4" />
+              Upload
+            </button>
+            <button
+              onClick={() => setTabValue(2)}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 text-sm font-medium transition-colors ${
+                tabValue === 2
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+              }`}
               id="image-tab-2"
               aria-controls="image-tabpanel-2"
-              icon={<PhotoCameraIcon sx={{ mr: 1 }} />}
-              iconPosition="start"
+            >
+              <Camera className="w-4 h-4" />
+              Camera
+            </button>
+          </nav>
+        </div>
+
+        {/* URL Tab */}
+        <TabPanel value={tabValue} index={0}>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="https://example.com/image.jpg"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleUrlSubmit();
+                }
+              }}
+              disabled={loading}
             />
-          </Tabs>
+            <button
+              onClick={handleUrlSubmit}
+              disabled={loading || !urlInput.trim()}
+              className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
+            >
+              Use URL
+            </button>
+          </div>
+        </TabPanel>
 
-          {/* URL Tab */}
-          <TabPanel value={tabValue} index={0}>
-            <Stack spacing={2}>
-              <TextField
-                label="Image URL"
-                placeholder="https://example.com/image.jpg"
-                fullWidth
-                size="small"
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleUrlSubmit();
-                  }
-                }}
-                disabled={loading}
-              />
-              <Button
-                variant="contained"
-                onClick={handleUrlSubmit}
-                disabled={loading || !urlInput.trim()}
-                fullWidth
-              >
-                Use URL
-              </Button>
-            </Stack>
-          </TabPanel>
+        {/* File Upload Tab */}
+        <TabPanel value={tabValue} index={1}>
+          <div className="space-y-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileInputChange}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+              className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <CloudUpload className="w-5 h-5" />
+              Choose Image
+            </button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Supported formats: JPG, PNG, GIF, WebP (Max 5MB)
+            </p>
+          </div>
+        </TabPanel>
 
-          {/* File Upload Tab */}
-          <TabPanel value={tabValue} index={1}>
-            <Stack spacing={2}>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileInputChange}
-                style={{ display: "none" }}
-              />
-              <Button
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loading}
-                fullWidth
-              >
-                Choose Image
-              </Button>
-              <Typography variant="caption" color="text.secondary">
-                Supported formats: JPG, PNG, GIF, WebP (Max 5MB)
-              </Typography>
-            </Stack>
-          </TabPanel>
+        {/* Camera Tab */}
+        <TabPanel value={tabValue} index={2}>
+          <div className="space-y-4">
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleCameraInputChange}
+              className="hidden"
+            />
+            <button
+              onClick={handleCameraClick}
+              disabled={loading}
+              className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <Camera className="w-5 h-5" />
+              Take Photo
+            </button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Best on mobile devices. On desktop, you can select an image file
+              from your device.
+            </p>
+            {cameraPermission === "denied" && (
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  Camera access is denied. Try using the Upload or URL options instead.
+                </p>
+              </div>
+            )}
+          </div>
+        </TabPanel>
 
-          {/* Camera Tab */}
-          <TabPanel value={tabValue} index={2}>
-            <Stack spacing={2}>
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCameraInputChange}
-                style={{ display: "none" }}
-              />
-              <Button
-                variant="contained"
-                startIcon={<PhotoCameraIcon />}
-                onClick={handleCameraClick}
-                disabled={loading}
-                fullWidth
-              >
-                Take Photo
-              </Button>
-              <Typography variant="caption" color="text.secondary">
-                Best on mobile devices. On desktop, you can select an image file
-                from your device.
-              </Typography>
-              {cameraPermission === "denied" && (
-                <Alert severity="warning" icon={<WarningAmberIcon />}>
-                  Camera access is denied. Try using the Upload or URL options
-                  instead.
-                </Alert>
-              )}
-            </Stack>
-          </TabPanel>
-
-          {/* Permission Dialog */}
-          <Dialog
-            open={showPermissionDialog}
-            onClose={() => setShowPermissionDialog(false)}
-          >
-            <DialogTitle>Camera Permission Required</DialogTitle>
-            <DialogContent>
-              <Stack spacing={2} sx={{ pt: 2 }}>
-                <Typography variant="body2">
+        {/* Permission Dialog */}
+        {showPermissionDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Camera Permission Required
+              </h3>
+              <div className="space-y-4 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   This app needs permission to access your camera to take
                   photos. You can:
-                </Typography>
-                <Box component="ul" sx={{ pl: 2 }}>
-                  <Typography component="li" variant="body2">
-                    Allow camera access to take photos
-                  </Typography>
-                  <Typography component="li" variant="body2">
-                    Use the Upload tab to select images from your device
-                  </Typography>
-                  <Typography component="li" variant="body2">
-                    Use the URL tab to provide an image URL
-                  </Typography>
-                </Box>
-              </Stack>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowPermissionDialog(false)}>
-                Cancel
-              </Button>
-              <Button onClick={requestCameraPermission} variant="contained">
-                Allow Camera
-              </Button>
-            </DialogActions>
-          </Dialog>
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  <li>Allow camera access to take photos</li>
+                  <li>Use the Upload tab to select images from your device</li>
+                  <li>Use the URL tab to provide an image URL</li>
+                </ul>
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowPermissionDialog(false)}
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={requestCameraPermission}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  Allow Camera
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {/* Image Preview/Cropper */}
-          {previewUrl && (
-            <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
-              <ImageCropper
-                ref={cropperRef}
-                imageUrl={previewUrl}
-                targetWidth={targetWidth}
-                targetHeight={targetHeight}
-              />
-              <Typography
-                variant="caption"
-                color="primary.main"
-                sx={{ mt: 1, display: "block", textAlign: "center" }}
-              >
-                Adjust the image above. It will be uploaded when you save the
-                form.
-              </Typography>
-            </Box>
-          )}
+        {/* Image Preview/Cropper */}
+        {previewUrl && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <ImageCropper
+              ref={cropperRef}
+              imageUrl={previewUrl}
+              targetWidth={targetWidth}
+              targetHeight={targetHeight}
+            />
+            <p className="mt-2 text-xs text-center text-blue-600 dark:text-blue-400">
+              Adjust the image above. It will be uploaded when you save the form.
+            </p>
+          </div>
+        )}
 
-          {/* Current Saved Image Display */}
-          {value && !previewUrl && (
-            <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mb: 1, display: "block" }}
-              >
-                Current Image:
-              </Typography>
-              <Box
-                component="img"
-                src={value}
-                onError={() => setError("Failed to load image")}
-                sx={{
-                  width: "100%",
-                  maxHeight: 200,
-                  objectFit: "cover",
-                  borderRadius: 1,
-                  border: "1px solid",
-                  borderColor: "divider",
-                }}
-              />
-            </Box>
-          )}
-        </Box>
-      </Stack>
-    </Paper>
+        {/* Current Saved Image Display */}
+        {value && !previewUrl && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+              Current Image:
+            </p>
+            <img
+              src={value}
+              alt="Current"
+              onError={() => setError("Failed to load image")}
+              className="w-full max-h-[200px] object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
