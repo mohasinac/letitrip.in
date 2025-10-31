@@ -204,7 +204,7 @@ export default function OrderDetailPage({
       setLoading(true);
       const response = await apiPost(
         `/api/seller/orders/${params.id}/invoice`,
-        {},
+        {}
       );
 
       if (response.success) {
@@ -245,7 +245,7 @@ export default function OrderDetailPage({
       setActionLoading(true);
       const response = await apiPost(
         `/api/seller/orders/${params.id}/approve`,
-        {},
+        {}
       );
       if (response.success) {
         setSnackbar({
