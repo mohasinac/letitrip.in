@@ -2,33 +2,19 @@
 
 import React, { useState } from "react";
 import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Box,
-  Typography,
-  IconButton,
-  Tooltip,
-  Badge,
-} from "@mui/material";
-import {
-  Dashboard,
+  LayoutDashboard,
   ShoppingCart,
-  Inventory,
-  LocalShipping,
-  DiscountOutlined,
-  CampaignOutlined,
-  NotificationsOutlined,
-  AnalyticsOutlined,
+  Package,
+  Truck,
+  TicketPercent,
+  Megaphone,
+  Bell,
+  BarChart3,
   Settings,
   ChevronLeft,
   ChevronRight,
   Store,
-} from "@mui/icons-material";
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
@@ -43,7 +29,7 @@ interface SellerSidebarProps {
 const sellerMenuItems = [
   {
     label: "Dashboard",
-    icon: Dashboard,
+    icon: LayoutDashboard,
     href: SELLER_ROUTES.DASHBOARD,
   },
   {
@@ -58,33 +44,33 @@ const sellerMenuItems = [
   },
   {
     label: "Orders",
-    icon: Inventory,
+    icon: Package,
     href: SELLER_ROUTES.ORDERS,
   },
   {
     label: "Coupons",
-    icon: DiscountOutlined,
+    icon: TicketPercent,
     href: SELLER_ROUTES.COUPONS,
   },
   {
     label: "Sales",
-    icon: CampaignOutlined,
+    icon: Megaphone,
     href: SELLER_ROUTES.SALES,
   },
   {
     label: "Shipments",
-    icon: LocalShipping,
+    icon: Truck,
     href: SELLER_ROUTES.SHIPMENTS,
   },
   {
     label: "Alerts",
-    icon: NotificationsOutlined,
+    icon: Bell,
     href: SELLER_ROUTES.ALERTS,
     badge: true,
   },
   {
     label: "Analytics",
-    icon: AnalyticsOutlined,
+    icon: BarChart3,
     href: SELLER_ROUTES.ANALYTICS,
   },
   {
@@ -108,7 +94,7 @@ export default function SellerSidebar({
     onToggle?.(!isCollapsed);
   };
 
-  const sidebarWidth = isCollapsed ? 80 : 250;
+  const sidebarWidth = isCollapsed ? "80px" : "250px";
 
   const isItemActive = (href: string) => {
     if (href === SELLER_ROUTES.DASHBOARD) {
@@ -117,51 +103,35 @@ export default function SellerSidebar({
     return pathname.startsWith(href);
   };
 
+  if (!open) return null;
+
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: open ? sidebarWidth : 0,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: sidebarWidth,
-          boxSizing: "border-box",
-          backgroundColor: "background.paper",
-          borderRight: 1,
-          borderColor: "divider",
-          overflowX: "hidden",
-          transition: "width 0.3s ease-in-out",
-          top: "auto",
-          position: "relative",
-        },
-      }}
+    <aside
+      className="h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col"
+      style={{ width: sidebarWidth }}
     >
       {/* Sidebar Header */}
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: isCollapsed ? "center" : "space-between",
-          borderBottom: 1,
-          borderColor: "divider",
-          minHeight: 64,
-        }}
-      >
+      <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 min-h-16">
         {!isCollapsed && (
-          <Typography variant="subtitle1" fontWeight={700} color="primary">
+          <h2 className="text-base font-bold text-blue-600 dark:text-blue-400">
             Seller Panel
-          </Typography>
+          </h2>
         )}
-        <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
-          <IconButton size="small" onClick={handleToggleCollapse}>
-            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
-          </IconButton>
-        </Tooltip>
-      </Box>
+        <button
+          onClick={handleToggleCollapse}
+          className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+          ) : (
+            <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+          )}
+        </button>
+      </div>
 
       {/* Navigation Menu */}
-      <List sx={{ flex: 1, py: 2 }}>
+      <nav className="flex-1 py-4">
         {sellerMenuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = isItemActive(item.href);
@@ -169,81 +139,64 @@ export default function SellerSidebar({
 
           return (
             <React.Fragment key={item.href}>
-              <Tooltip title={isCollapsed ? item.label : ""} placement="right">
-                <ListItem disablePadding>
-                  <ListItemButton
-                    component={Link}
-                    href={item.href}
-                    selected={isActive}
-                    sx={{
-                      px: 2,
-                      py: 1.5,
-                      justifyContent: isCollapsed ? "center" : "flex-start",
-                      "&.Mui-selected": {
-                        backgroundColor: "primary.main",
-                        color: "primary.contrastText",
-                        "&:hover": {
-                          backgroundColor: "primary.main",
-                        },
-                        "& .MuiListItemIcon-root": {
-                          color: "primary.contrastText",
-                        },
-                      },
-                      "&:hover": {
-                        backgroundColor: "action.hover",
-                      },
-                      transition: "all 0.2s ease",
-                    }}
+              <Link
+                href={item.href}
+                className={`flex items-center px-4 py-3 transition-all duration-200 no-underline group ${
+                  isCollapsed ? "justify-center" : ""
+                } ${
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+                title={isCollapsed ? item.label : ""}
+              >
+                <div
+                  className={`flex items-center ${
+                    isCollapsed ? "" : "min-w-10"
+                  } justify-center relative`}
+                >
+                  {showBadge ? (
+                    <div className="relative">
+                      <Icon className="h-5 w-5" />
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {unreadAlerts > 9 ? "9+" : unreadAlerts}
+                      </span>
+                    </div>
+                  ) : (
+                    <Icon className="h-5 w-5" />
+                  )}
+                </div>
+                {!isCollapsed && (
+                  <span
+                    className={`ml-3 text-sm ${
+                      isActive ? "font-semibold" : "font-medium"
+                    }`}
                   >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: isCollapsed ? "auto" : 40,
-                        justifyContent: "center",
-                        color: isActive ? "primary.contrastText" : "inherit",
-                      }}
-                    >
-                      {showBadge ? (
-                        <Badge badgeContent={unreadAlerts} color="error">
-                          <Icon />
-                        </Badge>
-                      ) : (
-                        <Icon />
-                      )}
-                    </ListItemIcon>
-                    {!isCollapsed && (
-                      <ListItemText
-                        primary={item.label}
-                        primaryTypographyProps={{
-                          fontSize: "0.95rem",
-                          fontWeight: isActive ? 600 : 500,
-                        }}
-                      />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-              </Tooltip>
+                    {item.label}
+                  </span>
+                )}
+              </Link>
               {/* Add dividers for visual grouping */}
-              {(index === 1 || index === 6) && <Divider sx={{ my: 1 }} />}
+              {(index === 1 || index === 6) && (
+                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-2"></div>
+              )}
             </React.Fragment>
           );
         })}
-      </List>
+      </nav>
 
       {/* Sidebar Footer */}
-      <Box
-        sx={{
-          p: 2,
-          borderTop: 1,
-          borderColor: "divider",
-          textAlign: isCollapsed ? "center" : "left",
-        }}
+      <div
+        className={`p-4 border-t border-gray-200 dark:border-gray-800 ${
+          isCollapsed ? "text-center" : ""
+        }`}
       >
         {!isCollapsed && (
-          <Typography variant="caption" color="text.secondary">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             Seller v1.0.0
-          </Typography>
+          </p>
         )}
-      </Box>
-    </Drawer>
+      </div>
+    </aside>
   );
 }

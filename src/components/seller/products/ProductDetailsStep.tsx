@@ -1,17 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  TextField,
-  Autocomplete,
-  Chip,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
+  UnifiedInput,
+  UnifiedTextarea,
+  UnifiedBadge,
+} from "@/components/ui/unified";
+import { X, Search } from "lucide-react";
 
 interface ProductDetailsStepProps {
   data: any;
@@ -24,6 +19,10 @@ export default function ProductDetailsStep({
   categories,
   onChange,
 }: ProductDetailsStepProps) {
+  const [categorySearch, setCategorySearch] = useState("");
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+
   // Auto-generate slug from product name
   useEffect(() => {
     if (data.name && !data.seo.slug) {
@@ -47,58 +46,74 @@ export default function ProductDetailsStep({
   };
 
   const handleShortDescriptionChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     onChange({ shortDescription: e.target.value });
   };
 
   const handleFullDescriptionChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     onChange({ fullDescription: e.target.value });
   };
 
-  const handleCategoryChange = (event: any, value: any) => {
-    onChange({ categoryId: value?.id || "" });
+  const handleCategorySelect = (categoryId: string) => {
+    onChange({ categoryId });
+    setShowCategoryDropdown(false);
+    setCategorySearch("");
   };
 
-  const handleTagsChange = (event: any, newValue: string[]) => {
-    onChange({ tags: newValue });
+  const handleTagAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      if (!data.tags.includes(tagInput.trim())) {
+        onChange({ tags: [...data.tags, tagInput.trim()] });
+      }
+      setTagInput("");
+    }
+  };
+
+  const handleTagRemove = (tagToRemove: string) => {
+    onChange({ tags: data.tags.filter((tag: string) => tag !== tagToRemove) });
   };
 
   const selectedCategory = categories.find((cat) => cat.id === data.categoryId);
+  const filteredCategories = categories.filter((cat) =>
+    cat.pathString?.toLowerCase().includes(categorySearch.toLowerCase())
+  );
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Product Details
-      </Typography>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-1">Product Details</h2>
+        <p className="text-sm text-muted-foreground">
+          Add the basic information about your product
+        </p>
+      </div>
 
-      <TextField
-        label="Product Name *"
-        fullWidth
+      <UnifiedInput
+        label="Product Name"
         value={data.name}
         onChange={handleNameChange}
         placeholder="e.g., Beyblade Metal Fusion Storm Pegasus"
         helperText="Enter a clear, descriptive name for your product"
+        required
       />
 
-      <TextField
+      <UnifiedTextarea
         label="Short Description"
-        fullWidth
-        multiline
         rows={2}
         value={data.shortDescription}
         onChange={handleShortDescriptionChange}
         placeholder="Brief description that appears in listings"
-        helperText="A concise summary of your product (160 characters or less)"
-        inputProps={{ maxLength: 160 }}
+        helperText={`A concise summary of your product (${
+          data.shortDescription?.length || 0
+        }/160 characters)`}
+        maxLength={160}
       />
 
-      <TextField
+      <UnifiedTextarea
         label="Full Description"
-        fullWidth
-        multiline
         rows={6}
         value={data.fullDescription}
         onChange={handleFullDescriptionChange}
@@ -106,61 +121,114 @@ export default function ProductDetailsStep({
         helperText="Provide comprehensive details about your product"
       />
 
-      <Autocomplete
-        options={categories}
-        getOptionLabel={(option) => option.pathString || option.name}
-        value={selectedCategory || null}
-        onChange={handleCategoryChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Category *"
-            placeholder="Search for a category..."
-            helperText="Select the most specific category for your product"
-          />
-        )}
-        renderOption={(props, option) => (
-          <li {...props} key={option.id}>
-            <Box>
-              <Typography variant="body2">{option.pathString}</Typography>
-              {option.description && (
-                <Typography variant="caption" color="text.secondary">
-                  {option.description}
-                </Typography>
-              )}
-            </Box>
-          </li>
-        )}
-      />
+      {/* Category Selector */}
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          Category <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <div
+            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+            className="w-full px-3 py-2 border border-input rounded-lg bg-background cursor-pointer hover:border-primary transition-colors flex items-center justify-between"
+          >
+            <span
+              className={
+                selectedCategory ? "text-foreground" : "text-muted-foreground"
+              }
+            >
+              {selectedCategory
+                ? selectedCategory.pathString
+                : "Search for a category..."}
+            </span>
+            <Search className="w-4 h-4 text-muted-foreground" />
+          </div>
 
-      <Autocomplete
-        multiple
-        freeSolo
-        options={[]}
-        value={data.tags}
-        onChange={handleTagsChange}
-        renderTags={(value: string[], getTagProps) =>
-          value.map((option: string, index: number) => (
-            <Chip label={option} {...getTagProps({ index })} key={index} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Tags"
+          {showCategoryDropdown && (
+            <div className="absolute z-10 w-full mt-1 bg-background border border-input rounded-lg shadow-lg max-h-64 overflow-hidden">
+              <div className="p-2 border-b">
+                <input
+                  type="text"
+                  value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  placeholder="Search categories..."
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  autoFocus
+                />
+              </div>
+              <div className="max-h-48 overflow-y-auto">
+                {filteredCategories.length > 0 ? (
+                  filteredCategories.map((category) => (
+                    <div
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category.id)}
+                      className="px-3 py-2 hover:bg-muted cursor-pointer transition-colors"
+                    >
+                      <p className="text-sm font-medium">
+                        {category.pathString}
+                      </p>
+                      {category.description && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {category.description}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                    No categories found
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Select the most specific category for your product
+        </p>
+      </div>
+
+      {/* Tags Input */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Tags</label>
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagAdd}
             placeholder="Type and press Enter to add tags"
-            helperText="Add tags to help customers find your product (e.g., beyblade, metal, attack)"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           />
-        )}
-      />
+          {data.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {data.tags.map((tag: string, index: number) => (
+                <UnifiedBadge
+                  key={index}
+                  variant="secondary"
+                  onRemove={() => handleTagRemove(tag)}
+                >
+                  {tag}
+                </UnifiedBadge>
+              ))}
+            </div>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Add tags to help customers find your product (e.g., beyblade, metal,
+          attack)
+        </p>
+      </div>
 
       {selectedCategory && (
-        <Box sx={{ p: 2, bgcolor: "background.default", borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Selected Category: <strong>{selectedCategory.pathString}</strong>
-          </Typography>
-        </Box>
+        <div className="p-3 bg-muted/50 rounded-lg border border-muted">
+          <p className="text-sm text-muted-foreground">
+            Selected Category:{" "}
+            <span className="font-semibold text-foreground">
+              {selectedCategory.pathString}
+            </span>
+          </p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

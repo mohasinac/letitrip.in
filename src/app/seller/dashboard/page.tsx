@@ -1,21 +1,12 @@
 "use client";
 
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Button,
-} from "@mui/material";
-import {
   ShoppingCart,
   TrendingUp,
-  LocalShipping,
-  AttachMoney,
-  ArrowForward,
-} from "@mui/icons-material";
+  Truck,
+  DollarSign,
+  ArrowRight,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import Link from "next/link";
@@ -34,53 +25,29 @@ const StatCard = ({
   change: string;
   href?: string;
 }) => (
-  <Card>
-    <CardContent>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-        <Box
-          sx={{
-            bgcolor: "primary.main",
-            p: 1.5,
-            borderRadius: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "primary.contrastText",
-          }}
+  <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="flex items-center gap-3 mb-4">
+      <div className="bg-blue-600 p-3 rounded-lg flex items-center justify-center text-white">
+        <Icon className="h-5 w-5" />
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
+    </div>
+    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      {value}
+    </h3>
+    <div className="flex justify-between items-center">
+      <p className="text-sm text-green-600 dark:text-green-400">{change}</p>
+      {href && (
+        <Link
+          href={href}
+          className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 no-underline"
         >
-          <Icon />
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          {title}
-        </Typography>
-      </Box>
-      <Typography variant="h5" fontWeight={700} gutterBottom>
-        {value}
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="caption" color="success.main">
-          {change}
-        </Typography>
-        {href && (
-          <Button
-            component={Link}
-            href={href}
-            size="small"
-            endIcon={<ArrowForward />}
-            sx={{ textTransform: "none" }}
-          >
-            View
-          </Button>
-        )}
-      </Box>
-    </CardContent>
-  </Card>
+          View
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      )}
+    </div>
+  </div>
 );
 
 function SellerDashboardContent() {
@@ -101,14 +68,14 @@ function SellerDashboardContent() {
       href: SELLER_ROUTES.PRODUCTS,
     },
     {
-      icon: LocalShipping,
+      icon: Truck,
       title: "Pending Orders",
       value: "0",
       change: "No pending orders",
       href: SELLER_ROUTES.ORDERS,
     },
     {
-      icon: AttachMoney,
+      icon: DollarSign,
       title: "Total Revenue",
       value: "₹0",
       change: "Start selling to earn",
@@ -122,153 +89,106 @@ function SellerDashboardContent() {
   ];
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
+    <div className="py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Seller Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
             Welcome to your seller panel. Manage your store, products, and
             orders from here.
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Quick Setup Guide */}
-        <Card
-          sx={{
-            mb: 4,
-            bgcolor: "primary.50",
-            borderLeft: 4,
-            borderColor: "primary.main",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
-              🚀 Quick Setup Guide
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Follow these steps to start selling:
-            </Typography>
-            <Box component="ol" sx={{ pl: 2, "& li": { mb: 1 } }}>
-              <li>
-                <Link
-                  href={SELLER_ROUTES.SHOP_SETUP}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Typography
-                    component="span"
-                    color="primary"
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Setup your shop →
-                  </Typography>
-                </Link>{" "}
-                Configure shop name, pickup addresses, and SEO
-              </li>
-              <li>
-                <Link
-                  href={SELLER_ROUTES.PRODUCTS_NEW}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Typography
-                    component="span"
-                    color="primary"
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Add your first product →
-                  </Typography>
-                </Link>{" "}
-                Upload products with images and details
-              </li>
-              <li>
-                <Link
-                  href={SELLER_ROUTES.SALES}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Typography
-                    component="span"
-                    color="primary"
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Create a sale or coupon →
-                  </Typography>
-                </Link>{" "}
-                Attract customers with discounts
-              </li>
-            </Box>
-          </CardContent>
-        </Card>
+        <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-600 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            🚀 Quick Setup Guide
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            Follow these steps to start selling:
+          </p>
+          <ol className="pl-5 space-y-2">
+            <li className="text-gray-700 dark:text-gray-300">
+              <Link
+                href={SELLER_ROUTES.SHOP_SETUP}
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 no-underline"
+              >
+                Setup your shop →
+              </Link>{" "}
+              Configure shop name, pickup addresses, and SEO
+            </li>
+            <li className="text-gray-700 dark:text-gray-300">
+              <Link
+                href={SELLER_ROUTES.PRODUCTS_NEW}
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 no-underline"
+              >
+                Add your first product →
+              </Link>{" "}
+              Upload products with images and details
+            </li>
+            <li className="text-gray-700 dark:text-gray-300">
+              <Link
+                href={SELLER_ROUTES.SALES}
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 no-underline"
+              >
+                Create a sale or coupon →
+              </Link>{" "}
+              Attract customers with discounts
+            </li>
+          </ol>
+        </div>
 
         {/* Stats Grid */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
-            <Grid item xs={12} sm={6} md={3} key={stat.title}>
-              <StatCard {...stat} />
-            </Grid>
+            <StatCard key={stat.title} {...stat} />
           ))}
-        </Grid>
+        </div>
 
         {/* Quick Actions */}
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Recent Orders
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  No orders yet. Your orders will appear here.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{ mb: 2 }}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                Recent Orders
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                No orders yet. Your orders will appear here.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Quick Actions
+              </h2>
+              <div className="flex flex-col gap-3">
+                <Link
+                  href={SELLER_ROUTES.PRODUCTS_NEW}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-center no-underline font-medium"
                 >
-                  Quick Actions
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <Button
-                    component={Link}
-                    href={SELLER_ROUTES.PRODUCTS_NEW}
-                    variant="contained"
-                    fullWidth
-                    sx={{ textTransform: "none" }}
-                  >
-                    Add Product
-                  </Button>
-                  <Button
-                    component={Link}
-                    href={SELLER_ROUTES.COUPONS_NEW}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ textTransform: "none" }}
-                  >
-                    Create Coupon
-                  </Button>
-                  <Button
-                    component={Link}
-                    href={SELLER_ROUTES.SALES_NEW}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ textTransform: "none" }}
-                  >
-                    Create Sale
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+                  Add Product
+                </Link>
+                <Link
+                  href={SELLER_ROUTES.COUPONS_NEW}
+                  className="w-full px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-center no-underline font-medium"
+                >
+                  Create Coupon
+                </Link>
+                <Link
+                  href={SELLER_ROUTES.SALES_NEW}
+                  className="w-full px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-center no-underline font-medium"
+                >
+                  Create Sale
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

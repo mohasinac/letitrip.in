@@ -2,18 +2,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Slider,
-  Typography,
-  CircularProgress,
-  Paper,
-} from "@mui/material";
-import { PlayArrow, Pause, CameraAlt } from "@mui/icons-material";
+  UnifiedModal,
+  PrimaryButton,
+  SecondaryButton,
+} from "@/components/ui/unified";
+import { Play, Pause, Camera } from "lucide-react";
 
 interface VideoThumbnailSelectorProps {
   open: boolean;
@@ -23,7 +16,7 @@ interface VideoThumbnailSelectorProps {
   onSave: (
     thumbnailBlob: Blob,
     thumbnailUrl: string,
-    timestamp: number,
+    timestamp: number
   ) => void;
 }
 
@@ -161,7 +154,7 @@ export default function VideoThumbnailSelector({
       }
 
       alert(
-        "Unable to capture frame from this video. This may be due to browser security restrictions.",
+        "Unable to capture frame from this video. This may be due to browser security restrictions."
       );
     }
   };
@@ -196,172 +189,146 @@ export default function VideoThumbnailSelector({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        Select Video Thumbnail
-        <Typography variant="caption" display="block" color="text.secondary">
-          Scrub through the video and capture the perfect frame
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        {loading && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: 300,
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        )}
+    <UnifiedModal
+      open={open}
+      onClose={onClose}
+      title="Select Video Thumbnail"
+      size="lg"
+    >
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Scrub through the video and capture the perfect frame
+      </p>
 
-        {/* Video Player */}
-        <Box
-          sx={{
-            position: "relative",
-            width: "100%",
-            bgcolor: "black",
-            borderRadius: 1,
-            overflow: "hidden",
-            display: loading ? "none" : "block",
-          }}
+      {loading && (
+        <div className="flex justify-center items-center min-h-[300px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+
+      {/* Video Player */}
+      <div
+        className={`relative w-full bg-black rounded-lg overflow-hidden ${
+          loading ? "hidden" : "block"
+        }`}
+      >
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          className="w-full max-h-[400px] block"
+        />
+
+        {/* Play/Pause Overlay */}
+        <div
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 pointer-events-none ${
+            isPlaying ? "opacity-0" : "opacity-80"
+          }`}
         >
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            onLoadedMetadata={handleLoadedMetadata}
-            onTimeUpdate={handleTimeUpdate}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            style={{
-              width: "100%",
-              maxHeight: "400px",
-              display: "block",
-            }}
-          />
+          {!isPlaying && (
+            <Play
+              className="w-20 h-20 text-white"
+              style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))" }}
+            />
+          )}
+        </div>
+      </div>
 
-          {/* Play/Pause Overlay */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              opacity: isPlaying ? 0 : 0.8,
-              transition: "opacity 0.3s",
-              pointerEvents: "none",
-            }}
-          >
-            {!isPlaying && (
-              <PlayArrow
-                sx={{
-                  fontSize: 80,
-                  color: "white",
-                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
-                }}
-              />
-            )}
-          </Box>
-        </Box>
+      {/* Hidden canvas for frame capture */}
+      <canvas ref={canvasRef} className="hidden" />
 
-        {/* Hidden canvas for frame capture */}
-        <canvas ref={canvasRef} style={{ display: "none" }} />
-
-        {/* Controls */}
-        {!loading && (
-          <Box sx={{ mt: 3 }}>
-            {/* Timeline Slider */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={togglePlayPause}
-                sx={{ minWidth: 40 }}
-              >
-                {isPlaying ? <Pause /> : <PlayArrow />}
-              </Button>
-              <Typography variant="caption" sx={{ minWidth: 50 }}>
-                {formatTime(currentTime)}
-              </Typography>
-              <Slider
-                value={currentTime}
-                min={0}
-                max={duration}
-                step={0.1}
-                onChange={handleSliderChange}
-                sx={{ flex: 1 }}
-              />
-              <Typography variant="caption" sx={{ minWidth: 50 }}>
-                {formatTime(duration)}
-              </Typography>
-            </Box>
-
-            {/* Capture Button */}
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<CameraAlt />}
-              onClick={captureCurrentFrame}
-              sx={{ mb: 2 }}
+      {/* Controls */}
+      {!loading && (
+        <div className="mt-6">
+          {/* Timeline Slider */}
+          <div className="flex items-center gap-4 mb-4">
+            <SecondaryButton
+              size="sm"
+              onClick={togglePlayPause}
+              className="min-w-[40px] !px-2"
             >
-              Capture Current Frame
-            </Button>
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </SecondaryButton>
+            <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[50px]">
+              {formatTime(currentTime)}
+            </span>
+            <input
+              type="range"
+              value={currentTime}
+              min={0}
+              max={duration}
+              step={0.1}
+              onChange={(e) =>
+                handleSliderChange(e as any, parseFloat(e.target.value))
+              }
+              className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[50px]">
+              {formatTime(duration)}
+            </span>
+          </div>
 
-            {/* Thumbnail Preview */}
-            {thumbnailPreview && (
-              <Paper elevation={2} sx={{ p: 2, bgcolor: "grey.50" }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Selected Thumbnail Preview
-                </Typography>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 200,
-                    backgroundImage: `url(${thumbnailPreview})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: 1,
-                    border: "2px solid",
-                    borderColor: "primary.main",
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "block" }}
-                >
-                  Frame at {formatTime(currentTime)}
-                </Typography>
-              </Paper>
-            )}
-          </Box>
-        )}
+          {/* Capture Button */}
+          <SecondaryButton
+            fullWidth
+            leftIcon={<Camera className="w-4 h-4" />}
+            onClick={captureCurrentFrame}
+            className="mb-4"
+          >
+            Capture Current Frame
+          </SecondaryButton>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          <strong>Tip:</strong> Use the slider to scrub through the video, or
-          play/pause to find the perfect moment. Click "Capture Current Frame"
-          when ready.
-        </Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={saving}>
+          {/* Thumbnail Preview */}
+          {thumbnailPreview && (
+            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-blue-600">
+              <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                Selected Thumbnail Preview
+              </p>
+              <div
+                className="w-full h-[200px] bg-cover bg-center rounded-lg border-2 border-blue-600"
+                style={{ backgroundImage: `url(${thumbnailPreview})` }}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Frame at {formatTime(currentTime)}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+        <strong>Tip:</strong> Use the slider to scrub through the video, or
+        play/pause to find the perfect moment. Click "Capture Current Frame"
+        when ready.
+      </p>
+
+      {/* Modal Actions */}
+      <div className="flex justify-end gap-3 mt-6">
+        <SecondaryButton onClick={onClose} disabled={saving}>
           Cancel
-        </Button>
-        <Button
+        </SecondaryButton>
+        <PrimaryButton
           onClick={handleSave}
-          variant="contained"
           disabled={!thumbnailPreview || saving}
-          startIcon={saving ? <CircularProgress size={20} /> : null}
+          leftIcon={
+            saving ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            ) : undefined
+          }
         >
           {saving
             ? "Saving..."
             : thumbnailPreview
-              ? "Use This Thumbnail"
-              : "Capture Frame First"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            ? "Use This Thumbnail"
+            : "Capture Frame First"}
+        </PrimaryButton>
+      </div>
+    </UnifiedModal>
   );
 }

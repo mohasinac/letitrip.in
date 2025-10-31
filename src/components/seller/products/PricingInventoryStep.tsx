@@ -2,19 +2,12 @@
 
 import React from "react";
 import {
-  Box,
-  TextField,
-  Typography,
-  InputAdornment,
-  Switch,
-  FormControlLabel,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
-import { Autorenew } from "@mui/icons-material";
+  UnifiedInput,
+  UnifiedSwitch,
+  UnifiedSelect,
+  SecondaryButton,
+} from "@/components/ui/unified";
+import { RotateCcw } from "lucide-react";
 
 interface PricingInventoryStepProps {
   data: any;
@@ -47,16 +40,14 @@ export default function PricingInventoryStep({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
         Pricing & Inventory
-      </Typography>
+      </h2>
 
       {/* Pricing */}
-      <Box
-        sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}
-      >
-        <TextField
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <UnifiedInput
           label="Regular Price *"
           type="number"
           value={data.pricing.price || ""}
@@ -68,11 +59,9 @@ export default function PricingInventoryStep({
               },
             })
           }
-          InputProps={{
-            startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-          }}
+          leftIcon={<span className="text-gray-500">₹</span>}
         />
-        <TextField
+        <UnifiedInput
           label="Compare At Price"
           type="number"
           value={data.pricing.compareAtPrice || ""}
@@ -84,12 +73,10 @@ export default function PricingInventoryStep({
               },
             })
           }
-          InputProps={{
-            startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-          }}
+          leftIcon={<span className="text-gray-500">₹</span>}
           helperText="Show savings"
         />
-        <TextField
+        <UnifiedInput
           label="Cost"
           type="number"
           value={data.pricing.cost || ""}
@@ -101,42 +88,37 @@ export default function PricingInventoryStep({
               },
             })
           }
-          InputProps={{
-            startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-          }}
+          leftIcon={<span className="text-gray-500">₹</span>}
           helperText="For profit calculation"
         />
-      </Box>
+      </div>
 
       {/* Inventory */}
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+      <h3 className="text-lg font-medium text-gray-900 dark:text-white mt-4">
         Inventory
-      </Typography>
+      </h3>
 
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <TextField
+      <div className="flex gap-4">
+        <UnifiedInput
           label="SKU *"
-          fullWidth
+          className="flex-1"
           value={data.inventory.sku}
           onChange={(e) =>
             onChange({ inventory: { ...data.inventory, sku: e.target.value } })
           }
           helperText="Stock Keeping Unit"
         />
-        <Button
-          variant="outlined"
+        <SecondaryButton
           onClick={generateSKU}
-          startIcon={<Autorenew />}
-          sx={{ minWidth: 150 }}
+          leftIcon={<RotateCcw className="w-4 h-4" />}
+          className="mt-6"
         >
           Generate
-        </Button>
-      </Box>
+        </SecondaryButton>
+      </div>
 
-      <Box
-        sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 2 }}
-      >
-        <TextField
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UnifiedInput
           label="Quantity *"
           type="number"
           value={data.inventory.quantity}
@@ -150,7 +132,7 @@ export default function PricingInventoryStep({
           }
           helperText="Available stock"
         />
-        <TextField
+        <UnifiedInput
           label="Low Stock Threshold"
           type="number"
           value={data.inventory.lowStockThreshold}
@@ -164,40 +146,35 @@ export default function PricingInventoryStep({
           }
           helperText="Alert when stock is low"
         />
-      </Box>
+      </div>
 
-      <FormControlLabel
-        control={
-          <Switch
-            checked={data.inventory.trackInventory}
-            onChange={(e) =>
-              onChange({
-                inventory: {
-                  ...data.inventory,
-                  trackInventory: e.target.checked,
-                },
-              })
-            }
-          />
-        }
+      <UnifiedSwitch
         label="Track inventory"
+        checked={data.inventory.trackInventory}
+        onChange={(e) =>
+          onChange({
+            inventory: {
+              ...data.inventory,
+              trackInventory: e.target.checked,
+            },
+          })
+        }
       />
 
       {addresses.length > 0 && (
-        <FormControl fullWidth>
-          <InputLabel>Pickup Address</InputLabel>
-          <Select
-            value={data.pickupAddressId || ""}
-            onChange={(e) => onChange({ pickupAddressId: e.target.value })}
-          >
-            {addresses.map((addr: any) => (
-              <MenuItem key={addr.id} value={addr.id}>
-                {addr.label} - {addr.address}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <UnifiedSelect
+          label="Pickup Address"
+          value={data.pickupAddressId || ""}
+          onChange={(e) => onChange({ pickupAddressId: e.target.value })}
+        >
+          <option value="">Select an address</option>
+          {addresses.map((addr: any) => (
+            <option key={addr.id} value={addr.id}>
+              {addr.label} - {addr.address}
+            </option>
+          ))}
+        </UnifiedSelect>
       )}
-    </Box>
+    </div>
   );
 }

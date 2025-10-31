@@ -1,22 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  Box,
-  Typography,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-  InputAdornment,
-  Divider,
-  Alert,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
-import { Category } from "@mui/icons-material";
+  UnifiedInput,
+  UnifiedTextarea,
+  UnifiedSelect,
+  UnifiedCheckbox,
+  UnifiedBadge,
+  UnifiedAlert,
+} from "@/components/ui/unified";
+import { FolderOpen } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface BasicInfoPricingStepProps {
   data: any;
@@ -68,253 +62,223 @@ export default function BasicInfoPricingStep({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Basic Information & Pricing
-      </Typography>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-2xl font-semibold mb-2 text-text">
+          Basic Information & Pricing
+        </h2>
+      </div>
 
-      <Alert severity="info">
+      <UnifiedAlert variant="info">
         Fill in the essential product details and pricing. SKU is optional and
         will be auto-generated if left empty.
-      </Alert>
+      </UnifiedAlert>
 
       {/* Product Details */}
-      <Box>
-        <Typography
-          variant="subtitle2"
-          sx={{ mb: 2, color: "primary.main", fontWeight: 600 }}
-        >
+      <div>
+        <h3 className="text-sm font-semibold text-primary mb-4">
           Product Details
-        </Typography>
+        </h3>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            fullWidth
-            required
+        <div className="flex flex-col gap-4">
+          <UnifiedInput
             label="Product Name"
+            required
             value={data.name}
             onChange={(e) => onChange({ name: e.target.value })}
             placeholder="e.g., Beyblade Burst Evolution Dragoon"
             helperText="Clear, descriptive name for your product"
           />
 
-          <FormControl fullWidth required>
-            <InputLabel>Category</InputLabel>
-            <Select
+          <div className="relative">
+            <UnifiedSelect
+              label="Category"
+              required
               value={data.categoryId}
               onChange={(e) => onChange({ categoryId: e.target.value })}
-              startAdornment={
-                <InputAdornment position="start">
-                  <Category />
-                </InputAdornment>
-              }
             >
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
-                </MenuItem>
+              <option value="">Select a category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
-            </Select>
-          </FormControl>
+            </UnifiedSelect>
+            <FolderOpen className="w-4 h-4 text-textSecondary absolute left-3 top-10 pointer-events-none" />
+          </div>
 
-          <TextField
-            fullWidth
-            required
+          <UnifiedInput
             label="Short Description"
+            required
             value={data.shortDescription}
             onChange={(e) => onChange({ shortDescription: e.target.value })}
             placeholder="Brief one-line description"
             helperText="50-100 characters"
-            inputProps={{ maxLength: 100 }}
+            maxLength={100}
           />
 
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
+          <UnifiedTextarea
             label="Full Description"
             value={data.fullDescription}
             onChange={(e) => onChange({ fullDescription: e.target.value })}
             placeholder="Detailed product description, features, specifications..."
             helperText="Detailed information about your product"
+            rows={4}
           />
 
-          <Box>
-            <TextField
-              fullWidth
+          <div>
+            <UnifiedInput
               label="Tags (Press Enter to add)"
               onKeyDown={handleAddTag}
               placeholder="e.g., beyblade, evolution, attack-type"
               helperText="Add relevant tags for better discoverability"
             />
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            <div className="flex flex-wrap gap-2 mt-2">
               {data.tags.map((tag: string) => (
-                <Chip
+                <UnifiedBadge
                   key={tag}
-                  label={tag}
-                  onDelete={() => handleRemoveTag(tag)}
-                  color="primary"
-                  variant="outlined"
-                />
+                  variant="primary"
+                  onRemove={() => handleRemoveTag(tag)}
+                >
+                  {tag}
+                </UnifiedBadge>
               ))}
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Divider />
+      <div className="border-t border-border"></div>
 
       {/* Pricing */}
-      <Box>
-        <Typography
-          variant="subtitle2"
-          sx={{ mb: 2, color: "primary.main", fontWeight: 600 }}
-        >
-          Pricing
-        </Typography>
+      <div>
+        <h3 className="text-sm font-semibold text-primary mb-4">Pricing</h3>
 
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <TextField
-            sx={{ flex: "1 1 200px" }}
-            required
-            type="number"
-            label="Selling Price"
-            value={data.pricing.price || ""}
-            onChange={(e) =>
-              onChange({
-                pricing: {
-                  ...data.pricing,
-                  price: parseFloat(e.target.value) || 0,
-                },
-              })
-            }
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">₹</InputAdornment>
-              ),
-              inputProps: { min: 0, step: 0.01 },
-            }}
-            helperText="Your selling price"
-          />
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <UnifiedInput
+              label="Selling Price"
+              required
+              type="number"
+              value={data.pricing.price || ""}
+              onChange={(e) =>
+                onChange({
+                  pricing: {
+                    ...data.pricing,
+                    price: parseFloat(e.target.value) || 0,
+                  },
+                })
+              }
+              leftIcon={<span className="text-textSecondary">₹</span>}
+              helperText="Your selling price"
+              min={0}
+              step={0.01}
+            />
+          </div>
 
-          <TextField
-            sx={{ flex: "1 1 200px" }}
-            type="number"
-            label="Compare at Price (Optional)"
-            value={data.pricing.compareAtPrice || ""}
-            onChange={(e) =>
-              onChange({
-                pricing: {
-                  ...data.pricing,
-                  compareAtPrice: e.target.value
-                    ? parseFloat(e.target.value)
-                    : undefined,
-                },
-              })
-            }
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">₹</InputAdornment>
-              ),
-              inputProps: { min: 0, step: 0.01 },
-            }}
-            helperText="Original/MRP price"
-          />
+          <div className="flex-1 min-w-[200px]">
+            <UnifiedInput
+              label="Compare at Price (Optional)"
+              type="number"
+              value={data.pricing.compareAtPrice || ""}
+              onChange={(e) =>
+                onChange({
+                  pricing: {
+                    ...data.pricing,
+                    compareAtPrice: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
+                  },
+                })
+              }
+              leftIcon={<span className="text-textSecondary">₹</span>}
+              helperText="Original/MRP price"
+              min={0}
+              step={0.01}
+            />
+          </div>
 
-          <TextField
-            sx={{ flex: "1 1 200px" }}
-            type="number"
-            label="Cost per Item (Optional)"
-            value={data.pricing.cost || ""}
-            onChange={(e) =>
-              onChange({
-                pricing: {
-                  ...data.pricing,
-                  cost: e.target.value ? parseFloat(e.target.value) : undefined,
-                },
-              })
-            }
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">₹</InputAdornment>
-              ),
-              inputProps: { min: 0, step: 0.01 },
-            }}
-            helperText="Your cost (private)"
-          />
-        </Box>
-      </Box>
+          <div className="flex-1 min-w-[200px]">
+            <UnifiedInput
+              label="Cost per Item (Optional)"
+              type="number"
+              value={data.pricing.cost || ""}
+              onChange={(e) =>
+                onChange({
+                  pricing: {
+                    ...data.pricing,
+                    cost: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
+                  },
+                })
+              }
+              leftIcon={<span className="text-textSecondary">₹</span>}
+              helperText="Your cost (private)"
+              min={0}
+              step={0.01}
+            />
+          </div>
+        </div>
+      </div>
 
-      <Divider />
+      <div className="border-t border-border"></div>
 
       {/* Inventory */}
-      <Box>
-        <Typography
-          variant="subtitle2"
-          sx={{ mb: 2, color: "primary.main", fontWeight: 600 }}
-        >
-          Inventory
-        </Typography>
+      <div>
+        <h3 className="text-sm font-semibold text-primary mb-4">Inventory</h3>
 
         {/* Unique Item Checkbox */}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={data.inventory.isUnique || false}
-              onChange={(e) => {
-                const isUnique = e.target.checked;
-                onChange({
-                  inventory: {
-                    ...data.inventory,
-                    isUnique,
-                    quantity: isUnique ? 1 : data.inventory.quantity,
-                    lowStockThreshold: isUnique
-                      ? 0
-                      : data.inventory.lowStockThreshold,
-                    trackInventory: !isUnique,
-                  },
-                });
-              }}
-            />
-          }
-          label={
-            <Box>
-              <Typography variant="body2" fontWeight={600}>
-                Unique Item (One-of-a-Kind)
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                This is a single unique item - no inventory tracking needed
-              </Typography>
-            </Box>
-          }
-          sx={{ mb: 2 }}
-        />
+        <div className="mb-4">
+          <UnifiedCheckbox
+            label="Unique Item (One-of-a-Kind)"
+            checked={data.inventory.isUnique || false}
+            onChange={(e) => {
+              const isUnique = e.target.checked;
+              onChange({
+                inventory: {
+                  ...data.inventory,
+                  isUnique,
+                  quantity: isUnique ? 1 : data.inventory.quantity,
+                  lowStockThreshold: isUnique
+                    ? 0
+                    : data.inventory.lowStockThreshold,
+                  trackInventory: !isUnique,
+                },
+              });
+            }}
+            helperText="This is a single unique item - no inventory tracking needed"
+          />
+        </div>
 
         {data.inventory.isUnique && (
-          <Alert severity="info" sx={{ mb: 2 }}>
+          <UnifiedAlert variant="info" className="mb-4">
             <strong>Unique Item Mode:</strong> Quantity is set to 1. No low
             stock alerts. Perfect for one-of-a-kind products, vintage items, or
             collectibles.
-          </Alert>
+          </UnifiedAlert>
         )}
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <TextField
-              sx={{ flex: "1 1 300px" }}
-              label="SKU (Optional)"
-              value={data.inventory.sku}
-              onChange={(e) =>
-                onChange({
-                  inventory: { ...data.inventory, sku: e.target.value },
-                })
-              }
-              placeholder="Auto-generated if empty"
-              helperText={
-                <span>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4 flex-wrap">
+            <div className="flex-1 min-w-[300px]">
+              <div className="relative">
+                <label className="text-sm font-medium text-text mb-1.5 block">
+                  SKU (Optional)
+                </label>
+                <UnifiedInput
+                  value={data.inventory.sku}
+                  onChange={(e) =>
+                    onChange({
+                      inventory: { ...data.inventory, sku: e.target.value },
+                    })
+                  }
+                  placeholder="Auto-generated if empty"
+                />
+                <p className="text-xs text-textSecondary mt-1.5">
                   Stock Keeping Unit.{" "}
                   <span
-                    style={{ color: "#1976d2", cursor: "pointer" }}
+                    className="text-primary cursor-pointer hover:underline"
                     onClick={() => {
                       const sku = generateSKU();
                       onChange({ inventory: { ...data.inventory, sku } });
@@ -322,78 +286,74 @@ export default function BasicInfoPricingStep({
                   >
                     Generate SKU
                   </span>
-                </span>
-              }
-            />
+                </p>
+              </div>
+            </div>
 
-            <TextField
-              sx={{ flex: "1 1 150px" }}
-              required
-              type="number"
-              label="Quantity"
-              value={data.inventory.quantity || ""}
-              onChange={(e) =>
-                onChange({
-                  inventory: {
-                    ...data.inventory,
-                    quantity: parseInt(e.target.value) || 0,
-                  },
-                })
-              }
-              disabled={data.inventory.isUnique}
-              InputProps={{
-                inputProps: { min: 0, step: 1 },
-              }}
-              helperText={
-                data.inventory.isUnique
-                  ? "Fixed at 1 for unique items"
-                  : "Available stock"
-              }
-            />
+            <div className="flex-1 min-w-[150px]">
+              <UnifiedInput
+                label="Quantity"
+                required
+                type="number"
+                value={data.inventory.quantity || ""}
+                onChange={(e) =>
+                  onChange({
+                    inventory: {
+                      ...data.inventory,
+                      quantity: parseInt(e.target.value) || 0,
+                    },
+                  })
+                }
+                disabled={data.inventory.isUnique}
+                helperText={
+                  data.inventory.isUnique
+                    ? "Fixed at 1 for unique items"
+                    : "Available stock"
+                }
+                min={0}
+                step={1}
+              />
+            </div>
 
-            <TextField
-              sx={{ flex: "1 1 150px" }}
-              type="number"
-              label="Low Stock Alert"
-              value={data.inventory.lowStockThreshold || ""}
-              onChange={(e) =>
-                onChange({
-                  inventory: {
-                    ...data.inventory,
-                    lowStockThreshold: parseInt(e.target.value) || 0,
-                  },
-                })
-              }
-              disabled={data.inventory.isUnique}
-              InputProps={{
-                inputProps: { min: 0, step: 1 },
-              }}
-              helperText={
-                data.inventory.isUnique
-                  ? "Not applicable for unique items"
-                  : "Alert threshold"
-              }
-            />
-          </Box>
+            <div className="flex-1 min-w-[150px]">
+              <UnifiedInput
+                label="Low Stock Alert"
+                type="number"
+                value={data.inventory.lowStockThreshold || ""}
+                onChange={(e) =>
+                  onChange({
+                    inventory: {
+                      ...data.inventory,
+                      lowStockThreshold: parseInt(e.target.value) || 0,
+                    },
+                  })
+                }
+                disabled={data.inventory.isUnique}
+                helperText={
+                  data.inventory.isUnique
+                    ? "Not applicable for unique items"
+                    : "Alert threshold"
+                }
+                min={0}
+                step={1}
+              />
+            </div>
+          </div>
 
-          <FormControl fullWidth>
-            <InputLabel>Pickup Location (Optional)</InputLabel>
-            <Select
-              value={data.pickupAddressId || ""}
-              onChange={(e) => onChange({ pickupAddressId: e.target.value })}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {addresses.map((address) => (
-                <MenuItem key={address.id} value={address.id}>
-                  {address.addressLine1}, {address.city}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-    </Box>
+          <UnifiedSelect
+            label="Pickup Location (Optional)"
+            value={data.pickupAddressId || ""}
+            onChange={(e) => onChange({ pickupAddressId: e.target.value })}
+          >
+            <option value="">None</option>
+            {addresses.map((addr) => (
+              <option key={addr.id} value={addr.id}>
+                {addr.addressLine1}, {addr.city}
+              </option>
+            ))}
+          </UnifiedSelect>
+        </div>
+      </div>
+    </div>
   );
 }

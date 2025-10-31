@@ -2,32 +2,23 @@
 
 import React, { useState, useRef } from "react";
 import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  TextField,
-  Paper,
-  Alert,
-  CircularProgress,
-  LinearProgress,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+  PrimaryButton,
+  SecondaryButton,
+  UnifiedInput,
+  UnifiedAlert,
+  UnifiedCard,
+} from "@/components/ui/unified";
 import {
   CloudUpload,
-  Delete,
-  DragIndicator,
-  CropSquare,
+  Trash2,
+  GripVertical,
+  Crop,
   PlayCircle,
-  VideoLibrary,
-  CameraAlt,
-  Photo,
-  ArrowDropDown,
-  PhotoCamera,
-} from "@mui/icons-material";
+  Video,
+  Camera,
+  Image as ImageIcon,
+  ChevronDown,
+} from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { uploadWithAuth } from "@/lib/api/seller";
 import WhatsAppImageEditor, { WhatsAppCropData } from "./WhatsAppImageEditor";
@@ -52,7 +43,7 @@ export default function MediaUploadStep({
   } | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(
-    null,
+    null
   );
   const [thumbnailSelectorOpen, setThumbnailSelectorOpen] = useState(false);
   const [selectedVideoForThumbnail, setSelectedVideoForThumbnail] = useState<{
@@ -91,7 +82,7 @@ export default function MediaUploadStep({
             order: data.media.images.length + index,
             isNew: true, // Flag to indicate this needs to be uploaded
           };
-        }),
+        })
       );
 
       onChange({
@@ -111,7 +102,7 @@ export default function MediaUploadStep({
 
   const removeImage = (index: number) => {
     const newImages = data.media.images.filter(
-      (_: any, i: number) => i !== index,
+      (_: any, i: number) => i !== index
     );
     onChange({ media: { ...data.media, images: newImages } });
   };
@@ -178,7 +169,7 @@ export default function MediaUploadStep({
    * Generate video thumbnail from first frame
    */
   const generateVideoThumbnail = (
-    videoFile: File,
+    videoFile: File
   ): Promise<{ blob: Blob; url: string }> => {
     return new Promise((resolve, reject) => {
       const video = document.createElement("video");
@@ -222,7 +213,7 @@ export default function MediaUploadStep({
               URL.revokeObjectURL(video.src);
             },
             "image/jpeg",
-            0.85,
+            0.85
           );
         } catch (error) {
           reject(error);
@@ -305,7 +296,7 @@ export default function MediaUploadStep({
 
   const removeVideo = (index: number) => {
     const newVideos = data.media.videos.filter(
-      (_: any, i: number) => i !== index,
+      (_: any, i: number) => i !== index
     );
     onChange({ media: { ...data.media, videos: newVideos } });
   };
@@ -313,7 +304,7 @@ export default function MediaUploadStep({
   const openThumbnailSelector = (
     index: number,
     videoUrl: string,
-    currentThumbnail?: string,
+    currentThumbnail?: string
   ) => {
     setSelectedVideoForThumbnail({
       index,
@@ -326,7 +317,7 @@ export default function MediaUploadStep({
   const handleThumbnailSave = (
     thumbnailBlob: Blob,
     thumbnailUrl: string,
-    timestamp: number,
+    timestamp: number
   ) => {
     if (!selectedVideoForThumbnail) return;
 
@@ -355,74 +346,91 @@ export default function MediaUploadStep({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
         Media Upload
-      </Typography>
+      </h2>
 
-      <Alert severity="info">
+      <UnifiedAlert variant="info">
         Upload up to 5 images. First image will be the main product image. Drag
         to reorder. Supports JPG, PNG, WebP (max 5MB per image).
-      </Alert>
+      </UnifiedAlert>
 
       {error && (
-        <Alert severity="error" onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <div className="relative">
+          <UnifiedAlert variant="error" onClose={() => setError(null)}>
+            {error}
+          </UnifiedAlert>
+          <button
+            onClick={() => setError(null)}
+            className="absolute top-3 right-3 text-red-600 hover:text-red-800"
+          >
+            ×
+          </button>
+        </div>
       )}
 
       {uploading && (
-        <Box sx={{ width: "100%" }}>
-          <Typography variant="caption" gutterBottom>
+        <div className="w-full">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
             Uploading images...
-          </Typography>
-          <LinearProgress variant="indeterminate" />
-        </Box>
+          </p>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <div
+              className="h-full bg-blue-600 animate-progress-stripes bg-gradient-to-r from-blue-500 to-blue-600"
+              style={{ width: "100%" }}
+            ></div>
+          </div>
+        </div>
       )}
 
       {/* Image Upload with Camera Support */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
-        <Button
-          variant="contained"
-          onClick={(e) => setUploadMenuAnchor(e.currentTarget)}
-          endIcon={<ArrowDropDown />}
-          sx={{
-            py: 1.5,
-            px: 3,
-          }}
-          disabled={data.media.images.length >= 5 || uploading}
-        >
-          {uploading ? "Processing..." : "Add Images"}
-        </Button>
+      <div className="mb-6 flex items-center gap-4">
+        <div className="relative">
+          <PrimaryButton
+            onClick={(e) => setUploadMenuAnchor(e.currentTarget)}
+            rightIcon={<ChevronDown className="w-4 h-4" />}
+            disabled={data.media.images.length >= 5 || uploading}
+          >
+            {uploading ? "Processing..." : "Add Images"}
+          </PrimaryButton>
 
-        <Menu
-          anchorEl={uploadMenuAnchor}
-          open={Boolean(uploadMenuAnchor)}
-          onClose={() => setUploadMenuAnchor(null)}
-        >
-          <MenuItem
-            onClick={() => {
-              setUploadMenuAnchor(null);
-              fileInputRef.current?.click();
-            }}
-          >
-            <ListItemIcon>
-              <Photo />
-            </ListItemIcon>
-            <ListItemText>Choose from Gallery</ListItemText>
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              setUploadMenuAnchor(null);
-              cameraInputRef.current?.click();
-            }}
-          >
-            <ListItemIcon>
-              <CameraAlt />
-            </ListItemIcon>
-            <ListItemText>Take Photo</ListItemText>
-          </MenuItem>
-        </Menu>
+          {/* Dropdown Menu */}
+          {uploadMenuAnchor && (
+            <>
+              <div
+                className="fixed inset-0 z-10"
+                onClick={() => setUploadMenuAnchor(null)}
+              />
+              <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20">
+                <button
+                  onClick={() => {
+                    setUploadMenuAnchor(null);
+                    fileInputRef.current?.click();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <ImageIcon className="w-5 h-5 text-gray-500" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    Choose from Gallery
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    setUploadMenuAnchor(null);
+                    cameraInputRef.current?.click();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
+                >
+                  <Camera className="w-5 h-5 text-gray-500" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    Take Photo
+                  </span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Hidden file inputs */}
         <input
@@ -444,24 +452,20 @@ export default function MediaUploadStep({
           disabled={data.media.images.length >= 5 || uploading}
         />
 
-        <Typography variant="caption" color="text.secondary">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
           {data.media.images.length} / 5 images • Saved locally until you submit
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {/* Image Grid with Drag and Drop */}
       {data.media.images.length > 0 && (
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="images" direction="horizontal">
             {(provided) => (
-              <Box
+              <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                  gap: 2,
-                }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               >
                 {data.media.images.map((img: any, index: number) => (
                   <Draggable
@@ -470,173 +474,116 @@ export default function MediaUploadStep({
                     index={index}
                   >
                     {(provided, snapshot) => (
-                      <Paper
+                      <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        sx={{
-                          p: 2,
-                          opacity: snapshot.isDragging ? 0.8 : 1,
-                          transform: snapshot.isDragging
-                            ? "rotate(2deg)"
-                            : "none",
-                          boxShadow: snapshot.isDragging ? 6 : 1,
-                          transition: "box-shadow 0.2s",
-                        }}
+                        className={`p-4 bg-white dark:bg-gray-800 rounded-lg shadow transition-all ${
+                          snapshot.isDragging
+                            ? "opacity-80 rotate-2 shadow-xl"
+                            : "shadow-md"
+                        }`}
                       >
-                        <Box
-                          sx={{
-                            width: "100%",
-                            height: 200,
-                            bgcolor: "grey.100",
-                            backgroundImage: `url(${img.url})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            borderRadius: 1,
-                            mb: 1,
-                            position: "relative",
-                          }}
-                        >
+                        <div className="relative w-full h-[200px] bg-gray-100 dark:bg-gray-700 rounded-lg mb-2 overflow-hidden">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center"
+                            style={{ backgroundImage: `url(${img.url})` }}
+                          />
+
                           {/* Drag Handle */}
-                          <IconButton
+                          <button
                             {...provided.dragHandleProps}
-                            size="small"
-                            sx={{
-                              position: "absolute",
-                              top: 8,
-                              left: 8,
-                              bgcolor: "background.paper",
-                              cursor: "grab",
-                              "&:active": {
-                                cursor: "grabbing",
-                              },
-                            }}
+                            className="absolute top-2 left-2 p-1 bg-white dark:bg-gray-800 rounded cursor-grab active:cursor-grabbing hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           >
-                            <DragIndicator />
-                          </IconButton>
+                            <GripVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          </button>
 
                           {/* Delete Button */}
-                          <IconButton
-                            size="small"
-                            sx={{
-                              position: "absolute",
-                              top: 8,
-                              right: 8,
-                              bgcolor: "background.paper",
-                            }}
+                          <button
                             onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 p-1 bg-white dark:bg-gray-800 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                           >
-                            <Delete />
-                          </IconButton>
+                            <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                          </button>
 
                           {/* WhatsApp Edit Button */}
-                          <IconButton
-                            size="small"
-                            sx={{
-                              position: "absolute",
-                              top: 48,
-                              right: 8,
-                              bgcolor: img.whatsappEdited
-                                ? "#25D366"
-                                : "background.paper",
-                              color: img.whatsappEdited ? "white" : "inherit",
-                              "&:hover": {
-                                bgcolor: img.whatsappEdited
-                                  ? "#128C7E"
-                                  : "background.paper",
-                              },
-                            }}
+                          <button
                             onClick={() => openWhatsAppEditor(index, img.url)}
                             title="Edit for WhatsApp (800x800)"
+                            className={`absolute top-12 right-2 p-1 rounded transition-colors ${
+                              img.whatsappEdited
+                                ? "bg-[#25D366] hover:bg-[#128C7E] text-white"
+                                : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            }`}
                           >
-                            <CropSquare />
-                          </IconButton>
+                            <Crop className="w-5 h-5" />
+                          </button>
 
                           {/* Main Badge */}
                           {index === 0 && (
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                bottom: 8,
-                                left: 8,
-                                bgcolor: "primary.main",
-                                color: "white",
-                                px: 1,
-                                py: 0.5,
-                                borderRadius: 1,
-                                fontSize: "0.75rem",
-                              }}
-                            >
+                            <div className="absolute bottom-2 left-2 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded">
                               Main Image
-                            </Box>
+                            </div>
                           )}
 
                           {/* Order Badge */}
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              bottom: 8,
-                              right: 8,
-                              bgcolor: "rgba(0, 0, 0, 0.6)",
-                              color: "white",
-                              width: 28,
-                              height: 28,
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "0.875rem",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <div className="absolute bottom-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                             {index + 1}
-                          </Box>
-                        </Box>
-                        <TextField
-                          fullWidth
-                          size="small"
+                          </div>
+                        </div>
+                        <UnifiedInput
+                          size="sm"
                           label="Alt Text"
                           value={img.altText}
                           onChange={(e) => updateAltText(index, e.target.value)}
                         />
-                      </Paper>
+                      </div>
                     )}
                   </Draggable>
                 ))}
                 {provided.placeholder}
-              </Box>
+              </div>
             )}
           </Droppable>
         </DragDropContext>
       )}
 
-      {/* Video Upload */}
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="subtitle2" gutterBottom>
+      {/* Video Upload Section */}
+      <div className="mt-8">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
           Product Videos (Optional)
-        </Typography>
-        <Alert severity="info" sx={{ mb: 2 }}>
+        </h3>
+        <UnifiedAlert variant="info" className="mb-4">
           Upload up to 2 videos. Thumbnails will be auto-generated. Supports
           MP4, WebM, MOV (max 20MB per video).
-        </Alert>
+        </UnifiedAlert>
 
         {uploadingVideo && (
-          <Box sx={{ width: "100%", mb: 2 }}>
-            <Typography variant="caption" gutterBottom>
+          <div className="w-full mb-4">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
               Processing video and generating thumbnail...
-            </Typography>
-            <LinearProgress variant="indeterminate" />
-          </Box>
+            </p>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full bg-blue-600 animate-progress-stripes bg-gradient-to-r from-blue-500 to-blue-600"
+                style={{ width: "100%" }}
+              ></div>
+            </div>
+          </div>
         )}
 
-        <Button
-          variant="outlined"
-          component="label"
-          startIcon={
-            uploadingVideo ? <CircularProgress size={20} /> : <VideoLibrary />
-          }
-          disabled={data.media.videos.length >= 2 || uploadingVideo}
-        >
-          {uploadingVideo ? "Processing..." : "Add Videos"}
+        <label className="inline-block">
+          <SecondaryButton
+            leftIcon={
+              uploadingVideo ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+              ) : (
+                <Video className="w-4 h-4" />
+              )
+            }
+            disabled={data.media.videos.length >= 2 || uploadingVideo}
+          >
+            {uploadingVideo ? "Processing..." : "Add Videos"}
+          </SecondaryButton>
           <input
             type="file"
             hidden
@@ -645,152 +592,76 @@ export default function MediaUploadStep({
             onChange={handleVideoUpload}
             disabled={data.media.videos.length >= 2 || uploadingVideo}
           />
-        </Button>
-        <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+        </label>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
           {data.media.videos.length} / 2 videos • Saved locally until you submit
-        </Typography>
+        </p>
 
         {/* Video Grid */}
         {data.media.videos.length > 0 && (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: 2,
-              mt: 2,
-            }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {data.media.videos.map((video: any, index: number) => (
-              <Paper key={`video-${index}`} sx={{ p: 2 }}>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 200,
-                    bgcolor: "grey.100",
-                    backgroundImage: `url(${video.thumbnail})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: 1,
-                    mb: 1,
-                    position: "relative",
-                    cursor: "pointer",
-                    "&:hover .play-icon": {
-                      opacity: 1,
-                      transform: "scale(1.1)",
-                    },
-                  }}
+              <div
+                key={`video-${index}`}
+                className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md"
+              >
+                <div
+                  className="relative w-full h-[200px] bg-gray-100 dark:bg-gray-700 rounded-lg mb-2 overflow-hidden cursor-pointer group"
                   onClick={() => window.open(video.url, "_blank")}
                 >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${video.thumbnail})` }}
+                  />
+
                   {/* Play Icon Overlay */}
-                  <Box
-                    className="play-icon"
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      opacity: 0.8,
-                      transition: "all 0.3s",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    <PlayCircle
-                      sx={{
-                        fontSize: 64,
-                        color: "white",
-                        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
-                      }}
-                    />
-                  </Box>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all pointer-events-none">
+                    <PlayCircle className="w-16 h-16 text-white drop-shadow-lg" />
+                  </div>
 
                   {/* Delete Button */}
-                  <IconButton
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      bgcolor: "background.paper",
-                    }}
-                    onClick={(e) => {
+                  <button
+                    onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       removeVideo(index);
                     }}
+                    className="absolute top-2 right-2 p-1 bg-white dark:bg-gray-800 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
-                    <Delete />
-                  </IconButton>
+                    <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  </button>
 
                   {/* Change Thumbnail Button */}
-                  <IconButton
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 48,
-                      right: 8,
-                      bgcolor: "background.paper",
-                      "&:hover": {
-                        bgcolor: "primary.light",
-                        color: "white",
-                      },
-                    }}
-                    onClick={(e) => {
+                  <button
+                    onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       openThumbnailSelector(index, video.url, video.thumbnail);
                     }}
                     title="Change Thumbnail"
+                    className="absolute top-12 right-2 p-1 bg-white dark:bg-gray-800 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                   >
-                    <PhotoCamera />
-                  </IconButton>
+                    <Camera className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </button>
 
                   {/* Video Badge */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      left: 8,
-                      bgcolor: "error.main",
-                      color: "white",
-                      px: 1,
-                      py: 0.5,
-                      borderRadius: 1,
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                    }}
-                  >
+                  <div className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded">
                     VIDEO {index + 1}
-                  </Box>
+                  </div>
 
                   {/* File Size Badge */}
                   {video.size && (
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: 8,
-                        right: 8,
-                        bgcolor: "rgba(0, 0, 0, 0.7)",
-                        color: "white",
-                        px: 1,
-                        py: 0.5,
-                        borderRadius: 1,
-                        fontSize: "0.7rem",
-                      }}
-                    >
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
                       {(video.size / (1024 * 1024)).toFixed(1)} MB
-                    </Box>
+                    </div>
                   )}
-                </Box>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ display: "block", mt: 1 }}
-                >
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {video.name || `Video ${index + 1}`}
-                </Typography>
-              </Paper>
+                </p>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* WhatsApp Image Editor Modal */}
       {selectedImageForEdit && (
@@ -820,6 +691,6 @@ export default function MediaUploadStep({
           onSave={handleThumbnailSave}
         />
       )}
-    </Box>
+    </div>
   );
 }

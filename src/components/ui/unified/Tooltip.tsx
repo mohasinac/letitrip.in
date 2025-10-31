@@ -14,14 +14,14 @@ export interface UnifiedTooltipProps {
   // Content
   content: React.ReactNode;
   children: React.ReactElement;
-  
+
   // Placement
   placement?: "top" | "bottom" | "left" | "right";
-  
+
   // Behavior
   delay?: number;
   disabled?: boolean;
-  
+
   // Style
   className?: string;
 }
@@ -35,9 +35,11 @@ const placementClasses = {
 
 const arrowClasses = {
   top: "top-full left-1/2 -translate-x-1/2 border-t-text border-x-transparent border-b-transparent",
-  bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-text border-x-transparent border-t-transparent",
+  bottom:
+    "bottom-full left-1/2 -translate-x-1/2 border-b-text border-x-transparent border-t-transparent",
   left: "left-full top-1/2 -translate-y-1/2 border-l-text border-y-transparent border-r-transparent",
-  right: "right-full top-1/2 -translate-y-1/2 border-r-text border-y-transparent border-l-transparent",
+  right:
+    "right-full top-1/2 -translate-y-1/2 border-r-text border-y-transparent border-l-transparent",
 };
 
 export const UnifiedTooltip: React.FC<UnifiedTooltipProps> = ({
@@ -55,7 +57,7 @@ export const UnifiedTooltip: React.FC<UnifiedTooltipProps> = ({
 
   const showTooltip = () => {
     if (disabled) return;
-    
+
     timeoutRef.current = setTimeout(() => {
       setIsVisible(true);
     }, delay);
@@ -106,43 +108,49 @@ export const UnifiedTooltip: React.FC<UnifiedTooltipProps> = ({
     },
   });
 
-  const tooltipContent = isVisible && typeof document !== "undefined" ? (
-    createPortal(
-      <div
-        style={{
-          position: "absolute",
-          top: position.top,
-          left: position.left,
-          zIndex: 9999,
-        }}
-        className="w-full h-full pointer-events-none"
-      >
-        <div className={cn("relative inline-block", placementClasses[placement])}>
-          {/* Tooltip Box */}
+  const tooltipContent =
+    isVisible && typeof document !== "undefined"
+      ? createPortal(
           <div
-            className={cn(
-              "bg-text text-surface px-3 py-2 rounded-md text-sm font-medium",
-              "shadow-lg max-w-xs whitespace-nowrap",
-              "animate-fadeIn",
-              className
-            )}
-            role="tooltip"
+            style={{
+              position: "absolute",
+              top: position.top,
+              left: position.left,
+              zIndex: 9999,
+            }}
+            className="w-full h-full pointer-events-none"
           >
-            {content}
-          </div>
-          
-          {/* Arrow */}
-          <div
-            className={cn(
-              "absolute w-0 h-0 border-4",
-              arrowClasses[placement]
-            )}
-          />
-        </div>
-      </div>,
-      document.body
-    )
-  ) : null;
+            <div
+              className={cn(
+                "relative inline-block",
+                placementClasses[placement]
+              )}
+            >
+              {/* Tooltip Box */}
+              <div
+                className={cn(
+                  "bg-text text-surface px-3 py-2 rounded-md text-sm font-medium",
+                  "shadow-lg max-w-xs whitespace-nowrap",
+                  "animate-fadeIn",
+                  className
+                )}
+                role="tooltip"
+              >
+                {content}
+              </div>
+
+              {/* Arrow */}
+              <div
+                className={cn(
+                  "absolute w-0 h-0 border-4",
+                  arrowClasses[placement]
+                )}
+              />
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
 
   return (
     <>

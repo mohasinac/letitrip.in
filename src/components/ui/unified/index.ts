@@ -31,6 +31,30 @@ export { default as Alert } from "./Alert";
 export * from "./FormControls";
 export { default as FormControls } from "./FormControls";
 
+// Tooltip
+export * from "./Tooltip";
+export { default as Tooltip } from "./Tooltip";
+
+// Dropdown
+export * from "./Dropdown";
+export { default as Dropdown } from "./Dropdown";
+
+// Tabs
+export * from "./Tabs";
+export { default as Tabs } from "./Tabs";
+
+// Accordion
+export * from "./Accordion";
+export { default as Accordion } from "./Accordion";
+
+// Skeleton
+export * from "./Skeleton";
+export { default as Skeleton } from "./Skeleton";
+
+// Progress & Avatar
+export * from "./Progress";
+export { default as Progress } from "./Progress";
+
 // Future components will be added here:
 // export * from "./Form";
 // export * from "./Tooltip";

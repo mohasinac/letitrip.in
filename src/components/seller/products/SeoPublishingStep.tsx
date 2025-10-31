@@ -1,19 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Typography,
-  TextField,
-  Autocomplete,
-  Chip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
-  Alert,
-} from "@mui/material";
+  UnifiedInput,
+  UnifiedTextarea,
+  UnifiedSelect,
+  UnifiedAlert,
+  UnifiedCard,
+  CardContent,
+  UnifiedBadge,
+} from "@/components/ui/unified";
+import { X } from "lucide-react";
 
 interface SeoPublishingStepProps {
   data: any;
@@ -24,6 +21,8 @@ export default function SeoPublishingStep({
   data,
   onChange,
 }: SeoPublishingStepProps) {
+  const [keywordInput, setKeywordInput] = useState("");
+
   // Auto-generate SEO data if not set
   useEffect(() => {
     if (!data.seo.title && data.name) {
@@ -52,137 +51,173 @@ export default function SeoPublishingStep({
     onChange({ seo: { ...data.seo, slug } });
   };
 
+  const handleKeywordAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && keywordInput.trim()) {
+      e.preventDefault();
+      if (!data.seo.keywords.includes(keywordInput.trim())) {
+        onChange({
+          seo: {
+            ...data.seo,
+            keywords: [...data.seo.keywords, keywordInput.trim()],
+          },
+        });
+      }
+      setKeywordInput("");
+    }
+  };
+
+  const handleKeywordRemove = (keywordToRemove: string) => {
+    onChange({
+      seo: {
+        ...data.seo,
+        keywords: data.seo.keywords.filter(
+          (keyword: string) => keyword !== keywordToRemove
+        ),
+      },
+    });
+  };
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        SEO & Publishing
-      </Typography>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-1">SEO & Publishing</h2>
+        <p className="text-sm text-muted-foreground">
+          Optimize your product for search engines and set publishing options
+        </p>
+      </div>
 
-      <Alert severity="info">
+      <UnifiedAlert variant="info">
         SEO settings help your product rank better in search results
-      </Alert>
+      </UnifiedAlert>
 
-      <TextField
-        label="SEO Title *"
-        fullWidth
+      <UnifiedInput
+        label="SEO Title"
         value={data.seo.title}
         onChange={(e) =>
           onChange({ seo: { ...data.seo, title: e.target.value } })
         }
-        helperText="Optimal length: 50-60 characters"
-        inputProps={{ maxLength: 60 }}
+        helperText={`Optimal length: 50-60 characters (${
+          data.seo.title?.length || 0
+        }/60)`}
+        maxLength={60}
+        required
       />
 
-      <TextField
-        label="SEO Description *"
-        fullWidth
-        multiline
+      <UnifiedTextarea
+        label="SEO Description"
         rows={3}
         value={data.seo.description}
         onChange={(e) =>
           onChange({ seo: { ...data.seo, description: e.target.value } })
         }
-        helperText="Optimal length: 150-160 characters"
-        inputProps={{ maxLength: 160 }}
+        helperText={`Optimal length: 150-160 characters (${
+          data.seo.description?.length || 0
+        }/160)`}
+        maxLength={160}
+        required
       />
 
-      <Autocomplete
-        multiple
-        freeSolo
-        options={[]}
-        value={data.seo.keywords}
-        onChange={(event, newValue) =>
-          onChange({ seo: { ...data.seo, keywords: newValue } })
-        }
-        renderTags={(value: string[], getTagProps) =>
-          value.map((option: string, index: number) => (
-            <Chip label={option} {...getTagProps({ index })} key={index} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="SEO Keywords"
-            placeholder="Type and press Enter"
-            helperText="Add keywords that customers might search for"
+      {/* SEO Keywords */}
+      <div>
+        <label className="block text-sm font-medium mb-2">SEO Keywords</label>
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={keywordInput}
+            onChange={(e) => setKeywordInput(e.target.value)}
+            onKeyDown={handleKeywordAdd}
+            placeholder="Type and press Enter to add keywords"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           />
-        )}
-      />
+          {data.seo.keywords.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {data.seo.keywords.map((keyword: string, index: number) => (
+                <UnifiedBadge
+                  key={index}
+                  variant="secondary"
+                  onRemove={() => handleKeywordRemove(keyword)}
+                >
+                  {keyword}
+                </UnifiedBadge>
+              ))}
+            </div>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Add keywords that customers might search for
+        </p>
+      </div>
 
-      <TextField
-        label="Product Slug *"
-        fullWidth
+      <UnifiedInput
+        label="Product Slug"
         value={data.seo.slug}
         onChange={handleSlugChange}
         helperText="URL-friendly slug (must start with 'buy-')"
         placeholder="buy-product-name"
+        required
       />
 
-      {/* Preview */}
-      <Paper sx={{ p: 2, bgcolor: "grey.50" }}>
-        <Typography variant="caption" color="text.secondary" gutterBottom>
-          Search Preview:
-        </Typography>
-        <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
-          {data.seo.title || "Product Title"}
-        </Typography>
-        <Typography variant="caption" color="success.main">
-          justforview.in/{data.seo.slug || "buy-product"}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          {data.seo.description || "Product description appears here..."}
-        </Typography>
-      </Paper>
+      {/* Search Preview */}
+      <UnifiedCard variant="outlined" className="bg-muted/30">
+        <CardContent className="p-4">
+          <p className="text-xs text-muted-foreground mb-2">Search Preview:</p>
+          <h3 className="text-sm font-medium text-primary mb-1">
+            {data.seo.title || "Product Title"}
+          </h3>
+          <p className="text-xs text-green-600 mb-2">
+            justforview.in/{data.seo.slug || "buy-product"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {data.seo.description || "Product description appears here..."}
+          </p>
+        </CardContent>
+      </UnifiedCard>
 
       {/* Publishing Options */}
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
-        Publishing Options
-      </Typography>
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-medium mb-4">Publishing Options</h3>
 
-      <TextField
-        label="Start Date"
-        type="datetime-local"
-        fullWidth
-        value={
-          data.startDate
-            ? new Date(data.startDate).toISOString().slice(0, 16)
-            : ""
-        }
-        onChange={(e) => onChange({ startDate: new Date(e.target.value) })}
-        helperText="When product goes live"
-        InputLabelProps={{ shrink: true }}
-      />
+        <div className="space-y-4">
+          <UnifiedInput
+            label="Start Date"
+            type="datetime-local"
+            value={
+              data.startDate
+                ? new Date(data.startDate).toISOString().slice(0, 16)
+                : ""
+            }
+            onChange={(e) => onChange({ startDate: new Date(e.target.value) })}
+            helperText="When product goes live"
+          />
 
-      <TextField
-        label="Expiration Date (Optional)"
-        type="datetime-local"
-        fullWidth
-        value={
-          data.expirationDate
-            ? new Date(data.expirationDate).toISOString().slice(0, 16)
-            : ""
-        }
-        onChange={(e) =>
-          onChange({
-            expirationDate: e.target.value
-              ? new Date(e.target.value)
-              : undefined,
-          })
-        }
-        helperText="Leave empty for permanent listing"
-        InputLabelProps={{ shrink: true }}
-      />
+          <UnifiedInput
+            label="Expiration Date (Optional)"
+            type="datetime-local"
+            value={
+              data.expirationDate
+                ? new Date(data.expirationDate).toISOString().slice(0, 16)
+                : ""
+            }
+            onChange={(e) =>
+              onChange({
+                expirationDate: e.target.value
+                  ? new Date(e.target.value)
+                  : undefined,
+              })
+            }
+            helperText="Leave empty for permanent listing"
+          />
 
-      <FormControl fullWidth>
-        <InputLabel>Status</InputLabel>
-        <Select
-          value={data.status}
-          onChange={(e) => onChange({ status: e.target.value })}
-        >
-          <MenuItem value="draft">Draft (Hidden)</MenuItem>
-          <MenuItem value="active">Active (Visible to customers)</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
+          <UnifiedSelect
+            label="Status"
+            value={data.status}
+            onChange={(e) => onChange({ status: e.target.value })}
+          >
+            <option value="draft">Draft (Hidden)</option>
+            <option value="active">Active (Visible to customers)</option>
+          </UnifiedSelect>
+        </div>
+      </div>
+    </div>
   );
 }

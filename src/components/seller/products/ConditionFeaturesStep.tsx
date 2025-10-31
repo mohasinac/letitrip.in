@@ -2,22 +2,14 @@
 
 import React from "react";
 import {
-  Box,
-  Typography,
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Switch,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  Button,
-  IconButton,
-  Chip,
-} from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+  UnifiedInput,
+  UnifiedSelect,
+  UnifiedCheckbox,
+  UnifiedRadio,
+  UnifiedSwitch,
+  SecondaryButton,
+} from "@/components/ui/unified";
+import { Plus, X } from "lucide-react";
 
 interface ConditionFeaturesStepProps {
   data: any;
@@ -53,7 +45,7 @@ export default function ConditionFeaturesStep({
   const updateSpecification = (
     index: number,
     field: "key" | "value",
-    value: string,
+    value: string
   ) => {
     const newSpecs = [...data.specifications];
     newSpecs[index] = { ...newSpecs[index], [field]: value };
@@ -63,118 +55,122 @@ export default function ConditionFeaturesStep({
   const removeSpecification = (index: number) => {
     onChange({
       specifications: data.specifications.filter(
-        (_: any, i: number) => i !== index,
+        (_: any, i: number) => i !== index
       ),
     });
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Condition & Features
-      </Typography>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-1">Condition & Features</h2>
+        <p className="text-sm text-muted-foreground">
+          Add product condition, shipping details, and features
+        </p>
+      </div>
 
       {/* Condition */}
-      <FormControl>
-        <Typography variant="subtitle2" gutterBottom>
-          Condition *
-        </Typography>
-        <RadioGroup
-          value={data.condition}
-          onChange={(e) => onChange({ condition: e.target.value })}
-        >
-          <FormControlLabel value="new" control={<Radio />} label="New" />
-          <FormControlLabel
+      <div>
+        <label className="block text-sm font-medium mb-3">
+          Condition <span className="text-red-500">*</span>
+        </label>
+        <div className="space-y-2">
+          <UnifiedRadio
+            name="condition"
+            value="new"
+            label="New"
+            checked={data.condition === "new"}
+            onChange={(e) => onChange({ condition: e.target.value })}
+          />
+          <UnifiedRadio
+            name="condition"
             value="used_mint"
-            control={<Radio />}
             label="Used - Mint Condition"
+            checked={data.condition === "used_mint"}
+            onChange={(e) => onChange({ condition: e.target.value })}
           />
-          <FormControlLabel
+          <UnifiedRadio
+            name="condition"
             value="used_good"
-            control={<Radio />}
             label="Used - Good Condition"
+            checked={data.condition === "used_good"}
+            onChange={(e) => onChange({ condition: e.target.value })}
           />
-          <FormControlLabel
+          <UnifiedRadio
+            name="condition"
             value="used_fair"
-            control={<Radio />}
             label="Used - Fair Condition"
+            checked={data.condition === "used_fair"}
+            onChange={(e) => onChange({ condition: e.target.value })}
           />
-          <FormControlLabel
+          <UnifiedRadio
+            name="condition"
             value="damaged"
-            control={<Radio />}
             label="Damaged"
+            checked={data.condition === "damaged"}
+            onChange={(e) => onChange({ condition: e.target.value })}
           />
-        </RadioGroup>
-      </FormControl>
+        </div>
+      </div>
 
       {/* Returns */}
-      <Box>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={data.returnable}
-              onChange={(e) => onChange({ returnable: e.target.checked })}
-            />
-          }
+      <div className="space-y-3">
+        <UnifiedSwitch
           label="Returnable"
+          checked={data.returnable}
+          onChange={(e) => onChange({ returnable: e.target.checked })}
         />
         {data.returnable && (
-          <TextField
-            label="Return Period (days)"
-            type="number"
-            value={data.returnPeriod || 7}
-            onChange={(e) =>
-              onChange({ returnPeriod: parseInt(e.target.value) || 7 })
-            }
-            sx={{ ml: 4, width: 200 }}
-          />
+          <div className="ml-8">
+            <UnifiedInput
+              label="Return Period (days)"
+              type="number"
+              value={data.returnPeriod || 7}
+              onChange={(e) =>
+                onChange({ returnPeriod: parseInt(e.target.value) || 7 })
+              }
+              className="max-w-xs"
+            />
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Shipping */}
-      <Typography variant="subtitle2">Shipping</Typography>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={data.shipping.isFree}
-            onChange={(e) =>
-              onChange({
-                shipping: { ...data.shipping, isFree: e.target.checked },
-              })
-            }
-          />
-        }
-        label="Free Shipping"
-      />
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Shipping</h3>
+        <UnifiedSwitch
+          label="Free Shipping"
+          checked={data.shipping.isFree}
+          onChange={(e) =>
+            onChange({
+              shipping: { ...data.shipping, isFree: e.target.checked },
+            })
+          }
+        />
 
-      <FormControl fullWidth>
-        <InputLabel>Shipping Method</InputLabel>
-        <Select
+        <UnifiedSelect
+          label="Shipping Method"
           value={data.shipping.method}
           onChange={(e) =>
             onChange({ shipping: { ...data.shipping, method: e.target.value } })
           }
         >
-          <MenuItem value="seller">Seller Shipped</MenuItem>
-          <MenuItem value="shiprocket">Shiprocket</MenuItem>
-          <MenuItem value="pickup">Pickup Only</MenuItem>
-        </Select>
-      </FormControl>
+          <option value="seller">Seller Shipped</option>
+          <option value="shiprocket">Shiprocket</option>
+          <option value="pickup">Pickup Only</option>
+        </UnifiedSelect>
+      </div>
 
       {/* Weight & Dimensions */}
-      <Box>
-        <Typography variant="subtitle2" gutterBottom>
+      <div>
+        <h3 className="text-sm font-medium mb-1">
           Weight & Dimensions (Optional)
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ mb: 2, display: "block" }}
-        >
+        </h3>
+        <p className="text-xs text-muted-foreground mb-3">
           Required for accurate shipping calculations
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <TextField
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <UnifiedInput
             label="Weight (grams)"
             type="number"
             value={data.shipping.weight || ""}
@@ -189,12 +185,9 @@ export default function ConditionFeaturesStep({
               })
             }
             placeholder="e.g., 50"
-            sx={{ width: 200 }}
-            InputProps={{
-              inputProps: { min: 0, step: 1 },
-            }}
+            min={0}
           />
-          <TextField
+          <UnifiedInput
             label="Length (cm)"
             type="number"
             value={data.shipping.dimensions?.length || ""}
@@ -212,12 +205,10 @@ export default function ConditionFeaturesStep({
               })
             }
             placeholder="e.g., 10"
-            sx={{ width: 150 }}
-            InputProps={{
-              inputProps: { min: 0, step: 0.1 },
-            }}
+            min={0}
+            step="0.1"
           />
-          <TextField
+          <UnifiedInput
             label="Width (cm)"
             type="number"
             value={data.shipping.dimensions?.width || ""}
@@ -235,12 +226,10 @@ export default function ConditionFeaturesStep({
               })
             }
             placeholder="e.g., 5"
-            sx={{ width: 150 }}
-            InputProps={{
-              inputProps: { min: 0, step: 0.1 },
-            }}
+            min={0}
+            step="0.1"
           />
-          <TextField
+          <UnifiedInput
             label="Height (cm)"
             type="number"
             value={data.shipping.dimensions?.height || ""}
@@ -258,86 +247,83 @@ export default function ConditionFeaturesStep({
               })
             }
             placeholder="e.g., 3"
-            sx={{ width: 150 }}
-            InputProps={{
-              inputProps: { min: 0, step: 0.1 },
-            }}
+            min={0}
+            step="0.1"
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Product Features */}
-      <Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 1,
-          }}
-        >
-          <Typography variant="subtitle2">Product Features</Typography>
-          <Button size="small" startIcon={<Add />} onClick={addFeature}>
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-sm font-medium">Product Features</h3>
+          <SecondaryButton size="sm" leftIcon={<Plus />} onClick={addFeature}>
             Add Feature
-          </Button>
-        </Box>
-        {data.features.map((feature: string, index: number) => (
-          <Box key={index} sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <TextField
-              fullWidth
-              size="small"
-              value={feature}
-              onChange={(e) => updateFeature(index, e.target.value)}
-              placeholder="e.g., High-speed rotation"
-            />
-            <IconButton size="small" onClick={() => removeFeature(index)}>
-              <Delete />
-            </IconButton>
-          </Box>
-        ))}
-      </Box>
+          </SecondaryButton>
+        </div>
+        <div className="space-y-2">
+          {data.features.map((feature: string, index: number) => (
+            <div key={index} className="flex gap-2">
+              <UnifiedInput
+                value={feature}
+                onChange={(e) => updateFeature(index, e.target.value)}
+                placeholder="e.g., High-speed rotation"
+                className="flex-1"
+              />
+              <button
+                type="button"
+                onClick={() => removeFeature(index)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Specifications */}
-      <Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 1,
-          }}
-        >
-          <Typography variant="subtitle2">Specifications</Typography>
-          <Button size="small" startIcon={<Add />} onClick={addSpecification}>
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-sm font-medium">Specifications</h3>
+          <SecondaryButton
+            size="sm"
+            leftIcon={<Plus />}
+            onClick={addSpecification}
+          >
             Add Specification
-          </Button>
-        </Box>
-        {data.specifications.map((spec: any, index: number) => (
-          <Box key={index} sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <TextField
-              size="small"
-              value={spec.key}
-              onChange={(e) =>
-                updateSpecification(index, "key", e.target.value)
-              }
-              placeholder="Key (e.g., Weight)"
-              sx={{ width: "30%" }}
-            />
-            <TextField
-              fullWidth
-              size="small"
-              value={spec.value}
-              onChange={(e) =>
-                updateSpecification(index, "value", e.target.value)
-              }
-              placeholder="Value (e.g., 50g)"
-            />
-            <IconButton size="small" onClick={() => removeSpecification(index)}>
-              <Delete />
-            </IconButton>
-          </Box>
-        ))}
-      </Box>
-    </Box>
+          </SecondaryButton>
+        </div>
+        <div className="space-y-2">
+          {data.specifications.map((spec: any, index: number) => (
+            <div key={index} className="flex gap-2">
+              <UnifiedInput
+                value={spec.key}
+                onChange={(e) =>
+                  updateSpecification(index, "key", e.target.value)
+                }
+                placeholder="Key (e.g., Weight)"
+                className="w-1/3"
+              />
+              <UnifiedInput
+                value={spec.value}
+                onChange={(e) =>
+                  updateSpecification(index, "value", e.target.value)
+                }
+                placeholder="Value (e.g., 50g)"
+                className="flex-1"
+              />
+              <button
+                type="button"
+                onClick={() => removeSpecification(index)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

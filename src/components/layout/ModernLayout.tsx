@@ -1,37 +1,20 @@
 "use client";
 
-import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  Container,
-  Box,
-  IconButton,
-  Typography,
-  Button,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Menu as MuiMenu,
-  MenuItem,
-  Avatar,
-  Divider,
-} from "@mui/material";
+import React, { useState } from "react";
 import {
   Menu,
   ShoppingCart,
   Search,
-  Person,
-  LightMode,
-  DarkMode,
-  Login,
-  Logout,
-  AccountCircle,
-} from "@mui/icons-material";
+  User,
+  Sun,
+  Moon,
+  LogIn,
+  LogOut,
+  UserCircle,
+  X,
+} from "lucide-react";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import AdminSidebar from "@/components/layout/AdminSidebar";
@@ -84,62 +67,88 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   };
 
   const drawer = (
-    <Box sx={{ width: 250 }} role="presentation">
-      <List>
+    <nav className="w-64 p-4">
+      <ul className="space-y-2">
         {navigation.map((item) => (
-          <ListItem key={item.name} component="a" href={item.href}>
-            <ListItemText primary={item.name} />
-          </ListItem>
+          <li key={item.name}>
+            <Link
+              href={item.href}
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {item.name}
+            </Link>
+          </li>
         ))}
-        <Divider sx={{ my: 1 }} />
+        <li className="border-t border-gray-200 dark:border-gray-700 my-2"></li>
         {/* Mobile Auth Links */}
         {user ? (
           <>
-            <ListItem component={Link} href="/profile">
-              <ListItemText primary="Profile" />
-            </ListItem>
+            <li>
+              <Link
+                href="/profile"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                Profile
+              </Link>
+            </li>
             {user.role === "admin" && (
-              <ListItem component={Link} href="/admin">
-                <ListItemText primary="Admin Panel" />
-              </ListItem>
+              <li>
+                <Link
+                  href="/admin"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Admin Panel
+                </Link>
+              </li>
             )}
             {(user.role === "seller" || user.role === "admin") && (
-              <ListItem component={Link} href="/seller/dashboard">
-                <ListItemText primary="Seller Panel" />
-              </ListItem>
+              <li>
+                <Link
+                  href="/seller/dashboard"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Seller Panel
+                </Link>
+              </li>
             )}
-            <ListItem
-              component="button"
-              onClick={handleLogout}
-              sx={{
-                cursor: "pointer",
-                "&:hover": { backgroundColor: "action.hover" },
-              }}
-            >
-              <ListItemText primary="Logout" />
-            </ListItem>
+            <li>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+              >
+                Logout
+              </button>
+            </li>
           </>
         ) : (
           <>
-            <ListItem component={Link} href="/login">
-              <ListItemText primary="Sign In" />
-            </ListItem>
-            <ListItem component={Link} href="/register">
-              <ListItemText primary="Register" />
-            </ListItem>
+            <li>
+              <Link
+                href="/login"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                Sign In
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/register"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                Register
+              </Link>
+            </li>
           </>
         )}
-      </List>
-    </Box>
+      </ul>
+    </nav>
   );
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        minHeight: "100vh",
-        flexDirection: isAdminRoute || isSellerRoute ? "row" : "column",
-      }}
+    <div
+      className={`flex min-h-screen ${
+        isAdminRoute || isSellerRoute ? "flex-row" : "flex-col"
+      }`}
     >
       {/* Admin Sidebar - Only show on admin routes */}
       {isAdminRoute && (
@@ -154,386 +163,249 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
         />
       )}
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          flexGrow: 1,
-          width: "100%",
-        }}
-      >
+      <div className="flex flex-col flex-grow w-full">
         {/* Header */}
-        <AppBar
-          position="sticky"
-          elevation={0}
-          sx={{
-            backgroundColor: "background.default",
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
-          <Container maxWidth="xl">
-            <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
+        <header className="sticky top-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 z-50">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center py-3">
               {/* Mobile menu button - only show on mobile */}
-              <Box
-                sx={{
-                  display: { xs: "flex", md: "none" },
-                  width: 48,
-                  justifyContent: "flex-start",
-                }}
-              >
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  edge="start"
+              <div className="flex md:hidden w-12 justify-start">
+                <button
                   onClick={handleDrawerToggle}
-                  sx={{ color: "text.primary" }}
+                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  aria-label="open drawer"
                 >
-                  <Menu />
-                </IconButton>
-              </Box>
+                  <Menu className="h-6 w-6" />
+                </button>
+              </div>
 
               {/* Logo */}
-              <Typography
-                variant="h6"
-                component="a"
+              <Link
                 href="/"
-                sx={{
-                  fontWeight: 700,
-                  color: "text.primary",
-                  textDecoration: "none",
-                  fontSize: { xs: "1.2rem", md: "1.5rem" },
-                  flexGrow: { xs: 1, md: 0 },
-                  textAlign: { xs: "center", md: "left" },
-                }}
+                className="font-bold text-gray-900 dark:text-white no-underline text-xl md:text-2xl flex-grow md:flex-grow-0 text-center md:text-left"
               >
                 JustForView
-              </Typography>
+              </Link>
 
               {/* Desktop Navigation */}
-              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+              <nav className="hidden md:flex gap-2">
                 {navigation.map((item) => (
-                  <Button
+                  <Link
                     key={item.name}
                     href={item.href}
-                    sx={{
-                      color: "text.primary",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      fontSize: "0.95rem",
-                      "&:hover": {
-                        backgroundColor: "action.hover",
-                      },
-                    }}
+                    className="px-4 py-2 text-gray-900 dark:text-white font-medium rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     {item.name}
-                  </Button>
+                  </Link>
                 ))}
-              </Box>
+              </nav>
 
-              {/* Right side icons */}
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <IconButton sx={{ color: "text.primary" }}>
-                  <Search />
-                </IconButton>
-                <IconButton sx={{ color: "text.primary" }}>
-                  <ShoppingCart />
-                </IconButton>
-
-                {/* Authentication Section */}
+              {/* Right Section - Icons and Auth */}
+              <div className="flex items-center gap-2">
                 <ClientOnly>
                   {user ? (
                     <>
-                      <IconButton
-                        onClick={handleProfileMenuOpen}
-                        sx={{ color: "text.primary" }}
-                        aria-label="account menu"
-                      >
-                        {user.name ? (
-                          <Avatar
-                            sx={{
-                              width: 32,
-                              height: 32,
-                              fontSize: "0.875rem",
-                              bgcolor: "primary.main",
-                            }}
-                          >
-                            {user.name.charAt(0).toUpperCase()}
-                          </Avatar>
-                        ) : (
-                          <AccountCircle />
-                        )}
-                      </IconButton>
-                      <MuiMenu
-                        anchorEl={profileMenuAnchor}
-                        open={Boolean(profileMenuAnchor)}
-                        onClose={handleProfileMenuClose}
-                        onClick={handleProfileMenuClose}
-                        PaperProps={{
-                          elevation: 0,
-                          sx: {
-                            overflow: "visible",
-                            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
-                            mt: 1.5,
-                            "& .MuiAvatar-root": {
-                              width: 32,
-                              height: 32,
-                              ml: -0.5,
-                              mr: 1,
-                            },
-                            "&:before": {
-                              content: '""',
-                              display: "block",
-                              position: "absolute",
-                              top: 0,
-                              right: 14,
-                              width: 10,
-                              height: 10,
-                              bgcolor: "background.paper",
-                              transform: "translateY(-50%) rotate(45deg)",
-                              zIndex: 0,
-                            },
-                          },
-                        }}
-                        transformOrigin={{
-                          horizontal: "right",
-                          vertical: "top",
-                        }}
-                        anchorOrigin={{
-                          horizontal: "right",
-                          vertical: "bottom",
-                        }}
-                      >
-                        <MenuItem component={Link} href="/profile">
-                          <Avatar sx={{ mr: 2 }}>
+                      {/* User Profile Menu */}
+                      <div className="relative">
+                        <button
+                          onClick={handleProfileMenuOpen}
+                          className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
                             {user.name
                               ? user.name.charAt(0).toUpperCase()
                               : "U"}
-                          </Avatar>
-                          Profile
-                        </MenuItem>
-                        {user.role === "admin" && (
-                          <MenuItem component={Link} href="/admin">
-                            <AccountCircle sx={{ mr: 2 }} />
-                            Admin Panel
-                          </MenuItem>
+                          </div>
+                          <UserCircle className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                        </button>
+
+                        {/* Custom Dropdown Menu */}
+                        {Boolean(profileMenuAnchor) && (
+                          <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                            <Link
+                              href="/profile"
+                              onClick={handleProfileMenuClose}
+                              className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                                {user.name
+                                  ? user.name.charAt(0).toUpperCase()
+                                  : "U"}
+                              </div>
+                              <span>Profile</span>
+                            </Link>
+                            {user.role === "admin" && (
+                              <Link
+                                href="/admin"
+                                onClick={handleProfileMenuClose}
+                                className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline"
+                              >
+                                <UserCircle className="h-5 w-5" />
+                                <span>Admin Panel</span>
+                              </Link>
+                            )}
+                            {(user.role === "seller" ||
+                              user.role === "admin") && (
+                              <Link
+                                href="/seller/dashboard"
+                                onClick={handleProfileMenuClose}
+                                className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline"
+                              >
+                                <UserCircle className="h-5 w-5" />
+                                <span>Seller Panel</span>
+                              </Link>
+                            )}
+                            <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                            <button
+                              onClick={handleLogout}
+                              className="w-full flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-left"
+                            >
+                              <LogOut className="h-5 w-5" />
+                              <span>Logout</span>
+                            </button>
+                          </div>
                         )}
-                        {(user.role === "seller" || user.role === "admin") && (
-                          <MenuItem component={Link} href="/seller/dashboard">
-                            <AccountCircle sx={{ mr: 2 }} />
-                            Seller Panel
-                          </MenuItem>
-                        )}
-                        <Divider />
-                        <MenuItem onClick={handleLogout}>
-                          <Logout sx={{ mr: 2 }} />
-                          Logout
-                        </MenuItem>
-                      </MuiMenu>
+                      </div>
                     </>
                   ) : (
                     <>
-                      <Button
-                        component={Link}
+                      <Link
                         href="/login"
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Login />}
-                        sx={{
-                          display: { xs: "none", sm: "flex" },
-                          textTransform: "none",
-                          borderColor: "primary.main",
-                          color: "primary.main",
-                          "&:hover": {
-                            borderColor: "primary.dark",
-                            backgroundColor: "primary.main",
-                            color: "primary.contrastText",
-                          },
-                        }}
+                        className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:border-blue-500 transition-colors no-underline"
                       >
+                        <LogIn className="h-4 w-4" />
                         Sign In
-                      </Button>
-                      <IconButton
-                        component={Link}
+                      </Link>
+                      <Link
                         href="/login"
-                        sx={{
-                          color: "text.primary",
-                          display: { xs: "flex", sm: "none" },
-                        }}
+                        className="flex sm:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                       >
-                        <Person />
-                      </IconButton>
+                        <User className="h-5 w-5" />
+                      </Link>
                     </>
                   )}
                 </ClientOnly>
 
-                <IconButton
+                <button
                   onClick={toggleTheme}
-                  sx={{ color: "text.primary" }}
+                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  {mode === "dark" ? <LightMode /> : <DarkMode />}
-                </IconButton>
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
+                  {mode === "dark" ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
 
         {/* Mobile Drawer */}
-        <Drawer
-          variant="temporary"
-          open={mobileMenuOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: 250,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
+        {mobileMenuOpen && (
+          <>
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+              onClick={handleDrawerToggle}
+            ></div>
+            {/* Drawer */}
+            <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out md:hidden shadow-xl">
+              {drawer}
+            </div>
+          </>
+        )}
 
         {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1 }}>
-          {children}
-        </Box>
+        <main className="flex-grow">{children}</main>
 
         {/* Footer */}
-        <Box
-          component="footer"
-          sx={{
-            backgroundColor: "background.paper",
-            borderTop: 1,
-            borderColor: "divider",
-            py: 6,
-            mt: 8,
-          }}
-        >
-          <Container maxWidth="xl">
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(4, 1fr)",
-                },
-                gap: 4,
-              }}
-            >
+        <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-12 mt-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               {/* Company Info */}
-              <Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   JustForView
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Your premium destination for authentic Beyblades and hobby
                   collectibles. Quality guaranteed.
-                </Typography>
-              </Box>
+                </p>
+              </div>
 
               {/* Quick Links */}
-              <Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   Quick Links
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                </h3>
+                <div className="flex flex-col gap-2">
                   {navigation.slice(0, 5).map((item) => (
-                    <Typography
+                    <Link
                       key={item.name}
-                      variant="body2"
-                      component="a"
                       href={item.href}
-                      sx={{
-                        color: "text.secondary",
-                        textDecoration: "none",
-                        "&:hover": { color: "primary.main" },
-                      }}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 no-underline transition-colors"
                     >
                       {item.name}
-                    </Typography>
+                    </Link>
                   ))}
-                </Box>
-              </Box>
+                </div>
+              </div>
 
               {/* Categories */}
-              <Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   Categories
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                </h3>
+                <div className="flex flex-col gap-2">
                   {[
                     { name: "Beyblade Burst", href: "/game" },
                     { name: "Metal Series", href: "/game" },
                     { name: "Plastic Gen", href: "/game" },
                     { name: "Accessories", href: "/game" },
                   ].map((item) => (
-                    <Typography
+                    <Link
                       key={item.name}
-                      variant="body2"
-                      component={Link}
                       href={item.href}
-                      sx={{
-                        color: "text.secondary",
-                        textDecoration: "none",
-                        "&:hover": { color: "primary.main" },
-                      }}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 no-underline transition-colors"
                     >
                       {item.name}
-                    </Typography>
+                    </Link>
                   ))}
-                </Box>
-              </Box>
+                </div>
+              </div>
 
               {/* Support */}
-              <Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   Support
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                </h3>
+                <div className="flex flex-col gap-2">
                   {[
                     { name: "Contact", href: "/contact" },
                     { name: "Terms", href: "/terms" },
                     { name: "Privacy", href: "/privacy" },
                   ].map((item) => (
-                    <Typography
+                    <Link
                       key={item.name}
-                      variant="body2"
-                      component={Link}
                       href={item.href}
-                      sx={{
-                        color: "text.secondary",
-                        textDecoration: "none",
-                        "&:hover": { color: "primary.main" },
-                      }}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 no-underline transition-colors"
                     >
                       {item.name}
-                    </Typography>
+                    </Link>
                   ))}
-                </Box>
-              </Box>
-            </Box>
+                </div>
+              </div>
+            </div>
 
-            <Box
-              sx={{
-                borderTop: 1,
-                borderColor: "divider",
-                mt: 4,
-                pt: 4,
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
+            <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 © 2025 JustForView. All rights reserved.
-              </Typography>
-            </Box>
-          </Container>
-        </Box>
-      </Box>
-    </Box>
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
   );
 }

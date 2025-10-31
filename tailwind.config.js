@@ -69,6 +69,8 @@ module.exports = {
         ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         bounce: "bounce 1s infinite",
+        shimmer: "shimmer 2s infinite",
+        "progress-stripes": "progress-stripes 1s linear infinite",
       },
       keyframes: {
         fadeIn: {
@@ -111,6 +113,14 @@ module.exports = {
             transform: "translateY(0)",
             animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
           },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "progress-stripes": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "30px 0" },
         },
       },
       // Responsive breakpoints

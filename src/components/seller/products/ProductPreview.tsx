@@ -2,25 +2,14 @@
 
 import React from "react";
 import {
-  Box,
-  Paper,
-  Typography,
-  Card,
+  UnifiedCard,
   CardMedia,
   CardContent,
-  Chip,
-  Rating,
-  Button,
-  Divider,
-  Stack,
-} from "@mui/material";
-import {
-  ShoppingCart,
-  LocalShipping,
-  Verified,
-  Refresh,
-  TrendingUp,
-} from "@mui/icons-material";
+  UnifiedBadge,
+  PrimaryButton,
+} from "@/components/ui/unified";
+import { ShoppingCart, Truck, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProductPreviewProps {
   data: any;
@@ -33,187 +22,175 @@ export default function ProductPreview({ data }: ProductPreviewProps) {
   const discount =
     compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 0;
 
-  return (
-    <Paper sx={{ p: 2, position: "sticky", top: 100 }}>
-      <Typography variant="h6" gutterBottom>
-        Product Preview
-      </Typography>
-      <Typography variant="caption" color="text.secondary" paragraph>
-        How customers will see your product
-      </Typography>
+  // Custom star rating component
+  const StarRating = ({ value }: { value: number }) => {
+    return (
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg
+            key={star}
+            className={cn(
+              "w-4 h-4",
+              star <= value
+                ? "text-warning fill-warning"
+                : "text-border fill-border"
+            )}
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        ))}
+      </div>
+    );
+  };
 
-      <Card>
+  return (
+    <div className="p-4 bg-surface rounded-lg sticky top-24">
+      <h3 className="text-xl font-semibold mb-1 text-text">Product Preview</h3>
+      <p className="text-xs text-textSecondary mb-4">
+        How customers will see your product
+      </p>
+
+      <UnifiedCard variant="elevated" className="overflow-hidden">
+        {/* Product Image */}
         <CardMedia
-          component="div"
-          sx={{
-            height: 250,
-            backgroundImage: `url(${mainImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            bgcolor: "grey.200",
-            position: "relative",
+          className={cn(
+            "h-60 bg-cover bg-center bg-surfaceVariant relative",
+            !mainImage && "flex items-center justify-center"
+          )}
+          style={{
+            backgroundImage: mainImage ? `url(${mainImage})` : undefined,
           }}
         >
           {discount > 0 && (
-            <Chip
-              label={`-${discount}%`}
-              color="error"
-              size="small"
-              sx={{ position: "absolute", top: 8, right: 8 }}
-            />
+            <div className="absolute top-2 right-2">
+              <UnifiedBadge variant="error" size="sm">
+                -{discount}%
+              </UnifiedBadge>
+            </div>
           )}
         </CardMedia>
-        <CardContent>
-          <Typography variant="h6" gutterBottom noWrap>
+
+        <CardContent className="p-6">
+          {/* Product Name */}
+          <h3 className="text-xl font-semibold mb-2 text-text truncate">
             {data.name || "Product Name"}
-          </Typography>
+          </h3>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <Rating value={4.5} precision={0.5} size="small" readOnly />
-            <Typography variant="caption" color="text.secondary">
-              (0 reviews)
-            </Typography>
-          </Box>
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-2">
+            <StarRating value={4.5} />
+            <span className="text-xs text-textSecondary">(0 reviews)</span>
+          </div>
 
-          <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 2 }}>
-            <Typography variant="h5" color="primary">
+          {/* Price */}
+          <div className="flex items-baseline gap-2 mb-4">
+            <span className="text-2xl font-bold text-primary">
               ₹{price.toLocaleString()}
-            </Typography>
+            </span>
             {compareAt > price && (
-              <Typography
-                variant="body2"
-                sx={{ textDecoration: "line-through", color: "text.secondary" }}
-              >
+              <span className="text-sm line-through text-textSecondary">
                 ₹{compareAt.toLocaleString()}
-              </Typography>
+              </span>
             )}
-          </Box>
+          </div>
 
+          {/* Description */}
           {data.shortDescription && (
-            <Typography variant="body2" color="text.secondary" paragraph>
+            <p className="text-sm text-textSecondary mb-4 line-clamp-3">
               {data.shortDescription}
-            </Typography>
+            </p>
           )}
 
           {/* Product Features */}
-          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} mb={2}>
+          <div className="flex flex-wrap gap-2 mb-4">
             {data.condition && (
-              <Chip
-                label={data.condition.replace("_", " ").toUpperCase()}
-                size="small"
-                variant="outlined"
-              />
+              <UnifiedBadge variant="outline" size="sm">
+                {data.condition.replace("_", " ").toUpperCase()}
+              </UnifiedBadge>
             )}
             {data.shipping?.isFree && (
-              <Chip
-                icon={<LocalShipping />}
-                label="Free Shipping"
-                color="success"
-                size="small"
-              />
+              <UnifiedBadge variant="success" size="sm">
+                <Truck className="w-3 h-3 mr-1" />
+                Free Shipping
+              </UnifiedBadge>
             )}
             {data.returnable && (
-              <Chip
-                icon={<Refresh />}
-                label={`${data.returnPeriod || 7} Days Return`}
-                color="info"
-                size="small"
-              />
+              <UnifiedBadge variant="info" size="sm">
+                <RotateCcw className="w-3 h-3 mr-1" />
+                {data.returnPeriod || 7} Days Return
+              </UnifiedBadge>
             )}
-          </Stack>
+          </div>
 
-          <Button
-            variant="contained"
+          {/* Add to Cart Button */}
+          <PrimaryButton
             fullWidth
-            startIcon={<ShoppingCart />}
+            leftIcon={<ShoppingCart className="w-4 h-4" />}
             disabled
-            sx={{ mb: 2 }}
+            className="mb-4"
           >
             Add to Cart
-          </Button>
+          </PrimaryButton>
 
-          {/* SEO Information */}
+          {/* SEO Preview */}
           {data.seo?.title && (
             <>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle2" color="primary" gutterBottom>
+              <div className="border-t border-border my-4"></div>
+              <h4 className="text-sm font-semibold text-primary mb-2">
                 SEO Preview
-              </Typography>
-              <Box sx={{ p: 1.5, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography
-                  variant="caption"
-                  color="primary"
-                  sx={{ fontWeight: 600 }}
-                >
+              </h4>
+              <div className="p-3 bg-surfaceVariant rounded">
+                <p className="text-xs font-semibold text-primary">
                   {data.seo.title}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  display="block"
-                  color="success.main"
-                >
+                </p>
+                <p className="text-xs text-success">
                   justforview.in › {data.seo.slug}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  display="block"
-                  color="text.secondary"
-                  sx={{ mt: 0.5 }}
-                >
+                </p>
+                <p className="text-xs text-textSecondary mt-1">
                   {data.seo.description}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             </>
           )}
 
           {/* Product Status & Info */}
           {(data.status || data.inventory?.quantity !== undefined) && (
             <>
-              <Divider sx={{ my: 2 }} />
-              <Stack spacing={0.5}>
+              <div className="border-t border-border my-4"></div>
+              <div className="space-y-2">
                 {data.status && (
-                  <Box
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      Status:
-                    </Typography>
-                    <Chip
-                      label={data.status.toUpperCase()}
-                      size="small"
-                      color={data.status === "active" ? "success" : "default"}
-                    />
-                  </Box>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-textSecondary">Status:</span>
+                    <UnifiedBadge
+                      variant={data.status === "active" ? "success" : "default"}
+                      size="sm"
+                    >
+                      {data.status.toUpperCase()}
+                    </UnifiedBadge>
+                  </div>
                 )}
                 {data.inventory?.quantity !== undefined && (
-                  <Box
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      Stock:
-                    </Typography>
-                    <Typography variant="caption" fontWeight={600}>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-textSecondary">Stock:</span>
+                    <span className="text-xs font-semibold text-text">
                       {data.inventory.quantity} units
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
                 )}
                 {data.inventory?.sku && (
-                  <Box
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      SKU:
-                    </Typography>
-                    <Typography variant="caption" fontWeight={600}>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-textSecondary">SKU:</span>
+                    <span className="text-xs font-semibold text-text">
                       {data.inventory.sku}
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
                 )}
-              </Stack>
+              </div>
             </>
           )}
         </CardContent>
-      </Card>
-    </Paper>
+      </UnifiedCard>
+    </div>
   );
 }
