@@ -172,7 +172,7 @@ export default function CategoryForm({
       reset();
     } catch (error) {
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to save category",
+        error instanceof Error ? error.message : "Failed to save category"
       );
     } finally {
       setIsSubmitting(false);
@@ -379,7 +379,7 @@ export default function CategoryForm({
                           onChange={(e) => {
                             const selected = Array.from(
                               e.target.selectedOptions,
-                              (option) => option.value,
+                              (option) => option.value
                             );
                             field.onChange(selected);
                           }}

@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import {
-  Edit,
-  Trash2,
-  Eye,
-  EyeOff,
-  Search,
-  Database,
-} from "lucide-react";
+import { Edit, Trash2, Eye, EyeOff, Search, Database } from "lucide-react";
 import type { Category } from "@/types";
 
 interface CategoryListViewProps {
@@ -28,7 +21,7 @@ export default function CategoryListView({
 
   const categoryMap = useMemo(
     () => new Map(categories.map((cat) => [cat.id, cat])),
-    [categories],
+    [categories]
   );
 
   const filteredCategories = useMemo(
@@ -36,9 +29,9 @@ export default function CategoryListView({
       categories.filter(
         (cat) =>
           cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          cat.slug.toLowerCase().includes(searchTerm.toLowerCase()),
+          cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
       ),
-    [categories, searchTerm],
+    [categories, searchTerm]
   );
 
   const sortedCategories = useMemo(
@@ -49,20 +42,20 @@ export default function CategoryListView({
         if (aMinLevel !== bMinLevel) return aMinLevel - bMinLevel;
         return a.sortOrder - b.sortOrder;
       }),
-    [filteredCategories],
+    [filteredCategories]
   );
 
   const paginatedCategories = useMemo(
     () =>
       sortedCategories.slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
+        page * rowsPerPage + rowsPerPage
       ),
-    [sortedCategories, page, rowsPerPage],
+    [sortedCategories, page, rowsPerPage]
   );
 
   const getParentInfo = (
-    category: Category,
+    category: Category
   ): { names: string[]; slugs: string[] } => {
     if (!category.parentIds || category.parentIds.length === 0) {
       return { names: ["—"], slugs: [] };
@@ -181,9 +174,9 @@ export default function CategoryListView({
                   <td className="px-4 py-3 text-center">
                     <span
                       className="inline-block px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
-                      title={`Min Level: ${category.minLevel || 0}, Max Level: ${
-                        category.maxLevel || 0
-                      }`}
+                      title={`Min Level: ${
+                        category.minLevel || 0
+                      }, Max Level: ${category.maxLevel || 0}`}
                     >
                       {category.minLevel || 0}-{category.maxLevel || 0}
                     </span>

@@ -2,32 +2,15 @@
 
 import React, { useMemo, useState } from "react";
 import {
-  Box,
-  Typography,
-  IconButton,
-  Chip,
-  Collapse,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  Paper,
-  Tooltip,
-  Badge,
-  TableRow as MuiTableRow,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  Storage as StorageIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  Database,
+  Search,
+} from "lucide-react";
 import type { Category } from "@/types";
 
 interface CategoryTreeViewProps {
@@ -57,7 +40,7 @@ function CategoryNode({
 
   const children = useMemo(
     () => allCategories.filter((cat) => cat.parentIds?.includes(category.id)),
-    [allCategories, category.id],
+    [allCategories, category.id]
   );
 
   // Filter children based on search term
@@ -66,7 +49,7 @@ function CategoryNode({
     return children.filter(
       (cat) =>
         cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cat.slug.toLowerCase().includes(searchTerm.toLowerCase()),
+        cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [children, searchTerm]);
 
@@ -92,7 +75,7 @@ function CategoryNode({
         if (matches) return true;
 
         const subChildren = allCategories.filter((c) =>
-          c.parentIds?.includes(cat.id),
+          c.parentIds?.includes(cat.id)
         );
         return hasMatchingDescendant(subChildren);
       });
@@ -112,126 +95,114 @@ function CategoryNode({
 
   return (
     <>
-      <TableRow
-        sx={{
-          backgroundColor:
-            level % 2 === 0 ? "background.paper" : "action.hover",
-          "&:hover": {
-            backgroundColor: "action.selected",
-          },
-        }}
+      <tr
+        className={`${
+          level % 2 === 0
+            ? "bg-white dark:bg-gray-800"
+            : "bg-gray-50 dark:bg-gray-700"
+        } hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors`}
       >
-        <TableCell sx={{ paddingLeft: `${level * 32 + 16}px`, width: "40%" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <td
+          className="py-3 border-b border-gray-200 dark:border-gray-700"
+          style={{ paddingLeft: `${level * 32 + 16}px`, width: "40%" }}
+        >
+          <div className="flex items-center gap-2">
             {hasChildren ? (
-              <IconButton
-                size="small"
+              <button
                 onClick={() => setExpanded(!expanded)}
-                sx={{ width: 32, height: 32 }}
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
+                {expanded ? (
+                  <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                ) : (
+                  <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                )}
+              </button>
             ) : (
-              <Box sx={{ width: 32 }} />
+              <div className="w-8" />
             )}
             {category.image && (
-              <Box
-                component="img"
+              <img
                 src={category.image}
                 alt={category.name}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 1,
-                  objectFit: "cover",
-                }}
+                className="w-8 h-8 rounded object-cover"
               />
             )}
-            <Typography variant="body2" fontWeight={500}>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
               {category.name}
-            </Typography>
-          </Box>
-        </TableCell>
+            </span>
+          </div>
+        </td>
 
         {/* Slug */}
-        <TableCell sx={{ fontSize: "0.875rem", color: "text.secondary" }}>
+        <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
           {category.slug}
-        </TableCell>
+        </td>
 
         {/* Products */}
-        <TableCell align="center">
-          <Tooltip
+        <td className="py-3 px-4 text-center border-b border-gray-200 dark:border-gray-700">
+          <div
+            className="inline-flex items-center justify-center relative cursor-pointer"
             title={`${category.inStockCount || 0} in stock, ${
               category.outOfStockCount || 0
             } out of stock`}
           >
-            <Badge
-              badgeContent={category.productCount || 0}
-              color="primary"
-              sx={{ cursor: "pointer" }}
-            >
-              <StorageIcon fontSize="small" />
-            </Badge>
-          </Tooltip>
-        </TableCell>
+            <Database className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            {(category.productCount || 0) > 0 && (
+              <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {category.productCount}
+              </span>
+            )}
+          </div>
+        </td>
 
         {/* Status */}
-        <TableCell align="center">
-          <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+        <td className="py-3 px-4 text-center border-b border-gray-200 dark:border-gray-700">
+          <div className="flex gap-2 items-center justify-center">
             {category.featured && (
-              <Chip
-                label="Featured"
-                size="small"
-                color="primary"
-                variant="outlined"
-              />
+              <span className="px-2 py-1 text-xs border border-blue-500 text-blue-600 dark:text-blue-400 rounded">
+                Featured
+              </span>
             )}
             {category.isActive ? (
-              <Tooltip title="Active">
-                <VisibilityIcon
-                  fontSize="small"
-                  sx={{ color: "success.main" }}
-                />
-              </Tooltip>
+              <span title="Active">
+                <Eye className="w-4 h-4 text-green-600 dark:text-green-400" />
+              </span>
             ) : (
-              <Tooltip title="Inactive">
-                <VisibilityOffIcon
-                  fontSize="small"
-                  sx={{ color: "text.disabled" }}
-                />
-              </Tooltip>
+              <span title="Inactive">
+                <EyeOff className="w-4 h-4 text-gray-400" />
+              </span>
             )}
-          </Box>
-        </TableCell>
+          </div>
+        </td>
 
         {/* Actions */}
-        <TableCell align="right" sx={{ width: "15%" }}>
-          <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
-            <Tooltip title="Edit">
-              <IconButton
-                size="small"
-                onClick={() => onEdit(category)}
-                sx={{ color: "primary.main" }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton
-                size="small"
-                onClick={() => onDelete(category.id)}
-                sx={{ color: "error.main" }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </TableCell>
-      </TableRow>
+        <td
+          className="py-3 px-4 text-right border-b border-gray-200 dark:border-gray-700"
+          style={{ width: "15%" }}
+        >
+          <div className="flex gap-1 justify-end">
+            <button
+              onClick={() => onEdit(category)}
+              className="p-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onDelete(category.id)}
+              className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
 
       {/* Children */}
-      {hasChildren && (
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+      {hasChildren && expanded && (
+        <>
           {filteredChildren.map((child) => (
             <CategoryNode
               key={child.id}
@@ -243,19 +214,10 @@ function CategoryNode({
               searchTerm={searchTerm}
             />
           ))}
-        </Collapse>
+        </>
       )}
     </>
   );
-}
-
-interface TableRowProps {
-  children: React.ReactNode;
-  sx?: any;
-}
-
-function TableRow({ children, sx }: TableRowProps) {
-  return <MuiTableRow sx={sx}>{children}</MuiTableRow>;
 }
 
 export default function CategoryTreeView({
@@ -270,107 +232,67 @@ export default function CategoryTreeView({
       categories
         .filter((cat) => !cat.parentIds || cat.parentIds.length === 0)
         .sort((a, b) => a.sortOrder - b.sortOrder),
-    [categories],
+    [categories]
   );
 
   return (
-    <Box>
+    <div className="space-y-4">
       {/* Search Bar */}
-      <Box sx={{ mb: 3 }}>
-        <TextField
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
           placeholder="Search categories by name or slug..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          fullWidth
-          size="small"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
-      </Box>
+      </div>
 
-      <TableContainer
-        component={Paper}
-        sx={{
-          backgroundColor: "background.paper",
-          "& thead tr": {
-            backgroundColor: "action.hover",
-          },
-          "& th": {
-            color: "text.primary",
-            fontWeight: 600,
-          },
-          "& td": {
-            color: "text.primary",
-            borderColor: "divider",
-          },
-        }}
-      >
-        <table style={{ width: "100%" }}>
-          <thead>
-            <tr
-              style={{
-                borderBottom: "1px solid var(--palette-divider, #e0e0e0)",
-              }}
-            >
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  width: "40%",
-                }}
-              >
-                <Typography variant="subtitle2" fontWeight={600}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <th
+                  className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white"
+                  style={{ width: "40%" }}
+                >
                   Category Name
-                </Typography>
-              </th>
-              <th style={{ padding: "12px 16px", textAlign: "left" }}>
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   Slug
-                </Typography>
-              </th>
-              <th style={{ padding: "12px 16px", textAlign: "center" }}>
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
                   Products
-                </Typography>
-              </th>
-              <th style={{ padding: "12px 16px", textAlign: "center" }}>
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
                   Status
-                </Typography>
-              </th>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "right",
-                  width: "15%",
-                }}
-              >
-                <Typography variant="subtitle2" fontWeight={600}>
+                </th>
+                <th
+                  className="px-4 py-3 text-right text-sm font-semibold text-gray-900 dark:text-white"
+                  style={{ width: "15%" }}
+                >
                   Actions
-                </Typography>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rootCategories.map((category) => (
-              <CategoryNode
-                key={category.id}
-                category={category}
-                allCategories={categories}
-                level={0}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                searchTerm={searchTerm}
-              />
-            ))}
-          </tbody>
-        </table>
-      </TableContainer>
-    </Box>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rootCategories.map((category) => (
+                <CategoryNode
+                  key={category.id}
+                  category={category}
+                  allCategories={categories}
+                  level={0}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  searchTerm={searchTerm}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
