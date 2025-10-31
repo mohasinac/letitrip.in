@@ -2,37 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  CircularProgress,
-  Alert,
-  Card,
-  CardContent,
-  Checkbox,
-  Chip,
-  Stack,
-  Divider,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
-} from "@mui/lab";
-import {
-  Refresh as RefreshIcon,
-  CheckCircle as CheckIcon,
-  LocalShipping as ShipIcon,
-  Search as SearchIcon,
-  LocationOn as LocationIcon,
-} from "@mui/icons-material";
+  RefreshCw,
+  CheckCircle,
+  Truck,
+  Search,
+  MapPin,
+  Loader2,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -98,7 +74,7 @@ export default function BulkTrackingPage() {
         // Filter shipments that are trackable (not pending or cancelled)
         const trackableShipments = (response.data || []).filter(
           (s: Shipment) =>
-            !["pending", "cancelled"].includes(s.status) && s.trackingNumber,
+            !["pending", "cancelled"].includes(s.status) && s.trackingNumber
         );
         setShipments(trackableShipments);
       } else {
@@ -124,7 +100,7 @@ export default function BulkTrackingPage() {
 
       // Refresh tracking for selected shipments
       const refreshPromises = selectedShipments.map((shipmentId) =>
-        apiGet(`/api/seller/shipments/${shipmentId}`),
+        apiGet(`/api/seller/shipments/${shipmentId}`)
       );
 
       const responses = await Promise.all(refreshPromises);
@@ -132,7 +108,7 @@ export default function BulkTrackingPage() {
       // Update shipments with fresh data
       const updatedShipments = shipments.map((shipment) => {
         const response: any = responses.find(
-          (r: any) => r.success && r.data?.id === shipment.id,
+          (r: any) => r.success && r.data?.id === shipment.id
         );
         return response ? response.data : shipment;
       });
@@ -150,7 +126,7 @@ export default function BulkTrackingPage() {
     setSelectedShipments((prev) =>
       prev.includes(shipmentId)
         ? prev.filter((id) => id !== shipmentId)
-        : [...prev, shipmentId],
+        : [...prev, shipmentId]
     );
   };
 
@@ -170,7 +146,7 @@ export default function BulkTrackingPage() {
       shipment.orderId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       shipment.toAddress?.name
         ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+        .includes(searchQuery.toLowerCase())
   );
 
   const getStatusColor = (status: string) => {
@@ -193,273 +169,249 @@ export default function BulkTrackingPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "delivered":
-        return <CheckIcon />;
+        return <CheckCircle className="h-4 w-4" />;
       case "in_transit":
       case "out_for_delivery":
-        return <ShipIcon />;
+        return <Truck className="h-4 w-4" />;
       case "pickup_scheduled":
-        return <LocationIcon />;
+        return <MapPin className="h-4 w-4" />;
       default:
-        return <ShipIcon />;
+        return <Truck className="h-4 w-4" />;
     }
   };
 
   if (loading) {
     return (
       <RoleGuard requiredRole="seller">
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <CircularProgress />
-          </Box>
-        </Container>
+        <div className="container mx-auto px-4 max-w-7xl py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
   return (
     <RoleGuard requiredRole="seller">
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <div className="container mx-auto px-4 max-w-7xl py-8">
         {/* Header */}
-        <Box mb={4}>
-          <Typography variant="h4" gutterBottom>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Track Multiple Shipments
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Monitor and refresh tracking status for multiple shipments at once
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
-            {error}
-          </Alert>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex justify-between items-center">
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={() => setError("")}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+            >
+              ✕
+            </button>
+          </div>
         )}
 
         {/* Actions */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Stack
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              flexWrap="wrap"
-            >
-              <TextField
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="relative min-w-[300px]">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
                 placeholder="Search tracking number, order ID, or customer..."
-                size="small"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{ minWidth: 300 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
+            </div>
 
-              <Button
-                variant="outlined"
-                onClick={toggleAll}
-                startIcon={
-                  selectedShipments.length === filteredShipments.length ? (
-                    <CheckIcon />
-                  ) : null
-                }
-              >
-                {selectedShipments.length === filteredShipments.length
-                  ? "Deselect All"
-                  : "Select All"}
-              </Button>
+            <button
+              onClick={toggleAll}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              {selectedShipments.length === filteredShipments.length && (
+                <CheckCircle className="h-5 w-5" />
+              )}
+              {selectedShipments.length === filteredShipments.length
+                ? "Deselect All"
+                : "Select All"}
+            </button>
 
-              <Box sx={{ flex: 1 }} />
+            <div className="flex-1" />
 
-              <Chip
-                label={`${selectedShipments.length} / ${filteredShipments.length} selected`}
-                color={selectedShipments.length > 0 ? "primary" : "default"}
-              />
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                selectedShipments.length > 0
+                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+              }`}
+            >
+              {selectedShipments.length} / {filteredShipments.length} selected
+            </span>
 
-              <Button
-                variant="contained"
-                startIcon={<RefreshIcon />}
-                onClick={refreshTracking}
-                disabled={selectedShipments.length === 0 || refreshing}
-              >
-                {refreshing ? "Refreshing..." : "Refresh Tracking"}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
+            <button
+              onClick={refreshTracking}
+              disabled={selectedShipments.length === 0 || refreshing}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <RefreshCw className="h-5 w-5" />
+              {refreshing ? "Refreshing..." : "Refresh Tracking"}
+            </button>
+          </div>
+        </div>
 
         {/* Shipments List */}
         {filteredShipments.length === 0 ? (
-          <Card>
-            <CardContent sx={{ textAlign: "center", py: 8 }}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                {searchQuery
-                  ? "No matching shipments found"
-                  : "No trackable shipments"}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {searchQuery
-                  ? "Try a different search term"
-                  : "Shipments with tracking numbers will appear here"}
-              </Typography>
-            </CardContent>
-          </Card>
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
+            <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+              {searchQuery
+                ? "No matching shipments found"
+                : "No trackable shipments"}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {searchQuery
+                ? "Try a different search term"
+                : "Shipments with tracking numbers will appear here"}
+            </p>
+          </div>
         ) : (
-          <Stack spacing={3}>
+          <div className="space-y-6">
             {filteredShipments
               .filter(
                 (s) =>
                   selectedShipments.includes(s.id) ||
-                  selectedShipments.length === 0,
+                  selectedShipments.length === 0
               )
               .map((shipment) => (
-                <Card
+                <div
                   key={shipment.id}
-                  sx={{
-                    bgcolor: selectedShipments.includes(shipment.id)
-                      ? "action.selected"
-                      : "background.paper",
-                  }}
+                  className={`bg-white dark:bg-gray-900 rounded-lg border p-6 ${
+                    selectedShipments.includes(shipment.id)
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-gray-200 dark:border-gray-800"
+                  }`}
                 >
-                  <CardContent>
-                    <Stack
-                      direction="row"
-                      alignItems="flex-start"
-                      spacing={2}
-                      mb={2}
-                    >
-                      <Checkbox
-                        checked={selectedShipments.includes(shipment.id)}
-                        onChange={() => toggleShipment(shipment.id)}
-                      />
+                  <div className="flex items-start gap-4 mb-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedShipments.includes(shipment.id)}
+                      onChange={() => toggleShipment(shipment.id)}
+                      className="h-5 w-5 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
 
-                      <Box sx={{ flex: 1 }}>
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={2}
-                          flexWrap="wrap"
-                          mb={1}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 flex-wrap mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                          {shipment.trackingNumber}
+                        </h3>
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium uppercase ${
+                            getStatusColor(shipment.status) === "success"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                              : getStatusColor(shipment.status) === "info"
+                              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                              : getStatusColor(shipment.status) === "warning"
+                              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
+                              : getStatusColor(shipment.status) === "error"
+                              ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                              : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                          }`}
                         >
-                          <Typography variant="h6">
-                            {shipment.trackingNumber}
-                          </Typography>
-                          <Chip
-                            label={shipment.status
-                              .replace(/_/g, " ")
-                              .toUpperCase()}
-                            size="small"
-                            color={getStatusColor(shipment.status)}
-                            icon={getStatusIcon(shipment.status)}
-                          />
-                        </Stack>
+                          {getStatusIcon(shipment.status)}
+                          {shipment.status.replace(/_/g, " ")}
+                        </span>
+                      </div>
 
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          gutterBottom
-                        >
-                          Order: {shipment.orderId} • {shipment.carrier}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          To: {shipment.toAddress?.name},{" "}
-                          {shipment.toAddress?.city},{" "}
-                          {shipment.toAddress?.state}
-                        </Typography>
-                      </Box>
-                    </Stack>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        Order: {shipment.orderId} • {shipment.carrier}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        To: {shipment.toAddress?.name},{" "}
+                        {shipment.toAddress?.city}, {shipment.toAddress?.state}
+                      </p>
+                    </div>
+                  </div>
 
-                    <Divider sx={{ my: 2 }} />
+                  <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
 
-                    {/* Tracking Timeline */}
-                    {shipment.trackingHistory &&
-                    shipment.trackingHistory.length > 0 ? (
-                      <Timeline position="right">
-                        {shipment.trackingHistory
-                          .slice()
-                          .reverse()
-                          .map((event, index) => (
-                            <TimelineItem key={index}>
-                              <TimelineOppositeContent
-                                color="text.secondary"
-                                sx={{ flex: 0.3 }}
-                              >
-                                <Typography variant="caption">
-                                  {new Date(
-                                    event.timestamp,
-                                  ).toLocaleDateString()}
-                                </Typography>
-                                <Typography variant="caption" display="block">
-                                  {new Date(
-                                    event.timestamp,
-                                  ).toLocaleTimeString()}
-                                </Typography>
-                              </TimelineOppositeContent>
+                  {/* Tracking Timeline */}
+                  {shipment.trackingHistory &&
+                  shipment.trackingHistory.length > 0 ? (
+                    <div className="space-y-4">
+                      {shipment.trackingHistory
+                        .slice()
+                        .reverse()
+                        .map((event, index) => (
+                          <div key={index} className="flex gap-4">
+                            {/* Timeline Dot */}
+                            <div className="flex flex-col items-center">
+                              <div
+                                className={`w-3 h-3 rounded-full ${
+                                  index === 0
+                                    ? "bg-blue-600"
+                                    : "bg-gray-300 dark:bg-gray-600"
+                                }`}
+                              />
+                              {index < shipment.trackingHistory.length - 1 && (
+                                <div className="w-0.5 h-full bg-gray-300 dark:bg-gray-600 mt-1" />
+                              )}
+                            </div>
 
-                              <TimelineSeparator>
-                                <TimelineDot
-                                  color={index === 0 ? "primary" : "grey"}
-                                  variant={index === 0 ? "filled" : "outlined"}
-                                />
-                                {index <
-                                  shipment.trackingHistory.length - 1 && (
-                                  <TimelineConnector />
-                                )}
-                              </TimelineSeparator>
-
-                              <TimelineContent>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight={index === 0 ? "bold" : "normal"}
+                            {/* Timeline Content */}
+                            <div className="flex-1 pb-4">
+                              <div className="flex items-start justify-between gap-4 mb-1">
+                                <p
+                                  className={`text-sm ${
+                                    index === 0
+                                      ? "font-bold text-gray-900 dark:text-white"
+                                      : "font-medium text-gray-700 dark:text-gray-300"
+                                  }`}
                                 >
                                   {event.status
                                     .replace(/_/g, " ")
                                     .toUpperCase()}
-                                </Typography>
-                                {event.location && (
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                  >
-                                    📍 {event.location}
-                                  </Typography>
-                                )}
-                                <Typography
-                                  variant="caption"
-                                  display="block"
-                                  color="text.secondary"
-                                >
-                                  {event.description}
-                                </Typography>
-                              </TimelineContent>
-                            </TimelineItem>
-                          ))}
-                      </Timeline>
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        textAlign="center"
-                        py={2}
-                      >
-                        No tracking history available
-                      </Typography>
-                    )}
-                  </CardContent>
-                </Card>
+                                </p>
+                                <div className="text-right text-xs text-gray-500 dark:text-gray-400">
+                                  <p>
+                                    {new Date(
+                                      event.timestamp
+                                    ).toLocaleDateString()}
+                                  </p>
+                                  <p>
+                                    {new Date(
+                                      event.timestamp
+                                    ).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                              </div>
+                              {event.location && (
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                  📍 {event.location}
+                                </p>
+                              )}
+                              <p className="text-xs text-gray-500 dark:text-gray-500">
+                                {event.description}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
+                      No tracking history available
+                    </p>
+                  )}
+                </div>
               ))}
-          </Stack>
+          </div>
         )}
-      </Container>
+      </div>
     </RoleGuard>
   );
 }

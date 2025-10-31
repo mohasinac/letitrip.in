@@ -2,29 +2,14 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  InputAdornment,
-  Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  CircularProgress,
-  useTheme,
-} from "@mui/material";
-import {
   Search,
-  ExpandMore,
-  Email,
-  Chat,
+  ChevronDown,
+  Mail,
+  MessageCircle,
   Phone,
-  HelpOutline,
-} from "@mui/icons-material";
+  HelpCircle,
+  Loader2,
+} from "lucide-react";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 interface FAQItem {
@@ -38,7 +23,7 @@ export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [faqData, setFAQData] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const theme = useTheme();
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   // Add breadcrumb
   useBreadcrumbTracker([
@@ -133,7 +118,7 @@ export default function FAQPage() {
   const categories = [
     { id: "all", name: "All Categories", count: faqData.length },
     ...Array.from(
-      new Set(faqData.map((item) => item.category || "General")),
+      new Set(faqData.map((item) => item.category || "General"))
     ).map((category) => ({
       id: category.toLowerCase(),
       name: category,
@@ -155,347 +140,200 @@ export default function FAQPage() {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Box sx={{ textAlign: "center" }}>
-          <CircularProgress size={48} sx={{ mb: 2 }} />
-          <Typography variant="body1" color="text.secondary">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-base text-gray-600 dark:text-gray-400">
             Loading FAQ...
-          </Typography>
-        </Box>
-      </Box>
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box>
+    <div>
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          py: { xs: 8, md: 12 },
-          color: "white",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h1"
-              sx={{ fontWeight: 700, mb: 3, color: "white" }}
-            >
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 py-16 md:py-24 text-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
               Frequently Asked Questions
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ maxWidth: 800, mx: "auto", color: "white", opacity: 0.9 }}
-            >
+            </h1>
+            <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/90">
               Find answers to common questions about our Beyblade products,
               shipping, returns, and more. Can't find what you're looking for?
               Contact our support team.
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="xl">
+      <div className="py-16">
+        <div className="container mx-auto px-4 max-w-7xl">
           {/* Search Bar */}
-          <Box sx={{ maxWidth: 600, mx: "auto", mb: 6 }}>
-            <TextField
-              fullWidth
-              placeholder="Search FAQ..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 3,
-                },
-              }}
-            />
-          </Box>
+          <div className="max-w-2xl mx-auto mb-12">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search FAQ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", lg: "300px 1fr" },
-              gap: 6,
-            }}
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-12">
             {/* Categories Sidebar */}
-            <Box>
-              <Card sx={{ p: 3, borderRadius: 3, position: "sticky", top: 24 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+            <div>
+              <div className="p-6 rounded-2xl sticky top-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <h6 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   Categories
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                </h6>
+                <div className="flex flex-col gap-2">
                   {categories.map((category) => (
-                    <Chip
+                    <button
                       key={category.id}
-                      label={`${category.name} (${category.count})`}
                       onClick={() => setSelectedCategory(category.id)}
-                      variant={
-                        selectedCategory === category.id ? "filled" : "outlined"
-                      }
-                      color={
-                        selectedCategory === category.id ? "primary" : "default"
-                      }
-                      sx={{
-                        justifyContent: "space-between",
-                        px: 2,
-                        py: 1,
-                        height: "auto",
-                        "& .MuiChip-label": {
-                          width: "100%",
-                          textAlign: "left",
-                        },
-                        cursor: "pointer",
-                        transition: "all 0.3s ease",
-                        "&:hover": {
-                          transform: "translateX(4px)",
-                        },
-                      }}
-                    />
+                      className={`px-4 py-2 text-left rounded-lg transition-all duration-300 hover:translate-x-1 ${
+                        selectedCategory === category.id
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {category.name} ({category.count})
+                    </button>
                   ))}
-                </Box>
-              </Card>
-            </Box>
+                </div>
+              </div>
+            </div>
 
             {/* FAQ Content */}
-            <Box>
+            <div>
               {filteredFAQs.length > 0 ? (
-                <Box>
+                <div className="space-y-4">
                   {filteredFAQs.map((item, index) => (
-                    <Accordion
+                    <div
                       key={`${item.question}-${index}`}
-                      sx={{
-                        mb: 2,
-                        borderRadius: 2,
-                        "&:before": { display: "none" },
-                        boxShadow: theme.shadows[2],
-                        "&.Mui-expanded": {
-                          boxShadow: theme.shadows[4],
-                        },
-                      }}
+                      className="rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow"
                     >
-                      <AccordionSummary
-                        expandIcon={<ExpandMore />}
-                        sx={{
-                          px: 3,
-                          py: 2,
-                          "&.Mui-expanded": {
-                            borderBottom: `1px solid ${theme.palette.divider}`,
-                          },
-                        }}
+                      <button
+                        onClick={() =>
+                          setExpandedIndex(
+                            expandedIndex === index ? null : index
+                          )
+                        }
+                        className={`w-full px-6 py-4 flex items-center justify-between text-left transition-colors ${
+                          expandedIndex === index
+                            ? "border-b border-gray-200 dark:border-gray-800"
+                            : ""
+                        }`}
                       >
-                        <Typography variant="h6" fontWeight={500}>
+                        <h6 className="text-lg font-medium text-gray-900 dark:text-white pr-4">
                           {item.question}
-                        </Typography>
-                      </AccordionSummary>
-                      <AccordionDetails sx={{ px: 3, py: 2 }}>
-                        <Typography
-                          variant="body1"
-                          color="text.secondary"
-                          sx={{ lineHeight: 1.7 }}
-                        >
-                          {item.answer}
-                        </Typography>
-                      </AccordionDetails>
-                    </Accordion>
+                        </h6>
+                        <ChevronDown
+                          className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform ${
+                            expandedIndex === index ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {expandedIndex === index && (
+                        <div className="px-6 py-4">
+                          <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {item.answer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   ))}
-                </Box>
+                </div>
               ) : (
-                <Card sx={{ p: 8, textAlign: "center", borderRadius: 3 }}>
-                  <HelpOutline
-                    sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
-                  />
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                <div className="p-16 text-center rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                  <HelpCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h6 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                     No results found
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  </h6>
+                  <p className="text-base text-gray-600 dark:text-gray-400">
                     Try adjusting your search or browse different categories.
-                  </Typography>
-                </Card>
+                  </p>
+                </div>
               )}
-            </Box>
-          </Box>
-        </Container>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Still Need Help Section */}
-      <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
-        <Container maxWidth="xl">
-          <Card sx={{ p: 6, textAlign: "center", borderRadius: 3 }}>
-            <Typography variant="h3" fontWeight={700} gutterBottom>
+      <div className="py-16 bg-gray-50 dark:bg-gray-950">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="p-12 text-center rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+            <h3 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
               Still need help?
-            </Typography>
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              sx={{ mb: 6, maxWidth: 600, mx: "auto" }}
-            >
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
               Can't find the answer you're looking for? Our customer support
               team is here to help. Get in touch with us through any of the
               following methods.
-            </Typography>
+            </p>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-                gap: 4,
-                maxWidth: 900,
-                mx: "auto",
-              }}
-            >
-              <Card
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: theme.shadows[8],
-                  },
-                }}
-                component="a"
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <a
                 href="mailto:support@justforview.in"
+                className="p-8 text-center rounded-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 no-underline"
               >
-                <Box
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 2,
-                    backgroundColor: "primary.main",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mx: "auto",
-                    mb: 2,
-                  }}
-                >
-                  <Email sx={{ fontSize: 32, color: "white" }} />
-                </Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+                <div className="w-16 h-16 rounded-lg bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                  <Mail className="h-8 w-8 text-white" />
+                </div>
+                <h6 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
                   Email Support
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 3 }}
-                >
+                </h6>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Get detailed help via email
-                </Typography>
-                <Button variant="outlined" size="small">
+                </p>
+                <span className="inline-block px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white">
                   Email Us
-                </Button>
-              </Card>
+                </span>
+              </a>
 
-              <Card
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: theme.shadows[8],
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 2,
-                    backgroundColor: "primary.main",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mx: "auto",
-                    mb: 2,
-                  }}
-                >
-                  <Chat sx={{ fontSize: 32, color: "white" }} />
-                </Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+              <div className="p-8 text-center rounded-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div className="w-16 h-16 rounded-lg bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="h-8 w-8 text-white" />
+                </div>
+                <h6 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
                   Live Chat
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 3 }}
-                >
+                </h6>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Chat with us in real-time
-                </Typography>
-                <Button variant="outlined" size="small">
+                </p>
+                <button className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white">
                   Start Chat
-                </Button>
-              </Card>
+                </button>
+              </div>
 
-              <Card
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: theme.shadows[8],
-                  },
-                }}
-                component="a"
+              <a
                 href="tel:+919876543210"
+                className="p-8 text-center rounded-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 no-underline"
               >
-                <Box
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 2,
-                    backgroundColor: "primary.main",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mx: "auto",
-                    mb: 2,
-                  }}
-                >
-                  <Phone sx={{ fontSize: 32, color: "white" }} />
-                </Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+                <div className="w-16 h-16 rounded-lg bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                  <Phone className="h-8 w-8 text-white" />
+                </div>
+                <h6 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
                   Phone Support
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 3 }}
-                >
+                </h6>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Call us during business hours
-                </Typography>
-                <Button variant="outlined" size="small">
+                </p>
+                <span className="inline-block px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white">
                   Call Us
-                </Button>
-              </Card>
-            </Box>
-          </Card>
-        </Container>
-      </Box>
-    </Box>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

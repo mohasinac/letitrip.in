@@ -2,31 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  CircularProgress,
-  Alert,
-  Card,
-  CardContent,
-  Checkbox,
-  IconButton,
-  Chip,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import {
-  Print as PrintIcon,
-  Download as DownloadIcon,
-  Share as ShareIcon,
-  Close as CloseIcon,
-  CheckCircle as CheckIcon,
-  LocalShipping as ShipIcon,
-} from "@mui/icons-material";
+  Printer,
+  Download,
+  Share2,
+  X,
+  CheckCircle,
+  Truck,
+  Loader2,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -96,7 +79,7 @@ export default function BulkShippingLabelPage() {
     setSelectedShipments((prev) =>
       prev.includes(shipmentId)
         ? prev.filter((id) => id !== shipmentId)
-        : [...prev, shipmentId],
+        : [...prev, shipmentId]
     );
   };
 
@@ -122,7 +105,7 @@ export default function BulkShippingLabelPage() {
         "/api/seller/shipments/bulk-manifest",
         {
           shipmentIds: selectedShipments,
-        },
+        }
       );
 
       if (response.success) {
@@ -200,191 +183,208 @@ export default function BulkShippingLabelPage() {
   if (loading) {
     return (
       <RoleGuard requiredRole="seller">
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <CircularProgress />
-          </Box>
-        </Container>
+        <div className="container mx-auto px-4 max-w-7xl py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
   return (
     <RoleGuard requiredRole="seller">
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <div className="container mx-auto px-4 max-w-7xl py-8">
         {/* Header */}
-        <Box mb={4}>
-          <Typography variant="h4" gutterBottom>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Bulk Shipping Labels & Manifest
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Select multiple shipments to generate a combined manifest
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
-            {error}
-          </Alert>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex justify-between items-center">
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={() => setError("")}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+            >
+              ✕
+            </button>
+          </div>
         )}
 
         {/* Actions */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Stack
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              flexWrap="wrap"
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={toggleAll}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <Button
-                variant="outlined"
-                onClick={toggleAll}
-                startIcon={
-                  selectedShipments.length === shipments.length ? (
-                    <CheckIcon />
-                  ) : null
-                }
-              >
-                {selectedShipments.length === shipments.length
-                  ? "Deselect All"
-                  : "Select All"}
-              </Button>
+              {selectedShipments.length === shipments.length && (
+                <CheckCircle className="h-5 w-5" />
+              )}
+              {selectedShipments.length === shipments.length
+                ? "Deselect All"
+                : "Select All"}
+            </button>
 
-              <Box sx={{ flex: 1 }} />
+            <div className="flex-1" />
 
-              <Chip
-                label={`${selectedShipments.length} / ${shipments.length} selected`}
-                color={selectedShipments.length > 0 ? "primary" : "default"}
-              />
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                selectedShipments.length > 0
+                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+              }`}
+            >
+              {selectedShipments.length} / {shipments.length} selected
+            </span>
 
-              <Button
-                variant="contained"
-                startIcon={<ShipIcon />}
-                onClick={generateManifest}
-                disabled={selectedShipments.length === 0 || generating}
-              >
-                {generating ? "Generating..." : "Generate Manifest"}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
+            <button
+              onClick={generateManifest}
+              disabled={selectedShipments.length === 0 || generating}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Truck className="h-5 w-5" />
+              {generating ? "Generating..." : "Generate Manifest"}
+            </button>
+          </div>
+        </div>
 
         {/* Shipments List */}
         {shipments.length === 0 ? (
-          <Card>
-            <CardContent sx={{ textAlign: "center", py: 8 }}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                No shipments available
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Shipments will appear here once orders are ready to ship
-              </Typography>
-            </CardContent>
-          </Card>
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
+            <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+              No shipments available
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Shipments will appear here once orders are ready to ship
+            </p>
+          </div>
         ) : (
-          <Stack spacing={2}>
+          <div className="space-y-4">
             {shipments.map((shipment) => (
-              <Card
+              <div
                 key={shipment.id}
-                sx={{
-                  cursor: "pointer",
-                  bgcolor: selectedShipments.includes(shipment.id)
-                    ? "action.selected"
-                    : "background.paper",
-                  "&:hover": {
-                    bgcolor: "action.hover",
-                  },
-                }}
                 onClick={() => toggleShipment(shipment.id)}
+                className={`bg-white dark:bg-gray-900 rounded-lg border cursor-pointer transition-colors p-6 ${
+                  selectedShipments.includes(shipment.id)
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
               >
-                <CardContent>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Checkbox
-                      checked={selectedShipments.includes(shipment.id)}
-                      onChange={() => toggleShipment(shipment.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                <div className="flex items-center gap-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedShipments.includes(shipment.id)}
+                    onChange={() => toggleShipment(shipment.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
 
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {shipment.trackingNumber || "No tracking"}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Order: {shipment.orderId} • {shipment.carrier}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        To: {shipment.toAddress?.name},{" "}
-                        {shipment.toAddress?.city}, {shipment.toAddress?.state}
-                      </Typography>
-                    </Box>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {shipment.trackingNumber || "No tracking"}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Order: {shipment.orderId} • {shipment.carrier}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                      To: {shipment.toAddress?.name}, {shipment.toAddress?.city}
+                      , {shipment.toAddress?.state}
+                    </p>
+                  </div>
 
-                    <Chip
-                      label={shipment.status.replace(/_/g, " ").toUpperCase()}
-                      size="small"
-                      color={getStatusColor(shipment.status)}
-                    />
-                  </Stack>
-                </CardContent>
-              </Card>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${
+                      getStatusColor(shipment.status) === "success"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                        : getStatusColor(shipment.status) === "info"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                        : getStatusColor(shipment.status) === "warning"
+                        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
+                        : getStatusColor(shipment.status) === "error"
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                    }`}
+                  >
+                    {shipment.status.replace(/_/g, " ")}
+                  </span>
+                </div>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
 
         {/* Preview Dialog */}
-        <Dialog
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-          maxWidth="lg"
-          fullWidth
-        >
-          <DialogTitle>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Typography variant="h6">Shipping Manifest Preview</Typography>
-              <IconButton onClick={() => setPreviewOpen(false)} size="small">
-                <CloseIcon />
-              </IconButton>
-            </Stack>
-          </DialogTitle>
+        {previewOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+              <div
+                className="fixed inset-0 transition-opacity bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75"
+                onClick={() => setPreviewOpen(false)}
+              />
 
-          <DialogContent dividers>
-            <iframe
-              srcDoc={manifestHtml}
-              style={{
-                width: "100%",
-                height: "700px",
-                border: "none",
-              }}
-              title="Manifest Preview"
-            />
-          </DialogContent>
+              <div className="inline-block align-bottom bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
+                {/* Dialog Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Shipping Manifest Preview
+                  </h2>
+                  <button
+                    onClick={() => setPreviewOpen(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
 
-          <DialogActions>
-            <Button onClick={handleShare} startIcon={<ShareIcon />}>
-              Share
-            </Button>
-            <Button onClick={handleDownload} startIcon={<DownloadIcon />}>
-              Download HTML
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handlePrint}
-              startIcon={<PrintIcon />}
-            >
-              Print
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+                {/* Dialog Content */}
+                <div className="px-6 py-4 max-h-[700px] overflow-y-auto border-b border-gray-200 dark:border-gray-800">
+                  <iframe
+                    srcDoc={manifestHtml}
+                    style={{
+                      width: "100%",
+                      height: "700px",
+                      border: "none",
+                    }}
+                    title="Manifest Preview"
+                  />
+                </div>
+
+                {/* Dialog Actions */}
+                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 flex justify-end gap-3">
+                  <button
+                    onClick={handleShare}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Share2 className="h-5 w-5" />
+                    Share
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Download className="h-5 w-5" />
+                    Download HTML
+                  </button>
+                  <button
+                    onClick={handlePrint}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Printer className="h-5 w-5" />
+                    Print
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </RoleGuard>
   );
 }

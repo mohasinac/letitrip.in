@@ -84,8 +84,8 @@ function AdminDashboardContent() {
             Recent Activity
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Your admin dashboard is ready. Navigate using the sidebar to
-            manage products, orders, users, and more.
+            Your admin dashboard is ready. Navigate using the sidebar to manage
+            products, orders, users, and more.
           </p>
         </div>
       </div>

@@ -1,62 +1,37 @@
 "use client";
 
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Loader2 } from "lucide-react";
 
 export default function Loading() {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "background.default",
-      }}
-    >
-      <Box sx={{ textAlign: "center" }}>
-        <CircularProgress
-          size={60}
-          thickness={4}
-          sx={{ mb: 4, color: "primary.main" }}
-        />
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-950">
+      <div className="text-center">
+        <Loader2 className="h-15 w-15 animate-spin text-blue-600 mx-auto mb-8" />
 
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+        <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-8">
           Loading your adventure...
-        </Typography>
+        </h2>
 
         {/* Progress dots animation */}
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+        <div className="flex justify-center gap-2">
           {[0, 150, 300].map((delay, index) => (
-            <Box
+            <div
               key={index}
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                backgroundColor:
-                  index === 0
-                    ? "primary.main"
-                    : index === 1
-                      ? "secondary.main"
-                      : "success.main",
-                animation: "bounce 1s infinite",
+              className={`w-2 h-2 rounded-full animate-bounce ${
+                index === 0
+                  ? "bg-blue-600"
+                  : index === 1
+                  ? "bg-purple-600"
+                  : "bg-green-600"
+              }`}
+              style={{
                 animationDelay: `${delay}ms`,
-                "@keyframes bounce": {
-                  "0%, 80%, 100%": {
-                    transform: "scale(0)",
-                    opacity: 0.5,
-                  },
-                  "40%": {
-                    transform: "scale(1)",
-                    opacity: 1,
-                  },
-                },
+                animationDuration: "1s",
               }}
             />
           ))}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -2,20 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  useTheme,
-} from "@mui/material";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function GamePage() {
-  const theme = useTheme();
-
   // Add breadcrumb
   useBreadcrumbTracker([
     {
@@ -26,171 +15,76 @@ export default function GamePage() {
   ]);
 
   return (
-    <Box>
+    <div>
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          py: { xs: 8, md: 12 },
-          color: "white",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h1"
-              sx={{ fontWeight: 700, mb: 3, color: "white" }}
-            >
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 py-16 md:py-24 text-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
               🌪️ Game Hub
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ maxWidth: 800, mx: "auto", color: "white", opacity: 0.9 }}
-            >
+            </h1>
+            <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/90">
               Welcome to the ultimate gaming experience! Choose your adventure
               and dive into exciting gameplay.
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Game Selection */}
-      <Box sx={{ py: 8, backgroundColor: "background.default" }}>
-        <Container maxWidth="lg">
-          <Card
-            component={Link}
+      <div className="py-16 bg-gray-50 dark:bg-gray-950">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <Link
             href="/game/beyblade-battle"
-            sx={{
-              textAlign: "center",
-              borderRadius: 3,
-              backgroundColor: "background.paper",
-              border: `4px solid ${theme.palette.primary.main}`,
-              textDecoration: "none",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.02)",
-                boxShadow: `0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px ${theme.palette.primary.main}40`,
-              },
-            }}
+            className="block text-center rounded-2xl bg-white dark:bg-gray-900 border-4 border-blue-600 dark:border-blue-500 no-underline cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           >
-            <CardContent sx={{ p: 6 }}>
-              <Typography variant="h1" sx={{ fontSize: "6rem", mb: 4 }}>
-                ⚡
-              </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontWeight: 700,
-                }}
-                gutterBottom
-              >
+            <div className="p-12">
+              <div className="text-8xl mb-8">⚡</div>
+              <h3 className="text-4xl text-blue-600 dark:text-blue-400 font-bold mb-4">
                 Beyblade Battle Arena
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  mb: 4,
-                  lineHeight: 1.7,
-                  color:
-                    theme.palette.mode === "dark"
-                      ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-                      : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-                  opacity: 0.9,
-                }}
-              >
+              </h3>
+              <p className="text-base leading-relaxed mb-8 opacity-90 text-gray-700 dark:text-gray-300">
                 Real-time Beyblade battles with advanced physics, collision
                 mechanics, and strategic gameplay. Battle against AI with charge
                 points, speed zones, and mobile controls!
-              </Typography>
+              </p>
 
               {/* Feature highlights */}
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "repeat(2, 1fr)",
-                    md: "repeat(4, 1fr)",
-                  },
-                  gap: 2,
-                  mb: 4,
-                }}
-              >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
                   { icon: "🎮", text: "Real-time Control" },
                   { icon: "🌀", text: "Physics Engine" },
                   { icon: "📱", text: "Mobile Friendly" },
                   { icon: "🤖", text: "Smart AI" },
                 ].map((feature, index) => (
-                  <Card
+                  <div
                     key={index}
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      backgroundColor: "action.hover",
-                      border: `2px solid ${theme.palette.primary.main}40`,
-                    }}
+                    className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border-2 border-blue-600/25"
                   >
-                    <Typography variant="h4" sx={{ mb: 1 }}>
-                      {feature.icon}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ fontWeight: 600, color: "text.primary" }}
-                    >
+                    <div className="text-4xl mb-2">{feature.icon}</div>
+                    <p className="text-xs font-semibold text-gray-900 dark:text-white">
                       {feature.text}
-                    </Typography>
-                  </Card>
+                    </p>
+                  </div>
                 ))}
-              </Box>
+              </div>
 
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  boxShadow: theme.shadows[8],
-                  "&:hover": {
-                    boxShadow: theme.shadows[12],
-                  },
-                }}
-              >
+              <button className="px-8 py-3 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
                 Play Now →
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </div>
+          </Link>
 
           {/* Coming Soon Games */}
-          <Box sx={{ mt: 8, textAlign: "center" }}>
-            <Typography
-              variant="h4"
-              fontWeight={600}
-              gutterBottom
-              sx={{
-                color:
-                  theme.palette.mode === "dark"
-                    ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-                    : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-              }}
-            >
+          <div className="mt-16 text-center">
+            <h4 className="text-3xl font-semibold mb-4 text-gray-900 dark:text-white">
               🚀 More Games Coming Soon
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 4, color: "#cccccc" }}>
+            </h4>
+            <p className="text-base mb-8 text-gray-600 dark:text-gray-400">
               More exciting games are in development!
-            </Typography>
+            </p>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-                gap: 4,
-              }}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 {
                   icon: "🏁",
@@ -208,50 +102,28 @@ export default function GamePage() {
                   desc: "Brain-bending challenges",
                 },
               ].map((game, index) => (
-                <Card
+                <div
                   key={index}
-                  sx={{
-                    borderRadius: 3,
-                    opacity: 0.7,
-                    backgroundColor: "background.paper",
-                    border: `2px dashed ${theme.palette.primary.main}40`,
-                    textAlign: "center",
-                  }}
+                  className="rounded-2xl opacity-70 bg-white dark:bg-gray-900 border-2 border-dashed border-blue-600/25 text-center"
                 >
-                  <CardContent sx={{ p: 4 }}>
-                    <Typography variant="h2" sx={{ fontSize: "3rem", mb: 2 }}>
-                      {game.icon}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight={600}
-                      gutterBottom
-                      sx={{ color: "text.primary" }}
-                    >
+                  <div className="p-8">
+                    <div className="text-6xl mb-4">{game.icon}</div>
+                    <h6 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                       {game.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ mb: 2, color: "text.secondary" }}
-                    >
+                    </h6>
+                    <p className="text-sm mb-4 text-gray-600 dark:text-gray-400">
                       {game.desc}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: theme.palette.primary.main,
-                        fontWeight: 600,
-                      }}
-                    >
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
                       Coming Soon...
-                    </Typography>
-                  </CardContent>
-                </Card>
+                    </p>
+                  </div>
+                </div>
               ))}
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

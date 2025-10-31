@@ -2,30 +2,15 @@
 
 import Link from "next/link";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  useTheme,
-} from "@mui/material";
-import {
   CheckCircle,
-  People,
   TrendingUp,
-  Email,
-  Phone,
-  LocationOn,
-  Verified,
+  Users,
+  ShieldCheck,
   Star,
-} from "@mui/icons-material";
+} from "lucide-react";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
 export default function AboutPage() {
-  const theme = useTheme();
-
   // Add breadcrumb
   useBreadcrumbTracker([
     {
@@ -36,289 +21,156 @@ export default function AboutPage() {
   ]);
 
   return (
-    <Box>
+    <div>
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          py: { xs: 8, md: 12 },
-          color: "white",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontWeight: 700,
-                mb: 3,
-                color: "white",
-              }}
-            >
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 py-16 md:py-24 text-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
               About JustForView
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                maxWidth: 600,
-                mx: "auto",
-                color: "white",
-                opacity: 0.9,
-              }}
-            >
+            </h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto text-white/90">
               Your trusted destination for authentic hobby products, rare
               collectibles, and premium gaming accessories since 2020.
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Our Story */}
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="xl">
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gap: 6,
-              alignItems: "center",
-            }}
-          >
-            <Box>
-              <Typography variant="h2" sx={{ fontWeight: 700, mb: 3 }}>
+      <div className="py-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">
                 Our Story
-              </Typography>
-              <Box sx={{ space: 4 }}>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mb: 2 }}
-                >
+              </h2>
+              <div className="space-y-4">
+                <p className="text-base text-gray-600 dark:text-gray-400">
                   JustForView was born from a passion for authentic hobby
                   products and the frustration of finding genuine items in the
                   market. What started as a small collection grew into India's
                   premier destination for Beyblades, collectibles, and gaming
                   accessories.
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
+                </p>
+                <p className="text-base text-gray-600 dark:text-gray-400">
                   We understand the excitement of unboxing a new product, the
                   thrill of finding that rare item you've been searching for,
                   and the importance of authenticity in collectibles. That's why
                   we've built our entire business around these core values.
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ position: "relative" }}>
-              <Card
-                sx={{
-                  borderRadius: 3,
-                  overflow: "hidden",
-                  transition: "transform 0.3s ease",
-                  "&:hover": { transform: "translateY(-8px)" },
-                }}
-              >
-                <Box
-                  sx={{
-                    height: 300,
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main}20 0%, ${theme.palette.primary.main}10 100%)`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography variant="h4" color="primary" fontWeight={600}>
+                </p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="rounded-2xl overflow-hidden transition-transform duration-300 hover:-translate-y-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div className="h-80 bg-gradient-to-br from-blue-600/20 to-blue-600/10 dark:from-blue-700/20 dark:to-blue-700/10 flex items-center justify-center">
+                  <h4 className="text-3xl text-blue-600 dark:text-blue-400 font-semibold">
                     Our Journey
-                  </Typography>
-                </Box>
-              </Card>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Mission & Vision */}
-      <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
-        <Container maxWidth="xl">
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-              gap: 4,
-            }}
-          >
-            <Card
-              sx={{
-                p: 4,
-                textAlign: "center",
-                borderRadius: 3,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: theme.shadows[8],
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: "50%",
-                  backgroundColor: "primary.main",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  mx: "auto",
-                  mb: 3,
-                }}
-              >
-                <TrendingUp sx={{ fontSize: 32, color: "white" }} />
-              </Box>
-              <Typography variant="h4" fontWeight={600} gutterBottom>
+      <div className="py-16 bg-gray-50 dark:bg-gray-950">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="p-8 text-center rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <h4 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
                 Our Mission
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
+              </h4>
+              <p className="text-base text-gray-600 dark:text-gray-400">
                 To provide authentic, high-quality hobby products while building
                 a passionate community of collectors and enthusiasts across
                 India.
-              </Typography>
-            </Card>
+              </p>
+            </div>
 
-            <Card
-              sx={{
-                p: 4,
-                textAlign: "center",
-                borderRadius: 3,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: theme.shadows[8],
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: "50%",
-                  backgroundColor: "primary.main",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  mx: "auto",
-                  mb: 3,
-                }}
-              >
-                <People sx={{ fontSize: 32, color: "white" }} />
-              </Box>
-              <Typography variant="h4" fontWeight={600} gutterBottom>
+            <div className="p-8 text-center rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-6">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h4 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
                 Our Vision
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
+              </h4>
+              <p className="text-base text-gray-600 dark:text-gray-400">
                 To become the most trusted and comprehensive platform for hobby
                 enthusiasts, expanding globally while maintaining our commitment
                 to authenticity.
-              </Typography>
-            </Card>
-          </Box>
-        </Container>
-      </Box>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Values */}
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="xl">
-          <Typography
-            variant="h2"
-            sx={{ textAlign: "center", mb: 6, fontWeight: 700 }}
-          >
+      <div className="py-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2 className="text-4xl text-center mb-12 font-bold text-gray-900 dark:text-white">
             Our Values
-          </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-              gap: 4,
-            }}
-          >
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Verified sx={{ fontSize: 40 }} />,
+                icon: <ShieldCheck className="h-10 w-10" />,
                 title: "Authenticity",
                 description:
                   "Every product is 100% genuine and verified. We work directly with authorized distributors and brands to ensure authenticity.",
                 color: "#00c851",
               },
               {
-                icon: <People sx={{ fontSize: 40 }} />,
+                icon: <Users className="h-10 w-10" />,
                 title: "Community",
                 description:
                   "We're more than a store - we're a community. We connect enthusiasts, share knowledge, and celebrate the passion for collecting.",
                 color: "#0095f6",
               },
               {
-                icon: <Star sx={{ fontSize: 40 }} />,
+                icon: <Star className="h-10 w-10" />,
                 title: "Excellence",
                 description:
                   "From product quality to customer service, we strive for excellence in everything we do. Your satisfaction is our priority.",
                 color: "#ff6900",
               },
             ].map((value, index) => (
-              <Card
+              <div
                 key={index}
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: theme.shadows[8],
-                  },
-                }}
+                className="p-8 text-center rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
               >
-                <Box
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: "50%",
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+                  style={{
                     backgroundColor: `${value.color}20`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mx: "auto",
-                    mb: 3,
                     color: value.color,
                   }}
                 >
                   {value.icon}
-                </Box>
-                <Typography variant="h5" fontWeight={600} gutterBottom>
+                </div>
+                <h5 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                   {value.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                </h5>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {value.description}
-                </Typography>
-              </Card>
+                </p>
+              </div>
             ))}
-          </Box>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Team Section */}
-      <Box sx={{ py: 8, backgroundColor: "background.paper" }}>
-        <Container maxWidth="xl">
-          <Typography
-            variant="h2"
-            sx={{ textAlign: "center", mb: 6, fontWeight: 700 }}
-          >
+      <div className="py-16 bg-gray-50 dark:bg-gray-950">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2 className="text-4xl text-center mb-12 font-bold text-gray-900 dark:text-white">
             Meet Our Team
-          </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-              gap: 4,
-            }}
-          >
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 name: "Arjun Sharma",
@@ -336,172 +188,84 @@ export default function AboutPage() {
                 bio: "Connecting enthusiasts and building our vibrant community",
               },
             ].map((member, index) => (
-              <Card
+              <div
                 key={index}
-                sx={{
-                  p: 3,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: theme.shadows[8],
-                  },
-                }}
+                className="p-6 text-center rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
               >
-                <Box
-                  sx={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: "50%",
-                    backgroundColor: "primary.main",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mx: "auto",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h4" color="white" fontWeight={600}>
+                <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl text-white font-semibold">
                     {member.name
                       .split(" ")
                       .map((n) => n[0])
                       .join("")}
-                  </Typography>
-                </Box>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
+                  </span>
+                </div>
+                <h6 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
                   {member.name}
-                </Typography>
-                <Typography variant="body2" color="primary" sx={{ mb: 2 }}>
+                </h6>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">
                   {member.role}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {member.bio}
-                </Typography>
-              </Card>
+                </p>
+              </div>
             ))}
-          </Box>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Stats */}
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="xl">
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "repeat(2, 1fr)",
-                md: "repeat(4, 1fr)",
-              },
-              gap: 4,
-              textAlign: "center",
-            }}
-          >
+      <div className="py-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { number: "50K+", label: "Happy Customers" },
               { number: "10K+", label: "Products Sold" },
               { number: "500+", label: "Live Auctions" },
               { number: "99%", label: "Satisfaction Rate" },
             ].map((stat, index) => (
-              <Box key={index}>
-                <Typography
-                  variant="h3"
-                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
-                >
+              <div key={index}>
+                <h3 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                   {stat.number}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  fontWeight={500}
-                >
+                </h3>
+                <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
                   {stat.label}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             ))}
-          </Box>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* CTA Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          py: 8,
-          color: "white",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h2"
-              sx={{ fontWeight: 700, mb: 2, color: "white" }}
-            >
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 py-16 text-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-4 text-white">
               Join Our Community
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                mb: 4,
-                maxWidth: 600,
-                mx: "auto",
-                color: "white",
-                opacity: 0.9,
-              }}
-            >
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto text-white/90">
               Ready to discover authentic products and connect with fellow
               enthusiasts?
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                justifyContent: "center",
-                flexDirection: { xs: "column", sm: "row" },
-                maxWidth: 400,
-                mx: "auto",
-              }}
-            >
-              <Button
-                component={Link}
+            </p>
+            <div className="flex gap-4 justify-center flex-col sm:flex-row max-w-md mx-auto">
+              <Link
                 href="/products"
-                variant="contained"
-                size="large"
-                sx={{
-                  backgroundColor: "white",
-                  color: "primary.main",
-                  fontWeight: 600,
-                  px: 4,
-                  "&:hover": {
-                    backgroundColor: "grey.100",
-                  },
-                }}
+                className="inline-block px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Shop Now
-              </Button>
-              <Button
-                component={Link}
+              </Link>
+              <Link
                 href="/contact"
-                variant="outlined"
-                size="large"
-                sx={{
-                  color: "white",
-                  borderColor: "white",
-                  fontWeight: 600,
-                  px: 4,
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+                className="inline-block px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
               >
                 Contact Us
-              </Button>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

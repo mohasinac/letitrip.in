@@ -2,7 +2,6 @@ import InteractiveHeroBanner from "@/components/home/InteractiveHeroBanner";
 import ModernFeaturedCategories from "@/components/home/ModernFeaturedCategories";
 import ModernWhyChooseUs from "@/components/home/ModernWhyChooseUs";
 import ModernCustomerReviews from "@/components/home/ModernCustomerReviews";
-import { Box } from "@mui/material";
 import { getAdminDb } from "@/lib/database/admin";
 import type { Category } from "@/types";
 
@@ -65,7 +64,7 @@ export default async function HomePage() {
           inStockCount: inStockSnapshot.data().count,
           outOfStockCount: outOfStockSnapshot.data().count,
         } as CategoryWithCount;
-      }),
+      })
     );
 
     featuredCategories = categoriesWithCounts;
@@ -75,11 +74,11 @@ export default async function HomePage() {
   }
 
   return (
-    <Box>
+    <>
       <InteractiveHeroBanner />
       <ModernFeaturedCategories categories={featuredCategories} />
       <ModernWhyChooseUs />
       <ModernCustomerReviews />
-    </Box>
+    </>
   );
 }

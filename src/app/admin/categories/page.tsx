@@ -1,26 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Dialog,
-  Alert,
-  Tabs,
-  Tab,
-  CircularProgress,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  VisibilityOff as VisibilityOffIcon,
-  Visibility as VisibilityIcon,
-} from "@mui/icons-material";
+import { Plus, Loader2 } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
@@ -47,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <div className="py-6">{children}</div>}
     </div>
   );
 }
@@ -60,7 +41,7 @@ function AdminCategoriesContent() {
   const [success, setSuccess] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null,
+    null
   );
   const [tabValue, setTabValue] = useState(1);
 
@@ -83,7 +64,7 @@ function AdminCategoriesContent() {
       setLoading(true);
       setError(null);
       const data = await apiClient.get<Category[]>(
-        "/admin/categories?format=list",
+        "/admin/categories?format=list"
       );
       setCategories(data);
     } catch (err: any) {
@@ -129,7 +110,7 @@ function AdminCategoriesContent() {
       setSuccess(
         selectedCategory
           ? "Category updated successfully"
-          : "Category created successfully",
+          : "Category created successfully"
       );
       handleCloseDialog();
       fetchCategories();
@@ -159,76 +140,91 @@ function AdminCategoriesContent() {
   };
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
+    <div className="py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" fontWeight={700}>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Category Management
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
+          </h1>
+          <button
             onClick={() => handleOpenDialog()}
-            sx={{
-              textTransform: "none",
-              fontWeight: 600,
-            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
           >
+            <Plus className="h-5 w-5" />
             Add Category
-          </Button>
-        </Box>
+          </button>
+        </div>
 
         {/* Alerts */}
         {error && (
-          <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
-            {error}
-          </Alert>
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex justify-between items-center">
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+            >
+              ✕
+            </button>
+          </div>
         )}
         {success && (
-          <Alert
-            severity="success"
-            onClose={() => setSuccess(null)}
-            sx={{ mb: 2 }}
-          >
-            {success}
-          </Alert>
+          <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex justify-between items-center">
+            <p className="text-green-800 dark:text-green-200">{success}</p>
+            <button
+              onClick={() => setSuccess(null)}
+              className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
+            >
+              ✕
+            </button>
+          </div>
         )}
 
         {/* Loading */}
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
-          </Box>
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
         ) : (
-          <Card>
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
             {/* Tabs */}
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs
-                value={tabValue}
-                onChange={(e, newValue) => setTabValue(newValue)}
-                aria-label="category view"
-              >
-                <Tab label="Tree View" id="tab-0" aria-controls="tabpanel-0" />
-                <Tab label="List View" id="tab-1" aria-controls="tabpanel-1" />
-              </Tabs>
-            </Box>
+            <div className="border-b border-gray-200 dark:border-gray-800">
+              <nav className="flex gap-8 px-6" aria-label="category view">
+                <button
+                  onClick={(e) => setTabValue(0)}
+                  id="tab-0"
+                  aria-controls="tabpanel-0"
+                  className={`py-4 px-2 font-semibold border-b-2 transition-colors ${
+                    tabValue === 0
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  }`}
+                >
+                  Tree View
+                </button>
+                <button
+                  onClick={(e) => setTabValue(1)}
+                  id="tab-1"
+                  aria-controls="tabpanel-1"
+                  className={`py-4 px-2 font-semibold border-b-2 transition-colors ${
+                    tabValue === 1
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  }`}
+                >
+                  List View
+                </button>
+              </nav>
+            </div>
 
             {/* Tree View */}
             <TabPanel value={tabValue} index={0}>
               {categories.length === 0 ? (
-                <Box sx={{ textAlign: "center", py: 4 }}>
-                  <Typography color="text.secondary">
+                <div className="text-center py-8">
+                  <p className="text-gray-600 dark:text-gray-400">
                     No categories found. Create your first category!
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               ) : (
                 <CategoryTreeView
                   categories={categories}
@@ -241,11 +237,11 @@ function AdminCategoriesContent() {
             {/* List View */}
             <TabPanel value={tabValue} index={1}>
               {categories.length === 0 ? (
-                <Box sx={{ textAlign: "center", py: 4 }}>
-                  <Typography color="text.secondary">
+                <div className="text-center py-8">
+                  <p className="text-gray-600 dark:text-gray-400">
                     No categories found. Create your first category!
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               ) : (
                 <CategoryListView
                   categories={categories}
@@ -254,9 +250,9 @@ function AdminCategoriesContent() {
                 />
               )}
             </TabPanel>
-          </Card>
+          </div>
         )}
-      </Container>
+      </div>
 
       {/* Category Form Dialog */}
       <CategoryForm
@@ -266,7 +262,7 @@ function AdminCategoriesContent() {
         category={selectedCategory}
         allCategories={categories}
       />
-    </Box>
+    </div>
   );
 }
 
