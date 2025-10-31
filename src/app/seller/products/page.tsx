@@ -6,6 +6,7 @@ import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import type { SellerProduct } from "@/types";
 import { apiGet, apiDelete } from "@/lib/api/seller";
 import {
@@ -20,6 +21,7 @@ import { UnifiedModal } from "@/components/ui/unified/Modal";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
 
 function ProductsListContent() {
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useBreadcrumbTracker([
@@ -57,6 +59,8 @@ function ProductsListContent() {
 
   // Fetch products from API
   const fetchProducts = async () => {
+    if (!user || authLoading) return;
+
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -85,14 +89,17 @@ function ProductsListContent() {
         message: error.message || "Failed to load products",
         type: "error",
       });
+      console.error("Failed to fetch products:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [statusFilter]);
+    if (user && !authLoading) {
+      fetchProducts();
+    }
+  }, [statusFilter, user, authLoading]);
 
   const handleDeleteClick = (product: SellerProduct) => {
     setSelectedProduct(product);
@@ -174,9 +181,12 @@ function ProductsListContent() {
       render: (_, product) => (
         <div className="flex items-center gap-3">
           <img
-            src={product.images[0]?.url || "/placeholder-product.png"}
+            src={product.images?.[0]?.url || "/placeholder-product.png"}
             alt={product.name}
             className="w-12 h-12 rounded-lg object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/placeholder-product.png";
+            }}
           />
           <div className="min-w-0">
             <p className="font-medium text-text truncate">{product.name}</p>
@@ -202,7 +212,7 @@ function ProductsListContent() {
       render: (_, product) => (
         <div className="text-right">
           <p className="font-semibold text-text">
-            ₹{product.price.toLocaleString()}
+            ₹{product.price?.toLocaleString() || "0"}
           </p>
           {product.compareAtPrice && (
             <p className="text-xs text-textSecondary line-through">
