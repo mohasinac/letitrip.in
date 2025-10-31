@@ -27,6 +27,10 @@ import {
   DialogContentText,
   DialogActions,
   TextField,
+  Avatar,
+  Stack,
+} from "@mui/material";
+import {
   Timeline,
   TimelineItem,
   TimelineSeparator,
@@ -34,9 +38,7 @@ import {
   TimelineContent,
   TimelineDot,
   TimelineOppositeContent,
-  Avatar,
-  Stack,
-} from "@mui/material";
+} from "@mui/lab";
 import {
   ArrowBack as ArrowBackIcon,
   CheckCircle as ApproveIcon,
