@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-import { Box, BoxProps } from "@mui/material";
-import { useThemeStyles } from "@/hooks/useThemeStyles";
 
-interface ThemeAwareBoxProps extends Omit<BoxProps, "sx"> {
+interface ThemeAwareBoxProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "hero" | "card" | "surface" | "background";
   gradient?: boolean;
   children: React.ReactNode;
@@ -18,59 +16,53 @@ export function ThemeAwareBox({
   variant = "background",
   gradient = false,
   children,
+  className = "",
   ...props
 }: ThemeAwareBoxProps) {
-  const { colors, gradients, shadows, isDark } = useThemeStyles();
-
-  const getStyles = () => {
-    const baseStyles = {
-      backgroundColor: colors.background,
-      color: colors.text,
-    };
+  const getClassNames = () => {
+    const baseClasses =
+      "bg-white dark:bg-gray-950 text-gray-900 dark:text-white";
 
     switch (variant) {
       case "hero":
-        return {
-          ...baseStyles,
-          background: gradient ? gradients.hero : colors.primary,
-          color: "white",
-          py: { xs: 8, md: 12 },
-        };
+        return `${
+          gradient
+            ? "bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900"
+            : "bg-blue-600 dark:bg-blue-700"
+        } text-white py-16 md:py-24`;
 
       case "card":
-        return {
-          ...baseStyles,
-          backgroundColor: colors.surface,
-          border: `1px solid ${colors.border}`,
-          borderRadius: 3,
-          boxShadow: shadows.card,
-          background: gradient ? gradients.card : colors.surface,
-        };
+        return `${
+          gradient
+            ? "bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+            : "bg-white dark:bg-gray-900"
+        } border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm`;
 
       case "surface":
-        return {
-          ...baseStyles,
-          backgroundColor: colors.surface,
-        };
+        return "bg-white dark:bg-gray-900";
 
       default:
-        return baseStyles;
+        return baseClasses;
     }
   };
 
   return (
-    <Box sx={getStyles()} {...props}>
+    <div className={`${getClassNames()} ${className}`} {...props}>
       {children}
-    </Box>
+    </div>
   );
 }
 
 /**
  * Hero section wrapper with automatic theme-aware gradient
  */
-export function HeroSection({ children, ...props }: BoxProps) {
+export function HeroSection({
+  children,
+  className = "",
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <ThemeAwareBox variant="hero" gradient {...props}>
+    <ThemeAwareBox variant="hero" gradient className={className} {...props}>
       {children}
     </ThemeAwareBox>
   );
@@ -79,9 +71,13 @@ export function HeroSection({ children, ...props }: BoxProps) {
 /**
  * Card wrapper with automatic theme-aware styling
  */
-export function ThemeCard({ children, ...props }: BoxProps) {
+export function ThemeCard({
+  children,
+  className = "",
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <ThemeAwareBox variant="card" {...props}>
+    <ThemeAwareBox variant="card" className={className} {...props}>
       {children}
     </ThemeAwareBox>
   );

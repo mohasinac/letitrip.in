@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Button, Card, CardContent } from "@mui/material";
 import type { GameBeyblade } from "../types/game";
 
 interface MatchResultScreenProps {
@@ -24,143 +23,95 @@ const MatchResultScreen: React.FC<MatchResultScreenProps> = ({
   onPlayAgainMultiplayer,
 }) => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        gap: 3,
-        p: 3,
-      }}
-    >
-      <Card
-        sx={{
-          textAlign: "center",
-          p: { xs: 3, md: 4 },
-          borderRadius: 3,
-          backgroundColor: "background.paper",
-          border: `2px solid`,
-          borderColor: isPlayerWinner ? "success.main" : "error.main",
-          maxWidth: 500,
-          width: "100%",
-        }}
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 p-6">
+      <div
+        className={`text-center p-8 rounded-2xl bg-white dark:bg-gray-800 border-2 max-w-md w-full ${
+          isPlayerWinner
+            ? "border-green-500 dark:border-green-600"
+            : "border-red-500 dark:border-red-600"
+        }`}
       >
-        <CardContent>
-          {/* Victory/Defeat Icon */}
-          <Box sx={{ fontSize: "5rem", mb: 2 }}>
-            {isPlayerWinner ? "🏆" : "💔"}
-          </Box>
+        {/* Victory/Defeat Icon */}
+        <div className="text-7xl mb-4">{isPlayerWinner ? "🏆" : "💔"}</div>
 
-          {/* Result Title */}
-          <Typography
-            variant="h3"
-            color={isPlayerWinner ? "success.main" : "error.main"}
-            fontWeight={700}
-            gutterBottom
-            sx={{ fontSize: { xs: "1.75rem", md: "3rem" } }}
-          >
-            {isPlayerWinner ? "Victory!" : "Defeat!"}
-          </Typography>
+        {/* Result Title */}
+        <h3
+          className={`text-4xl md:text-5xl font-bold mb-2 ${
+            isPlayerWinner
+              ? "text-green-600 dark:text-green-500"
+              : "text-red-600 dark:text-red-500"
+          }`}
+        >
+          {isPlayerWinner ? "Victory!" : "Defeat!"}
+        </h3>
 
-          {/* Winner Name */}
+        {/* Winner Name */}
+        {winner && (
+          <h5 className="text-xl md:text-2xl text-gray-900 dark:text-white mb-6">
+            {winner.config.name} Wins!
+          </h5>
+        )}
+
+        {/* Game Stats */}
+        <div className="flex flex-col gap-2 mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <p className="text-gray-700 dark:text-gray-300">
+            Battle Duration: {gameTime.toFixed(1)}s
+          </p>
           {winner && (
-            <Typography
-              variant="h5"
-              color="text.primary"
-              sx={{ mb: 3, fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+            <>
+              <p className="text-gray-700 dark:text-gray-300">
+                Remaining Spin: {Math.floor(winner.spin)}
+              </p>
+              <p className="text-gray-700 dark:text-gray-300">
+                Final Power: {Math.floor(winner.power || 0)}/25
+              </p>
+            </>
+          )}
+          {isMultiplayer && (
+            <p className="text-blue-600 dark:text-blue-400 mt-2 font-bold text-sm">
+              Online Multiplayer Match
+            </p>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-4">
+          {/* Play Again for Single Player */}
+          {onPlayAgain && !isMultiplayer && (
+            <button
+              onClick={onPlayAgain}
+              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
-              {winner.config.name} Wins!
-            </Typography>
+              Play Again
+            </button>
           )}
 
-          {/* Game Stats */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              mb: 3,
-              p: 2,
-              bgcolor: "background.default",
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="body1" color="text.secondary">
-              Battle Duration: {gameTime.toFixed(1)}s
-            </Typography>
-            {winner && (
-              <>
-                <Typography variant="body1" color="text.secondary">
-                  Remaining Spin: {Math.floor(winner.spin)}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Final Power: {Math.floor(winner.power || 0)}/25
-                </Typography>
-              </>
-            )}
-            {isMultiplayer && (
-              <Typography
-                variant="body2"
-                color="primary.main"
-                sx={{ mt: 1, fontWeight: "bold" }}
-              >
-                Online Multiplayer Match
-              </Typography>
-            )}
-          </Box>
-
-          {/* Action Buttons */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {/* Play Again for Single Player */}
-            {onPlayAgain && !isMultiplayer && (
-              <Button
-                variant="contained"
-                onClick={onPlayAgain}
-                size="large"
-                fullWidth
-              >
-                Play Again
-              </Button>
-            )}
-
-            {/* Play Again for Multiplayer - Rejoin Matchmaking */}
-            {isMultiplayer && onPlayAgainMultiplayer && (
-              <Button
-                variant="contained"
-                onClick={onPlayAgainMultiplayer}
-                size="large"
-                fullWidth
-                color="primary"
-              >
-                🎮 Find New Opponent
-              </Button>
-            )}
-
-            <Button
-              variant="outlined"
-              onClick={onBackToMenu}
-              size="large"
-              fullWidth
+          {/* Play Again for Multiplayer - Rejoin Matchmaking */}
+          {isMultiplayer && onPlayAgainMultiplayer && (
+            <button
+              onClick={onPlayAgainMultiplayer}
+              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
-              Back to Menu
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
+              🎮 Find New Opponent
+            </button>
+          )}
+
+          <button
+            onClick={onBackToMenu}
+            className="w-full px-6 py-3 bg-transparent border-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium transition-colors"
+          >
+            Back to Menu
+          </button>
+        </div>
+      </div>
 
       {/* Encouragement Message */}
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ textAlign: "center", maxWidth: 400 }}
-      >
+      <p className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-md">
         {isPlayerWinner
           ? "Great job! Your beyblade skills are improving!"
           : "Don't give up! Try different strategies and special moves!"}
-      </Typography>
-    </Box>
+      </p>
+    </div>
   );
 };
 

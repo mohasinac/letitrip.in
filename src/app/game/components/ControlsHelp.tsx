@@ -1,15 +1,12 @@
 "use client";
 
 import React from "react";
-import { useTheme } from "@mui/material/styles";
 
 interface ControlsHelpProps {
   className?: string;
 }
 
 const ControlsHelp: React.FC<ControlsHelpProps> = ({ className = "" }) => {
-  const theme = useTheme();
-
   const controlMethods = [
     {
       icon: "🖱️",
@@ -33,27 +30,12 @@ const ControlsHelp: React.FC<ControlsHelpProps> = ({ className = "" }) => {
 
   return (
     <div
-      className={`rounded-xl p-6 shadow-lg ${className}`}
+      className={`rounded-xl p-6 shadow-lg bg-gradient-to-br from-gray-800 to-gray-900 dark:from-gray-900 dark:to-black border-2 border-blue-500 ${className}`}
       style={{
-        backgroundColor:
-          theme.palette.mode === "dark"
-            ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-            : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-        borderColor: "#0095f6",
-        borderWidth: "2px",
-        borderStyle: "solid",
         boxShadow: "0 10px 30px rgba(0, 149, 246, 0.1)",
       }}
     >
-      <h3
-        className="text-lg font-bold text-center mb-4"
-        style={{
-          color:
-            theme.palette.mode === "dark"
-              ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-              : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-        }}
-      >
+      <h3 className="text-lg font-bold text-center mb-4 bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent">
         Controls
       </h3>
 
@@ -61,14 +43,10 @@ const ControlsHelp: React.FC<ControlsHelpProps> = ({ className = "" }) => {
         {controlMethods.map((method, index) => (
           <div
             key={index}
-            className="p-4 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-md"
+            className="p-4 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-md bg-gray-700/50 dark:bg-gray-800/50 border"
             style={{
-              backgroundColor:
-                theme.palette.mode === "dark"
-                  ? `linear-gradient(135deg, #ffffff 0%, ${theme.palette.primary.main} 100%)`
-                  : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
               borderLeft: `4px solid ${method.color}`,
-              border: `1px solid ${method.color}40`,
+              borderColor: `${method.color}40`,
             }}
           >
             <div className="flex items-center mb-2">
@@ -80,7 +58,7 @@ const ControlsHelp: React.FC<ControlsHelpProps> = ({ className = "" }) => {
                 {method.title}
               </h4>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: "#cccccc" }}>
+            <p className="text-sm leading-relaxed text-gray-300">
               {method.description}
             </p>
           </div>

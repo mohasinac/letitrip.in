@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, SxProps, Theme } from "@mui/material";
 import * as MuiIcons from "@mui/icons-material";
 
 interface IconPreviewProps {
   iconName: string | null | undefined;
   size?: number;
-  sx?: SxProps<Theme>;
+  className?: string;
 }
 
 /**
@@ -31,27 +30,20 @@ export function getMuiIcon(iconName: string | null | undefined) {
  * IconPreview Component
  * Displays Material UI icon preview with fallback states
  */
-export function IconPreview({ iconName, size = 48, sx }: IconPreviewProps) {
+export function IconPreview({
+  iconName,
+  size = 48,
+  className = "",
+}: IconPreviewProps) {
   if (!iconName) {
     return (
-      <Box
-        sx={{
-          width: 80,
-          height: 80,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "action.hover",
-          borderRadius: 1,
-          border: "1px solid",
-          borderColor: "divider",
-          ...sx,
-        }}
+      <div
+        className={`w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 ${className}`}
       >
-        <Typography variant="caption" color="text.secondary">
+        <span className="text-xs text-gray-500 dark:text-gray-400">
           No icon
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   }
 
@@ -59,43 +51,22 @@ export function IconPreview({ iconName, size = 48, sx }: IconPreviewProps) {
 
   if (!IconComponent) {
     return (
-      <Box
-        sx={{
-          width: 80,
-          height: 80,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "action.hover",
-          borderRadius: 1,
-          border: "1px solid",
-          borderColor: "error.main",
-          ...sx,
-        }}
+      <div
+        className={`w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded border border-red-500 dark:border-red-600 ${className}`}
       >
-        <Typography variant="caption" color="error">
+        <span className="text-xs text-red-600 dark:text-red-400">
           Invalid icon
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        width: 80,
-        height: 80,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "primary.main",
-        borderRadius: 1,
-        color: "primary.contrastText",
-        ...sx,
-      }}
+    <div
+      className={`w-20 h-20 flex items-center justify-center bg-blue-600 dark:bg-blue-700 rounded text-white ${className}`}
     >
-      <IconComponent sx={{ fontSize: size }} />
-    </Box>
+      <IconComponent style={{ fontSize: size }} />
+    </div>
   );
 }
 

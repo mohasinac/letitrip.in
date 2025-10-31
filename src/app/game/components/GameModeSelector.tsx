@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Box, Button, Typography, Card, CardContent } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 interface GameModeSelectorProps {
@@ -14,110 +13,51 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
   const router = useRouter();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        gap: 4,
-        p: 3,
-      }}
-    >
-      <Typography
-        variant="h3"
-        sx={{ mb: 2, fontWeight: "bold", textAlign: "center" }}
-      >
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 p-6">
+      <h3 className="text-4xl mb-4 font-bold text-center text-gray-900 dark:text-white">
         Choose Game Mode
-      </Typography>
+      </h3>
 
-      <Box
-        sx={{
-          display: "flex",
-          gap: 3,
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
+      <div className="flex gap-6 flex-wrap justify-center">
         {/* Single Player */}
-        <Card
-          sx={{
-            width: 300,
-            cursor: "pointer",
-            transition: "transform 0.3s, box-shadow 0.3s",
-            "&:hover": {
-              transform: "translateY(-8px)",
-              boxShadow: 6,
-            },
-          }}
+        <div
+          className="w-80 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
           onClick={() => onSelectMode("1p")}
         >
-          <CardContent sx={{ textAlign: "center", p: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, fontSize: "3rem" }}>
-              🎮
-            </Typography>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4">🎮</div>
+            <h5 className="text-2xl mb-4 font-bold text-gray-900 dark:text-white">
               Single Player
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            </h5>
+            <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
               Battle against AI opponent
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              sx={{
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: "bold",
-              }}
-            >
+            </p>
+            <button className="w-full py-3 px-6 text-lg font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               Play vs AI
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
 
         {/* Multiplayer */}
-        <Card
-          sx={{
-            width: 300,
-            cursor: "pointer",
-            transition: "transform 0.3s, box-shadow 0.3s",
-            "&:hover": {
-              transform: "translateY(-8px)",
-              boxShadow: 6,
-            },
-          }}
+        <div
+          className="w-80 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
           onClick={() => onSelectMode("2p")}
         >
-          <CardContent sx={{ textAlign: "center", p: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, fontSize: "3rem" }}>
-              🌐
-            </Typography>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4">🌐</div>
+            <h5 className="text-2xl mb-4 font-bold text-gray-900 dark:text-white">
               Multiplayer
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            </h5>
+            <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
               Battle online with another player
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              color="secondary"
-              sx={{
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: "bold",
-              }}
-            >
+            </p>
+            <button className="w-full py-3 px-6 text-lg font-bold bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
               Play Online
-            </Button>
-          </CardContent>
-        </Card>
-      </Box>
-    </Box>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

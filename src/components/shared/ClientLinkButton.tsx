@@ -2,11 +2,12 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Button, ButtonProps } from "@mui/material";
 
-interface ClientLinkButtonProps extends Omit<ButtonProps, "href"> {
+interface ClientLinkButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href: string;
   children: React.ReactNode;
+  variant?: "contained" | "outlined" | "text";
 }
 
 /**
@@ -15,6 +16,8 @@ interface ClientLinkButtonProps extends Omit<ButtonProps, "href"> {
 export function ClientLinkButton({
   href,
   children,
+  variant = "contained",
+  className = "",
   ...props
 }: ClientLinkButtonProps) {
   const router = useRouter();
@@ -23,9 +26,20 @@ export function ClientLinkButton({
     router.push(href);
   };
 
+  const variantClasses = {
+    contained: "bg-blue-600 text-white hover:bg-blue-700",
+    outlined:
+      "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20",
+    text: "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20",
+  };
+
   return (
-    <Button {...props} onClick={handleClick}>
+    <button
+      {...props}
+      onClick={handleClick}
+      className={`px-4 py-2 rounded-lg font-medium transition-colors ${variantClasses[variant]} ${className}`}
+    >
       {children}
-    </Button>
+    </button>
   );
 }

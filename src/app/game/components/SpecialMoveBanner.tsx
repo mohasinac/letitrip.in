@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
 import { CinematicMoveState } from "../utils/cinematicSpecialMoves";
 
 interface SpecialMoveBannerProps {
@@ -11,7 +10,6 @@ interface SpecialMoveBannerProps {
 export default function SpecialMoveBanner({
   cinematicMove,
 }: SpecialMoveBannerProps) {
-  const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -25,204 +23,150 @@ export default function SpecialMoveBanner({
   if (!isVisible || !cinematicMove) return null;
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0, 0, 0, 0.85)",
-        animation: "bannerFadeIn 0.3s ease-out",
-        "@keyframes bannerFadeIn": {
-          from: {
-            opacity: 0,
-          },
-          to: {
-            opacity: 1,
-          },
-        },
-      }}
-    >
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/85 animate-fadeIn">
       {/* Let It Rip! Text */}
-      <Typography
-        variant="h1"
-        sx={{
-          fontSize: { xs: "3rem", sm: "5rem", md: "7rem" },
-          fontWeight: 900,
-          color: "#ffffff",
+      <h1
+        className="text-5xl sm:text-7xl md:text-8xl font-black text-white text-center mb-4 animate-pulse-scale-slide"
+        style={{
           textShadow: `
-            0 0 20px ${theme.palette.primary.main},
-            0 0 40px ${theme.palette.primary.main},
-            0 0 60px ${theme.palette.primary.main},
-            0 0 80px ${theme.palette.primary.main},
+            0 0 20px #3b82f6,
+            0 0 40px #3b82f6,
+            0 0 60px #3b82f6,
+            0 0 80px #3b82f6,
             0 5px 0 rgba(0,0,0,0.5)
           `,
-          mb: 2,
-          animation:
-            "letItRipPulse 0.8s ease-in-out infinite, letItRipSlideIn 0.5s ease-out",
-          textAlign: "center",
-          "@keyframes letItRipPulse": {
-            "0%, 100%": {
-              transform: "scale(1)",
-            },
-            "50%": {
-              transform: "scale(1.05)",
-            },
-          },
-          "@keyframes letItRipSlideIn": {
-            from: {
-              transform: "translateY(-100px) scale(0.5)",
-              opacity: 0,
-            },
-            to: {
-              transform: "translateY(0) scale(1)",
-              opacity: 1,
-            },
-          },
         }}
       >
         LET IT RIP!
-      </Typography>
+      </h1>
 
       {/* Special Move Name */}
-      <Box
-        sx={{
-          position: "relative",
-          width: "80%",
-          maxWidth: "800px",
-          padding: "20px 40px",
-          background: `linear-gradient(135deg, 
-            ${theme.palette.primary.main}20 0%, 
-            ${theme.palette.secondary.main}20 100%)`,
-          border: `4px solid ${theme.palette.primary.main}`,
-          borderRadius: "12px",
+      <div
+        className="relative w-4/5 max-w-3xl px-10 py-5 rounded-xl border-4 border-blue-500 shadow-glow animate-slideUp"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)",
           boxShadow: `
-            0 0 30px ${theme.palette.primary.main}80,
-            inset 0 0 20px ${theme.palette.primary.main}40
+            0 0 30px rgba(59, 130, 246, 0.5),
+            inset 0 0 20px rgba(59, 130, 246, 0.25)
           `,
-          animation: "moveNameSlideUp 0.6s ease-out 0.3s both",
-          "@keyframes moveNameSlideUp": {
-            from: {
-              transform: "translateY(100px)",
-              opacity: 0,
-            },
-            to: {
-              transform: "translateY(0)",
-              opacity: 1,
-            },
-          },
         }}
       >
-        <Typography
-          variant="h2"
-          sx={{
-            fontSize: { xs: "1.5rem", sm: "2.5rem", md: "3.5rem" },
-            fontWeight: 800,
-            color: theme.palette.primary.main,
-            textAlign: "center",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
+        <h2
+          className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-blue-500 text-center uppercase tracking-widest animate-glow"
+          style={{
             textShadow: `
-              0 0 10px ${theme.palette.primary.main},
-              0 0 20px ${theme.palette.primary.main},
+              0 0 10px #3b82f6,
+              0 0 20px #3b82f6,
               2px 2px 4px rgba(0,0,0,0.8)
             `,
-            animation: "moveNameGlow 1s ease-in-out infinite",
-            "@keyframes moveNameGlow": {
-              "0%, 100%": {
-                filter: "brightness(1)",
-              },
-              "50%": {
-                filter: "brightness(1.3)",
-              },
-            },
           }}
         >
           {cinematicMove.moveName}
-        </Typography>
+        </h2>
 
         {/* Move Type Indicator */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: "-15px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            padding: "5px 20px",
-            background: theme.palette.secondary.main,
-            color: "#fff",
-            borderRadius: "20px",
-            fontSize: "0.875rem",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
-          }}
-        >
+        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-1 bg-purple-600 text-white rounded-full text-sm font-bold uppercase shadow-lg">
           {cinematicMove.moveType.replace(/-/g, " ")}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Energy Flash Effects */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: "none",
-          "& > div": {
-            position: "absolute",
-            background: `radial-gradient(circle, ${theme.palette.primary.main}40 0%, transparent 70%)`,
-            borderRadius: "50%",
-            animation: "energyPulse 2s ease-out infinite",
-          },
-          "& > div:nth-of-type(1)": {
-            top: "10%",
-            left: "10%",
-            width: "200px",
-            height: "200px",
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-[10%] left-[10%] w-[200px] h-[200px] rounded-full animate-energyPulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)",
             animationDelay: "0s",
-          },
-          "& > div:nth-of-type(2)": {
-            top: "60%",
-            right: "15%",
-            width: "150px",
-            height: "150px",
+          }}
+        />
+        <div
+          className="absolute top-[60%] right-[15%] w-[150px] h-[150px] rounded-full animate-energyPulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)",
             animationDelay: "0.5s",
-          },
-          "& > div:nth-of-type(3)": {
-            bottom: "20%",
-            left: "20%",
-            width: "180px",
-            height: "180px",
+          }}
+        />
+        <div
+          className="absolute bottom-[20%] left-[20%] w-[180px] h-[180px] rounded-full animate-energyPulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)",
             animationDelay: "1s",
-          },
-          "@keyframes energyPulse": {
-            "0%": {
-              transform: "scale(0)",
-              opacity: 0,
-            },
-            "50%": {
-              opacity: 0.6,
-            },
-            "100%": {
-              transform: "scale(2)",
-              opacity: 0,
-            },
-          },
-        }}
-      >
-        <div />
-        <div />
-        <div />
-      </Box>
-    </Box>
+          }}
+        />
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes pulse-scale-slide {
+          from {
+            transform: translateY(-100px) scale(0.5);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+        @keyframes slideUp {
+          from {
+            transform: translateY(100px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes glow {
+          0%,
+          100% {
+            filter: brightness(1);
+          }
+          50% {
+            filter: brightness(1.3);
+          }
+        }
+        @keyframes energyPulse {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+        .animate-pulse-scale-slide {
+          animation: pulse-scale-slide 0.5s ease-out,
+            pulse 0.8s ease-in-out infinite;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.6s ease-out 0.3s both;
+        }
+        .animate-glow {
+          animation: glow 1s ease-in-out infinite;
+        }
+        .animate-energyPulse {
+          animation: energyPulse 2s ease-out infinite;
+        }
+      `}</style>
+    </div>
   );
 }

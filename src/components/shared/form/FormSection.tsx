@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, SxProps, Theme } from "@mui/material";
 
 interface FormSectionProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  sx?: SxProps<Theme>;
+  className?: string;
 }
 
 /**
@@ -19,26 +18,20 @@ export function FormSection({
   title,
   subtitle,
   children,
-  sx,
+  className = "",
 }: FormSectionProps) {
   return (
-    <Box sx={{ ...sx }}>
-      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+    <div className={className}>
+      <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white">
         {title}
-      </Typography>
+      </h3>
       {subtitle && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ mb: 2, display: "block" }}
-        >
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-4 block">
           {subtitle}
-        </Typography>
+        </p>
       )}
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {children}
-      </Box>
-    </Box>
+      <div className="flex flex-col gap-4">{children}</div>
+    </div>
   );
 }
 

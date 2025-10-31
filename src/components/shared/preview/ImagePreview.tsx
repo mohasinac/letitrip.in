@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, SxProps, Theme } from "@mui/material";
 import { getImageUrl } from "@/lib/utils/storage";
 
 interface ImagePreviewProps {
   imageUrl: string | null | undefined;
   useCache?: boolean;
   cacheDuration?: number;
-  sx?: SxProps<Theme>;
+  className?: string;
 }
 
 /**
@@ -20,53 +19,31 @@ export function ImagePreview({
   imageUrl,
   useCache = true,
   cacheDuration = 86400,
-  sx,
+  className = "",
 }: ImagePreviewProps) {
   const [imageError, setImageError] = useState(false);
 
   if (!imageUrl) {
     return (
-      <Box
-        sx={{
-          width: 80,
-          height: 80,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "action.hover",
-          borderRadius: 1,
-          border: "1px solid",
-          borderColor: "divider",
-          ...sx,
-        }}
+      <div
+        className={`w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 ${className}`}
       >
-        <Typography variant="caption" color="text.secondary">
+        <span className="text-xs text-gray-500 dark:text-gray-400">
           No image
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   }
 
   if (imageError) {
     return (
-      <Box
-        sx={{
-          width: 80,
-          height: 80,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "action.hover",
-          borderRadius: 1,
-          border: "1px solid",
-          borderColor: "error.main",
-          ...sx,
-        }}
+      <div
+        className={`w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded border border-red-500 dark:border-red-600 ${className}`}
       >
-        <Typography variant="caption" color="error">
+        <span className="text-xs text-red-600 dark:text-red-400">
           Failed to load
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   }
 
@@ -76,19 +53,11 @@ export function ImagePreview({
     : imageUrl;
 
   return (
-    <Box
-      component="img"
+    <img
       src={cachedImageUrl}
       onError={() => setImageError(true)}
-      sx={{
-        width: 80,
-        height: 80,
-        objectFit: "cover",
-        borderRadius: 1,
-        border: "1px solid",
-        borderColor: "divider",
-        ...sx,
-      }}
+      className={`w-20 h-20 object-cover rounded border border-gray-200 dark:border-gray-700 ${className}`}
+      alt="Preview"
     />
   );
 }

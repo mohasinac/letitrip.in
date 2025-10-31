@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Box, Button, SxProps, Theme } from "@mui/material";
 
 interface FormActionsProps {
   onCancel?: () => void;
@@ -9,7 +8,7 @@ interface FormActionsProps {
   submitLabel?: string;
   cancelLabel?: string;
   isLoading?: boolean;
-  sx?: SxProps<Theme>;
+  className?: string;
   variant?: "inline" | "full-width";
 }
 
@@ -24,39 +23,38 @@ export function FormActions({
   submitLabel = "Submit",
   cancelLabel = "Cancel",
   isLoading = false,
-  sx,
+  className = "",
   variant = "inline",
 }: FormActionsProps) {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: 2,
-        justifyContent: variant === "full-width" ? "space-between" : "flex-end",
-        ...(sx as any),
-      }}
+    <div
+      className={`flex gap-4 ${
+        variant === "full-width" ? "justify-between" : "justify-end"
+      } ${className}`}
     >
       {onCancel && (
-        <Button
+        <button
           onClick={onCancel}
           disabled={isLoading}
-          variant="outlined"
-          sx={{ flex: variant === "full-width" ? 1 : "auto" }}
+          className={`px-4 py-2 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+            variant === "full-width" ? "flex-1" : ""
+          }`}
         >
           {cancelLabel}
-        </Button>
+        </button>
       )}
       {onSubmit && (
-        <Button
+        <button
           onClick={onSubmit}
           disabled={isLoading}
-          variant="contained"
-          sx={{ flex: variant === "full-width" ? 1 : "auto" }}
+          className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+            variant === "full-width" ? "flex-1" : ""
+          }`}
         >
           {isLoading ? "Loading..." : submitLabel}
-        </Button>
+        </button>
       )}
-    </Box>
+    </div>
   );
 }
 

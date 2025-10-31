@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Box, Button, useTheme } from "@mui/material";
 import BeybladeSelect from "@/components/game/BeybladeSelect";
 import ArenaSelect from "@/components/game/ArenaSelect";
 
@@ -34,96 +33,43 @@ const GameControls: React.FC<GameControlsProps> = ({
   className = "",
   isMultiplayer = false,
 }) => {
-  const theme = useTheme();
-
   // In multiplayer mode, don't show beyblade selectors
   if (isMultiplayer) {
     return (
-      <Box
-        className={className}
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          alignItems: "center",
-          justifyContent: "center",
-          gap: { xs: 2, sm: 3 },
-          px: { xs: 2, sm: 0 },
-          width: "100%",
-        }}
+      <div
+        className={`flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-4 sm:px-0 w-full ${className}`}
       >
         {/* Restart Button - Disabled in multiplayer */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            minWidth: { xs: "100%", sm: 200 },
-            maxWidth: { xs: "100%", sm: 250 },
-          }}
-        >
-          <Button
+        <div className="flex flex-col items-center min-w-full sm:min-w-[200px] max-w-full sm:max-w-[250px]">
+          <button
             onClick={onRestart}
             disabled={true}
-            variant="contained"
-            size="large"
-            fullWidth
-            sx={{
-              px: 4,
-              py: { xs: 1.25, sm: 1.5 },
-              borderRadius: 2,
-              fontWeight: 600,
-              opacity: 0.6,
-            }}
+            className="w-full px-8 py-3 sm:py-3.5 rounded-lg font-semibold opacity-60 bg-blue-600 text-white cursor-not-allowed"
           >
             Multiplayer Battle
-          </Button>
-        </Box>
-      </Box>
+          </button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box
-      className={className}
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        alignItems: "center",
-        justifyContent: "center",
-        gap: { xs: 2, sm: 3 },
-        px: { xs: 2, sm: 0 },
-        width: "100%",
-      }}
+    <div
+      className={`flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-4 sm:px-0 w-full ${className}`}
     >
       {/* Player Beyblade Selection */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minWidth: { xs: "100%", sm: 300 },
-          maxWidth: { xs: "100%", sm: 350 },
-        }}
-      >
+      <div className="flex flex-col items-center min-w-full sm:min-w-[300px] max-w-full sm:max-w-[350px]">
         <BeybladeSelect
           value={playerBeyblade}
           onChange={onPlayerBeybladeChange}
           label="Your Beyblade"
           disabled={isPlaying}
         />
-      </Box>
+      </div>
 
       {/* Arena Selection */}
       {onArenaChange && (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            minWidth: { xs: "100%", sm: 300 },
-            maxWidth: { xs: "100%", sm: 350 },
-          }}
-        >
+        <div className="flex flex-col items-center min-w-full sm:min-w-[300px] max-w-full sm:max-w-[350px]">
           <ArenaSelect
             value={arena}
             onChange={onArenaChange}
@@ -131,67 +77,33 @@ const GameControls: React.FC<GameControlsProps> = ({
             disabled={isPlaying}
             showRandomButton={true}
           />
-        </Box>
+        </div>
       )}
 
       {/* Restart Button */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minWidth: { xs: "100%", sm: 200 },
-          maxWidth: { xs: "100%", sm: 250 },
-        }}
-      >
-        <Button
+      <div className="flex flex-col items-center min-w-full sm:min-w-[200px] max-w-full sm:max-w-[250px]">
+        <button
           onClick={onRestart}
           disabled={isPlaying || isLoading}
-          variant="contained"
-          size="large"
-          fullWidth
-          sx={{
-            px: 4,
-            py: { xs: 1.25, sm: 1.5 },
-            borderRadius: 2,
-            fontWeight: 600,
-            boxShadow: `0 4px 15px ${theme.palette.primary.main}40`,
-            transition: "all 0.2s ease",
-            "&:hover": {
-              transform: isPlaying || isLoading ? "none" : "scale(1.05)",
-              boxShadow:
-                isPlaying || isLoading
-                  ? undefined
-                  : `0 6px 20px ${theme.palette.primary.main}60`,
-            },
-            "&:active": {
-              transform: isPlaying || isLoading ? "none" : "scale(0.95)",
-            },
-            "&:disabled": {
-              opacity: 0.6,
-              cursor: "not-allowed",
-            },
+          className={`w-full px-8 py-3 sm:py-3.5 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-lg ${
+            isPlaying || isLoading
+              ? "opacity-60 cursor-not-allowed"
+              : "hover:scale-105 hover:shadow-xl active:scale-95"
+          }`}
+          style={{
+            boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
           }}
         >
           {isLoading
             ? "Loading..."
             : isPlaying
-              ? "Battle In Progress"
-              : "New Battle"}
-        </Button>
-      </Box>
+            ? "Battle In Progress"
+            : "New Battle"}
+        </button>
+      </div>
 
       {/* AI Beyblade Selection */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minWidth: { xs: "100%", sm: 300 },
-          maxWidth: { xs: "100%", sm: 350 },
-          gap: 1,
-        }}
-      >
+      <div className="flex flex-col items-center min-w-full sm:min-w-[300px] max-w-full sm:max-w-[350px] gap-2">
         <BeybladeSelect
           value={aiBeyblade}
           onChange={onAIBeybladeChange}
@@ -199,8 +111,8 @@ const GameControls: React.FC<GameControlsProps> = ({
           disabled={isPlaying}
           showRandomButton={true}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
