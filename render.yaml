@@ -1,13 +1,18 @@
 services:
   - type: web
-    name: beyblade-socket-server
+    name: hobbiesspot-socket-server
     runtime: node
-    plan: free # or starter ($7/month) for always-on
+    plan: free # Upgrade to starter ($7/month) for always-on production
+    region: oregon # Choose: oregon, frankfurt, singapore
     buildCommand: npm install
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://justforview-in.vercel.app,https://justforview.vercel.app,https://www.justforview.in,https://*.vercel.app,http://localhost:3000,http://localhost:3001
+        value: https://hobbiesspot.com,https://www.hobbiesspot.com,https://*.vercel.app,http://localhost:3000
+      - key: PORT
+        value: 10000
     healthCheckPath: /health
+    # Auto-deploy from GitHub
+    autoDeploy: true
