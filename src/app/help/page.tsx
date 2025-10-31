@@ -1,17 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Typography,
-  Stack,
-  Card,
-  Tab,
-  Tabs,
-  Button,
-  TextField,
-  MenuItem,
-} from "@mui/material";
 import Link from "next/link";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 
@@ -229,7 +218,9 @@ export default function HelpPage() {
   ];
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -253,272 +244,282 @@ export default function HelpPage() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", py: 4 }}>
-      <Box sx={{ maxWidth: "1200px", mx: "auto", px: 2 }}>
-        <Stack spacing={4}>
+    <div className="min-h-screen py-8 bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="space-y-8">
           {/* Header */}
-          <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h3" component="h1" gutterBottom>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Help Center
-            </Typography>
-            <Typography variant="h6" color="text.secondary">
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
               Get help with your Beyblade orders, products, and account
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
           {/* Tabs */}
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={activeTab}
-              onChange={(e, value) => setActiveTab(value)}
-            >
-              <Tab label="Browse Help Topics" value="help" />
-              <Tab label="Contact Us" value="contact" />
-            </Tabs>
-          </Box>
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <div className="flex gap-8">
+              <button
+                onClick={() => setActiveTab("help")}
+                className={`pb-4 px-1 border-b-2 font-medium transition-colors ${
+                  activeTab === "help"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+              >
+                Browse Help Topics
+              </button>
+              <button
+                onClick={() => setActiveTab("contact")}
+                className={`pb-4 px-1 border-b-2 font-medium transition-colors ${
+                  activeTab === "contact"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+              >
+                Contact Us
+              </button>
+            </div>
+          </div>
 
           {/* Help Topics Tab */}
           {activeTab === "help" && (
-            <Box>
-              <Typography variant="h5" gutterBottom>
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
                 Browse Help Topics
-              </Typography>
-              <Stack spacing={3}>
+              </h2>
+              <div className="space-y-4">
                 {supportCategories.map((category) => (
-                  <Card key={category.id} sx={{ p: 3 }}>
-                    <Stack direction="row" spacing={2} alignItems="flex-start">
-                      <Box sx={{ color: "primary.main", mt: 1 }}>
+                  <div
+                    key={category.id}
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+                  >
+                    <div className="flex gap-4 items-start">
+                      <div className="text-blue-600 dark:text-blue-400 mt-1">
                         {category.icon}
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                           {category.title}
-                        </Typography>
-                        <Typography color="text.secondary" sx={{ mb: 2 }}>
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">
                           {category.description}
-                        </Typography>
-                        <Stack spacing={1}>
+                        </p>
+                        <div className="space-y-3">
                           {category.links.map((link, index) => (
-                            <Box key={index}>
+                            <div key={index}>
                               <Link
                                 href={link.href}
-                                style={{ textDecoration: "none" }}
+                                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                               >
-                                <Typography
-                                  variant="body1"
-                                  sx={{
-                                    color: "primary.main",
-                                    "&:hover": { textDecoration: "underline" },
-                                  }}
-                                >
-                                  {link.title}
-                                </Typography>
+                                {link.title}
                               </Link>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
                                 {link.description}
-                              </Typography>
-                            </Box>
+                              </p>
+                            </div>
                           ))}
-                        </Stack>
-                      </Box>
-                    </Stack>
-                  </Card>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           )}
 
           {/* Contact Tab */}
           {activeTab === "contact" && (
-            <Box>
-              <Typography variant="h5" gutterBottom>
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
                 Contact Support
-              </Typography>
-              <Stack direction={{ xs: "column", md: "row" }} spacing={4}>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Contact Form */}
-                <Box sx={{ flex: 1 }}>
-                  <Card sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom>
+                <div>
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
                       Send us a message
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit}>
-                      <Stack spacing={3}>
-                        <TextField
-                          label="Name *"
+                    </h3>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Name *
+                        </label>
+                        <input
+                          type="text"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
                           required
-                          fullWidth
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <TextField
-                          label="Email *"
-                          name="email"
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Email *
+                        </label>
+                        <input
                           type="email"
+                          name="email"
                           value={formData.email}
                           onChange={handleInputChange}
                           required
-                          fullWidth
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <TextField
-                          select
-                          label="Category"
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Category
+                        </label>
+                        <select
                           name="category"
                           value={formData.category}
                           onChange={handleInputChange}
-                          fullWidth
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                          <MenuItem value="general">General Question</MenuItem>
-                          <MenuItem value="order">Order Issue</MenuItem>
-                          <MenuItem value="shipping">
-                            Shipping & Delivery
-                          </MenuItem>
-                          <MenuItem value="return">Returns & Refunds</MenuItem>
-                          <MenuItem value="product">
-                            Product Information
-                          </MenuItem>
-                          <MenuItem value="account">Account & Payment</MenuItem>
-                          <MenuItem value="auction">
-                            Auctions & Bidding
-                          </MenuItem>
-                          <MenuItem value="technical">
-                            Technical Support
-                          </MenuItem>
-                        </TextField>
-                        <TextField
-                          label="Subject *"
+                          <option value="general">General Question</option>
+                          <option value="order">Order Issue</option>
+                          <option value="shipping">Shipping & Delivery</option>
+                          <option value="return">Returns & Refunds</option>
+                          <option value="product">Product Information</option>
+                          <option value="account">Account & Payment</option>
+                          <option value="auction">Auctions & Bidding</option>
+                          <option value="technical">Technical Support</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Subject *
+                        </label>
+                        <input
+                          type="text"
                           name="subject"
                           value={formData.subject}
                           onChange={handleInputChange}
                           required
-                          fullWidth
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        {(formData.category === "order" ||
-                          formData.category === "shipping" ||
-                          formData.category === "return") && (
-                          <TextField
-                            label="Order Number (Optional)"
+                      </div>
+                      {(formData.category === "order" ||
+                        formData.category === "shipping" ||
+                        formData.category === "return") && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Order Number (Optional)
+                          </label>
+                          <input
+                            type="text"
                             name="orderNumber"
                             value={formData.orderNumber}
                             onChange={handleInputChange}
                             placeholder="e.g., #12345"
-                            fullWidth
+                            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           />
-                        )}
-                        <TextField
-                          label="Message *"
+                        </div>
+                      )}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Message *
+                        </label>
+                        <textarea
                           name="message"
                           value={formData.message}
                           onChange={handleInputChange}
-                          multiline
                           rows={6}
                           placeholder="Please describe your question or issue in detail..."
                           required
-                          fullWidth
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          disabled={isSubmitting}
-                          fullWidth
-                        >
-                          {isSubmitting ? "Sending..." : "Send Message"}
-                        </Button>
-                      </Stack>
-                    </Box>
-                  </Card>
-                </Box>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-colors"
+                      >
+                        {isSubmitting ? "Sending..." : "Send Message"}
+                      </button>
+                    </form>
+                  </div>
+                </div>
 
                 {/* Contact Information */}
-                <Box sx={{ flex: 1 }}>
-                  <Stack spacing={3}>
-                    <Card sx={{ p: 3 }}>
-                      <Typography variant="h6" gutterBottom>
+                <div>
+                  <div className="space-y-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
                         Other ways to reach us
-                      </Typography>
-                      <Stack spacing={3}>
-                        <Box>
-                          <Typography variant="subtitle1" gutterBottom>
+                      </h3>
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                             Email
-                          </Typography>
-                          <Typography color="text.secondary">
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400">
                             support@justforview.in
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                             We typically respond within 24 hours
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle1" gutterBottom>
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                             Phone
-                          </Typography>
-                          <Typography color="text.secondary">
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400">
                             1-800-BEYBLADE
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                             Mon-Fri, 9 AM - 6 PM EST
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle1" gutterBottom>
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                             Live Chat
-                          </Typography>
-                          <Typography color="text.secondary">
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400">
                             Available on our website
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                             Mon-Fri, 9 AM - 6 PM EST
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Card>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                    <Card sx={{ p: 3, bgcolor: "primary.lighter" }}>
-                      <Typography variant="h6" gutterBottom>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow-sm p-6">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                         Before contacting us
-                      </Typography>
-                      <Stack
-                        spacing={1}
-                        component="ul"
-                        sx={{ pl: 0, listStyle: "none" }}
-                      >
-                        <Box component="li">
-                          <Typography variant="body2">
-                            • Check our{" "}
-                            <Link href="/faq" style={{ color: "inherit" }}>
-                              FAQ page
-                            </Link>{" "}
-                            for quick answers
-                          </Typography>
-                        </Box>
-                        <Box component="li">
-                          <Typography variant="body2">
-                            • Have your order number ready if asking about an
-                            order
-                          </Typography>
-                        </Box>
-                        <Box component="li">
-                          <Typography variant="body2">
-                            • Include photos if reporting a product issue
-                          </Typography>
-                        </Box>
-                        <Box component="li">
-                          <Typography variant="body2">
-                            • Be specific about the problem you're experiencing
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Card>
-                  </Stack>
-                </Box>
-              </Stack>
-            </Box>
+                      </h3>
+                      <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                        <li>
+                          • Check our{" "}
+                          <Link
+                            href="/faq"
+                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            FAQ page
+                          </Link>{" "}
+                          for quick answers
+                        </li>
+                        <li>
+                          • Have your order number ready if asking about an
+                          order
+                        </li>
+                        <li>• Include photos if reporting a product issue</li>
+                        <li>
+                          • Be specific about the problem you're experiencing
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
-        </Stack>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

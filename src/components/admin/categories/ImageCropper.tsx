@@ -9,18 +9,10 @@ import React, {
   useImperativeHandle,
 } from "react";
 import {
-  Box,
-  Stack,
-  Typography,
-  Slider,
-  IconButton,
-  Paper,
-} from "@mui/material";
-import {
-  ZoomIn as ZoomInIcon,
-  ZoomOut as ZoomOutIcon,
-  RestartAlt as ResetIcon,
-} from "@mui/icons-material";
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+} from "lucide-react";
 
 interface ImageCropperProps {
   imageUrl: string;
@@ -191,109 +183,95 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
     }));
 
     return (
-      <Paper elevation={3} sx={{ p: 2 }}>
-        <Stack spacing={2}>
-          <Typography variant="subtitle2" fontWeight={600}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
             Adjust Image (Drag to move, scroll to zoom)
-          </Typography>
+          </h3>
 
           {/* Canvas Preview */}
-          <Box
-            sx={{
-              position: "relative",
-              width: targetWidth,
-              height: targetHeight,
-              margin: "0 auto",
-              border: "2px solid",
-              borderColor: "primary.main",
-              borderRadius: 1,
-              overflow: "hidden",
-              cursor: isDragging ? "grabbing" : "grab",
-              touchAction: "none",
-            }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <canvas
-              ref={canvasRef}
-              width={targetWidth}
-              height={targetHeight}
+          <div className="flex justify-center">
+            <div
+              className={`relative border-2 border-blue-500 dark:border-blue-400 rounded overflow-hidden ${
+                isDragging ? "cursor-grabbing" : "cursor-grab"
+              }`}
               style={{
-                display: "block",
-                width: "100%",
-                height: "100%",
+                width: targetWidth,
+                height: targetHeight,
+                touchAction: "none",
               }}
-            />
-
-            {/* Size indicator */}
-            <Box
-              sx={{
-                position: "absolute",
-                bottom: 8,
-                right: 8,
-                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                color: "white",
-                px: 1,
-                py: 0.5,
-                borderRadius: 1,
-                fontSize: "0.75rem",
-              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
-              {targetWidth} × {targetHeight}
-            </Box>
-          </Box>
-
-          {/* Zoom Controls */}
-          <Stack spacing={2}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <IconButton
-                size="small"
-                onClick={handleZoomOut}
-                disabled={zoom <= 0.1}
-              >
-                <ZoomOutIcon />
-              </IconButton>
-
-              <Slider
-                value={zoom}
-                onChange={(_, value) => setZoom(value as number)}
-                min={0.1}
-                max={3}
-                step={0.1}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
-                sx={{ flex: 1 }}
+              <canvas
+                ref={canvasRef}
+                width={targetWidth}
+                height={targetHeight}
+                className="block w-full h-full"
               />
 
-              <IconButton
-                size="small"
+              {/* Size indicator */}
+              <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                {targetWidth} × {targetHeight}
+              </div>
+            </div>
+          </div>
+
+          {/* Zoom Controls */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                disabled={zoom <= 0.1}
+                className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Zoom out"
+              >
+                <ZoomOut className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </button>
+
+              <input
+                type="range"
+                min="0.1"
+                max="3"
+                step="0.1"
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                title={`Zoom: ${Math.round(zoom * 100)}%`}
+              />
+
+              <button
+                type="button"
                 onClick={handleZoomIn}
                 disabled={zoom >= 3}
+                className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Zoom in"
               >
-                <ZoomInIcon />
-              </IconButton>
+                <ZoomIn className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </button>
 
-              <IconButton size="small" onClick={handleReset} title="Reset">
-                <ResetIcon />
-              </IconButton>
-            </Box>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                title="Reset"
+              >
+                <RotateCcw className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </button>
+            </div>
 
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              textAlign="center"
-            >
-              Drag to reposition • Scroll or use slider to zoom • Click reset to
-              center
-            </Typography>
-          </Stack>
-        </Stack>
-      </Paper>
+            <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+              Drag to reposition • Scroll or use slider to zoom • Click reset to center
+            </p>
+          </div>
+        </div>
+      </div>
     );
   },
 );

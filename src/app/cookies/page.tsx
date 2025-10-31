@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Container, Typography, Card, CardContent } from "@mui/material";
 import {
   HeroSection,
   ThemeAwareBox,
@@ -21,138 +20,88 @@ export default function CookiePolicyPage() {
     <ThemeAwareBox>
       {/* Hero Section */}
       <HeroSection>
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h1"
-              sx={{ fontWeight: 700, mb: 3, color: "white" }}
-            >
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold text-white mb-6">
               Cookie Policy
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ maxWidth: 800, mx: "auto", color: "white", opacity: 0.9 }}
-            >
+            </h1>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
               Learn about how we use cookies to improve your experience on
               JustForView.
-            </Typography>
-          </Box>
-        </Container>
+            </p>
+          </div>
+        </div>
       </HeroSection>
 
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <Card sx={{ borderRadius: 3 }}>
-              <CardContent sx={{ p: 4 }}>
-                <Typography
-                  variant="h6"
-                  color="text.secondary"
-                  sx={{ lineHeight: 1.7 }}
-                >
+      <div className="py-16">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-col gap-6">
+            <div className="rounded-2xl bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+              <div className="p-8">
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                   This Cookie Policy explains how JustForView uses cookies and
                   similar technologies to recognize you when you visit our
                   website.
-                </Typography>
-              </CardContent>
-            </Card>
+                </p>
+              </div>
+            </div>
 
             {[
               {
                 title: "What are cookies?",
                 content: (
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     Cookies are small data files that are placed on your
                     computer or mobile device when you visit a website. Cookies
                     are widely used by website owners to make their websites
                     work, or to work more efficiently, as well as to provide
                     reporting information.
-                  </Typography>
+                  </p>
                 ),
               },
               {
                 title: "Types of cookies we use",
                 content: (
-                  <Box>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ lineHeight: 1.7, mb: 2 }}
-                    >
-                      <Typography
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Essential Cookies:
-                      </Typography>{" "}
+                      </span>{" "}
                       These are necessary for the website to function properly,
                       including authentication and security.
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ lineHeight: 1.7, mb: 2 }}
-                    >
-                      <Typography
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Performance Cookies:
-                      </Typography>{" "}
+                      </span>{" "}
                       These help us understand how visitors interact with our
                       website by collecting anonymous information.
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ lineHeight: 1.7, mb: 2 }}
-                    >
-                      <Typography
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Functional Cookies:
-                      </Typography>{" "}
+                      </span>{" "}
                       These enable enhanced functionality and personalization,
                       such as remembering your preferences.
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ lineHeight: 1.7 }}
-                    >
-                      <Typography
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Marketing Cookies:
-                      </Typography>{" "}
+                      </span>{" "}
                       These track visitors across websites to display relevant
                       advertisements.
-                    </Typography>
-                  </Box>
+                    </p>
+                  </div>
                 ),
               },
               {
                 title: "How to manage cookies",
                 content: (
-                  <Box>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ lineHeight: 1.7, mb: 2 }}
-                    >
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                       You can control and manage cookies in various ways:
-                    </Typography>
-                    <Box component="ul" sx={{ pl: 3, color: "text.secondary" }}>
+                    </p>
+                    <ul className="pl-6 list-disc text-gray-600 dark:text-gray-300 space-y-2">
                       <li>
                         Browser settings: Most browsers allow you to refuse or
                         accept cookies
@@ -169,58 +118,52 @@ export default function CookiePolicyPage() {
                         Opt-out tools: Use industry opt-out tools for
                         advertising cookies
                       </li>
-                    </Box>
-                  </Box>
+                    </ul>
+                  </div>
                 ),
               },
               {
                 title: "Third-party cookies",
                 content: (
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     We may use third-party services that place cookies on your
                     device, including analytics services like Google Analytics,
                     payment processors, and social media platforms. These third
                     parties have their own privacy policies and cookie policies.
-                  </Typography>
+                  </p>
                 ),
               },
               {
                 title: "Contact us",
                 content: (
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     If you have any questions about our use of cookies, please
                     contact us at{" "}
-                    <Typography
-                      component="a"
+                    <a
                       href="mailto:privacy@justforview.in"
-                      sx={{ color: "primary.main", textDecoration: "none" }}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       privacy@justforview.in
-                    </Typography>
-                  </Typography>
+                    </a>
+                  </p>
                 ),
               },
             ].map((section, index) => (
-              <Card key={index} sx={{ borderRadius: 3 }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Typography variant="h5" fontWeight={600} gutterBottom>
+              <div
+                key={index}
+                className="rounded-2xl bg-white dark:bg-gray-800 shadow-lg overflow-hidden"
+              >
+                <div className="p-8">
+                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     {section.title}
-                  </Typography>
+                  </h2>
                   {section.content}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
-          </Box>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
     </ThemeAwareBox>
   );
 }

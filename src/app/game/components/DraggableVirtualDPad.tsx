@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Box, IconButton, Tooltip } from "@mui/material";
 import {
-  DragIndicator as DragIcon,
-  LockOpen as UnlockIcon,
-  Lock as LockIcon,
-  Add as ZoomInIcon,
-  Remove as ZoomOutIcon,
-  VerticalAlignBottom as MoveBottomIcon,
-} from "@mui/icons-material";
+  GripVertical,
+  LockOpen,
+  Lock,
+  Plus,
+  Minus,
+  MoveDown,
+} from "lucide-react";
 import VirtualDPad from "./VirtualDPad";
 import { useCookie } from "@/hooks/useCookie";
 
@@ -30,7 +29,7 @@ const DraggableVirtualDPad: React.FC<DraggableVirtualDPadProps> = ({
   // Load saved position from cookie or use default
   const [savedPosition, setSavedPosition] = useCookie(
     "dpad-position",
-    JSON.stringify({ x: 16, y: -16 }), // Default: bottom-right with 16px offset
+    JSON.stringify({ x: 16, y: -16 }) // Default: bottom-right with 16px offset
   );
 
   // Load saved scale from cookie or use default
@@ -193,210 +192,81 @@ const DraggableVirtualDPad: React.FC<DraggableVirtualDPadProps> = ({
   };
 
   return (
-    <Box
+    <div
       ref={dpadRef}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      sx={{
-        position: "fixed",
+      className="fixed w-auto h-auto pointer-events-auto z-[1000]"
+      style={{
         left: position.x,
         top: position.y < 0 ? "auto" : position.y,
         bottom: position.y < 0 ? Math.abs(position.y) : "auto",
-        width: "auto",
-        height: "auto",
         transform: `scale(${scale})`,
         transformOrigin: "bottom left",
-        pointerEvents: "auto", // D-pad should receive events
         cursor: isDragging ? "grabbing" : isLocked ? "default" : "grab",
-        zIndex: 1000,
         transition: isDragging ? "none" : "all 0.2s ease",
       }}
     >
       {/* Drag Handle - Only visible when not locked */}
       {!isLocked && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: -12,
-            right: -12,
-            width: 40,
-            height: 40,
-            backgroundColor: "rgba(59, 130, 246, 0.9)",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "grab",
-            zIndex: 11,
-            border: "3px solid rgba(255, 255, 255, 0.6)",
+        <div
+          className="absolute -top-3 -right-3 w-10 h-10 bg-blue-500/90 rounded-full flex items-center justify-center cursor-grab z-[11] border-3 border-white/60 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+          style={{
             boxShadow:
               "0 2px 8px rgba(0,0,0,0.4), 0 0 12px rgba(59,130,246,0.5)",
-            "&:active": {
-              cursor: "grabbing",
-              transform: "scale(0.95)",
-            },
-            "&:hover": {
-              transform: "scale(1.1)",
-              boxShadow:
-                "0 4px 12px rgba(0,0,0,0.5), 0 0 16px rgba(59,130,246,0.7)",
-            },
-            transition: "all 0.2s ease",
           }}
         >
-          <DragIcon sx={{ fontSize: 20, color: "white" }} />
-        </Box>
+          <GripVertical size={20} className="text-white" />
+        </div>
       )}
 
       {/* Lock Button */}
-      <Tooltip
+      <button
+        onClick={toggleLock}
         title={isLocked ? "Unlock to move" : "Lock position"}
-        placement="top"
-      >
-        <IconButton
-          size="small"
-          onClick={toggleLock}
-          sx={{
-            position: "absolute",
-            top: -8,
-            left: -8,
-            width: 24,
-            height: 24,
-            backgroundColor: isLocked
-              ? "rgba(239, 68, 68, 0.8)"
-              : "rgba(34, 197, 94, 0.8)",
-            color: "white",
-            zIndex: 11,
-            border: "2px solid rgba(255, 255, 255, 0.3)",
-            "&:hover": {
-              backgroundColor: isLocked
-                ? "rgba(239, 68, 68, 0.9)"
-                : "rgba(34, 197, 94, 0.9)",
-            },
-            "& .MuiSvgIcon-root": {
-              fontSize: 14,
-            },
-          }}
-        >
-          {isLocked ? <LockIcon /> : <UnlockIcon />}
-        </IconButton>
-      </Tooltip>
-
-      {/* Zoom In Button */}
-      <Tooltip title="Zoom In" placement="top">
-        <IconButton
-          size="small"
-          onClick={handleZoomIn}
-          disabled={scale >= 2}
-          sx={{
-            position: "absolute",
-            top: -8,
-            left: 20,
-            width: 24,
-            height: 24,
-            backgroundColor: "rgba(59, 130, 246, 0.8)",
-            color: "white",
-            zIndex: 11,
-            border: "2px solid rgba(255, 255, 255, 0.3)",
-            "&:hover": {
-              backgroundColor: "rgba(59, 130, 246, 0.9)",
-            },
-            "&:disabled": {
-              backgroundColor: "rgba(100, 100, 100, 0.5)",
-              color: "rgba(255, 255, 255, 0.5)",
-            },
-            "& .MuiSvgIcon-root": {
-              fontSize: 14,
-            },
-          }}
-        >
-          <ZoomInIcon />
-        </IconButton>
-      </Tooltip>
-
-      {/* Zoom Out Button */}
-      <Tooltip title="Zoom Out" placement="top">
-        <IconButton
-          size="small"
-          onClick={handleZoomOut}
-          disabled={scale <= 0.5}
-          sx={{
-            position: "absolute",
-            top: -8,
-            left: 48,
-            width: 24,
-            height: 24,
-            backgroundColor: "rgba(59, 130, 246, 0.8)",
-            color: "white",
-            zIndex: 11,
-            border: "2px solid rgba(255, 255, 255, 0.3)",
-            "&:hover": {
-              backgroundColor: "rgba(59, 130, 246, 0.9)",
-            },
-            "&:disabled": {
-              backgroundColor: "rgba(100, 100, 100, 0.5)",
-              color: "rgba(255, 255, 255, 0.5)",
-            },
-            "& .MuiSvgIcon-root": {
-              fontSize: 14,
-            },
-          }}
-        >
-          <ZoomOutIcon />
-        </IconButton>
-      </Tooltip>
-
-      {/* Scale Indicator */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: -8,
-          left: 76,
-          height: 24,
-          px: 1,
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          color: "white",
-          zIndex: 11,
-          border: "2px solid rgba(255, 255, 255, 0.3)",
-          borderRadius: "12px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "10px",
-          fontWeight: "bold",
-          minWidth: "36px",
+        className="absolute -top-2 -left-2 w-6 h-6 text-white z-[11] border-2 border-white/30 rounded-full hover:opacity-90 transition-opacity"
+        style={{
+          backgroundColor: isLocked
+            ? "rgba(239, 68, 68, 0.8)"
+            : "rgba(34, 197, 94, 0.8)",
         }}
       >
+        {isLocked ? <Lock size={14} /> : <LockOpen size={14} />}
+      </button>
+
+      {/* Zoom In Button */}
+      <button
+        onClick={handleZoomIn}
+        disabled={scale >= 2}
+        title="Zoom In"
+        className="absolute -top-2 left-5 w-6 h-6 bg-blue-500/80 text-white z-[11] border-2 border-white/30 rounded-full hover:bg-blue-500/90 disabled:bg-gray-500/50 disabled:text-white/50 transition-colors"
+      >
+        <Plus size={14} />
+      </button>
+
+      {/* Zoom Out Button */}
+      <button
+        onClick={handleZoomOut}
+        disabled={scale <= 0.5}
+        title="Zoom Out"
+        className="absolute -top-2 left-12 w-6 h-6 bg-blue-500/80 text-white z-[11] border-2 border-white/30 rounded-full hover:bg-blue-500/90 disabled:bg-gray-500/50 disabled:text-white/50 transition-colors"
+      >
+        <Minus size={14} />
+      </button>
+
+      {/* Scale Indicator */}
+      <div className="absolute -top-2 left-[76px] h-6 px-2 bg-black/70 text-white z-[11] border-2 border-white/30 rounded-xl flex items-center justify-center text-[10px] font-bold min-w-[36px]">
         {Math.round(scale * 100)}%
-      </Box>
+      </div>
 
       {/* Move to Bottom Button */}
-      <Tooltip title="Move to Bottom Center" placement="top">
-        <IconButton
-          size="small"
-          onClick={moveToBottom}
-          sx={{
-            position: "absolute",
-            top: -8,
-            left: 116,
-            width: 24,
-            height: 24,
-            backgroundColor: "rgba(168, 85, 247, 0.8)",
-            color: "white",
-            zIndex: 11,
-            border: "2px solid rgba(255, 255, 255, 0.3)",
-            "&:hover": {
-              backgroundColor: "rgba(168, 85, 247, 0.9)",
-              transform: "scale(1.1)",
-            },
-            transition: "all 0.2s ease",
-            "& .MuiSvgIcon-root": {
-              fontSize: 14,
-            },
-          }}
-        >
-          <MoveBottomIcon />
-        </IconButton>
-      </Tooltip>
+      <button
+        onClick={moveToBottom}
+        title="Move to Bottom Center"
+        className="absolute -top-2 left-[116px] w-6 h-6 bg-purple-500/80 text-white z-[11] border-2 border-white/30 rounded-full hover:bg-purple-500/90 hover:scale-110 transition-all duration-200"
+      >
+        <MoveDown size={14} />
+      </button>
 
       {/* Virtual D-Pad */}
       <VirtualDPad
@@ -407,18 +277,9 @@ const DraggableVirtualDPad: React.FC<DraggableVirtualDPadProps> = ({
 
       {/* Dragging overlay indicator */}
       {isDragging && (
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: "rgba(59, 130, 246, 0.2)",
-            borderRadius: "50%",
-            pointerEvents: "none",
-            border: "2px dashed rgba(59, 130, 246, 0.5)",
-          }}
-        />
+        <div className="absolute inset-0 bg-blue-500/20 rounded-full pointer-events-none border-2 border-dashed border-blue-500/50" />
       )}
-    </Box>
+    </div>
   );
 };
 

@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Slider,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { X, Loader2 } from "lucide-react";
 import Cropper from "react-easy-crop";
 
 interface Point {
@@ -59,7 +49,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
-  rotation = 0,
+  rotation = 0
 ): Promise<Blob> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
@@ -97,7 +87,7 @@ async function getCroppedImg(
     offsetX,
     offsetY,
     pixelCrop.width * scale,
-    pixelCrop.height * scale,
+    pixelCrop.height * scale
   );
 
   // Convert canvas to blob
@@ -129,7 +119,7 @@ export default function WhatsAppImageEditor({
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
-    [],
+    []
   );
 
   const handleSave = async () => {
@@ -151,144 +141,133 @@ export default function WhatsAppImageEditor({
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        WhatsApp Image Editor (800x800)
-        <Typography variant="caption" display="block" color="text.secondary">
-          Drag image to position • Scroll or use slider to zoom
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <Box sx={{ position: "relative", width: "100%", height: 500 }}>
-          <Cropper
-            image={imageUrl}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            onCropChange={setCrop}
-            onCropComplete={onCropComplete}
-            onZoomChange={setZoom}
-            minZoom={0.1}
-            maxZoom={3}
-            zoomSpeed={0.5}
-            restrictPosition={false}
-            style={{
-              containerStyle: {
-                backgroundColor: "#f0f0f0",
-                cursor: "move",
-              },
-              cropAreaStyle: {
-                border: "2px solid #25D366",
-                boxShadow: "0 0 20px rgba(37, 211, 102, 0.3)",
-              },
-              mediaStyle: {
-                cursor: "grab",
-              },
-            }}
-          />
-          {/* 800x800 Frame Overlay */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 400,
-              height: 400,
-              border: "3px dashed #25D366",
-              pointerEvents: "none",
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              pt: 2,
-              boxShadow: "inset 0 0 30px rgba(37, 211, 102, 0.1)",
-            }}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Dialog */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                WhatsApp Image Editor (800x800)
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Drag image to position • Scroll or use slider to zoom
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-6">
+          <div className="relative w-full h-[500px] bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
+            <Cropper
+              image={imageUrl}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              minZoom={0.1}
+              maxZoom={3}
+              zoomSpeed={0.5}
+              restrictPosition={false}
+              style={{
+                containerStyle: {
+                  backgroundColor: "#f0f0f0",
+                  cursor: "move",
+                },
+                cropAreaStyle: {
+                  border: "2px solid #25D366",
+                  boxShadow: "0 0 20px rgba(37, 211, 102, 0.3)",
+                },
+                mediaStyle: {
+                  cursor: "grab",
+                },
+              }}
+            />
+            {/* 800x800 Frame Overlay */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border-3 border-dashed border-[#25D366] pointer-events-none flex items-start justify-center pt-4 shadow-[inset_0_0_30px_rgba(37,211,102,0.1)]">
+              <span className="bg-[#25D366] text-white px-3 py-1 rounded text-xs font-semibold">
+                📱 800x800 WhatsApp Frame
+              </span>
+            </div>
+
+            {/* Drag Instruction Overlay */}
+            {zoom === (initialZoom || 1) && crop.x === 0 && crop.y === 0 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg pointer-events-none flex items-center gap-2">
+                <span className="text-sm">👆 Drag image to reposition</span>
+              </div>
+            )}
+          </div>
+
+          {/* Zoom Control */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm text-gray-700 dark:text-gray-300">
+                Zoom: {zoom.toFixed(1)}x (0.1x - 3x)
+              </label>
+            </div>
+            <input
+              type="range"
+              min="0.1"
+              max="3"
+              step="0.05"
+              value={zoom}
+              onChange={(e) => setZoom(parseFloat(e.target.value))}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#25D366]"
+              style={{
+                background: `linear-gradient(to right, #25D366 0%, #25D366 ${
+                  ((zoom - 0.1) / 2.9) * 100
+                }%, rgb(229 231 235) ${
+                  ((zoom - 0.1) / 2.9) * 100
+                }%, rgb(229 231 235) 100%)`,
+              }}
+            />
+          </div>
+
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+            <strong>Drag</strong> the image to adjust position.{" "}
+            <strong>Zoom</strong> in/out to fit your content. Settings are saved
+            without uploading.
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <Typography
-              variant="caption"
-              sx={{
-                bgcolor: "rgba(37, 211, 102, 0.95)",
-                color: "white",
-                px: 2,
-                py: 0.5,
-                borderRadius: 1,
-                fontWeight: 600,
-                fontSize: "0.75rem",
-              }}
-            >
-              📱 800x800 WhatsApp Frame
-            </Typography>
-          </Box>
-
-          {/* Drag Instruction Overlay */}
-          {zoom === (initialZoom || 1) && crop.x === 0 && crop.y === 0 && (
-            <Box
-              sx={{
-                position: "absolute",
-                bottom: 16,
-                left: "50%",
-                transform: "translateX(-50%)",
-                bgcolor: "rgba(0, 0, 0, 0.7)",
-                color: "white",
-                px: 2,
-                py: 1,
-                borderRadius: 2,
-                pointerEvents: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <Typography variant="caption">
-                👆 Drag image to reposition
-              </Typography>
-            </Box>
-          )}
-        </Box>
-
-        {/* Zoom Control */}
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="caption" gutterBottom display="block">
-            Zoom: {zoom.toFixed(1)}x (0.1x - 3x)
-          </Typography>
-          <Slider
-            value={zoom}
-            min={0.1}
-            max={3}
-            step={0.05}
-            onChange={(e, zoom) => setZoom(zoom as number)}
-            sx={{
-              color: "#25D366",
-            }}
-          />
-        </Box>
-
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          <strong>Drag</strong> the image to adjust position.{" "}
-          <strong>Zoom</strong> in/out to fit your content. Settings are saved
-          without uploading.
-        </Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={saving}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          disabled={saving}
-          startIcon={saving ? <CircularProgress size={20} /> : null}
-          sx={{
-            bgcolor: "#25D366",
-            "&:hover": {
-              bgcolor: "#128C7E",
-            },
-          }}
-        >
-          {saving ? "Saving..." : "Save Crop Settings"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-2 rounded-lg bg-[#25D366] hover:bg-[#128C7E] text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          >
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {saving ? "Saving..." : "Save Crop Settings"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

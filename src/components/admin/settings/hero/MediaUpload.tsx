@@ -1,20 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-  Typography,
-  CircularProgress,
-  Alert,
-  Chip,
-} from "@mui/material";
-import {
-  CloudUpload as CloudUploadIcon,
-  PhotoCamera as PhotoCameraIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import { CloudUpload, Camera, Trash2, Loader2 } from "lucide-react";
 
 interface MediaUploadProps {
   onImageSelected: (imageUrl: string) => void;
@@ -42,7 +29,7 @@ export default function MediaUpload({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [previewType, setPreviewType] = useState<"image" | "video" | null>(
-    null,
+    null
   );
 
   // Cleanup preview URL on unmount
@@ -145,7 +132,7 @@ export default function MediaUpload({
   };
 
   const handleCameraCapture = async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -162,28 +149,26 @@ export default function MediaUpload({
   };
 
   return (
-    <Stack spacing={2}>
+    <div className="space-y-4">
       {/* Upload Buttons */}
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-        <Button
-          variant="outlined"
-          startIcon={<CloudUploadIcon />}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
           onClick={() => fileInputRef.current?.click()}
           disabled={loading}
-          fullWidth={true}
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
+          <CloudUpload className="w-5 h-5" />
           {loading ? "Uploading..." : "Upload Image/Video"}
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<PhotoCameraIcon />}
+        </button>
+        <button
           onClick={() => cameraInputRef.current?.click()}
           disabled={loading}
-          fullWidth={true}
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
+          <Camera className="w-5 h-5" />
           {loading ? "Capturing..." : "Use Camera"}
-        </Button>
-      </Stack>
+        </button>
+      </div>
 
       {/* Hidden Inputs */}
       <input
@@ -191,7 +176,7 @@ export default function MediaUpload({
         type="file"
         accept={acceptedTypes.join(",")}
         onChange={handleFileInputChange}
-        style={{ display: "none" }}
+        className="hidden"
       />
       <input
         ref={cameraInputRef}
@@ -199,49 +184,37 @@ export default function MediaUpload({
         accept="image/*,video/*"
         capture="environment"
         onChange={handleCameraCapture}
-        style={{ display: "none" }}
+        className="hidden"
       />
 
       {/* Error Message */}
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       {/* Loading Indicator */}
       {loading && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            py: 2,
-          }}
-        >
-          <CircularProgress size={40} />
-          <Typography sx={{ ml: 2 }}>Uploading...</Typography>
-        </Box>
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-600 dark:text-blue-400" />
+          <span className="ml-3 text-gray-700 dark:text-gray-300">
+            Uploading...
+          </span>
+        </div>
       )}
 
       {/* Preview (Not Saved Yet) */}
       {previewUrl && previewType && (
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }} color="primary.main">
+        <div>
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
             Preview (Not Saved Yet)
-          </Typography>
-          <Box
-            sx={{
-              position: "relative",
-              width: "100%",
-              borderRadius: 1,
-              border: "3px solid",
-              borderColor: "primary.main",
-              overflow: "hidden",
-              boxShadow: 3,
-            }}
-          >
+          </p>
+          <div className="relative w-full rounded-lg border-3 border-blue-600 dark:border-blue-400 overflow-hidden shadow-lg">
             {previewType === "image" ? (
-              <Box
-                sx={{
-                  width: "100%",
-                  height: 200,
+              <div
+                className="w-full h-50"
+                style={{
                   backgroundImage: `url(${previewUrl})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -250,133 +223,85 @@ export default function MediaUpload({
             ) : (
               <video
                 src={previewUrl}
-                style={{
-                  width: "100%",
-                  height: 200,
-                  objectFit: "cover",
-                }}
+                className="w-full h-50 object-cover"
                 controls
               />
             )}
-          </Box>
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <button
               onClick={handleSaveMedia}
               disabled={loading}
-              fullWidth
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading
                 ? "Saving..."
                 : `Save ${previewType === "image" ? "Image" : "Video"}`}
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
+            </button>
+            <button
               onClick={handleCancelPreview}
               disabled={loading}
-              fullWidth
+              className="px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
-            </Button>
-          </Stack>
-        </Box>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Current Image Preview */}
       {currentImage && !previewUrl && (
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        <div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Current Image
-          </Typography>
-          <Box
-            sx={{
-              position: "relative",
-              width: "100%",
-              height: 200,
-              backgroundImage: `url(${currentImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              borderRadius: 1,
-              border: "2px solid",
-              borderColor: "divider",
-              overflow: "hidden",
-            }}
-          >
-            <Button
-              size="small"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={handleRemoveImage}
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
-                color: "white",
-                "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.8)" },
+          </p>
+          <div className="relative w-full h-50 rounded-lg border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage: `url(${currentImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
+            />
+            <button
+              onClick={handleRemoveImage}
+              className="absolute top-2 right-2 flex items-center gap-1 px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-sm transition-colors"
             >
+              <Trash2 className="w-4 h-4" />
               Remove
-            </Button>
-          </Box>
-        </Box>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Current Video Preview */}
       {currentVideo && !previewUrl && (
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        <div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Current Video
-          </Typography>
-          <Box
-            sx={{
-              position: "relative",
-              width: "100%",
-              borderRadius: 1,
-              border: "2px solid",
-              borderColor: "divider",
-              overflow: "hidden",
-            }}
-          >
+          </p>
+          <div className="relative w-full rounded-lg border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
             <video
               src={currentVideo}
-              style={{
-                width: "100%",
-                height: 200,
-                objectFit: "cover",
-              }}
+              className="w-full h-50 object-cover"
               controls
             />
-            <Button
-              size="small"
-              color="error"
-              startIcon={<DeleteIcon />}
+            <button
               onClick={handleRemoveVideo}
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
-                color: "white",
-                "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.8)" },
-              }}
+              className="absolute top-2 right-2 flex items-center gap-1 px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-sm transition-colors"
             >
+              <Trash2 className="w-4 h-4" />
               Remove
-            </Button>
-          </Box>
-        </Box>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* File Size Info */}
-      <Chip
-        label={`Max file size: ${maxSize}MB | Accepted: ${acceptedTypes.join(
-          ", ",
-        )}`}
-        size="small"
-        variant="outlined"
-      />
-    </Stack>
+      <div className="inline-block px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
+        Max file size: {maxSize}MB | Accepted: {acceptedTypes.join(", ")}
+      </div>
+    </div>
   );
 }

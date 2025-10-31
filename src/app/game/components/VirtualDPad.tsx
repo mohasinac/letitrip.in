@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
 
 interface VirtualDPadProps {
   onDirectionChange: (direction: { x: number; y: number }) => void;
@@ -14,7 +13,6 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
   onActionButton,
   className = "",
 }) => {
-  const theme = useTheme();
   const [stickPosition, setStickPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const joystickRef = useRef<HTMLDivElement>(null);
@@ -133,8 +131,9 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
           className="absolute inset-0 rounded-full border-4"
           style={{
             backgroundColor: "rgba(0, 0, 0, 0.4)",
-            borderColor: `${theme.palette.primary.main}80`,
-            boxShadow: `0 0 20px ${theme.palette.primary.main}40, inset 0 0 15px rgba(0,0,0,0.5)`,
+            borderColor: "rgba(59, 130, 246, 0.5)",
+            boxShadow:
+              "0 0 20px rgba(59, 130, 246, 0.25), inset 0 0 15px rgba(0,0,0,0.5)",
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
@@ -165,13 +164,11 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
             style={{
               width: "36px",
               height: "36px",
-              backgroundColor: isDragging
-                ? theme.palette.primary.main
-                : theme.palette.secondary.main,
+              backgroundColor: isDragging ? "#3B82F6" : "#8B5CF6",
               transform: `translate(${stickPosition.x}px, ${stickPosition.y}px)`,
               border: "3px solid rgba(255, 255, 255, 0.6)",
               boxShadow: isDragging
-                ? `0 0 20px ${theme.palette.primary.main}, 0 4px 8px rgba(0,0,0,0.4)`
+                ? "0 0 20px #3B82F6, 0 4px 8px rgba(0,0,0,0.4)"
                 : "0 2px 6px rgba(0,0,0,0.3)",
               transition: isDragging ? "none" : "all 0.2s ease-out",
             }}
@@ -193,7 +190,7 @@ const VirtualDPad: React.FC<VirtualDPadProps> = ({
               style={{
                 width: "70px",
                 height: "70px",
-                borderColor: `${theme.palette.primary.main}60`,
+                borderColor: "rgba(59, 130, 246, 0.4)",
                 pointerEvents: "none",
               }}
             />
