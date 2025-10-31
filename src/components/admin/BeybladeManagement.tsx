@@ -2,28 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  IconButton,
-  LinearProgress,
-  Button,
-  TextField,
-  MenuItem,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import {
   Edit as EditIcon,
-  CameraAlt as CameraIcon,
-  Refresh as RefreshIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
+  Camera,
+  RefreshCw,
+  Plus,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
 import { BeybladeStats } from "@/types/beybladeStats";
 import BeybladeImageUploader from "./BeybladeImageUploader";
 
@@ -95,205 +80,123 @@ export default function BeybladeManagement() {
     const matchesType = filterType === "all" || bey.type === filterType;
     const matchesSearch =
       searchQuery === "" ||
-      bey.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (bey.name && bey.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
       bey.id.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: "center", py: 8 }}>
-        <Typography variant="h6" gutterBottom>
+      <div className="text-center py-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Loading Beyblades...
-        </Typography>
-        <LinearProgress sx={{ maxWidth: 400, mx: "auto", mt: 2 }} />
-      </Box>
+        </h2>
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ maxWidth: 600, mx: "auto" }}>
-        {error}
-      </Alert>
+      <div className="max-w-2xl mx-auto p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-red-800">{error}</p>
+      </div>
     );
   }
 
   return (
-    <Box>
+    <div>
       {/* Filters and Actions */}
-      <Box
-        sx={{
-          mb: 4,
-          display: "flex",
-          gap: 2,
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <TextField
-          label="Search Beyblades"
-          variant="outlined"
-          size="small"
+      <div className="mb-6 flex gap-3 flex-wrap items-center">
+        <input
+          type="text"
+          placeholder="Search Beyblades"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ minWidth: 250 }}
+          className="min-w-[250px] px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <TextField
-          select
-          label="Filter by Type"
+        <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          size="small"
-          sx={{ minWidth: 150 }}
+          className="min-w-[150px] px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <MenuItem value="all">All Types</MenuItem>
-          <MenuItem value="attack">Attack</MenuItem>
-          <MenuItem value="defense">Defense</MenuItem>
-          <MenuItem value="stamina">Stamina</MenuItem>
-          <MenuItem value="balanced">Balanced</MenuItem>
-        </TextField>
+          <option value="all">All Types</option>
+          <option value="attack">Attack</option>
+          <option value="defense">Defense</option>
+          <option value="stamina">Stamina</option>
+          <option value="balanced">Balanced</option>
+        </select>
 
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
+        <button
           onClick={fetchBeyblades}
-          size="small"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
         >
+          <RefreshCw className="w-4 h-4" />
           Refresh
-        </Button>
+        </button>
 
-        <Box sx={{ flexGrow: 1 }} />
+        <div className="flex-1" />
 
-        <Typography variant="body2" color="text.secondary">
+        <p className="text-sm text-gray-600">
           {filteredBeyblades.length} Beyblade
           {filteredBeyblades.length !== 1 ? "s" : ""}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {/* Beyblade Grid */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
-          },
-          gap: 3,
-        }}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredBeyblades.map((beyblade) => (
-          <Card
+          <div
             key={beyblade.id}
-            sx={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              position: "relative",
-              borderRadius: 2,
-              overflow: "hidden",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                transform: "translateY(-4px)",
-                boxShadow: 6,
-              },
-            }}
+            className="h-full flex flex-col relative rounded-xl overflow-hidden bg-white border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
             {/* Type Banner */}
-            <Box
-              sx={{
-                height: 8,
-                background: getTypeGradient(beyblade.type),
-              }}
+            <div
+              className="h-2"
+              style={{ background: getTypeGradient(beyblade.type) }}
             />
 
-            <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+            <div className="flex-1 p-5">
               {/* Header with Image */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 2,
-                  mb: 2,
-                }}
-              >
+              <div className="flex items-start gap-3 mb-4">
                 {/* Beyblade Image or Circle */}
-                <Box
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: "50%",
+                <div
+                  className="relative w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0 border-4 border-white shadow-md"
+                  style={{
                     background: beyblade.imageUrl
                       ? `url(${beyblade.imageUrl}) center/cover`
                       : getTypeGradient(beyblade.type),
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "white",
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    flexShrink: 0,
-                    border: "3px solid",
-                    borderColor: "background.paper",
-                    boxShadow: 2,
-                    position: "relative",
                   }}
                 >
-                  {!beyblade.imageUrl && beyblade.name.charAt(0)}
+                  {!beyblade.imageUrl && beyblade.name?.charAt(0)}
 
                   {/* Upload Icon Overlay */}
-                  <IconButton
-                    size="small"
+                  <button
                     onClick={() => handleImageUpload(beyblade)}
-                    sx={{
-                      position: "absolute",
-                      bottom: -5,
-                      right: -5,
-                      bgcolor: "primary.main",
-                      color: "white",
-                      width: 28,
-                      height: 28,
-                      "&:hover": {
-                        bgcolor: "primary.dark",
-                      },
-                    }}
+                    className="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700"
                   >
-                    <CameraIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                </Box>
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
 
                 {/* Name and Type */}
-                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    sx={{
-                      mb: 0.5,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-lg mb-1 truncate">
                     {beyblade.name}
-                  </Typography>
-                  <Chip
-                    label={beyblade.type.toUpperCase()}
-                    size="small"
-                    sx={{
-                      bgcolor: getTypeColor(beyblade.type),
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: "0.7rem",
-                    }}
-                  />
-                </Box>
-              </Box>
+                  </h3>
+                  <span
+                    className="inline-block px-2 py-1 text-xs font-bold text-white rounded"
+                    style={{ backgroundColor: getTypeColor(beyblade.type) }}
+                  >
+                    {beyblade.type.toUpperCase()}
+                  </span>
+                </div>
+              </div>
 
               {/* Stats */}
-              <Box sx={{ mb: 2 }}>
+              <div className="mb-4">
                 <StatBar
                   label="Attack"
                   value={beyblade.typeDistribution.attack}
@@ -312,125 +215,91 @@ export default function BeybladeManagement() {
                   max={150}
                   color="#ffa502"
                 />
-              </Box>
+              </div>
 
               {/* Physical Stats */}
-              <Box
-                sx={{ display: "flex", gap: 2, mb: 2, fontSize: "0.875rem" }}
-              >
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    display="block"
-                  >
-                    Mass
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {beyblade.mass}g
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    display="block"
-                  >
-                    Radius
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {beyblade.radius}px
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    display="block"
-                  >
-                    Spin Steal
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
+              <div className="flex gap-4 mb-4 text-sm">
+                <div>
+                  <p className="text-xs text-gray-500">Mass</p>
+                  <p className="font-bold text-gray-900">{beyblade.mass}g</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Radius</p>
+                  <p className="font-bold text-gray-900">{beyblade.radius}px</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Spin Steal</p>
+                  <p className="font-bold text-gray-900">
                     {beyblade.spinStealFactor}x
-                  </Typography>
-                </Box>
-              </Box>
+                  </p>
+                </div>
+              </div>
 
               {/* Special Move */}
-              {beyblade.specialMove && (
-                <Box
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 1,
-                    bgcolor: "action.hover",
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    display="block"
-                  >
-                    Special Move
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold" gutterBottom>
-                    {beyblade.specialMove.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Cost: {beyblade.specialMove.powerCost} ⚡ | Duration:{" "}
-                    {beyblade.specialMove.flags.duration}s
-                  </Typography>
-                </Box>
+              {(beyblade as any).specialMove && (
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">Special Move</p>
+                  <p className="font-bold text-sm text-gray-900 mb-1">
+                    {(beyblade as any).specialMove.name}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Cost: {(beyblade as any).specialMove.powerCost} ⚡ | Duration:{" "}
+                    {(beyblade as any).specialMove.flags.duration}s
+                  </p>
+                </div>
               )}
 
               {/* Contact Points Count */}
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mt: 1, display: "block" }}
-              >
+              <p className="text-xs text-gray-500 mt-2">
                 {beyblade.pointsOfContact.length} Contact Points
-              </Typography>
-            </CardContent>
-          </Card>
+              </p>
+            </div>
+          </div>
         ))}
-      </Box>
+      </div>
 
       {/* No Results */}
       {filteredBeyblades.length === 0 && (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography variant="h6" color="text.secondary">
+        <div className="text-center py-16">
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">
             No Beyblades found
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          </h3>
+          <p className="text-sm text-gray-500">
             Try adjusting your filters or search query
-          </Typography>
-        </Box>
+          </p>
+        </div>
       )}
 
       {/* Image Upload Dialog */}
-      <Dialog
-        open={imageUploadOpen}
-        onClose={() => setImageUploadOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Upload Image for {selectedBeyblade?.name}</DialogTitle>
-        <DialogContent>
-          {selectedBeyblade && (
-            <BeybladeImageUploader
-              beybladeId={selectedBeyblade.id}
-              currentImageUrl={selectedBeyblade.imageUrl}
-              onImageUploaded={handleImageUploaded}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setImageUploadOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {imageUploadOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Upload Image for {selectedBeyblade?.name}
+              </h2>
+            </div>
+            <div className="p-6">
+              {selectedBeyblade && (
+                <BeybladeImageUploader
+                  beybladeId={selectedBeyblade.id}
+                  currentImageUrl={selectedBeyblade.imageUrl}
+                  onImageUploaded={handleImageUploaded}
+                />
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setImageUploadOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -449,28 +318,22 @@ function StatBar({
   const percentage = (value / max) * 100;
 
   return (
-    <Box sx={{ mb: 1 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-        <Typography variant="caption" color="text.secondary">
-          {label}
-        </Typography>
-        <Typography variant="caption" fontWeight="bold">
+    <div className="mb-2">
+      <div className="flex justify-between mb-1">
+        <span className="text-xs text-gray-500">{label}</span>
+        <span className="text-xs font-bold text-gray-900">
           {value}/{max}
-        </Typography>
-      </Box>
-      <LinearProgress
-        variant="determinate"
-        value={percentage}
-        sx={{
-          height: 6,
-          borderRadius: 3,
-          bgcolor: "action.hover",
-          "& .MuiLinearProgress-bar": {
-            bgcolor: color,
-            borderRadius: 3,
-          },
-        }}
-      />
-    </Box>
+        </span>
+      </div>
+      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: color,
+          }}
+        />
+      </div>
+    </div>
   );
 }

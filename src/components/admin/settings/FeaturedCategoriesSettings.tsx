@@ -2,34 +2,17 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Alert,
-  CircularProgress,
-  Switch,
-  FormControlLabel,
-  Chip,
-  Stack,
-  IconButton,
-  Tooltip,
-  Paper,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
-import {
-  DragIndicator as DragIcon,
-  Save as SaveIcon,
-  Refresh as RefreshIcon,
-  TrendingUp as TrendingIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
+  TrendingUp,
+  Save,
+  RefreshCw,
+  Eye,
+  EyeOff,
   Image as ImageIcon,
-  Search as SearchIcon,
-  Clear as ClearIcon,
-} from "@mui/icons-material";
+  ChevronUp,
+  ChevronDown,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types";
@@ -48,7 +31,6 @@ export default function FeaturedCategoriesSettings() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all categories
   const fetchCategories = useCallback(async () => {
@@ -184,100 +166,91 @@ export default function FeaturedCategoriesSettings() {
   const handleReset = () => {
     fetchCategories();
     setHasChanges(false);
-    setSearchTerm("");
   };
 
   const featuredCategories = categories.filter((cat) => cat.featured);
   const nonFeaturedCategories = categories.filter((cat) => !cat.featured);
 
-  // Filter categories based on search term
-  const filteredNonFeaturedCategories = nonFeaturedCategories.filter((cat) => {
-    if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
-    return (
-      cat.name.toLowerCase().includes(search) ||
-      cat.slug.toLowerCase().includes(search) ||
-      cat.description?.toLowerCase().includes(search)
-    );
-  });
-
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center py-8">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
     );
   }
 
   return (
-    <Box>
+    <div className="space-y-6">
       {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-              <TrendingIcon color="primary" />
-              <Typography variant="h6" fontWeight={600}>
-                Featured Categories ({featuredCategories.length}/6)
-              </Typography>
-            </Box>
-            {featuredCategories.length > 6 && (
-              <Chip
-                label={`Exceeds limit - ${featuredCategories.length - 6} too many`}
-                color="error"
-                size="small"
-              />
-            )}
-          </Box>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="outlined"
-            startIcon={<RefreshIcon />}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900">
+            Featured Categories ({featuredCategories.length}/6)
+          </h2>
+          {featuredCategories.length > 6 && (
+            <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
+              Exceeds limit - {featuredCategories.length - 6} too many
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <button
             onClick={handleReset}
             disabled={!hasChanges || loading}
-            sx={{ textTransform: "none" }}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <RefreshCw className="w-4 h-4" />
             Reset
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+          </button>
+          <button
             onClick={handleSave}
             disabled={!hasChanges || saving || loading}
-            sx={{ textTransform: "none", fontWeight: 600 }}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            {saving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
             Save Changes
-          </Button>
-        </Stack>
-      </Box>
+          </button>
+        </div>
+      </div>
 
       {/* Alerts */}
       {error && (
-        <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+          <button
+            onClick={() => setError(null)}
+            className="text-red-600 hover:text-red-800"
+          >
+            ×
+          </button>
+        </div>
       )}
       {success && (
-        <Alert
-          severity="success"
-          onClose={() => setSuccess(null)}
-          sx={{ mb: 2 }}
-        >
-          {success}
-        </Alert>
+        <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex-1">
+            <p className="text-sm text-green-800">{success}</p>
+          </div>
+          <button
+            onClick={() => setSuccess(null)}
+            className="text-green-600 hover:text-green-800"
+          >
+            ×
+          </button>
+        </div>
       )}
 
       {/* Info */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2" fontWeight={600} gutterBottom>
-          💡 Tips:
-        </Typography>
-        <Typography variant="body2" component="ul" sx={{ pl: 2, mb: 0 }}>
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm font-semibold text-blue-900 mb-2">💡 Tips:</p>
+        <ul className="text-sm text-blue-800 space-y-1 pl-5 list-disc">
           <li>
             <strong>Maximum 6 categories</strong> can be featured on the
             homepage
@@ -288,65 +261,50 @@ export default function FeaturedCategoriesSettings() {
           <li>Featured categories must be active to appear on the homepage</li>
           <li>Categories with no in-stock products will appear grey</li>
           <li>Attempting to add a 7th category will show an error</li>
-        </Typography>
-      </Alert>
+        </ul>
+      </div>
 
       {/* Warning for exceeding limit */}
       {featuredCategories.length > 6 && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          <Typography variant="body2" fontWeight={600}>
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm font-semibold text-red-900 mb-1">
             ⚠️ Too many featured categories!
-          </Typography>
-          <Typography variant="body2">
+          </p>
+          <p className="text-sm text-red-800">
             You have selected {featuredCategories.length} categories, but only 6
             can be featured. Please unfeature {featuredCategories.length - 6}{" "}
             {featuredCategories.length - 6 === 1 ? "category" : "categories"}{" "}
             before saving.
-          </Typography>
-        </Alert>
+          </p>
+        </div>
       )}
 
       {/* Featured Categories Section */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 3,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <TrendingIcon color="primary" />
-              <Typography variant="h6" fontWeight={600}>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
                 Featured Categories ({featuredCategories.length}/6)
-              </Typography>
-            </Box>
+              </h3>
+            </div>
             {featuredCategories.length > 6 && (
-              <Chip
-                label="Exceeds limit - only first 6 will show"
-                color="warning"
-                size="small"
-              />
+              <span className="px-2 py-1 text-xs font-medium text-amber-700 bg-amber-100 rounded-full">
+                Exceeds limit - only first 6 will show
+              </span>
             )}
-          </Box>
+          </div>
 
           {featuredCategories.length === 0 ? (
-            <Box
-              sx={{
-                textAlign: "center",
-                py: 4,
-                color: "text.secondary",
-              }}
-            >
-              <Typography>
+            <div className="text-center py-8 text-gray-500">
+              <p>
                 No featured categories selected. Toggle the "Featured" switch
                 below to add categories.
-              </Typography>
-            </Box>
+              </p>
+            </div>
           ) : (
-            <Stack spacing={2}>
+            <div className="space-y-3">
               {featuredCategories.map((category, index) => (
                 <CategoryItem
                   key={category.id}
@@ -361,32 +319,26 @@ export default function FeaturedCategoriesSettings() {
                   showWarning={index >= 6}
                 />
               ))}
-            </Stack>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Available Categories Section */}
-      <Card>
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-            <Typography variant="h6" fontWeight={600}>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">
               Available Categories ({nonFeaturedCategories.length})
-            </Typography>
-          </Box>
+            </h3>
+          </div>
 
           {nonFeaturedCategories.length === 0 ? (
-            <Box
-              sx={{
-                textAlign: "center",
-                py: 4,
-                color: "text.secondary",
-              }}
-            >
-              <Typography>All categories are featured!</Typography>
-            </Box>
+            <div className="text-center py-8 text-gray-500">
+              <p>All categories are featured!</p>
+            </div>
           ) : (
-            <Stack spacing={2}>
+            <div className="space-y-3">
               {nonFeaturedCategories.map((category) => (
                 <CategoryItem
                   key={category.id}
@@ -400,11 +352,11 @@ export default function FeaturedCategoriesSettings() {
                   isFeatured={false}
                 />
               ))}
-            </Stack>
+            </div>
           )}
-        </CardContent>
-      </Card>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -432,180 +384,110 @@ function CategoryItem({
   showWarning,
 }: CategoryItemProps) {
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 2,
-        border: "1px solid",
-        borderColor: showWarning ? "warning.main" : "divider",
-        backgroundColor: showWarning
-          ? (theme) => theme.palette.warning.light + "10"
-          : "background.paper",
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-        "&:hover": {
-          backgroundColor: "action.hover",
-        },
-      }}
+    <div
+      className={`p-4 border rounded-lg flex items-center gap-3 hover:bg-gray-50 ${
+        showWarning
+          ? "border-amber-300 bg-amber-50/50"
+          : "border-gray-200 bg-white"
+      }`}
     >
       {/* Drag Handle & Order Controls */}
       {isFeatured && (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-          <Tooltip title="Move up">
-            <span>
-              <IconButton
-                size="small"
-                onClick={() => onMoveUp(index)}
-                disabled={index === 0}
-                sx={{ p: 0.5 }}
-              >
-                <DragIcon
-                  sx={{
-                    transform: "rotate(-90deg)",
-                    fontSize: 20,
-                  }}
-                />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="Move down">
-            <span>
-              <IconButton
-                size="small"
-                onClick={() => onMoveDown(index)}
-                disabled={index === totalCount - 1}
-                sx={{ p: 0.5 }}
-              >
-                <DragIcon
-                  sx={{
-                    transform: "rotate(90deg)",
-                    fontSize: 20,
-                  }}
-                />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </Box>
+        <div className="flex flex-col gap-1">
+          <button
+            onClick={() => onMoveUp(index)}
+            disabled={index === 0}
+            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Move up"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => onMoveDown(index)}
+            disabled={index === totalCount - 1}
+            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Move down"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
       )}
 
       {/* Category Image */}
-      <Box
-        sx={{
-          width: 60,
-          height: 60,
-          borderRadius: 1,
-          overflow: "hidden",
-          backgroundColor: "action.hover",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
+      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
         {category.image ? (
-          <Box
-            component="img"
+          <img
             src={category.image}
             alt={category.name}
-            sx={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
+            className="w-full h-full object-cover"
           />
         ) : (
-          <ImageIcon sx={{ fontSize: 30, color: "text.secondary" }} />
+          <ImageIcon className="w-8 h-8 text-gray-400" />
         )}
-      </Box>
+      </div>
 
       {/* Category Info */}
-      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-          <Typography variant="subtitle1" fontWeight={600} noWrap>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h4 className="font-semibold text-gray-900 truncate">
             {category.name}
-          </Typography>
+          </h4>
           {showWarning && (
-            <Chip
-              label="Won't show"
-              size="small"
-              color="warning"
-              sx={{ height: 20 }}
-            />
+            <span className="px-2 py-0.5 text-xs font-medium text-amber-700 bg-amber-100 rounded whitespace-nowrap">
+              Won't show
+            </span>
           )}
-        </Box>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{
-            display: "block",
-            mb: 0.5,
-            fontFamily: "monospace",
-          }}
-        >
-          {category.slug}
-        </Typography>
-        <Stack direction="row" spacing={1}>
-          <Chip
-            label={`${category.productCount || 0} products`}
-            size="small"
-            variant="outlined"
-            sx={{ height: 20, fontSize: "0.7rem" }}
-          />
+        </div>
+        <p className="text-xs text-gray-500 font-mono mb-1">{category.slug}</p>
+        <div className="flex gap-2">
+          <span className="px-2 py-0.5 text-xs border border-gray-300 rounded-full text-gray-600">
+            {category.productCount || 0} products
+          </span>
           {category.inStockCount !== undefined && (
-            <Chip
-              label={`${category.inStockCount} in stock`}
-              size="small"
-              color={category.inStockCount > 0 ? "success" : "default"}
-              variant="outlined"
-              sx={{ height: 20, fontSize: "0.7rem" }}
-            />
+            <span
+              className={`px-2 py-0.5 text-xs border rounded-full ${
+                category.inStockCount > 0
+                  ? "border-green-300 text-green-700 bg-green-50"
+                  : "border-gray-300 text-gray-600"
+              }`}
+            >
+              {category.inStockCount} in stock
+            </span>
           )}
-        </Stack>
-      </Box>
+        </div>
+      </div>
 
       {/* Controls */}
-      <Stack direction="row" spacing={1} alignItems="center">
-        <FormControlLabel
-          control={
-            <Switch
-              checked={category.isActive}
-              onChange={() => onToggleActive(category.id)}
-              size="small"
-            />
-          }
-          label={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {category.isActive ? (
-                <VisibilityIcon sx={{ fontSize: 18 }} />
-              ) : (
-                <VisibilityOffIcon sx={{ fontSize: 18 }} />
-              )}
-              <Typography variant="caption">Active</Typography>
-            </Box>
-          }
-          labelPlacement="start"
-          sx={{ m: 0 }}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={category.featured}
-              onChange={() => onToggleFeatured(category.id)}
-              size="small"
-              color="primary"
-            />
-          }
-          label={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <TrendingIcon sx={{ fontSize: 18 }} />
-              <Typography variant="caption">Featured</Typography>
-            </Box>
-          }
-          labelPlacement="start"
-          sx={{ m: 0 }}
-        />
-      </Stack>
-    </Paper>
+      <div className="flex gap-4 items-center">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <span className="flex items-center gap-1 text-xs text-gray-600">
+            {category.isActive ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4" />
+            )}
+            Active
+          </span>
+          <input
+            type="checkbox"
+            checked={category.isActive}
+            onChange={() => onToggleActive(category.id)}
+            className="w-10 h-5 appearance-none bg-gray-300 rounded-full relative cursor-pointer transition-colors checked:bg-blue-600 before:content-[''] before:absolute before:w-4 before:h-4 before:rounded-full before:bg-white before:top-0.5 before:left-0.5 before:transition-transform checked:before:translate-x-5"
+          />
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <span className="flex items-center gap-1 text-xs text-gray-600">
+            <TrendingUp className="w-4 h-4" />
+            Featured
+          </span>
+          <input
+            type="checkbox"
+            checked={category.featured}
+            onChange={() => onToggleFeatured(category.id)}
+            className="w-10 h-5 appearance-none bg-gray-300 rounded-full relative cursor-pointer transition-colors checked:bg-blue-600 before:content-[''] before:absolute before:w-4 before:h-4 before:rounded-full before:bg-white before:top-0.5 before:left-0.5 before:transition-transform checked:before:translate-x-5"
+          />
+        </label>
+      </div>
+    </div>
   );
 }
