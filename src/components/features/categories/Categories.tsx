@@ -50,16 +50,18 @@ export default function Categories({
       setLoading(true);
       setAlert({ show: false, message: "", type: "info" });
       const data = await apiClient.get<Category[]>(
-        "/admin/categories?format=list"
+        "/api/admin/categories?format=list"
       );
-      setCategories(data);
+      // Ensure we always have an array
+      setCategories(Array.isArray(data) ? data : []);
     } catch (err: any) {
+      console.error("Failed to fetch categories:", err);
+      setCategories([]); // Set to empty array on error
       setAlert({
         show: true,
         message: err.response?.data?.error || "Failed to fetch categories",
         type: "error",
       });
-      console.error(err);
     } finally {
       setLoading(false);
     }

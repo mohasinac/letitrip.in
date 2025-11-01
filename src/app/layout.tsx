@@ -9,6 +9,11 @@ import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
 import { Toaster } from "react-hot-toast";
 
+// Import debug utilities in development
+if (process.env.NODE_ENV === "development") {
+  import("@/lib/debug/auth-debug");
+}
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -26,6 +31,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+  ),
   title: {
     default: "HobbiesSpot - Premium Beyblade Store",
     template: "%s | HobbiesSpot",

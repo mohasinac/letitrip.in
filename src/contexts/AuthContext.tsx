@@ -61,7 +61,7 @@ interface AuthContextType extends AuthState {
     name: string,
     email: string,
     password: string,
-    role?: "admin" | "seller" | "user",
+    role?: "admin" | "seller" | "user"
   ) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -176,7 +176,7 @@ const isValidRedirectPath = (path: string): boolean => {
 
 // Helper function to get default redirect based on user role
 const getDefaultRedirectForRole = (
-  role?: "admin" | "seller" | "user",
+  role?: "admin" | "seller" | "user"
 ): string => {
   switch (role) {
     case "admin":
@@ -256,7 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // If preferences cookies are now allowed, migrate any pending auth data
     if (settings.preferences) {
       const pendingRedirect = StorageManager.getItem(
-        "auth_redirect_after_login",
+        "auth_redirect_after_login"
       );
       if (pendingRedirect) {
         // Data is now properly stored, no need to do anything special
@@ -290,14 +290,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
       const firebaseUser = userCredential.user;
 
       // Save redirect path from URL params or last visited non-auth page
       if (typeof window !== "undefined") {
         const redirectParam = new URLSearchParams(window.location.search).get(
-          "redirect",
+          "redirect"
         );
 
         // Priority: URL param > last visited non-auth page > default
@@ -325,7 +325,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name: string,
     email: string,
     password: string,
-    role: "admin" | "seller" | "user" = "user",
+    role: "admin" | "seller" | "user" = "user"
   ) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
@@ -492,11 +492,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Helper function to retry getting user data with backoff
     const getUserDataWithRetry = async (
       firebaseUser: any,
-      maxAttempts: number = 5,
+      maxAttempts: number = 5
     ): Promise<any | null> => {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-          const userData = await apiClient.get("/auth/me", {
+          const userData = await apiClient.get("/api/auth/me", {
             timeout: 30000,
           });
 
@@ -507,7 +507,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log(
             `Attempt ${attempt}/${maxAttempts} to fetch user data failed:`,
             error.response?.status,
-            error.response?.data?.error,
+            error.response?.data?.error
           );
 
           // If it's a 401 and not the last attempt, retry with backoff
@@ -554,7 +554,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
               console.log(
                 "Firebase auth state: user authenticated",
-                userWithFirebase.role,
+                userWithFirebase.role
               );
               dispatch({ type: "SET_USER", payload: userWithFirebase });
 
@@ -572,7 +572,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 } else {
                   // Role-based redirect
                   const defaultPath = getDefaultRedirectForRole(
-                    userWithFirebase.role,
+                    userWithFirebase.role
                   );
                   if (
                     window.location.pathname === "/login" ||
@@ -591,7 +591,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // If API fails after all retries, use Firebase fallback
             console.log(
               "API error fetching user data after retries, using Firebase fallback:",
-              apiError.response?.status,
+              apiError.response?.status
             );
 
             const basicUser = {

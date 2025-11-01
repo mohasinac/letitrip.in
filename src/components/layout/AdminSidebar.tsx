@@ -13,7 +13,12 @@ import {
   ChevronRight,
   FolderTree,
   Gamepad2,
-  Dices,
+  Tag,
+  Megaphone,
+  Bell,
+  FileText,
+  TrendingUp,
+  Shield,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,6 +34,11 @@ const adminMenuItems = [
     label: "Dashboard",
     icon: LayoutDashboard,
     href: "/admin",
+  },
+  {
+    label: "Analytics",
+    icon: BarChart3,
+    href: "/admin/analytics",
   },
   {
     label: "Products",
@@ -51,9 +61,19 @@ const adminMenuItems = [
     href: "/admin/users",
   },
   {
-    label: "Analytics",
-    icon: BarChart3,
-    href: "/admin/analytics",
+    label: "Coupons",
+    icon: Tag,
+    href: "/admin/coupons",
+  },
+  {
+    label: "Sales",
+    icon: Megaphone,
+    href: "/admin/sales",
+  },
+  {
+    label: "Reviews",
+    icon: TrendingUp,
+    href: "/admin/reviews",
   },
   {
     label: "Support",
@@ -61,23 +81,14 @@ const adminMenuItems = [
     href: "/admin/support",
   },
   {
+    label: "Notifications",
+    icon: Bell,
+    href: "/admin/notifications",
+  },
+  {
     label: "Game",
     icon: Gamepad2,
     href: "/admin/game/beyblades",
-    subItems: [
-      {
-        label: "Beyblades",
-        href: "/admin/game/beyblades",
-      },
-      {
-        label: "Stadiums",
-        href: "/admin/game/stadiums",
-      },
-      {
-        label: "Stats",
-        href: "/admin/game/stats",
-      },
-    ],
   },
   {
     label: "Settings",
@@ -99,8 +110,6 @@ export default function AdminSidebar({
     onToggle?.(!isCollapsed);
   };
 
-  const sidebarWidth = isCollapsed ? "80px" : "250px";
-
   const isItemActive = (href: string) => {
     if (href === "/admin") {
       return pathname === "/admin";
@@ -112,31 +121,34 @@ export default function AdminSidebar({
 
   return (
     <aside
-      className="h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col"
-      style={{ width: sidebarWidth }}
+      className={`h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col sticky top-0 ${
+        isCollapsed ? "w-20" : "w-64"
+      }`}
+      style={{ minWidth: isCollapsed ? "5rem" : "16rem" }}
     >
       {/* Sidebar Header */}
       <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 min-h-16">
         {!isCollapsed && (
-          <h2 className="text-base font-bold text-blue-600 dark:text-blue-400">
-            Admin
+          <h2 className="text-base font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Admin Panel
           </h2>
         )}
         <button
           onClick={handleToggleCollapse}
-          className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          title={isCollapsed ? "Expand" : "Collapse"}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
+          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+            <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
           ) : (
-            <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+            <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
           )}
         </button>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 py-4">
+      <nav className="flex-1 py-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
         {adminMenuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = isItemActive(item.href);
@@ -145,12 +157,12 @@ export default function AdminSidebar({
             <React.Fragment key={item.href}>
               <Link
                 href={item.href}
-                className={`flex items-center px-4 py-3 transition-all duration-200 no-underline ${
+                className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group ${
                   isCollapsed ? "justify-center" : ""
                 } ${
                   isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
                 }`}
                 title={isCollapsed ? item.label : ""}
               >
@@ -159,7 +171,9 @@ export default function AdminSidebar({
                     isCollapsed ? "" : "min-w-10"
                   } justify-center`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon
+                    className={`h-5 w-5 ${isActive ? "animate-pulse" : ""}`}
+                  />
                 </div>
                 {!isCollapsed && (
                   <span
@@ -172,8 +186,8 @@ export default function AdminSidebar({
                 )}
               </Link>
               {/* Add dividers for visual grouping */}
-              {(index === 2 || index === 6) && (
-                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-2"></div>
+              {(index === 1 || index === 5 || index === 10) && (
+                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
               )}
             </React.Fragment>
           );
@@ -186,8 +200,28 @@ export default function AdminSidebar({
           isCollapsed ? "text-center" : ""
         }`}
       >
-        {!isCollapsed && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">v1.0.0</p>
+        {!isCollapsed ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span>Version</span>
+              <span className="font-semibold">v1.2.0</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                <div
+                  className="bg-blue-600 h-1.5 rounded-full"
+                  style={{ width: "75%" }}
+                ></div>
+              </div>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                75%
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="w-8 h-8 mx-auto rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+            <Shield className="h-4 w-4 text-white" />
+          </div>
         )}
       </div>
     </aside>

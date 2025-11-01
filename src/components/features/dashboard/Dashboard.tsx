@@ -164,29 +164,53 @@ export function Dashboard({
       setError(null);
 
       if (context === "admin") {
-        // Fetch admin stats from multiple endpoints
-        const [ordersStats, productsStats] = await Promise.all([
-          apiClient.get<any>("/api/admin/orders/stats").catch(() => ({
-            total: 0,
-            pending: 0,
-            totalRevenue: 0,
-          })),
-          apiClient.get<any>("/api/admin/products/stats").catch(() => ({
-            total: 0,
-            totalSellers: 0,
-          })),
-        ]);
+        // Fetch admin stats from multiple endpoints with better error handling
+        try {
+          const [ordersStats, productsStats] = await Promise.all([
+            apiClient.get<any>("/api/admin/orders/stats"),
+            apiClient.get<any>("/api/admin/products/stats"),
+          ]);
 
-        setStats({
-          totalOrders: ordersStats?.total || 0,
-          pendingOrders: ordersStats?.pending || 0,
-          totalRevenue: ordersStats?.totalRevenue || 0,
-          thisMonthRevenue: ordersStats?.totalRevenue || 0, // TODO: Calculate current month
-          totalProducts: productsStats?.total || 0,
-          totalSellers: productsStats?.totalSellers || 0,
-          ordersChange: "+12% from last month",
-          revenueChange: "+22% from last month",
-        });
+          setStats({
+            totalOrders: ordersStats?.total || 0,
+            pendingOrders: ordersStats?.pending || 0,
+            totalRevenue: ordersStats?.totalRevenue || 0,
+            thisMonthRevenue: ordersStats?.totalRevenue || 0, // TODO: Calculate current month
+            totalProducts: productsStats?.total || 0,
+            totalSellers: productsStats?.totalSellers || 0,
+            ordersChange: "+12% from last month",
+            revenueChange: "+22% from last month",
+          });
+        } catch (apiError: any) {
+          // Check if it's an authentication error
+          if (
+            apiError.response?.status === 401 ||
+            apiError.response?.status === 403
+          ) {
+            console.error(
+              "Authentication/Authorization error:",
+              apiError.response?.data
+            );
+            setError(
+              `Authentication Error: ${
+                apiError.response?.data?.error ||
+                "Please ensure you are logged in as an admin"
+              }`
+            );
+          } else {
+            console.error("API Error:", apiError);
+            setError("Failed to load dashboard data. Please refresh the page.");
+          }
+          // Set default stats on error
+          setStats({
+            totalOrders: 0,
+            pendingOrders: 0,
+            totalRevenue: 0,
+            thisMonthRevenue: 0,
+            totalProducts: 0,
+            totalSellers: 0,
+          });
+        }
       } else {
         // Fetch seller stats
         const [ordersResponse, productsResponse] = await Promise.all([

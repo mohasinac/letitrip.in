@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const authHeader = request.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer ")) {
+      console.error("[Support Stats] No authorization header found");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
@@ -18,13 +19,26 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.split("Bearer ")[1];
     const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
+    
+    let decodedToken;
+    try {
+      decodedToken = await auth.verifyIdToken(token);
+    } catch (verifyError: any) {
+      console.error("[Support Stats] Token verification failed:", verifyError.message);
+      return NextResponse.json(
+        { success: false, error: "Invalid token" },
+        { status: 401 }
+      );
+    }
+    
     const role = decodedToken.role || "user";
+    console.log("[Support Stats] User role:", role);
 
     // Only admins can access
     if (role !== "admin") {
+      console.error("[Support Stats] Access denied. Role:", role, "Required: admin");
       return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
+        { success: false, error: `Unauthorized: Admin access required. Your role: ${role}` },
         { status: 403 }
       );
     }

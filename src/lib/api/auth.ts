@@ -85,7 +85,7 @@ class AuthAPI {
    */
   async getCurrentUser(): Promise<User | null> {
     try {
-      const response = await apiClient.get<User>("/auth/me");
+      const response = await apiClient.get<User>("/api/auth/me");
       return response;
     } catch (error) {
       console.error("Failed to get current user:", error);

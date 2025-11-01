@@ -23,8 +23,9 @@ class ApiClient {
   private tokenPromise: Promise<string | null> | null = null;
 
   constructor(config?: ApiClientConfig) {
-    const baseURL =
-      config?.baseURL || process.env.NEXT_PUBLIC_API_URL || "/api";
+    // Don't set baseURL since routes already include /api prefix
+    // Setting baseURL causes double /api/api/ in URLs
+    const baseURL = config?.baseURL || "";
     const timeout = config?.timeout || 30000;
     this.maxRetries = config?.retries || 3;
 
@@ -268,7 +269,6 @@ class ApiClient {
     try {
       const response = await axios.get<ApiResponse<T>>(url, {
         params,
-        baseURL: this.client.defaults.baseURL,
         timeout: this.client.defaults.timeout,
         withCredentials: true,
       });
@@ -285,7 +285,6 @@ class ApiClient {
   async publicPost<T = any>(url: string, data?: any): Promise<T> {
     try {
       const response = await axios.post<ApiResponse<T>>(url, data, {
-        baseURL: this.client.defaults.baseURL,
         timeout: this.client.defaults.timeout,
         withCredentials: true,
         headers: {
@@ -328,11 +327,37 @@ class ApiClient {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       const message = error.response?.data?.error || error.message;
+      const url = error.config?.url || "unknown";
+      const method = error.config?.method?.toUpperCase() || "REQUEST";
 
-      console.error(`API Error [${status}]:`, message);
+      // More detailed error logging
+      console.error(`API Error [${status}]: ${method} ${url}`);
+      console.error(`Message:`, message);
+
+      // Log authentication-specific errors with more context
+      if (status === 401) {
+        console.error("🔒 Authentication Error: Token may be missing or invalid");
+        console.error("Check if user is logged in and Firebase token is available");
+      } else if (status === 403) {
+        console.error("⛔ Authorization Error: User may not have required permissions");
+        console.error("Check if user has the required role (e.g., admin)");
+      } else if (status === 404) {
+        console.error("❓ Not Found: API endpoint may not exist or route is incorrect");
+        console.error("Verify the API route file exists at: src/app/api" + url);
+      }
 
       if (error.response?.data?.errors) {
         console.error("Validation errors:", error.response.data.errors);
+      }
+
+      // Log request details for debugging
+      if (process.env.NODE_ENV === "development") {
+        console.debug("Request Config:", {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          params: error.config?.params,
+        });
       }
     } else if (error instanceof Error) {
       console.error("Error:", error.message);
