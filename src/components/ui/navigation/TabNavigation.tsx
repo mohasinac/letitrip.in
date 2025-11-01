@@ -1,9 +1,9 @@
 /**
  * TabNavigation Component
- * 
+ *
  * A flexible tab navigation component with multiple variants, icons, badges,
  * and optional URL synchronization.
- * 
+ *
  * @example
  * ```tsx
  * <TabNavigation
@@ -19,9 +19,9 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export interface Tab {
   /** Unique tab identifier */
@@ -35,7 +35,7 @@ export interface Tab {
   /** Whether the tab is disabled */
   disabled?: boolean;
   /** Optional aria-label */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Optional custom content (overrides label) */
   content?: React.ReactNode;
 }
@@ -48,9 +48,9 @@ export interface TabNavigationProps {
   /** Callback when tab changes */
   onChange: (tabId: string) => void;
   /** Visual variant */
-  variant?: 'underline' | 'pills' | 'bordered' | 'segmented';
+  variant?: "underline" | "pills" | "bordered" | "segmented";
   /** Tab orientation */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** Whether tabs fill available width */
   fullWidth?: boolean;
   /** Sync tab state with URL search params */
@@ -62,27 +62,33 @@ export interface TabNavigationProps {
   /** Message for change confirmation */
   confirmMessage?: string;
   /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   /** Additional class name */
   className?: string;
   /** Callback before tab change (return false to prevent change) */
-  onBeforeChange?: (fromTab: string, toTab: string) => boolean | Promise<boolean>;
+  onBeforeChange?: (
+    fromTab: string,
+    toTab: string
+  ) => boolean | Promise<boolean>;
 }
 
-export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps>(
+export const TabNavigation = React.forwardRef<
+  HTMLDivElement,
+  TabNavigationProps
+>(
   (
     {
       tabs,
       value,
       onChange,
-      variant = 'underline',
-      orientation = 'horizontal',
+      variant = "underline",
+      orientation = "horizontal",
       fullWidth = false,
       syncWithUrl = false,
-      urlParam = 'tab',
+      urlParam = "tab",
       confirmOnChange = false,
-      confirmMessage = 'You have unsaved changes. Are you sure you want to switch tabs?',
-      size = 'md',
+      confirmMessage = "You have unsaved changes. Are you sure you want to switch tabs?",
+      size = "md",
       className,
       onBeforeChange,
     },
@@ -122,7 +128,7 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
 
       // Update URL if sync is enabled
       if (syncWithUrl && router) {
-        const params = new URLSearchParams(searchParams?.toString() || '');
+        const params = new URLSearchParams(searchParams?.toString() || "");
         params.set(urlParam, tab.id);
         router.push(`?${params.toString()}`, { scroll: false });
       }
@@ -132,60 +138,58 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
 
     const getSizeClasses = () => {
       switch (size) {
-        case 'sm':
-          return 'text-sm px-3 py-1.5';
-        case 'lg':
-          return 'text-base px-6 py-3';
+        case "sm":
+          return "text-sm px-3 py-1.5";
+        case "lg":
+          return "text-base px-6 py-3";
         default:
-          return 'text-sm px-4 py-2';
+          return "text-sm px-4 py-2";
       }
     };
 
     const getVariantClasses = (tab: Tab, isActive: boolean) => {
       const baseClasses = cn(
-        'flex items-center gap-2 transition-all duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-        tab.disabled
-          ? 'opacity-50 cursor-not-allowed'
-          : 'cursor-pointer',
+        "flex items-center gap-2 transition-all duration-200",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        tab.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
         getSizeClasses()
       );
 
       switch (variant) {
-        case 'underline':
+        case "underline":
           return cn(
             baseClasses,
-            'border-b-2 rounded-t-lg',
+            "border-b-2 rounded-t-lg",
             isActive
-              ? 'border-primary text-primary font-medium'
-              : 'border-transparent text-textSecondary hover:text-text hover:border-border'
+              ? "border-primary text-primary font-medium"
+              : "border-transparent text-textSecondary hover:text-text hover:border-border"
           );
 
-        case 'pills':
+        case "pills":
           return cn(
             baseClasses,
-            'rounded-full',
+            "rounded-full",
             isActive
-              ? 'bg-primary text-white font-medium'
-              : 'bg-surface text-textSecondary hover:bg-surface hover:text-text'
+              ? "bg-primary text-white font-medium"
+              : "bg-surface text-textSecondary hover:bg-surface hover:text-text"
           );
 
-        case 'bordered':
+        case "bordered":
           return cn(
             baseClasses,
-            'border rounded-lg',
+            "border rounded-lg",
             isActive
-              ? 'border-primary bg-primary/5 text-primary font-medium'
-              : 'border-border text-textSecondary hover:border-primary hover:text-text'
+              ? "border-primary bg-primary/5 text-primary font-medium"
+              : "border-border text-textSecondary hover:border-primary hover:text-text"
           );
 
-        case 'segmented':
+        case "segmented":
           return cn(
             baseClasses,
-            'first:rounded-l-lg last:rounded-r-lg border-y border-r first:border-l',
+            "first:rounded-l-lg last:rounded-r-lg border-y border-r first:border-l",
             isActive
-              ? 'bg-primary text-white font-medium z-10'
-              : 'bg-surface text-textSecondary hover:bg-background'
+              ? "bg-primary text-white font-medium z-10"
+              : "bg-surface text-textSecondary hover:bg-background"
           );
 
         default:
@@ -202,7 +206,7 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
           role="tab"
           aria-selected={isActive}
           aria-controls={`tabpanel-${tab.id}`}
-          aria-label={tab['aria-label'] || tab.label}
+          aria-label={tab["aria-label"] || tab.label}
           disabled={tab.disabled}
           onClick={() => handleTabClick(tab)}
           className={getVariantClasses(tab, isActive)}
@@ -210,18 +214,18 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
           {tab.content || (
             <>
               {tab.icon && <span className="flex-shrink-0">{tab.icon}</span>}
-              <span className={fullWidth ? 'flex-1 text-center' : ''}>
+              <span className={fullWidth ? "flex-1 text-center" : ""}>
                 {tab.label}
               </span>
               {tab.badge !== undefined && (
                 <span
                   className={cn(
-                    'px-2 py-0.5 text-xs font-medium rounded-full',
+                    "px-2 py-0.5 text-xs font-medium rounded-full",
                     isActive
-                      ? variant === 'pills'
-                        ? 'bg-white text-primary'
-                        : 'bg-primary text-white'
-                      : 'bg-surface text-textSecondary'
+                      ? variant === "pills"
+                        ? "bg-white text-primary"
+                        : "bg-primary text-white"
+                      : "bg-surface text-textSecondary"
                   )}
                 >
                   {tab.badge}
@@ -239,16 +243,16 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
         role="tablist"
         aria-orientation={orientation}
         className={cn(
-          'flex',
-          orientation === 'vertical'
-            ? 'flex-col space-y-1'
-            : variant === 'segmented'
-            ? 'flex-row -space-x-px'
-            : 'flex-row space-x-1 overflow-x-auto',
-          variant === 'underline' && orientation === 'horizontal'
-            ? 'border-b border-border'
-            : '',
-          fullWidth && orientation === 'horizontal' ? 'w-full' : '',
+          "flex",
+          orientation === "vertical"
+            ? "flex-col space-y-1"
+            : variant === "segmented"
+            ? "flex-row -space-x-px"
+            : "flex-row space-x-1 overflow-x-auto",
+          variant === "underline" && orientation === "horizontal"
+            ? "border-b border-border"
+            : "",
+          fullWidth && orientation === "horizontal" ? "w-full" : "",
           className
         )}
       >
@@ -258,20 +262,20 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
   }
 );
 
-TabNavigation.displayName = 'TabNavigation';
+TabNavigation.displayName = "TabNavigation";
 
 /**
  * Hook for managing tab navigation state
- * 
+ *
  * @example
  * ```tsx
  * const { activeTab, setActiveTab, goToTab, markDirty } = useTabNavigation('basic');
- * 
+ *
  * // Mark as dirty when form changes
  * const handleInputChange = () => {
  *   markDirty();
  * };
- * 
+ *
  * return (
  *   <TabNavigation
  *     tabs={tabs}

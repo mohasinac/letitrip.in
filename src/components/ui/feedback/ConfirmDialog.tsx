@@ -1,9 +1,9 @@
 /**
  * ConfirmDialog Component
- * 
+ *
  * A reusable confirmation dialog for destructive or important actions.
  * Supports various levels of confirmation including type-to-confirm for critical actions.
- * 
+ *
  * @example
  * ```tsx
  * <ConfirmDialog
@@ -19,11 +19,11 @@
  * ```
  */
 
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Info, CheckCircle, XCircle, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import UnifiedButton from '@/components/ui/unified/Button';
-import UnifiedCard from '@/components/ui/unified/Card';
+import React, { useState, useEffect } from "react";
+import { AlertTriangle, Info, CheckCircle, XCircle, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import UnifiedButton from "@/components/ui/unified/Button";
+import UnifiedCard from "@/components/ui/unified/Card";
 
 export interface ConfirmDialogProps {
   /** Whether the dialog is open */
@@ -39,9 +39,19 @@ export interface ConfirmDialogProps {
   /** Cancel button label */
   cancelLabel?: string;
   /** Variant style of the dialog */
-  variant?: 'info' | 'warning' | 'danger' | 'success';
+  variant?: "info" | "warning" | "danger" | "success";
   /** Button variant for confirm action */
-  confirmVariant?: 'primary' | 'success' | 'warning' | 'outlined' | 'outline' | 'ghost' | 'secondary' | 'destructive' | 'contained' | 'text';
+  confirmVariant?:
+    | "primary"
+    | "success"
+    | "warning"
+    | "outlined"
+    | "outline"
+    | "ghost"
+    | "secondary"
+    | "destructive"
+    | "contained"
+    | "text";
   /** Callback when confirmed */
   onConfirm: () => void | Promise<void>;
   /** Loading state during action */
@@ -60,17 +70,20 @@ export interface ConfirmDialogProps {
   className?: string;
 }
 
-export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps>(
+export const ConfirmDialog = React.forwardRef<
+  HTMLDivElement,
+  ConfirmDialogProps
+>(
   (
     {
       open,
       onClose,
       title,
       message,
-      confirmLabel = 'Confirm',
-      cancelLabel = 'Cancel',
-      variant = 'warning',
-      confirmVariant = 'primary',
+      confirmLabel = "Confirm",
+      cancelLabel = "Cancel",
+      variant = "warning",
+      confirmVariant = "primary",
       onConfirm,
       loading = false,
       icon,
@@ -83,12 +96,12 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
     ref
   ) => {
     const [dontAskAgain, setDontAskAgain] = useState(false);
-    const [typedText, setTypedText] = useState('');
+    const [typedText, setTypedText] = useState("");
     const [isConfirming, setIsConfirming] = useState(false);
 
     useEffect(() => {
       if (!open) {
-        setTypedText('');
+        setTypedText("");
         setDontAskAgain(false);
       }
     }, [open]);
@@ -108,17 +121,17 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
         }
         onClose();
       } catch (error) {
-        console.error('Confirm action failed:', error);
+        console.error("Confirm action failed:", error);
       } finally {
         setIsConfirming(false);
       }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !requiresTyping) {
+      if (e.key === "Enter" && !requiresTyping) {
         e.preventDefault();
         handleConfirm();
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         e.preventDefault();
         onClose();
       }
@@ -128,13 +141,13 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
       if (icon) return icon;
 
       switch (variant) {
-        case 'info':
+        case "info":
           return <Info className="w-6 h-6 text-info" />;
-        case 'warning':
+        case "warning":
           return <AlertTriangle className="w-6 h-6 text-warning" />;
-        case 'danger':
+        case "danger":
           return <XCircle className="w-6 h-6 text-error" />;
-        case 'success':
+        case "success":
           return <CheckCircle className="w-6 h-6 text-success" />;
         default:
           return <AlertTriangle className="w-6 h-6 text-warning" />;
@@ -143,21 +156,23 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
 
     const getIconBgColor = () => {
       switch (variant) {
-        case 'info':
-          return 'bg-info/10';
-        case 'warning':
-          return 'bg-warning/10';
-        case 'danger':
-          return 'bg-error/10';
-        case 'success':
-          return 'bg-success/10';
+        case "info":
+          return "bg-info/10";
+        case "warning":
+          return "bg-warning/10";
+        case "danger":
+          return "bg-error/10";
+        case "success":
+          return "bg-success/10";
         default:
-          return 'bg-warning/10';
+          return "bg-warning/10";
       }
     };
 
     const isConfirmDisabled =
-      loading || isConfirming || (requiresTyping && typedText !== requiresTyping);
+      loading ||
+      isConfirming ||
+      (requiresTyping && typedText !== requiresTyping);
 
     return (
       <div
@@ -175,7 +190,7 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
           ref={ref}
           variant="elevated"
           className={cn(
-            'relative w-full max-w-md animate-in zoom-in-95 duration-200',
+            "relative w-full max-w-md animate-in zoom-in-95 duration-200",
             className
           )}
         >
@@ -190,7 +205,12 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
 
           <div className="p-6">
             {/* Icon */}
-            <div className={cn('w-12 h-12 rounded-full flex items-center justify-center mb-4', getIconBgColor())}>
+            <div
+              className={cn(
+                "w-12 h-12 rounded-full flex items-center justify-center mb-4",
+                getIconBgColor()
+              )}
+            >
               {getIcon()}
             </div>
 
@@ -199,7 +219,7 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
 
             {/* Message */}
             <div className="text-textSecondary mb-4">
-              {typeof message === 'string' ? <p>{message}</p> : message}
+              {typeof message === "string" ? <p>{message}</p> : message}
             </div>
 
             {/* Consequences */}
@@ -210,7 +230,10 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
                 </p>
                 <ul className="space-y-1">
                   {consequences.map((consequence, index) => (
-                    <li key={index} className="text-sm text-textSecondary flex items-start">
+                    <li
+                      key={index}
+                      className="text-sm text-textSecondary flex items-start"
+                    >
                       <span className="text-error mr-2">•</span>
                       <span>{consequence}</span>
                     </li>
@@ -223,8 +246,9 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
             {requiresTyping && (
               <div className="mb-4">
                 <label className="block text-sm font-medium text-text mb-2">
-                  Type <span className="font-mono text-error">{requiresTyping}</span> to
-                  confirm:
+                  Type{" "}
+                  <span className="font-mono text-error">{requiresTyping}</span>{" "}
+                  to confirm:
                 </label>
                 <input
                   type="text"
@@ -232,12 +256,12 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
                   onChange={(e) => setTypedText(e.target.value)}
                   placeholder={requiresTyping}
                   className={cn(
-                    'w-full px-3 py-2 bg-background border rounded-lg',
-                    'text-text placeholder:text-textSecondary',
-                    'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                    "w-full px-3 py-2 bg-background border rounded-lg",
+                    "text-text placeholder:text-textSecondary",
+                    "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
                     typedText && typedText !== requiresTyping
-                      ? 'border-error'
-                      : 'border-border'
+                      ? "border-error"
+                      : "border-border"
                   )}
                   autoFocus
                 />
@@ -289,27 +313,27 @@ export const ConfirmDialog = React.forwardRef<HTMLDivElement, ConfirmDialogProps
   }
 );
 
-ConfirmDialog.displayName = 'ConfirmDialog';
+ConfirmDialog.displayName = "ConfirmDialog";
 
 /**
  * Hook for managing confirm dialog state
- * 
+ *
  * @example
  * ```tsx
  * const { confirmDialog, confirm } = useConfirmDialog();
- * 
+ *
  * const handleDelete = async () => {
  *   const confirmed = await confirm({
  *     title: 'Delete Product',
  *     message: 'Are you sure?',
  *     variant: 'danger',
  *   });
- *   
+ *
  *   if (confirmed) {
  *     await deleteProduct();
  *   }
  * };
- * 
+ *
  * return (
  *   <>
  *     <button onClick={handleDelete}>Delete</button>
@@ -323,24 +347,24 @@ export function useConfirmDialog() {
     open: boolean;
     title: string;
     message: string;
-    variant: ConfirmDialogProps['variant'];
+    variant: ConfirmDialogProps["variant"];
     confirmLabel: string;
-    confirmVariant: ConfirmDialogProps['confirmVariant'];
+    confirmVariant: ConfirmDialogProps["confirmVariant"];
     requiresTyping?: string;
     consequences?: string[];
     onConfirm: () => void;
   }>({
     open: false,
-    title: '',
-    message: '',
-    variant: 'warning',
-    confirmLabel: 'Confirm',
-    confirmVariant: 'primary',
+    title: "",
+    message: "",
+    variant: "warning",
+    confirmLabel: "Confirm",
+    confirmVariant: "primary",
     onConfirm: () => {},
   });
 
   const confirm = (
-    options: Omit<typeof state, 'open' | 'onConfirm'>
+    options: Omit<typeof state, "open" | "onConfirm">
   ): Promise<boolean> => {
     return new Promise((resolve) => {
       setState({

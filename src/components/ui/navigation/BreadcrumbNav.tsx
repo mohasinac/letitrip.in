@@ -1,9 +1,9 @@
 /**
  * BreadcrumbNav Component
- * 
+ *
  * An enhanced breadcrumb navigation component with mobile optimization,
  * SEO schema markup, and collapsible items.
- * 
+ *
  * @example
  * ```tsx
  * <BreadcrumbNav
@@ -18,10 +18,10 @@
  * ```
  */
 
-import React from 'react';
-import Link from 'next/link';
-import { ChevronRight, Home, MoreHorizontal, ChevronLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { ChevronRight, Home, MoreHorizontal, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface BreadcrumbItem {
   /** Breadcrumb label */
@@ -31,20 +31,20 @@ export interface BreadcrumbItem {
   /** Optional icon */
   icon?: React.ReactNode;
   /** Optional aria-label */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 export interface BreadcrumbNavProps {
   /** Array of breadcrumb items */
   items: BreadcrumbItem[];
   /** Separator between items */
-  separator?: 'slash' | 'chevron' | 'custom';
+  separator?: "slash" | "chevron" | "custom";
   /** Custom separator element (if separator is 'custom') */
   customSeparator?: React.ReactNode;
   /** Maximum number of items to show before collapsing */
   maxItems?: number;
   /** From which position to start collapsing (start or middle) */
-  collapseFrom?: 'start' | 'middle';
+  collapseFrom?: "start" | "middle";
   /** Show home icon for first item */
   showHomeIcon?: boolean;
   /** Show back button on mobile */
@@ -52,7 +52,7 @@ export interface BreadcrumbNavProps {
   /** Include Schema.org markup for SEO */
   includeSchema?: boolean;
   /** Mobile variant */
-  mobileVariant?: 'full' | 'back-only' | 'compact';
+  mobileVariant?: "full" | "back-only" | "compact";
   /** Additional class name */
   className?: string;
 }
@@ -61,21 +61,21 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
   (
     {
       items,
-      separator = 'chevron',
+      separator = "chevron",
       customSeparator,
       maxItems = 5,
-      collapseFrom = 'middle',
+      collapseFrom = "middle",
       showHomeIcon = true,
       showBackButton = true,
       includeSchema = true,
-      mobileVariant = 'full',
+      mobileVariant = "full",
       className,
     },
     ref
   ) => {
     const getSeparator = () => {
-      if (separator === 'custom' && customSeparator) return customSeparator;
-      if (separator === 'slash')
+      if (separator === "custom" && customSeparator) return customSeparator;
+      if (separator === "slash")
         return <span className="text-textSecondary mx-2">/</span>;
       return <ChevronRight className="w-4 h-4 text-textSecondary mx-1" />;
     };
@@ -83,7 +83,7 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
     const getCollapsedItems = () => {
       if (items.length <= maxItems) return items;
 
-      if (collapseFrom === 'start') {
+      if (collapseFrom === "start") {
         // Keep first and last items, collapse middle
         const firstItem = items[0];
         const lastItems = items.slice(-(maxItems - 2));
@@ -138,22 +138,20 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
             <Link
               href={item.href}
               className={cn(
-                'text-textSecondary hover:text-text transition-colors',
-                'max-w-[200px] truncate'
+                "text-textSecondary hover:text-text transition-colors",
+                "max-w-[200px] truncate"
               )}
-              aria-label={item['aria-label'] || item.label}
+              aria-label={item["aria-label"] || item.label}
             >
               {content}
             </Link>
           ) : (
             <span
               className={cn(
-                isLast
-                  ? 'text-text font-medium'
-                  : 'text-textSecondary',
-                'max-w-[200px] truncate'
+                isLast ? "text-text font-medium" : "text-textSecondary",
+                "max-w-[200px] truncate"
               )}
-              aria-current={isLast ? 'page' : undefined}
+              aria-current={isLast ? "page" : undefined}
             >
               {content}
             </span>
@@ -164,15 +162,12 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
     };
 
     // Mobile back button variant
-    if (mobileVariant === 'back-only' && items.length > 1) {
+    if (mobileVariant === "back-only" && items.length > 1) {
       const previousItem = items[items.length - 2];
       return (
         <nav
           ref={ref}
-          className={cn(
-            'flex md:hidden items-center text-sm',
-            className
-          )}
+          className={cn("flex md:hidden items-center text-sm", className)}
           aria-label="Breadcrumb"
         >
           {showBackButton && previousItem.href && (
@@ -189,7 +184,7 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
     }
 
     // Mobile compact variant
-    if (mobileVariant === 'compact' && items.length > 1) {
+    if (mobileVariant === "compact" && items.length > 1) {
       const currentItem = items[items.length - 1];
       const previousItem = items[items.length - 2];
 
@@ -198,10 +193,7 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
           {/* Mobile compact */}
           <nav
             ref={ref}
-            className={cn(
-              'flex md:hidden items-center text-sm',
-              className
-            )}
+            className={cn("flex md:hidden items-center text-sm", className)}
             aria-label="Breadcrumb"
           >
             {showBackButton && previousItem.href && (
@@ -219,10 +211,7 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
 
           {/* Desktop full */}
           <nav
-            className={cn(
-              'hidden md:flex items-center text-sm',
-              className
-            )}
+            className={cn("hidden md:flex items-center text-sm", className)}
             aria-label="Breadcrumb"
           >
             <ol className="flex items-center flex-wrap gap-y-2">
@@ -237,7 +226,7 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
     return (
       <nav
         ref={ref}
-        className={cn('flex items-center text-sm', className)}
+        className={cn("flex items-center text-sm", className)}
         aria-label="Breadcrumb"
       >
         <ol className="flex items-center flex-wrap gap-y-2">
@@ -250,14 +239,18 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
             type="application/ld+json"
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'BreadcrumbList',
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
                 itemListElement: items.map((item, index) => ({
-                  '@type': 'ListItem',
+                  "@type": "ListItem",
                   position: index + 1,
                   name: item.label,
                   ...(item.href && {
-                    item: `${typeof window !== 'undefined' ? window.location.origin : ''}${item.href}`,
+                    item: `${
+                      typeof window !== "undefined"
+                        ? window.location.origin
+                        : ""
+                    }${item.href}`,
                   }),
                 })),
               }),
@@ -269,27 +262,26 @@ export const BreadcrumbNav = React.forwardRef<HTMLElement, BreadcrumbNavProps>(
   }
 );
 
-BreadcrumbNav.displayName = 'BreadcrumbNav';
+BreadcrumbNav.displayName = "BreadcrumbNav";
 
 /**
  * Hook for managing breadcrumb navigation
- * 
+ *
  * @example
  * ```tsx
  * const { breadcrumbs, addBreadcrumb, setBreadcrumbs } = useBreadcrumbs([
  *   { label: 'Dashboard', href: '/dashboard' }
  * ]);
- * 
+ *
  * // Add a breadcrumb
  * addBreadcrumb({ label: 'Products', href: '/products' });
- * 
+ *
  * return <BreadcrumbNav items={breadcrumbs} />;
  * ```
  */
 export function useBreadcrumbs(initialBreadcrumbs: BreadcrumbItem[] = []) {
-  const [breadcrumbs, setBreadcrumbs] = React.useState<BreadcrumbItem[]>(
-    initialBreadcrumbs
-  );
+  const [breadcrumbs, setBreadcrumbs] =
+    React.useState<BreadcrumbItem[]>(initialBreadcrumbs);
 
   const addBreadcrumb = (item: BreadcrumbItem) => {
     setBreadcrumbs((prev) => [...prev, item]);

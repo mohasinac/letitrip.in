@@ -1,12 +1,12 @@
 /**
  * LoadingOverlay Component
- * 
+ *
  * A versatile loading overlay component that displays loading states with various
  * animations and optional cancellation support.
- * 
+ *
  * @example
  * ```tsx
- * <LoadingOverlay 
+ * <LoadingOverlay
  *   visible={loading}
  *   message="Loading products..."
  *   variant="spinner"
@@ -16,10 +16,10 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
-import { Loader2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import UnifiedButton from '@/components/ui/unified/Button';
+import React, { useEffect, useState } from "react";
+import { Loader2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import UnifiedButton from "@/components/ui/unified/Button";
 
 export interface LoadingOverlayProps {
   /** Whether the overlay is visible */
@@ -27,7 +27,7 @@ export interface LoadingOverlayProps {
   /** Loading message to display */
   message?: string;
   /** Variant of the loading animation */
-  variant?: 'spinner' | 'pulse' | 'dots' | 'bars';
+  variant?: "spinner" | "pulse" | "dots" | "bars";
   /** Whether to blur the background */
   blur?: boolean;
   /** Progress percentage (0-100) */
@@ -46,12 +46,15 @@ export interface LoadingOverlayProps {
   className?: string;
 }
 
-export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayProps>(
+export const LoadingOverlay = React.forwardRef<
+  HTMLDivElement,
+  LoadingOverlayProps
+>(
   (
     {
       visible,
-      message = 'Loading...',
-      variant = 'spinner',
+      message = "Loading...",
+      variant = "spinner",
       blur = true,
       progress,
       cancellable = false,
@@ -82,10 +85,10 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
 
     const renderAnimation = () => {
       switch (variant) {
-        case 'spinner':
+        case "spinner":
           return <Loader2 className="w-8 h-8 animate-spin text-primary" />;
 
-        case 'pulse':
+        case "pulse":
           return (
             <div className="flex gap-2">
               {[0, 1, 2].map((i) => (
@@ -98,7 +101,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
             </div>
           );
 
-        case 'dots':
+        case "dots":
           return (
             <div className="flex gap-2">
               {[0, 1, 2].map((i) => (
@@ -111,7 +114,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
             </div>
           );
 
-        case 'bars':
+        case "bars":
           return (
             <div className="flex gap-1 items-end h-8">
               {[0, 1, 2, 3, 4].map((i) => (
@@ -137,7 +140,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
         <div
           ref={ref}
           className={cn(
-            'flex flex-col items-center justify-center py-8',
+            "flex flex-col items-center justify-center py-8",
             className
           )}
         >
@@ -145,7 +148,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
           {message && (
             <p className="text-sm text-textSecondary mt-3">{message}</p>
           )}
-          {typeof progress === 'number' && (
+          {typeof progress === "number" && (
             <div className="w-full max-w-xs mt-4">
               <div className="h-1.5 bg-surface rounded-full overflow-hidden">
                 <div
@@ -166,8 +169,8 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
       <div
         ref={ref}
         className={cn(
-          'fixed inset-0 flex items-center justify-center transition-all duration-200',
-          blur ? 'backdrop-blur-sm' : '',
+          "fixed inset-0 flex items-center justify-center transition-all duration-200",
+          blur ? "backdrop-blur-sm" : "",
           className
         )}
         style={{ zIndex }}
@@ -197,7 +200,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
           )}
 
           {/* Progress bar */}
-          {typeof progress === 'number' && (
+          {typeof progress === "number" && (
             <div className="mt-4">
               <div className="h-2 bg-background rounded-full overflow-hidden">
                 <div
@@ -223,11 +226,7 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
           {/* Cancel action */}
           {cancellable && onCancel && (
             <div className="mt-4 flex justify-center">
-              <UnifiedButton
-                variant="outline"
-                size="sm"
-                onClick={onCancel}
-              >
+              <UnifiedButton variant="outline" size="sm" onClick={onCancel}>
                 Cancel
               </UnifiedButton>
             </div>
@@ -238,15 +237,15 @@ export const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayPro
   }
 );
 
-LoadingOverlay.displayName = 'LoadingOverlay';
+LoadingOverlay.displayName = "LoadingOverlay";
 
 /**
  * Hook for managing loading overlay state
- * 
+ *
  * @example
  * ```tsx
  * const { showLoading, hideLoading, setProgress } = useLoadingOverlay();
- * 
+ *
  * const handleSubmit = async () => {
  *   showLoading('Saving product...');
  *   try {
@@ -261,12 +260,12 @@ LoadingOverlay.displayName = 'LoadingOverlay';
 export function useLoadingOverlay() {
   const [state, setState] = useState({
     visible: false,
-    message: 'Loading...',
+    message: "Loading...",
     progress: undefined as number | undefined,
   });
 
   const showLoading = (message?: string, progress?: number) => {
-    setState({ visible: true, message: message || 'Loading...', progress });
+    setState({ visible: true, message: message || "Loading...", progress });
   };
 
   const hideLoading = () => {
