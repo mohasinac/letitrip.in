@@ -158,7 +158,7 @@ export async function DELETE(
     const sellerId = decodedToken.uid;
 
     const couponDoc = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .doc(params.id)
       .get();
 
@@ -171,7 +171,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await adminDb.collection("seller_coupons").doc(params.id).delete();
+    await adminDb.collection("coupons").doc(params.id).delete();
 
     return NextResponse.json({ message: "Coupon deleted successfully" });
   } catch (error: any) {
