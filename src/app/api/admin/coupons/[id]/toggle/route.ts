@@ -36,7 +36,7 @@ export async function POST(
     }
 
     // Get current coupon
-    const couponDoc = await db.collection("seller_coupons").doc(id).get();
+    const couponDoc = await db.collection("coupons").doc(id).get();
     if (!couponDoc.exists) {
       return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
     }
@@ -45,7 +45,7 @@ export async function POST(
     const newStatus = !couponData?.isActive;
 
     // Update coupon status
-    await db.collection("seller_coupons").doc(id).update({
+    await db.collection("coupons").doc(id).update({
       isActive: newStatus,
       updatedAt: new Date().toISOString(),
     });

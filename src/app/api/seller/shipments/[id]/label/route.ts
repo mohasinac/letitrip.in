@@ -33,7 +33,7 @@ export async function GET(
     // Get shipment using Admin SDK
     const db = getAdminDb();
     const shipmentSnap = await db
-      .collection("seller_shipments")
+      .collection("shipments")
       .doc(params.id)
       .get();
 

@@ -20,7 +20,7 @@ export async function GET(
     const sellerId = decodedToken.uid;
 
     const couponDoc = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .doc(params.id)
       .get();
 
@@ -70,7 +70,7 @@ export async function PUT(
     const sellerId = decodedToken.uid;
 
     const couponDoc = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .doc(params.id)
       .get();
 

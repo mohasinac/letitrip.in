@@ -43,7 +43,7 @@ export async function POST(
     }
 
     // Get shipment
-    const shipmentDoc = await db.collection("seller_shipments").doc(id).get();
+    const shipmentDoc = await db.collection("shipments").doc(id).get();
     if (!shipmentDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Shipment not found" },
@@ -63,7 +63,7 @@ export async function POST(
 
     // TODO: Integrate with actual shipping carrier API to cancel
     // For now, just update the status
-    await db.collection("seller_shipments").doc(id).update({
+    await db.collection("shipments").doc(id).update({
       status: "failed",
       updatedAt: new Date().toISOString(),
       cancelledAt: new Date().toISOString(),

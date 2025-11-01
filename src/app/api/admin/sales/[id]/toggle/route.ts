@@ -43,7 +43,7 @@ export async function POST(
     }
 
     // Get current sale
-    const saleDoc = await db.collection("seller_sales").doc(id).get();
+    const saleDoc = await db.collection("sales").doc(id).get();
     if (!saleDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Sale not found" },
@@ -55,7 +55,7 @@ export async function POST(
     const newStatus = saleData?.status === "active" ? "inactive" : "active";
 
     // Update sale status
-    await db.collection("seller_sales").doc(id).update({
+    await db.collection("sales").doc(id).update({
       status: newStatus,
       updatedAt: new Date().toISOString(),
     });

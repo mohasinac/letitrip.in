@@ -39,7 +39,7 @@ export async function POST(
     const { id } = params;
 
     // Get sale document
-    const docRef = adminDb.collection("seller_sales").doc(id);
+    const docRef = adminDb.collection("sales").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {

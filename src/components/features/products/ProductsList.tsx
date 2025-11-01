@@ -323,24 +323,32 @@ export function ProductsList({
       key: "name",
       label: "Product",
       sortable: true,
-      render: (_, product) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={product.images?.[0]?.url || PLACEHOLDER_IMAGE}
-            alt={product.name}
-            className="w-12 h-12 rounded-lg object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE;
-            }}
-          />
-          <div className="min-w-0">
-            <p className="font-medium text-text truncate">{product.name}</p>
-            <p className="text-xs text-textSecondary truncate">
-              {product.slug}
-            </p>
+      render: (_, product) => {
+        // Support both old (media.images) and new (images) formats
+        const imageUrl =
+          product.images?.[0]?.url ||
+          (product as any).media?.images?.[0]?.url ||
+          PLACEHOLDER_IMAGE;
+
+        return (
+          <div className="flex items-center gap-3">
+            <img
+              src={imageUrl}
+              alt={product.name}
+              className="w-12 h-12 rounded-lg object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE;
+              }}
+            />
+            <div className="min-w-0">
+              <p className="font-medium text-text truncate">{product.name}</p>
+              <p className="text-xs text-textSecondary truncate">
+                {product.slug}
+              </p>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: "sku",

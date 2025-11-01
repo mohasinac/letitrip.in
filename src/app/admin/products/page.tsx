@@ -21,7 +21,7 @@ export default function AdminProducts() {
         basePath="/admin/products"
         breadcrumbs={breadcrumbs}
         showSellerInfo={true}
-        getEditRoute={(id) => `/admin/products/edit/${id}`}
+        getEditRoute={(id) => `/seller/products/${id}/edit`}
       />
     </RoleGuard>
   );

@@ -39,7 +39,7 @@ export async function GET(
     const { id } = params;
 
     // Get sale document
-    const docRef = adminDb.collection("seller_sales").doc(id);
+    const docRef = adminDb.collection("sales").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -120,7 +120,7 @@ export async function PUT(
     const body = await request.json();
 
     // Get existing sale
-    const docRef = adminDb.collection("seller_sales").doc(id);
+    const docRef = adminDb.collection("sales").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -272,7 +272,7 @@ export async function DELETE(
     const { id } = params;
 
     // Get sale document
-    const docRef = adminDb.collection("seller_sales").doc(id);
+    const docRef = adminDb.collection("sales").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {

@@ -20,7 +20,7 @@ export async function POST(
     const sellerId = decodedToken.uid;
 
     const couponDoc = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .doc(params.id)
       .get();
 
@@ -36,7 +36,7 @@ export async function POST(
     const currentStatus = couponData.status;
     const newStatus = currentStatus === "active" ? "inactive" : "active";
 
-    await adminDb.collection("seller_coupons").doc(params.id).update({
+    await adminDb.collection("coupons").doc(params.id).update({
       status: newStatus,
       updatedAt: Timestamp.now(),
     });

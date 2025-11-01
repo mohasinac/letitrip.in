@@ -43,7 +43,7 @@ export async function POST(
 
     // Get shipment using Admin SDK
     const db = getAdminDb();
-    const shipmentRef = db.collection("seller_shipments").doc(params.id);
+    const shipmentRef = db.collection("shipments").doc(params.id);
     const shipmentSnap = await shipmentRef.get();
 
     if (!shipmentSnap.exists) {

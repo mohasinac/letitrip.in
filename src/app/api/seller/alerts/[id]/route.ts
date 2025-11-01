@@ -32,7 +32,7 @@ export async function DELETE(
 
     // Get alert using Admin SDK
     const db = getAdminDb();
-    const alertRef = db.collection("seller_alerts").doc(params.id);
+    const alertRef = db.collection("alerts").doc(params.id);
     const alertSnap = await alertRef.get();
 
     if (!alertSnap.exists) {
