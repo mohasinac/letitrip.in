@@ -70,10 +70,12 @@ export async function POST(request: NextRequest) {
       }
 
       const product = productDoc.data();
-      if (product?.stock < item.quantity) {
+      const currentStock = product?.stock ?? product?.quantity ?? 0;
+      
+      if (currentStock < item.quantity) {
         return NextResponse.json(
           {
-            error: `Insufficient stock for ${item.name}. Available: ${product?.stock}`,
+            error: `Insufficient stock for ${item.name}. Available: ${currentStock}`,
           },
           { status: 400 }
         );
@@ -142,10 +144,23 @@ export async function POST(request: NextRequest) {
     const batch = db.batch();
     for (const item of items) {
       const productRef = db.collection(PRODUCTS_COLLECTION).doc(item.productId);
-      batch.update(productRef, {
-        stock: FieldValue.increment(-item.quantity),
+      const productDoc = await productRef.get();
+      const productData = productDoc.data();
+      
+      // Update both stock and quantity fields for compatibility
+      const updates: any = {
         updatedAt: new Date(),
-      });
+      };
+      
+      if (productData?.stock !== undefined) {
+        updates.stock = FieldValue.increment(-item.quantity);
+      }
+      
+      if (productData?.quantity !== undefined) {
+        updates.quantity = FieldValue.increment(-item.quantity);
+      }
+      
+      batch.update(productRef, updates);
     }
     await batch.commit();
 

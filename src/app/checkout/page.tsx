@@ -122,12 +122,16 @@ export default function CheckoutPage() {
               },
               body: JSON.stringify({
                 items: items.map((item) => ({
-                  productId: item.id,
+                  id: item.id,
+                  productId: item.productId,
                   name: item.name,
-                  image: item.image,
+                  image: item.image || "/assets/placeholder.png",
                   price: item.price,
                   quantity: item.quantity,
                   sku: item.sku || "",
+                  sellerId: item.sellerId || "default-seller",
+                  sellerName: item.sellerName || "JustForView",
+                  slug: item.slug || "",
                 })),
                 shippingAddress: {
                   fullName: selectedAddress.fullName,
@@ -246,12 +250,16 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           items: items.map((item) => ({
-            productId: item.id,
+            id: item.id,
+            productId: item.productId,
             name: item.name,
-            image: item.image,
+            image: item.image || "/assets/placeholder.png",
             price: item.price,
             quantity: item.quantity,
             sku: item.sku || "",
+            sellerId: item.sellerId || "default-seller",
+            sellerName: item.sellerName || "JustForView",
+            slug: item.slug || "",
           })),
           shippingAddress: {
             fullName: selectedAddress.fullName,

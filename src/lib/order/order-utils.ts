@@ -91,9 +91,7 @@ export function validateOrderItems(items: OrderItem[]): {
     if (item.price <= 0) {
       errors.push(`Item ${index + 1}: Invalid price`);
     }
-    if (!item.sellerId) {
-      errors.push(`Item ${index + 1}: Missing seller ID`);
-    }
+    // Seller ID is optional - will use default if not provided
   });
 
   return {
