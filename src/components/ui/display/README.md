@@ -7,6 +7,7 @@
 ## 📦 Components
 
 ### StatsCard
+
 Display key metrics with trends and icons. Perfect for dashboards.
 
 ```tsx
@@ -23,6 +24,7 @@ Display key metrics with trends and icons. Perfect for dashboards.
 ---
 
 ### EmptyState
+
 Beautiful empty states with actionable CTAs.
 
 ```tsx
@@ -38,6 +40,7 @@ Beautiful empty states with actionable CTAs.
 ---
 
 ### DataCard
+
 Display structured key-value data in organized cards.
 
 ```tsx
@@ -45,7 +48,7 @@ Display structured key-value data in organized cards.
   title="Order Info"
   data={[
     { label: "ID", value: "12345", copy: true },
-    { label: "Total", value: "$299", highlight: true }
+    { label: "Total", value: "$299", highlight: true },
   ]}
 />
 ```
@@ -84,6 +87,7 @@ import {
 ## 🎨 Demo
 
 View all components in action:
+
 ```
 /demo/display-components
 ```
@@ -93,6 +97,7 @@ View all components in action:
 ## ✨ Features
 
 ### StatsCard
+
 - 5 color themes
 - Trend indicators
 - Loading states
@@ -100,6 +105,7 @@ View all components in action:
 - Responsive grid
 
 ### EmptyState
+
 - 5 variants
 - Icon/image support
 - Primary & secondary actions
@@ -107,6 +113,7 @@ View all components in action:
 - Custom content
 
 ### DataCard
+
 - 1-3 column layouts
 - Copy-to-clipboard
 - Linkable values
@@ -119,12 +126,14 @@ View all components in action:
 ## 🎯 Use Cases
 
 ### StatsCard
+
 - Dashboard metrics
 - Analytics displays
 - KPI cards
 - Real-time stats
 
 ### EmptyState
+
 - List pages with no data
 - Search results (no matches)
 - Error states
@@ -132,6 +141,7 @@ View all components in action:
 - Coming soon features
 
 ### DataCard
+
 - Detail pages
 - User profiles
 - Order information
@@ -153,6 +163,7 @@ View all components in action:
 ## 🏗️ Architecture
 
 ### Component Structure
+
 ```
 display/
 ├── StatsCard.tsx      (220 lines)
@@ -168,6 +179,7 @@ display/
 ```
 
 ### Dependencies
+
 - `@/components/ui/unified/Card`
 - `@/components/ui/unified/Button`
 - `@/lib/utils` (cn helper)
@@ -189,19 +201,24 @@ display/
 ## 🔧 Technical Details
 
 ### TypeScript
+
 All components use strict TypeScript with exported interfaces:
+
 ```tsx
-import type { StatsCardProps, StatsCardTrend } from '@/components/ui/display';
+import type { StatsCardProps, StatsCardTrend } from "@/components/ui/display";
 ```
 
 ### Forwarded Refs
+
 All components support ref forwarding:
+
 ```tsx
 const cardRef = useRef<HTMLDivElement>(null);
 <StatsCard ref={cardRef} ... />
 ```
 
 ### Accessibility
+
 - Semantic HTML
 - ARIA labels
 - Keyboard navigation
@@ -212,16 +229,30 @@ const cardRef = useRef<HTMLDivElement>(null);
 ## 📝 Examples
 
 ### Dashboard
+
 ```tsx
 <StatsCardGrid columns={4}>
-  <StatsCard title="Revenue" value="$45K" trend={{ value: 12, direction: "up" }} />
+  <StatsCard
+    title="Revenue"
+    value="$45K"
+    trend={{ value: 12, direction: "up" }}
+  />
   <StatsCard title="Orders" value={234} trend={{ value: 5, direction: "up" }} />
-  <StatsCard title="Users" value={892} trend={{ value: 2, direction: "down" }} />
-  <StatsCard title="Products" value={156} trend={{ value: 0, direction: "neutral" }} />
+  <StatsCard
+    title="Users"
+    value={892}
+    trend={{ value: 2, direction: "down" }}
+  />
+  <StatsCard
+    title="Products"
+    value={156}
+    trend={{ value: 0, direction: "neutral" }}
+  />
 </StatsCardGrid>
 ```
 
 ### List Page
+
 ```tsx
 function ProductsList() {
   if (products.length === 0) {
@@ -238,6 +269,7 @@ function ProductsList() {
 ```
 
 ### Detail Page
+
 ```tsx
 <DataCardGroup spacing="md">
   <DataCard title="Order Info" data={orderData} columns={2} />
@@ -251,19 +283,24 @@ function ProductsList() {
 ## 🧪 Testing
 
 ### Manual Testing
+
 Run the demo page:
+
 ```bash
 npm run dev
 # Navigate to /demo/display-components
 ```
 
 ### Type Checking
+
 ```bash
 npm run type-check
 ```
 
 ### Accessibility Testing
+
 All components tested with:
+
 - Keyboard navigation
 - Screen readers
 - Color contrast
@@ -274,6 +311,7 @@ All components tested with:
 ## 🚀 Future Enhancements
 
 ### Planned
+
 - [ ] Animated number counting (StatsCard)
 - [ ] Sparkline charts (StatsCard)
 - [ ] Custom illustrations (EmptyState)
@@ -281,6 +319,7 @@ All components tested with:
 - [ ] Export functionality (DataCard)
 
 ### Under Consideration
+
 - [ ] Storybook integration
 - [ ] Visual regression tests
 - [ ] Performance benchmarks

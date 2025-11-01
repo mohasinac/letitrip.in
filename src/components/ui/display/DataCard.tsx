@@ -1,6 +1,6 @@
 /**
  * DataCard - A flexible card component for displaying structured data
- * 
+ *
  * @example
  * <DataCard
  *   title="Order Information"
@@ -14,12 +14,16 @@
  * />
  */
 
-import React, { useState } from 'react';
-import { Copy, Check, ExternalLink, Edit, MoreVertical } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { UnifiedCard, CardHeader, CardContent } from '@/components/ui/unified/Card';
-import { UnifiedButton } from '@/components/ui/unified/Button';
-import Link from 'next/link';
+import React, { useState } from "react";
+import { Copy, Check, ExternalLink, Edit, MoreVertical } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  UnifiedCard,
+  CardHeader,
+  CardContent,
+} from "@/components/ui/unified/Card";
+import { UnifiedButton } from "@/components/ui/unified/Button";
+import Link from "next/link";
 
 export interface DataCardField {
   /** Field label */
@@ -48,7 +52,7 @@ export interface DataCardAction {
   /** Optional icon */
   icon?: React.ReactNode;
   /** Button variant */
-  variant?: 'primary' | 'outline' | 'ghost' | 'destructive';
+  variant?: "primary" | "outline" | "ghost" | "destructive";
   /** Loading state */
   loading?: boolean;
   /** Disabled state */
@@ -77,7 +81,7 @@ export interface DataCardProps {
   /** Default collapsed state */
   defaultCollapsed?: boolean;
   /** Card variant */
-  variant?: 'default' | 'elevated' | 'outlined' | 'filled' | 'glass';
+  variant?: "default" | "elevated" | "outlined" | "filled" | "glass";
 }
 
 export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
@@ -93,7 +97,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
       className,
       collapsible = false,
       defaultCollapsed = false,
-      variant = 'default',
+      variant = "default",
       ...props
     },
     ref
@@ -107,14 +111,14 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
         setCopiedField(label);
         setTimeout(() => setCopiedField(null), 2000);
       } catch (error) {
-        console.error('Failed to copy:', error);
+        console.error("Failed to copy:", error);
       }
     };
 
     const gridClasses = {
-      1: 'grid-cols-1',
-      2: 'grid-cols-1 md:grid-cols-2',
-      3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+      1: "grid-cols-1",
+      2: "grid-cols-1 md:grid-cols-2",
+      3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
     };
 
     if (loading) {
@@ -122,7 +126,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
         <UnifiedCard
           ref={ref}
           variant={variant}
-          className={cn('animate-pulse', className)}
+          className={cn("animate-pulse", className)}
           {...props}
         >
           <CardHeader
@@ -135,7 +139,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
             }
           />
           <CardContent>
-            <div className={cn('grid gap-4', gridClasses[columns])}>
+            <div className={cn("grid gap-4", gridClasses[columns])}>
               {Array.from({ length: columns * 2 }).map((_, i) => (
                 <div key={i}>
                   <div className="h-3 bg-surface rounded w-20 mb-2" />
@@ -149,12 +153,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
     }
 
     return (
-      <UnifiedCard
-        ref={ref}
-        variant={variant}
-        className={className}
-        {...props}
-      >
+      <UnifiedCard ref={ref} variant={variant} className={className} {...props}>
         <CardHeader
           title={title}
           subtitle={subtitle}
@@ -162,7 +161,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
             icon && (
               <span className="text-primary">
                 {React.cloneElement(icon as React.ReactElement, {
-                  className: 'w-5 h-5',
+                  className: "w-5 h-5",
                 })}
               </span>
             )
@@ -173,7 +172,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
                 <UnifiedButton
                   key={index}
                   onClick={action.onClick}
-                  variant={action.variant || 'ghost'}
+                  variant={action.variant || "ghost"}
                   size="sm"
                   loading={action.loading}
                   disabled={action.disabled}
@@ -181,7 +180,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
                   {action.icon && (
                     <span className="mr-1">
                       {React.cloneElement(action.icon as React.ReactElement, {
-                        className: 'w-4 h-4',
+                        className: "w-4 h-4",
                       })}
                     </span>
                   )}
@@ -194,7 +193,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
                   variant="ghost"
                   size="sm"
                 >
-                  {collapsed ? 'Expand' : 'Collapse'}
+                  {collapsed ? "Expand" : "Collapse"}
                 </UnifiedButton>
               )}
             </div>
@@ -203,20 +202,21 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
 
         {!collapsed && (
           <CardContent>
-            <div className={cn('grid gap-4', gridClasses[columns])}>
+            <div className={cn("grid gap-4", gridClasses[columns])}>
               {data.map((field, index) => {
                 const valueAsString =
-                  typeof field.value === 'string' || typeof field.value === 'number'
+                  typeof field.value === "string" ||
+                  typeof field.value === "number"
                     ? String(field.value)
-                    : '';
+                    : "";
                 const isCopied = copiedField === field.label;
 
                 return (
                   <div
                     key={index}
                     className={cn(
-                      'space-y-1',
-                      field.hideOnMobile && 'hidden md:block'
+                      "space-y-1",
+                      field.hideOnMobile && "hidden md:block"
                     )}
                   >
                     <p className="text-xs text-textSecondary font-medium">
@@ -225,20 +225,27 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
                     <div className="flex items-center gap-2">
                       <div
                         className={cn(
-                          'font-medium flex-1',
-                          field.highlight && 'text-lg text-primary font-semibold',
+                          "font-medium flex-1",
+                          field.highlight &&
+                            "text-lg text-primary font-semibold",
                           field.valueClassName
                         )}
                       >
                         {field.link ? (
                           <Link
                             href={field.link}
-                            target={field.linkExternal ? '_blank' : undefined}
-                            rel={field.linkExternal ? 'noopener noreferrer' : undefined}
+                            target={field.linkExternal ? "_blank" : undefined}
+                            rel={
+                              field.linkExternal
+                                ? "noopener noreferrer"
+                                : undefined
+                            }
                             className="text-primary hover:underline inline-flex items-center gap-1"
                           >
                             {field.value}
-                            {field.linkExternal && <ExternalLink className="w-3 h-3" />}
+                            {field.linkExternal && (
+                              <ExternalLink className="w-3 h-3" />
+                            )}
                           </Link>
                         ) : (
                           field.value
@@ -250,8 +257,8 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
                         <button
                           onClick={() => handleCopy(valueAsString, field.label)}
                           className={cn(
-                            'p-1 rounded hover:bg-surface transition-colors',
-                            isCopied && 'text-success'
+                            "p-1 rounded hover:bg-surface transition-colors",
+                            isCopied && "text-success"
                           )}
                           title="Copy to clipboard"
                         >
@@ -274,7 +281,7 @@ export const DataCard = React.forwardRef<HTMLDivElement, DataCardProps>(
   }
 );
 
-DataCard.displayName = 'DataCard';
+DataCard.displayName = "DataCard";
 
 /**
  * DataCardGroup - A container for multiple related DataCards
@@ -283,18 +290,18 @@ export interface DataCardGroupProps {
   children: React.ReactNode;
   className?: string;
   /** Vertical spacing between cards */
-  spacing?: 'sm' | 'md' | 'lg';
+  spacing?: "sm" | "md" | "lg";
 }
 
 export const DataCardGroup: React.FC<DataCardGroupProps> = ({
   children,
   className,
-  spacing = 'md',
+  spacing = "md",
 }) => {
   const spacingClasses = {
-    sm: 'space-y-2',
-    md: 'space-y-4',
-    lg: 'space-y-6',
+    sm: "space-y-2",
+    md: "space-y-4",
+    lg: "space-y-6",
   };
 
   return (

@@ -1,6 +1,6 @@
 /**
  * EmptyState - A component for displaying empty states with actions
- * 
+ *
  * @example
  * <EmptyState
  *   icon={<Package />}
@@ -14,9 +14,9 @@
  * />
  */
 
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { UnifiedButton } from '@/components/ui/unified/Button';
+import React from "react";
+import { cn } from "@/lib/utils";
+import { UnifiedButton } from "@/components/ui/unified/Button";
 
 export interface EmptyStateAction {
   /** Button label */
@@ -26,7 +26,7 @@ export interface EmptyStateAction {
   /** Optional icon */
   icon?: React.ReactNode;
   /** Button variant */
-  variant?: 'primary' | 'outline' | 'ghost';
+  variant?: "primary" | "outline" | "ghost";
   /** Loading state */
   loading?: boolean;
 }
@@ -43,7 +43,12 @@ export interface EmptyStateProps {
   /** Secondary action button */
   secondaryAction?: EmptyStateAction;
   /** Variant determines the style */
-  variant?: 'no-data' | 'no-results' | 'error' | 'no-permission' | 'coming-soon';
+  variant?:
+    | "no-data"
+    | "no-results"
+    | "error"
+    | "no-permission"
+    | "coming-soon";
   /** Additional CSS classes */
   className?: string;
   /** Custom image URL instead of icon */
@@ -55,30 +60,30 @@ export interface EmptyStateProps {
 }
 
 const variantStyles = {
-  'no-data': {
-    iconColor: 'text-textSecondary',
-    titleColor: 'text-text',
-    bgColor: 'bg-transparent',
+  "no-data": {
+    iconColor: "text-textSecondary",
+    titleColor: "text-text",
+    bgColor: "bg-transparent",
   },
-  'no-results': {
-    iconColor: 'text-info',
-    titleColor: 'text-text',
-    bgColor: 'bg-info/5',
+  "no-results": {
+    iconColor: "text-info",
+    titleColor: "text-text",
+    bgColor: "bg-info/5",
   },
   error: {
-    iconColor: 'text-error',
-    titleColor: 'text-error',
-    bgColor: 'bg-error/5',
+    iconColor: "text-error",
+    titleColor: "text-error",
+    bgColor: "bg-error/5",
   },
-  'no-permission': {
-    iconColor: 'text-warning',
-    titleColor: 'text-text',
-    bgColor: 'bg-warning/5',
+  "no-permission": {
+    iconColor: "text-warning",
+    titleColor: "text-text",
+    bgColor: "bg-warning/5",
   },
-  'coming-soon': {
-    iconColor: 'text-primary',
-    titleColor: 'text-text',
-    bgColor: 'bg-primary/5',
+  "coming-soon": {
+    iconColor: "text-primary",
+    titleColor: "text-text",
+    bgColor: "bg-primary/5",
   },
 };
 
@@ -90,7 +95,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       description,
       action,
       secondaryAction,
-      variant = 'no-data',
+      variant = "no-data",
       className,
       image,
       imageAlt,
@@ -105,7 +110,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       <div
         ref={ref}
         className={cn(
-          'flex flex-col items-center justify-center text-center py-12 px-4 rounded-lg',
+          "flex flex-col items-center justify-center text-center py-12 px-4 rounded-lg",
           styles.bgColor,
           className
         )}
@@ -119,16 +124,16 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
             className="w-48 h-48 object-contain mb-6 opacity-80"
           />
         ) : icon ? (
-          <div className={cn('mb-6', styles.iconColor)}>
+          <div className={cn("mb-6", styles.iconColor)}>
             {React.cloneElement(icon as React.ReactElement, {
-              className: 'w-16 h-16 mx-auto',
+              className: "w-16 h-16 mx-auto",
               strokeWidth: 1.5,
             })}
           </div>
         ) : null}
 
         {/* Title */}
-        <h3 className={cn('text-lg font-semibold mb-2', styles.titleColor)}>
+        <h3 className={cn("text-lg font-semibold mb-2", styles.titleColor)}>
           {title}
         </h3>
 
@@ -145,14 +150,14 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
             {action && (
               <UnifiedButton
                 onClick={action.onClick}
-                variant={action.variant || 'primary'}
+                variant={action.variant || "primary"}
                 loading={action.loading}
                 className="min-w-[140px]"
               >
                 {action.icon && (
                   <span className="mr-2">
                     {React.cloneElement(action.icon as React.ReactElement, {
-                      className: 'w-4 h-4',
+                      className: "w-4 h-4",
                     })}
                   </span>
                 )}
@@ -163,7 +168,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
             {secondaryAction && (
               <UnifiedButton
                 onClick={secondaryAction.onClick}
-                variant={secondaryAction.variant || 'outline'}
+                variant={secondaryAction.variant || "outline"}
                 loading={secondaryAction.loading}
                 className="min-w-[140px]"
               >
@@ -172,7 +177,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
                     {React.cloneElement(
                       secondaryAction.icon as React.ReactElement,
                       {
-                        className: 'w-4 h-4',
+                        className: "w-4 h-4",
                       }
                     )}
                   </span>
@@ -190,7 +195,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
   }
 );
 
-EmptyState.displayName = 'EmptyState';
+EmptyState.displayName = "EmptyState";
 
 /**
  * Common preset empty states for quick use

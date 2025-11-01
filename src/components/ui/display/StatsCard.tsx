@@ -1,6 +1,6 @@
 /**
  * StatsCard - A card component for displaying statistics with trends and icons
- * 
+ *
  * @example
  * <StatsCard
  *   title="Total Orders"
@@ -11,16 +11,16 @@
  * />
  */
 
-import React from 'react';
-import { TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { UnifiedCard } from '@/components/ui/unified/Card';
+import React from "react";
+import { TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { UnifiedCard } from "@/components/ui/unified/Card";
 
 export interface StatsCardTrend {
   /** The trend value (e.g., 12 for 12%) */
   value: number;
   /** The direction of the trend */
-  direction: 'up' | 'down' | 'neutral';
+  direction: "up" | "down" | "neutral";
   /** Optional label (e.g., "from last month") */
   label?: string;
   /** Whether to show percentage sign */
@@ -37,7 +37,7 @@ export interface StatsCardProps {
   /** Optional trend information */
   trend?: StatsCardTrend;
   /** Color theme for the icon background */
-  color?: 'primary' | 'success' | 'warning' | 'error' | 'info';
+  color?: "primary" | "success" | "warning" | "error" | "info";
   /** Loading state */
   loading?: boolean;
   /** Optional description */
@@ -53,20 +53,20 @@ export interface StatsCardProps {
 }
 
 const colorClasses = {
-  primary: 'bg-primary/10 text-primary',
-  success: 'bg-success/10 text-success',
-  warning: 'bg-warning/10 text-warning',
-  error: 'bg-error/10 text-error',
-  info: 'bg-info/10 text-info',
+  primary: "bg-primary/10 text-primary",
+  success: "bg-success/10 text-success",
+  warning: "bg-warning/10 text-warning",
+  error: "bg-error/10 text-error",
+  info: "bg-info/10 text-info",
 };
 
 const trendClasses = {
-  up: 'text-success',
-  down: 'text-error',
-  neutral: 'text-textSecondary',
+  up: "text-success",
+  down: "text-error",
+  neutral: "text-textSecondary",
 };
 
-const TrendIcon = ({ direction }: { direction: 'up' | 'down' | 'neutral' }) => {
+const TrendIcon = ({ direction }: { direction: "up" | "down" | "neutral" }) => {
   const icons = {
     up: TrendingUp,
     down: TrendingDown,
@@ -83,7 +83,7 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
       value,
       icon,
       trend,
-      color = 'primary',
+      color = "primary",
       loading = false,
       description,
       onClick,
@@ -101,7 +101,7 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
         <UnifiedCard
           ref={ref}
           variant="elevated"
-          className={cn('animate-pulse', className)}
+          className={cn("animate-pulse", className)}
           {...props}
         >
           <div className="flex items-center justify-between">
@@ -121,8 +121,8 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
         ref={ref}
         variant="elevated"
         className={cn(
-          'transition-all duration-200',
-          onClick && 'cursor-pointer hover:shadow-lg hover:-translate-y-0.5',
+          "transition-all duration-200",
+          onClick && "cursor-pointer hover:shadow-lg hover:-translate-y-0.5",
           className
         )}
         onClick={onClick}
@@ -145,15 +145,15 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
             {trend && (
               <p
                 className={cn(
-                  'text-xs flex items-center gap-1',
+                  "text-xs flex items-center gap-1",
                   trendClasses[trend.direction]
                 )}
               >
                 <TrendIcon direction={trend.direction} />
                 <span className="font-medium">
-                  {trend.direction === 'up' && '+'}
+                  {trend.direction === "up" && "+"}
                   {trend.value}
-                  {trend.showPercentage !== false && '%'}
+                  {trend.showPercentage !== false && "%"}
                 </span>
                 {trend.label && (
                   <span className="text-textSecondary">{trend.label}</span>
@@ -170,13 +170,13 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
           {icon && (
             <div
               className={cn(
-                'p-3 rounded-lg transition-transform duration-200',
+                "p-3 rounded-lg transition-transform duration-200",
                 colorClasses[color],
-                onClick && 'group-hover:scale-110'
+                onClick && "group-hover:scale-110"
               )}
             >
               {React.cloneElement(icon as React.ReactElement, {
-                className: 'w-6 h-6',
+                className: "w-6 h-6",
               })}
             </div>
           )}
@@ -186,7 +186,7 @@ export const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
   }
 );
 
-StatsCard.displayName = 'StatsCard';
+StatsCard.displayName = "StatsCard";
 
 /**
  * StatsCardGrid - A responsive grid container for multiple StatsCards
@@ -203,14 +203,14 @@ export const StatsCardGrid: React.FC<StatsCardGridProps> = ({
   className,
 }) => {
   const gridClasses = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+    1: "grid-cols-1",
+    2: "grid-cols-1 md:grid-cols-2",
+    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
   };
 
   return (
-    <div className={cn('grid gap-4', gridClasses[columns], className)}>
+    <div className={cn("grid gap-4", gridClasses[columns], className)}>
       {children}
     </div>
   );

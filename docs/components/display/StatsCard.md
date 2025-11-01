@@ -21,8 +21,8 @@ The `StatsCard` component displays key metrics and statistics with optional tren
 ## Basic Usage
 
 ```tsx
-import { StatsCard, StatsCardGrid } from '@/components/ui/display';
-import { ShoppingCart } from 'lucide-react';
+import { StatsCard, StatsCardGrid } from "@/components/ui/display";
+import { ShoppingCart } from "lucide-react";
 
 function Dashboard() {
   return (
@@ -34,7 +34,7 @@ function Dashboard() {
         trend={{ value: 12, direction: "up", label: "from last month" }}
         color="primary"
       />
-      
+
       <StatsCard
         title="Revenue"
         value="$45,678"
@@ -42,7 +42,7 @@ function Dashboard() {
         trend={{ value: 8, direction: "up", label: "vs last week" }}
         color="success"
       />
-      
+
       <StatsCard
         title="Conversion Rate"
         value="3.24%"
@@ -59,28 +59,28 @@ function Dashboard() {
 
 ### StatsCardProps
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | Required | The title/label of the stat |
-| `value` | `string \| number` | Required | The main value to display |
-| `icon` | `ReactNode` | - | Optional icon to display |
-| `trend` | `StatsCardTrend` | - | Trend information with direction |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Icon background color theme |
-| `loading` | `boolean` | `false` | Show loading skeleton |
-| `description` | `string` | - | Alternative to trend, shows plain text |
-| `onClick` | `() => void` | - | Click handler (makes card clickable) |
-| `formatValue` | `(value) => string` | - | Custom value formatter |
-| `tooltip` | `string` | - | Tooltip text on hover |
-| `className` | `string` | - | Additional CSS classes |
+| Prop          | Type                                                       | Default     | Description                            |
+| ------------- | ---------------------------------------------------------- | ----------- | -------------------------------------- |
+| `title`       | `string`                                                   | Required    | The title/label of the stat            |
+| `value`       | `string \| number`                                         | Required    | The main value to display              |
+| `icon`        | `ReactNode`                                                | -           | Optional icon to display               |
+| `trend`       | `StatsCardTrend`                                           | -           | Trend information with direction       |
+| `color`       | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Icon background color theme            |
+| `loading`     | `boolean`                                                  | `false`     | Show loading skeleton                  |
+| `description` | `string`                                                   | -           | Alternative to trend, shows plain text |
+| `onClick`     | `() => void`                                               | -           | Click handler (makes card clickable)   |
+| `formatValue` | `(value) => string`                                        | -           | Custom value formatter                 |
+| `tooltip`     | `string`                                                   | -           | Tooltip text on hover                  |
+| `className`   | `string`                                                   | -           | Additional CSS classes                 |
 
 ### StatsCardTrend
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `value` | `number` | Required | Trend value (e.g., 12 for 12%) |
-| `direction` | `'up' \| 'down' \| 'neutral'` | Required | Trend direction |
-| `label` | `string` | - | Label text (e.g., "from last month") |
-| `showPercentage` | `boolean` | `true` | Show % sign after value |
+| Prop             | Type                          | Default  | Description                          |
+| ---------------- | ----------------------------- | -------- | ------------------------------------ |
+| `value`          | `number`                      | Required | Trend value (e.g., 12 for 12%)       |
+| `direction`      | `'up' \| 'down' \| 'neutral'` | Required | Trend direction                      |
+| `label`          | `string`                      | -        | Label text (e.g., "from last month") |
+| `showPercentage` | `boolean`                     | `true`   | Show % sign after value              |
 
 ## Examples
 
@@ -99,11 +99,7 @@ function Dashboard() {
 ### Loading State
 
 ```tsx
-<StatsCard
-  title="Loading..."
-  value={0}
-  loading={true}
-/>
+<StatsCard title="Loading..." value={0} loading={true} />
 ```
 
 ### Clickable Card
@@ -113,7 +109,7 @@ function Dashboard() {
   title="New Messages"
   value={42}
   icon={<MessageSquare />}
-  onClick={() => router.push('/messages')}
+  onClick={() => router.push("/messages")}
   tooltip="Click to view messages"
 />
 ```
@@ -184,8 +180,8 @@ The `StatsCardGrid` component provides responsive grid layouts:
 ```tsx
 // Dashboard with real data
 function DashboardStats() {
-  const { data, loading } = useQuery('dashboard-stats');
-  
+  const { data, loading } = useQuery("dashboard-stats");
+
   return (
     <StatsCardGrid columns={4}>
       <StatsCard
@@ -195,8 +191,8 @@ function DashboardStats() {
         icon={<DollarSign />}
         trend={{
           value: data?.salesTrend || 0,
-          direction: data?.salesTrend > 0 ? 'up' : 'down',
-          label: 'vs last month'
+          direction: data?.salesTrend > 0 ? "up" : "down",
+          label: "vs last month",
         }}
         color="success"
         loading={loading}

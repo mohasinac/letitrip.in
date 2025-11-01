@@ -20,12 +20,12 @@ The `EmptyState` component provides beautiful, consistent UI for empty states, n
 ## Basic Usage
 
 ```tsx
-import { EmptyState } from '@/components/ui/display';
-import { Package, Plus } from 'lucide-react';
+import { EmptyState } from "@/components/ui/display";
+import { Package, Plus } from "lucide-react";
 
 function ProductsList() {
   const { products, loading } = useProducts();
-  
+
   if (!loading && products.length === 0) {
     return (
       <EmptyState
@@ -34,49 +34,50 @@ function ProductsList() {
         description="Get started by adding your first product"
         action={{
           label: "Add Product",
-          onClick: () => router.push('/products/new'),
-          icon: <Plus />
+          onClick: () => router.push("/products/new"),
+          icon: <Plus />,
         }}
         secondaryAction={{
           label: "Import Products",
-          onClick: handleImport
+          onClick: handleImport,
         }}
       />
     );
   }
-  
+
   return <ProductsGrid products={products} />;
 }
 ```
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `icon` | `ReactNode` | - | Icon or illustration to display |
-| `title` | `string` | Required | Main title text |
-| `description` | `string` | - | Description text below title |
-| `action` | `EmptyStateAction` | - | Primary action button |
-| `secondaryAction` | `EmptyStateAction` | - | Secondary action button |
-| `variant` | `'no-data' \| 'no-results' \| 'error' \| 'no-permission' \| 'coming-soon'` | `'no-data'` | Visual variant |
-| `image` | `string` | - | Custom image URL (instead of icon) |
-| `imageAlt` | `string` | - | Alt text for image |
-| `children` | `ReactNode` | - | Additional content below actions |
-| `className` | `string` | - | Additional CSS classes |
+| Prop              | Type                                                                       | Default     | Description                        |
+| ----------------- | -------------------------------------------------------------------------- | ----------- | ---------------------------------- |
+| `icon`            | `ReactNode`                                                                | -           | Icon or illustration to display    |
+| `title`           | `string`                                                                   | Required    | Main title text                    |
+| `description`     | `string`                                                                   | -           | Description text below title       |
+| `action`          | `EmptyStateAction`                                                         | -           | Primary action button              |
+| `secondaryAction` | `EmptyStateAction`                                                         | -           | Secondary action button            |
+| `variant`         | `'no-data' \| 'no-results' \| 'error' \| 'no-permission' \| 'coming-soon'` | `'no-data'` | Visual variant                     |
+| `image`           | `string`                                                                   | -           | Custom image URL (instead of icon) |
+| `imageAlt`        | `string`                                                                   | -           | Alt text for image                 |
+| `children`        | `ReactNode`                                                                | -           | Additional content below actions   |
+| `className`       | `string`                                                                   | -           | Additional CSS classes             |
 
 ### EmptyStateAction
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | `string` | Required | Button label |
-| `onClick` | `() => void` | Required | Click handler |
-| `icon` | `ReactNode` | - | Optional button icon |
-| `variant` | `'primary' \| 'outline' \| 'ghost'` | `'primary'` (primary) or `'outline'` (secondary) | Button variant |
-| `loading` | `boolean` | `false` | Loading state |
+| Prop      | Type                                | Default                                          | Description          |
+| --------- | ----------------------------------- | ------------------------------------------------ | -------------------- |
+| `label`   | `string`                            | Required                                         | Button label         |
+| `onClick` | `() => void`                        | Required                                         | Click handler        |
+| `icon`    | `ReactNode`                         | -                                                | Optional button icon |
+| `variant` | `'primary' \| 'outline' \| 'ghost'` | `'primary'` (primary) or `'outline'` (secondary) | Button variant       |
+| `loading` | `boolean`                           | `false`                                          | Loading state        |
 
 ## Variants
 
 ### no-data
+
 Default variant for when no data exists yet.
 
 ```tsx
@@ -89,6 +90,7 @@ Default variant for when no data exists yet.
 ```
 
 ### no-results
+
 For search or filter results.
 
 ```tsx
@@ -101,6 +103,7 @@ For search or filter results.
 ```
 
 ### error
+
 For error states.
 
 ```tsx
@@ -111,12 +114,13 @@ For error states.
   description="We couldn't load the data"
   action={{
     label: "Try Again",
-    onClick: refetch
+    onClick: refetch,
   }}
 />
 ```
 
 ### no-permission
+
 For access denied scenarios.
 
 ```tsx
@@ -129,6 +133,7 @@ For access denied scenarios.
 ```
 
 ### coming-soon
+
 For features under development.
 
 ```tsx
@@ -194,7 +199,7 @@ import { EmptyStatePresets } from '@/components/ui/display';
   action={{
     label: "Import Data",
     onClick: handleImport,
-    icon: <Upload />
+    icon: <Upload />,
   }}
 />
 ```
@@ -208,7 +213,7 @@ import { EmptyStatePresets } from '@/components/ui/display';
   description="Upload your first document"
   action={{
     label: "Upload",
-    onClick: handleUpload
+    onClick: handleUpload,
   }}
 >
   <div className="mt-4 text-sm text-textSecondary">
@@ -229,7 +234,7 @@ import { EmptyStatePresets } from '@/components/ui/display';
     label: "Sync Now",
     onClick: handleSync,
     loading: syncing,
-    icon: <RefreshCw />
+    icon: <RefreshCw />,
   }}
 />
 ```
@@ -256,9 +261,9 @@ import { EmptyStatePresets } from '@/components/ui/display';
 ```tsx
 function MyList() {
   const { data, loading, error } = useData();
-  
+
   if (loading) return <LoadingSpinner />;
-  
+
   if (error) {
     return (
       <EmptyState
@@ -268,12 +273,12 @@ function MyList() {
         description={error.message}
         action={{
           label: "Retry",
-          onClick: refetch
+          onClick: refetch,
         }}
       />
     );
   }
-  
+
   if (data.length === 0) {
     return (
       <EmptyState
@@ -282,12 +287,12 @@ function MyList() {
         description="Get started by creating your first item"
         action={{
           label: "Create Item",
-          onClick: handleCreate
+          onClick: handleCreate,
         }}
       />
     );
   }
-  
+
   return <ItemsList data={data} />;
 }
 ```
@@ -297,7 +302,7 @@ function MyList() {
 ```tsx
 function SearchResults({ query, filters, results }) {
   const hasFilters = Object.values(filters).some(Boolean);
-  
+
   if (results.length === 0) {
     return (
       <EmptyState
@@ -312,13 +317,13 @@ function SearchResults({ query, filters, results }) {
         action={
           hasFilters && {
             label: "Clear Filters",
-            onClick: clearFilters
+            onClick: clearFilters,
           }
         }
       />
     );
   }
-  
+
   return <ResultsList results={results} />;
 }
 ```

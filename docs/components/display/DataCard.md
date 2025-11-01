@@ -22,8 +22,8 @@ The `DataCard` component displays structured data in a beautiful, organized card
 ## Basic Usage
 
 ```tsx
-import { DataCard } from '@/components/ui/display';
-import { ShoppingCart, Edit, Trash } from 'lucide-react';
+import { DataCard } from "@/components/ui/display";
+import { ShoppingCart, Edit, Trash } from "lucide-react";
 
 function OrderDetails({ order }) {
   return (
@@ -35,7 +35,11 @@ function OrderDetails({ order }) {
         { label: "Order ID", value: order.id, copy: true },
         { label: "Status", value: <StatusBadge status={order.status} /> },
         { label: "Total", value: formatCurrency(order.total), highlight: true },
-        { label: "Customer", value: order.customerName, link: `/customers/${order.customerId}` },
+        {
+          label: "Customer",
+          value: order.customerName,
+          link: `/customers/${order.customerId}`,
+        },
         { label: "Created", value: formatDate(order.createdAt) },
         { label: "Updated", value: formatDate(order.updatedAt) },
       ]}
@@ -45,14 +49,14 @@ function OrderDetails({ order }) {
           label: "Edit",
           icon: <Edit />,
           onClick: handleEdit,
-          variant: "outline"
+          variant: "outline",
         },
         {
           label: "Delete",
           icon: <Trash />,
           onClick: handleDelete,
-          variant: "destructive"
-        }
+          variant: "destructive",
+        },
       ]}
     />
   );
@@ -63,43 +67,43 @@ function OrderDetails({ order }) {
 
 ### DataCardProps
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | Required | Card title |
-| `icon` | `ReactNode` | - | Optional header icon |
-| `subtitle` | `string` | - | Optional subtitle/description |
-| `data` | `DataCardField[]` | Required | Array of data fields |
-| `columns` | `1 \| 2 \| 3` | `2` | Grid columns |
-| `actions` | `DataCardAction[]` | - | Action buttons |
-| `loading` | `boolean` | `false` | Loading state |
-| `collapsible` | `boolean` | `false` | Enable collapse |
-| `defaultCollapsed` | `boolean` | `false` | Initially collapsed |
-| `variant` | `'default' \| 'elevated' \| 'outlined' \| 'filled' \| 'glass'` | `'default'` | Card variant |
-| `className` | `string` | - | Additional CSS classes |
+| Prop               | Type                                                           | Default     | Description                   |
+| ------------------ | -------------------------------------------------------------- | ----------- | ----------------------------- |
+| `title`            | `string`                                                       | Required    | Card title                    |
+| `icon`             | `ReactNode`                                                    | -           | Optional header icon          |
+| `subtitle`         | `string`                                                       | -           | Optional subtitle/description |
+| `data`             | `DataCardField[]`                                              | Required    | Array of data fields          |
+| `columns`          | `1 \| 2 \| 3`                                                  | `2`         | Grid columns                  |
+| `actions`          | `DataCardAction[]`                                             | -           | Action buttons                |
+| `loading`          | `boolean`                                                      | `false`     | Loading state                 |
+| `collapsible`      | `boolean`                                                      | `false`     | Enable collapse               |
+| `defaultCollapsed` | `boolean`                                                      | `false`     | Initially collapsed           |
+| `variant`          | `'default' \| 'elevated' \| 'outlined' \| 'filled' \| 'glass'` | `'default'` | Card variant                  |
+| `className`        | `string`                                                       | -           | Additional CSS classes        |
 
 ### DataCardField
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | `string` | Required | Field label |
-| `value` | `ReactNode` | Required | Field value (can be JSX) |
-| `copy` | `boolean` | `false` | Enable copy-to-clipboard |
-| `highlight` | `boolean` | `false` | Highlight this field (larger, bold) |
-| `link` | `string` | - | URL to navigate to |
-| `linkExternal` | `boolean` | `false` | Open link in new tab |
-| `valueClassName` | `string` | - | Custom class for value |
-| `hideOnMobile` | `boolean` | `false` | Hide on mobile devices |
+| Prop             | Type        | Default  | Description                         |
+| ---------------- | ----------- | -------- | ----------------------------------- |
+| `label`          | `string`    | Required | Field label                         |
+| `value`          | `ReactNode` | Required | Field value (can be JSX)            |
+| `copy`           | `boolean`   | `false`  | Enable copy-to-clipboard            |
+| `highlight`      | `boolean`   | `false`  | Highlight this field (larger, bold) |
+| `link`           | `string`    | -        | URL to navigate to                  |
+| `linkExternal`   | `boolean`   | `false`  | Open link in new tab                |
+| `valueClassName` | `string`    | -        | Custom class for value              |
+| `hideOnMobile`   | `boolean`   | `false`  | Hide on mobile devices              |
 
 ### DataCardAction
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | `string` | Required | Action label |
-| `onClick` | `() => void` | Required | Click handler |
-| `icon` | `ReactNode` | - | Optional icon |
-| `variant` | `'primary' \| 'outline' \| 'ghost' \| 'destructive'` | `'ghost'` | Button variant |
-| `loading` | `boolean` | `false` | Loading state |
-| `disabled` | `boolean` | `false` | Disabled state |
+| Prop       | Type                                                 | Default   | Description    |
+| ---------- | ---------------------------------------------------- | --------- | -------------- |
+| `label`    | `string`                                             | Required  | Action label   |
+| `onClick`  | `() => void`                                         | Required  | Click handler  |
+| `icon`     | `ReactNode`                                          | -         | Optional icon  |
+| `variant`  | `'primary' \| 'outline' \| 'ghost' \| 'destructive'` | `'ghost'` | Button variant |
+| `loading`  | `boolean`                                            | `false`   | Loading state  |
+| `disabled` | `boolean`                                            | `false`   | Disabled state |
 
 ## Examples
 
@@ -146,10 +150,8 @@ function OrderDetails({ order }) {
     {
       label: "Status",
       value: (
-        <Badge variant={getStatusVariant(order.status)}>
-          {order.status}
-        </Badge>
-      )
+        <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
+      ),
     },
     {
       label: "Progress",
@@ -158,8 +160,8 @@ function OrderDetails({ order }) {
           <Progress value={order.progress} className="flex-1" />
           <span>{order.progress}%</span>
         </div>
-      )
-    }
+      ),
+    },
   ]}
   columns={1}
 />
@@ -176,13 +178,13 @@ function OrderDetails({ order }) {
       label: "Website",
       value: customer.website,
       link: customer.websiteUrl,
-      linkExternal: true
+      linkExternal: true,
     },
     {
       label: "Profile",
       value: "View Profile",
-      link: `/customers/${customer.id}`
-    }
+      link: `/customers/${customer.id}`,
+    },
   ]}
   columns={2}
 />
@@ -219,14 +221,14 @@ function OrderDetails({ order }) {
       label: "Upgrade",
       icon: <ArrowUp />,
       onClick: handleUpgrade,
-      variant: "primary"
+      variant: "primary",
     },
     {
       label: "Cancel",
       icon: <X />,
       onClick: handleCancel,
-      variant: "destructive"
-    }
+      variant: "destructive",
+    },
   ]}
 />
 ```
@@ -234,12 +236,7 @@ function OrderDetails({ order }) {
 ### Loading State
 
 ```tsx
-<DataCard
-  title="Loading data..."
-  data={[]}
-  loading={true}
-  columns={2}
-/>
+<DataCard title="Loading data..." data={[]} loading={true} columns={2} />
 ```
 
 ## DataCardGroup
@@ -247,13 +244,13 @@ function OrderDetails({ order }) {
 Group multiple related cards with consistent spacing:
 
 ```tsx
-import { DataCardGroup } from '@/components/ui/display';
+import { DataCardGroup } from "@/components/ui/display";
 
 <DataCardGroup spacing="lg">
   <DataCard title="Personal Info" data={personalData} />
   <DataCard title="Contact Info" data={contactData} />
   <DataCard title="Preferences" data={preferencesData} />
-</DataCardGroup>
+</DataCardGroup>;
 ```
 
 Spacing options: `'sm'` | `'md'` | `'lg'`
@@ -269,13 +266,13 @@ Fields with `copy: true` show a copy button that copies the value to clipboard:
     {
       label: "API Key",
       value: "sk_live_abc123...",
-      copy: true  // Shows copy button
+      copy: true, // Shows copy button
     },
     {
       label: "Secret",
       value: "********",
-      copy: true
-    }
+      copy: true,
+    },
   ]}
 />
 ```
@@ -305,11 +302,11 @@ function OrderDetailsPage({ orderId }) {
   const { data: order, loading } = useOrder(orderId);
   const { mutate: updateOrder } = useUpdateOrder();
   const { mutate: deleteOrder } = useDeleteOrder();
-  
+
   if (loading) {
     return <DataCard title="Loading..." data={[]} loading={true} columns={2} />;
   }
-  
+
   return (
     <DataCardGroup spacing="md">
       <DataCard
@@ -318,7 +315,11 @@ function OrderDetailsPage({ orderId }) {
         data={[
           { label: "Order ID", value: order.id, copy: true },
           { label: "Status", value: <StatusBadge status={order.status} /> },
-          { label: "Total", value: formatCurrency(order.total), highlight: true },
+          {
+            label: "Total",
+            value: formatCurrency(order.total),
+            highlight: true,
+          },
           { label: "Items", value: order.items.length },
           { label: "Created", value: formatDate(order.createdAt) },
           { label: "Updated", value: formatDate(order.updatedAt) },
@@ -334,11 +335,11 @@ function OrderDetailsPage({ orderId }) {
             label: "Delete",
             icon: <Trash />,
             onClick: () => deleteOrder(orderId),
-            variant: "destructive"
-          }
+            variant: "destructive",
+          },
         ]}
       />
-      
+
       <DataCard
         title="Customer Information"
         icon={<User />}
@@ -349,12 +350,12 @@ function OrderDetailsPage({ orderId }) {
           {
             label: "Profile",
             value: "View Profile",
-            link: `/customers/${order.customer.id}`
+            link: `/customers/${order.customer.id}`,
           },
         ]}
         columns={2}
       />
-      
+
       <DataCard
         title="Shipping Address"
         icon={<MapPin />}
