@@ -9,7 +9,11 @@ export default function AdminNotificationsPage() {
         description="Manage system notifications and alerts"
         breadcrumbs={[
           { label: "Admin", href: "/admin" },
-          { label: "Notifications", href: "/admin/notifications", active: true },
+          {
+            label: "Notifications",
+            href: "/admin/notifications",
+            active: true,
+          },
         ]}
       />
     </RoleGuard>

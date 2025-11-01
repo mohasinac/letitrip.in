@@ -100,7 +100,8 @@ export default function Notifications({
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"delete" | "view" | null>(null);
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
@@ -113,11 +114,14 @@ export default function Notifications({
       const params = new URLSearchParams();
       if (searchQuery) params.append("search", searchQuery);
       if (typeFilter !== "all") params.append("type", typeFilter);
-      if (statusFilter !== "all") params.append("isRead", statusFilter === "read" ? "true" : "false");
+      if (statusFilter !== "all")
+        params.append("isRead", statusFilter === "read" ? "true" : "false");
       if (severityFilter !== "all") params.append("severity", severityFilter);
 
       const response = await apiClient.get(
-        `/admin/notifications${params.toString() ? `?${params.toString()}` : ""}`
+        `/admin/notifications${
+          params.toString() ? `?${params.toString()}` : ""
+        }`
       );
 
       if (response) {
@@ -178,7 +182,9 @@ export default function Notifications({
 
     try {
       setActionLoading(true);
-      await apiClient.delete(`/admin/notifications?id=${selectedNotification.id}`);
+      await apiClient.delete(
+        `/admin/notifications?id=${selectedNotification.id}`
+      );
       fetchNotifications();
       setShowModal(false);
       setSelectedNotification(null);
@@ -255,7 +261,11 @@ export default function Notifications({
       label: "Notification",
       render: (notif: Notification) => (
         <div className="max-w-md">
-          <div className={`text-sm font-medium ${!notif.isRead ? "font-bold" : ""} text-gray-900 dark:text-white`}>
+          <div
+            className={`text-sm font-medium ${
+              !notif.isRead ? "font-bold" : ""
+            } text-gray-900 dark:text-white`}
+          >
             {notif.title}
           </div>
           <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
@@ -281,12 +291,17 @@ export default function Notifications({
         const Icon = getSeverityIcon(notif.severity);
         return (
           <div className="flex items-center gap-1">
-            <Icon className={`w-4 h-4 ${
-              notif.severity === "error" ? "text-red-500" :
-              notif.severity === "warning" ? "text-yellow-500" :
-              notif.severity === "success" ? "text-green-500" :
-              "text-blue-500"
-            }`} />
+            <Icon
+              className={`w-4 h-4 ${
+                notif.severity === "error"
+                  ? "text-red-500"
+                  : notif.severity === "warning"
+                  ? "text-yellow-500"
+                  : notif.severity === "success"
+                  ? "text-green-500"
+                  : "text-blue-500"
+              }`}
+            />
             <span className="text-sm capitalize">{notif.severity}</span>
           </div>
         );
@@ -305,7 +320,7 @@ export default function Notifications({
       ),
       badge: (notif: Notification) => ({
         text: notif.isRead ? "Read" : "Unread",
-        color: notif.isRead ? "gray" : "blue" as any,
+        color: notif.isRead ? "gray" : ("blue" as any),
       }),
     },
     {
@@ -512,7 +527,11 @@ export default function Notifications({
             setShowModal(false);
             setSelectedNotification(null);
           }}
-          title={modalType === "view" ? "Notification Details" : "Delete Notification"}
+          title={
+            modalType === "view"
+              ? "Notification Details"
+              : "Delete Notification"
+          }
         >
           <div className="space-y-4">
             {/* Notification Details */}
@@ -569,11 +588,16 @@ export default function Notifications({
               <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                 <div>User: {selectedNotification.sellerId}</div>
                 <div>•</div>
-                <div>{new Date(selectedNotification.createdAt).toLocaleString()}</div>
+                <div>
+                  {new Date(selectedNotification.createdAt).toLocaleString()}
+                </div>
                 {selectedNotification.isRead && selectedNotification.readAt && (
                   <>
                     <div>•</div>
-                    <div>Read: {new Date(selectedNotification.readAt).toLocaleString()}</div>
+                    <div>
+                      Read:{" "}
+                      {new Date(selectedNotification.readAt).toLocaleString()}
+                    </div>
                   </>
                 )}
               </div>
@@ -589,7 +613,8 @@ export default function Notifications({
                       Warning: This action cannot be undone
                     </p>
                     <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                      Deleting this notification will permanently remove it from the system.
+                      Deleting this notification will permanently remove it from
+                      the system.
                     </p>
                   </div>
                 </div>
