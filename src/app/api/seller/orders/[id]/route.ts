@@ -39,7 +39,7 @@ export async function GET(
 
     // Get order document
     const orderDoc = await adminDb
-      .collection("seller_orders")
+      .collection("orders")
       .doc(orderId)
       .get();
 

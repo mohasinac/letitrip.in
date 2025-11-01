@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     // Build query
     let query = adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .where("sellerId", "==", sellerId)
       .orderBy("createdAt", "desc");
 
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     // Check if coupon code already exists for this seller
     const existingCoupon = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .where("sellerId", "==", sellerId)
       .where("code", "==", body.code.toUpperCase())
       .limit(1)
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create coupon
-    const docRef = await adminDb.collection("seller_coupons").add(couponData);
+    const docRef = await adminDb.collection("coupons").add(couponData);
     const newCoupon = await docRef.get();
 
     return NextResponse.json(

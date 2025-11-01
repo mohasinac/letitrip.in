@@ -45,7 +45,7 @@ interface Category {
 export default function CategoryDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -59,6 +59,7 @@ export default function CategoryDetailPage({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [slug, setSlug] = useState<string>("");
 
   const [searchQuery, setSearchQuery] = useState(
     searchParams?.get("search") || ""
@@ -73,7 +74,12 @@ export default function CategoryDetailPage({
   );
   const [showFilters, setShowFilters] = useState(false);
 
-  const slug = params.slug;
+  // Unwrap params promise
+  useEffect(() => {
+    params.then((resolvedParams) => {
+      setSlug(resolvedParams.slug);
+    });
+  }, [params]);
 
   useEffect(() => {
     if (slug) {

@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
 
     const adminDb = getAdminDb();
 
-    // Fetch all orders from seller_orders collection
-    const ordersSnapshot = await adminDb.collection("seller_orders").get();
+    // Fetch all orders from orders collection
+    const ordersSnapshot = await adminDb.collection("orders").get();
 
     const allOrders = ordersSnapshot.docs.map((doc) => ({
       id: doc.id,

@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Build query
     let query = adminDb
-      .collection("seller_orders")
+      .collection("orders")
       .where("sellerId", "==", sellerId);
 
     // Filter by status if provided
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate stats
     const allOrdersSnapshot = await adminDb
-      .collection("seller_orders")
+      .collection("orders")
       .where("sellerId", "==", sellerId)
       .get();
 

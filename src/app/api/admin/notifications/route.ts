@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     const db = getAdminDb();
-    let query = db.collection("seller_alerts");
+    let query = db.collection("alerts");
 
     // Apply filters
     if (type && type !== "all") {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    const docRef = await db.collection("seller_alerts").add(notificationData);
+    const docRef = await db.collection("alerts").add(notificationData);
 
     return NextResponse.json({
       success: true,
@@ -144,7 +144,7 @@ export async function PATCH(request: NextRequest) {
       const now = new Date().toISOString();
 
       for (const id of notificationIds) {
-        const ref = db.collection("seller_alerts").doc(id);
+        const ref = db.collection("alerts").doc(id);
         batch.update(ref, {
           isRead: true,
           readAt: now,
@@ -179,7 +179,7 @@ export async function PATCH(request: NextRequest) {
       const batch = db.batch();
 
       for (const id of notificationIds) {
-        const ref = db.collection("seller_alerts").doc(id);
+        const ref = db.collection("alerts").doc(id);
         batch.delete(ref);
       }
 
@@ -201,7 +201,7 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      await db.collection("seller_alerts").doc(notificationId).update({
+      await db.collection("alerts").doc(notificationId).update({
         isRead: true,
         readAt: new Date().toISOString(),
       });
@@ -236,7 +236,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const db = getAdminDb();
-    await db.collection("seller_alerts").doc(notificationId).delete();
+    await db.collection("alerts").doc(notificationId).delete();
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

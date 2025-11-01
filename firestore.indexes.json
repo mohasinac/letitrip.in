@@ -118,7 +118,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_products",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_products",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -135,7 +135,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_products",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -144,7 +144,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_products",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "status", "order": "ASCENDING" },
@@ -153,7 +153,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_coupons",
+      "collectionGroup": "coupons",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -161,24 +161,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_coupons",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "sellerId", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "seller_sales",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "sellerId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "seller_sales",
+      "collectionGroup": "coupons",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -187,7 +170,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_orders",
+      "collectionGroup": "sales",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -195,7 +178,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_orders",
+      "collectionGroup": "sales",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -204,7 +187,24 @@
       ]
     },
     {
-      "collectionGroup": "seller_orders",
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -213,7 +213,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_shipments",
+      "collectionGroup": "shipments",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -221,7 +221,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_shipments",
+      "collectionGroup": "shipments",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -230,7 +230,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_alerts",
+      "collectionGroup": "alerts",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -238,7 +238,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_alerts",
+      "collectionGroup": "alerts",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },
@@ -247,7 +247,7 @@
       ]
     },
     {
-      "collectionGroup": "seller_alerts",
+      "collectionGroup": "alerts",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "sellerId", "order": "ASCENDING" },

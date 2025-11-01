@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     let updatedCount = 0;
 
     for (const alertId of alertIds) {
-      const alertRef = db.collection("seller_alerts").doc(alertId);
+      const alertRef = db.collection("alerts").doc(alertId);
       const alertSnap = await alertRef.get();
 
       if (!alertSnap.exists) {

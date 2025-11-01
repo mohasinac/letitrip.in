@@ -43,7 +43,7 @@ export async function POST(
     const { reason } = body;
 
     // Get order document
-    const orderRef = adminDb.collection("seller_orders").doc(orderId);
+    const orderRef = adminDb.collection("orders").doc(orderId);
     const orderDoc = await orderRef.get();
 
     if (!orderDoc.exists) {
@@ -86,7 +86,7 @@ export async function POST(
     });
 
     // Create alert for seller
-    await adminDb.collection("seller_alerts").add({
+    await adminDb.collection("alerts").add({
       sellerId,
       orderId,
       orderNumber: orderData?.orderNumber,

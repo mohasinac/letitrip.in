@@ -563,7 +563,7 @@ export async function DELETE(request: NextRequest) {
     // Update products that use any of these categories
     // Set their categoryId to null and categoryName to empty string
     const productsSnapshot = await db
-      .collection("seller_products")
+      .collection("products")
       .where("categoryId", "in", allCategoriesToDelete.slice(0, 10)) // Firestore 'in' query limit is 10
       .get();
 
@@ -572,7 +572,7 @@ export async function DELETE(request: NextRequest) {
     for (let i = 0; i < allCategoriesToDelete.length; i += 10) {
       const batch = allCategoriesToDelete.slice(i, i + 10);
       const snapshot = await db
-        .collection("seller_products")
+        .collection("products")
         .where("categoryId", "in", batch)
         .get();
 

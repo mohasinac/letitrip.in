@@ -41,8 +41,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    // Build query - fetch from seller_products collection
-    let firestoreQuery: any = adminDb.collection("seller_products");
+    // Build query - fetch from products collection
+    let firestoreQuery: any = adminDb.collection("products");
 
     // Apply filters
     if (status && status !== "all") {
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create product in Firestore
-    const docRef = await adminDb.collection("seller_products").add(productData);
+    const docRef = await adminDb.collection("products").add(productData);
 
     return NextResponse.json({
       success: true,
@@ -250,7 +250,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete each product
     ids.forEach((id: string) => {
-      const docRef = adminDb.collection("seller_products").doc(id);
+      const docRef = adminDb.collection("products").doc(id);
       batch.delete(docRef);
     });
 

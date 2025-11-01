@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Build query
     let query = adminDb
-      .collection("seller_products")
+      .collection("products")
       .where("sellerId", "==", uid);
 
     // Filter by status
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     // Validate SKU uniqueness if provided
     if (body.sku) {
       const existingProduct = await adminDb
-        .collection("seller_products")
+        .collection("products")
         .where("sellerId", "==", uid)
         .where("sku", "==", body.sku)
         .limit(1)
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
     // Validate slug uniqueness
     if (body.seo?.slug) {
       const existingSlug = await adminDb
-        .collection("seller_products")
+        .collection("products")
         .where("seo.slug", "==", body.seo.slug)
         .limit(1)
         .get();
@@ -286,7 +286,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create product in Firestore
-    const docRef = await adminDb.collection("seller_products").add(productData);
+    const docRef = await adminDb.collection("products").add(productData);
 
     // Return created product
     const createdProduct = {

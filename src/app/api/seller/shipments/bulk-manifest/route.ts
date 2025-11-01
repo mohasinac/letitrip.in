@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const shipments: any[] = [];
     for (const shipmentId of shipmentIds) {
       const shipmentSnap = await db
-        .collection("seller_shipments")
+        .collection("shipments")
         .doc(shipmentId)
         .get();
 
@@ -248,7 +248,7 @@ function generateManifestHtml(shipments: any[]): string {
 
   <div class="footer">
     <p>This is a computer-generated manifest. No signature required.</p>
-    <p>Â© ${now.getFullYear()} hobbiesspot.com - All rights reserved</p>
+    <p>© ${now.getFullYear()} hobbiesspot.com - All rights reserved</p>
   </div>
 </body>
 </html>

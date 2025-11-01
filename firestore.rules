@@ -7,12 +7,23 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Products collection - read for all, write for admins only
+    // Products collection - public read, sellers can manage their own, admins manage all
     match /products/{productId} {
-      allow read: if true; // Anyone can read products
-      allow write: if request.auth != null && 
-                      exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Public read for active products only
+      allow read: if resource.data.status == 'active' || isAdmin() || 
+                     (request.auth != null && resource.data.sellerId == request.auth.uid);
+      
+      // Sellers can create products with their sellerId
+      allow create: if request.auth != null && 
+                       (isAdmin() || 
+                        (isSeller() && request.resource.data.sellerId == request.auth.uid));
+      
+      // Sellers can update their own products, admins can update all
+      allow update: if request.auth != null && 
+                       (isAdmin() || resource.data.sellerId == request.auth.uid);
+      
+      // Only admins can delete products
+      allow delete: if request.auth != null && isAdmin();
       
       // Product reviews subcollection
       match /reviews/{reviewId} {
@@ -146,22 +157,8 @@ service cloud.firestore {
       allow read, write: if request.auth != null && isAdmin();
     }
     
-    // Seller Products collection - sellers can manage their own products, admins can manage all
-    match /seller_products/{productId} {
-      allow read: if true; // Anyone can read products
-      allow create: if request.auth != null && 
-                       (isAdmin() || 
-                        (isSeller() && 
-                         request.resource.data.sellerId == request.auth.uid)) &&
-                       validateSellerProduct();
-      allow update: if request.auth != null && 
-                       (isAdmin() || resource.data.sellerId == request.auth.uid);
-      allow delete: if request.auth != null && 
-                       (isAdmin() || resource.data.sellerId == request.auth.uid);
-    }
-    
-    // Seller Coupons collection - sellers can manage their own coupons, admins can manage all
-    match /seller_coupons/{couponId} {
+    // Coupons collection (common) - sellers can manage their own coupons, admins can manage all
+    match /coupons/{couponId} {
       allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
       allow get: if request.auth != null && 
                     (isAdmin() || resource.data.sellerId == request.auth.uid);
@@ -176,8 +173,8 @@ service cloud.firestore {
                        (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
-    // Seller Sales collection - sellers can manage their own sales, admins can manage all
-    match /seller_sales/{saleId} {
+    // Sales collection (common) - sellers can manage their own sales, admins can manage all
+    match /sales/{saleId} {
       allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
       allow get: if request.auth != null && 
                     (isAdmin() || resource.data.sellerId == request.auth.uid);
@@ -192,6 +189,36 @@ service cloud.firestore {
                        (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
+    // Notifications collection (common) - users can access their own notifications
+    match /notifications/{notificationId} {
+      allow list: if request.auth != null; // Authenticated users can query/list (with userId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null; // System creates notifications
+      allow update: if request.auth != null && 
+                       (isAdmin() || resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && 
+                       (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Alerts collection (common) - users/sellers can access their own alerts
+    match /alerts/{alertId} {
+      allow list: if request.auth != null; // Authenticated users can query/list (with userId/sellerId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || 
+                     resource.data.userId == request.auth.uid || 
+                     resource.data.sellerId == request.auth.uid);
+      allow create: if request.auth != null; // System creates alerts
+      allow update: if request.auth != null && 
+                       (isAdmin() || 
+                        resource.data.userId == request.auth.uid || 
+                        resource.data.sellerId == request.auth.uid);
+      allow delete: if request.auth != null && 
+                       (isAdmin() || 
+                        resource.data.userId == request.auth.uid || 
+                        resource.data.sellerId == request.auth.uid);
+    }
+    
     // Seller Shops collection - sellers can manage their own shops, admins can manage all
     match /sellers/{sellerId} {
       allow read: if true; // Anyone can read shop info
@@ -200,41 +227,16 @@ service cloud.firestore {
       allow delete: if request.auth != null && isAdmin(); // Only admins can delete shops
     }
     
-    // Seller Orders collection - sellers see their orders, admins see all
-    match /seller_orders/{orderId} {
-      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
-      allow get: if request.auth != null && 
-                    (isAdmin() || resource.data.sellerId == request.auth.uid);
-      allow create: if request.auth != null; // System creates orders
-      allow update: if request.auth != null && 
-                       (isAdmin() || resource.data.sellerId == request.auth.uid);
-      allow delete: if isAdmin(); // Only admins can delete orders
-    }
-    
-    // Seller Shipments collection
-    match /seller_shipments/{shipmentId} {
-      // Allow listing/querying shipments
-      // Sellers can only query their own shipments (enforced in the query with where clause)
-      // Admins can query all shipments
+    // Shipments collection (common) - tied to orders, accessible by seller and customer
+    match /shipments/{shipmentId} {
       allow list: if request.auth != null;
-      // Allow reading specific shipment documents
       allow get: if request.auth != null && 
-                    (isAdmin() || resource.data.sellerId == request.auth.uid);
+                    (isAdmin() || 
+                     resource.data.sellerId == request.auth.uid || 
+                     resource.data.userId == request.auth.uid);
       allow create, update: if request.auth != null && 
-                               (isAdmin() || request.resource.data.sellerId == request.auth.uid);
+                               (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow delete: if isAdmin(); // Only admins can delete shipments
-    }
-    
-    // Seller Alerts collection
-    match /seller_alerts/{alertId} {
-      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
-      allow get: if request.auth != null && 
-                    (isAdmin() || resource.data.sellerId == request.auth.uid);
-      allow create: if request.auth != null; // System creates alerts
-      allow update: if request.auth != null && 
-                       (isAdmin() || resource.data.sellerId == request.auth.uid);
-      allow delete: if request.auth != null && 
-                       (isAdmin() || resource.data.sellerId == request.auth.uid);
     }
     
     // Helper functions

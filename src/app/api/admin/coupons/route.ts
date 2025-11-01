@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Fetch all seller coupons
-    let query = db.collection("seller_coupons").orderBy("createdAt", "desc");
+    let query = db.collection("coupons").orderBy("createdAt", "desc");
 
     // Apply status filter
     if (status && status !== "all") {
@@ -132,7 +132,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete the coupon
-    await db.collection("seller_coupons").doc(id).delete();
+    await db.collection("coupons").doc(id).delete();
 
     return NextResponse.json({ message: "Coupon deleted successfully" });
   } catch (error: any) {

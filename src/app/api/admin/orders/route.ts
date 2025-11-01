@@ -41,8 +41,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    // Build query - fetch from seller_orders collection
-    let firestoreQuery: any = adminDb.collection("seller_orders");
+    // Build query - fetch from orders collection
+    let firestoreQuery: any = adminDb.collection("orders");
 
     // Apply filters
     if (status && status !== "all") {
@@ -156,7 +156,7 @@ export async function PATCH(request: NextRequest) {
 
     // Update each order
     ids.forEach((id: string) => {
-      const docRef = adminDb.collection("seller_orders").doc(id);
+      const docRef = adminDb.collection("orders").doc(id);
       batch.update(docRef, {
         status,
         updatedAt: new Date(),

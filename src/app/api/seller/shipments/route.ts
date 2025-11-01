@@ -41,24 +41,24 @@ export async function GET(req: NextRequest) {
     if (userRole === "admin") {
       if (statusFilter !== "all") {
         shipmentsQuery = db
-          .collection("seller_shipments")
+          .collection("shipments")
           .where("status", "==", statusFilter)
           .orderBy("createdAt", "desc");
       } else {
         shipmentsQuery = db
-          .collection("seller_shipments")
+          .collection("shipments")
           .orderBy("createdAt", "desc");
       }
     } else {
       if (statusFilter !== "all") {
         shipmentsQuery = db
-          .collection("seller_shipments")
+          .collection("shipments")
           .where("sellerId", "==", userId)
           .where("status", "==", statusFilter)
           .orderBy("createdAt", "desc");
       } else {
         shipmentsQuery = db
-          .collection("seller_shipments")
+          .collection("shipments")
           .where("sellerId", "==", userId)
           .orderBy("createdAt", "desc");
       }
@@ -77,10 +77,10 @@ export async function GET(req: NextRequest) {
     // Calculate stats
     let statsQuery;
     if (userRole === "admin") {
-      statsQuery = db.collection("seller_shipments");
+      statsQuery = db.collection("shipments");
     } else {
       statsQuery = db
-        .collection("seller_shipments")
+        .collection("shipments")
         .where("sellerId", "==", userId);
     }
 

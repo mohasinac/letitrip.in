@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     const search = searchParams.get("search");
 
-    // Build query - fetch from seller_shipments collection
-    let firestoreQuery: any = db.collection("seller_shipments");
+    // Build query - fetch from shipments collection
+    let firestoreQuery: any = db.collection("shipments");
 
     // Apply status filter
     if (status && status !== "all") {
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     );
 
     // Calculate stats
-    const allShipmentsSnapshot = await db.collection("seller_shipments").get();
+    const allShipmentsSnapshot = await db.collection("shipments").get();
     const allShipments = allShipmentsSnapshot.docs.map((doc) => doc.data());
 
     const stats = {

@@ -157,7 +157,7 @@ export async function GET(
     const { id } = await params; // Await params
 
     // Get product document
-    const docRef = adminDb.collection("seller_products").doc(id);
+    const docRef = adminDb.collection("products").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -238,7 +238,7 @@ export async function PUT(
     const body = await request.json();
 
     // Get existing product
-    const docRef = adminDb.collection("seller_products").doc(id);
+    const docRef = adminDb.collection("products").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -261,7 +261,7 @@ export async function PUT(
     // Validate SKU uniqueness if changed
     if (body.sku && body.sku !== existingProduct?.sku) {
       const existingSkuProduct = await adminDb
-        .collection("seller_products")
+        .collection("products")
         .where("sellerId", "==", uid)
         .where("sku", "==", body.sku)
         .limit(1)
@@ -278,7 +278,7 @@ export async function PUT(
     // Validate slug uniqueness if changed
     if (body.seo?.slug && body.seo.slug !== existingProduct?.seo?.slug) {
       const existingSlug = await adminDb
-        .collection("seller_products")
+        .collection("products")
         .where("seo.slug", "==", body.seo.slug)
         .limit(1)
         .get();
@@ -479,7 +479,7 @@ export async function DELETE(
     const { id } = await params; // Await params
 
     // Get product document
-    const docRef = adminDb.collection("seller_products").doc(id);
+    const docRef = adminDb.collection("products").doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {

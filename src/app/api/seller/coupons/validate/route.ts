@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Find the coupon
     const couponSnapshot = await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .where("code", "==", couponCode.toUpperCase())
       .where("status", "==", "active")
       .limit(1)

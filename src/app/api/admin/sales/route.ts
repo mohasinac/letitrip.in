@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     const search = searchParams.get("search");
 
-    // Build query - fetch from seller_sales collection
-    let firestoreQuery: any = db.collection("seller_sales");
+    // Build query - fetch from sales collection
+    let firestoreQuery: any = db.collection("sales");
 
     // Apply status filter
     if (status && status !== "all") {
@@ -154,7 +154,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete the sale
-    await db.collection("seller_sales").doc(id).delete();
+    await db.collection("sales").doc(id).delete();
 
     return NextResponse.json({
       success: true,

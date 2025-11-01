@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Build query
-    let query = adminDb.collection("seller_sales").where("sellerId", "==", uid);
+    let query = adminDb.collection("sales").where("sellerId", "==", uid);
 
     // Filter by status
     if (status) {
@@ -214,7 +214,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create sale in Firestore
-    const docRef = await adminDb.collection("seller_sales").add(saleData);
+    const docRef = await adminDb.collection("sales").add(saleData);
 
     // Return created sale
     const createdSale = {

@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     // Build base query for orders using Admin SDK
     const db = getAdminDb();
     let ordersQuery = db
-      .collection("seller_orders")
+      .collection("orders")
       .where("createdAt", ">=", startTimestamp)
       .orderBy("createdAt", "desc");
 
@@ -140,14 +140,14 @@ export async function GET(req: NextRequest) {
 
     // Get low stock products using Admin SDK
     let productsQuery = db
-      .collection("seller_products")
+      .collection("products")
       .where("status", "==", "active")
       .orderBy("stock", "asc")
       .limit(10);
 
     if (userRole !== "admin") {
       productsQuery = db
-        .collection("seller_products")
+        .collection("products")
         .where("sellerId", "==", userId)
         .where("status", "==", "active")
         .orderBy("stock", "asc")

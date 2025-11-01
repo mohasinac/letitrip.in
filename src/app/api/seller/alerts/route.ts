@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     // Build query using Admin SDK
     const db = getAdminDb();
-    let alertsQuery = db.collection("seller_alerts").orderBy("createdAt", "desc");
+    let alertsQuery = db.collection("alerts").orderBy("createdAt", "desc");
 
     if (userRole !== "admin") {
       alertsQuery = alertsQuery.where("sellerId", "==", userId);
@@ -60,8 +60,8 @@ export async function GET(req: NextRequest) {
 
     // Get stats using Admin SDK
     const statsQuery = userRole !== "admin" 
-      ? db.collection("seller_alerts").where("sellerId", "==", userId)
-      : db.collection("seller_alerts");
+      ? db.collection("alerts").where("sellerId", "==", userId)
+      : db.collection("alerts");
 
     const statsSnap = await statsQuery.get();
     let totalAlerts = 0;

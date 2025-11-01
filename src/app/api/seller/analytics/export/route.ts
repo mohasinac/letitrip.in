@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     // Get orders using Admin SDK
     const db = getAdminDb();
     let ordersQuery = db
-      .collection("seller_orders")
+      .collection("orders")
       .where("createdAt", ">=", startTimestamp)
       .orderBy("createdAt", "desc");
 
