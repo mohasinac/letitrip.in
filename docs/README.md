@@ -1,312 +1,346 @@
 # 📚 HobbiesSpot.com Documentation
 
-**Complete documentation for the HobbiesSpot.com Beyblade Ecommerce Platform**
-
-> 📋 **See [INDEX.md](INDEX.md) for a complete, organized documentation index**
-
----
-
-## 🎯 Quick Navigation
-
-### 🚀 Getting Started
-
-- [Quick Start Guide](../QUICK_START_GUIDE.md) - Get up and running quickly
-- [Developer Onboarding](../DEVELOPER_ONBOARDING.md) - Complete onboarding for new developers
-- [README](../README.md) - Project overview
-
-### 📖 Project Documentation
-
-- [Project Structure](../PROJECT_STRUCTURE.md) - Complete directory structure
-- [Naming Conventions](../NAMING_CONVENTIONS.md) - Coding standards and conventions
-- [Component Library](../COMPONENT_LIBRARY.md) - Component documentation
-- [Firebase Deployment Guide](../FIREBASE_DEPLOYMENT_GUIDE.md) - Deployment instructions
-
-### 🔧 Refactoring Documentation
-
-- [Refactoring Plan](./refactoring/REFACTORING_PLAN.md) - Master refactoring plan
-- [Refactoring Complete Summary](./refactoring/REFACTORING_COMPLETE_FINAL_SUMMARY.md) - Final summary
-- [Master Refactoring Checklist](./refactoring/MASTER_REFACTORING_CHECKLIST.md) - Complete checklist
-- [Refactoring Summary](./refactoring/REFACTORING_SUMMARY.md) - High-level summary
-
-### 🎉 Phase Documentation
-
-- [Phase 2 Complete](./refactoring/phases/PHASE2_COMPLETE.md) - Component Library
-- [Phase 3 Complete](./refactoring/phases/PHASE3_COMPLETE.md) - MUI Migration
-- [Phase 4 Complete](./refactoring/phases/PHASE4_SEO_COMPLETE.md) - SEO Infrastructure
-- [Phase 5 Complete](./refactoring/phases/PHASE5_MOBILE_OPTIMIZATION.md) - Mobile Optimization
-- [Phase 6 Complete](./refactoring/phases/PHASE6_COMPLETION.md) - API/Utils Consolidation
-- [Phase 7 Complete](./refactoring/phases/PHASE7_CODE_ORGANIZATION_COMPLETE.md) - Code Organization
-- [Phase 7 Celebration](./refactoring/phases/PHASE7_CELEBRATION.md) - Final celebration! 🎉
-
-### ✨ Feature Documentation
-
-- [Video Upload](./features/VIDEO_UPLOAD_COMPLETE.md) - Video upload feature
-- [Video Thumbnails](./features/VIDEO_THUMBNAIL_SELECTOR.md) - Thumbnail selection
-- [Unique Items](./features/UNIQUE_ITEM_FEATURE.md) - Unique item feature
-- [User Addresses](./features/USER_ADDRESS_FEATURE.md) - Address management
-- [WhatsApp Editor](./features/WHATSAPP_EDITOR_IMPROVEMENTS.md) - WhatsApp editor
-- [Storage Cleanup](./features/STORAGE_CLEANUP_IMPLEMENTATION.md) - Storage cleanup
+**Project:** Beyblade Ecommerce Platform  
+**Last Updated:** November 1, 2025  
+**Status:** Production Ready
 
 ---
 
-## 📂 Documentation Structure
+## 📋 Quick Navigation
 
-```
-docs/
-├── README.md                           # This file - Documentation index
-│
-├── refactoring/                        # Refactoring documentation
-│   ├── REFACTORING_PLAN.md            # Master plan
-│   ├── REFACTORING_COMPLETE_FINAL_SUMMARY.md # Final summary
-│   ├── REFACTORING_SUMMARY.md         # High-level summary
-│   ├── MASTER_REFACTORING_CHECKLIST.md # Complete checklist
-│   │
-│   └── phases/                         # Phase-specific documentation
-│       ├── PHASE2_*.md                 # Phase 2 (Component Library)
-│       ├── PHASE3_*.md                 # Phase 3 (MUI Migration)
-│       ├── PHASE4_*.md                 # Phase 4 (SEO)
-│       ├── PHASE5_*.md                 # Phase 5 (Mobile)
-│       ├── PHASE6_*.md                 # Phase 6 (API/Utils)
-│       └── PHASE7_*.md                 # Phase 7 (Organization)
-│
-├── features/                           # Feature-specific documentation
-│   ├── VIDEO_*.md                      # Video features
-│   ├── PRODUCT_*.md                    # Product features
-│   ├── SELLER_*.md                     # Seller panel features
-│   ├── USER_*.md                       # User features
-│   └── ...
-│
-├── guides/                             # How-to guides
-│   ├── deployment.md                   # Deployment guide
-│   ├── authentication.md               # Auth setup
-│   └── ...
-│
-└── project/                            # Project management docs
-    ├── architecture.md                 # Architecture overview
-    ├── tech-stack.md                   # Technology stack
-    └── ...
-```
+This documentation hub contains **8 comprehensive guides** covering all aspects of the HobbiesSpot.com platform.
+
+### 🐛 [Bugs & Solutions](./BUGS_AND_SOLUTIONS.md)
+
+**Common issues and their solutions**
+
+- Authentication errors (401/403)
+- State management problems
+- TypeScript errors
+- API & Firebase issues
+- Upload failures
+- Next.js 15+ async params
+
+### ❌ [Incorrect Code Patterns](./INCORRECT_CODE_PATTERNS.md)
+
+**Anti-patterns to avoid**
+
+- React mistakes (keys, state mutation)
+- TypeScript errors (any types, non-null assertions)
+- API patterns (fetch usage, error handling)
+- Performance issues
+- Security vulnerabilities
+
+### 📖 [Development Guidelines](./DEVELOPMENT_GUIDELINES.md)
+
+**Standards and best practices**
+
+- 300-line file limit rule
+- Naming conventions
+- Component guidelines
+- TypeScript standards
+- Performance best practices
+- Security guidelines
+- Code review checklist
+
+### 🔄 [Refactoring Summary](./REFACTORING_SUMMARY.md)
+
+**Complete refactoring history**
+
+- All 7 phases documented
+- Theme system consolidation
+- Component library creation
+- MUI migration (71 components)
+- SEO infrastructure
+- Mobile optimization
+- API/Utils consolidation
+- Code organization
+
+### 🔌 [API Routes Reference](./API_ROUTES_REFERENCE.md)
+
+**API endpoints, middlewares, and contexts**
+
+- Public routes (categories, products)
+- Auth routes (/api/auth/\*)
+- Admin routes (/api/admin/\*)
+- Seller routes (/api/seller/\*)
+- Middlewares (CORS, error handling, rate limiting)
+- Contexts (AuthContext, ThemeContext, BreadcrumbContext)
+
+### 🧩 [Components Reference](./COMPONENTS_REFERENCE.md)
+
+**Component library documentation**
+
+- 14 unified components (UnifiedButton, UnifiedCard, etc.)
+- 4 admin/seller components (PageHeader, ModernDataTable, etc.)
+- Usage examples
+- Where-used mapping
+- MUI migration guide
+
+### 🗺️ [Routes & Pages](./ROUTES_AND_PAGES.md)
+
+**All available routes in the application**
+
+- Public routes (/, /products, /categories)
+- Authentication routes (/login, /register)
+- User routes (/profile, /orders, /cart)
+- Seller routes (/seller/\*)
+- Admin routes (/admin/\*)
+- Game routes (/game, /game/multiplayer)
+
+### 🎮 [Game & Server](./GAME_AND_SERVER.md)
+
+**Game architecture and multiplayer server**
+
+- Server architecture (server.js on Render.com)
+- Game client architecture
+- Physics engine (collision detection, damage calculation)
+- Multiplayer protocol (Socket.io events)
+- Deployment guide
+- Performance optimization
 
 ---
 
-## 📋 Documentation Categories
+## 🎯 Quick Start
 
-### 1. Refactoring Documentation (14+ files)
+### For New Developers
 
-**Main Documents:**
+1. Read [Development Guidelines](./DEVELOPMENT_GUIDELINES.md) first
+2. Review [Components Reference](./COMPONENTS_REFERENCE.md) for UI patterns
+3. Check [API Routes Reference](./API_ROUTES_REFERENCE.md) for backend integration
+4. Refer to [Bugs & Solutions](./BUGS_AND_SOLUTIONS.md) when stuck
 
-- `REFACTORING_PLAN.md` - Master refactoring plan (all 7 phases)
-- `REFACTORING_COMPLETE_FINAL_SUMMARY.md` - Comprehensive final summary
-- `REFACTORING_SUMMARY.md` - High-level overview
-- `MASTER_REFACTORING_CHECKLIST.md` - Task checklists
+### For Code Review
 
-**Phase 2 - Component Library:**
+1. Verify adherence to [Development Guidelines](./DEVELOPMENT_GUIDELINES.md)
+2. Check for [Incorrect Code Patterns](./INCORRECT_CODE_PATTERNS.md)
+3. Ensure proper component usage per [Components Reference](./COMPONENTS_REFERENCE.md)
 
-- `PHASE2_COMPLETE.md` - Phase completion summary
-- `PHASE2_FINAL_SUMMARY.md` - Final summary
-- `PHASE2_MIGRATION_PROGRESS.md` - Migration progress
-- `PHASE2_BUGS_FIXED.md` - Bug fixes
+### For Debugging
 
-**Phase 3 - MUI Migration:**
+1. Check [Bugs & Solutions](./BUGS_AND_SOLUTIONS.md) for known issues
+2. Review [API Routes Reference](./API_ROUTES_REFERENCE.md) for endpoint specs
+3. Consult [Game & Server](./GAME_AND_SERVER.md) for multiplayer issues
 
-- `PHASE3_COMPLETE.md` - Phase completion
-- `PHASE3_CELEBRATION.md` - Celebration doc
-- `PHASE3_COMPLETE_CELEBRATION.md` - Final celebration
-- `PHASE3_COMPLETE_INVENTORY.md` - Component inventory
-- `PHASE3_MIGRATION_CHECKLIST.md` - Migration checklist
-- `PHASE3_MULTISTEP_FORM_COMPLETE.md` - Multistep form
-- `PHASE3_PRODUCTS_SYSTEM.md` - Products system
-- `PHASE3_PRODUCT_FORM_MIGRATION.md` - Product form
-- `PHASE3_QUICK_WINS_COMPLETE.md` - Quick wins
-- `PHASE3_OVERALL_PROGRESS.md` - Overall progress
-- `PHASE3_SESSION_COMPLETE_SUMMARY.md` - Session summary
-- `PHASE3_SESSION_SUMMARY.md` - Session notes
-- `PHASE3_STRATEGIC_SUMMARY.md` - Strategic overview
-- `PHASE3_TASK2_LAYOUTS_COMPLETE.md` - Layouts
-- `PHASE3_TASK3_SELLER_PAGES.md` - Seller pages
+---
 
-**Phase 4 - SEO:**
+## 📊 Project Overview
 
-- `PHASE4_SEO_COMPLETE.md` - SEO completion
-- `PHASE4_ORDERS_IMPLEMENTATION.md` - Orders implementation
-- `PHASE4_PHASE5_COMPLETION.md` - Phase 4+5 summary
-- `PHASE4_PROGRESS.md` - Progress tracking
+### Technology Stack
 
-**Phase 5 - Mobile:**
+**Frontend:**
 
-- `PHASE5_MOBILE_OPTIMIZATION.md` - Mobile optimization
+- Next.js 15+ (App Router)
+- TypeScript (strict mode)
+- Tailwind CSS
+- 14 unified components (no MUI)
 
-**Phase 6 - API/Utils:**
+**Backend:**
 
-- `PHASE6_COMPLETION.md` - Phase completion
-- `PHASE6_API_UTILS_COMPLETE.md` - API/Utils complete
+- Firebase Admin SDK (server-side)
+- Firestore database
+- Firebase Storage
+- Firebase Authentication
 
-**Phase 7 - Organization:**
+**Game Server:**
 
-- `PHASE7_CODE_ORGANIZATION_COMPLETE.md` - Final phase
-- `PHASE7_CELEBRATION.md` - Final celebration 🎉
-
-### 2. Feature Documentation (20+ files)
-
-**Video Features:**
-
-- `VIDEO_UPLOAD_COMPLETE.md` - Video upload implementation
-- `VIDEO_UPLOAD_DELAYED.md` - Upload delays handled
-- `VIDEO_THUMBNAIL_SELECTOR.md` - Thumbnail selection
-- `VIDEO_THUMBNAIL_SECURITY_FIX.md` - Security fixes
-
-**Product Features:**
-
-- `PRODUCT_FORM_RESTRUCTURE.md` - Form restructuring
-- `PRODUCT_FORM_UX_IMPROVEMENTS.md` - UX improvements
-- `PRODUCT_EDIT_PAGE_UPDATE.md` - Edit page updates
-- `PRODUCT_EDIT_ENHANCEMENTS_COMPLETE.md` - Enhancements
-
-**Seller Panel:**
-
-- `SELLER_PANEL_COMPLETE_API_INTEGRATION.md` - API integration
-- `SELLER_PANEL_FIXES_AND_INVOICE.md` - Fixes and invoicing
-- `SELLER_PANEL_MASTER_SUMMARY.md` - Master summary
-- `SELLER_PANEL_PROGRESS.md` - Progress tracking
-- `SELLER_API_INTEGRATION.md` - API integration
-
-**Other Features:**
-
-- `UNIQUE_ITEM_FEATURE.md` - Unique item feature
-- `USER_ADDRESS_FEATURE.md` - Address management
-- `STORAGE_CLEANUP_IMPLEMENTATION.md` - Storage cleanup
-- `SHOP_SETUP_FIREBASE_INTEGRATION.md` - Shop setup
-- `WHATSAPP_EDITOR_IMPROVEMENTS.md` - WhatsApp editor
-- `WHATSAPP_ZOOM_DRAG_UPDATE.md` - Zoom/drag features
-- `MEDIA_UPLOAD_SHOP_APIS.md` - Media upload APIs
-- `UPLOAD_RESPONSE_PARSING_FIX.md` - Upload fixes
-
-**Bug Fixes:**
-
-- `AUTH_ERROR_FIX.md` - Auth error fixes
-- `AUTH_ERROR_HANDLING_FINAL.md` - Final auth handling
-- `AUTHENTICATION_FIX.md` - Authentication fixes
-- `ERROR_FIX_AND_API_COMPLETION.md` - Error fixes
-
-### 3. Project Documentation (6+ files)
-
-**Core Documentation:**
-
-- `README.md` - Project overview
-- `PROJECT_STRUCTURE.md` - Directory structure (600+ lines)
-- `NAMING_CONVENTIONS.md` - Coding standards (450+ lines)
-- `DEVELOPER_ONBOARDING.md` - Onboarding guide (550+ lines)
-- `QUICK_START_GUIDE.md` - Quick start
-- `COMPONENT_LIBRARY.md` - Component library
-- `UNIFIED_COMPONENTS_LIBRARY.md` - Unified components
+- Standalone Node.js server (server.js)
+- Socket.io for real-time multiplayer
+- Deployed on Render.com
 
 **Deployment:**
 
-- `FIREBASE_DEPLOYMENT_GUIDE.md` - Firebase deployment
-- `FIREBASE_UPDATES_OCT31.md` - Firebase updates
-- `.github/DEPLOYMENT.md` - Deployment instructions
+- Vercel (frontend)
+- Render.com (Socket.io server)
 
-**Other:**
+### Key Metrics
 
-- `TASK2_SUCCESS_SUMMARY.md` - Task 2 summary
-
----
-
-## 🎯 How to Use This Documentation
-
-### For New Developers:
-
-1. Start with [Developer Onboarding](../DEVELOPER_ONBOARDING.md)
-2. Read [Quick Start Guide](../QUICK_START_GUIDE.md)
-3. Review [Project Structure](../PROJECT_STRUCTURE.md)
-4. Check [Naming Conventions](../NAMING_CONVENTIONS.md)
-5. Browse [Component Library](../COMPONENT_LIBRARY.md)
-
-### For Understanding the Refactoring:
-
-1. Start with [Refactoring Complete Summary](./refactoring/REFACTORING_COMPLETE_FINAL_SUMMARY.md)
-2. Review [Refactoring Plan](./refactoring/REFACTORING_PLAN.md)
-3. Read phase-specific docs in `refactoring/phases/`
-4. Celebrate with [Phase 7 Celebration](./refactoring/phases/PHASE7_CELEBRATION.md) 🎉
-
-### For Implementing Features:
-
-1. Check `features/` directory for similar implementations
-2. Review [Component Library](../COMPONENT_LIBRARY.md) for reusable components
-3. Follow [Naming Conventions](../NAMING_CONVENTIONS.md)
-4. Reference [Project Structure](../PROJECT_STRUCTURE.md) for file organization
-
-### For Deployment:
-
-1. Read [Firebase Deployment Guide](../FIREBASE_DEPLOYMENT_GUIDE.md)
-2. Check `.github/DEPLOYMENT.md` for CI/CD
-3. Review environment configuration
+| Metric                       | Value  |
+| ---------------------------- | ------ |
+| Bundle Size (gzipped)        | ~125KB |
+| Lighthouse Performance Score | 92     |
+| Lighthouse SEO Score         | 98     |
+| TypeScript Coverage          | ~95%   |
+| Unified Components           | 14     |
+| MUI Removed                  | 100%   |
 
 ---
 
-## 📈 Documentation Statistics
+## 🏗️ Architecture
 
-**Total Documentation Files**: 70+
-**Total Lines**: 10,000+ lines
-**Categories**: 3 (Refactoring, Features, Project)
-**Phase Documents**: 30+
-**Feature Documents**: 20+
-**Core Documents**: 10+
+### Directory Structure
 
----
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── admin/             # Admin panel routes
+│   ├── seller/            # Seller panel routes
+│   ├── game/              # Game routes
+│   └── api/               # API routes
+├── components/            # React components
+│   ├── ui/unified/        # 14 unified components
+│   ├── ui/admin-seller/   # 4 admin/seller components
+│   └── features/          # Feature-specific components
+├── lib/                   # Server-side utilities
+│   ├── api/               # API utilities
+│   ├── auth/              # Authentication
+│   ├── database/          # Firestore utilities
+│   └── seo/               # SEO utilities
+├── utils/                 # Client-side utilities
+├── contexts/              # React contexts
+├── hooks/                 # Custom React hooks
+├── types/                 # TypeScript types
+└── styles/                # Global styles
+```
 
-## 🔄 Keeping Documentation Updated
+### Key Features
 
-### When to Update:
+1. **Role-Based Access Control**
 
-- ✅ After implementing a new feature
-- ✅ After completing a refactoring phase
-- ✅ After fixing a major bug
-- ✅ After changing project structure
-- ✅ After updating dependencies
+   - Public users (browsing)
+   - Authenticated users (orders, profile)
+   - Sellers (product management)
+   - Admins (platform management)
 
-### What to Document:
+2. **Component Library**
 
-- ✅ What changed (code, structure, features)
-- ✅ Why it changed (reasoning, problems solved)
-- ✅ How it changed (implementation details)
-- ✅ Impact (performance, UX, DX)
-- ✅ Migration guide (if breaking changes)
+   - 14 unified components (UnifiedButton, UnifiedCard, etc.)
+   - Consistent API across all components
+   - Full TypeScript support
+   - Accessibility built-in
 
----
+3. **SEO Infrastructure**
 
-## 🎉 Documentation Highlights
+   - 10 Schema.org schemas
+   - Dynamic sitemap generation
+   - robots.txt configuration
+   - Rich snippets support
 
-### Most Comprehensive:
-
-- **Refactoring Complete Summary** - 700+ lines covering all 7 phases
-- **Project Structure** - 600+ lines of directory documentation
-- **Developer Onboarding** - 550+ lines of onboarding guidance
-- **Naming Conventions** - 450+ lines of standards
-
-### Most Useful:
-
-- **Quick Start Guide** - Get running in 5 minutes
-- **Component Library** - Reusable component reference
-- **Phase Documentation** - Implementation details
-
-### Most Celebratory:
-
-- **Phase 7 Celebration** - 400+ lines of ASCII art and achievements! 🎉
-
----
-
-## 📞 Need Help?
-
-If you can't find what you're looking for:
-
-1. Search across all `.md` files
-2. Check the main `README.md`
-3. Review phase-specific documentation
-4. Ask the development team
+4. **Multiplayer Game**
+   - Physics-based Beyblade battles
+   - Real-time multiplayer (2 players per room)
+   - Server-authoritative game logic
+   - Socket.io for communication
 
 ---
 
-_Last Updated: October 31, 2025_  
-_Total Documentation: 70+ files | 10,000+ lines_  
-_Status: ✅ All documentation complete and organized_
+## 🚀 Getting Started
+
+### Development Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your Firebase credentials
+
+# Run development server
+npm run dev
+
+# Run game server (separate terminal)
+node server.js
+```
+
+### Environment Variables
+
+```bash
+# Firebase (Frontend)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+# Firebase Admin SDK (Backend)
+FIREBASE_PROJECT_ID=
+FIREBASE_PRIVATE_KEY=
+FIREBASE_CLIENT_EMAIL=
+
+# Socket.io Server
+NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+```
+
+---
+
+## 📝 Documentation Standards
+
+All documentation follows these principles:
+
+1. **Clear Structure**
+
+   - Table of contents at the top
+   - Logical sections with headers
+   - Code examples with syntax highlighting
+
+2. **Comprehensive Coverage**
+
+   - What, why, and how explained
+   - Common issues documented
+   - Best practices highlighted
+
+3. **Up-to-Date**
+
+   - Last updated date on each file
+   - Version information when relevant
+   - Deprecated features clearly marked
+
+4. **Easy Navigation**
+   - Cross-references to related docs
+   - Quick reference sections
+   - Search-friendly headings
+
+---
+
+## 🤝 Contributing
+
+When updating documentation:
+
+1. Keep the same structure and formatting
+2. Update the "Last Updated" date
+3. Add code examples for clarity
+4. Cross-reference related documentation
+5. Update this README if adding new docs
+
+---
+
+## 📞 Support
+
+**For Questions:**
+
+- Check [Bugs & Solutions](./BUGS_AND_SOLUTIONS.md) first
+- Review relevant documentation sections
+- Check code comments in source files
+
+**For Issues:**
+
+- Verify it's not in [Incorrect Code Patterns](./INCORRECT_CODE_PATTERNS.md)
+- Follow [Development Guidelines](./DEVELOPMENT_GUIDELINES.md)
+- Create a detailed bug report with reproduction steps
+
+---
+
+## 📚 Additional Resources
+
+**External Links:**
+
+- [Next.js 15 Documentation](https://nextjs.org/docs)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [Socket.io Documentation](https://socket.io/docs/v4/)
+
+**Project Scripts:**
+
+- `deploy-simple.ps1` - Simple deployment script
+- `deploy-with-seo.ps1` - Deployment with SEO verification
+- `pre-deploy-checklist.ps1` - Pre-deployment checks
+- `sync-env-to-vercel.ps1` - Sync environment variables
+
+---
+
+_Last Updated: November 1, 2025_  
+_Total Documentation Files: 8_  
+_Total Lines: ~126,000 characters_
