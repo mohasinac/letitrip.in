@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import { doc, getDoc } from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Get shipping label
@@ -21,7 +19,7 @@ export async function GET(
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -29,21 +27,24 @@ export async function GET(
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
-    // Get shipment
-    const shipmentRef = doc(db, "seller_shipments", params.id);
-    const shipmentSnap = await getDoc(shipmentRef);
+    // Get shipment using Admin SDK
+    const db = getAdminDb();
+    const shipmentSnap = await db
+      .collection("seller_shipments")
+      .doc(params.id)
+      .get();
 
-    if (!shipmentSnap.exists()) {
+    if (!shipmentSnap.exists) {
       return NextResponse.json(
         { success: false, error: "Shipment not found" },
         { status: 404 },
       );
     }
 
-    const shipmentData = shipmentSnap.data();
+    const shipmentData = shipmentSnap.data()!;
 
     // Verify ownership (unless admin)
     if (userRole !== "admin" && shipmentData.sellerId !== userId) {

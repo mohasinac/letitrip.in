@@ -174,6 +174,10 @@ export async function POST(request: NextRequest) {
           : null,
       isPermanent: body.isPermanent || false,
       status: body.status || "active",
+      
+      // Advanced Discount Configuration
+      advancedConfig: body.advancedConfig || null,
+      
       createdAt: now,
       updatedAt: now,
     };

@@ -713,14 +713,23 @@ export interface ProductMediaVideo {
   storage_path: string; // seller/products/{slug}/v1 or v2
 }
 
-// Seller Coupon System (WooCommerce-style)
+// Seller Coupon System (WooCommerce-style with Advanced Types)
 export interface SellerCoupon {
   id: string;
   sellerId: string;
   code: string;
   name: string;
   description?: string;
-  type: "percentage" | "fixed" | "free_shipping" | "bogo" | "cart_discount";
+  type:
+    | "percentage"
+    | "fixed"
+    | "free_shipping"
+    | "bogo"
+    | "cart_discount"
+    | "buy_x_get_y_cheapest"
+    | "buy_x_get_y_percentage"
+    | "tiered_discount"
+    | "bundle_discount";
   value: number;
 
   // Usage Restrictions
@@ -729,6 +738,36 @@ export interface SellerCoupon {
   maxUses?: number;
   maxUsesPerUser?: number;
   usedCount: number;
+
+  // Advanced Discount Configuration
+  advancedConfig?: {
+    // For Buy X Get Y types
+    buyQuantity?: number;
+    getQuantity?: number;
+    getDiscountType?: "free" | "percentage" | "fixed";
+    getDiscountValue?: number;
+    applyToLowest?: boolean;
+    repeatOffer?: boolean;
+
+    // For Tiered Discounts
+    tiers?: Array<{
+      minQuantity: number;
+      maxQuantity?: number;
+      discountType: "percentage" | "fixed";
+      discountValue: number;
+    }>;
+
+    // For Bundle Discounts
+    bundleProducts?: Array<{
+      productId: string;
+      quantity: number;
+    }>;
+    bundleDiscountType?: "percentage" | "fixed";
+    bundleDiscountValue?: number;
+
+    // Maximum discount limit
+    maxDiscountAmount?: number;
+  };
 
   // Dates
   startDate: string;

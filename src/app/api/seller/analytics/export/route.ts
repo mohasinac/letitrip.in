@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  orderBy,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Export analytics data
@@ -25,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -33,8 +24,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     const body = await req.json();
     const { period = "30days" } = body;
@@ -63,26 +54,20 @@ export async function POST(req: NextRequest) {
         startDate.setDate(now.getDate() - 30);
     }
 
-    const startTimestamp = Timestamp.fromDate(startDate);
+    const startTimestamp = startDate;
 
-    // Get orders
-    let ordersQuery;
-    if (userRole === "admin") {
-      ordersQuery = query(
-        collection(db, "seller_orders"),
-        where("createdAt", ">=", startTimestamp),
-        orderBy("createdAt", "desc"),
-      );
-    } else {
-      ordersQuery = query(
-        collection(db, "seller_orders"),
-        where("sellerId", "==", userId),
-        where("createdAt", ">=", startTimestamp),
-        orderBy("createdAt", "desc"),
-      );
+    // Get orders using Admin SDK
+    const db = getAdminDb();
+    let ordersQuery = db
+      .collection("seller_orders")
+      .where("createdAt", ">=", startTimestamp)
+      .orderBy("createdAt", "desc");
+
+    if (userRole !== "admin") {
+      ordersQuery = ordersQuery.where("sellerId", "==", userId);
     }
 
-    const ordersSnap = await getDocs(ordersQuery);
+    const ordersSnap = await ordersQuery.get();
     const orders = ordersSnap.docs.map((doc) => {
       const data = doc.data();
       return {

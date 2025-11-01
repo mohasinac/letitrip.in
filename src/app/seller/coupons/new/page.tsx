@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Save, ArrowLeft, Plus, Trash2, Info, Shuffle } from "lucide-react";
+import {
+  Save,
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Info,
+  Shuffle,
+  Gift,
+  TrendingUp,
+  Package,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -25,7 +35,16 @@ interface CouponFormData {
   code: string;
   name: string;
   description: string;
-  type: "percentage" | "fixed" | "free_shipping" | "bogo" | "cart_discount";
+  type:
+    | "percentage"
+    | "fixed"
+    | "free_shipping"
+    | "bogo"
+    | "cart_discount"
+    | "buy_x_get_y_cheapest"
+    | "buy_x_get_y_percentage"
+    | "tiered_discount"
+    | "bundle_discount";
   value: number;
   minimumAmount: number;
   maximumAmount: number;
@@ -51,6 +70,28 @@ interface CouponFormData {
   };
   combinable: boolean;
   priority: number;
+  // Advanced configuration for new coupon types
+  advancedConfig: {
+    buyQuantity: number;
+    getQuantity: number;
+    getDiscountType: "free" | "percentage" | "fixed";
+    getDiscountValue: number;
+    applyToLowest: boolean;
+    repeatOffer: boolean;
+    tiers: Array<{
+      minQuantity: number;
+      maxQuantity: number;
+      discountType: "percentage" | "fixed";
+      discountValue: number;
+    }>;
+    bundleProducts: Array<{
+      productId: string;
+      quantity: number;
+    }>;
+    bundleDiscountType: "percentage" | "fixed";
+    bundleDiscountValue: number;
+    maxDiscountAmount: number;
+  };
 }
 
 export default function CreateCouponPage() {
@@ -104,7 +145,20 @@ export default function CreateCouponPage() {
       excludedUserEmails: [],
     },
     combinable: false,
-    priority: 1,
+    priority: 0,
+    advancedConfig: {
+      buyQuantity: 2,
+      getQuantity: 1,
+      getDiscountType: "free",
+      getDiscountValue: 0,
+      applyToLowest: true,
+      repeatOffer: true,
+      tiers: [],
+      bundleProducts: [],
+      bundleDiscountType: "percentage",
+      bundleDiscountValue: 0,
+      maxDiscountAmount: 0,
+    },
   });
 
   const handleChange = (field: string, value: any) => {
@@ -375,6 +429,20 @@ export default function CreateCouponPage() {
                           <option value="free_shipping">Free Shipping</option>
                           <option value="bogo">Buy One Get One</option>
                           <option value="cart_discount">Cart Discount</option>
+                          <optgroup label="Advanced Offers">
+                            <option value="buy_x_get_y_cheapest">
+                              Buy X Get Y Cheapest Free
+                            </option>
+                            <option value="buy_x_get_y_percentage">
+                              Buy X Get Y at Discount
+                            </option>
+                            <option value="tiered_discount">
+                              Tiered Discount (More Items = More Discount)
+                            </option>
+                            <option value="bundle_discount">
+                              Bundle Discount (Buy Products Together)
+                            </option>
+                          </optgroup>
                         </UnifiedSelect>
                       </div>
                       <div>
@@ -399,6 +467,482 @@ export default function CreateCouponPage() {
                         )}
                       </div>
                     </div>
+
+                    {/* Advanced Coupon Configuration - Buy X Get Y */}
+                    {(formData.type === "buy_x_get_y_cheapest" ||
+                      formData.type === "buy_x_get_y_percentage") && (
+                      <div className="space-y-4 p-4 bg-surface/50 border-2 border-primary/20 rounded-lg">
+                        <h3 className="font-semibold text-text flex items-center gap-2">
+                          <Info className="w-5 h-5 text-primary" />
+                          Buy X Get Y Configuration
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-2">
+                              Buy Quantity (X){" "}
+                              <span className="text-error">*</span>
+                            </label>
+                            <UnifiedInput
+                              type="number"
+                              min="1"
+                              value={formData.advancedConfig.buyQuantity}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    buyQuantity: parseInt(e.target.value) || 1,
+                                  },
+                                })
+                              }
+                              placeholder="2"
+                            />
+                            <p className="text-xs text-textSecondary mt-1">
+                              Customer must buy this many items
+                            </p>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-2">
+                              Get Quantity (Y){" "}
+                              <span className="text-error">*</span>
+                            </label>
+                            <UnifiedInput
+                              type="number"
+                              min="1"
+                              value={formData.advancedConfig.getQuantity}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    getQuantity: parseInt(e.target.value) || 1,
+                                  },
+                                })
+                              }
+                              placeholder="1"
+                            />
+                            <p className="text-xs text-textSecondary mt-1">
+                              Customer gets this many discounted
+                            </p>
+                          </div>
+                        </div>
+
+                        {formData.type === "buy_x_get_y_percentage" && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-text mb-2">
+                                Discount Type
+                              </label>
+                              <UnifiedSelect
+                                value={formData.advancedConfig.getDiscountType}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      getDiscountType: e.target.value as
+                                        | "free"
+                                        | "percentage"
+                                        | "fixed",
+                                    },
+                                  })
+                                }
+                              >
+                                <option value="free">Free</option>
+                                <option value="percentage">
+                                  Percentage Off
+                                </option>
+                                <option value="fixed">Fixed Amount Off</option>
+                              </UnifiedSelect>
+                            </div>
+                            {formData.advancedConfig.getDiscountType !==
+                              "free" && (
+                              <div>
+                                <label className="block text-sm font-medium text-text mb-2">
+                                  Discount Value
+                                </label>
+                                <UnifiedInput
+                                  type="number"
+                                  min="0"
+                                  value={
+                                    formData.advancedConfig.getDiscountValue
+                                  }
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      advancedConfig: {
+                                        ...formData.advancedConfig,
+                                        getDiscountValue:
+                                          parseFloat(e.target.value) || 0,
+                                      },
+                                    })
+                                  }
+                                  placeholder={
+                                    formData.advancedConfig.getDiscountType ===
+                                    "percentage"
+                                      ? "50"
+                                      : "100"
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id="applyToLowest"
+                              checked={formData.advancedConfig.applyToLowest}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    applyToLowest: e.target.checked,
+                                  },
+                                })
+                              }
+                              className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
+                            />
+                            <label
+                              htmlFor="applyToLowest"
+                              className="text-sm text-text"
+                            >
+                              Apply to cheapest items (recommended)
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id="repeatOffer"
+                              checked={formData.advancedConfig.repeatOffer}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    repeatOffer: e.target.checked,
+                                  },
+                                })
+                              }
+                              className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
+                            />
+                            <label
+                              htmlFor="repeatOffer"
+                              className="text-sm text-text"
+                            >
+                              Repeat offer (e.g., Buy 2 Get 1 → Buy 4 Get 2)
+                            </label>
+                          </div>
+                        </div>
+
+                        <div className="bg-info/10 border border-info/20 rounded p-3 flex gap-2">
+                          <Info className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
+                          <p className="text-xs text-textSecondary">
+                            <strong>Example:</strong> Buy{" "}
+                            {formData.advancedConfig.buyQuantity} Get{" "}
+                            {formData.advancedConfig.getQuantity}{" "}
+                            {formData.type === "buy_x_get_y_cheapest"
+                              ? "Cheapest Free"
+                              : formData.advancedConfig.getDiscountType ===
+                                "free"
+                              ? "Free"
+                              : `at ${
+                                  formData.advancedConfig.getDiscountValue
+                                }${
+                                  formData.advancedConfig.getDiscountType ===
+                                  "percentage"
+                                    ? "%"
+                                    : "₹"
+                                } off`}
+                            {formData.advancedConfig.repeatOffer &&
+                              " (Repeating)"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Advanced Coupon Configuration - Tiered Discount */}
+                    {formData.type === "tiered_discount" && (
+                      <div className="space-y-4 p-4 bg-surface/50 border-2 border-primary/20 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-text flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-primary" />
+                            Tiered Discount Configuration
+                          </h3>
+                          <UnifiedButton
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                advancedConfig: {
+                                  ...formData.advancedConfig,
+                                  tiers: [
+                                    ...(formData.advancedConfig.tiers || []),
+                                    {
+                                      minQuantity: 1,
+                                      maxQuantity: 0,
+                                      discountType: "percentage",
+                                      discountValue: 0,
+                                    },
+                                  ],
+                                },
+                              });
+                            }}
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Tier
+                          </UnifiedButton>
+                        </div>
+                        <p className="text-sm text-textSecondary">
+                          Define different discount levels based on cart
+                          quantity. Higher quantities get better discounts.
+                        </p>
+
+                        {formData.advancedConfig.tiers?.map((tier, index) => (
+                          <div
+                            key={index}
+                            className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 bg-background border border-border rounded"
+                          >
+                            <div>
+                              <label className="block text-xs font-medium text-text mb-1">
+                                Min Quantity
+                              </label>
+                              <UnifiedInput
+                                type="number"
+                                min="1"
+                                value={tier.minQuantity}
+                                onChange={(e) => {
+                                  const newTiers = [
+                                    ...(formData.advancedConfig.tiers || []),
+                                  ];
+                                  newTiers[index] = {
+                                    ...tier,
+                                    minQuantity: parseInt(e.target.value) || 1,
+                                  };
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      tiers: newTiers,
+                                    },
+                                  });
+                                }}
+                                placeholder="1"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-text mb-1">
+                                Max Quantity
+                              </label>
+                              <UnifiedInput
+                                type="number"
+                                min="0"
+                                value={tier.maxQuantity}
+                                onChange={(e) => {
+                                  const newTiers = [
+                                    ...(formData.advancedConfig.tiers || []),
+                                  ];
+                                  newTiers[index] = {
+                                    ...tier,
+                                    maxQuantity: parseInt(e.target.value) || 0,
+                                  };
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      tiers: newTiers,
+                                    },
+                                  });
+                                }}
+                                placeholder="0 (∞)"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-text mb-1">
+                                Type
+                              </label>
+                              <UnifiedSelect
+                                value={tier.discountType}
+                                onChange={(e) => {
+                                  const newTiers = [
+                                    ...(formData.advancedConfig.tiers || []),
+                                  ];
+                                  newTiers[index] = {
+                                    ...tier,
+                                    discountType: e.target.value as
+                                      | "percentage"
+                                      | "fixed",
+                                  };
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      tiers: newTiers,
+                                    },
+                                  });
+                                }}
+                              >
+                                <option value="percentage">%</option>
+                                <option value="fixed">₹</option>
+                              </UnifiedSelect>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-text mb-1">
+                                Value
+                              </label>
+                              <UnifiedInput
+                                type="number"
+                                min="0"
+                                value={tier.discountValue}
+                                onChange={(e) => {
+                                  const newTiers = [
+                                    ...(formData.advancedConfig.tiers || []),
+                                  ];
+                                  newTiers[index] = {
+                                    ...tier,
+                                    discountValue:
+                                      parseFloat(e.target.value) || 0,
+                                  };
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      tiers: newTiers,
+                                    },
+                                  });
+                                }}
+                                placeholder={
+                                  tier.discountType === "percentage"
+                                    ? "10"
+                                    : "100"
+                                }
+                              />
+                            </div>
+                            <div className="flex items-end">
+                              <UnifiedButton
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const newTiers =
+                                    formData.advancedConfig.tiers?.filter(
+                                      (_, i) => i !== index
+                                    ) || [];
+                                  setFormData({
+                                    ...formData,
+                                    advancedConfig: {
+                                      ...formData.advancedConfig,
+                                      tiers: newTiers,
+                                    },
+                                  });
+                                }}
+                                className="w-full"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </UnifiedButton>
+                            </div>
+                          </div>
+                        ))}
+
+                        {(!formData.advancedConfig.tiers ||
+                          formData.advancedConfig.tiers.length === 0) && (
+                          <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+                            <Package className="w-12 h-12 text-textSecondary mx-auto mb-2" />
+                            <p className="text-sm text-textSecondary">
+                              No tiers added yet. Click "Add Tier" to create
+                              your first tier.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Advanced Coupon Configuration - Bundle Discount */}
+                    {formData.type === "bundle_discount" && (
+                      <div className="space-y-4 p-4 bg-surface/50 border-2 border-primary/20 rounded-lg">
+                        <h3 className="font-semibold text-text flex items-center gap-2">
+                          <Package className="w-5 h-5 text-primary" />
+                          Bundle Discount Configuration
+                        </h3>
+                        <p className="text-sm text-textSecondary">
+                          Define specific products that must be purchased
+                          together to qualify for this discount.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-2">
+                              Discount Type
+                            </label>
+                            <UnifiedSelect
+                              value={formData.advancedConfig.bundleDiscountType}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    bundleDiscountType: e.target.value as
+                                      | "percentage"
+                                      | "fixed",
+                                  },
+                                })
+                              }
+                            >
+                              <option value="percentage">Percentage Off</option>
+                              <option value="fixed">Fixed Amount Off</option>
+                            </UnifiedSelect>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-2">
+                              Discount Value
+                            </label>
+                            <UnifiedInput
+                              type="number"
+                              min="0"
+                              value={
+                                formData.advancedConfig.bundleDiscountValue
+                              }
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  advancedConfig: {
+                                    ...formData.advancedConfig,
+                                    bundleDiscountValue:
+                                      parseFloat(e.target.value) || 0,
+                                  },
+                                })
+                              }
+                              placeholder={
+                                formData.advancedConfig.bundleDiscountType ===
+                                "percentage"
+                                  ? "20"
+                                  : "500"
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-text mb-2">
+                            Bundle Products
+                          </label>
+                          <div className="p-4 bg-background border-2 border-dashed border-border rounded-lg text-center">
+                            <Package className="w-12 h-12 text-textSecondary mx-auto mb-2" />
+                            <p className="text-sm text-textSecondary mb-1">
+                              Product selector coming soon
+                            </p>
+                            <p className="text-xs text-textSecondary">
+                              Bundle products can be configured via API for now
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Min/Max Amount */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -31,6 +31,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   onGameEnd,
   onPlayAgainMultiplayer,
 }) => {
+  // Theme colors - using Tailwind-like values
   const theme = {
     palette: {
       background: { default: "#111827", paper: "#1f2937" },
@@ -258,7 +259,17 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
   }, [playerWantsRematch, multiplayer, onBackToMenu]);
 
   return (
-    <div className="flex flex-col items-center gap-4 md:gap-8 w-full max-w-[1400px] mx-auto px-0 sm:px-4 md:px-6">
+    <div sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: { xs: 2, md: 4 },
+        width: "100%",
+        maxWidth: "1400px", // Increased from 1200px for widescreen support
+        mx: "auto",
+        px: { xs: 0, sm: 2, md: 3 },
+      }}
+    >
       {/* Game Controls */}
       <GameControls
         isPlaying={gameState.isPlaying}
@@ -276,10 +287,18 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
       />
 
       {/* Game Arena */}
-      <div
-        ref={arenaRef}
+      <div ref={arenaRef}
         tabIndex={-1}
-        className="relative w-full flex justify-center outline-none focus:outline-none"
+        sx={{
+          position: "relative",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          outline: "none", // Remove focus outline
+          "&:focus": {
+            outline: "none",
+          },
+        }}
       >
         <GameArena
           gameState={gameState}
@@ -292,10 +311,22 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
         {/* Loading Screen Overlay */}
         {isLoading && (
-          <div>
-            <div>
-              <div
-                sx={{
+          <div sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              borderRadius: 2,
+              zIndex: 10,
+            }}
+          >
+            <div sx={{ textAlign: "center" }}>
+              <div sx={{
                   fontSize: "4rem",
                   mb: 2,
                   animation: "spin 1s linear infinite",
@@ -307,15 +338,29 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
               >
                 ⚡
               </div>
-              <div>Loading Battle...</div>
-              <div>Preparing the arena</div>
+              <div variant="h4"
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontWeight: 700,
+                  mb: 1,
+                }}
+              >
+                Loading Battle...
+              </div>
+              <div variant="body1"
+                sx={{
+                  color: "white",
+                  opacity: 0.8,
+                }}
+              >
+                Preparing the arena
+              </div>
             </div>
           </div>
         )}
 
         {/* Mobile Special Move Buttons - Only on small screens */}
-        <div
-          sx={{
+        <div sx={{
             display: { xs: "block", md: "none" },
             position: "absolute",
             top: 0,
@@ -349,9 +394,22 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
         {/* Single Player Game Over Overlay - Show on canvas */}
         {!isMultiplayer && !gameState.isPlaying && gameState.winner && (
-          <div>
-            <div
-              sx={{
+          <div sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              borderRadius: 2,
+              zIndex: 10,
+              padding: 2,
+            }}
+          >
+            <div sx={{
                 textAlign: "center",
                 maxWidth: 400,
                 width: "100%",
@@ -370,42 +428,63 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
               </div>
 
               {/* Result Title */}
-              <div
+              <div variant="h4"
                 color={
                   gameState.winner.isPlayer ? "success.main" : "error.main"
                 }
+                fontWeight={700}
+                gutterBottom
                 sx={{ fontSize: { xs: "1.5rem", sm: "2rem" } }}
               >
                 {gameState.winner.config.name} Wins!
               </div>
 
-              <div
+              <div variant="h5"
                 color={
                   gameState.winner.isPlayer ? "success.main" : "error.main"
                 }
+                fontWeight={700}
                 sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" }, mb: 2 }}
               >
                 {gameState.winner.isPlayer ? "Victory!" : "Defeat!"}
               </div>
 
               {/* Game Stats */}
-              <div>
-                <div sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+              <div sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  mb: 2,
+                  p: 1.5,
+                  bgcolor: "background.default",
+                  borderRadius: 1,
+                }}
+              >
+                <div variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
                   Time: {gameState.gameTime.toFixed(1)}s
                 </div>
-                <div sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+                <div variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
                   Spin: {Math.floor(gameState.winner.spin)}
                 </div>
-                <div sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+                <div variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
                   Power: {Math.floor(gameState.winner.power || 0)}/25
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div>
-                <UnifiedButton
+              <div sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <UnifiedButton variant="contained"
                   onClick={restartGame}
-                  size="lg"
+                  size="large"
                   fullWidth
                   sx={{
                     fontSize: { xs: "0.875rem", sm: "1rem" },
@@ -414,9 +493,9 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                 >
                   🔄 Play Again
                 </UnifiedButton>
-                <UnifiedButton
+                <UnifiedButton variant="outlined"
                   onClick={onBackToMenu || (() => {})}
-                  size="lg"
+                  size="large"
                   fullWidth
                   sx={{
                     fontSize: { xs: "0.875rem", sm: "1rem" },
@@ -445,8 +524,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 
       {/* Battle Statistics */}
       {gameState.isPlaying && (
-        <div
-          sx={{
+        <div sx={{
             display: "grid",
             gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
             gap: { xs: 2, md: 3 },
@@ -456,8 +534,7 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           }}
         >
           {gameState.beyblades.map((beyblade, index) => (
-            <UnifiedCard
-              key={beyblade.id}
+            <UnifiedCard key={beyblade.id}
               sx={{
                 p: { xs: 1.5, md: 2 },
                 borderRadius: 2,
@@ -477,7 +554,9 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                   "&:last-child": { pb: { xs: 1.5, md: 2 } },
                 }}
               >
-                <div
+                <div variant="h6"
+                  fontWeight={600}
+                  gutterBottom
                   color={beyblade.isPlayer ? "primary.main" : "secondary.main"}
                   sx={{ fontSize: { xs: "1rem", md: "1.25rem" } }}
                 >
@@ -485,26 +564,30 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                   {beyblade.config.name}
                 </div>
 
-                <div
-                  sx={{
+                <div sx={{
                     display: "flex",
                     flexDirection: "column",
                     gap: { xs: 0.5, md: 1 },
                   }}
                 >
-                  <div>
-                    <div sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}>
+                  <div sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Spin:
                     </div>
-                    <div
+                    <div variant="body2"
+                      fontFamily="monospace"
                       sx={{
                         fontSize: { xs: "0.75rem", md: "0.875rem" },
                         color:
                           beyblade.spin > 1000
                             ? "#22C55E"
                             : beyblade.spin > 400
-                            ? "#F59E0B"
-                            : "#EF4444",
+                              ? "#F59E0B"
+                              : "#EF4444",
                       }}
                     >
                       {Math.floor(beyblade.spin)}/
@@ -512,38 +595,50 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
                     </div>
                   </div>
 
-                  <div>
-                    <div sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}>
+                  <div sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Power:
                     </div>
-                    <div sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}>
+                    <div variant="body2"
+                      fontFamily="monospace"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       {Math.floor(beyblade.power || 0)}/25
                     </div>
                   </div>
 
-                  <div>
-                    <div sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}>
+                  <div sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div variant="body2"
+                      color="text.primary"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                    >
                       Status:
                     </div>
-                    <div
+                    <div variant="body2"
                       sx={{
                         fontSize: { xs: "0.75rem", md: "0.875rem" },
                         color: beyblade.isDead
                           ? "#EF4444"
                           : beyblade.isOutOfBounds
-                          ? "#F59E0B"
-                          : beyblade.isInBlueLoop
-                          ? "#3B82F6"
-                          : "#22C55E",
+                            ? "#F59E0B"
+                            : beyblade.isInBlueLoop
+                              ? "#3B82F6"
+                              : "#22C55E",
                       }}
                     >
                       {beyblade.isDead
                         ? "💀 Eliminated"
                         : beyblade.isOutOfBounds
-                        ? "🚫 Out of Bounds"
-                        : beyblade.isInBlueLoop
-                        ? "🔄 Speed Loop"
-                        : "⚡ Active"}
+                          ? "🚫 Out of Bounds"
+                          : beyblade.isInBlueLoop
+                            ? "🔄 Speed Loop"
+                            : "⚡ Active"}
                     </div>
                   </div>
                 </div>
@@ -557,3 +652,4 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
 };
 
 export default EnhancedBeybladeArena;
+

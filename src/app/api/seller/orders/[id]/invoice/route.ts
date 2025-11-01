@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 // Interface definitions
 interface InvoiceData {
@@ -67,7 +58,7 @@ export async function POST(
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -75,21 +66,21 @@ export async function POST(
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
-    // Get order
-    const orderRef = doc(db, "orders", params.id);
-    const orderSnap = await getDoc(orderRef);
+    // Get order using Admin SDK
+    const db = getAdminDb();
+    const orderSnap = await db.collection("orders").doc(params.id).get();
 
-    if (!orderSnap.exists()) {
+    if (!orderSnap.exists) {
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 },
       );
     }
 
-    const orderData = orderSnap.data();
+    const orderData = orderSnap.data()!;
 
     // Verify seller owns this order (unless admin)
     if (userRole !== "admin" && orderData.sellerId !== userId) {
@@ -100,9 +91,8 @@ export async function POST(
     }
 
     // Get seller information
-    const sellerRef = doc(db, "users", orderData.sellerId);
-    const sellerSnap = await getDoc(sellerRef);
-    const sellerData = sellerSnap.exists() ? sellerSnap.data() : null;
+    const sellerSnap = await db.collection("users").doc(orderData.sellerId).get();
+    const sellerData = sellerSnap.exists ? sellerSnap.data() : null;
 
     // Generate invoice number (format: INV-YYYYMMDD-XXXXX)
     const invoiceDate = new Date();
@@ -546,7 +536,7 @@ export async function GET(
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -554,21 +544,21 @@ export async function GET(
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
-    // Get order
-    const orderRef = doc(db, "orders", params.id);
-    const orderSnap = await getDoc(orderRef);
+    // Get order using Admin SDK
+    const db = getAdminDb();
+    const orderSnap = await db.collection("orders").doc(params.id).get();
 
-    if (!orderSnap.exists()) {
+    if (!orderSnap.exists) {
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 },
       );
     }
 
-    const orderData = orderSnap.data();
+    const orderData = orderSnap.data()!;
 
     // Verify seller owns this order (unless admin)
     if (userRole !== "admin" && orderData.sellerId !== userId) {

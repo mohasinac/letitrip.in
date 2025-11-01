@@ -91,14 +91,22 @@ export default function PrivacyPage() {
                 title: "3. How We Use Your Information",
                 content: (
                   <ul className="pl-6 space-y-2 text-gray-600 dark:text-gray-400">
-                    <li className="list-disc">Process orders and manage your account</li>
+                    <li className="list-disc">
+                      Process orders and manage your account
+                    </li>
                     <li className="list-disc">
                       Communicate with you about orders, promotions, and updates
                     </li>
-                    <li className="list-disc">Improve our website and services</li>
-                    <li className="list-disc">Prevent fraud and ensure security</li>
+                    <li className="list-disc">
+                      Improve our website and services
+                    </li>
+                    <li className="list-disc">
+                      Prevent fraud and ensure security
+                    </li>
                     <li className="list-disc">Comply with legal obligations</li>
-                    <li className="list-disc">Send marketing communications (with your consent)</li>
+                    <li className="list-disc">
+                      Send marketing communications (with your consent)
+                    </li>
                   </ul>
                 ),
               },
@@ -115,8 +123,12 @@ export default function PrivacyPage() {
                       <li className="list-disc">
                         With service providers who help us operate our business
                       </li>
-                      <li className="list-disc">When required by law or to protect our rights</li>
-                      <li className="list-disc">In connection with a business transfer or merger</li>
+                      <li className="list-disc">
+                        When required by law or to protect our rights
+                      </li>
+                      <li className="list-disc">
+                        In connection with a business transfer or merger
+                      </li>
                       <li className="list-disc">With your explicit consent</li>
                     </ul>
                   </div>
@@ -137,14 +149,22 @@ export default function PrivacyPage() {
                 title: "6. Your Rights",
                 content: (
                   <ul className="pl-6 space-y-2 text-gray-600 dark:text-gray-400">
-                    <li className="list-disc">Access and review your personal information</li>
-                    <li className="list-disc">Request correction of inaccurate information</li>
+                    <li className="list-disc">
+                      Access and review your personal information
+                    </li>
+                    <li className="list-disc">
+                      Request correction of inaccurate information
+                    </li>
                     <li className="list-disc">
                       Request deletion of your information (subject to legal
                       requirements)
                     </li>
-                    <li className="list-disc">Opt-out of marketing communications</li>
-                    <li className="list-disc">Data portability (where applicable)</li>
+                    <li className="list-disc">
+                      Opt-out of marketing communications
+                    </li>
+                    <li className="list-disc">
+                      Data portability (where applicable)
+                    </li>
                   </ul>
                 ),
               },

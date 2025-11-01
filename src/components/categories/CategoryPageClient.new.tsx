@@ -47,12 +47,12 @@ export default function CategoryPageClient({
     if (!currentCategory) {
       // Show root categories (no parents)
       categories = allCategories.filter(
-        (cat) => !cat.parentIds || cat.parentIds.length === 0,
+        (cat) => !cat.parentIds || cat.parentIds.length === 0
       );
     } else {
       // Show subcategories of current category
       categories = allCategories.filter((cat) =>
-        cat.parentIds?.includes(currentCategory.id),
+        cat.parentIds?.includes(currentCategory.id)
       );
     }
 
@@ -63,7 +63,7 @@ export default function CategoryPageClient({
         (cat) =>
           cat.name.toLowerCase().includes(searchLower) ||
           cat.slug.toLowerCase().includes(searchLower) ||
-          cat.description?.toLowerCase().includes(searchLower),
+          cat.description?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -134,9 +134,7 @@ export default function CategoryPageClient({
 
       {/* Page Header */}
       <div className="mb-8 text-center">
-        <h1
-          className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent"
-        >
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
           {currentCategory ? currentCategory.name : "Shop by Category"}
         </h1>
         {currentCategory && currentCategory.description && (
@@ -175,7 +173,9 @@ export default function CategoryPageClient({
             type="text"
             placeholder="Search categories by name, slug, or description..."
             value={searchTerm}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchTerm(e.target.value)
+            }
             className="pl-10 w-full"
           />
         </div>
@@ -268,9 +268,7 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
           : "bg-gray-50 dark:bg-gray-900 opacity-75"
       }`}
       style={{
-        boxShadow: hasInStockProducts
-          ? undefined
-          : "0 1px 3px rgba(0,0,0,0.1)",
+        boxShadow: hasInStockProducts ? undefined : "0 1px 3px rgba(0,0,0,0.1)",
       }}
     >
       <div className="relative">
@@ -328,12 +326,14 @@ function CategoryCard({ category }: { category: CategoryWithCounts }) {
         {/* Bottom Actions Area */}
         <div className="flex items-center justify-between mt-auto pt-4">
           {/* Product/Subcategory Count */}
-          <span className={`text-sm font-semibold ${getCategoryColorClasses()}`}>
+          <span
+            className={`text-sm font-semibold ${getCategoryColorClasses()}`}
+          >
             {category.totalProductCount > 0
               ? `${category.totalProductCount}+ Products`
               : category.subcategoryCount > 0
-                ? `${category.subcategoryCount} Subcategories`
-                : "Coming Soon"}
+              ? `${category.subcategoryCount} Subcategories`
+              : "Coming Soon"}
           </span>
 
           {/* Explore Button */}

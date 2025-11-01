@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import * as LucideIcons from "lucide-react";
+import * as MuiIcons from "@mui/icons-material";
 
 interface IconPreviewProps {
   iconName: string | null | undefined;
@@ -10,15 +10,15 @@ interface IconPreviewProps {
 }
 
 /**
- * Get Lucide icon component by name
- * @param iconName - Icon name from Lucide React
+ * Get Material UI icon component by name
+ * @param iconName - Icon name from MuiIcons
  * @returns IconComponent or null
  */
-export function getLucideIcon(iconName: string | null | undefined) {
+export function getMuiIcon(iconName: string | null | undefined) {
   if (!iconName) return null;
 
   try {
-    const IconComponent = (LucideIcons as any)[iconName];
+    const IconComponent = (MuiIcons as any)[iconName];
     return IconComponent || null;
   } catch (error) {
     console.debug(`Icon not found: ${iconName}`);
@@ -28,7 +28,7 @@ export function getLucideIcon(iconName: string | null | undefined) {
 
 /**
  * IconPreview Component
- * Displays Lucide React icon preview with fallback states
+ * Displays Material UI icon preview with fallback states
  */
 export function IconPreview({
   iconName,
@@ -47,7 +47,7 @@ export function IconPreview({
     );
   }
 
-  const IconComponent = getLucideIcon(iconName);
+  const IconComponent = getMuiIcon(iconName);
 
   if (!IconComponent) {
     return (
@@ -65,7 +65,7 @@ export function IconPreview({
     <div
       className={`w-20 h-20 flex items-center justify-center bg-blue-600 dark:bg-blue-700 rounded text-white ${className}`}
     >
-      <IconComponent size={size} />
+      <IconComponent style={{ fontSize: size }} />
     </div>
   );
 }

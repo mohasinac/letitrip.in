@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Get analytics overview
@@ -26,7 +16,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -34,8 +24,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     // Get period from query params
     const { searchParams } = new URL(req.url);
@@ -65,26 +55,20 @@ export async function GET(req: NextRequest) {
         startDate.setDate(now.getDate() - 30);
     }
 
-    const startTimestamp = Timestamp.fromDate(startDate);
+    const startTimestamp = startDate;
 
-    // Build base query for orders
-    let ordersQuery;
-    if (userRole === "admin") {
-      ordersQuery = query(
-        collection(db, "seller_orders"),
-        where("createdAt", ">=", startTimestamp),
-        orderBy("createdAt", "desc"),
-      );
-    } else {
-      ordersQuery = query(
-        collection(db, "seller_orders"),
-        where("sellerId", "==", userId),
-        where("createdAt", ">=", startTimestamp),
-        orderBy("createdAt", "desc"),
-      );
+    // Build base query for orders using Admin SDK
+    const db = getAdminDb();
+    let ordersQuery = db
+      .collection("seller_orders")
+      .where("createdAt", ">=", startTimestamp)
+      .orderBy("createdAt", "desc");
+
+    if (userRole !== "admin") {
+      ordersQuery = ordersQuery.where("sellerId", "==", userId);
     }
 
-    const ordersSnap = await getDocs(ordersQuery);
+    const ordersSnap = await ordersQuery.get();
     const orders = ordersSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -154,26 +138,23 @@ export async function GET(req: NextRequest) {
         revenue: product.revenue,
       }));
 
-    // Get low stock products
-    let productsQuery;
-    if (userRole === "admin") {
-      productsQuery = query(
-        collection(db, "seller_products"),
-        where("status", "==", "active"),
-        orderBy("stock", "asc"),
-        limit(10),
-      );
-    } else {
-      productsQuery = query(
-        collection(db, "seller_products"),
-        where("sellerId", "==", userId),
-        where("status", "==", "active"),
-        orderBy("stock", "asc"),
-        limit(10),
-      );
+    // Get low stock products using Admin SDK
+    let productsQuery = db
+      .collection("seller_products")
+      .where("status", "==", "active")
+      .orderBy("stock", "asc")
+      .limit(10);
+
+    if (userRole !== "admin") {
+      productsQuery = db
+        .collection("seller_products")
+        .where("sellerId", "==", userId)
+        .where("status", "==", "active")
+        .orderBy("stock", "asc")
+        .limit(10);
     }
 
-    const productsSnap = await getDocs(productsQuery);
+    const productsSnap = await productsQuery.get();
     const lowStockProducts = productsSnap.docs
       .map((doc) => {
         const data = doc.data();

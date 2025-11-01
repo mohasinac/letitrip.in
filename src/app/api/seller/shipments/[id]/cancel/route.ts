@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 /**
  * Cancel shipment
@@ -21,7 +20,7 @@ export async function POST(
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -29,24 +28,25 @@ export async function POST(
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     const body = await req.json();
     const { reason } = body;
 
-    // Get shipment
-    const shipmentRef = doc(db, "seller_shipments", params.id);
-    const shipmentSnap = await getDoc(shipmentRef);
+    // Get shipment using Admin SDK
+    const db = getAdminDb();
+    const shipmentRef = db.collection("seller_shipments").doc(params.id);
+    const shipmentSnap = await shipmentRef.get();
 
-    if (!shipmentSnap.exists()) {
+    if (!shipmentSnap.exists) {
       return NextResponse.json(
         { success: false, error: "Shipment not found" },
         { status: 404 },
       );
     }
 
-    const shipmentData = shipmentSnap.data();
+    const shipmentData = shipmentSnap.data()!;
 
     // Verify ownership (unless admin)
     if (userRole !== "admin" && shipmentData.sellerId !== userId) {
@@ -77,11 +77,11 @@ export async function POST(
     };
 
     // Update shipment
-    await updateDoc(shipmentRef, {
+    await shipmentRef.update({
       status: "cancelled",
       cancelReason: reason,
       updatedAt: new Date(),
-      trackingHistory: arrayUnion(trackingEvent),
+      trackingHistory: FieldValue.arrayUnion(trackingEvent),
     });
 
     // TODO: Update related order status if needed

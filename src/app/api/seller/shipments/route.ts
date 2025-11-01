@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Get all shipments for seller
@@ -26,7 +16,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -34,8 +24,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
+    
+    console.log("Shipments API - User ID:", userId, "Role:", userRole);
+
+    // Get admin Firestore instance (bypasses security rules)
+    const db = getAdminDb();
 
     // Get query params
     const { searchParams } = new URL(req.url);
@@ -45,35 +40,31 @@ export async function GET(req: NextRequest) {
     let shipmentsQuery;
     if (userRole === "admin") {
       if (statusFilter !== "all") {
-        shipmentsQuery = query(
-          collection(db, "seller_shipments"),
-          where("status", "==", statusFilter),
-          orderBy("createdAt", "desc"),
-        );
+        shipmentsQuery = db
+          .collection("seller_shipments")
+          .where("status", "==", statusFilter)
+          .orderBy("createdAt", "desc");
       } else {
-        shipmentsQuery = query(
-          collection(db, "seller_shipments"),
-          orderBy("createdAt", "desc"),
-        );
+        shipmentsQuery = db
+          .collection("seller_shipments")
+          .orderBy("createdAt", "desc");
       }
     } else {
       if (statusFilter !== "all") {
-        shipmentsQuery = query(
-          collection(db, "seller_shipments"),
-          where("sellerId", "==", userId),
-          where("status", "==", statusFilter),
-          orderBy("createdAt", "desc"),
-        );
+        shipmentsQuery = db
+          .collection("seller_shipments")
+          .where("sellerId", "==", userId)
+          .where("status", "==", statusFilter)
+          .orderBy("createdAt", "desc");
       } else {
-        shipmentsQuery = query(
-          collection(db, "seller_shipments"),
-          where("sellerId", "==", userId),
-          orderBy("createdAt", "desc"),
-        );
+        shipmentsQuery = db
+          .collection("seller_shipments")
+          .where("sellerId", "==", userId)
+          .orderBy("createdAt", "desc");
       }
     }
 
-    const shipmentsSnap = await getDocs(shipmentsQuery);
+    const shipmentsSnap = await shipmentsQuery.get();
     const shipments = shipmentsSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -86,15 +77,14 @@ export async function GET(req: NextRequest) {
     // Calculate stats
     let statsQuery;
     if (userRole === "admin") {
-      statsQuery = query(collection(db, "seller_shipments"));
+      statsQuery = db.collection("seller_shipments");
     } else {
-      statsQuery = query(
-        collection(db, "seller_shipments"),
-        where("sellerId", "==", userId),
-      );
+      statsQuery = db
+        .collection("seller_shipments")
+        .where("sellerId", "==", userId);
     }
 
-    const statsSnap = await getDocs(statsQuery);
+    const statsSnap = await statsQuery.get();
     let total = 0;
     let pending = 0;
     let pickup_scheduled = 0;

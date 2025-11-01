@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  where,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Generate bulk manifest for multiple shipments
@@ -25,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -33,8 +24,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     const body = await req.json();
     const { shipmentIds = [] } = body;
@@ -46,17 +37,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get all shipments
+    // Get all shipments using Admin SDK
+    const db = getAdminDb();
     const shipments: any[] = [];
     for (const shipmentId of shipmentIds) {
-      const shipmentRef = doc(db, "seller_shipments", shipmentId);
-      const shipmentSnap = await getDoc(shipmentRef);
+      const shipmentSnap = await db
+        .collection("seller_shipments")
+        .doc(shipmentId)
+        .get();
 
-      if (!shipmentSnap.exists()) {
+      if (!shipmentSnap.exists) {
         continue;
       }
 
-      const shipmentData = shipmentSnap.data();
+      const shipmentData = shipmentSnap.data()!;
 
       // Verify ownership (unless admin)
       if (userRole !== "admin" && shipmentData.sellerId !== userId) {

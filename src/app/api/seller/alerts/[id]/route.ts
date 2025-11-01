@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Delete alert
@@ -21,7 +19,7 @@ export async function DELETE(
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -29,21 +27,22 @@ export async function DELETE(
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
-    // Get alert
-    const alertRef = doc(db, "seller_alerts", params.id);
-    const alertSnap = await getDoc(alertRef);
+    // Get alert using Admin SDK
+    const db = getAdminDb();
+    const alertRef = db.collection("seller_alerts").doc(params.id);
+    const alertSnap = await alertRef.get();
 
-    if (!alertSnap.exists()) {
+    if (!alertSnap.exists) {
       return NextResponse.json(
         { success: false, error: "Alert not found" },
         { status: 404 },
       );
     }
 
-    const alertData = alertSnap.data();
+    const alertData = alertSnap.data()!;
 
     // Verify ownership (unless admin)
     if (userRole !== "admin" && alertData.sellerId !== userId) {
@@ -54,7 +53,7 @@ export async function DELETE(
     }
 
     // Delete alert
-    await deleteDoc(alertRef);
+    await alertRef.delete();
 
     return NextResponse.json({
       success: true,

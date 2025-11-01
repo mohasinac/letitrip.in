@@ -6,7 +6,7 @@ import { ModernThemeProvider } from "@/contexts/ModernThemeContext";
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 import ModernLayout from "@/components/layout/ModernLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import ThemeRegistry from "@/components/shared/ThemeRegistry";
+
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -162,46 +162,44 @@ export default function RootLayout({
             "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <ThemeRegistry>
-          <AuthProvider>
-            <ModernThemeProvider>
-              <BreadcrumbProvider>
-                <ErrorBoundary>
-                  <ModernLayout>{children}</ModernLayout>
-                </ErrorBoundary>
-              </BreadcrumbProvider>
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
+        <AuthProvider>
+          <ModernThemeProvider>
+            <BreadcrumbProvider>
+              <ErrorBoundary>
+                <ModernLayout>{children}</ModernLayout>
+              </ErrorBoundary>
+            </BreadcrumbProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "#1a1a1a",
+                  color: "#ffffff",
+                  border: "1px solid #333333",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+                },
+                success: {
+                  duration: 3000,
                   style: {
-                    background: "#1a1a1a",
-                    color: "#ffffff",
-                    border: "1px solid #333333",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+                    background: "#2ed573",
+                    color: "white",
                   },
-                  success: {
-                    duration: 3000,
-                    style: {
-                      background: "#2ed573",
-                      color: "white",
-                    },
+                },
+                error: {
+                  duration: 5000,
+                  style: {
+                    background: "#ff4757",
+                    color: "white",
                   },
-                  error: {
-                    duration: 5000,
-                    style: {
-                      background: "#ff4757",
-                      color: "white",
-                    },
-                  },
-                }}
-              />
-            </ModernThemeProvider>
-          </AuthProvider>
-        </ThemeRegistry>
+                },
+              }}
+            />
+          </ModernThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

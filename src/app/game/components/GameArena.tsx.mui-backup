@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
 import { GameState, GameBeyblade, Vector2D } from "../types/game";
 import {
   renderArenaBackground,
@@ -51,16 +52,7 @@ const GameArena: React.FC<GameArenaProps> = ({
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
   const [canvasScale, setCanvasScale] = React.useState(1);
   const [isScreenTooSmall, setIsScreenTooSmall] = React.useState(false);
-
-  // Theme colors - using Tailwind-like values
-  const theme = {
-    palette: {
-      background: { default: "#111827" },
-      primary: { main: "#3b82f6" },
-      secondary: { main: "#a855f7" },
-      error: { main: "#ef4444" },
-    },
-  };
+  const theme = useTheme();
 
   // Update refs when props change
   useEffect(() => {
@@ -122,7 +114,7 @@ const GameArena: React.FC<GameArenaProps> = ({
         0,
         stadium.center.x,
         stadium.center.y,
-        stadium.innerRadius
+        stadium.innerRadius,
       );
       floorGradient.addColorStop(0, "#1a1a1a");
       floorGradient.addColorStop(0.7, "#2a2a2a");
@@ -134,7 +126,7 @@ const GameArena: React.FC<GameArenaProps> = ({
         stadium.center.y,
         stadium.innerRadius,
         0,
-        Math.PI * 2
+        Math.PI * 2,
       );
       ctx.fill();
 
@@ -161,7 +153,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.center.y,
             stadium.outerRadius,
             startAngle,
-            endAngle
+            endAngle,
           );
           ctx.arc(
             stadium.center.x,
@@ -169,7 +161,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.innerRadius,
             endAngle,
             startAngle,
-            true
+            true,
           );
           ctx.closePath();
           ctx.fill();
@@ -183,7 +175,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.center.y,
             stadium.outerRadius,
             startAngle,
-            endAngle
+            endAngle,
           );
           ctx.arc(
             stadium.center.x,
@@ -191,7 +183,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.outerRadius - wallThickness,
             endAngle,
             startAngle,
-            true
+            true,
           );
           ctx.closePath();
           ctx.fill();
@@ -208,11 +200,11 @@ const GameArena: React.FC<GameArenaProps> = ({
             ctx.beginPath();
             ctx.moveTo(
               stadium.center.x + Math.cos(brickAngle) * innerR,
-              stadium.center.y + Math.sin(brickAngle) * innerR
+              stadium.center.y + Math.sin(brickAngle) * innerR,
             );
             ctx.lineTo(
               stadium.center.x + Math.cos(brickAngle) * outerR,
-              stadium.center.y + Math.sin(brickAngle) * outerR
+              stadium.center.y + Math.sin(brickAngle) * outerR,
             );
             ctx.stroke();
           }
@@ -223,7 +215,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.center.y,
             midRadius,
             startAngle,
-            endAngle
+            endAngle,
           );
           ctx.stroke();
         } else {
@@ -235,7 +227,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.center.y,
             stadium.outerRadius,
             startAngle,
-            endAngle
+            endAngle,
           );
           ctx.arc(
             stadium.center.x,
@@ -243,7 +235,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             stadium.innerRadius,
             endAngle,
             startAngle,
-            true
+            true,
           );
           ctx.closePath();
           ctx.fill();
@@ -295,7 +287,7 @@ const GameArena: React.FC<GameArenaProps> = ({
             };
             img.onerror = () => {
               console.warn(
-                `Failed to load beyblade image: ${beyblade.config.fileName}`
+                `Failed to load beyblade image: ${beyblade.config.fileName}`,
               );
               resolve(); // Continue even if one image fails
             };
@@ -352,7 +344,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       const scale = Math.min(
         containerWidth / canvasSize,
         containerHeight / canvasSize,
-        1.2 // Cap at 1.2x for better control on large screens
+        1.2, // Cap at 1.2x for better control on large screens
       );
 
       setCanvasScale(scale);
@@ -383,7 +375,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       };
       onMouseMove(position);
     },
-    [onMouseMove]
+    [onMouseMove],
   );
 
   // Handle touch events
@@ -405,7 +397,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       };
       onTouchStart(position);
     },
-    [onTouchStart]
+    [onTouchStart],
   );
 
   const handleTouchMove = useCallback(
@@ -426,7 +418,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       };
       onTouchMove(position);
     },
-    [onTouchMove]
+    [onTouchMove],
   );
 
   const handleTouchEnd = useCallback(
@@ -434,7 +426,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       event.preventDefault();
       if (onTouchEnd) onTouchEnd();
     },
-    [onTouchEnd]
+    [onTouchEnd],
   );
 
   // Render game state - stable function that uses refs
@@ -468,7 +460,7 @@ const GameArena: React.FC<GameArenaProps> = ({
         currentGameState.stadium,
         theme.palette,
         currentGameState,
-        currentTime
+        currentTime,
       );
     }
 
@@ -478,7 +470,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       currentGameState.stadium,
       theme.palette,
       currentGameState,
-      currentTime
+      currentTime,
     );
 
     // Draw beyblades
@@ -489,7 +481,7 @@ const GameArena: React.FC<GameArenaProps> = ({
         currentImagesLoaded,
         beybladeImagesRef.current,
         theme.palette,
-        currentTime
+        currentTime,
       );
     });
 
@@ -499,7 +491,7 @@ const GameArena: React.FC<GameArenaProps> = ({
       currentGameState,
       theme.palette,
       beybladeImagesRef.current,
-      currentTime
+      currentTime,
     );
   }, [theme.palette]); // Only recreate if theme changes
 
@@ -605,7 +597,7 @@ const drawDynamicBlueCircles = (
   stadium: any,
   colors: any,
   gameState: GameState,
-  currentTime: number
+  currentTime: number,
 ) => {
   // Check if any beyblade can use normal loop (200 radius)
   const canNormalLoop = gameState.beyblades.some(
@@ -613,7 +605,7 @@ const drawDynamicBlueCircles = (
       !b.isDead &&
       !b.isOutOfBounds &&
       (!b.normalLoopCooldownEnd ||
-        gameState.gameTime >= b.normalLoopCooldownEnd)
+        gameState.gameTime >= b.normalLoopCooldownEnd),
   );
 
   // Draw blue circle for normal loop (200 radius) - always visible when available
@@ -627,7 +619,7 @@ const drawDynamicBlueCircles = (
       stadium.center.y,
       stadium.normalLoopRadius,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.stroke();
     ctx.setLineDash([]);
@@ -638,7 +630,7 @@ const drawDynamicBlueCircles = (
     (b) =>
       !b.isDead &&
       !b.isOutOfBounds &&
-      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd)
+      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd),
   );
 
   // Draw blue circle for charge dash (300 radius) when available
@@ -652,7 +644,7 @@ const drawDynamicBlueCircles = (
       stadium.center.y,
       stadium.chargeDashRadius,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.stroke();
     ctx.setLineDash([]);
@@ -709,7 +701,7 @@ const drawGameZones = (
   stadium: any,
   colors: any,
   gameState: GameState,
-  currentTime: number
+  currentTime: number,
 ) => {
   // Draw main arena floor (inner circle) with subtle gradient
   const floorGradient = ctx.createRadialGradient(
@@ -718,7 +710,7 @@ const drawGameZones = (
     0,
     stadium.center.x,
     stadium.center.y,
-    stadium.innerRadius
+    stadium.innerRadius,
   );
   floorGradient.addColorStop(0, "#1a1a1a");
   floorGradient.addColorStop(0.7, "#2a2a2a");
@@ -730,7 +722,7 @@ const drawGameZones = (
     stadium.center.y,
     stadium.innerRadius,
     0,
-    Math.PI * 2
+    Math.PI * 2,
   );
   ctx.fill();
 
@@ -740,7 +732,7 @@ const drawGameZones = (
       !b.isDead &&
       !b.isOutOfBounds &&
       (!b.normalLoopCooldownEnd ||
-        gameState.gameTime >= b.normalLoopCooldownEnd)
+        gameState.gameTime >= b.normalLoopCooldownEnd),
   );
 
   // Draw blue circle for normal loop (200 radius) - always visible when available
@@ -755,7 +747,7 @@ const drawGameZones = (
       stadium.center.y,
       stadium.normalLoopRadius,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.stroke();
     ctx.setLineDash([]); // Reset dash
@@ -766,7 +758,7 @@ const drawGameZones = (
     (b) =>
       !b.isDead &&
       !b.isOutOfBounds &&
-      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd)
+      (!b.blueLoopCooldownEnd || gameState.gameTime >= b.blueLoopCooldownEnd),
   );
 
   // Draw blue circle for charge dash (350 radius) when available
@@ -781,7 +773,7 @@ const drawGameZones = (
       stadium.center.y,
       stadium.chargeDashRadius,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.stroke();
     ctx.setLineDash([]); // Reset dash
@@ -810,7 +802,7 @@ const drawGameZones = (
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       ctx.arc(
         stadium.center.x,
@@ -818,7 +810,7 @@ const drawGameZones = (
         stadium.innerRadius,
         endAngle,
         startAngle,
-        true
+        true,
       );
       ctx.closePath();
       ctx.fill();
@@ -832,7 +824,7 @@ const drawGameZones = (
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       ctx.arc(
         stadium.center.x,
@@ -840,7 +832,7 @@ const drawGameZones = (
         stadium.outerRadius - wallThickness,
         endAngle,
         startAngle,
-        true
+        true,
       );
       ctx.closePath();
       ctx.fill();
@@ -859,11 +851,11 @@ const drawGameZones = (
         ctx.beginPath();
         ctx.moveTo(
           stadium.center.x + Math.cos(brickAngle) * innerR,
-          stadium.center.y + Math.sin(brickAngle) * innerR
+          stadium.center.y + Math.sin(brickAngle) * innerR,
         );
         ctx.lineTo(
           stadium.center.x + Math.cos(brickAngle) * outerR,
-          stadium.center.y + Math.sin(brickAngle) * outerR
+          stadium.center.y + Math.sin(brickAngle) * outerR,
         );
         ctx.stroke();
       }
@@ -876,7 +868,7 @@ const drawGameZones = (
         stadium.center.y,
         midRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       ctx.stroke();
     } else {
@@ -888,7 +880,7 @@ const drawGameZones = (
         stadium.center.y,
         stadium.outerRadius,
         startAngle,
-        endAngle
+        endAngle,
       );
       ctx.arc(
         stadium.center.x,
@@ -896,7 +888,7 @@ const drawGameZones = (
         stadium.innerRadius,
         endAngle,
         startAngle,
-        true
+        true,
       );
       ctx.closePath();
       ctx.fill();
@@ -971,7 +963,7 @@ const drawBeyblade = (
   imagesLoaded: boolean,
   images: Map<string, HTMLImageElement>,
   colors: any,
-  currentTime: number
+  currentTime: number,
 ) => {
   ctx.save();
   ctx.translate(beyblade.position.x, beyblade.position.y);
@@ -1065,7 +1057,7 @@ const drawBeyblade = (
       beyblade.radius,
       0,
       0,
-      explosionRadius
+      explosionRadius,
     );
     gradient.addColorStop(0, `rgba(239, 68, 68, 0)`);
     gradient.addColorStop(0.5, `rgba(239, 68, 68, ${ultimateOpacity * 0.5})`);
@@ -1094,7 +1086,7 @@ const drawBeyblade = (
         currentAngle += (Math.random() - 0.5) * 0.3;
         ctx.lineTo(
           Math.cos(currentAngle) * currentRadius,
-          Math.sin(currentAngle) * currentRadius
+          Math.sin(currentAngle) * currentRadius,
         );
       }
       ctx.stroke();
@@ -1110,7 +1102,7 @@ const drawBeyblade = (
   // Draw beyblade
   ctx.rotate(beyblade.rotation);
   const beybladeImage = images.get(
-    beyblade.config.fileName.replace(".svg", "")
+    beyblade.config.fileName.replace(".svg", ""),
   );
 
   if (imagesLoaded && beybladeImage) {
@@ -1142,7 +1134,7 @@ const drawBeyblade = (
     ctx.fillText(
       "OUT OF BOUNDS",
       beyblade.position.x,
-      beyblade.position.y - beyblade.radius - 20
+      beyblade.position.y - beyblade.radius - 20,
     );
   }
 };
@@ -1152,7 +1144,7 @@ const drawGameUI = (
   gameState: GameState,
   colors: any,
   beybladeImages: Map<string, HTMLImageElement> | null = null,
-  currentTime?: number
+  currentTime?: number,
 ) => {
   const canvasWidth = 800;
   const canvasHeight = 800; // Square canvas
@@ -1229,7 +1221,7 @@ const drawGameUI = (
       0,
       bannerY,
       0,
-      bannerY + bannerHeight
+      bannerY + bannerHeight,
     );
     gradient.addColorStop(0, "#9C27B090");
     gradient.addColorStop(0.5, "#FF9800A0");
@@ -1278,7 +1270,7 @@ const drawGameUI = (
       0,
       bannerY,
       0,
-      bannerY + bannerHeight
+      bannerY + bannerHeight,
     );
     gradient.addColorStop(0, `${colors.primary.main}90`);
     gradient.addColorStop(0.5, `${colors.secondary.main}80`);
@@ -1309,7 +1301,7 @@ const drawGameUI = (
         -imageSize / 2,
         -imageSize / 2,
         imageSize,
-        imageSize
+        imageSize,
       );
       ctx.restore();
     }
@@ -1352,7 +1344,7 @@ const drawGameUI = (
               imageX - 10,
               imageY - 10,
               smallImageSize + 20,
-              smallImageSize + 20
+              smallImageSize + 20,
             );
           }
 
@@ -1361,7 +1353,7 @@ const drawGameUI = (
             imageX,
             imageY,
             smallImageSize,
-            smallImageSize
+            smallImageSize,
           );
 
           // Draw beyblade name
@@ -1371,7 +1363,7 @@ const drawGameUI = (
           ctx.fillText(
             beyblade.config.name,
             imageX + smallImageSize / 2,
-            imageY + smallImageSize + 20
+            imageY + smallImageSize + 20,
           );
         }
       });
@@ -1390,7 +1382,7 @@ const drawCornerStats = (
   x: number,
   y: number,
   colors: any,
-  isPlayer: boolean
+  isPlayer: boolean,
 ) => {
   const width = 100;
   const height = 80;
@@ -1472,7 +1464,7 @@ const drawCornerStats = (
   ctx.fillText(
     `Power: ${Math.floor(beyblade.power || 0)}/${maxPower}`,
     x + 5,
-    y + 78
+    y + 78,
   );
 };
 

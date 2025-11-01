@@ -177,8 +177,70 @@ function CouponsListContent() {
         return "BOGO";
       case "cart_discount":
         return "Cart Discount";
+      case "buy_x_get_y_cheapest":
+        return "Buy X Get Y Free";
+      case "buy_x_get_y_percentage":
+        return "Buy X Get Y Discount";
+      case "tiered_discount":
+        return "Tiered Discount";
+      case "bundle_discount":
+        return "Bundle Discount";
       default:
         return type;
+    }
+  };
+
+  const getCouponDescription = (coupon: SellerCoupon): string => {
+    const config = coupon.advancedConfig;
+
+    switch (coupon.type) {
+      case "percentage":
+        return `${coupon.value}% off`;
+      case "fixed":
+        return `₹${coupon.value} off`;
+      case "free_shipping":
+        return "Free shipping";
+      case "bogo":
+        return "Buy one get one";
+      case "cart_discount":
+        return `₹${coupon.value} cart discount`;
+
+      case "buy_x_get_y_cheapest":
+        if (!config) return "Buy X Get Y Free";
+        return `Buy ${config.buyQuantity} Get ${
+          config.getQuantity
+        } Cheapest Free${config.repeatOffer ? " (Repeating)" : ""}`;
+
+      case "buy_x_get_y_percentage":
+        if (!config) return "Buy X Get Y Discount";
+        const discountText =
+          config.getDiscountType === "free"
+            ? "Free"
+            : config.getDiscountType === "percentage"
+            ? `${config.getDiscountValue}% Off`
+            : `₹${config.getDiscountValue} Off`;
+        return `Buy ${config.buyQuantity} Get ${config.getQuantity} at ${discountText}`;
+
+      case "tiered_discount":
+        if (!config?.tiers || config.tiers.length === 0)
+          return "Tiered Discount";
+        const tierCount = config.tiers.length;
+        const firstTier = config.tiers[0];
+        const lastTier = config.tiers[tierCount - 1];
+        return `${tierCount} Tiers: ${firstTier.discountValue}% to ${lastTier.discountValue}%`;
+
+      case "bundle_discount":
+        if (!config) return "Bundle Discount";
+        const bundleDisc =
+          config.bundleDiscountType === "percentage"
+            ? `${config.bundleDiscountValue}% off`
+            : `₹${config.bundleDiscountValue} off`;
+        return `Buy ${
+          config.bundleProducts?.length || 0
+        } products together: ${bundleDisc}`;
+
+      default:
+        return coupon.description || "";
     }
   };
 
@@ -341,11 +403,9 @@ function CouponsListContent() {
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {coupon.name}
                         </div>
-                        {coupon.description && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {coupon.description}
-                          </div>
-                        )}
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {getCouponDescription(coupon)}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
@@ -357,7 +417,18 @@ function CouponsListContent() {
                           ? `${coupon.value}%`
                           : coupon.type === "fixed"
                           ? `₹${coupon.value}`
-                          : "Free Shipping"}
+                          : coupon.type === "free_shipping"
+                          ? "Free"
+                          : coupon.type === "buy_x_get_y_cheapest" ||
+                            coupon.type === "buy_x_get_y_percentage"
+                          ? `${coupon.advancedConfig?.buyQuantity}+${coupon.advancedConfig?.getQuantity}`
+                          : coupon.type === "tiered_discount"
+                          ? `${coupon.advancedConfig?.tiers?.length || 0} Tiers`
+                          : coupon.type === "bundle_discount"
+                          ? `${
+                              coupon.advancedConfig?.bundleProducts?.length || 0
+                            } Items`
+                          : "—"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {coupon.usedCount}

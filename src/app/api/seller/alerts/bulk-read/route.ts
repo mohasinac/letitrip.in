@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Mark multiple alerts as read
@@ -18,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -26,8 +24,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     const body = await req.json();
     const { alertIds = [] } = body;
@@ -47,19 +45,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify ownership and update in batch
-    const batch = writeBatch(db);
+    // Verify ownership and update in batch using Admin SDK
+    const db = getAdminDb();
+    const batch = db.batch();
     let updatedCount = 0;
 
     for (const alertId of alertIds) {
-      const alertRef = doc(db, "seller_alerts", alertId);
-      const alertSnap = await getDoc(alertRef);
+      const alertRef = db.collection("seller_alerts").doc(alertId);
+      const alertSnap = await alertRef.get();
 
-      if (!alertSnap.exists()) {
+      if (!alertSnap.exists) {
         continue; // Skip non-existent alerts
       }
 
-      const alertData = alertSnap.data();
+      const alertData = alertSnap.data()!;
 
       // Verify ownership (unless admin)
       if (userRole !== "admin" && alertData.sellerId !== userId) {

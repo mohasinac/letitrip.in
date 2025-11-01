@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth/jwt";
-import { db } from "@/lib/database/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit as firestoreLimit,
-  Timestamp,
-} from "firebase/firestore";
+import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
 /**
  * Get seller alerts
@@ -26,7 +16,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await getAdminAuth().verifyIdToken(token);
     if (!decoded) {
       return NextResponse.json(
         { success: false, error: "Invalid token" },
@@ -34,8 +24,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const userId = decoded.userId;
-    const userRole = decoded.role;
+    const userId = decoded.uid;
+    const userRole = (decoded as any).role || "user";
 
     // Get query params
     const { searchParams } = new URL(req.url);
@@ -43,45 +33,37 @@ export async function GET(req: NextRequest) {
     const isReadParam = searchParams.get("isRead");
     const limitParam = parseInt(searchParams.get("limit") || "50");
 
-    // Build query
-    let alertsQuery;
-    const constraints: any[] = [orderBy("createdAt", "desc")];
+    // Build query using Admin SDK
+    const db = getAdminDb();
+    let alertsQuery = db.collection("seller_alerts").orderBy("createdAt", "desc");
 
     if (userRole !== "admin") {
-      constraints.unshift(where("sellerId", "==", userId));
+      alertsQuery = alertsQuery.where("sellerId", "==", userId);
     }
 
     if (type !== "all") {
-      constraints.push(where("type", "==", type));
+      alertsQuery = alertsQuery.where("type", "==", type);
     }
 
     if (isReadParam !== null) {
-      constraints.push(where("isRead", "==", isReadParam === "true"));
+      alertsQuery = alertsQuery.where("isRead", "==", isReadParam === "true");
     }
 
-    constraints.push(firestoreLimit(limitParam));
+    alertsQuery = alertsQuery.limit(limitParam);
 
-    alertsQuery = query(collection(db, "seller_alerts"), ...constraints);
-
-    const alertsSnap = await getDocs(alertsQuery);
+    const alertsSnap = await alertsQuery.get();
     const alerts = alertsSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
     }));
 
-    // Get stats
-    let statsQuery;
-    if (userRole === "admin") {
-      statsQuery = query(collection(db, "seller_alerts"));
-    } else {
-      statsQuery = query(
-        collection(db, "seller_alerts"),
-        where("sellerId", "==", userId),
-      );
-    }
+    // Get stats using Admin SDK
+    const statsQuery = userRole !== "admin" 
+      ? db.collection("seller_alerts").where("sellerId", "==", userId)
+      : db.collection("seller_alerts");
 
-    const statsSnap = await getDocs(statsQuery);
+    const statsSnap = await statsQuery.get();
     let totalAlerts = 0;
     let unreadAlerts = 0;
     let newOrders = 0;

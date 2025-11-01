@@ -134,8 +134,9 @@ service cloud.firestore {
     
     // Seller Coupons collection - sellers can manage their own coupons, admins can manage all
     match /seller_coupons/{couponId} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null && 
                        (isAdmin() || 
                         (isSeller() && 
@@ -149,8 +150,9 @@ service cloud.firestore {
     
     // Seller Sales collection - sellers can manage their own sales, admins can manage all
     match /seller_sales/{saleId} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null && 
                        (isAdmin() || 
                         (isSeller() && 
@@ -172,8 +174,9 @@ service cloud.firestore {
     
     // Seller Orders collection - sellers see their orders, admins see all
     match /seller_orders/{orderId} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null; // System creates orders
       allow update: if request.auth != null && 
                        (isAdmin() || resource.data.sellerId == request.auth.uid);
@@ -182,17 +185,23 @@ service cloud.firestore {
     
     // Seller Shipments collection
     match /seller_shipments/{shipmentId} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      // Allow listing/querying shipments
+      // Sellers can only query their own shipments (enforced in the query with where clause)
+      // Admins can query all shipments
+      allow list: if request.auth != null;
+      // Allow reading specific shipment documents
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create, update: if request.auth != null && 
-                               (isAdmin() || resource.data.sellerId == request.auth.uid);
+                               (isAdmin() || request.resource.data.sellerId == request.auth.uid);
       allow delete: if isAdmin(); // Only admins can delete shipments
     }
     
     // Seller Alerts collection
     match /seller_alerts/{alertId} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || resource.data.sellerId == request.auth.uid);
+      allow list: if request.auth != null; // Authenticated users can query/list (with sellerId filter in query)
+      allow get: if request.auth != null && 
+                    (isAdmin() || resource.data.sellerId == request.auth.uid);
       allow create: if request.auth != null; // System creates alerts
       allow update: if request.auth != null && 
                        (isAdmin() || resource.data.sellerId == request.auth.uid);

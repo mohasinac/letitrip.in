@@ -120,6 +120,11 @@ export async function PUT(
       updateData.endDate = null;
     }
 
+    // Include advancedConfig if provided
+    if (body.advancedConfig !== undefined) {
+      updateData.advancedConfig = body.advancedConfig;
+    }
+
     await adminDb
       .collection("seller_coupons")
       .doc(params.id)

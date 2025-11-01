@@ -1,19 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  Stack,
-} from "@mui/material";
+import { UnifiedCard } from "@/components/ui/unified/Card";
+import { CardContent } from "@/components/ui/unified/Card";
 import EnhancedBeybladeArena from "../components/EnhancedBeybladeArena";
 import GameModeSelector from "../components/GameModeSelector";
 import MultiplayerLobby from "../components/MultiplayerLobby";
@@ -79,44 +68,14 @@ export default function BeybladeGamePage() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        py: { xs: 2, md: 4 },
-        backgroundColor: "background.default",
-      }}
-    >
-      <Container maxWidth="xl" sx={{ maxWidth: { xs: "100%", xl: "1600px" } }}>
+    <div className="min-h-screen py-4 md:py-8 bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header Section */}
-        <Box
-          sx={{
-            textAlign: "center",
-            mb: { xs: 3, md: 6 },
-            px: { xs: 2, md: 0 },
-          }}
-        >
-          <Typography
-            variant="h3"
-            component="h1"
-            gutterBottom
-            fontWeight="bold"
-            sx={{
-              color: "text.primary",
-              fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3rem" },
-            }}
-          >
+        <div className="text-center mb-6 md:mb-12 px-4 md:px-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
             🌪️ Beyblade Battle Arena
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              maxWidth: 600,
-              mx: "auto",
-              color: "text.secondary",
-              fontSize: { xs: "0.875rem", sm: "1rem", md: "1.25rem" },
-              px: { xs: 1, md: 0 },
-            }}
-          >
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-gray-600 dark:text-gray-400 px-2 md:px-0">
             {gamePhase === "mode-selection" &&
               "Choose your game mode and start battling!"}
             {gamePhase === "lobby" &&
@@ -128,8 +87,8 @@ export default function BeybladeGamePage() {
             {gamePhase === "playing" &&
               gameMode === "2p" &&
               "Online Multiplayer Battle!"}
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Game Mode Selection */}
         {gamePhase === "mode-selection" && (
@@ -156,379 +115,212 @@ export default function BeybladeGamePage() {
         {/* Main Game Arena */}
         {gamePhase === "playing" && (
           <>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                mb: { xs: 4, md: 8 },
-                px: { xs: 1, md: 0 },
-              }}
-            >
+            <div className="flex justify-center mb-8 md:mb-16 px-2 md:px-0">
               <EnhancedBeybladeArena
                 gameMode={gameMode as "1p" | "2p"}
                 multiplayerData={multiplayerData}
                 onBackToMenu={handleBackToModeSelection}
                 onPlayAgainMultiplayer={handlePlayAgainMultiplayer}
               />
-            </Box>
+            </div>
 
             {/* Game Information Cards - Only show for single player */}
             {gameMode === "1p" && (
-              <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={{ xs: 3, md: 4 }}
-                sx={{ mb: { xs: 4, md: 6 }, px: { xs: 2, md: 0 } }}
-              >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12 px-4 md:px-0">
                 {/* Game Features Card */}
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{
-                      height: "100%",
-                      backgroundColor: "background.paper",
-                      border: "2px solid",
-                      borderColor: "primary.main",
-                      "&:hover": {
-                        transform: "scale(1.02)",
-                        boxShadow: "0 10px 30px rgba(0, 149, 246, 0.2)",
-                      },
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          color: "text.primary",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <span style={{ marginRight: "12px" }}>⚡</span>
-                        Game Features
-                      </Typography>
-                      <List>
-                        {[
-                          {
-                            icon: "🎮",
-                            title: "Real-time Control",
-                            desc: "Mouse movement controls your Beyblade instantly",
-                          },
-                          {
-                            icon: "🌀",
-                            title: "Spin Mechanics",
-                            desc: "Both start at 100% spin, decay over time",
-                          },
-                          {
-                            icon: "💥",
-                            title: "Collision Physics",
-                            desc: "Every hit reduces spin for both Beyblades",
-                          },
-                          {
-                            icon: "🏟️",
-                            title: "Stadium Boundaries",
-                            desc: "Ring-out victories possible",
-                          },
-                          {
-                            icon: "🤖",
-                            title: "AI Opponent",
-                            desc: "Intelligent enemy that hunts you down",
-                          },
-                        ].map((feature, index) => (
-                          <ListItem key={index} sx={{ px: 0 }}>
-                            <ListItemIcon>
-                              <Typography variant="h6">
-                                {feature.icon}
-                              </Typography>
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={
-                                <Typography
-                                  fontWeight="bold"
-                                  sx={{ color: "text.primary" }}
-                                >
-                                  {feature.title}
-                                </Typography>
-                              }
-                              secondary={
-                                <Typography sx={{ color: "text.secondary" }}>
-                                  {feature.desc}
-                                </Typography>
-                              }
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </CardContent>
-                  </Card>
-                </Box>
+                <UnifiedCard className="h-full border-2 border-primary-600 hover:scale-[1.02] transition-all duration-300 hover:shadow-xl">
+                  <CardContent className="p-6">
+                    <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center">
+                      <span className="mr-3">⚡</span>
+                      Game Features
+                    </h2>
+                    <ul className="space-y-4">
+                      {[
+                        {
+                          icon: "🎮",
+                          title: "Real-time Control",
+                          desc: "Mouse movement controls your Beyblade instantly",
+                        },
+                        {
+                          icon: "🌀",
+                          title: "Spin Mechanics",
+                          desc: "Both start at 100% spin, decay over time",
+                        },
+                        {
+                          icon: "💥",
+                          title: "Collision Physics",
+                          desc: "Every hit reduces spin for both Beyblades",
+                        },
+                        {
+                          icon: "🏟️",
+                          title: "Stadium Boundaries",
+                          desc: "Ring-out victories possible",
+                        },
+                        {
+                          icon: "🤖",
+                          title: "AI Opponent",
+                          desc: "Intelligent enemy that hunts you down",
+                        },
+                      ].map((feature, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0">
+                            {feature.icon}
+                          </span>
+                          <div>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">
+                              {feature.title}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {feature.desc}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </UnifiedCard>
 
                 {/* Strategy Tips Card */}
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{
-                      height: "100%",
-                      backgroundColor: "background.paper",
-                      border: "2px solid #2ed573",
-                      "&:hover": {
-                        transform: "scale(1.02)",
-                        boxShadow: "0 10px 30px rgba(46, 213, 115, 0.2)",
-                      },
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          color: "text.primary",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <span style={{ marginRight: "12px" }}>🧠</span>
-                        Strategy Tips
-                      </Typography>
-                      <List>
-                        {[
-                          {
-                            icon: "🏃",
-                            title: "Stay Mobile",
-                            desc: "Keep moving to avoid AI attacks",
-                          },
-                          {
-                            icon: "🎯",
-                            title: "Strategic Collisions",
-                            desc: "Time your hits when enemy has low spin",
-                          },
-                          {
-                            icon: "📍",
-                            title: "Positioning",
-                            desc: "Use stadium edges to your advantage",
-                          },
-                          {
-                            icon: "⚖️",
-                            title: "Spin Management",
-                            desc: "Avoid unnecessary collisions early on",
-                          },
-                          {
-                            icon: "🏁",
-                            title: "Endgame",
-                            desc: "Low spin makes you vulnerable to ring-outs",
-                          },
-                        ].map((tip, index) => (
-                          <ListItem key={index} sx={{ px: 0 }}>
-                            <ListItemIcon>
-                              <Typography variant="h6">{tip.icon}</Typography>
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={
-                                <Typography
-                                  fontWeight="bold"
-                                  sx={{ color: "text.primary" }}
-                                >
-                                  {tip.title}
-                                </Typography>
-                              }
-                              secondary={
-                                <Typography sx={{ color: "text.secondary" }}>
-                                  {tip.desc}
-                                </Typography>
-                              }
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Stack>
+                <UnifiedCard className="h-full border-2 border-green-500 hover:scale-[1.02] transition-all duration-300 hover:shadow-xl">
+                  <CardContent className="p-6">
+                    <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center">
+                      <span className="mr-3">🧠</span>
+                      Strategy Tips
+                    </h2>
+                    <ul className="space-y-4">
+                      {[
+                        {
+                          icon: "🏃",
+                          title: "Stay Mobile",
+                          desc: "Keep moving to avoid AI attacks",
+                        },
+                        {
+                          icon: "🎯",
+                          title: "Strategic Collisions",
+                          desc: "Time your hits when enemy has low spin",
+                        },
+                        {
+                          icon: "📍",
+                          title: "Positioning",
+                          desc: "Use stadium edges to your advantage",
+                        },
+                        {
+                          icon: "⚖️",
+                          title: "Spin Management",
+                          desc: "Avoid unnecessary collisions early on",
+                        },
+                        {
+                          icon: "🏁",
+                          title: "Endgame",
+                          desc: "Low spin makes you vulnerable to ring-outs",
+                        },
+                      ].map((tip, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0">
+                            {tip.icon}
+                          </span>
+                          <div>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">
+                              {tip.title}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {tip.desc}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </UnifiedCard>
+              </div>
             )}
           </>
         )}
 
         {/* Advanced Mechanics Section - Only show for single player */}
         {gamePhase === "playing" && gameMode === "1p" && (
-          <Card
-            sx={{
-              backgroundColor: "background.paper",
-              border: "2px solid",
-              borderColor: "primary.main",
-              boxShadow: "0 10px 30px rgba(0, 149, 246, 0.1)",
-              mx: { xs: 2, md: 0 },
-            }}
-          >
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Typography
-                variant="h5"
-                component="h2"
-                gutterBottom
-                sx={{
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "text.primary",
-                  fontWeight: "bold",
-                  fontSize: { xs: "1.25rem", md: "1.5rem" },
-                }}
-              >
-                <span style={{ marginRight: "12px" }}>🔬</span>
+          <UnifiedCard className="border-2 border-primary-600 shadow-xl mx-4 md:mx-0">
+            <CardContent className="p-4 md:p-6">
+              <h2 className="text-xl md:text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100 flex items-center justify-center">
+                <span className="mr-3">🔬</span>
                 Advanced Battle Mechanics
-              </Typography>
+              </h2>
 
-              <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={{ xs: 2, md: 3 }}
-                sx={{ mb: { xs: 3, md: 4 } }}
-              >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
                 {/* Blue Zone */}
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{
-                      bgcolor: "#1a2332",
-                      height: "100%",
-                      border: "2px solid #3b82f6",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: "#60a5fa",
-                          display: "flex",
-                          alignItems: "center",
-                          mb: 2,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <span style={{ marginRight: "8px" }}>🔵</span>
-                        Blue Speed Zone
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#e5e7eb" }}>
-                        Triggers a mandatory 1-second loop with 2× acceleration.
-                        Player retains control, AI loses control. 3-second
-                        cooldown after each loop.
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
+                <UnifiedCard className="bg-gray-800 border-2 border-blue-500">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-blue-400 flex items-center mb-3">
+                      <span className="mr-2">🔵</span>
+                      Blue Speed Zone
+                    </h3>
+                    <p className="text-sm text-gray-200">
+                      Triggers a mandatory 1-second loop with 2× acceleration.
+                      Player retains control, AI loses control. 3-second
+                      cooldown after each loop.
+                    </p>
+                  </CardContent>
+                </UnifiedCard>
 
                 {/* Red Zones */}
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{
-                      bgcolor: "#2d1b1b",
-                      height: "100%",
-                      border: "2px solid #ef4444",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: "#f87171",
-                          display: "flex",
-                          alignItems: "center",
-                          mb: 2,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <span style={{ marginRight: "8px" }}>🔴</span>
-                        Wall Zones
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#e5e7eb" }}>
-                        Angles 0-60°, 120-180°, 240-300°. Collision causes spin
-                        loss (10 + acceleration) and respawn inside blue circle.
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
+                <UnifiedCard className="bg-red-950 border-2 border-red-500">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-red-400 flex items-center mb-3">
+                      <span className="mr-2">🔴</span>
+                      Wall Zones
+                    </h3>
+                    <p className="text-sm text-gray-200">
+                      Angles 0-60°, 120-180°, 240-300°. Collision causes spin
+                      loss (10 + acceleration) and respawn inside blue circle.
+                    </p>
+                  </CardContent>
+                </UnifiedCard>
 
                 {/* Yellow Zones */}
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{
-                      bgcolor: "#2d2619",
-                      height: "100%",
-                      border: "2px solid #f59e0b",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: "#fbbf24",
-                          display: "flex",
-                          alignItems: "center",
-                          mb: 2,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <span style={{ marginRight: "8px" }}>🟡</span>
-                        Exit Zones
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#e5e7eb" }}>
-                        Angles 60-120°, 180-240°, 300-360°. Cross these
-                        boundaries and it's game over - instant elimination!
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Stack>
+                <UnifiedCard className="bg-yellow-950 border-2 border-yellow-500">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-yellow-400 flex items-center mb-3">
+                      <span className="mr-2">🟡</span>
+                      Exit Zones
+                    </h3>
+                    <p className="text-sm text-gray-200">
+                      Angles 60-120°, 180-240°, 300-360°. Cross these boundaries
+                      and it's game over - instant elimination!
+                    </p>
+                  </CardContent>
+                </UnifiedCard>
+              </div>
 
               {/* Collision Damage */}
-              <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={{ xs: 2, md: 3 }}
-              >
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{ bgcolor: "#1a2332", border: "2px solid #0ea5e9" }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{ color: "#38bdf8", fontWeight: "bold" }}
-                      >
-                        ⚡ Same Spin Collision
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#e5e7eb" }}>
-                        Damage = |acceleration difference| + other Beyblade's
-                        acceleration
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <UnifiedCard className="bg-gray-800 border-2 border-cyan-500">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-cyan-400 mb-2">
+                      ⚡ Same Spin Collision
+                    </h3>
+                    <p className="text-sm text-gray-200">
+                      Damage = |acceleration difference| + other Beyblade's
+                      acceleration
+                    </p>
+                  </CardContent>
+                </UnifiedCard>
 
-                <Box sx={{ flex: 1 }}>
-                  <Card
-                    sx={{ bgcolor: "#2d1b2d", border: "2px solid #ec4899" }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{ color: "#f472b6", fontWeight: "bold" }}
-                      >
-                        💥 Opposite Spin Collision
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#e5e7eb" }}>
-                        Both get average spin + their acceleration, take average
-                        acceleration + other's acceleration damage
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Stack>
+                <UnifiedCard className="bg-pink-950 border-2 border-pink-500">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-pink-400 mb-2">
+                      💥 Opposite Spin Collision
+                    </h3>
+                    <p className="text-sm text-gray-200">
+                      Both get average spin + their acceleration, take average
+                      acceleration + other's acceleration damage
+                    </p>
+                  </CardContent>
+                </UnifiedCard>
+              </div>
             </CardContent>
-          </Card>
+          </UnifiedCard>
         )}
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }
