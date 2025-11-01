@@ -21,6 +21,7 @@ import AdminSidebar from "@/components/layout/AdminSidebar";
 import SellerSidebar from "@/components/seller/SellerSidebar";
 import { useIsAdminRoute } from "@/hooks/useIsAdminRoute";
 import { usePathname } from "next/navigation";
+import FloatingCart from "@/components/cart/FloatingCart";
 
 interface ModernLayoutProps {
   children: React.ReactNode;
@@ -343,6 +344,9 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
         {/* Main Content */}
         <main className="flex-grow">{children}</main>
+
+        {/* Floating Cart Button */}
+        <FloatingCart />
 
         {/* Footer */}
         <footer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 border-t border-gray-200 dark:border-gray-800 py-12 mt-16">

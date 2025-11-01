@@ -4,6 +4,9 @@ import "./modern-globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ModernThemeProvider } from "@/contexts/ModernThemeContext";
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import ModernLayout from "@/components/layout/ModernLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
@@ -173,9 +176,15 @@ export default function RootLayout({
         <AuthProvider>
           <ModernThemeProvider>
             <BreadcrumbProvider>
-              <ErrorBoundary>
-                <ModernLayout>{children}</ModernLayout>
-              </ErrorBoundary>
+              <CurrencyProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <ErrorBoundary>
+                      <ModernLayout>{children}</ModernLayout>
+                    </ErrorBoundary>
+                  </WishlistProvider>
+                </CartProvider>
+              </CurrencyProvider>
             </BreadcrumbProvider>
             <Toaster
               position="top-right"
