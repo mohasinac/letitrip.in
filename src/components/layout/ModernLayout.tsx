@@ -22,6 +22,7 @@ import SellerSidebar from "@/components/seller/SellerSidebar";
 import { useIsAdminRoute } from "@/hooks/useIsAdminRoute";
 import { usePathname } from "next/navigation";
 import FloatingCart from "@/components/cart/FloatingCart";
+import GlobalSearch from "@/components/layout/GlobalSearch";
 
 interface ModernLayoutProps {
   children: React.ReactNode;
@@ -185,10 +186,15 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               {/* Logo */}
               <Link
                 href="/"
-                className="font-bold text-gray-900 dark:text-white no-underline text-xl md:text-2xl flex-grow md:flex-grow-0 text-center md:text-left"
+                className="font-bold text-gray-900 dark:text-white no-underline text-xl md:text-2xl flex-shrink-0"
               >
                 HobbiesSpot
               </Link>
+
+              {/* Global Search - Desktop Only */}
+              <div className="hidden md:block flex-1 max-w-2xl mx-4">
+                <GlobalSearch />
+              </div>
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex gap-1">

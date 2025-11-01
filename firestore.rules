@@ -90,17 +90,45 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
-    
-    // User addresses collection
-    match /users/{userId}/addresses/{addressId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // Wishlist collection - users can only access their own wishlist
+    match /wishlists/{wishlistId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
     }
     
-    // Contact messages - anyone can create, only admins can read
-    match /contacts/{contactId} {
-      allow create: if validateContact();
-      allow read: if request.auth != null && isAdmin();
-      allow update: if request.auth != null && isAdmin();
+    // Reviews collection - authenticated users can create, public read for approved
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId &&
+                       validateReview();
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || isAdmin());
+      allow delete: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    
+    // Stores collection - public read, seller write own store, admin write all
+    match /stores/{storeId} {
+      allow read: if resource.data.isActive == true || isAdmin();
+      allow create: if request.auth != null && 
+                       isSeller() &&
+                       request.resource.data.ownerId == request.auth.uid;
+      allow update: if request.auth != null && 
+                       (isAdmin() || resource.data.ownerId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+    
+    // Orders collection - users can read their own orders, admins can read all
+    match /orders/{orderId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId &&
+                       validateOrder();
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || isAdmin());
     }
     
     // Returns/Refunds collection

@@ -34,54 +34,54 @@ This document outlines the implementation plan for transforming the current webs
 
 - ✅ Address management (CRUD)
 - ✅ Checkout page with address selection
-- ✅ Payment gateway integration (Razorpay + PayPal)
-- ✅ Order creation flow
-- ✅ User profile sidebar
+- ⏳ Payment gateway integration (Razorpay + PayPal)
+- ⏳ Order creation flow
+- ⏳ User profile sidebar
 
 ### **Session 3: Order Management (HIGH)**
 
-- ✅ Order status workflow
-- ✅ Seller order acceptance
-- ✅ Shipment creation (Shiprocket integration)
-- ✅ Order tracking updates
-- ✅ Review system (product + seller)
+- ⏳ Order status workflow
+- ⏳ Seller order acceptance
+- ⏳ Shipment creation (Shiprocket integration)
+- ⏳ Order tracking updates
+- ⏳ Review system (product + seller)
 
 ### **Session 4: Product Discovery (HIGH)**
 
-- ✅ Products listing page with filters
-- ✅ Live search with infinite scroll
-- ✅ Advanced filters (price, category, stock, etc.)
-- ✅ Sort options
-- ✅ Out of stock toggle
+- ⏳ Products listing page with filters
+- ⏳ Live search with infinite scroll
+- ⏳ Advanced filters (price, category, stock, etc.)
+- ⏳ Sort options
+- ⏳ Out of stock toggle
 
 ### **Session 5: Product Details (MEDIUM)**
 
-- ✅ Product detail page
-- ✅ Seller information display
-- ✅ Product variants (same root category)
-- ✅ Similar products recommendations
-- ✅ Reviews display
+- ⏳ Product detail page
+- ⏳ Seller information display
+- ⏳ Product variants (same root category)
+- ⏳ Similar products recommendations
+- ⏳ Reviews display
 
 ### **Session 6: Stores & Categories (MEDIUM)**
 
-- ✅ Stores listing page
-- ✅ Store filters & search
-- ✅ Categories page with products
-- ✅ Category search functionality
+- ⏳ Stores listing page
+- ⏳ Store filters & search
+- ⏳ Categories page with products
+- ⏳ Category search functionality
 
 ### **Session 7: Search & SEO (MEDIUM)**
 
-- ✅ Global live search
-- ✅ Search across products, sellers, categories
-- ✅ Sitemap generation on deployment
-- ✅ Fix broken links
+- ⏳ Global live search
+- ⏳ Search across products, sellers, categories
+- ⏳ Sitemap generation on deployment
+- ⏳ Fix broken links
 
 ### **Session 8: Polish & Testing (LOW)**
 
-- ✅ Code optimization
-- ✅ Testing & bug fixes
-- ✅ Performance optimization
-- ✅ Final deployment
+- ⏳ Code optimization
+- ⏳ Testing & bug fixes
+- ⏳ Performance optimization
+- ⏳ Final deployment
 
 ---
 
@@ -1482,7 +1482,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 **Last Updated:** November 1, 2025
 
-### Completed
+### Completed (November 1, 2025 Session)
+
+**Phase 1-3: Core Shopping Experience ✅**
+
+- ✅ Currency system with multi-currency support (INR, USD, EUR, GBP)
+- ✅ Cart context with localStorage persistence
+- ✅ Wishlist context with localStorage persistence
+- ✅ FloatingCart component site-wide
+- ✅ CartDrawer slide-in panel
+- ✅ Cart page (/cart) with full management
+- ✅ Wishlist page (/wishlist) with grid layout
+- ✅ WishlistButton reusable component
+- ✅ Address management (CRUD operations)
+- ✅ Address API routes with Firebase auth
+- ✅ useAddresses custom hook
+- ✅ AddressForm modal component
+- ✅ AddressCard display component
+- ✅ Addresses management page (/profile/addresses)
+- ✅ Checkout page (/checkout) with address selection
+
+**Previously Completed:**
 
 - ✅ Admin panel
 - ✅ Seller dashboard
@@ -1492,27 +1512,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 - ✅ Coupon system
 - ✅ Sales system
 - ✅ User authentication
-- ✅ Razorpay integration (partial)
 
 ### In Progress
 
-- 🔄 None (ready to start implementation)
+- 🔄 Payment gateway integration (Razorpay + PayPal)
+- 🔄 Order creation workflow
 
 ### Pending
 
-- ⏳ Everything listed in sessions 1-8
+- ⏳ Order status workflow
+- ⏳ Seller order acceptance
+- ⏳ Shipment creation (Shiprocket)
+- ⏳ Order tracking
+- ⏳ Review system
+- ⏳ Products page with filters
+- ⏳ Product detail pages
+- ⏳ Stores & Categories pages
+- ⏳ Global search
+- ⏳ SEO & Sitemap
 
 ---
 
 ## 🎯 Next Steps
 
-1. **Review this document** with stakeholders
-2. **Prioritize features** if timeline is tight
-3. **Set up development environment**
-4. **Begin Session 1** - Core Shopping Experience
-5. **Test incrementally** after each session
-6. **Deploy to staging** after Session 4
-7. **User testing** before final deployment
+1. ✅ ~~Review this document~~ - DONE
+2. ✅ ~~Set up development environment~~ - DONE
+3. ✅ ~~Begin Session 1: Core Shopping Experience~~ - COMPLETE
+4. **Next: Implement payment gateways (Razorpay + PayPal)**
+5. **Next: Create order workflow**
+6. Test checkout flow end-to-end
+7. Implement product listing with filters
+8. Deploy to staging after payment integration
 
 ---
 
