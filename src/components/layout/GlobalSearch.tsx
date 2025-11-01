@@ -34,7 +34,11 @@ interface SearchResults {
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
 
-export default function GlobalSearch() {
+interface GlobalSearchProps {
+  onClose?: () => void;
+}
+
+export default function GlobalSearch({ onClose }: GlobalSearchProps = {}) {
   const router = useRouter();
   const { formatPrice } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
@@ -71,12 +75,13 @@ export default function GlobalSearch() {
         !searchRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        onClose?.();
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [onClose]);
 
   useEffect(() => {
     if (query.trim().length < 2) {
@@ -138,6 +143,7 @@ export default function GlobalSearch() {
     saveRecentSearch(searchQuery);
     setIsOpen(false);
     setQuery("");
+    onClose?.();
     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
   };
 
@@ -146,6 +152,7 @@ export default function GlobalSearch() {
 
     if (e.key === "Escape") {
       setIsOpen(false);
+      onClose?.();
       inputRef.current?.blur();
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -193,6 +200,7 @@ export default function GlobalSearch() {
     // Check products
     if (selectedIndex < currentIndex + results.products.length) {
       const product = results.products[selectedIndex - currentIndex];
+      onClose?.();
       router.push(`/products/${product.slug}`);
       setIsOpen(false);
       setQuery("");
@@ -204,6 +212,7 @@ export default function GlobalSearch() {
     // Check categories
     if (selectedIndex < currentIndex + results.categories.length) {
       const category = results.categories[selectedIndex - currentIndex];
+      onClose?.();
       router.push(`/categories/${category.slug}`);
       setIsOpen(false);
       setQuery("");
@@ -215,6 +224,7 @@ export default function GlobalSearch() {
     // Check stores
     if (selectedIndex < currentIndex + results.stores.length) {
       const store = results.stores[selectedIndex - currentIndex];
+      onClose?.();
       router.push(`/stores/${store.slug}`);
       setIsOpen(false);
       setQuery("");
@@ -245,20 +255,37 @@ export default function GlobalSearch() {
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder="Search products, categories, or stores..."
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="w-full pl-10 pr-20 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          autoFocus
         />
-        {query && (
-          <button
-            onClick={() => {
-              setQuery("");
-              setResults({ products: [], categories: [], stores: [] });
-              inputRef.current?.focus();
-            }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {query && (
+            <button
+              onClick={() => {
+                setQuery("");
+                setResults({ products: [], categories: [], stores: [] });
+                inputRef.current?.focus();
+              }}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+          {onClose && (
+            <button
+              onClick={() => {
+                onClose();
+                setQuery("");
+                setResults({ products: [], categories: [], stores: [] });
+              }}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Close search"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Dropdown */}
@@ -336,6 +363,7 @@ export default function GlobalSearch() {
                             saveRecentSearch(query);
                             setIsOpen(false);
                             setQuery("");
+                            onClose?.();
                           }}
                           className={`flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                             selectedIndex === itemIndex
@@ -387,6 +415,7 @@ export default function GlobalSearch() {
                             saveRecentSearch(query);
                             setIsOpen(false);
                             setQuery("");
+                            onClose?.();
                           }}
                           className={`block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                             selectedIndex === itemIndex
@@ -431,6 +460,7 @@ export default function GlobalSearch() {
                             saveRecentSearch(query);
                             setIsOpen(false);
                             setQuery("");
+                            onClose?.();
                           }}
                           className={`block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                             selectedIndex === itemIndex

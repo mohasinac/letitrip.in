@@ -44,6 +44,10 @@ export interface Order {
   userName: string;
   userEmail: string;
 
+  // Seller info (for single-seller orders)
+  sellerId?: string;
+  sellerName?: string;
+
   // Items
   items: OrderItem[];
 

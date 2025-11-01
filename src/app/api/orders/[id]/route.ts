@@ -4,9 +4,12 @@ import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Await params in Next.js 15+
+    const { id: orderId } = await params;
+    
     // Verify authentication
     const user = await verifyFirebaseToken(request);
 
@@ -15,7 +18,6 @@ export async function GET(
     }
 
     const userId = user.uid;
-    const orderId = params.id;
 
     // Fetch order from Firestore
     const adminDb = getAdminDb();

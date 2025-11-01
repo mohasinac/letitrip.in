@@ -7,9 +7,12 @@ import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    // Await params in Next.js 15+
+    const { id: orderId } = await params;
+    
     // Verify authentication
     const authHeader = request.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer ")) {
@@ -25,7 +28,6 @@ export async function GET(
     const uid = decodedToken.uid;
     const role = decodedToken.role || "user";
     const sellerId = uid;
-    const orderId = params.id;
 
     // Only sellers and admins can access
     if (role !== "seller" && role !== "admin") {

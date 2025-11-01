@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, History } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { getProductImageUrl } from "@/utils/product";
 
 interface RecentlyViewedProduct {
   id: string;
@@ -88,7 +89,11 @@ export default function RecentlyViewed({
             >
               <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                 <Image
-                  src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
+                  src={getProductImageUrl(
+                    product,
+                    0,
+                    "/assets/placeholder.png"
+                  )}
                   alt={product.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"

@@ -113,6 +113,49 @@
 
 ---
 
+### 3. Firestore Index Missing Error
+
+**Problem:**
+
+- Error: "The query requires an index. You can create it here..."
+- Query on products collection with `status` and `quantity` fields failed
+- Missing composite index for filtering active products by stock
+
+**Root Cause:**
+
+- Firestore requires composite indexes when querying with:
+  - Multiple equality filters
+  - Equality filter + range/inequality filter
+  - Equality filter + orderBy on different field
+- The products API route was querying:
+  - `.where("status", "==", "active")`
+  - `.where("quantity", ">", 0)`
+- This combination requires a composite index
+
+**Fix Applied:**
+
+- Added missing index to `firestore.indexes.json`:
+  ```json
+  {
+    "collectionGroup": "products",
+    "queryScope": "COLLECTION",
+    "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" },
+      { "fieldPath": "quantity", "order": "ASCENDING" },
+      { "fieldPath": "__name__", "order": "ASCENDING" }
+    ]
+  }
+  ```
+- Deployed indexes to Firebase: `firebase deploy --only firestore:indexes`
+
+**Note:** Index building takes time (a few minutes for small collections, longer for large ones). The error will persist until the index is fully built.
+
+**Files Changed:**
+
+- `firestore.indexes.json`
+
+---
+
 ## Testing Checklist
 
 ### Category Page Testing

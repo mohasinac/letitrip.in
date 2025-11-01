@@ -54,6 +54,7 @@ export interface Product {
   images: ProductImage[];
   videos?: ProductVideo[]; // Support for product videos
   category: string;
+  categorySlug?: string; // For display purposes
   tags: string[];
   status: "active" | "draft" | "archived";
   isFeatured: boolean;
@@ -68,6 +69,12 @@ export interface Product {
     storeStatus?: "live" | "maintenance" | "offline";
     isVerified?: boolean;
   };
+  // Condition & Features
+  condition?: "new" | "used-mint" | "used-good" | "used-fair" | "damaged";
+  returnable?: boolean;
+  returnPeriod?: number; // days
+  features?: string[];
+  specifications?: { [key: string]: string };
   seo?: {
     title: string;
     description: string;

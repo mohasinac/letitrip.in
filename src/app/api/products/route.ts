@@ -27,20 +27,51 @@ export async function GET(request: NextRequest) {
       query = query.where("category", "==", category);
     }
 
-    // Stock filter
+    // Stock filter - Try to use Firestore query, fallback to in-memory if index not ready
+    let useInMemoryStockFilter = false;
     if (inStockOnly) {
-      query = query.where("quantity", ">", 0);
+      try {
+        query = query.where("quantity", ">", 0);
+      } catch (error: any) {
+        console.warn("Stock filter index not ready, using in-memory filtering");
+        useInMemoryStockFilter = true;
+      }
     }
 
     // Price range filter (we'll filter this in memory after fetch)
     // Firestore doesn't support multiple range queries on different fields
 
     // Fetch products
-    const snapshot = await query.get();
+    let snapshot;
+    try {
+      snapshot = await query.get();
+    } catch (error: any) {
+      // If query fails due to missing index, fall back to simpler query
+      if (error.code === 9 || error.message?.includes("index")) {
+        console.warn("Composite index not ready, using fallback query");
+        query = adminDb.collection("products").where("status", "==", "active");
+        if (category) {
+          query = query.where("category", "==", category);
+        }
+        snapshot = await query.get();
+        useInMemoryStockFilter = inStockOnly;
+      } else {
+        throw error;
+      }
+    }
+    
     let products = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     })) as any[];
+
+    // Apply in-memory stock filter if needed
+    if (useInMemoryStockFilter && inStockOnly) {
+      products = products.filter((product) => {
+        const stock = product.quantity ?? product.stock ?? 0;
+        return stock > 0;
+      });
+    }
 
     // Apply search filter (in memory)
     if (search) {

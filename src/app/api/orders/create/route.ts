@@ -128,6 +128,11 @@ export async function POST(request: NextRequest) {
       status: initialStatus,
 
       customerNotes: customerNotes || "",
+      
+      // Add sellerId from first item (for single-seller orders)
+      // For multi-seller orders, this would need to be split into separate orders
+      sellerId: items[0]?.sellerId || "default-seller",
+      sellerName: items[0]?.sellerName || "JustForView",
 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

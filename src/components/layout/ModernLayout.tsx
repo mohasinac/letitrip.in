@@ -32,8 +32,6 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Products", href: "/products" },
   { name: "Categories", href: "/categories" },
-  { name: "Stores", href: "/stores" },
-  { name: "Game", href: "/game" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -42,6 +40,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   const { user, logout, loading } = useAuth();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] =
     useState<null | HTMLElement>(null);
   const [adminSidebarOpen, setAdminSidebarOpen] = useState(true);
@@ -191,13 +190,8 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 HobbiesSpot
               </Link>
 
-              {/* Global Search - Desktop Only */}
-              <div className="hidden md:block flex-1 max-w-2xl mx-4">
-                <GlobalSearch />
-              </div>
-
               {/* Desktop Navigation */}
-              <nav className="hidden lg:flex gap-1">
+              <nav className="hidden lg:flex gap-1 flex-1">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
@@ -215,14 +209,19 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
               {/* Right Section - Search, Cart, and Auth */}
               <div className="flex items-center gap-2">
-                {/* Search Icon */}
-                <Link
-                  href="/search"
-                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                {/* Search Icon - Toggle search bar */}
+                <button
+                  onClick={() => setSearchOpen(!searchOpen)}
+                  className={`p-2 rounded-md transition-colors ${
+                    searchOpen
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
                   title="Search"
+                  aria-label="Toggle search"
                 >
                   <Search className="h-5 w-5" />
-                </Link>
+                </button>
 
                 {/* Shopping Cart */}
                 <Link
@@ -330,6 +329,13 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 </button>
               </div>
             </div>
+
+            {/* Search Bar Dropdown - Shows below navbar when search icon is clicked */}
+            {searchOpen && (
+              <div className="border-t border-gray-200 dark:border-gray-800 py-4 animate-slideDown">
+                <GlobalSearch onClose={() => setSearchOpen(false)} />
+              </div>
+            )}
           </div>
         </header>
 
