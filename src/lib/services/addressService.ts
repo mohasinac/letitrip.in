@@ -11,7 +11,7 @@ import {
   writeBatch,
   getDoc
 } from "firebase/firestore";
-import { db } from "@/config/firebase";
+import { getAdminDb } from "@/lib/database/admin";
 import { Address, AddressFormData } from "@/types/address";
 
 const ADDRESSES_COLLECTION = "addresses";
@@ -22,6 +22,7 @@ export class AddressService {
    */
   static async getUserAddresses(userId: string): Promise<Address[]> {
     try {
+      const db = getAdminDb();
       const q = query(
         collection(db, ADDRESSES_COLLECTION),
         where("userId", "==", userId)
