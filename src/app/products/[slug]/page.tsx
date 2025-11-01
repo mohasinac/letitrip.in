@@ -24,6 +24,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import RecentlyViewed from "@/components/products/RecentlyViewed";
 import toast from "react-hot-toast";
+import { getProductImageUrl, getProductImages } from "@/utils/product";
 
 interface Product {
   id: string;
@@ -175,7 +176,7 @@ export default function ProductDetailPage() {
         name: product.name,
         slug: product.slug,
         price: product.price,
-        images: product.images,
+        images: getProductImages(product),
         category: product.category,
       } as Product);
 
@@ -208,7 +209,7 @@ export default function ProductDetailPage() {
       name: product.name,
       price: product.price,
       quantity: quantity,
-      image: product.images[0]?.url,
+      image: getProductImageUrl(product, 0),
       sku: product.sku,
       addedAt: new Date(),
     });
@@ -223,7 +224,7 @@ export default function ProductDetailPage() {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.images[0]?.url || "/assets/placeholder.png",
+      image: getProductImageUrl(product, 0) || "/assets/placeholder.png",
       slug: product.slug,
     };
 
@@ -336,10 +337,10 @@ export default function ProductDetailPage() {
             >
               <Image
                 src={
-                  product.images[selectedImage]?.url ||
+                  getProductImages(product)[selectedImage]?.url ||
                   "/assets/placeholder.png"
                 }
-                alt={product.images[selectedImage]?.alt || product.name}
+                alt={getProductImages(product)[selectedImage]?.alt || product.name}
                 fill
                 className={`object-cover transition-transform duration-200 ${
                   imageZoom ? "scale-150" : "scale-100"
@@ -372,9 +373,9 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Thumbnail Gallery */}
-            {product.images.length > 1 && (
+            {getProductImages(product).length > 1 && (
               <div className="grid grid-cols-5 gap-2">
-                {product.images.slice(0, 5).map((image, index) => (
+                {getProductImages(product).slice(0, 5).map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -801,7 +802,7 @@ export default function ProductDetailPage() {
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                     <Image
                       src={
-                        relProduct.images[0]?.url || "/assets/placeholder.png"
+                        relgetProductImageUrl(product, 0) || "/assets/placeholder.png"
                       }
                       alt={relProduct.name}
                       fill

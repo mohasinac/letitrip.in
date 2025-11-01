@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import toast from "react-hot-toast";
+import { getProductImageUrl } from "@/utils/product";
 
 interface Product {
   id: string;
@@ -426,7 +427,7 @@ function ProductCard({
           {/* Image */}
           <div className="w-32 h-32 flex-shrink-0 relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
             <Image
-              src={product.images[0]?.url || "/assets/placeholder.png"}
+              src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
               alt={product.name}
               fill
               className="object-cover"
@@ -487,7 +488,7 @@ function ProductCard({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.images[0]?.url || "/assets/placeholder.png",
+                image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
                 slug: product.slug,
               }}
             />
@@ -504,7 +505,7 @@ function ProductCard({
         {/* Image */}
         <div className="relative w-full h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
           <Image
-            src={product.images[0]?.url || "/assets/placeholder.png"}
+            src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -558,15 +559,14 @@ function ProductCard({
 
       {/* Wishlist Button */}
       <div className="absolute top-2 right-2">
-        <WishlistButton
-          product={{
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.images[0]?.url || "/assets/placeholder.png",
-            slug: product.slug,
-          }}
-        />
+        <WishlistButton            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+              slug: product.slug,
+            }}
+          />
       </div>
     </div>
   );

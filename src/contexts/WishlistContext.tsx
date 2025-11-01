@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { getProductImageUrl } from "@/utils/product";
 
 export interface WishlistItem {
   id: string;
@@ -76,7 +77,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       id: `wish_${Date.now()}`,
       productId: product.id,
       name: product.name || product.title,
-      image: product.images?.[0] || product.image || "",
+      image: getProductImageUrl(product, 0, ""),
       price: product.price,
       slug: product.slug,
       addedAt: new Date().toISOString(),

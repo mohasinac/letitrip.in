@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { getProductImageUrl } from "@/utils/product";
 
 export interface CartItem {
   id: string;
@@ -94,7 +95,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         id: `cart_${Date.now()}`,
         productId: product.id,
         name: product.name || product.title,
-        image: product.images?.[0] || product.image || "",
+        image: getProductImageUrl(product, 0, ""),
         price: product.price,
         quantity,
         stock: product.stock || 0,

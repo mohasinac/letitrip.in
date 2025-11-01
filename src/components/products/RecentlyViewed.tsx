@@ -88,7 +88,7 @@ export default function RecentlyViewed({
             >
               <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                 <Image
-                  src={product.images[0]?.url || "/assets/placeholder.png"}
+                  src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
                   alt={product.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"

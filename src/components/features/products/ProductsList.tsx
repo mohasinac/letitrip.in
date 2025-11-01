@@ -33,6 +33,7 @@ import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedModal } from "@/components/ui/unified/Modal";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
 import type { SellerProduct } from "@/types";
+import { getProductImageUrl } from "@/utils/product";
 
 // Placeholder image
 const PLACEHOLDER_IMAGE =
@@ -324,11 +325,7 @@ export function ProductsList({
       label: "Product",
       sortable: true,
       render: (_, product) => {
-        // Support both old (media.images) and new (images) formats
-        const imageUrl =
-          product.images?.[0]?.url ||
-          (product as any).media?.images?.[0]?.url ||
-          PLACEHOLDER_IMAGE;
+        const imageUrl = getProductImageUrl(product, 0, PLACEHOLDER_IMAGE);
 
         return (
           <div className="flex items-center gap-3">

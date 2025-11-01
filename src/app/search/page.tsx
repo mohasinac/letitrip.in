@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Search, Loader2, Package, Grid, List } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
+import { getProductImageUrl } from "@/utils/product";
 
 interface Product {
   id: string;
@@ -183,7 +184,7 @@ function ProductCard({
         className="block relative h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden"
       >
         <Image
-          src={product.images[0]?.url || "/assets/placeholder.png"}
+          src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -250,7 +251,7 @@ function ProductCard({
               id: product.id,
               name: product.name,
               price: product.price,
-              image: product.images[0]?.url || "/assets/placeholder.png",
+              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
               slug: product.slug,
             }}
           />
@@ -285,7 +286,7 @@ function ProductListItem({
           className="relative w-32 h-32 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden"
         >
           <Image
-            src={product.images[0]?.url || "/assets/placeholder.png"}
+            src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -358,7 +359,7 @@ function ProductListItem({
               id: product.id,
               name: product.name,
               price: product.price,
-              image: product.images[0]?.url || "/assets/placeholder.png",
+              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
               slug: product.slug,
             }}
           />
@@ -381,3 +382,4 @@ export default function SearchPage() {
     </Suspense>
   );
 }
+
