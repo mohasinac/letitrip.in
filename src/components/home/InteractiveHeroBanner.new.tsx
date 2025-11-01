@@ -13,7 +13,11 @@ import {
 import { useCookie } from "@/hooks/useCookie";
 import { HeroBannerSlide } from "@/types/heroBanner";
 import { Product } from "@/app/api/admin/products/route";
-import { UnifiedCard, UnifiedButton, UnifiedBadge } from "@/components/ui/unified";
+import {
+  UnifiedCard,
+  UnifiedButton,
+  UnifiedBadge,
+} from "@/components/ui/unified";
 import { cn } from "@/lib/utils";
 
 const InteractiveHeroBanner: React.FC = () => {
@@ -43,7 +47,7 @@ const InteractiveHeroBanner: React.FC = () => {
 
           if (allProductIds.size > 0) {
             const productsRes = await fetch(
-              `/api/admin/products?ids=${Array.from(allProductIds).join(",")}`,
+              `/api/admin/products?ids=${Array.from(allProductIds).join(",")}`
             );
             const productsData = await productsRes.json();
 
@@ -273,7 +277,9 @@ const InteractiveHeroBanner: React.FC = () => {
                     />
                     {product.badge && (
                       <UnifiedBadge
-                        variant={product.badge === "New" ? "success" : "warning"}
+                        variant={
+                          product.badge === "New" ? "success" : "warning"
+                        }
                         className="absolute top-2 right-2 text-xs font-semibold"
                       >
                         {product.badge}

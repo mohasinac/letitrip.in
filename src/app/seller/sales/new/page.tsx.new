@@ -89,25 +89,16 @@ export default function CreateSalePage() {
     if (formData.discountValue <= 0) {
       newErrors.discountValue = "Discount value must be greater than 0";
     }
-    if (
-      formData.discountType === "percentage" &&
-      formData.discountValue > 100
-    ) {
+    if (formData.discountType === "percentage" && formData.discountValue > 100) {
       newErrors.discountValue = "Percentage cannot exceed 100";
     }
     if (!formData.isPermanent && !formData.endDate) {
       newErrors.endDate = "End date is required for non-permanent sales";
     }
-    if (
-      formData.applyTo === "specific_products" &&
-      formData.productIds.length === 0
-    ) {
+    if (formData.applyTo === "specific_products" && formData.productIds.length === 0) {
       newErrors.productIds = "Please select at least one product";
     }
-    if (
-      formData.applyTo === "specific_categories" &&
-      formData.categoryIds.length === 0
-    ) {
+    if (formData.applyTo === "specific_categories" && formData.categoryIds.length === 0) {
       newErrors.categoryIds = "Please select at least one category";
     }
 
@@ -206,7 +197,7 @@ export default function CreateSalePage() {
                         value={formData.name}
                         onChange={(e) => handleChange("name", e.target.value)}
                         placeholder="e.g., End of Season Sale"
-                        error={!!errors.name}
+                        error={errors.name}
                       />
                       {errors.name && (
                         <p className="text-xs text-error mt-1">{errors.name}</p>
@@ -219,9 +210,7 @@ export default function CreateSalePage() {
                       </label>
                       <UnifiedTextarea
                         value={formData.description}
-                        onChange={(e) =>
-                          handleChange("description", e.target.value)
-                        }
+                        onChange={(e) => handleChange("description", e.target.value)}
                         placeholder="Describe this sale..."
                         rows={3}
                       />
@@ -259,9 +248,7 @@ export default function CreateSalePage() {
                         </label>
                         <UnifiedSelect
                           value={formData.discountType}
-                          onChange={(e) =>
-                            handleChange("discountType", e.target.value)
-                          }
+                          onChange={(e) => handleChange("discountType", e.target.value)}
                         >
                           <option value="percentage">Percentage Off</option>
                           <option value="fixed">Fixed Amount Off</option>
@@ -276,22 +263,13 @@ export default function CreateSalePage() {
                           type="number"
                           value={formData.discountValue}
                           onChange={(e) =>
-                            handleChange(
-                              "discountValue",
-                              parseFloat(e.target.value)
-                            )
+                            handleChange("discountValue", parseFloat(e.target.value))
                           }
-                          placeholder={
-                            formData.discountType === "percentage"
-                              ? "10"
-                              : "100"
-                          }
-                          error={!!errors.discountValue}
+                          placeholder={formData.discountType === "percentage" ? "10" : "100"}
+                          error={errors.discountValue}
                         />
                         {errors.discountValue && (
-                          <p className="text-xs text-error mt-1">
-                            {errors.discountValue}
-                          </p>
+                          <p className="text-xs text-error mt-1">{errors.discountValue}</p>
                         )}
                         <p className="text-xs text-textSecondary mt-1">
                           {formData.discountType === "percentage"
@@ -304,9 +282,7 @@ export default function CreateSalePage() {
                     <div className="flex items-center gap-2">
                       <UnifiedSwitch
                         checked={formData.enableFreeShipping}
-                        onChange={(checked) =>
-                          handleChange("enableFreeShipping", checked)
-                        }
+                        onChange={(checked) => handleChange("enableFreeShipping", checked)}
                       />
                       <label className="text-sm text-text">
                         Enable free shipping for this sale
@@ -330,17 +306,11 @@ export default function CreateSalePage() {
                       </label>
                       <UnifiedSelect
                         value={formData.applyTo}
-                        onChange={(e) =>
-                          handleChange("applyTo", e.target.value)
-                        }
+                        onChange={(e) => handleChange("applyTo", e.target.value)}
                       >
                         <option value="all_products">All Products</option>
-                        <option value="specific_products">
-                          Specific Products
-                        </option>
-                        <option value="specific_categories">
-                          Specific Categories
-                        </option>
+                        <option value="specific_products">Specific Products</option>
+                        <option value="specific_categories">Specific Categories</option>
                       </UnifiedSelect>
                     </div>
 
@@ -350,9 +320,8 @@ export default function CreateSalePage() {
                         <div className="text-sm text-text">
                           <p className="font-medium mb-1">Product Selection</p>
                           <p className="text-textSecondary">
-                            Product selection feature will be available in the
-                            next update. For now, the sale will apply to all
-                            products.
+                            Product selection feature will be available in the next update.
+                            For now, the sale will apply to all products.
                           </p>
                         </div>
                       </div>
@@ -364,9 +333,8 @@ export default function CreateSalePage() {
                         <div className="text-sm text-text">
                           <p className="font-medium mb-1">Category Selection</p>
                           <p className="text-textSecondary">
-                            Category selection feature will be available in the
-                            next update. For now, the sale will apply to all
-                            products.
+                            Category selection feature will be available in the next update.
+                            For now, the sale will apply to all products.
                           </p>
                         </div>
                       </div>
@@ -378,9 +346,7 @@ export default function CreateSalePage() {
 
                 {/* Sale Period */}
                 <div>
-                  <h2 className="text-xl font-semibold text-text mb-4">
-                    Sale Period
-                  </h2>
+                  <h2 className="text-xl font-semibold text-text mb-4">Sale Period</h2>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -391,32 +357,23 @@ export default function CreateSalePage() {
                         <UnifiedInput
                           type="date"
                           value={formData.startDate}
-                          onChange={(e) =>
-                            handleChange("startDate", e.target.value)
-                          }
+                          onChange={(e) => handleChange("startDate", e.target.value)}
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-text mb-2">
-                          End Date{" "}
-                          {!formData.isPermanent && (
-                            <span className="text-error">*</span>
-                          )}
+                          End Date {!formData.isPermanent && <span className="text-error">*</span>}
                         </label>
                         <UnifiedInput
                           type="date"
                           value={formData.endDate}
-                          onChange={(e) =>
-                            handleChange("endDate", e.target.value)
-                          }
+                          onChange={(e) => handleChange("endDate", e.target.value)}
                           disabled={formData.isPermanent}
-                          error={!!errors.endDate}
+                          error={errors.endDate}
                         />
                         {errors.endDate && (
-                          <p className="text-xs text-error mt-1">
-                            {errors.endDate}
-                          </p>
+                          <p className="text-xs text-error mt-1">{errors.endDate}</p>
                         )}
                       </div>
                     </div>
@@ -424,9 +381,7 @@ export default function CreateSalePage() {
                     <div className="flex items-center gap-2">
                       <UnifiedSwitch
                         checked={formData.isPermanent}
-                        onChange={(checked) =>
-                          handleChange("isPermanent", checked)
-                        }
+                        onChange={(checked) => handleChange("isPermanent", checked)}
                       />
                       <label className="text-sm text-text">
                         This sale never expires (permanent sale)
@@ -441,13 +396,9 @@ export default function CreateSalePage() {
                   <div className="text-sm text-text">
                     <p className="font-medium mb-1">About Sales</p>
                     <ul className="text-textSecondary space-y-1 list-disc list-inside">
-                      <li>
-                        Sales are automatically applied to eligible products
-                      </li>
+                      <li>Sales are automatically applied to eligible products</li>
                       <li>Only one sale discount can be applied per product</li>
-                      <li>
-                        Customers can still use coupons on top of sale prices
-                      </li>
+                      <li>Customers can still use coupons on top of sale prices</li>
                       <li>Sale prices are displayed on product pages</li>
                     </ul>
                   </div>

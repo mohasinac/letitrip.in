@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, Loader2, Trash2, Archive } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Loader2,
+  Trash2,
+  Archive,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiGet, apiPut, apiDelete, uploadWithAuth } from "@/lib/api/seller";
@@ -93,7 +100,10 @@ interface ProductFormData {
   status: "draft" | "active";
 }
 
-function EditProductContent({ params }: { params: { id: string } }) {
+function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = React.use(params);
+  const productId = unwrappedParams.id;
+
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
@@ -113,16 +123,16 @@ function EditProductContent({ params }: { params: { id: string } }) {
       fetchLeafCategories();
       fetchAddresses();
     }
-  }, [user, authLoading, params.id]);
+  }, [user, authLoading, productId]);
 
   const fetchProductData = async () => {
     try {
       setFetchingData(true);
-      const response = await apiGet<any>(`/api/seller/products/${params.id}`);
-      
+      const response = await apiGet<any>(`/api/seller/products/${productId}`);
+
       if (response.success && response.data) {
         const product = response.data;
-        
+
         // Transform API data to form data structure
         setFormData({
           name: product.name || "",
@@ -164,8 +174,12 @@ function EditProductContent({ params }: { params: { id: string } }) {
             keywords: product.seo?.keywords || [],
             slug: product.slug || "",
           },
-          startDate: product.startDate ? new Date(product.startDate) : new Date(),
-          expirationDate: product.expirationDate ? new Date(product.expirationDate) : undefined,
+          startDate: product.startDate
+            ? new Date(product.startDate)
+            : new Date(),
+          expirationDate: product.expirationDate
+            ? new Date(product.expirationDate)
+            : undefined,
           status: product.status || "draft",
         });
       } else {
@@ -182,7 +196,9 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const fetchLeafCategories = async () => {
     try {
-      const response = await apiGet<any>("/api/seller/products/categories/leaf");
+      const response = await apiGet<any>(
+        "/api/seller/products/categories/leaf"
+      );
       if (response.success) {
         setCategories(response.data);
       }
@@ -219,7 +235,7 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const validateBeforeSubmit = (): boolean => {
     if (!formData) return false;
-    
+
     if (!formData.name.trim()) {
       setError("Product name is required");
       setActiveStep(0);
@@ -270,7 +286,7 @@ function EditProductContent({ params }: { params: { id: string } }) {
       };
 
       const response = await apiPut<any>(
-        `/api/seller/products/${params.id}`,
+        `/api/seller/products/${productId}`,
         finalFormData
       );
 
@@ -304,8 +320,10 @@ function EditProductContent({ params }: { params: { id: string } }) {
     setError(null);
 
     try {
-      const response = await apiDelete<any>(`/api/seller/products/${params.id}`);
-      
+      const response = await apiDelete<any>(
+        `/api/seller/products/${productId}`
+      );
+
       if (response.success) {
         router.push(SELLER_ROUTES.PRODUCTS);
       } else {
@@ -322,16 +340,16 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const handleArchive = async () => {
     if (!formData) return;
-    
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await apiPut<any>(`/api/seller/products/${params.id}`, {
+      const response = await apiPut<any>(`/api/seller/products/${productId}`, {
         ...formData,
         status: "archived",
       });
-      
+
       if (response.success) {
         router.push(SELLER_ROUTES.PRODUCTS);
       } else {
@@ -339,7 +357,9 @@ function EditProductContent({ params }: { params: { id: string } }) {
         setArchiveDialogOpen(false);
       }
     } catch (error: any) {
-      setError(error.message || "An error occurred while archiving the product");
+      setError(
+        error.message || "An error occurred while archiving the product"
+      );
       setArchiveDialogOpen(false);
     } finally {
       setLoading(false);
@@ -348,7 +368,7 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const uploadPendingImages = async () => {
     if (!formData) return [];
-    
+
     const images = formData.media.images;
     const uploadedImages = [];
 
@@ -393,7 +413,8 @@ function EditProductContent({ params }: { params: { id: string } }) {
           });
           URL.revokeObjectURL(img.url);
         } else {
-          const errorMsg = response.error || response.details || "Unknown error";
+          const errorMsg =
+            response.error || response.details || "Unknown error";
           throw new Error(`Image ${i + 1}: ${errorMsg}`);
         }
       } catch (error: any) {
@@ -408,7 +429,7 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const uploadPendingVideos = async () => {
     if (!formData) return [];
-    
+
     const videos = formData.media.videos;
     const uploadedVideos = [];
 
@@ -482,7 +503,9 @@ function EditProductContent({ params }: { params: { id: string } }) {
           thumbnailResponse.data.length === 0
         ) {
           throw new Error(
-            `Video ${i + 1} thumbnail: ${thumbnailResponse.error || "Upload failed"}`
+            `Video ${i + 1} thumbnail: ${
+              thumbnailResponse.error || "Upload failed"
+            }`
           );
         }
 
@@ -515,7 +538,7 @@ function EditProductContent({ params }: { params: { id: string } }) {
 
   const getStepContent = (step: number) => {
     if (!formData) return null;
-    
+
     switch (step) {
       case 0:
         return (
@@ -655,7 +678,9 @@ function EditProductContent({ params }: { params: { id: string } }) {
                 variant="success"
                 onClick={handleSubmit}
                 loading={loading}
-                icon={loading ? <Loader2 className="animate-spin" /> : <Check />}
+                icon={
+                  loading ? <Loader2 className="animate-spin" /> : <Check />
+                }
               >
                 {loading ? "Updating..." : "Update Product"}
               </UnifiedButton>
@@ -703,8 +728,8 @@ function EditProductContent({ params }: { params: { id: string } }) {
         }
       >
         <p className="text-textSecondary">
-          Are you sure you want to delete this product? This action cannot be undone. 
-          All product data and media will be permanently removed.
+          Are you sure you want to delete this product? This action cannot be
+          undone. All product data and media will be permanently removed.
         </p>
       </UnifiedModal>
 
@@ -733,15 +758,19 @@ function EditProductContent({ params }: { params: { id: string } }) {
         }
       >
         <p className="text-textSecondary">
-          Are you sure you want to archive this product? Archived products will not be 
-          visible to customers but can be restored later.
+          Are you sure you want to archive this product? Archived products will
+          not be visible to customers but can be restored later.
         </p>
       </UnifiedModal>
     </div>
   );
 }
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   return (
     <RoleGuard requiredRole="seller">
       <EditProductContent params={params} />

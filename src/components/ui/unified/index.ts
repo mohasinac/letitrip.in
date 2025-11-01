@@ -54,6 +54,9 @@ export { default as Skeleton } from "./Skeleton";
 // Stepper
 export * from "./Stepper";
 
+// Timeline
+export * from "./Timeline";
+
 // Progress & Avatar
 export * from "./Progress";
 export { default as Progress } from "./Progress";

@@ -1,622 +1,376 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  Grid,
-  Paper,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Divider,
-  Stack,
-} from "@mui/material";
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
-} from "@mui/lab";
-import {
-  ArrowBack as ArrowBackIcon,
-  Print as PrintIcon,
-  Refresh as RefreshIcon,
-  Cancel as CancelIcon,
-  LocalShipping as ShippingIcon,
-  Assignment as InvoiceIcon,
-  Description as ManifestIcon,
-  Room as LocationIcon,
-} from "@mui/icons-material";
+import { ArrowLeft, Package, Truck, MapPin } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
 import { useAuth } from "@/contexts/AuthContext";
-import { apiGet, apiPost } from "@/lib/api/seller";
-import { useRouter } from "next/navigation";
+import { apiGet } from "@/lib/api/seller";
 import Link from "next/link";
+import {
+  UnifiedCard,
+  CardContent,
+  UnifiedButton,
+  UnifiedBadge,
+  UnifiedAlert,
+} from "@/components/ui/unified";
+import { Timeline, TimelineEvent } from "@/components/ui/unified/Timeline";
 
-interface ShipmentTrackingEvent {
+interface TrackingUpdate {
   status: string;
-  location?: string;
   description: string;
+  location?: string;
   timestamp: string;
-}
-
-interface Address {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
 }
 
 interface Shipment {
   id: string;
-  sellerId: string;
   orderId: string;
   orderNumber: string;
-  carrier: string;
   trackingNumber: string;
-  shiprocketOrderId?: string;
-  shiprocketShipmentId?: string;
-  fromAddress: Address;
-  toAddress: Address;
-  weight: number;
-  dimensions: {
-    length: number;
-    width: number;
-    height: number;
-    unit: "cm" | "in";
-  };
-  status:
-    | "pending"
-    | "pickup_scheduled"
-    | "in_transit"
-    | "out_for_delivery"
-    | "delivered"
-    | "failed"
-    | "returned";
-  trackingHistory: ShipmentTrackingEvent[];
-  shippingLabel?: string;
-  invoiceUrl?: string;
-  manifestUrl?: string;
+  carrier: string;
+  status: string;
+  estimatedDelivery?: string;
+  actualDelivery?: string;
+  trackingUpdates: TrackingUpdate[];
+  shippedAt: string;
   createdAt: string;
   updatedAt: string;
-  shippedAt?: string;
-  deliveredAt?: string;
+  customerName: string;
+  customerPhone: string;
+  shippingAddress: {
+    fullName: string;
+    phone: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+  };
 }
 
 export default function ShipmentDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  useBreadcrumbTracker();
-  const router = useRouter();
+  const unwrappedParams = React.use(params);
+  const shipmentId = unwrappedParams.id;
+
+  useBreadcrumbTracker([
+    { label: "Shipments", href: SELLER_ROUTES.SHIPMENTS },
+    {
+      label: `Shipment #${shipmentId.slice(0, 8)}`,
+      href: "",
+      active: true,
+    },
+  ]);
+
   const { user } = useAuth();
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    message: string;
+    variant: "success" | "error" | "info" | "warning";
+  }>({
+    show: false,
     message: "",
-    severity: "success" as "success" | "error" | "info" | "warning",
+    variant: "success",
   });
 
   useEffect(() => {
     if (user) {
       fetchShipmentDetails();
     }
-  }, [user, params.id]);
+  }, [user, shipmentId]);
 
   const fetchShipmentDetails = async () => {
     try {
       setLoading(true);
-      const response = await apiGet(`/api/seller/shipments/${params.id}`);
+      const response = (await apiGet(
+        `/api/seller/shipments/${shipmentId}`
+      )) as any;
       if (response.success) {
         setShipment(response.data);
       } else {
-        setSnackbar({
-          open: true,
+        setAlert({
+          show: true,
           message: response.error || "Failed to fetch shipment details",
-          severity: "error",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error fetching shipment:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to load shipment details",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateTracking = async () => {
-    try {
-      setActionLoading(true);
-      const response = await apiPost(
-        `/api/seller/shipments/${params.id}/track`,
-        {},
-      );
-      if (response.success) {
-        setSnackbar({
-          open: true,
-          message: "Tracking updated successfully",
-          severity: "success",
-        });
-        fetchShipmentDetails();
-      } else {
-        setSnackbar({
-          open: true,
-          message: response.error || "Failed to update tracking",
-          severity: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error updating tracking:", error);
-      setSnackbar({
-        open: true,
-        message: "Failed to update tracking",
-        severity: "error",
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleCancelShipment = async () => {
-    if (!confirm(`Are you sure you want to cancel this shipment?`)) {
-      return;
-    }
-
-    try {
-      setActionLoading(true);
-      const response = await apiPost(
-        `/api/seller/shipments/${params.id}/cancel`,
-        {},
-      );
-      if (response.success) {
-        setSnackbar({
-          open: true,
-          message: "Shipment cancelled successfully",
-          severity: "success",
-        });
-        fetchShipmentDetails();
-      } else {
-        setSnackbar({
-          open: true,
-          message: response.error || "Failed to cancel shipment",
-          severity: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error cancelling shipment:", error);
-      setSnackbar({
-        open: true,
-        message: "Failed to cancel shipment",
-        severity: "error",
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors: Record<
-      string,
-      "default" | "primary" | "success" | "error" | "warning"
-    > = {
+  const getStatusVariant = (
+    status: string
+  ): "success" | "error" | "warning" | "info" => {
+    const variants: Record<string, "success" | "error" | "warning" | "info"> = {
       pending: "warning",
-      pickup_scheduled: "info",
-      in_transit: "primary",
-      out_for_delivery: "primary",
+      in_transit: "info",
+      out_for_delivery: "info",
       delivered: "success",
       failed: "error",
-      returned: "error",
+      returned: "warning",
     };
-    return colors[status] || "default";
+    return variants[status] || "info";
   };
 
-  const formatStatus = (status: string) => {
-    return status
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const getStatusColor = (
+    status: string
+  ): "primary" | "grey" | "success" | "error" | "warning" | "info" => {
+    const colors: Record<
+      string,
+      "primary" | "grey" | "success" | "error" | "warning" | "info"
+    > = {
+      pending: "warning",
+      picked_up: "info",
+      in_transit: "primary",
+      out_for_delivery: "info",
+      delivered: "success",
+      failed: "error",
+      returned: "warning",
+    };
+    return colors[status] || "info";
+  };
+
+  const buildTimeline = (): TimelineEvent[] => {
+    if (!shipment) return [];
+
+    const events: TimelineEvent[] = shipment.trackingUpdates.map((update) => ({
+      title: update.status
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase()),
+      description: update.description,
+      timestamp: update.timestamp,
+      location: update.location,
+      color: getStatusColor(update.status),
+      icon: <Package className="w-3 h-3" />,
+    }));
+
+    return events;
   };
 
   if (loading) {
     return (
-      <RoleGuard requiredRoles={["seller", "admin"]}>
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <CircularProgress />
-          </Box>
-        </Container>
+      <RoleGuard requiredRole="seller">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
   if (!shipment) {
     return (
-      <RoleGuard requiredRoles={["seller", "admin"]}>
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box textAlign="center" py={8}>
-            <Typography variant="h5" color="text.secondary">
+      <RoleGuard requiredRole="seller">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-semibold text-textSecondary mb-4">
               Shipment not found
-            </Typography>
-            <Button
-              component={Link}
-              href={SELLER_ROUTES.SHIPMENTS}
-              startIcon={<ArrowBackIcon />}
-              sx={{ mt: 2 }}
-            >
-              Back to Shipments
-            </Button>
-          </Box>
-        </Container>
+            </h2>
+            <Link href={SELLER_ROUTES.SHIPMENTS}>
+              <UnifiedButton variant="outline" icon={<ArrowLeft />}>
+                Back to Shipments
+              </UnifiedButton>
+            </Link>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
+  const timeline = buildTimeline();
+
   return (
-    <RoleGuard requiredRoles={["seller", "admin"]}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <RoleGuard requiredRole="seller">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Alert */}
+        {alert.show && (
+          <div className="mb-6">
+            <UnifiedAlert
+              variant={alert.variant}
+              onClose={() => setAlert({ ...alert, show: false })}
+            >
+              {alert.message}
+            </UnifiedAlert>
+          </div>
+        )}
+
         {/* Header */}
-        <Box mb={4}>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            <Button
-              component={Link}
-              href={SELLER_ROUTES.SHIPMENTS}
-              startIcon={<ArrowBackIcon />}
-              variant="outlined"
-            >
-              Back
-            </Button>
-            <Typography variant="h4">Shipment Details</Typography>
-            <Chip
-              label={formatStatus(shipment.status)}
-              color={getStatusColor(shipment.status)}
-              size="small"
-            />
-          </Box>
+        <div className="mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <Link href={SELLER_ROUTES.SHIPMENTS}>
+              <UnifiedButton variant="outline" size="sm" icon={<ArrowLeft />}>
+                Back
+              </UnifiedButton>
+            </Link>
+            <h1 className="text-3xl font-bold text-text">Shipment Tracking</h1>
+            <UnifiedBadge variant={getStatusVariant(shipment.status)}>
+              {shipment.status.replace(/_/g, " ").toUpperCase()}
+            </UnifiedBadge>
+          </div>
+        </div>
 
-          {/* Action Buttons */}
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              startIcon={<RefreshIcon />}
-              onClick={handleUpdateTracking}
-              disabled={actionLoading}
-            >
-              Update Tracking
-            </Button>
-
-            {shipment.shippingLabel && (
-              <Button
-                variant="outlined"
-                startIcon={<PrintIcon />}
-                onClick={() => window.open(shipment.shippingLabel, "_blank")}
-              >
-                Print Label
-              </Button>
-            )}
-
-            {shipment.invoiceUrl && (
-              <Button
-                variant="outlined"
-                startIcon={<InvoiceIcon />}
-                onClick={() => window.open(shipment.invoiceUrl, "_blank")}
-              >
-                View Invoice
-              </Button>
-            )}
-
-            {shipment.manifestUrl && (
-              <Button
-                variant="outlined"
-                startIcon={<ManifestIcon />}
-                onClick={() => window.open(shipment.manifestUrl, "_blank")}
-              >
-                View Manifest
-              </Button>
-            )}
-
-            {shipment.status === "pending" && (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<CancelIcon />}
-                onClick={handleCancelShipment}
-                disabled={actionLoading}
-              >
-                Cancel Shipment
-              </Button>
-            )}
-          </Stack>
-        </Box>
-
-        <Grid container spacing={3}>
-          {/* Left Column */}
-          <Grid item xs={12} md={8}>
-            {/* Shipment Info */}
-            <Card sx={{ mb: 3 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Timeline */}
+          <div className="lg:col-span-2">
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Shipment Information
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">
+                <h2 className="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+                  <Truck className="w-5 h-5" />
+                  Tracking Timeline
+                </h2>
+                <Timeline
+                  events={timeline}
+                  variant="compact"
+                  showTimestamps={true}
+                />
+              </CardContent>
+            </UnifiedCard>
+          </div>
+
+          {/* Right Column - Details */}
+          <div className="space-y-6">
+            {/* Tracking Information */}
+            <UnifiedCard>
+              <CardContent>
+                <h2 className="text-lg font-semibold text-text mb-4 flex items-center gap-2">
+                  <Package className="w-5 h-5" />
+                  Tracking Details
+                </h2>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-textSecondary mb-1">
+                      Tracking Number
+                    </p>
+                    <p className="text-sm font-mono font-semibold text-text">
+                      {shipment.trackingNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-textSecondary mb-1">Carrier</p>
+                    <p className="text-sm font-medium text-text">
+                      {shipment.carrier}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-textSecondary mb-1">
                       Order Number
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      component={Link}
+                    </p>
+                    <Link
                       href={`${SELLER_ROUTES.ORDERS}/${shipment.orderId}`}
-                      color="primary"
-                      sx={{ textDecoration: "none" }}
+                      className="text-sm font-medium text-primary hover:underline"
                     >
                       #{shipment.orderNumber}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">
-                      Tracking Number
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      {shipment.trackingNumber}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">
-                      Carrier
-                    </Typography>
-                    <Typography variant="body1">{shipment.carrier}</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">
-                      Weight
-                    </Typography>
-                    <Typography variant="body1">
-                      {shipment.weight} kg
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2" color="text.secondary">
-                      Dimensions
-                    </Typography>
-                    <Typography variant="body1">
-                      {shipment.dimensions.length} × {shipment.dimensions.width}{" "}
-                      × {shipment.dimensions.height} {shipment.dimensions.unit}
-                    </Typography>
-                  </Grid>
-                  {shipment.shiprocketOrderId && (
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Shiprocket Order ID
-                      </Typography>
-                      <Typography variant="body1">
-                        {shipment.shiprocketOrderId}
-                      </Typography>
-                    </Grid>
+                    </Link>
+                  </div>
+                  {shipment.estimatedDelivery && (
+                    <div>
+                      <p className="text-xs text-textSecondary mb-1">
+                        Estimated Delivery
+                      </p>
+                      <p className="text-sm font-medium text-text">
+                        {new Date(
+                          shipment.estimatedDelivery
+                        ).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
                   )}
-                  {shipment.shiprocketShipmentId && (
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Shiprocket Shipment ID
-                      </Typography>
-                      <Typography variant="body1">
-                        {shipment.shiprocketShipmentId}
-                      </Typography>
-                    </Grid>
+                  {shipment.actualDelivery && (
+                    <div>
+                      <p className="text-xs text-textSecondary mb-1">
+                        Delivered On
+                      </p>
+                      <p className="text-sm font-medium text-success">
+                        {new Date(shipment.actualDelivery).toLocaleDateString(
+                          "en-US",
+                          {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )}
+                      </p>
+                    </div>
                   )}
-                </Grid>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
-            {/* Tracking History */}
-            <Card>
+            {/* Customer Information */}
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Tracking History
-                </Typography>
-                {shipment.trackingHistory.length === 0 ? (
-                  <Box textAlign="center" py={4}>
-                    <LocationIcon
-                      sx={{ fontSize: 48, color: "text.secondary", mb: 2 }}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      No tracking updates yet
-                    </Typography>
-                  </Box>
-                ) : (
-                  <Timeline>
-                    {shipment.trackingHistory.map((event, index) => (
-                      <TimelineItem key={index}>
-                        <TimelineOppositeContent color="text.secondary">
-                          <Typography variant="caption">
-                            {new Date(event.timestamp).toLocaleString()}
-                          </Typography>
-                          {event.location && (
-                            <Typography variant="caption" display="block">
-                              <LocationIcon fontSize="inherit" />{" "}
-                              {event.location}
-                            </Typography>
-                          )}
-                        </TimelineOppositeContent>
-                        <TimelineSeparator>
-                          <TimelineDot
-                            color={index === 0 ? "primary" : "grey"}
-                          />
-                          {index < shipment.trackingHistory.length - 1 && (
-                            <TimelineConnector />
-                          )}
-                        </TimelineSeparator>
-                        <TimelineContent>
-                          <Typography variant="body2" fontWeight={500}>
-                            {event.status}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {event.description}
-                          </Typography>
-                        </TimelineContent>
-                      </TimelineItem>
-                    ))}
-                  </Timeline>
-                )}
+                <h2 className="text-lg font-semibold text-text mb-4">
+                  Customer Information
+                </h2>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-text">
+                    {shipment.customerName}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {shipment.customerPhone}
+                  </p>
+                </div>
               </CardContent>
-            </Card>
-          </Grid>
+            </UnifiedCard>
 
-          {/* Right Column */}
-          <Grid item xs={12} md={4}>
-            {/* From Address */}
-            <Card sx={{ mb: 3 }}>
+            {/* Shipping Address */}
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  From Address
-                </Typography>
-                <Typography variant="body2">
-                  {shipment.fromAddress.fullName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.fromAddress.phone}
-                </Typography>
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.fromAddress.addressLine1}
-                </Typography>
-                {shipment.fromAddress.addressLine2 && (
-                  <Typography variant="body2" color="text.secondary">
-                    {shipment.fromAddress.addressLine2}
-                  </Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.fromAddress.city}, {shipment.fromAddress.state}{" "}
-                  {shipment.fromAddress.pincode}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.fromAddress.country}
-                </Typography>
-              </CardContent>
-            </Card>
-
-            {/* To Address */}
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  To Address
-                </Typography>
-                <Typography variant="body2">
-                  {shipment.toAddress.fullName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.toAddress.phone}
-                </Typography>
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.toAddress.addressLine1}
-                </Typography>
-                {shipment.toAddress.addressLine2 && (
-                  <Typography variant="body2" color="text.secondary">
-                    {shipment.toAddress.addressLine2}
-                  </Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.toAddress.city}, {shipment.toAddress.state}{" "}
-                  {shipment.toAddress.pincode}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {shipment.toAddress.country}
-                </Typography>
-              </CardContent>
-            </Card>
-
-            {/* Timestamps */}
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Timeline
-                </Typography>
-                <Box>
-                  <Box mb={2}>
-                    <Typography variant="body2" color="text.secondary">
-                      Created
-                    </Typography>
-                    <Typography variant="body2">
-                      {new Date(shipment.createdAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                  {shipment.shippedAt && (
-                    <Box mb={2}>
-                      <Typography variant="body2" color="text.secondary">
-                        Shipped
-                      </Typography>
-                      <Typography variant="body2">
-                        {new Date(shipment.shippedAt).toLocaleString()}
-                      </Typography>
-                    </Box>
+                <h2 className="text-lg font-semibold text-text mb-4 flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  Delivery Address
+                </h2>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-text">
+                    {shipment.shippingAddress.fullName}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {shipment.shippingAddress.phone}
+                  </p>
+                  <p className="text-sm text-textSecondary mt-2">
+                    {shipment.shippingAddress.addressLine1}
+                  </p>
+                  {shipment.shippingAddress.addressLine2 && (
+                    <p className="text-sm text-textSecondary">
+                      {shipment.shippingAddress.addressLine2}
+                    </p>
                   )}
-                  {shipment.deliveredAt && (
-                    <Box mb={2}>
-                      <Typography variant="body2" color="text.secondary">
-                        Delivered
-                      </Typography>
-                      <Typography variant="body2">
-                        {new Date(shipment.deliveredAt).toLocaleString()}
-                      </Typography>
-                    </Box>
-                  )}
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Last Updated
-                    </Typography>
-                    <Typography variant="body2">
-                      {new Date(shipment.updatedAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                </Box>
+                  <p className="text-sm text-textSecondary">
+                    {shipment.shippingAddress.city},{" "}
+                    {shipment.shippingAddress.state}{" "}
+                    {shipment.shippingAddress.pincode}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {shipment.shippingAddress.country}
+                  </p>
+                </div>
               </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            variant="filled"
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+            </UnifiedCard>
+          </div>
+        </div>
+      </div>
     </RoleGuard>
   );
 }

@@ -2,56 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  Grid,
-  Divider,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  TextField,
-  Avatar,
-  Stack,
-} from "@mui/material";
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
-} from "@mui/lab";
-import {
-  ArrowBack as ArrowBackIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  Print as PrintIcon,
-  LocalShipping as ShipIcon,
-  Assignment as NoteIcon,
-  ShoppingBag as OrderIcon,
-  Payment as PaymentIcon,
-  LocalShipping as DeliveryIcon,
-  CheckCircleOutline as CompletedIcon,
-  Close as CancelIcon,
-} from "@mui/icons-material";
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Printer,
+  Truck,
+  ShoppingBag,
+  CreditCard,
+  Package,
+  CheckCircle2,
+  X,
+} from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
@@ -60,6 +21,16 @@ import { apiGet, apiPost } from "@/lib/api/seller";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  UnifiedCard,
+  CardContent,
+  UnifiedButton,
+  UnifiedBadge,
+  UnifiedModal,
+  UnifiedAlert,
+  UnifiedTextarea,
+} from "@/components/ui/unified";
+import { Timeline, TimelineEvent } from "@/components/ui/unified/Timeline";
 
 interface OrderItem {
   id: string;
@@ -134,29 +105,31 @@ interface Order {
   cancelledAt?: string;
 }
 
-interface TimelineEvent {
-  title: string;
-  description: string;
-  timestamp: string;
-  icon: React.ReactNode;
-  color: "primary" | "success" | "error" | "warning" | "info";
-}
-
 export default function OrderDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  useBreadcrumbTracker();
+  const unwrappedParams = React.use(params);
+  const orderId = unwrappedParams.id;
+
+  useBreadcrumbTracker([
+    { label: "Orders", href: SELLER_ROUTES.ORDERS },
+    { label: `Order #${orderId.slice(0, 8)}`, href: "", active: true },
+  ]);
   const router = useRouter();
   const { user } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    message: string;
+    variant: "success" | "error" | "info" | "warning";
+  }>({
+    show: false,
     message: "",
-    severity: "success" as "success" | "error" | "info" | "warning",
+    variant: "success",
   });
 
   // Action dialogs
@@ -171,27 +144,27 @@ export default function OrderDetailPage({
     if (user) {
       fetchOrderDetails();
     }
-  }, [user, params.id]);
+  }, [user, orderId]);
 
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
-      const response = await apiGet(`/api/seller/orders/${params.id}`);
+      const response = (await apiGet(`/api/seller/orders/${orderId}`)) as any;
       if (response.success) {
         setOrder(response.data);
       } else {
-        setSnackbar({
-          open: true,
+        setAlert({
+          show: true,
           message: response.error || "Failed to fetch order details",
-          severity: "error",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error fetching order:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to load order details",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -202,37 +175,36 @@ export default function OrderDetailPage({
   const handleGenerateInvoice = async () => {
     try {
       setLoading(true);
-      const response = await apiPost(
-        `/api/seller/orders/${params.id}/invoice`,
+      const response = (await apiPost(
+        `/api/seller/orders/${orderId}/invoice`,
         {}
-      );
+      )) as any;
 
       if (response.success) {
-        // Open invoice in new window
         const invoiceWindow = window.open("", "_blank");
         if (invoiceWindow) {
           invoiceWindow.document.write(response.data.invoiceHtml);
           invoiceWindow.document.close();
         }
 
-        setSnackbar({
-          open: true,
+        setAlert({
+          show: true,
           message: `Invoice ${response.data.invoiceNumber} generated successfully!`,
-          severity: "success",
+          variant: "success",
         });
       } else {
-        setSnackbar({
-          open: true,
+        setAlert({
+          show: true,
           message: response.error || "Failed to generate invoice",
-          severity: "error",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error generating invoice:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to generate invoice",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -243,152 +215,153 @@ export default function OrderDetailPage({
   const handleApprove = async () => {
     try {
       setActionLoading(true);
-      const response = await apiPost(
-        `/api/seller/orders/${params.id}/approve`,
+      const response = (await apiPost(
+        `/api/seller/orders/${orderId}/approve`,
         {}
-      );
+      )) as any;
       if (response.success) {
-        setSnackbar({
-          open: true,
-          message: "Order approved successfully",
-          severity: "success",
-        });
+        setOrder(response.data);
         setApproveDialog(false);
-        fetchOrderDetails();
+        setAlert({
+          show: true,
+          message: "Order approved successfully!",
+          variant: "success",
+        });
       } else {
-        setSnackbar({
-          open: true,
-          message: response.message || "Failed to approve order",
-          severity: "error",
+        setAlert({
+          show: true,
+          message: response.error || "Failed to approve order",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error approving order:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to approve order",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setActionLoading(false);
     }
   };
 
+  // Reject order
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Please provide a reason for rejection",
-        severity: "warning",
+        variant: "error",
       });
       return;
     }
 
     try {
       setActionLoading(true);
-      const response = await apiPost(`/api/seller/orders/${params.id}/reject`, {
+      const response = (await apiPost(`/api/seller/orders/${orderId}/reject`, {
         reason: rejectionReason,
-      });
+      })) as any;
       if (response.success) {
-        setSnackbar({
-          open: true,
-          message: "Order rejected",
-          severity: "success",
-        });
+        setOrder(response.data);
         setRejectDialog(false);
         setRejectionReason("");
-        fetchOrderDetails();
+        setAlert({
+          show: true,
+          message: "Order rejected",
+          variant: "info",
+        });
       } else {
-        setSnackbar({
-          open: true,
-          message: response.message || "Failed to reject order",
-          severity: "error",
+        setAlert({
+          show: true,
+          message: response.error || "Failed to reject order",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error rejecting order:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to reject order",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setActionLoading(false);
     }
   };
 
+  // Cancel order
   const handleCancel = async () => {
     if (!cancelReason.trim()) {
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Please provide a reason for cancellation",
-        severity: "warning",
+        variant: "error",
       });
       return;
     }
 
     try {
       setActionLoading(true);
-      const response = await apiPost(`/api/seller/orders/${params.id}/cancel`, {
+      const response = (await apiPost(`/api/seller/orders/${orderId}/cancel`, {
         reason: cancelReason,
-      });
+      })) as any;
       if (response.success) {
-        setSnackbar({
-          open: true,
-          message: "Order cancelled",
-          severity: "success",
-        });
+        setOrder(response.data);
         setCancelDialog(false);
         setCancelReason("");
-        fetchOrderDetails();
+        setAlert({
+          show: true,
+          message: "Order cancelled",
+          variant: "info",
+        });
       } else {
-        setSnackbar({
-          open: true,
-          message: response.message || "Failed to cancel order",
-          severity: "error",
+        setAlert({
+          show: true,
+          message: response.error || "Failed to cancel order",
+          variant: "error",
         });
       }
     } catch (error) {
       console.error("Error cancelling order:", error);
-      setSnackbar({
-        open: true,
+      setAlert({
+        show: true,
         message: "Failed to cancel order",
-        severity: "error",
+        variant: "error",
       });
     } finally {
       setActionLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<
-      string,
-      "default" | "primary" | "success" | "error" | "warning"
-    > = {
+  // Get status badge variant
+  const getStatusVariant = (
+    status: string
+  ): "success" | "error" | "warning" | "info" => {
+    const variants: Record<string, "success" | "error" | "warning" | "info"> = {
       pending: "warning",
-      approved: "info",
-      processing: "primary",
-      shipped: "primary",
+      processing: "info",
+      approved: "success",
+      rejected: "error",
+      shipped: "info",
       delivered: "success",
       cancelled: "error",
-      rejected: "error",
+      refunded: "warning",
     };
-    return colors[status] || "default";
+    return variants[status] || "info";
   };
 
-  const getPaymentStatusColor = (status: string) => {
-    const colors: Record<
-      string,
-      "default" | "primary" | "success" | "error" | "warning"
-    > = {
-      pending: "warning",
+  const getPaymentStatusVariant = (status: string) => {
+    const variants: Record<string, "success" | "error" | "warning"> = {
       paid: "success",
+      pending: "warning",
       failed: "error",
-      refunded: "info",
+      refunded: "warning",
     };
-    return colors[status] || "default";
+    return variants[status] || "warning";
   };
 
+  // Build timeline
   const buildTimeline = (): TimelineEvent[] => {
     if (!order) return [];
 
@@ -399,7 +372,7 @@ export default function OrderDetailPage({
       title: "Order Placed",
       description: `Order #${order.orderNumber} was created`,
       timestamp: order.createdAt,
-      icon: <OrderIcon />,
+      icon: <ShoppingBag className="w-3 h-3" />,
       color: "primary",
     });
 
@@ -409,7 +382,7 @@ export default function OrderDetailPage({
         title: "Payment Received",
         description: `Payment via ${order.paymentMethod}`,
         timestamp: order.createdAt,
-        icon: <PaymentIcon />,
+        icon: <CreditCard className="w-3 h-3" />,
         color: "success",
       });
     } else {
@@ -417,28 +390,29 @@ export default function OrderDetailPage({
         title: "Payment Pending",
         description: `Awaiting ${order.paymentMethod} payment`,
         timestamp: order.createdAt,
-        icon: <PaymentIcon />,
+        icon: <CreditCard className="w-3 h-3" />,
         color: "warning",
       });
     }
 
-    // Approved/Rejected
+    // Approved
     if (order.approvedAt) {
       events.push({
         title: "Order Approved",
-        description: "Order approved by seller",
+        description: "Order approved and ready for processing",
         timestamp: order.approvedAt,
-        icon: <ApproveIcon />,
+        icon: <CheckCircle className="w-3 h-3" />,
         color: "success",
       });
     }
 
-    if (order.rejectedAt && order.rejectionReason) {
+    // Rejected
+    if (order.rejectedAt) {
       events.push({
         title: "Order Rejected",
-        description: order.rejectionReason,
+        description: order.rejectionReason || "Order was rejected",
         timestamp: order.rejectedAt,
-        icon: <RejectIcon />,
+        icon: <XCircle className="w-3 h-3" />,
         color: "error",
       });
     }
@@ -447,10 +421,10 @@ export default function OrderDetailPage({
     if (order.shippedAt) {
       events.push({
         title: "Order Shipped",
-        description: "Order is in transit",
+        description: "Order has been shipped",
         timestamp: order.shippedAt,
-        icon: <DeliveryIcon />,
-        color: "primary",
+        icon: <Truck className="w-3 h-3" />,
+        color: "info",
       });
     }
 
@@ -460,7 +434,7 @@ export default function OrderDetailPage({
         title: "Order Delivered",
         description: "Order successfully delivered",
         timestamp: order.deliveredAt,
-        icon: <CompletedIcon />,
+        icon: <CheckCircle2 className="w-3 h-3" />,
         color: "success",
       });
     }
@@ -471,7 +445,7 @@ export default function OrderDetailPage({
         title: "Order Cancelled",
         description: order.rejectionReason || "Order was cancelled",
         timestamp: order.cancelledAt,
-        icon: <CancelIcon />,
+        icon: <X className="w-3 h-3" />,
         color: "error",
       });
     }
@@ -481,39 +455,31 @@ export default function OrderDetailPage({
 
   if (loading) {
     return (
-      <RoleGuard requiredRoles={["seller", "admin"]}>
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
-            <CircularProgress />
-          </Box>
-        </Container>
+      <RoleGuard requiredRole="seller">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
 
   if (!order) {
     return (
-      <RoleGuard requiredRoles={["seller", "admin"]}>
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box textAlign="center" py={8}>
-            <Typography variant="h5" color="text.secondary">
+      <RoleGuard requiredRole="seller">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-semibold text-textSecondary mb-4">
               Order not found
-            </Typography>
-            <Button
-              component={Link}
-              href={SELLER_ROUTES.ORDERS}
-              startIcon={<ArrowBackIcon />}
-              sx={{ mt: 2 }}
-            >
-              Back to Orders
-            </Button>
-          </Box>
-        </Container>
+            </h2>
+            <Link href={SELLER_ROUTES.ORDERS}>
+              <UnifiedButton variant="outline" icon={<ArrowLeft />}>
+                Back to Orders
+              </UnifiedButton>
+            </Link>
+          </div>
+        </div>
       </RoleGuard>
     );
   }
@@ -521,506 +487,478 @@ export default function OrderDetailPage({
   const timeline = buildTimeline();
 
   return (
-    <RoleGuard requiredRoles={["seller", "admin"]}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header */}
-        <Box mb={4}>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            <Button
-              component={Link}
-              href={SELLER_ROUTES.ORDERS}
-              startIcon={<ArrowBackIcon />}
-              variant="outlined"
+    <RoleGuard requiredRole="seller">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Alert */}
+        {alert.show && (
+          <div className="mb-6">
+            <UnifiedAlert
+              variant={alert.variant}
+              onClose={() => setAlert({ ...alert, show: false })}
             >
-              Back
-            </Button>
-            <Typography variant="h4">Order #{order.orderNumber}</Typography>
-            <Chip
-              label={order.status.toUpperCase()}
-              color={getStatusColor(order.status)}
-              size="small"
-            />
-            <Chip
-              label={`Payment: ${order.paymentStatus.toUpperCase()}`}
-              color={getPaymentStatusColor(order.paymentStatus)}
-              size="small"
-            />
-          </Box>
+              {alert.message}
+            </UnifiedAlert>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <Link href={SELLER_ROUTES.ORDERS}>
+              <UnifiedButton variant="outline" size="sm" icon={<ArrowLeft />}>
+                Back
+              </UnifiedButton>
+            </Link>
+            <h1 className="text-3xl font-bold text-text">
+              Order #{order.orderNumber}
+            </h1>
+            <UnifiedBadge variant={getStatusVariant(order.status)}>
+              {order.status.toUpperCase()}
+            </UnifiedBadge>
+            <UnifiedBadge
+              variant={getPaymentStatusVariant(order.paymentStatus)}
+            >
+              Payment: {order.paymentStatus.toUpperCase()}
+            </UnifiedBadge>
+          </div>
 
           {/* Action Buttons */}
-          <Stack direction="row" spacing={2}>
+          <div className="flex flex-wrap gap-3">
             {order.status === "pending" && (
               <>
-                <Button
-                  variant="contained"
-                  color="success"
-                  startIcon={<ApproveIcon />}
+                <UnifiedButton
+                  variant="success"
+                  icon={<CheckCircle />}
                   onClick={() => setApproveDialog(true)}
                 >
                   Approve Order
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<RejectIcon />}
+                </UnifiedButton>
+                <UnifiedButton
+                  variant="destructive"
+                  icon={<XCircle />}
                   onClick={() => setRejectDialog(true)}
                 >
                   Reject Order
-                </Button>
+                </UnifiedButton>
               </>
             )}
 
             {order.status === "processing" && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<ShipIcon />}
+              <UnifiedButton
+                variant="primary"
+                icon={<Truck />}
                 onClick={() => {
-                  setSnackbar({
-                    open: true,
+                  setAlert({
+                    show: true,
                     message: "Shipment feature coming soon!",
-                    severity: "info",
+                    variant: "info",
                   });
                 }}
               >
                 Initiate Shipment
-              </Button>
+              </UnifiedButton>
             )}
 
             {!["delivered", "cancelled", "rejected"].includes(order.status) && (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<CancelIcon />}
+              <UnifiedButton
+                variant="destructive"
+                icon={<X />}
                 onClick={() => setCancelDialog(true)}
               >
                 Cancel Order
-              </Button>
+              </UnifiedButton>
             )}
 
-            <Button
-              variant="outlined"
-              startIcon={<PrintIcon />}
+            <UnifiedButton
+              variant="outline"
+              icon={<Printer />}
               onClick={handleGenerateInvoice}
               disabled={loading}
             >
               {loading ? "Generating..." : "Generate Invoice"}
-            </Button>
-          </Stack>
-        </Box>
+            </UnifiedButton>
+          </div>
+        </div>
 
-        <Grid container spacing={3}>
-          {/* Left Column */}
-          <Grid item xs={12} md={8}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - 2/3 width */}
+          <div className="lg:col-span-2 space-y-6">
             {/* Order Items */}
-            <Card sx={{ mb: 3 }}>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-xl font-semibold text-text mb-4">
                   Order Items
-                </Typography>
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell>SKU</TableCell>
-                        <TableCell align="right">Price</TableCell>
-                        <TableCell align="center">Quantity</TableCell>
-                        <TableCell align="right">Total</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-2 text-sm font-semibold text-text">
+                          Product
+                        </th>
+                        <th className="text-left py-3 px-2 text-sm font-semibold text-text">
+                          SKU
+                        </th>
+                        <th className="text-right py-3 px-2 text-sm font-semibold text-text">
+                          Price
+                        </th>
+                        <th className="text-center py-3 px-2 text-sm font-semibold text-text">
+                          Qty
+                        </th>
+                        <th className="text-right py-3 px-2 text-sm font-semibold text-text">
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {order.items.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            <Box display="flex" alignItems="center" gap={2}>
-                              <Avatar
-                                src={item.image}
-                                alt={item.name}
-                                variant="rounded"
-                                sx={{ width: 50, height: 50 }}
-                              />
-                              <Box>
-                                <Typography variant="body2" fontWeight={500}>
+                        <tr key={item.id} className="border-b border-border">
+                          <td className="py-3 px-2">
+                            <div className="flex items-center gap-3">
+                              <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-text">
                                   {item.name}
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                >
+                                </p>
+                                <p className="text-xs text-textSecondary">
                                   {item.slug}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" color="text.secondary">
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-2">
+                            <p className="text-sm text-textSecondary">
                               {item.sku}
-                            </Typography>
-                          </TableCell>
-                          <TableCell align="right">
-                            ₹{item.price.toLocaleString()}
-                          </TableCell>
-                          <TableCell align="center">{item.quantity}</TableCell>
-                          <TableCell align="right">
-                            <Typography fontWeight={500}>
+                            </p>
+                          </td>
+                          <td className="py-3 px-2 text-right">
+                            <p className="text-sm text-text">
+                              ₹{item.price.toLocaleString()}
+                            </p>
+                          </td>
+                          <td className="py-3 px-2 text-center">
+                            <p className="text-sm text-text">{item.quantity}</p>
+                          </td>
+                          <td className="py-3 px-2 text-right">
+                            <p className="text-sm font-semibold text-text">
                               ₹{item.total.toLocaleString()}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
+                            </p>
+                          </td>
+                        </tr>
                       ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
             {/* Pricing Breakdown */}
-            <Card sx={{ mb: 3 }}>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-xl font-semibold text-text mb-4">
                   Pricing Breakdown
-                </Typography>
-                <Box>
-                  <Box display="flex" justifyContent="space-between" py={1}>
-                    <Typography>Subtotal</Typography>
-                    <Typography>₹{order.subtotal.toLocaleString()}</Typography>
-                  </Box>
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2">
+                    <span className="text-text">Subtotal</span>
+                    <span className="text-text">
+                      ₹{order.subtotal.toLocaleString()}
+                    </span>
+                  </div>
 
                   {order.couponDiscount > 0 && order.couponSnapshot && (
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      py={1}
-                      color="success.main"
-                    >
-                      <Box>
-                        <Typography>Coupon Discount</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                    <div className="flex justify-between py-2 text-success">
+                      <div>
+                        <p className="text-success">Coupon Discount</p>
+                        <p className="text-xs text-textSecondary">
                           {order.couponSnapshot.code} -{" "}
                           {order.couponSnapshot.name}
-                        </Typography>
-                      </Box>
-                      <Typography>
+                        </p>
+                      </div>
+                      <span className="text-success">
                         -₹{order.couponDiscount.toLocaleString()}
-                      </Typography>
-                    </Box>
+                      </span>
+                    </div>
                   )}
 
                   {order.saleDiscount > 0 && order.saleSnapshot && (
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      py={1}
-                      color="success.main"
-                    >
-                      <Box>
-                        <Typography>Sale Discount</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                    <div className="flex justify-between py-2 text-success">
+                      <div>
+                        <p className="text-success">Sale Discount</p>
+                        <p className="text-xs text-textSecondary">
                           {order.saleSnapshot.name}
-                        </Typography>
-                      </Box>
-                      <Typography>
+                        </p>
+                      </div>
+                      <span className="text-success">
                         -₹{order.saleDiscount.toLocaleString()}
-                      </Typography>
-                    </Box>
+                      </span>
+                    </div>
                   )}
 
-                  <Box display="flex" justifyContent="space-between" py={1}>
-                    <Typography>Shipping Charges</Typography>
-                    <Typography>
+                  <div className="flex justify-between py-2">
+                    <span className="text-text">Shipping Charges</span>
+                    <span className="text-text">
                       {order.shippingCharges > 0
                         ? `₹${order.shippingCharges.toLocaleString()}`
                         : "FREE"}
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
 
-                  <Box display="flex" justifyContent="space-between" py={1}>
-                    <Typography>Tax</Typography>
-                    <Typography>₹{order.tax.toLocaleString()}</Typography>
-                  </Box>
+                  <div className="flex justify-between py-2">
+                    <span className="text-text">Tax</span>
+                    <span className="text-text">
+                      ₹{order.tax.toLocaleString()}
+                    </span>
+                  </div>
 
-                  <Divider sx={{ my: 2 }} />
+                  <div className="border-t border-border my-4"></div>
 
-                  <Box display="flex" justifyContent="space-between" py={1}>
-                    <Typography variant="h6">Total</Typography>
-                    <Typography variant="h6" color="primary">
+                  <div className="flex justify-between py-2">
+                    <span className="text-xl font-bold text-text">Total</span>
+                    <span className="text-xl font-bold text-primary">
                       ₹{order.total.toLocaleString()}
-                    </Typography>
-                  </Box>
-                </Box>
+                    </span>
+                  </div>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
             {/* Timeline */}
-            <Card>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-xl font-semibold text-text mb-6">
                   Order Timeline
-                </Typography>
-                <Timeline position="alternate">
-                  {timeline.map((event, index) => (
-                    <TimelineItem key={index}>
-                      <TimelineOppositeContent color="text.secondary">
-                        <Typography variant="caption">
-                          {new Date(event.timestamp).toLocaleString()}
-                        </Typography>
-                      </TimelineOppositeContent>
-                      <TimelineSeparator>
-                        <TimelineDot color={event.color}>
-                          {event.icon}
-                        </TimelineDot>
-                        {index < timeline.length - 1 && <TimelineConnector />}
-                      </TimelineSeparator>
-                      <TimelineContent>
-                        <Typography variant="body2" fontWeight={500}>
-                          {event.title}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {event.description}
-                        </Typography>
-                      </TimelineContent>
-                    </TimelineItem>
-                  ))}
-                </Timeline>
+                </h2>
+                <Timeline
+                  events={timeline}
+                  variant="default"
+                  showTimestamps={true}
+                  timestampPosition="alternate"
+                />
               </CardContent>
-            </Card>
-          </Grid>
+            </UnifiedCard>
+          </div>
 
-          {/* Right Column */}
-          <Grid item xs={12} md={4}>
+          {/* Right Column - 1/3 width */}
+          <div className="space-y-6">
             {/* Customer Info */}
-            <Card sx={{ mb: 3 }}>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-lg font-semibold text-text mb-3">
                   Customer Information
-                </Typography>
-                <Box>
-                  <Typography variant="body2" fontWeight={500}>
+                </h2>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-text">
                     {order.customerName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  </p>
+                  <p className="text-sm text-textSecondary">
                     {order.customerEmail}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  </p>
+                  <p className="text-sm text-textSecondary">
                     {order.customerPhone}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
             {/* Shipping Address */}
-            <Card sx={{ mb: 3 }}>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-lg font-semibold text-text mb-3">
                   Shipping Address
-                </Typography>
-                <Typography variant="body2">
-                  {order.shippingAddress.fullName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {order.shippingAddress.phone}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" mt={1}>
-                  {order.shippingAddress.addressLine1}
-                </Typography>
-                {order.shippingAddress.addressLine2 && (
-                  <Typography variant="body2" color="text.secondary">
-                    {order.shippingAddress.addressLine2}
-                  </Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-                  {order.shippingAddress.pincode}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {order.shippingAddress.country}
-                </Typography>
+                </h2>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-text">
+                    {order.shippingAddress.fullName}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {order.shippingAddress.phone}
+                  </p>
+                  <p className="text-sm text-textSecondary mt-2">
+                    {order.shippingAddress.addressLine1}
+                  </p>
+                  {order.shippingAddress.addressLine2 && (
+                    <p className="text-sm text-textSecondary">
+                      {order.shippingAddress.addressLine2}
+                    </p>
+                  )}
+                  <p className="text-sm text-textSecondary">
+                    {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+                    {order.shippingAddress.pincode}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {order.shippingAddress.country}
+                  </p>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
             {/* Billing Address */}
-            <Card sx={{ mb: 3 }}>
+            <UnifiedCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <h2 className="text-lg font-semibold text-text mb-3">
                   Billing Address
-                </Typography>
-                <Typography variant="body2">
-                  {order.billingAddress.fullName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {order.billingAddress.phone}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" mt={1}>
-                  {order.billingAddress.addressLine1}
-                </Typography>
-                {order.billingAddress.addressLine2 && (
-                  <Typography variant="body2" color="text.secondary">
-                    {order.billingAddress.addressLine2}
-                  </Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {order.billingAddress.city}, {order.billingAddress.state}{" "}
-                  {order.billingAddress.pincode}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {order.billingAddress.country}
-                </Typography>
+                </h2>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-text">
+                    {order.billingAddress.fullName}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {order.billingAddress.phone}
+                  </p>
+                  <p className="text-sm text-textSecondary mt-2">
+                    {order.billingAddress.addressLine1}
+                  </p>
+                  {order.billingAddress.addressLine2 && (
+                    <p className="text-sm text-textSecondary">
+                      {order.billingAddress.addressLine2}
+                    </p>
+                  )}
+                  <p className="text-sm text-textSecondary">
+                    {order.billingAddress.city}, {order.billingAddress.state}{" "}
+                    {order.billingAddress.pincode}
+                  </p>
+                  <p className="text-sm text-textSecondary">
+                    {order.billingAddress.country}
+                  </p>
+                </div>
               </CardContent>
-            </Card>
+            </UnifiedCard>
 
             {/* Notes */}
             {order.notes && (
-              <Card sx={{ mb: 3 }}>
+              <UnifiedCard>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <h2 className="text-lg font-semibold text-text mb-3">
                     Order Notes
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {order.notes}
-                  </Typography>
+                  </h2>
+                  <p className="text-sm text-textSecondary">{order.notes}</p>
                 </CardContent>
-              </Card>
+              </UnifiedCard>
             )}
 
             {order.internalNotes && (
-              <Card>
+              <UnifiedCard>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <h2 className="text-lg font-semibold text-text mb-3">
                     Internal Notes
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  </h2>
+                  <p className="text-sm text-textSecondary">
                     {order.internalNotes}
-                  </Typography>
+                  </p>
                 </CardContent>
-              </Card>
+              </UnifiedCard>
             )}
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
         {/* Approve Dialog */}
-        <Dialog open={approveDialog} onClose={() => setApproveDialog(false)}>
-          <DialogTitle>Approve Order</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+        <UnifiedModal
+          open={approveDialog}
+          onClose={() => setApproveDialog(false)}
+          title="Approve Order"
+        >
+          <div className="space-y-4">
+            <p className="text-textSecondary">
               Are you sure you want to approve order #{order.orderNumber}? This
               will move the order to processing status.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setApproveDialog(false)}
-              disabled={actionLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleApprove}
-              variant="contained"
-              color="success"
-              disabled={actionLoading}
-            >
-              {actionLoading ? <CircularProgress size={24} /> : "Approve"}
-            </Button>
-          </DialogActions>
-        </Dialog>
+            </p>
+            <div className="flex justify-end gap-3">
+              <UnifiedButton
+                variant="outline"
+                onClick={() => setApproveDialog(false)}
+                disabled={actionLoading}
+              >
+                Cancel
+              </UnifiedButton>
+              <UnifiedButton
+                variant="success"
+                onClick={handleApprove}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Approving..." : "Approve"}
+              </UnifiedButton>
+            </div>
+          </div>
+        </UnifiedModal>
 
         {/* Reject Dialog */}
-        <Dialog
+        <UnifiedModal
           open={rejectDialog}
           onClose={() => setRejectDialog(false)}
-          maxWidth="sm"
-          fullWidth
+          title="Reject Order"
         >
-          <DialogTitle>Reject Order</DialogTitle>
-          <DialogContent>
-            <DialogContentText mb={2}>
+          <div className="space-y-4">
+            <p className="text-textSecondary">
               Please provide a reason for rejecting order #{order.orderNumber}
-            </DialogContentText>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Rejection Reason"
+            </p>
+            <UnifiedTextarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Explain why you're rejecting this order..."
+              rows={4}
             />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setRejectDialog(false)}
-              disabled={actionLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleReject}
-              variant="contained"
-              color="error"
-              disabled={actionLoading}
-            >
-              {actionLoading ? <CircularProgress size={24} /> : "Reject Order"}
-            </Button>
-          </DialogActions>
-        </Dialog>
+            <div className="flex justify-end gap-3">
+              <UnifiedButton
+                variant="outline"
+                onClick={() => setRejectDialog(false)}
+                disabled={actionLoading}
+              >
+                Cancel
+              </UnifiedButton>
+              <UnifiedButton
+                variant="destructive"
+                onClick={handleReject}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Rejecting..." : "Reject Order"}
+              </UnifiedButton>
+            </div>
+          </div>
+        </UnifiedModal>
 
         {/* Cancel Dialog */}
-        <Dialog
+        <UnifiedModal
           open={cancelDialog}
           onClose={() => setCancelDialog(false)}
-          maxWidth="sm"
-          fullWidth
+          title="Cancel Order"
         >
-          <DialogTitle>Cancel Order</DialogTitle>
-          <DialogContent>
-            <DialogContentText mb={2}>
+          <div className="space-y-4">
+            <p className="text-textSecondary">
               Please provide a reason for cancelling order #{order.orderNumber}
-            </DialogContentText>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Cancellation Reason"
+            </p>
+            <UnifiedTextarea
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="Explain why you're cancelling this order..."
+              rows={4}
             />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setCancelDialog(false)}
-              disabled={actionLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCancel}
-              variant="contained"
-              color="error"
-              disabled={actionLoading}
-            >
-              {actionLoading ? <CircularProgress size={24} /> : "Cancel Order"}
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Snackbar */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            variant="filled"
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+            <div className="flex justify-end gap-3">
+              <UnifiedButton
+                variant="outline"
+                onClick={() => setCancelDialog(false)}
+                disabled={actionLoading}
+              >
+                Cancel
+              </UnifiedButton>
+              <UnifiedButton
+                variant="destructive"
+                onClick={handleCancel}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Cancelling..." : "Cancel Order"}
+              </UnifiedButton>
+            </div>
+          </div>
+        </UnifiedModal>
+      </div>
     </RoleGuard>
   );
 }

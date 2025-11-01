@@ -1,11 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-  ThemeProvider as MuiThemeProvider,
-  createTheme,
-} from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 
 type ThemeMode = "light" | "dark";
 type ThemeName = "default" | "custom";
@@ -19,7 +14,7 @@ interface ModernThemeContextType {
 }
 
 const ModernThemeContext = createContext<ModernThemeContextType | undefined>(
-  undefined,
+  undefined
 );
 
 // Default theme - original colors
@@ -135,7 +130,7 @@ export function ModernThemeProvider({
         } else {
           // Fallback to system preference if API fails
           const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
+            "(prefers-color-scheme: dark)"
           ).matches;
           setMode(prefersDark ? "dark" : "light");
         }
@@ -143,7 +138,7 @@ export function ModernThemeProvider({
         console.error("Failed to fetch theme settings:", error);
         // Fallback to system preference
         const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
+          "(prefers-color-scheme: dark)"
         ).matches;
         setMode(prefersDark ? "dark" : "light");
       }
@@ -208,166 +203,23 @@ export function ModernThemeProvider({
   const palette = colorPalettes[themeName];
   const colors = palette[mode];
 
-  const muiTheme = createTheme({
-    palette: {
-      mode,
-      primary: {
-        main: colors.primary,
-      },
-      secondary: {
-        main: colors.secondary,
-      },
-      background: {
-        default: colors.background,
-        paper: colors.surface,
-      },
-      text: {
-        primary: colors.text,
-        secondary: colors.textSecondary,
-      },
-      divider: colors.border,
-      error: {
-        main: colors.error,
-      },
-      success: {
-        main: colors.success,
-      },
-      warning: {
-        main: colors.warning,
-      },
-    },
-    typography: {
-      fontFamily: [
-        "-apple-system",
-        "BlinkMacSystemFont",
-        '"Segoe UI"',
-        "Roboto",
-        '"Helvetica Neue"',
-        "Arial",
-        "sans-serif",
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-      ].join(","),
-      h1: {
-        fontSize: "2.25rem",
-        fontWeight: 700,
-        lineHeight: 1.2,
-      },
-      h2: {
-        fontSize: "1.875rem",
-        fontWeight: 600,
-        lineHeight: 1.3,
-      },
-      h3: {
-        fontSize: "1.5rem",
-        fontWeight: 600,
-        lineHeight: 1.4,
-      },
-      h4: {
-        fontSize: "1.25rem",
-        fontWeight: 600,
-        lineHeight: 1.4,
-      },
-      h5: {
-        fontSize: "1.125rem",
-        fontWeight: 600,
-        lineHeight: 1.4,
-      },
-      h6: {
-        fontSize: "1rem",
-        fontWeight: 600,
-        lineHeight: 1.4,
-      },
-      body1: {
-        fontSize: "1rem",
-        lineHeight: 1.6,
-      },
-      body2: {
-        fontSize: "0.875rem",
-        lineHeight: 1.6,
-      },
-      caption: {
-        fontSize: "0.75rem",
-        lineHeight: 1.4,
-      },
-    },
-    shape: {
-      borderRadius: 8,
-    },
-    components: {
-      MuiCssBaseline: {
-        styleOverrides: {
-          body: {
-            backgroundColor: colors.background,
-            backgroundImage: "none",
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            fontWeight: 600,
-            borderRadius: 8,
-            padding: "8px 16px",
-            "&:hover": {
-              backgroundColor:
-                mode === "dark"
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "rgba(255, 255, 255, 0.1)",
-            },
-          },
-        },
-      },
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: 12,
-            backgroundColor: colors.surface,
-            border: `1px solid ${colors.border}`,
-            boxShadow:
-              mode === "dark"
-                ? "0 2px 8px rgba(255, 255, 255, 0.05)"
-                : "0 2px 8px rgba(255, 255, 255, 0.1)",
-          },
-        },
-      },
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            backgroundColor: colors.background,
-            color: colors.text,
-            boxShadow: `0 1px 0 ${colors.border}`,
-          },
-        },
-      },
-      MuiDrawer: {
-        styleOverrides: {
-          paper: {
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          },
-        },
-      },
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.primary,
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.primary,
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  // Apply theme colors to CSS variables for easy access
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      root.style.setProperty("--color-background", colors.background);
+      root.style.setProperty("--color-surface", colors.surface);
+      root.style.setProperty("--color-primary", colors.primary);
+      root.style.setProperty("--color-text", colors.text);
+      root.style.setProperty("--color-border", colors.border);
+      // Apply dark mode class
+      if (mode === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+    }
+  }, [colors, mode]);
 
   const value: ModernThemeContextType = {
     mode,
@@ -379,10 +231,7 @@ export function ModernThemeProvider({
 
   return (
     <ModernThemeContext.Provider value={value}>
-      <MuiThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        {children}
-      </MuiThemeProvider>
+      {children}
     </ModernThemeContext.Provider>
   );
 }
