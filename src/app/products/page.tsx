@@ -488,7 +488,11 @@ function ProductCard({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+                image: getProductImageUrl(
+                  product,
+                  0,
+                  "/assets/placeholder.png"
+                ),
                 slug: product.slug,
               }}
             />
@@ -559,14 +563,15 @@ function ProductCard({
 
       {/* Wishlist Button */}
       <div className="absolute top-2 right-2">
-        <WishlistButton            product={{
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
-              slug: product.slug,
-            }}
-          />
+        <WishlistButton
+          product={{
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+            slug: product.slug,
+          }}
+        />
       </div>
     </div>
   );

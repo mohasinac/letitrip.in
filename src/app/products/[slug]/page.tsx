@@ -340,7 +340,9 @@ export default function ProductDetailPage() {
                   getProductImages(product)[selectedImage]?.url ||
                   "/assets/placeholder.png"
                 }
-                alt={getProductImages(product)[selectedImage]?.alt || product.name}
+                alt={
+                  getProductImages(product)[selectedImage]?.alt || product.name
+                }
                 fill
                 className={`object-cover transition-transform duration-200 ${
                   imageZoom ? "scale-150" : "scale-100"
@@ -375,24 +377,26 @@ export default function ProductDetailPage() {
             {/* Thumbnail Gallery */}
             {getProductImages(product).length > 1 && (
               <div className="grid grid-cols-5 gap-2">
-                {getProductImages(product).slice(0, 5).map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImage === index
-                        ? "border-blue-600"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.alt || `${product.name} ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </button>
-                ))}
+                {getProductImages(product)
+                  .slice(0, 5)
+                  .map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(index)}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedImage === index
+                          ? "border-blue-600"
+                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                      }`}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={image.alt || `${product.name} ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
               </div>
             )}
           </div>
@@ -802,7 +806,8 @@ export default function ProductDetailPage() {
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                     <Image
                       src={
-                        relgetProductImageUrl(product, 0) || "/assets/placeholder.png"
+                        relgetProductImageUrl(product, 0) ||
+                        "/assets/placeholder.png"
                       }
                       alt={relProduct.name}
                       fill
