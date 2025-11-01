@@ -68,6 +68,7 @@ export const ADMIN_ROUTES = {
   ORDERS: "/admin/orders",
   USERS: "/admin/users",
   ANALYTICS: "/admin/analytics",
+  COUPONS: "/admin/coupons",
   SETTINGS: "/admin/settings",
 } as const;
 
