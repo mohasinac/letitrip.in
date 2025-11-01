@@ -88,7 +88,7 @@ export async function PUT(
     // Check if code is being changed and if it conflicts
     if (body.code && body.code !== couponData.code) {
       const existingCoupon = await adminDb
-        .collection("seller_coupons")
+        .collection("coupons")
         .where("sellerId", "==", sellerId)
         .where("code", "==", body.code.toUpperCase())
         .limit(1)
@@ -126,7 +126,7 @@ export async function PUT(
     }
 
     await adminDb
-      .collection("seller_coupons")
+      .collection("coupons")
       .doc(params.id)
       .update(updateData);
 
