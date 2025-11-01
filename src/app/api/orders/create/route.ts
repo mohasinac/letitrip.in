@@ -82,8 +82,89 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Calculate totals
-    const couponDiscount = 0; // TODO: Apply coupon logic
+    // Calculate totals with coupon discount
+    let couponDiscount = 0;
+    let appliedCoupon: any = null;
+    
+    if (couponCode) {
+      try {
+        // Validate coupon
+        const couponsRef = db.collection("coupons");
+        const couponSnapshot = await couponsRef
+          .where("code", "==", couponCode.toUpperCase())
+          .where("status", "==", "active")
+          .limit(1)
+          .get();
+
+        if (!couponSnapshot.empty) {
+          const couponDoc = couponSnapshot.docs[0];
+          const couponData: any = couponDoc.data();
+          const coupon = { id: couponDoc.id, ...couponData };
+          
+          // Basic validation - check expiry
+          if (!couponData.isPermanent && couponData.endDate) {
+            const endDate = new Date(couponData.endDate);
+            if (endDate < new Date()) {
+              console.log("Coupon expired, skipping");
+            } else {
+              // Calculate discount based on coupon type
+              const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+              
+              if (couponData.type === "percentage") {
+                couponDiscount = Math.round((subtotal * couponData.value) / 100);
+                if (couponData.maximumAmount > 0) {
+                  couponDiscount = Math.min(couponDiscount, couponData.maximumAmount);
+                }
+              } else if (couponData.type === "fixed") {
+                couponDiscount = Math.min(couponData.value, subtotal);
+              }
+              
+              appliedCoupon = {
+                code: couponData.code,
+                name: couponData.name,
+                type: couponData.type,
+                value: couponData.value,
+              };
+              
+              // Increment usage count
+              await couponDoc.ref.update({
+                usedCount: FieldValue.increment(1),
+                updatedAt: new Date(),
+              });
+            }
+          } else if (couponData.isPermanent) {
+            // Permanent coupon
+            const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
+            if (couponData.type === "percentage") {
+              couponDiscount = Math.round((subtotal * couponData.value) / 100);
+              if (couponData.maximumAmount > 0) {
+                couponDiscount = Math.min(couponDiscount, couponData.maximumAmount);
+              }
+            } else if (couponData.type === "fixed") {
+              couponDiscount = Math.min(couponData.value, subtotal);
+            }
+            
+            appliedCoupon = {
+              code: couponData.code,
+              name: couponData.name,
+              type: couponData.type,
+              value: couponData.value,
+            };
+            
+            // Increment usage count
+            await couponDoc.ref.update({
+              usedCount: FieldValue.increment(1),
+              updatedAt: new Date(),
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error applying coupon:", error);
+        // Continue without coupon
+      }
+    }
+    
     const totals = calculateOrderTotals(items, couponDiscount);
 
     // Generate order number
@@ -128,6 +209,9 @@ export async function POST(request: NextRequest) {
       status: initialStatus,
 
       customerNotes: customerNotes || "",
+      
+      // Add coupon snapshot if applied
+      ...(appliedCoupon && { couponSnapshot: appliedCoupon }),
       
       // Add sellerId from first item (for single-seller orders)
       // For multi-seller orders, this would need to be split into separate orders
