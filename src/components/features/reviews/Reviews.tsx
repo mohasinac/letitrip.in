@@ -85,7 +85,9 @@ export default function Reviews({
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"approve" | "reject" | "delete" | "view" | null>(null);
+  const [modalType, setModalType] = useState<
+    "approve" | "reject" | "delete" | "view" | null
+  >(null);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [adminNote, setAdminNote] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
@@ -227,9 +229,7 @@ export default function Reviews({
           <div className="text-sm font-medium text-gray-900 dark:text-white">
             {review.userName}
           </div>
-          {review.verified && (
-            <ShieldCheck className="w-4 h-4 text-blue-500" />
-          )}
+          {review.verified && <ShieldCheck className="w-4 h-4 text-blue-500" />}
         </div>
       ),
     },
@@ -616,7 +616,8 @@ export default function Reviews({
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  This note is for internal use only and won't be shown to the user.
+                  This note is for internal use only and won't be shown to the
+                  user.
                 </p>
               </div>
             )}
