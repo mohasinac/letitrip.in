@@ -805,10 +805,11 @@ export default function ProductDetailPage() {
                 >
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                     <Image
-                      src={
-                        relgetProductImageUrl(product, 0) ||
+                      src={getProductImageUrl(
+                        relProduct,
+                        0,
                         "/assets/placeholder.png"
-                      }
+                      )}
                       alt={relProduct.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
