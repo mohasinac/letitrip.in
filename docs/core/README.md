@@ -91,9 +91,11 @@ This documentation hub contains **11 comprehensive guides** covering all aspects
 
 - 14 unified components (UnifiedButton, UnifiedCard, etc.)
 - 4 admin/seller components (PageHeader, ModernDataTable, etc.)
+- Layout components (ModernLayout v1.2.0, AdminSidebar, SellerSidebar)
 - Usage examples
 - Where-used mapping
 - MUI migration guide
+- **NEW v1.2.0**: Enhanced layout with modernized navbar, footer, and sidebars
 
 ### 🗺️ [Routes & Pages](./ROUTES_AND_PAGES.md)
 
@@ -105,6 +107,7 @@ This documentation hub contains **11 comprehensive guides** covering all aspects
 - Seller routes (/seller/\*)
 - Admin routes (/admin/\*)
 - Game routes (/game, /game/multiplayer)
+- **NEW v1.2.0**: Updated navigation with Products, Stores, Search, Cart links
 
 ### 🎮 [Game & Server](./GAME_AND_SERVER.md)
 
@@ -178,6 +181,18 @@ This documentation hub contains **11 comprehensive guides** covering all aspects
 
 - Vercel (frontend)
 - Render.com (Socket.io server)
+
+### Recent Updates (v1.2.0 - November 2025)
+
+**Layout Modernization Complete ✅**
+
+- **ModernLayout**: Added Products/Stores links, Search/Cart icons, 30+ footer links, social media
+- **AdminSidebar**: Fixed collapse bug, added 4 menu items, gradient theme, progress bar, sticky positioning
+- **SellerSidebar**: Fixed collapse bug, Revenue link, green gradient, enhanced badges, store status
+- **Bugs Fixed**: Collapse issues, width management, mobile menu, footer responsiveness, dark mode
+- **Improvements**: 60fps animations, keyboard navigation, ARIA labels, WCAG 2.1 compliance
+
+See [COMPONENTS_REFERENCE.md](./COMPONENTS_REFERENCE.md) for detailed documentation.
 
 ### Key Metrics
 

@@ -144,6 +144,15 @@
       ]
     },
     {
+      "collectionGroup": "seller_products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "stock", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "seller_coupons",
       "queryScope": "COLLECTION",
       "fields": [

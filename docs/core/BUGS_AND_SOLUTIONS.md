@@ -321,7 +321,69 @@ const allowedOrigins = ["https://yourdomain.com", "https://*.vercel.app"];
 
 ## Firebase & Database Issues
 
-### 1. Missing or Insufficient Permissions
+### 1. Missing Firestore Composite Index
+
+**Error Message:**
+
+```
+FAILED_PRECONDITION: The query requires an index. You can create it here: https://console.firebase.google.com/...
+```
+
+**Root Cause:**
+
+- Firestore queries with multiple orderBy() or where() clauses require composite indexes
+- Indexes must be created before queries can execute
+- Commonly occurs when filtering by multiple fields (e.g., status AND stock)
+
+**Example Query That Triggers Error:**
+
+```typescript
+// This query needs a composite index on status + stock + __name__
+const products = await db
+  .collection("seller_products")
+  .where("status", "==", "active")
+  .orderBy("stock", "asc")
+  .get();
+```
+
+**Solution Steps:**
+
+1. **Read the Error URL:** Copy the Firebase Console URL from the error message
+2. **Add Index to firestore.indexes.json:**
+
+```json
+{
+  "collectionGroup": "seller_products",
+  "queryScope": "COLLECTION",
+  "fields": [
+    { "fieldPath": "status", "order": "ASCENDING" },
+    { "fieldPath": "stock", "order": "ASCENDING" },
+    { "fieldPath": "__name__", "order": "ASCENDING" }
+  ]
+}
+```
+
+3. **Deploy Index:**
+
+```bash
+firebase deploy --only firestore:indexes
+```
+
+4. **Wait for Build:** Index creation takes 2-5 minutes on Firebase backend
+
+**Alternative:** Click the URL in the error message to create the index directly in Firebase Console
+
+**Prevention:**
+
+- Review query patterns before deploying
+- Add indexes proactively for complex queries
+- Test queries in Firebase emulator during development
+
+**Fixed In:** Layout Modernization v1.2.0 - Added seller_products composite index
+
+---
+
+### 2. Missing or Insufficient Permissions
 
 **Root Cause:** Client-side security rules blocking request
 
@@ -335,7 +397,7 @@ const allowedOrigins = ["https://yourdomain.com", "https://*.vercel.app"];
 
 ---
 
-### 2. Placeholder Image 404 Errors
+### 3. Placeholder Image 404 Errors
 
 **Symptoms:**
 

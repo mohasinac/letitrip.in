@@ -449,42 +449,125 @@ export default function PageName() {
 
 ## Navigation Structure
 
-### Main Navigation
+### Main Navigation (ModernLayout v1.2.0)
 
-1. Home
-2. Categories
-3. Game
-4. Contact
+**Navbar Links:**
+
+1. Home (/)
+2. Products (/products) ⭐ NEW
+3. Categories (/categories)
+4. Stores (/stores) ⭐ NEW
+5. Game (/game)
+6. Contact (/contact)
+
+**Quick Actions:**
+
+- 🔍 Search (/search) ⭐ NEW
+- 🛒 Shopping Cart (/cart) ⭐ NEW
+- 🌙 Theme Toggle
+- 👤 User Profile Menu
+
+### Footer Navigation (30+ Links)
+
+**Shop Section:**
+
+- All Products (/products)
+- Categories (/categories)
+- Stores (/stores)
+- New Arrivals (/products?sort=newest)
+- Best Sellers (/products?sort=popular)
+- On Sale (/products?sale=true)
+
+**Customer Service:**
+
+- Contact Us (/contact)
+- Help Center (/help)
+- FAQ (/faq)
+- Track Order (/account/orders)
+- Returns (/account/returns)
+- Shipping Info (/shipping)
+
+**Company:**
+
+- About Us (/about)
+- Careers (/careers)
+- Blog (/blog)
+- Beyblade Game (/game)
+- Terms of Service (/terms)
+- Privacy Policy (/privacy)
+
+**Bottom Bar:**
+
+- Sitemap (/sitemap)
+- Accessibility (/accessibility)
+- Cookie Policy (/cookies)
+
+**Social Media:**
+
+- Facebook (external)
+- Twitter (external)
+- Instagram (external)
 
 ### User Menu (Authenticated)
 
-- Profile
-- Orders
-- Wishlist
+- Profile (/profile)
+- Orders (/account/orders)
+- Wishlist (/account/wishlist)
+- Settings (/account/settings)
 - Logout
 
-### Seller Menu
+**Admin/Seller Access:**
 
-- Dashboard
-- Shop Setup
-- Products
-- Orders
-- Coupons
-- Sales
-- Shipments
-- Analytics
-- Alerts
+- Admin Panel (/admin) - Admin only
+- Seller Panel (/seller/dashboard) - Seller/Admin
 
-### Admin Menu
+### Admin Sidebar Menu (v1.2.0)
 
-- Dashboard
-- Users
-- Categories
-- Products
-- Orders
-- Settings
-  - Game Settings
-  - Featured Categories
+13 Menu Items with Logical Grouping:
+
+**Analytics & Overview:**
+
+1. Dashboard (/admin)
+2. Analytics (/admin/analytics)
+
+**Content Management:** 3. Products (/admin/products) 4. Categories (/admin/categories) 5. Orders (/admin/orders) 6. Users (/admin/users)
+
+**Marketing & Sales:** 7. Coupons (/admin/coupons) ⭐ NEW 8. Sales (/admin/sales) ⭐ NEW 9. Reviews (/admin/reviews) ⭐ NEW 10. Support (/admin/support) 11. Notifications (/admin/notifications) ⭐ NEW
+
+**System:** 12. Game (/admin/game/beyblades) 13. Settings (/admin/settings)
+
+**Features:**
+
+- Gradient header (blue → purple)
+- Progress bar footer (75%)
+- Icon animations (pulse on active)
+- Sticky positioning
+- Collapsible (80px ↔ 256px)
+
+### Seller Sidebar Menu (v1.2.0)
+
+11 Menu Items with Logical Grouping:
+
+**Overview:**
+
+1. Dashboard (/seller/dashboard)
+2. Shop Setup (/seller/shop-setup)
+
+**Inventory & Orders:** 3. Products (/seller/products) 4. Orders (/seller/orders) 5. Shipments (/seller/shipments)
+
+**Marketing:** 6. Coupons (/seller/coupons) 7. Sales (/seller/sales)
+
+**Analytics:** 8. Analytics (/seller/analytics) 9. Revenue (/seller/analytics?tab=revenue) ⭐ NEW
+
+**Notifications & Settings:** 10. Alerts (/seller/alerts) - with badge system 11. Settings (/seller/settings)
+
+**Features:**
+
+- Green gradient theme (green → emerald)
+- Store status indicator (🟢 Active)
+- Enhanced badge system (bounce animation)
+- Sticky positioning
+- Collapsible (80px ↔ 256px)
 
 ---
 

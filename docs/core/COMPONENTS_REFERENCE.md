@@ -435,11 +435,235 @@ import RoleGuard from "@/components/features/auth/RoleGuard";
 
 **Location:** `src/components/layout/`
 
-### ModernLayout
+### 1. ModernLayout
 
-**Purpose:** Main app layout with header/footer
+**Purpose:** Main app layout with header, footer, and responsive navigation
+
+**Features:**
+
+- Modern navbar with 6 navigation links (Home, Products, Categories, Stores, Game, Contact)
+- Search and shopping cart icons
+- Theme switcher (light/dark mode)
+- User authentication menu
+- Responsive mobile drawer menu
+- Comprehensive footer with 30+ links organized in 5 columns
+- Social media integration (Facebook, Twitter, Instagram)
+- Sticky header with smooth transitions
 
 **Used in:** Root layout (`src/app/layout.tsx`)
+
+**Navigation Links:**
+
+```tsx
+// Main Navigation
+- Home (/)
+- Products (/products)
+- Categories (/categories)
+- Stores (/stores)
+- Game (/game)
+- Contact (/contact)
+
+// Quick Actions
+- Search (/search)
+- Shopping Cart (/cart)
+- Theme Toggle
+- User Profile Menu
+```
+
+**Footer Sections:**
+
+- **Company Info**: Brand, description, social media
+- **Shop**: Products, Categories, Stores, New Arrivals, Best Sellers, On Sale
+- **Customer Service**: Contact, Help, FAQ, Track Order, Returns, Shipping
+- **Company**: About, Careers, Blog, Game, Terms, Privacy
+- **Bottom Bar**: Sitemap, Accessibility, Cookie Policy
+
+**Responsive Breakpoints:**
+
+- Mobile (<768px): Hamburger menu, single column footer
+- Tablet (768-1024px): Partial navigation, 2-column footer
+- Desktop (>1024px): Full navigation, 5-column footer
+
+**Version:** v1.2.0 (Updated November 2025)
+
+---
+
+### 2. AdminSidebar
+
+**Purpose:** Navigation sidebar for admin panel with collapsible menu
+
+**Location:** `src/components/layout/AdminSidebar.tsx`
+
+**Features:**
+
+- ✅ Fixed minimize/maximize functionality
+- ✅ Sticky positioning (stays visible during scroll)
+- ✅ Scrollable content area with custom scrollbar
+- ✅ Gradient header (blue → purple)
+- ✅ Icon animations (pulse effect on active items)
+- ✅ Progress bar in footer
+- ✅ 13 menu items with logical grouping
+- ✅ Smooth transitions (300ms ease-in-out)
+
+**Menu Items:**
+
+1. Dashboard (/admin)
+2. Analytics (/admin/analytics)
+3. Products (/admin/products)
+4. Categories (/admin/categories)
+5. Orders (/admin/orders)
+6. Users (/admin/users)
+7. Coupons (/admin/coupons)
+8. Sales (/admin/sales)
+9. Reviews (/admin/reviews)
+10. Support (/admin/support)
+11. Notifications (/admin/notifications)
+12. Game (/admin/game/beyblades)
+13. Settings (/admin/settings)
+
+**States:**
+
+- **Expanded**: 256px (w-64) - Shows icons + labels + badges
+- **Collapsed**: 80px (w-20) - Shows icons only with tooltips
+
+**Color Scheme:**
+
+- **Gradient**: Blue (#2563eb) → Purple (#7c3aed)
+- **Hover**: Light Blue (#eff6ff)
+- **Active**: Blue Gradient + Shadow
+
+**Footer Display:**
+
+- Version v1.2.0
+- Progress bar showing 75%
+- Shield icon when collapsed
+
+**Usage:**
+
+```tsx
+import AdminSidebar from "@/components/layout/AdminSidebar";
+
+<AdminSidebar open={adminSidebarOpen} onToggle={setAdminSidebarOpen} />;
+```
+
+**Version:** v1.2.0 (Fixed & Enhanced November 2025)
+
+---
+
+### 3. SellerSidebar
+
+**Purpose:** Navigation sidebar for seller panel with status indicators
+
+**Location:** `src/components/seller/SellerSidebar.tsx`
+
+**Features:**
+
+- ✅ Fixed minimize/maximize functionality
+- ✅ Sticky positioning (stays visible during scroll)
+- ✅ Scrollable content area with custom scrollbar
+- ✅ Green gradient theme (green → emerald)
+- ✅ Enhanced badge system with bounce animation
+- ✅ Store status indicator with pulsing dot
+- ✅ 11 menu items with logical grouping
+- ✅ Multiple badge locations (icon + end of row)
+
+**Menu Items:**
+
+1. Dashboard (/seller/dashboard)
+2. Shop Setup (/seller/shop-setup)
+3. Products (/seller/products)
+4. Orders (/seller/orders)
+5. Shipments (/seller/shipments)
+6. Coupons (/seller/coupons)
+7. Sales (/seller/sales)
+8. Analytics (/seller/analytics)
+9. Revenue (/seller/analytics?tab=revenue)
+10. Alerts (/seller/alerts) - with badge
+11. Settings (/seller/settings)
+
+**States:**
+
+- **Expanded**: 256px (w-64) - Shows icons + labels + badges
+- **Collapsed**: 80px (w-20) - Shows icons only with tooltips
+
+**Color Scheme:**
+
+- **Gradient**: Green (#16a34a) → Emerald (#059669)
+- **Hover**: Light Green (#f0fdf4)
+- **Active**: Green Gradient + Shadow
+
+**Badge System:**
+
+- Small badge on icon (bounce animation)
+- Large badge at end of row (when expanded)
+- Displays "9+" for counts > 9, "99+" for counts > 99
+
+**Footer Display:**
+
+- Store Status: 🟢 Active (with pulsing dot)
+- Version v1.2.0
+- Store icon when collapsed
+
+**Usage:**
+
+```tsx
+import SellerSidebar from "@/components/seller/SellerSidebar";
+
+<SellerSidebar
+  open={sellerSidebarOpen}
+  onToggle={setSellerSidebarOpen}
+  unreadAlerts={5}
+/>;
+```
+
+**Version:** v1.2.0 (Fixed & Enhanced November 2025)
+
+---
+
+### Layout Component Improvements (v1.2.0)
+
+**Bugs Fixed:**
+
+1. ✅ Sidebar collapse/expand not working properly
+2. ✅ Width jumping on toggle
+3. ✅ Inline style conflicts
+4. ✅ No sticky positioning
+5. ✅ Content overflow issues
+6. ✅ Animation glitches
+7. ✅ Mobile menu overlapping
+8. ✅ Footer not responsive
+9. ✅ Active states not working
+10. ✅ Dark mode inconsistencies
+
+**New Features Added:**
+
+- Search icon in navbar
+- Shopping cart icon in navbar
+- 30+ footer links organized by category
+- Social media icons with custom SVGs
+- Gradient backgrounds and text
+- Smooth animations (pulse, bounce, transitions)
+- Better hover states and visual feedback
+- Consistent rounded corners (rounded-lg)
+- Full accessibility (ARIA labels, focus states)
+- Enhanced mobile responsiveness
+
+**Accessibility Improvements:**
+
+- Full keyboard navigation
+- Comprehensive ARIA labels
+- Clear focus indicators
+- Screen reader optimized
+- Color contrast compliant (WCAG 2.1)
+- Touch target sizes met (44px minimum)
+
+**Performance Optimizations:**
+
+- Smooth 60fps animations
+- No layout thrashing
+- Efficient re-renders
+- Optimized CSS transitions
+- Minimal CSS overhead
 
 ---
 
