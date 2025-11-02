@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/database/admin";
 
+// Helper functions to handle both nested and flattened data structures
+const getProductQuantity = (product: any): number => {
+  return product.inventory?.quantity ?? product.quantity ?? 0;
+};
+
+const getProductPrice = (product: any): number => {
+  return product.pricing?.price ?? product.price ?? 0;
+};
+
+const getProductCompareAtPrice = (product: any): number | undefined => {
+  return product.pricing?.compareAtPrice ?? product.compareAtPrice;
+};
+
 /**
  * GET /api/products - Public product listing API
  * Query params: search, category, minPrice, maxPrice, sort, inStock, page, limit
@@ -68,7 +81,7 @@ export async function GET(request: NextRequest) {
     // Apply in-memory stock filter if needed
     if (useInMemoryStockFilter && inStockOnly) {
       products = products.filter((product) => {
-        const stock = product.quantity ?? product.stock ?? 0;
+        const stock = getProductQuantity(product);
         return stock > 0;
       });
     }
@@ -90,20 +103,20 @@ export async function GET(request: NextRequest) {
     // Apply price range filter (in memory)
     if (minPrice) {
       const min = parseFloat(minPrice);
-      products = products.filter((product) => product.price >= min);
+      products = products.filter((product) => getProductPrice(product) >= min);
     }
     if (maxPrice) {
       const max = parseFloat(maxPrice);
-      products = products.filter((product) => product.price <= max);
+      products = products.filter((product) => getProductPrice(product) <= max);
     }
 
     // Apply sorting
     switch (sort) {
       case "price-low":
-        products.sort((a, b) => (a.price || 0) - (b.price || 0));
+        products.sort((a, b) => getProductPrice(a) - getProductPrice(b));
         break;
       case "price-high":
-        products.sort((a, b) => (b.price || 0) - (a.price || 0));
+        products.sort((a, b) => getProductPrice(b) - getProductPrice(a));
         break;
       case "newest":
         products.sort(
@@ -128,9 +141,20 @@ export async function GET(request: NextRequest) {
     const paginatedProducts = products.slice(startIndex, endIndex);
     const hasMore = endIndex < products.length;
 
+    // Transform products to ensure consistent structure for frontend
+    const transformedProducts = paginatedProducts.map((product) => ({
+      ...product,
+      // Ensure flattened fields are available for backward compatibility
+      price: getProductPrice(product),
+      compareAtPrice: getProductCompareAtPrice(product),
+      quantity: getProductQuantity(product),
+      sku: product.inventory?.sku ?? product.sku,
+      lowStockThreshold: product.inventory?.lowStockThreshold ?? product.lowStockThreshold ?? 1,
+    }));
+
     return NextResponse.json({
       success: true,
-      products: paginatedProducts,
+      products: transformedProducts,
       total: products.length,
       page,
       limit,

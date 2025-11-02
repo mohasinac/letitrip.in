@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/database/admin";
 
+// Helper functions to handle both nested and flattened data structures
+const getProductQuantity = (product: any): number => {
+  return product.inventory?.quantity ?? product.quantity ?? 0;
+};
+
+const getProductPrice = (product: any): number => {
+  return product.pricing?.price ?? product.price ?? 0;
+};
+
+const getProductCompareAtPrice = (product: any): number | undefined => {
+  return product.pricing?.compareAtPrice ?? product.compareAtPrice;
+};
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -33,9 +46,18 @@ export async function GET(
     }
 
     const doc = querySnapshot.docs[0];
+    const productData = doc.data();
+    
+    // Transform product to ensure consistent structure
     const product = {
       id: doc.id,
-      ...doc.data(),
+      ...productData,
+      // Ensure flattened fields are available for backward compatibility
+      price: getProductPrice(productData),
+      compareAtPrice: getProductCompareAtPrice(productData),
+      quantity: getProductQuantity(productData),
+      sku: productData.inventory?.sku ?? productData.sku,
+      lowStockThreshold: productData.inventory?.lowStockThreshold ?? productData.lowStockThreshold ?? 1,
     };
 
     return NextResponse.json({

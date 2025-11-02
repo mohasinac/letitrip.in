@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 
+// Helper functions to handle both nested and flattened data structures
+const getProductQuantity = (product: any): number => {
+  return product.inventory?.quantity ?? product.quantity ?? 0;
+};
+
+const getProductLowStockThreshold = (product: any): number => {
+  return product.inventory?.lowStockThreshold ?? product.lowStockThreshold ?? 1;
+};
+
+const getProductPrice = (product: any): number => {
+  return product.pricing?.price ?? product.price ?? 0;
+};
+
 /**
  * GET /api/admin/products
  * List all products from all sellers with filtering, search, and pagination
@@ -74,13 +87,21 @@ export async function GET(request: NextRequest) {
     // Apply stock status filter (client-side)
     if (stockStatus && stockStatus !== "all") {
       if (stockStatus === "outOfStock") {
-        products = products.filter((p: any) => (p.quantity || p.stock || 0) === 0);
+        products = products.filter((p: any) => getProductQuantity(p) === 0);
       } else if (stockStatus === "lowStock") {
         products = products.filter(
-          (p: any) => (p.quantity || p.stock || 0) > 0 && (p.quantity || p.stock || 0) < (p.lowStockThreshold || 10)
+          (p: any) => {
+            const qty = getProductQuantity(p);
+            const threshold = getProductLowStockThreshold(p);
+            return qty > 0 && qty < threshold;
+          }
         );
       } else if (stockStatus === "inStock") {
-        products = products.filter((p: any) => (p.quantity || p.stock || 0) > (p.lowStockThreshold || 10));
+        products = products.filter((p: any) => {
+          const qty = getProductQuantity(p);
+          const threshold = getProductLowStockThreshold(p);
+          return qty >= threshold;
+        });
       }
     }
 
@@ -99,9 +120,19 @@ export async function GET(request: NextRequest) {
     const startIndex = (page - 1) * limit;
     const paginatedProducts = products.slice(startIndex, startIndex + limit);
 
+    // Transform products to ensure consistent structure
+    const transformedProducts = paginatedProducts.map((product: any) => ({
+      ...product,
+      // Ensure flattened fields are available for backward compatibility
+      price: getProductPrice(product),
+      quantity: getProductQuantity(product),
+      lowStockThreshold: getProductLowStockThreshold(product),
+      sku: product.inventory?.sku ?? product.sku,
+    }));
+
     return NextResponse.json({
       success: true,
-      data: paginatedProducts,
+      data: transformedProducts,
       pagination: {
         page,
         limit,

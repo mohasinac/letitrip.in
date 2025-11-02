@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/database/admin";
 
+// Helper to get product price (handles both nested and flattened structures)
+const getProductPrice = (product: any): number => {
+  return product.pricing?.price ?? product.price ?? 0;
+};
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -45,8 +50,8 @@ export async function GET(request: NextRequest) {
           id: doc.id,
           name: data.name,
           slug: data.slug,
-          image: data.images?.[0]?.url,
-          price: data.price,
+          image: data.images?.[0]?.url || data.media?.images?.[0]?.url,
+          price: getProductPrice(data),
         };
       });
 
