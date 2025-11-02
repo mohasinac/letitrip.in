@@ -1,7 +1,7 @@
 # 🎨 Components Library & Usage Reference
 
 **Project:** HobbiesSpot.com - Beyblade Ecommerce Platform  
-**Last Updated:** November 1, 2025
+**Last Updated:** November 2, 2025
 
 ---
 
@@ -10,8 +10,7 @@
 1. [Unified Components (14)](#unified-components)
 2. [Admin/Seller Components (4)](#adminseller-components)
 3. [Feature Components](#feature-components)
-4. [Layout Components](#layout-components)
-5. [Usage Map](#where-components-are-used)
+4. [Layout Components](#where-components-are-used)
 
 ---
 
@@ -431,276 +430,108 @@ import RoleGuard from "@/components/features/auth/RoleGuard";
 
 ---
 
-## Layout Components
+## Application Layout Components
 
-**Location:** `src/components/layout/`
+### ModernLayout (`/src/components/layout/ModernLayout.tsx`)
 
-### 1. ModernLayout
-
-**Purpose:** Main app layout with header, footer, and responsive navigation
+Main application layout wrapper with unified navigation system.
 
 **Features:**
 
-- Modern navbar with 6 navigation links (Home, Products, Categories, Stores, Game, Contact)
-- Search and shopping cart icons
-- Theme switcher (light/dark mode)
-- User authentication menu
-- Responsive mobile drawer menu
-- Comprehensive footer with 30+ links organized in 5 columns
-- Social media integration (Facebook, Twitter, Instagram)
-- Sticky header with smooth transitions
-
-**Used in:** Root layout (`src/app/layout.tsx`)
-
-**Navigation Links:**
-
-```tsx
-// Main Navigation
-- Home (/)
-- Products (/products)
-- Categories (/categories)
-- Stores (/stores)
-- Game (/game)
-- Contact (/contact)
-
-// Quick Actions
-- Search (/search)
-- Shopping Cart (/cart)
-- Theme Toggle
-- User Profile Menu
-```
-
-**Footer Sections:**
-
-- **Company Info**: Brand, description, social media
-- **Shop**: Products, Categories, Stores, New Arrivals, Best Sellers, On Sale
-- **Customer Service**: Contact, Help, FAQ, Track Order, Returns, Shipping
-- **Company**: About, Careers, Blog, Game, Terms, Privacy
-- **Bottom Bar**: Sitemap, Accessibility, Cookie Policy
-
-**Responsive Breakpoints:**
-
-- Mobile (<768px): Hamburger menu, single column footer
-- Tablet (768-1024px): Partial navigation, 2-column footer
-- Desktop (>1024px): Full navigation, 5-column footer
-
-**Version:** v1.2.0 (Updated November 2025)
-
----
-
-### 2. AdminSidebar
-
-**Purpose:** Navigation sidebar for admin panel with collapsible menu
-
-**Location:** `src/components/layout/AdminSidebar.tsx`
-
-**Features:**
-
-- ✅ Fixed minimize/maximize functionality
-- ✅ Sticky positioning (stays visible during scroll)
-- ✅ Scrollable content area with custom scrollbar
-- ✅ Gradient header (blue → purple)
-- ✅ Icon animations (pulse effect on active items)
-- ✅ Progress bar in footer
-- ✅ 13 menu items with logical grouping
-- ✅ Smooth transitions (300ms ease-in-out)
-
-**Menu Items:**
-
-1. Dashboard (/admin)
-2. Analytics (/admin/analytics)
-3. Products (/admin/products)
-4. Categories (/admin/categories)
-5. Orders (/admin/orders)
-6. Users (/admin/users)
-7. Coupons (/admin/coupons)
-8. Sales (/admin/sales)
-9. Reviews (/admin/reviews)
-10. Support (/admin/support)
-11. Notifications (/admin/notifications)
-12. Game (/admin/game/beyblades)
-13. Settings (/admin/settings)
-
-**States:**
-
-- **Expanded**: 256px (w-64) - Shows icons + labels + badges
-- **Collapsed**: 80px (w-20) - Shows icons only with tooltips
-
-**Color Scheme:**
-
-- **Gradient**: Blue (#2563eb) → Purple (#7c3aed)
-- **Hover**: Light Blue (#eff6ff)
-- **Active**: Blue Gradient + Shadow
-
-**Footer Display:**
-
-- Version v1.2.0
-- Progress bar showing 75%
-- Shield icon when collapsed
+- **Navigation Bar**:
+  - Logo with icon (🎯 HobbiesSpot) at start
+  - Right-aligned items: Home, Products, Categories, Contact
+  - Currency selector (USD, EUR, GBP, INR)
+  - Expandable search (click icon to reveal search bar below navbar)
+  - Theme toggle (light/dark mode)
+  - Sign In button (when user not logged in)
+- **Unified Sidebar**: Shows based on user role and route
+  - Only visible when user is logged in
+  - Integrated via UnifiedSidebar component
+- **Mobile Responsive**:
+  - Drawer menu for navigation on small screens
+  - Touch-friendly interaction
+- **Footer**: 5-column layout with company info, shop links, help, and social media
 
 **Usage:**
 
 ```tsx
-import AdminSidebar from "@/components/layout/AdminSidebar";
+import ModernLayout from "@/components/layout/ModernLayout";
 
-<AdminSidebar open={adminSidebarOpen} onToggle={setAdminSidebarOpen} />;
+export default function Page() {
+  return (
+    <ModernLayout>
+      <YourContent />
+    </ModernLayout>
+  );
+}
 ```
-
-**Version:** v1.2.0 (Fixed & Enhanced November 2025)
 
 ---
 
-### 3. SellerSidebar
+### UnifiedSidebar (`/src/components/layout/UnifiedSidebar.tsx`)
 
-**Purpose:** Navigation sidebar for seller panel with status indicators
+**NEW in v1.3.0** - Single sidebar component that adapts based on user role and current route.
 
-**Location:** `src/components/seller/SellerSidebar.tsx`
+**Role-Based Menus:**
+
+**Admin Menu** (shown only on `/admin/*` routes):
+
+- Dashboard, Analytics, Products, Categories
+- Orders, Users, Coupons, Sales
+- Reviews, Support, Notifications
+- Game, Settings
+
+**Seller Menu** (shown only on `/seller/*` routes):
+
+- Dashboard, Shop Setup, Products, Orders
+- Shipments, Coupons, Sales, Analytics
+- Revenue, Alerts (with badge), Settings
+
+**User Menu** (shown for logged-in users on general routes):
+
+- Profile, Orders, Wishlist, Track Order
+- Links to Admin/Seller panels (if user has those roles)
 
 **Features:**
 
-- ✅ Fixed minimize/maximize functionality
-- ✅ Sticky positioning (stays visible during scroll)
-- ✅ Scrollable content area with custom scrollbar
-- ✅ Green gradient theme (green → emerald)
-- ✅ Enhanced badge system with bounce animation
-- ✅ Store status indicator with pulsing dot
-- ✅ 11 menu items with logical grouping
-- ✅ Multiple badge locations (icon + end of row)
+- Collapsible (80px ↔ 256px width)
+- Active route highlighting
+- Icon-based navigation
+- User info in footer with avatar
+- Badge support for notifications
 
-**Menu Items:**
+**Display Logic:**
 
-1. Dashboard (/seller/dashboard)
-2. Shop Setup (/seller/shop-setup)
-3. Products (/seller/products)
-4. Orders (/seller/orders)
-5. Shipments (/seller/shipments)
-6. Coupons (/seller/coupons)
-7. Sales (/seller/sales)
-8. Analytics (/seller/analytics)
-9. Revenue (/seller/analytics?tab=revenue)
-10. Alerts (/seller/alerts) - with badge
-11. Settings (/seller/settings)
+```tsx
+// Shows sidebar when:
+- User is logged in AND
+- (On admin route OR on seller route OR general route)
 
-**States:**
+// Hides sidebar when:
+- User not logged in
+- On public pages
+```
 
-- **Expanded**: 256px (w-64) - Shows icons + labels + badges
-- **Collapsed**: 80px (w-20) - Shows icons only with tooltips
+---
 
-**Color Scheme:**
+### AppLayout (`/src/app/layout.tsx`)
 
-- **Gradient**: Green (#16a34a) → Emerald (#059669)
-- **Hover**: Light Green (#f0fdf4)
-- **Active**: Green Gradient + Shadow
-
-**Badge System:**
-
-- Small badge on icon (bounce animation)
-- Large badge at end of row (when expanded)
-- Displays "9+" for counts > 9, "99+" for counts > 99
-
-**Footer Display:**
-
-- Store Status: 🟢 Active (with pulsing dot)
-- Version v1.2.0
-- Store icon when collapsed
+**Purpose:** Main layout component for the application, integrating the unified navigation system.
 
 **Usage:**
 
 ```tsx
-import SellerSidebar from "@/components/seller/SellerSidebar";
+import AppLayout from "@/app/layout";
 
-<SellerSidebar
-  open={sellerSidebarOpen}
-  onToggle={setSellerSidebarOpen}
-  unreadAlerts={5}
-/>;
+export default function Page() {
+  return (
+    <AppLayout>
+      <YourContent />
+    </AppLayout>
+  );
+}
 ```
-
-**Version:** v1.2.0 (Fixed & Enhanced November 2025)
-
----
-
-### Layout Component Improvements (v1.2.0)
-
-**Bugs Fixed:**
-
-1. ✅ Sidebar collapse/expand not working properly
-2. ✅ Width jumping on toggle
-3. ✅ Inline style conflicts
-4. ✅ No sticky positioning
-5. ✅ Content overflow issues
-6. ✅ Animation glitches
-7. ✅ Mobile menu overlapping
-8. ✅ Footer not responsive
-9. ✅ Active states not working
-10. ✅ Dark mode inconsistencies
-
-**New Features Added:**
-
-- Search icon in navbar
-- Shopping cart icon in navbar
-- 30+ footer links organized by category
-- Social media icons with custom SVGs
-- Gradient backgrounds and text
-- Smooth animations (pulse, bounce, transitions)
-- Better hover states and visual feedback
-- Consistent rounded corners (rounded-lg)
-- Full accessibility (ARIA labels, focus states)
-- Enhanced mobile responsiveness
-
-**Accessibility Improvements:**
-
-- Full keyboard navigation
-- Comprehensive ARIA labels
-- Clear focus indicators
-- Screen reader optimized
-- Color contrast compliant (WCAG 2.1)
-- Touch target sizes met (44px minimum)
-
-**Performance Optimizations:**
-
-- Smooth 60fps animations
-- No layout thrashing
-- Efficient re-renders
-- Optimized CSS transitions
-- Minimal CSS overhead
-
----
-
-## Where Components Are Used
-
-### By Page Type
-
-#### **Product Pages**
-
-- `UnifiedCard` - Product display
-- `UnifiedButton` - Add to cart, buy now
-- `UnifiedBadge` - Stock status, tags
-- `ModernDataTable` - Product lists (seller)
-- `SmartCategorySelector` - Category navigation
-
-#### **Forms (All)**
-
-- `UnifiedInput` - Text fields
-- `UnifiedSelect` - Dropdowns
-- `UnifiedCheckbox` - Agreement checkboxes
-- `UnifiedSwitch` - Toggle options
-- `UnifiedButton` - Submit buttons
-- `SeoFieldsGroup` - SEO fields (seller/admin)
-
-#### **Dashboards**
-
-- `PageHeader` - Page title
-- `UnifiedCard` - Stat widgets
-- `ModernDataTable` - Data tables
-- `UnifiedAlert` - Notifications
-
-#### **Admin/Seller Panels**
-
-- `PageHeader` - All pages
-- `AdminSidebar` / `SellerSidebar` - Navigation
-- `ModernDataTable` - Lists
-- `RoleGuard` - Access control
 
 ---
 
@@ -781,35 +612,57 @@ If you see MUI components, replace with:
 
 ---
 
-## Quick Reference Card
+## Quick Reference
 
-```tsx
-// Buttons
-<PrimaryButton>Primary</PrimaryButton>
-<SecondaryButton>Secondary</SecondaryButton>
-<OutlineButton>Outline</OutlineButton>
+### Directory Structure
 
-// Cards
-<UnifiedCard>Content</UnifiedCard>
-<ElevatedCard>Content</ElevatedCard>
-
-// Forms
-<UnifiedInput label="Name" value={name} onChange={setName} />
-<UnifiedSelect options={options} value={value} onChange={setValue} />
-<UnifiedCheckbox label="Agree" checked={agreed} onChange={setAgreed} />
-
-// Feedback
-<UnifiedAlert variant="success">Success!</UnifiedAlert>
-<StatusBadge status="active" />
-
-// Admin/Seller
-<PageHeader title="Page Title" />
-<ModernDataTable columns={cols} data={data} />
-<SmartCategorySelector value={cat} onChange={setCat} />
-<SeoFieldsGroup initialData={seo} onChange={setSeo} />
+```
+src/
+├── components/
+│   ├── layout/
+│   │   ├── ModernLayout.tsx          # Main layout with unified navigation
+│   │   ├── UnifiedSidebar.tsx        # Role-based sidebar (NEW v1.3.0)
+│   │   └── AppLayout.tsx             # Root layout provider
+│   ├── common/                        # Reusable components
+│   ├── admin/                         # Admin-specific components
+│   ├── seller/                        # Seller-specific components
+│   └── ui/                            # UI primitives
 ```
 
----
+### Component Index
 
-_Last Updated: November 1, 2025_  
-_For implementation details, see [UNIFIED_COMPONENTS_LIBRARY.md](./project/UNIFIED_COMPONENTS_LIBRARY.md)_
+#### Layout Components
+
+- **ModernLayout** - Main wrapper with navbar, search, theme toggle
+- **UnifiedSidebar** - Role-aware sidebar (admin/seller/user menus)
+- **AppLayout** - Root layout with contexts
+
+#### Common Components
+
+- **UnifiedButton** - Standardized button component
+- **UnifiedCard** - Container component for content sections
+- **UnifiedInput** - Form input fields with validation states
+- **UnifiedModal** - Dialog/modal overlays
+- **UnifiedBadge** - Status indicators and labels
+- **UnifiedAlert** - Feedback messages
+- **FormControls** - Checkbox, Radio, Switch, Select components
+- **UnifiedTabs** - Tab navigation component
+- **UnifiedAccordion** - Collapsible section component
+- **UnifiedTooltip** - Hover information component
+- **UnifiedDropdown** - Context menu component
+- **UnifiedSkeleton** - Loading placeholder component
+- **UnifiedProgress** - Progress indicator component
+- **UnifiedStepper** - Multi-step flow component
+
+#### Admin/Seller Components
+
+- **PageHeader** - Consistent page headers with breadcrumbs
+- **ModernDataTable** - Feature-rich data tables
+- **SmartCategorySelector** - Hierarchical category selection
+- **SeoFieldsGroup** - SEO metadata input group
+
+#### Feature Components
+
+- **RoleGuard** - Protect routes by user role
+
+---
