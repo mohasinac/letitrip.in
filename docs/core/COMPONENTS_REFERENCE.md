@@ -447,11 +447,36 @@ Main application layout wrapper with unified navigation system.
   - Sign In button (when user not logged in)
 - **Unified Sidebar**: Shows based on user role and route
   - Only visible when user is logged in
+  - **Hidden on mobile** (< 1024px) - BottomNav is used instead
+  - **Shown on desktop** (≥ 1024px) for admin/seller routes
   - Integrated via UnifiedSidebar component
+- **Mobile Bottom Navigation**: **NEW in v1.3.1**
+  - Shows only on mobile devices (< 768px)
+  - Hides on admin/seller/game routes
+  - Primary navigation for mobile users
+  - Dynamic items based on authentication state
+  - Auto-hide on scroll down, show on scroll up
+  - Wishlist badge integration
+  - Active state indication with top bar
+- **Floating Cart**: Site-wide cart access
+  - Fixed position bottom-right
+  - Item count badge
+  - Opens cart drawer
 - **Mobile Responsive**:
   - Drawer menu for navigation on small screens
+  - Bottom navigation for mobile
   - Touch-friendly interaction
 - **Footer**: 5-column layout with company info, shop links, help, and social media
+
+**Bottom Navigation Items:**
+
+Guest Users:
+
+- Home, Shop, Wishlist (with badge), Login
+
+Logged-In Users:
+
+- Home, Shop, Wishlist (with badge), Orders, Account
 
 **Usage:**
 
@@ -466,6 +491,14 @@ export default function Page() {
   );
 }
 ```
+
+**Context Dependencies:**
+
+- `AuthContext` - User authentication state
+- `CartContext` - Cart item count for badges
+- `WishlistContext` - Wishlist item count for badges
+- `CurrencyContext` - Currency selection
+- `ModernThemeContext` - Theme toggling
 
 ---
 
@@ -666,3 +699,100 @@ src/
 - **RoleGuard** - Protect routes by user role
 
 ---
+
+## Navigation Components
+
+### BottomNav (`/src/components/ui/navigation/BottomNav.tsx`)
+
+**NEW in v1.3.1** - Mobile-first bottom navigation bar with auto-hide functionality.
+
+**Features:**
+
+- Fixed bottom position on mobile devices
+- Auto-hide on scroll down, show on scroll up
+- Active state with top indicator bar
+- Badge support for notifications/counts
+- Floating Action Button (FAB) support (optional)
+- Dark theme with backdrop blur
+- Touch-friendly 44px+ touch targets
+- Hidden on desktop (md:hidden)
+
+**Props:**
+
+```typescript
+interface BottomNavProps {
+  items: BottomNavItem[];
+  floatingAction?: BottomNavFloatingAction;
+  autoHide?: boolean; // default: true
+  blur?: boolean; // default: true
+  className?: string;
+}
+
+interface BottomNavItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  badge?: string | number;
+  disabled?: boolean;
+}
+```
+
+**Usage:**
+
+```tsx
+import { BottomNav } from "@/components/ui/navigation/BottomNav";
+import { Home, ShoppingBag, Heart, User } from "lucide-react";
+
+<BottomNav
+  items={[
+    { id: "home", label: "Home", icon: <Home />, href: "/" },
+    { id: "shop", label: "Shop", icon: <ShoppingBag />, href: "/products" },
+    {
+      id: "wishlist",
+      label: "Wishlist",
+      icon: <Heart />,
+      href: "/wishlist",
+      badge: 5,
+    },
+    { id: "account", label: "Account", icon: <User />, href: "/account" },
+  ]}
+  autoHide={true}
+  blur={true}
+/>;
+```
+
+**With Floating Action Button:**
+
+```tsx
+<BottomNav
+  items={items}
+  floatingAction={{
+    icon: <Plus />,
+    onClick: () => router.push("/add"),
+    label: "Add Item",
+  }}
+/>
+```
+
+**Integration in ModernLayout:**
+
+BottomNav is automatically integrated in `ModernLayout` for customer-facing routes. It shows:
+
+- On mobile devices only (< 768px)
+- Guest users: Home, Shop, Wishlist, Login
+- Logged-in users: Home, Shop, Wishlist, Orders, Account
+- Hidden on: `/admin/*`, `/seller/*`, `/game/*` routes
+
+**Hook:**
+
+```tsx
+import { useBottomNav } from "@/components/ui/navigation/BottomNav";
+
+const bottomNav = useBottomNav();
+// Returns: { isVisible, show, hide, toggle }
+```
+
+---
+
+### Admin/Seller Components

@@ -9,13 +9,21 @@ import {
   LogIn,
   Globe,
   ChevronDown,
+  Home,
+  ShoppingBag,
+  Heart,
+  User,
+  Package,
 } from "lucide-react";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";
+import { BottomNav } from "@/components/ui/navigation/BottomNav";
 import { usePathname } from "next/navigation";
 import FloatingCart from "@/components/cart/FloatingCart";
 
@@ -41,12 +49,66 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   const { mode, toggleTheme } = useModernTheme();
   const { user, loading } = useAuth();
   const { currency: contextCurrency, setCurrency } = useCurrency();
+  const { itemCount } = useCart();
+  const { itemCount: wishlistCount } = useWishlist();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Determine if we're on admin/seller routes to hide bottom nav
+  const hideBottomNav =
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/seller") ||
+    pathname?.startsWith("/game");
+
+  // Bottom navigation items based on user state
+  const bottomNavItems = [
+    {
+      id: "home",
+      label: "Home",
+      icon: <Home className="w-6 h-6" />,
+      href: "/",
+    },
+    {
+      id: "products",
+      label: "Shop",
+      icon: <ShoppingBag className="w-6 h-6" />,
+      href: "/products",
+    },
+    {
+      id: "wishlist",
+      label: "Wishlist",
+      icon: <Heart className="w-6 h-6" />,
+      href: "/wishlist",
+      badge: wishlistCount > 0 ? wishlistCount : undefined,
+    },
+    ...(user
+      ? [
+          {
+            id: "orders",
+            label: "Orders",
+            icon: <Package className="w-6 h-6" />,
+            href: "/account/orders",
+          },
+          {
+            id: "account",
+            label: "Account",
+            icon: <User className="w-6 h-6" />,
+            href: "/account",
+          },
+        ]
+      : [
+          {
+            id: "login",
+            label: "Login",
+            icon: <User className="w-6 h-6" />,
+            href: "/login",
+          },
+        ]),
+  ];
 
   // Sync selected currency with context
   const selectedCurrency =
@@ -115,10 +177,12 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
         shouldShowSidebar ? "flex-row" : "flex-col"
       }`}
     >
-      {/* Unified Sidebar - Shown for logged-in users */}
+      {/* Unified Sidebar - Hidden on mobile, shown on desktop for logged-in users */}
       {shouldShowSidebar && (
         <ClientOnly>
-          <UnifiedSidebar open={sidebarOpen} onToggle={setSidebarOpen} />
+          <div className="hidden lg:block">
+            <UnifiedSidebar open={sidebarOpen} onToggle={setSidebarOpen} />
+          </div>
         </ClientOnly>
       )}
 
@@ -453,6 +517,13 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
             </div>
           </div>
         </footer>
+
+        {/* Mobile Bottom Navigation - Only show on customer routes */}
+        {!hideBottomNav && (
+          <ClientOnly>
+            <BottomNav items={bottomNavItems} autoHide={true} blur={true} />
+          </ClientOnly>
+        )}
       </div>
     </div>
   );
