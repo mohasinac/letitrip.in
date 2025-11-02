@@ -376,7 +376,7 @@ export async function PUT(
     if (body.inventory !== undefined) {
       updateData.inventory = {
         quantity: parseInt(body.inventory.quantity) || 0,
-        lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 10,
+        lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 1,
         trackInventory: body.inventory.trackInventory !== false,
       };
     }

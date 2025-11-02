@@ -234,7 +234,7 @@ export function Dashboard({
           myProducts: products.length,
           deliveredOrders: ordersStats.delivered || 0,
           lowStockProducts: products.filter(
-            (p: any) => p.quantity <= p.lowStockThreshold
+            (p: any) => p.quantity < p.lowStockThreshold
           ).length,
           ordersChange: "Get started by adding products",
           revenueChange: "Start selling to earn",

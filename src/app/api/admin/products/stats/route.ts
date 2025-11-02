@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       lowStock: allProducts.filter(
         (p: any) =>
           (p.quantity || p.stock || 0) > 0 &&
-          (p.quantity || p.stock || 0) <= (p.lowStockThreshold || 10)
+          (p.quantity || p.stock || 0) < (p.lowStockThreshold || 10)
       ).length,
       inStock: allProducts.filter(
         (p: any) => (p.quantity || p.stock || 0) > (p.lowStockThreshold || 10)

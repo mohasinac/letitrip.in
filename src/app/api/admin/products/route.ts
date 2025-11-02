@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
         products = products.filter((p: any) => (p.quantity || p.stock || 0) === 0);
       } else if (stockStatus === "lowStock") {
         products = products.filter(
-          (p: any) => (p.quantity || p.stock || 0) > 0 && (p.quantity || p.stock || 0) <= (p.lowStockThreshold || 10)
+          (p: any) => (p.quantity || p.stock || 0) > 0 && (p.quantity || p.stock || 0) < (p.lowStockThreshold || 10)
         );
       } else if (stockStatus === "inStock") {
         products = products.filter((p: any) => (p.quantity || p.stock || 0) > (p.lowStockThreshold || 10));

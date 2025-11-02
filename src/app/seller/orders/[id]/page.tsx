@@ -146,39 +146,45 @@ export default function OrderDetailPage({
   // Calculate if cancellation is allowed based on role and time
   const canCancelOrder = () => {
     if (!order) return false;
-    
+
     // Admin can always cancel (no time limit)
     if (userRole === "admin") return true;
-    
+
     // Cannot cancel if already delivered, cancelled, or rejected
     if (["delivered", "cancelled", "rejected"].includes(order.status)) {
       return false;
     }
-    
+
     // For sellers, check 3-day limit from payment date
-    if (userRole === "seller" && order.paymentStatus === "paid" && order.paidAt) {
+    if (
+      userRole === "seller" &&
+      order.paymentStatus === "paid" &&
+      order.paidAt
+    ) {
       const paidAt = new Date(order.paidAt);
       const now = new Date();
-      const daysSincePayment = (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60 * 24);
+      const daysSincePayment =
+        (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60 * 24);
       return daysSincePayment <= 3;
     }
-    
+
     return true; // For unpaid orders, allow cancellation
   };
 
   const getCancellationTimeInfo = () => {
     if (!order || userRole === "admin") return null;
-    
+
     if (order.paymentStatus === "paid" && order.paidAt) {
       const paidAt = new Date(order.paidAt);
       const now = new Date();
-      const hoursRemaining = 72 - ((now.getTime() - paidAt.getTime()) / (1000 * 60 * 60));
-      
+      const hoursRemaining =
+        72 - (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60);
+
       if (hoursRemaining <= 0) return "expired";
       if (hoursRemaining < 24) return `${Math.floor(hoursRemaining)} hours`;
       return `${Math.floor(hoursRemaining / 24)} days`;
     }
-    
+
     return null;
   };
 
@@ -635,14 +641,34 @@ export default function OrderDetailPage({
             )}
 
             {!["delivered", "cancelled", "rejected"].includes(order.status) && (
-              <UnifiedButton
-                variant="destructive"
-                icon={<X />}
-                onClick={() => setCancelDialog(true)}
-                disabled={actionLoading}
-              >
-                Cancel Order
-              </UnifiedButton>
+              <div className="flex flex-col gap-1">
+                {userRole === "seller" && getCancellationTimeInfo() && (
+                  <div
+                    className={`text-xs ${
+                      getCancellationTimeInfo() === "expired"
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-yellow-600 dark:text-yellow-400"
+                    }`}
+                  >
+                    {getCancellationTimeInfo() === "expired"
+                      ? "Cancellation window expired (3-day limit)"
+                      : `Cancel within: ${getCancellationTimeInfo()}`}
+                  </div>
+                )}
+                <UnifiedButton
+                  variant="destructive"
+                  icon={<X />}
+                  onClick={() => setCancelDialog(true)}
+                  disabled={actionLoading || !canCancelOrder()}
+                  title={
+                    !canCancelOrder()
+                      ? "Cancellation window expired. Contact admin for assistance."
+                      : "Cancel this order"
+                  }
+                >
+                  Cancel Order
+                </UnifiedButton>
+              </div>
             )}
 
             <UnifiedButton
@@ -1053,6 +1079,31 @@ export default function OrderDetailPage({
             <p className="text-textSecondary">
               Please provide a reason for cancelling order #{order.orderNumber}
             </p>
+
+            {/* Show cancellation policy */}
+            {userRole === "seller" &&
+              order.paymentStatus === "paid" &&
+              order.paidAt && (
+                <UnifiedAlert variant="warning">
+                  <p className="text-sm">
+                    <strong>Cancellation Policy:</strong> Sellers can cancel
+                    paid orders within 3 days of payment.
+                    {getCancellationTimeInfo() === "expired"
+                      ? " Your cancellation window has expired. Please contact admin for assistance."
+                      : ` You have ${getCancellationTimeInfo()} remaining.`}
+                  </p>
+                </UnifiedAlert>
+              )}
+
+            {userRole === "admin" && (
+              <UnifiedAlert variant="info">
+                <p className="text-sm">
+                  <strong>Admin Privilege:</strong> As an admin, you can cancel
+                  this order at any time.
+                </p>
+              </UnifiedAlert>
+            )}
+
             <UnifiedTextarea
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
@@ -1070,7 +1121,7 @@ export default function OrderDetailPage({
               <UnifiedButton
                 variant="destructive"
                 onClick={handleCancel}
-                disabled={actionLoading}
+                disabled={actionLoading || !canCancelOrder()}
               >
                 {actionLoading ? "Cancelling..." : "Cancel Order"}
               </UnifiedButton>

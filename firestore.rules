@@ -82,30 +82,38 @@ service cloud.firestore {
       }
     }
     
-    // Cart collection - users can only access their own cart
+    // Cart collection - users can only access their own cart, admins have full access
     match /carts/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && 
+                            (request.auth.uid == userId || isAdmin());
       
       // Cart items subcollection
       match /items/{itemId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if request.auth != null && 
+                              (request.auth.uid == userId || isAdmin());
       }
     }
     
-    // Watchlist collection - users can only access their own watchlist
+    // Watchlist collection - users can only access their own watchlist, admins have full access
     match /watchlists/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && 
+                            (request.auth.uid == userId || isAdmin());
       
       // Watchlist items subcollection
       match /items/{itemId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if request.auth != null && 
+                              (request.auth.uid == userId || isAdmin());
       }
     }
 
-    // Wishlist collection - users can only access their own wishlist
+    // Wishlist collection - users can only access their own wishlist, admins have full access
     match /wishlists/{wishlistId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow write: if request.auth != null && 
+                      (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && 
+                       (request.auth.uid == request.resource.data.userId || isAdmin());
     }
     
     // Reviews collection - authenticated users can create, public read for approved
@@ -122,7 +130,7 @@ service cloud.firestore {
     
     // Stores collection - public read, seller write own store, admin write all
     match /stores/{storeId} {
-      allow read: if resource.data.isActive == true || isAdmin();
+      allow read: if resource.data.isActive == true || isAdmin() || isSeller();
       allow create: if request.auth != null && 
                        isSeller() &&
                        request.resource.data.ownerId == request.auth.uid;
@@ -131,25 +139,18 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
     
-    // Orders collection - users can read their own orders, admins can read all
-    match /orders/{orderId} {
-      allow read: if request.auth != null && 
-                     (request.auth.uid == resource.data.userId || isAdmin());
-      allow create: if request.auth != null && 
-                       request.auth.uid == request.resource.data.userId &&
-                       validateOrder();
-      allow update: if request.auth != null && 
-                       (request.auth.uid == resource.data.userId || isAdmin());
-    }
-    
     // Returns/Refunds collection
     match /returns/{returnId} {
       allow read: if request.auth != null && 
-                     (request.auth.uid == resource.data.userId || isAdmin());
+                     (request.auth.uid == resource.data.userId || 
+                      request.auth.uid == resource.data.sellerId ||
+                      isAdmin());
       allow create: if request.auth != null && 
                        request.auth.uid == request.resource.data.userId &&
                        validateReturn();
-      allow update: if request.auth != null && isAdmin();
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.sellerId || isAdmin());
+      allow delete: if request.auth != null && isAdmin();
     }
     
     // Admin logs collection - only admins can access

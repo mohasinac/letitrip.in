@@ -325,7 +325,7 @@ export default function BasicInfoPricingStep({
                   onChange({
                     inventory: {
                       ...data.inventory,
-                      lowStockThreshold: parseInt(e.target.value) || 0,
+                      lowStockThreshold: parseInt(e.target.value) || 1,
                     },
                   })
                 }
@@ -333,9 +333,9 @@ export default function BasicInfoPricingStep({
                 helperText={
                   data.inventory.isUnique
                     ? "Not applicable for unique items"
-                    : "Alert threshold"
+                    : "Alert when stock is below this value"
                 }
-                min={0}
+                min={1}
                 step={1}
               />
             </div>

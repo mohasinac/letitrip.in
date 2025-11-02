@@ -140,11 +140,12 @@ export default function PricingInventoryStep({
             onChange({
               inventory: {
                 ...data.inventory,
-                lowStockThreshold: parseInt(e.target.value) || 10,
+                lowStockThreshold: parseInt(e.target.value) || 1,
               },
             })
           }
-          helperText="Alert when stock is low"
+          min={1}
+          helperText="Alert when stock is below this value"
         />
       </div>
 

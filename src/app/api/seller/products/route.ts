@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
 
       inventory: {
         quantity: parseInt(body.inventory.quantity) || 0,
-        lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 10,
+        lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 1,
         trackInventory: body.inventory.trackInventory !== false,
       },
 

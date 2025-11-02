@@ -98,13 +98,13 @@ export async function POST(request: NextRequest) {
         allProperties: Object.getOwnPropertyNames(file || {}),
       });
 
-      // Validate file size
-      const maxSize = type === "video" ? 20 * 1024 * 1024 : 5 * 1024 * 1024; // 20MB for videos, 5MB for images
+      // Validate file size: 10MB for images, 50MB for videos
+      const maxSize = type === "video" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
       if (file.size > maxSize) {
         return NextResponse.json(
           {
             success: false,
-            error: `File ${file.name} exceeds maximum size of ${type === "video" ? "20MB" : "5MB"}`,
+            error: `File ${file.name} exceeds maximum size of ${type === "video" ? "50MB" : "10MB"}`,
           },
           { status: 400 },
         );

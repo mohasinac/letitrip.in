@@ -244,7 +244,7 @@ export const createProductSchema = z
     lowStockThreshold: z
       .number()
       .int()
-      .nonnegative("Low stock threshold must be non-negative")
+      .min(1, "Low stock threshold must be at least 1")
       .max(1000, "Threshold is too high")
       .default(10),
     trackQuantity: z.boolean().default(true),
@@ -373,7 +373,7 @@ export const updateProductSchema = z.object({
   lowStockThreshold: z
     .number()
     .int()
-    .nonnegative("Low stock threshold must be non-negative")
+    .min(1, "Low stock threshold must be at least 1")
     .max(1000, "Threshold is too high")
     .optional(),
   trackQuantity: z.boolean().optional(),

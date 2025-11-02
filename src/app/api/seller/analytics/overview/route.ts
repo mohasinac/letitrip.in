@@ -165,7 +165,7 @@ export async function GET(req: NextRequest) {
           lowStockThreshold: data.lowStockThreshold || 10,
         };
       })
-      .filter((product) => product.stock <= product.lowStockThreshold)
+      .filter((product) => product.stock < product.lowStockThreshold)
       .slice(0, 5);
 
     return NextResponse.json({

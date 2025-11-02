@@ -199,7 +199,7 @@ export function ProductsList({
           active: products.filter((p) => p.status === "active").length,
           outOfStock: products.filter((p) => p.quantity === 0).length,
           lowStock: products.filter(
-            (p) => p.quantity > 0 && p.quantity <= p.lowStockThreshold
+            (p) => p.quantity > 0 && p.quantity < p.lowStockThreshold
           ).length,
         };
         setStats(calculatedStats);
@@ -313,7 +313,7 @@ export function ProductsList({
   const getStockStatus = (stock: number, lowStockThreshold: number) => {
     if (stock === 0)
       return { label: "Out of Stock", variant: "error" as const };
-    if (stock <= lowStockThreshold)
+    if (stock < lowStockThreshold)
       return { label: "Low Stock", variant: "warning" as const };
     return { label: "In Stock", variant: "success" as const };
   };
