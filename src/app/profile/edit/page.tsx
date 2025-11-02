@@ -12,10 +12,14 @@ import {
   ArrowLeft,
   Camera,
   X,
+  Crop,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import WhatsAppImageEditor, {
+  WhatsAppCropData,
+} from "@/components/seller/products/WhatsAppImageEditor";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -28,6 +32,11 @@ export default function EditProfilePage() {
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string>("");
+  const [photoCropData, setPhotoCropData] = useState<WhatsAppCropData | null>(
+    null
+  );
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -56,7 +65,11 @@ export default function EditProfilePage() {
       setPhotoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+        const url = reader.result as string;
+        setPhotoPreview(url);
+        setCurrentPhotoUrl(url);
+        // Open editor immediately after selecting photo
+        setEditorOpen(true);
       };
       reader.readAsDataURL(file);
     }
@@ -65,6 +78,20 @@ export default function EditProfilePage() {
   const handleRemovePhoto = () => {
     setPhotoFile(null);
     setPhotoPreview(formData.photoURL);
+    setPhotoCropData(null);
+  };
+
+  const handleCropSave = (cropData: WhatsAppCropData) => {
+    setPhotoCropData(cropData);
+    setEditorOpen(false);
+    toast.success("Profile picture cropped successfully");
+  };
+
+  const openEditor = () => {
+    if (photoPreview || formData.photoURL) {
+      setCurrentPhotoUrl(photoPreview || formData.photoURL);
+      setEditorOpen(true);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,7 +129,7 @@ export default function EditProfilePage() {
       }
 
       // Update profile
-      const response = await fetch("/api/users/profile", {
+      const response = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -112,6 +139,7 @@ export default function EditProfilePage() {
           name: formData.name,
           phone: formData.phone,
           photoURL,
+          photoCropData: photoCropData || undefined,
         }),
       });
 
@@ -202,15 +230,32 @@ export default function EditProfilePage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Upload a new photo or keep your current one
                 </p>
-                {photoFile && (
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
-                  >
-                    <X className="w-4 h-4" />
-                    Remove new photo
-                  </button>
+                <div className="flex gap-2">
+                  {(photoPreview || formData.photoURL) && (
+                    <button
+                      type="button"
+                      onClick={openEditor}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                    >
+                      <Crop className="w-4 h-4" />
+                      Crop & Adjust
+                    </button>
+                  )}
+                  {photoFile && (
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+                    >
+                      <X className="w-4 h-4" />
+                      Remove new photo
+                    </button>
+                  )}
+                </div>
+                {photoCropData && (
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    ✓ Photo cropped and ready
+                  </p>
                 )}
               </div>
             </div>
@@ -313,6 +358,18 @@ export default function EditProfilePage() {
             </Link>
           </div>
         </form>
+
+        {/* WhatsApp Image Editor */}
+        {editorOpen && currentPhotoUrl && (
+          <WhatsAppImageEditor
+            open={editorOpen}
+            imageUrl={currentPhotoUrl}
+            initialCrop={photoCropData?.crop}
+            initialZoom={photoCropData?.zoom}
+            onClose={() => setEditorOpen(false)}
+            onSave={handleCropSave}
+          />
+        )}
       </div>
     </div>
   );

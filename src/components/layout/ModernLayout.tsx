@@ -177,7 +177,8 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
         label: "Shop",
         icon: <ShoppingBag className="w-6 h-6" />,
         href: "/products",
-      },          ...(user
+      },
+      ...(user
         ? [
             {
               id: "orders",
@@ -746,7 +747,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 </p>
                 <div className="flex gap-6">
                   <Link
-                    href="/sitemap"
+                    href="/sitemap-page"
                     className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 no-underline transition-colors"
                   >
                     Sitemap

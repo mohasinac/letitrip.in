@@ -51,7 +51,7 @@ export default function ProfilePage() {
       if (!user || !user.getIdToken) return;
 
       const token = await user.getIdToken();
-      const response = await fetch("/api/users/profile", {
+      const response = await fetch("/api/user/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -62,7 +62,7 @@ export default function ProfilePage() {
       }
 
       const data = await response.json();
-      setUserData(data.user || user);
+      setUserData(data.data || user);
     } catch (error: any) {
       console.error("Error fetching user data:", error);
       // Fallback to auth context user

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Search,
   Package,
@@ -18,12 +19,23 @@ import toast from "react-hot-toast";
 
 export default function TrackOrderPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { formatPrice } = useCurrency();
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  // Auto-populate email if user is logged in
+  useEffect(() => {
+    if (user?.email) {
+      setEmail(user.email);
+    } else if (user?.phone) {
+      // If no email, use phone number
+      setEmail(user.phone);
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,18 +97,22 @@ export default function TrackOrderPage() {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link
-            href="/profile"
-            className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline mb-4 no-underline"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Profile
-          </Link>
+          {user && (
+            <Link
+              href="/profile"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline mb-4 no-underline"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Profile
+            </Link>
+          )}
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Track Your Order
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Enter your order number and email to track your order
+            {user
+              ? "Enter your order number to track your order"
+              : "Enter your order number and email to track your order"}
           </p>
         </div>
 
@@ -128,17 +144,40 @@ export default function TrackOrderPage() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              Email Address
+              Email Address or Phone Number{" "}
+              {user && (
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
+                  (Auto-filled)
+                </span>
+              )}
             </label>
             <input
               id="email"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="your.email@example.com"
+              className={`w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg ${
+                user
+                  ? "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700"
+                  : "bg-white dark:bg-gray-700"
+              } text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+              placeholder={
+                user
+                  ? email || "your.email@example.com"
+                  : "your.email@example.com or phone number"
+              }
               required
             />
+            {user ? (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Using your account {user.email ? "email" : "phone number"}. You
+                can change this if needed.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Enter the email or phone number used when placing the order.
+              </p>
+            )}
           </div>
 
           <button
@@ -168,8 +207,8 @@ export default function TrackOrderPage() {
               Order Not Found
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              We couldn't find an order with that order number and email.
-              Please check your details and try again.
+              We couldn't find an order with that order number and email. Please
+              check your details and try again.
             </p>
           </div>
         )}
@@ -219,13 +258,20 @@ export default function TrackOrderPage() {
                       const isCurrent = index === currentIndex;
 
                       return (
-                        <div key={stage.key} className="flex flex-col items-center flex-1">
+                        <div
+                          key={stage.key}
+                          className="flex flex-col items-center flex-1"
+                        >
                           <div
                             className={`w-10 h-10 rounded-full flex items-center justify-center ${
                               isCompleted
                                 ? "bg-green-600 text-white"
                                 : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                            } ${isCurrent ? "ring-4 ring-green-200 dark:ring-green-900" : ""}`}
+                            } ${
+                              isCurrent
+                                ? "ring-4 ring-green-200 dark:ring-green-900"
+                                : ""
+                            }`}
                           >
                             {isCompleted ? (
                               <CheckCircle2 className="w-6 h-6" />
@@ -252,7 +298,9 @@ export default function TrackOrderPage() {
                                   : "bg-gray-300 dark:bg-gray-600"
                               }`}
                               style={{
-                                left: `${((index + 1) / orderStages.length) * 100}%`,
+                                left: `${
+                                  ((index + 1) / orderStages.length) * 100
+                                }%`,
                                 width: `${(1 / orderStages.length) * 100}%`,
                               }}
                             />

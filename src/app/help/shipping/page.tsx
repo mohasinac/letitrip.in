@@ -139,8 +139,8 @@ export default function ShippingInfoPage() {
                     by location (7-21 business days).
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    International shipping rates are calculated at checkout based
-                    on destination and package weight.
+                    International shipping rates are calculated at checkout
+                    based on destination and package weight.
                   </p>
                 </div>
               </div>
@@ -188,7 +188,14 @@ export default function ShippingInfoPage() {
             </p>
             <p>
               You can also track your order by logging into your account and
-              visiting the <Link href="/profile/track-order" className="text-blue-600 dark:text-blue-400 hover:underline">Track Order</Link> page.
+              visiting the{" "}
+              <Link
+                href="/profile/track-order"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Track Order
+              </Link>{" "}
+              page.
             </p>
           </div>
         </div>
@@ -206,8 +213,8 @@ export default function ShippingInfoPage() {
             <li className="flex gap-2">
               <span className="text-yellow-600 dark:text-yellow-400">•</span>
               <span>
-                Delivery times are estimates and not guaranteed. Delays may occur
-                due to weather, customs, or courier issues.
+                Delivery times are estimates and not guaranteed. Delays may
+                occur due to weather, customs, or courier issues.
               </span>
             </li>
             <li className="flex gap-2">
@@ -221,15 +228,22 @@ export default function ShippingInfoPage() {
               <span className="text-yellow-600 dark:text-yellow-400">•</span>
               <span>
                 Please ensure your shipping address is correct. We are not
-                responsible for orders shipped to incorrect addresses provided by
-                the customer.
+                responsible for orders shipped to incorrect addresses provided
+                by the customer.
               </span>
             </li>
             <li className="flex gap-2">
               <span className="text-yellow-600 dark:text-yellow-400">•</span>
               <span>
                 If you don't receive your order within the estimated delivery
-                time, please <Link href="/contact" className="text-blue-600 dark:text-blue-400 hover:underline">contact us</Link>.
+                time, please{" "}
+                <Link
+                  href="/contact"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  contact us
+                </Link>
+                .
               </span>
             </li>
           </ul>

@@ -21,8 +21,7 @@ export async function GET(request: NextRequest) {
     const decodedToken = await auth.verifyIdToken(token);
     const uid = decodedToken.uid;
     const role = decodedToken.role || "user";
-    const sellerId = uid;
-
+    
     // Only sellers and admins can access
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
@@ -30,6 +29,9 @@ export async function GET(request: NextRequest) {
         { status: 403 },
       );
     }
+
+    // For admins, get all orders. For sellers, filter by their ID
+    const sellerId = role === "admin" ? null : uid;
 
     const adminDb = getAdminDb();
 
@@ -39,10 +41,16 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    // Build query
-    let query = adminDb
-      .collection("orders")
-      .where("sellerId", "==", sellerId);
+    // Build query - admins see all orders, sellers see only their orders
+    let query;
+    if (sellerId) {
+      query = adminDb
+        .collection("orders")
+        .where("sellerId", "==", sellerId);
+    } else {
+      // Admin - get all orders
+      query = adminDb.collection("orders");
+    }
 
     // Filter by status if provided
     if (status && status !== "all") {
@@ -73,16 +81,22 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate stats
-    const allOrdersSnapshot = await adminDb
-      .collection("orders")
-      .where("sellerId", "==", sellerId)
-      .get();
+    let allOrdersSnapshot;
+    if (sellerId) {
+      allOrdersSnapshot = await adminDb
+        .collection("orders")
+        .where("sellerId", "==", sellerId)
+        .get();
+    } else {
+      // Admin - get all orders
+      allOrdersSnapshot = await adminDb.collection("orders").get();
+    }
 
     const allOrders = allOrdersSnapshot.docs.map((doc: any) => doc.data());
 
     const stats = {
       total: allOrders.length,
-      pendingApproval: allOrders.filter((o: any) => o.status === "pending")
+      pendingApproval: allOrders.filter((o: any) => o.status === "pending_approval")
         .length,
       processing: allOrders.filter((o: any) => o.status === "processing")
         .length,

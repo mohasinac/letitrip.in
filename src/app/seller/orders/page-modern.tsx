@@ -27,12 +27,27 @@ import { UnifiedModal } from "@/components/ui/unified/Modal";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
 import { SimpleTabs } from "@/components/ui/unified/Tabs";
 
+interface OrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  sku?: string;
+  sellerId?: string;
+  sellerName?: string;
+  slug?: string;
+}
+
 interface Order {
   id: string;
   orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  items: number;
+  customerName?: string;
+  customerEmail?: string;
+  userName?: string;
+  userEmail?: string;
+  items: OrderItem[];
   total: number;
   status: string;
   paymentStatus: string;
@@ -288,9 +303,11 @@ function OrdersListContent() {
       sortable: true,
       render: (_, order) => (
         <div className="min-w-0">
-          <p className="font-medium text-text truncate">{order.customerName}</p>
+          <p className="font-medium text-text truncate">
+            {order.customerName || order.userName || "Unknown"}
+          </p>
           <p className="text-xs text-textSecondary truncate">
-            {order.customerEmail}
+            {order.customerEmail || order.userEmail || "N/A"}
           </p>
         </div>
       ),
@@ -300,7 +317,9 @@ function OrdersListContent() {
       label: "Items",
       align: "center",
       sortable: true,
-      render: (_, order) => <span className="text-text">{order.items}</span>,
+      render: (_, order) => (
+        <span className="text-text">{order.items?.length || 0}</span>
+      ),
     },
     {
       key: "total",

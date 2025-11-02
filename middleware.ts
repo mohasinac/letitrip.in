@@ -12,6 +12,9 @@ const protectedRoutes = [
   "/cart/checkout",
 ];
 
+// Define public routes that don't require authentication (even if under protected paths)
+const publicRoutes = ["/profile/track-order"];
+
 // Define routes that redirect authenticated users away (login/register pages)
 const authRoutes = ["/login", "/register"];
 
@@ -56,6 +59,9 @@ export function middleware(request: NextRequest) {
   const isAuthenticated = !!(authHeader?.startsWith("Bearer ") || authCookie);
 
   // Check if the current path requires authentication
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route),
   );
@@ -65,8 +71,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route),
   );
 
-  // Redirect unauthenticated users away from protected routes
-  if (isProtectedRoute && !isAuthenticated) {
+  // Redirect unauthenticated users away from protected routes (unless it's a public route)
+  if (isProtectedRoute && !isAuthenticated && !isPublicRoute) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

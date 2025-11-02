@@ -107,6 +107,7 @@ export const POST = createApiHandler(async (request) => {
     const now = new Date().toISOString();
     const userData = {
       id: newUser.uid,
+      userId: newUser.uid, // Add userId field for consistency
       name: phoneNumber.replace(/^\+\d+/, ""), // Use phone as temporary name
       email: null,
       phone: phoneNumber,

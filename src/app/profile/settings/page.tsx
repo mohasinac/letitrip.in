@@ -75,7 +75,7 @@ export default function SettingsPage() {
       // Optionally save to backend
       if (user && (user as any).getIdToken) {
         const token = await (user as any).getIdToken();
-        await fetch("/api/users/preferences", {
+        await fetch("/api/user/preferences", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

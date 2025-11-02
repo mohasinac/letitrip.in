@@ -51,7 +51,7 @@ export interface ModernDataTableProps<T> {
   loading?: boolean;
   selectable?: boolean;
   bulkActions?: BulkAction[];
-  rowActions?: RowAction<T>[];
+  rowActions?: RowAction<T>[] | ((row: T) => RowAction<T>[]);
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   currentPage?: number;
@@ -357,24 +357,30 @@ export function ModernDataTable<T extends Record<string, any>>({
                     ))}
 
                     {/* Row actions */}
-                    {rowActions.length > 0 && (
-                      <td className="px-4 py-3 text-center">
-                        <UnifiedDropdown
-                          trigger={
-                            <button className="p-1 hover:bg-surfaceVariant rounded transition-colors">
-                              <MoreVertical className="w-5 h-5 text-textSecondary" />
-                            </button>
-                          }
-                          items={rowActions.map((action, idx) => ({
-                            id: `action-${idx}`,
-                            label: action.label,
-                            onClick: () => action.onClick(row),
-                            icon: action.icon,
-                          }))}
-                          placement="bottom-end"
-                        />
-                      </td>
-                    )}
+                    {(() => {
+                      const actions = typeof rowActions === 'function' 
+                        ? rowActions(row) 
+                        : rowActions;
+                      
+                      return actions.length > 0 ? (
+                        <td className="px-4 py-3 text-center">
+                          <UnifiedDropdown
+                            trigger={
+                              <button className="p-1 hover:bg-surfaceVariant rounded transition-colors">
+                                <MoreVertical className="w-5 h-5 text-textSecondary" />
+                              </button>
+                            }
+                            items={actions.map((action, idx) => ({
+                              id: `action-${idx}`,
+                              label: action.label,
+                              onClick: () => action.onClick(row),
+                              icon: action.icon,
+                            }))}
+                            placement="bottom-end"
+                          />
+                        </td>
+                      ) : null;
+                    })()}
                   </tr>
                 );
               })

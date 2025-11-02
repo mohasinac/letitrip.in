@@ -85,6 +85,7 @@ export const POST = createApiHandler(async (request) => {
   const now = new Date().toISOString();
   const userData = {
     id: userRecord.uid,
+    userId: userRecord.uid, // Add userId field for consistency
     name,
     email,
     phone: phone || null,

@@ -57,7 +57,14 @@ export async function PUT(request: NextRequest) {
     const db = getAdminDb();
 
     // Only allow updating certain fields
-    const allowedFields = ["name", "phone", "avatar", "addresses"];
+    const allowedFields = [
+      "name",
+      "phone",
+      "photoURL",
+      "photoCropData",
+      "avatar",
+      "addresses",
+    ];
     const updates: any = {};
 
     for (const field of allowedFields) {
@@ -73,8 +80,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Add updated timestamp
+    // Add updated timestamp and ensure userId is set
     updates.updatedAt = new Date().toISOString();
+    updates.userId = user.uid; // Ensure userId is always saved
 
     // Update user document
     await db.collection("users").doc(user.uid).update(updates);

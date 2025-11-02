@@ -1,24 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database/config";
-import { doc, updateDoc } from "firebase/firestore";
+import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
+import { getAdminDb } from "@/lib/database/admin";
 
 /**
  * PUT /api/user/preferences
- * Update user preferences (currency, etc.)
+ * Update user preferences (currency, notifications, etc.)
  */
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId, preferredCurrency } = body;
-
-    if (!userId) {
+    // Verify Firebase token
+    const user = await verifyFirebaseToken(request);
+    if (!user) {
       return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
+        { success: false, error: "Authentication required" },
+        { status: 401 }
       );
     }
 
-    // Validate currency
+    const body = await request.json();
+    const {
+      preferredCurrency,
+      emailNotifications,
+      orderUpdates,
+      promotionalEmails,
+    } = body;
+
+    // Validate currency if provided
     const validCurrencies = ["INR", "USD", "EUR", "GBP"];
     if (preferredCurrency && !validCurrencies.includes(preferredCurrency)) {
       return NextResponse.json(
@@ -27,21 +34,36 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update user document
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      preferredCurrency,
+    // Prepare update object
+    const updates: any = {
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    if (preferredCurrency !== undefined) {
+      updates.preferredCurrency = preferredCurrency;
+    }
+    if (emailNotifications !== undefined) {
+      updates.emailNotifications = emailNotifications;
+    }
+    if (orderUpdates !== undefined) {
+      updates.orderUpdates = orderUpdates;
+    }
+    if (promotionalEmails !== undefined) {
+      updates.promotionalEmails = promotionalEmails;
+    }
+
+    // Update user document using Admin SDK
+    const db = getAdminDb();
+    await db.collection("users").doc(user.uid).update(updates);
 
     return NextResponse.json({
       success: true,
       message: "Preferences updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user preferences:", error);
     return NextResponse.json(
-      { error: "Failed to update preferences" },
+      { success: false, error: error.message || "Failed to update preferences" },
       { status: 500 }
     );
   }
