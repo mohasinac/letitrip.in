@@ -38,19 +38,21 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         setCurrencyState(cookieCurrency);
         return;
       }
-      
+
       // Fallback to localStorage for backward compatibility
       const savedCurrency = localStorage.getItem("preferred_currency");
       if (savedCurrency && SUPPORTED_CURRENCIES.includes(savedCurrency)) {
         setCurrencyState(savedCurrency);
         // Migrate to cookie
-        cookieStorage.set(CURRENCY_COOKIE_NAME, savedCurrency, { expires: 365 });
+        cookieStorage.set(CURRENCY_COOKIE_NAME, savedCurrency, {
+          expires: 365,
+        });
       } else {
         // Set default INR in cookie
         cookieStorage.set(CURRENCY_COOKIE_NAME, "INR", { expires: 365 });
       }
     };
-    
+
     loadCurrency();
   }, []);
 
@@ -88,15 +90,15 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     if (!SUPPORTED_CURRENCIES.includes(newCurrency)) {
       return;
     }
-    
+
     setCurrencyState(newCurrency);
-    
+
     // Save to cookie (for guests and as backup)
     cookieStorage.set(CURRENCY_COOKIE_NAME, newCurrency, { expires: 365 });
-    
+
     // Also save to localStorage for backward compatibility
     localStorage.setItem("preferred_currency", newCurrency);
-    
+
     // If user is logged in, save to database
     if (userId) {
       try {

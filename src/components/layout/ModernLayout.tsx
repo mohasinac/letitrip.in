@@ -47,14 +47,15 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
+
   // Sync selected currency with context
-  const selectedCurrency = currencies.find(c => c.code === contextCurrency) || currencies[3]; // Default to INR
+  const selectedCurrency =
+    currencies.find((c) => c.code === contextCurrency) || currencies[3]; // Default to INR
 
   const isAdminRoute = pathname?.startsWith("/admin") || false;
   const isSellerRoute = pathname?.startsWith("/seller") || false;
   const shouldShowSidebar = user && (isAdminRoute || isSellerRoute || user);
-  
+
   const handleCurrencyChange = async (currencyCode: string) => {
     await setCurrency(currencyCode, user?.id);
     setCurrencyMenuOpen(false);

@@ -7,16 +7,19 @@
 ## Currency System
 
 ### Default Currency
+
 **INR** (Indian Rupee) - Set as default for all users
 
 ### How It Works
 
 **Guests**:
+
 - Currency saved in cookies (365 days)
 - Persists across browser sessions
 - Falls back to localStorage
 
 **Logged-In Users**:
+
 - Currency saved to database
 - Syncs automatically
 - Cookie used for instant loading
@@ -52,11 +55,13 @@ formatPrice(100); // "₹100" or "$1" depending on currency
 ### How It Works
 
 **Guest Users**:
+
 1. Add items to cart
 2. Items saved to cookies + localStorage
 3. Cart persists across sessions
 
 **On Login**:
+
 1. Guest cart loaded
 2. Merged with user's existing cart
 3. Duplicates combined (quantities added)
@@ -67,10 +72,10 @@ formatPrice(100); // "₹100" or "$1" depending on currency
 
 ### Storage Locations
 
-| User Type | Primary Storage | Backup |
-|-----------|----------------|--------|
-| Guest | Cookies (30 days) | localStorage |
-| Logged-in | Firestore | Cookies |
+| User Type | Primary Storage   | Backup       |
+| --------- | ----------------- | ------------ |
+| Guest     | Cookies (30 days) | localStorage |
+| Logged-in | Firestore         | Cookies      |
 
 ---
 
@@ -98,6 +103,7 @@ DELETE /api/cart?userId=xxx     # Clear cart
 ## Database Schema
 
 ### Users Collection
+
 ```typescript
 {
   // ...existing fields...
@@ -106,6 +112,7 @@ DELETE /api/cart?userId=xxx     # Clear cart
 ```
 
 ### Carts Collection (NEW)
+
 ```typescript
 {
   userId: string,        // Document ID
@@ -147,12 +154,14 @@ http://localhost:3000
 ## Files Changed
 
 **New Files** (4):
+
 - `src/utils/guestCart.ts`
 - `src/app/api/cart/route.ts`
 - `src/app/api/user/preferences/route.ts`
 - `docs/GUEST_CART_CURRENCY_IMPLEMENTATION.md`
 
 **Updated Files** (4):
+
 - `src/contexts/CurrencyContext.tsx`
 - `src/contexts/CartContext.tsx`
 - `src/components/layout/ModernLayout.tsx`
@@ -163,16 +172,19 @@ http://localhost:3000
 ## Common Issues
 
 **Cart not merging?**
+
 - Check browser console for errors
 - Verify user is logged in (`user?.id` exists)
 - Check network tab for API calls
 
 **Currency not saving?**
+
 - Check cookies are enabled
 - Verify `/api/user/preferences` endpoint works
 - Check Firestore permissions
 
 **Guest cart lost?**
+
 - Check cookie expiry (30 days)
 - Verify localStorage not cleared
 - Check browser privacy settings

@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             // Merge with current user cart
             const merged = GuestCartManager.merge(guestCart, items);
             setItems(merged);
-            
+
             // Save merged cart to database
             await fetch("/api/cart", {
               method: "POST",
@@ -88,7 +88,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 items: merged,
               }),
             });
-            
+
             // Clear guest cart
             GuestCartManager.clear();
             toast.success(`${guestCart.length} item(s) merged from guest cart`);

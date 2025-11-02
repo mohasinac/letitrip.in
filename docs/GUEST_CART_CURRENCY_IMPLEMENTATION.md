@@ -18,16 +18,19 @@ Implemented guest cart functionality and currency persistence for both guest and
 **Default Currency**: INR (Indian Rupee)
 
 **For Guest Users**:
+
 - Currency preference saved in cookies (365-day expiry)
 - Fallback to localStorage for backward compatibility
 - Persists across sessions
 
 **For Logged-In Users**:
+
 - Currency preference saved to user profile in database
 - Synced with cookies for instant loading
 - Updated via `/api/user/preferences` endpoint
 
 **Implementation Files**:
+
 - `src/contexts/CurrencyContext.tsx` - Updated
 - `src/app/api/user/preferences/route.ts` - NEW
 - `src/components/layout/ModernLayout.tsx` - Updated
@@ -38,6 +41,7 @@ Implemented guest cart functionality and currency persistence for both guest and
 ### 2. Guest Cart Functionality
 
 **Features**:
+
 - ✅ Guests can add items to cart without logging in
 - ✅ Cart persisted in cookies (30-day expiry) and localStorage
 - ✅ Cart automatically merged when guest logs in
@@ -46,6 +50,7 @@ Implemented guest cart functionality and currency persistence for both guest and
 - ✅ Guest cart cleared after successful merge
 
 **Implementation Files**:
+
 - `src/utils/guestCart.ts` - NEW (GuestCartManager utility)
 - `src/contexts/CartContext.tsx` - Updated
 - `src/app/api/cart/route.ts` - NEW (GET, POST, DELETE endpoints)
@@ -69,6 +74,7 @@ Implemented guest cart functionality and currency persistence for both guest and
 ```
 
 **Storage Strategy**:
+
 - **Cookies**: Compact format (product IDs + quantities only) - 4KB limit safe
 - **localStorage**: Full cart data with product details
 
@@ -81,6 +87,7 @@ Implemented guest cart functionality and currency persistence for both guest and
 Save user preferences (currency, etc.) to Firestore.
 
 **Request Body**:
+
 ```json
 {
   "userId": "user123",
@@ -89,6 +96,7 @@ Save user preferences (currency, etc.) to Firestore.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -103,9 +111,11 @@ Save user preferences (currency, etc.) to Firestore.
 **Three endpoints**:
 
 #### GET /api/cart?userId=xxx
+
 Load user's cart from database.
 
 **Response**:
+
 ```json
 {
   "items": [...],
@@ -114,9 +124,11 @@ Load user's cart from database.
 ```
 
 #### POST /api/cart
+
 Save/update user's cart to database.
 
 **Request Body**:
+
 ```json
 {
   "userId": "user123",
@@ -125,6 +137,7 @@ Save/update user's cart to database.
 ```
 
 #### DELETE /api/cart?userId=xxx
+
 Clear user's cart.
 
 ---
@@ -134,6 +147,7 @@ Clear user's cart.
 ### 1. `src/contexts/CurrencyContext.tsx`
 
 **Changes**:
+
 - Default currency set to INR
 - `setCurrency()` now async, accepts optional `userId`
 - Saves to cookies for guests (365-day expiry)
@@ -141,8 +155,9 @@ Clear user's cart.
 - Loads from cookies on mount with localStorage fallback
 
 **New Signature**:
+
 ```typescript
-setCurrency: (currency: string, userId?: string) => Promise<void>
+setCurrency: (currency: string, userId?: string) => Promise<void>;
 ```
 
 ---
@@ -150,6 +165,7 @@ setCurrency: (currency: string, userId?: string) => Promise<void>
 ### 2. `src/contexts/CartContext.tsx`
 
 **Changes**:
+
 - Added `useAuth()` hook to detect user login state
 - Cart loads from:
   - **Guest**: `GuestCartManager.load()` (cookies/localStorage)
@@ -165,6 +181,7 @@ setCurrency: (currency: string, userId?: string) => Promise<void>
   - Shows toast notification with merge count
 
 **New Dependencies**:
+
 ```typescript
 import { GuestCartManager } from "@/utils/guestCart";
 import { useAuth } from "@/contexts/AuthContext";
@@ -175,15 +192,18 @@ import { useAuth } from "@/contexts/AuthContext";
 ### 3. `src/components/layout/ModernLayout.tsx`
 
 **Changes**:
+
 - Added `useCurrency()` hook
 - Currency selector now calls `setCurrency(code, user?.id)`
 - Selected currency synced with context (no local state)
 - Default currency set to INR (index 3 in currencies array)
 
 **Currency Handling**:
+
 ```typescript
 const { currency: contextCurrency, setCurrency } = useCurrency();
-const selectedCurrency = currencies.find(c => c.code === contextCurrency) || currencies[3]; // INR default
+const selectedCurrency =
+  currencies.find((c) => c.code === contextCurrency) || currencies[3]; // INR default
 
 const handleCurrencyChange = async (currencyCode: string) => {
   await setCurrency(currencyCode, user?.id);
@@ -196,6 +216,7 @@ const handleCurrencyChange = async (currencyCode: string) => {
 ### 4. `src/types/index.ts`
 
 **Added to User interface**:
+
 ```typescript
 export interface User {
   // ...existing fields...
@@ -243,10 +264,12 @@ export interface User {
 ### Test Scenario 4: Guest Cart Merge on Login
 
 **Setup**:
+
 - Guest cart: Product A (qty 2), Product B (qty 1)
 - User cart (in database): Product A (qty 1), Product C (qty 3)
 
 **Expected After Login**:
+
 - Product A: qty 3 (2 + 1 merged)
 - Product B: qty 1 (from guest)
 - Product C: qty 3 (from user)
@@ -255,6 +278,7 @@ export interface User {
 - Merged cart saved to database
 
 **Test Steps**:
+
 1. Add products as guest
 2. Log in
 3. Verify merge toast appears
@@ -267,11 +291,13 @@ export interface User {
 ### Test Scenario 5: Stock Limits During Merge
 
 **Setup**:
+
 - Guest cart: Product A (qty 5)
 - User cart: Product A (qty 8)
 - Product A stock: 10
 
 **Expected**:
+
 - Product A: qty 10 (capped at stock limit, not 13)
 
 ---
@@ -279,11 +305,13 @@ export interface User {
 ### Test Scenario 6: API Endpoints
 
 **Test GET /api/cart**:
+
 ```bash
 curl "http://localhost:3000/api/cart?userId=user123"
 ```
 
 **Test POST /api/cart**:
+
 ```bash
 curl -X POST http://localhost:3000/api/cart \
   -H "Content-Type: application/json" \
@@ -291,11 +319,13 @@ curl -X POST http://localhost:3000/api/cart \
 ```
 
 **Test DELETE /api/cart**:
+
 ```bash
 curl -X DELETE "http://localhost:3000/api/cart?userId=user123"
 ```
 
 **Test PUT /api/user/preferences**:
+
 ```bash
 curl -X PUT http://localhost:3000/api/user/preferences \
   -H "Content-Type: application/json" \
@@ -309,6 +339,7 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ### Firestore Collections
 
 #### `users` collection
+
 ```typescript
 {
   id: string,
@@ -320,6 +351,7 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ```
 
 #### `carts` collection (NEW)
+
 ```typescript
 {
   userId: string,              // Document ID = userId
@@ -329,6 +361,7 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ```
 
 **CartItem structure**:
+
 ```typescript
 {
   id: string,           // Unique cart item ID
@@ -349,10 +382,10 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 
 ## 🍪 Cookies Used
 
-| Cookie Name | Purpose | Expiry | Size |
-|-------------|---------|--------|------|
-| `preferred_currency` | Store currency preference | 365 days | < 10 bytes |
-| `guest_cart` | Store guest cart (compact) | 30 days | < 4KB |
+| Cookie Name          | Purpose                    | Expiry   | Size       |
+| -------------------- | -------------------------- | -------- | ---------- |
+| `preferred_currency` | Store currency preference  | 365 days | < 10 bytes |
+| `guest_cart`         | Store guest cart (compact) | 30 days  | < 4KB      |
 
 **Note**: Both cookies use `SameSite=Strict` and `Secure` (on HTTPS) for security.
 
@@ -361,11 +394,13 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ## 🔐 Security Considerations
 
 1. **Cookie Security**:
+
    - `SameSite=Strict` prevents CSRF
    - `Secure` flag on HTTPS
    - `HttpOnly` not set (need JS access)
 
 2. **API Validation**:
+
    - User ID required for all endpoints
    - Currency codes validated against whitelist
    - Cart items validated as array
@@ -380,18 +415,22 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ## 📊 Performance Impact
 
 **Cart Loading**:
+
 - Guest: Instant (local storage)
 - Logged-in: ~200ms (database fetch)
 
 **Cart Saving**:
+
 - Guest: Instant (local storage)
 - Logged-in: ~300ms (database write) - async, non-blocking
 
 **Cart Merge**:
+
 - Runs once on login: ~500ms
 - Toast notification provides feedback
 
 **Cookie Size**:
+
 - Currency: < 10 bytes
 - Guest cart (compact): < 4KB (safe for all browsers)
 
@@ -400,11 +439,13 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 ## 🔄 Migration Notes
 
 **Existing Users**:
+
 - Old `shopping_cart` localStorage automatically migrates to cookies
 - Old currency preference in localStorage migrates to cookies
 - No data loss for existing cart items
 
 **Database Updates**:
+
 - User documents updated with `preferredCurrency` field on first currency change
 - Cart documents created on first cart save for logged-in users
 - Old localStorage carts will merge with new system
@@ -415,10 +456,8 @@ curl -X PUT http://localhost:3000/api/user/preferences \
 
 1. **Cookie Size**: Guest cart limited to ~50-100 items (4KB cookie limit)
    - Full data still in localStorage as backup
-   
 2. **Offline Mode**: Database operations fail offline
    - Cart falls back to cookies/localStorage
-   
 3. **Cross-Device Sync**: Guest carts don't sync across devices
    - Only user carts sync via database
 
@@ -443,7 +482,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 
 function ProductCard({ product }) {
   const { formatPrice, currency } = useCurrency();
-  
+
   return (
     <div>
       <h3>{product.name}</h3>
@@ -461,16 +500,14 @@ import { GuestCartManager } from "@/utils/guestCart";
 
 function CheckoutButton() {
   const hasGuestCart = GuestCartManager.hasCart();
-  
+
   if (hasGuestCart && !user) {
-    return <button onClick={() => router.push("/login")}>
-      Login to Checkout
-    </button>;
+    return (
+      <button onClick={() => router.push("/login")}>Login to Checkout</button>
+    );
   }
-  
-  return <button onClick={handleCheckout}>
-    Proceed to Checkout
-  </button>;
+
+  return <button onClick={handleCheckout}>Proceed to Checkout</button>;
 }
 ```
 
@@ -502,4 +539,4 @@ function CheckoutButton() {
 
 ---
 
-*This implementation follows Phase 7 principles: reusable utilities, clean separation of concerns, and user-centric design.*
+_This implementation follows Phase 7 principles: reusable utilities, clean separation of concerns, and user-centric design._
