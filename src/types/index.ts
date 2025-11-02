@@ -11,6 +11,7 @@ export interface User {
   role: "admin" | "user" | "seller";
   avatar?: string;
   addresses: Address[];
+  preferredCurrency?: string; // User's preferred currency (INR, USD, EUR, GBP)
   isOver18?: boolean; // Age verification flag
   createdAt: string;
   updatedAt: string;

@@ -1,10 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 interface CurrencyContextType {
   currency: string;
-  setCurrency: (currency: string) => void;
+  setCurrency: (currency: string, userId?: string) => Promise<void>;
   convertPrice: (price: number) => number;
   formatPrice: (price: number) => string;
   exchangeRates: Record<string, number>;
@@ -16,9 +17,10 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(
 );
 
 const SUPPORTED_CURRENCIES = ["INR", "USD", "EUR", "GBP"];
+const CURRENCY_COOKIE_NAME = "preferred_currency";
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrencyState] = useState("INR");
+  const [currency, setCurrencyState] = useState("INR"); // Default to INR
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({
     INR: 1,
     USD: 0.012,
@@ -27,12 +29,29 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load currency preference from localStorage on mount
+  // Load currency preference on mount (guests: from cookies, users: will be synced from AuthContext)
   useEffect(() => {
-    const savedCurrency = localStorage.getItem("preferred_currency");
-    if (savedCurrency && SUPPORTED_CURRENCIES.includes(savedCurrency)) {
-      setCurrencyState(savedCurrency);
-    }
+    const loadCurrency = () => {
+      // Try to load from cookie first (for guests)
+      const cookieCurrency = cookieStorage.get(CURRENCY_COOKIE_NAME);
+      if (cookieCurrency && SUPPORTED_CURRENCIES.includes(cookieCurrency)) {
+        setCurrencyState(cookieCurrency);
+        return;
+      }
+      
+      // Fallback to localStorage for backward compatibility
+      const savedCurrency = localStorage.getItem("preferred_currency");
+      if (savedCurrency && SUPPORTED_CURRENCIES.includes(savedCurrency)) {
+        setCurrencyState(savedCurrency);
+        // Migrate to cookie
+        cookieStorage.set(CURRENCY_COOKIE_NAME, savedCurrency, { expires: 365 });
+      } else {
+        // Set default INR in cookie
+        cookieStorage.set(CURRENCY_COOKIE_NAME, "INR", { expires: 365 });
+      }
+    };
+    
+    loadCurrency();
   }, []);
 
   // Fetch exchange rates from API (you can replace with your preferred API)
@@ -65,10 +84,36 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
-  const setCurrency = (newCurrency: string) => {
-    if (SUPPORTED_CURRENCIES.includes(newCurrency)) {
-      setCurrencyState(newCurrency);
-      localStorage.setItem("preferred_currency", newCurrency);
+  const setCurrency = async (newCurrency: string, userId?: string) => {
+    if (!SUPPORTED_CURRENCIES.includes(newCurrency)) {
+      return;
+    }
+    
+    setCurrencyState(newCurrency);
+    
+    // Save to cookie (for guests and as backup)
+    cookieStorage.set(CURRENCY_COOKIE_NAME, newCurrency, { expires: 365 });
+    
+    // Also save to localStorage for backward compatibility
+    localStorage.setItem("preferred_currency", newCurrency);
+    
+    // If user is logged in, save to database
+    if (userId) {
+      try {
+        await fetch("/api/user/preferences", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            preferredCurrency: newCurrency,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to save currency preference to database:", error);
+        // Continue anyway - cookie/localStorage will work
+      }
     }
   };
 

@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
+import { GuestCartManager } from "@/utils/guestCart";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface CartItem {
   id: string;
@@ -35,32 +37,102 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [cartMerged, setCartMerged] = useState(false);
+  const { user } = useAuth();
 
-  // Load cart from localStorage on mount
+  // Load cart on mount
   useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem("shopping_cart");
-      if (savedCart) {
-        const parsed = JSON.parse(savedCart);
-        setItems(parsed);
+    const loadCart = async () => {
+      try {
+        if (user) {
+          // Logged-in user: load from database
+          const response = await fetch(`/api/cart?userId=${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setItems(data.items || []);
+          }
+        } else {
+          // Guest: load from cookies/localStorage
+          const guestCart = GuestCartManager.load();
+          setItems(guestCart);
+        }
+      } catch (error) {
+        console.error("Failed to load cart:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to load cart from localStorage:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    };
 
-  // Save cart to localStorage whenever it changes
+    loadCart();
+  }, []); // Only run on mount
+
+  // Merge guest cart with user cart when user logs in
+  useEffect(() => {
+    const mergeGuestCart = async () => {
+      if (user && !cartMerged && GuestCartManager.hasCart()) {
+        try {
+          const guestCart = GuestCartManager.load();
+          if (guestCart.length > 0) {
+            // Merge with current user cart
+            const merged = GuestCartManager.merge(guestCart, items);
+            setItems(merged);
+            
+            // Save merged cart to database
+            await fetch("/api/cart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: user.id,
+                items: merged,
+              }),
+            });
+            
+            // Clear guest cart
+            GuestCartManager.clear();
+            toast.success(`${guestCart.length} item(s) merged from guest cart`);
+          }
+        } catch (error) {
+          console.error("Failed to merge guest cart:", error);
+        } finally {
+          setCartMerged(true);
+        }
+      }
+    };
+
+    mergeGuestCart();
+  }, [user, cartMerged, items]);
+
+  // Save cart whenever it changes
   useEffect(() => {
     if (!isLoading) {
-      try {
-        localStorage.setItem("shopping_cart", JSON.stringify(items));
-      } catch (error) {
-        console.error("Failed to save cart to localStorage:", error);
-      }
+      const saveCart = async () => {
+        try {
+          if (user) {
+            // Logged-in user: save to database
+            await fetch("/api/cart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: user.id,
+                items,
+              }),
+            });
+          } else {
+            // Guest: save to cookies/localStorage
+            GuestCartManager.save(items);
+          }
+        } catch (error) {
+          console.error("Failed to save cart:", error);
+        }
+      };
+
+      saveCart();
     }
-  }, [items, isLoading]);
+  }, [items, isLoading, user]);
 
   const addItem = (product: any, quantity: number = 1) => {
     if (!product || !product.id) {

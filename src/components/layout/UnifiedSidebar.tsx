@@ -36,7 +36,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SELLER_ROUTES } from "@/constants/routes";
 
 interface UnifiedSidebarProps {
-  open?: boolean;
+  open?: boolean; // Controls sidebar visibility
   onToggle?: (open: boolean) => void;
   unreadAlerts?: number;
 }
@@ -167,8 +167,10 @@ export default function UnifiedSidebar({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleToggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-    onToggle?.(!isCollapsed);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    // Don't call onToggle - it should only control visibility, not collapse state
+    // The sidebar manages its own collapsed state
   };
 
   const handleLogout = async () => {

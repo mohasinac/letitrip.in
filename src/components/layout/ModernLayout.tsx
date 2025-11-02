@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";
@@ -39,17 +40,25 @@ const currencies = [
 export default function ModernLayout({ children }: ModernLayoutProps) {
   const { mode, toggleTheme } = useModernTheme();
   const { user, loading } = useAuth();
+  const { currency: contextCurrency, setCurrency } = useCurrency();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  
+  // Sync selected currency with context
+  const selectedCurrency = currencies.find(c => c.code === contextCurrency) || currencies[3]; // Default to INR
 
   const isAdminRoute = pathname?.startsWith("/admin") || false;
   const isSellerRoute = pathname?.startsWith("/seller") || false;
   const shouldShowSidebar = user && (isAdminRoute || isSellerRoute || user);
+  
+  const handleCurrencyChange = async (currencyCode: string) => {
+    await setCurrency(currencyCode, user?.id);
+    setCurrencyMenuOpen(false);
+  };
 
   const handleDrawerToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -176,10 +185,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                         {currencies.map((currency) => (
                           <button
                             key={currency.code}
-                            onClick={() => {
-                              setSelectedCurrency(currency);
-                              setCurrencyMenuOpen(false);
-                            }}
+                            onClick={() => handleCurrencyChange(currency.code)}
                             className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                               selectedCurrency.code === currency.code
                                 ? "bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-medium"
