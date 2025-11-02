@@ -14,6 +14,8 @@ import {
   Heart,
   User,
   Package,
+  ShieldCheck,
+  Store,
 } from "lucide-react";
 import { useModernTheme } from "@/contexts/ModernThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -253,88 +255,154 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   };
 
   const drawer = (
-    <nav className="w-64 p-4">
-      <ul className="space-y-2">
-        {/* Main Navigation for Customer Routes */}
-        {!isAdminRoute &&
-          !isSellerRoute &&
-          navigation.map((item) => (
-            <li key={item.name}>
+    <nav className="flex flex-col h-full bg-white dark:bg-gray-900">
+      {/* Drawer Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl leading-none">🎯</span>
+          <span className="font-bold text-lg text-gray-900 dark:text-white leading-none">
+            HobbiesSpot
+          </span>
+        </div>
+        <button
+          onClick={handleDrawerToggle}
+          className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="close drawer"
+        >
+          <svg
+            className="w-5 h-5 text-gray-700 dark:text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Drawer Content */}
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
+        <ul className="space-y-2">
+          {/* Main Navigation for Customer Routes */}
+          {!isAdminRoute &&
+            !isSellerRoute &&
+            navigation.map((item) => (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                    pathname === item.href
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30"
+                      : "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-md"
+                  }`}
+                  onClick={handleDrawerToggle}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+
+          {!isAdminRoute && !isSellerRoute && (
+            <li className="my-4">
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
+            </li>
+          )}
+
+          {/* All Navigation Items (including overflow from mobile bottom nav) */}
+          {allNavItems.map((item) => (
+            <li key={item.id}>
               <Link
                 href={item.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                  pathname === item.href
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30"
+                    : "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-md"
+                }`}
                 onClick={handleDrawerToggle}
               >
-                {item.name}
+                <span className="flex items-center gap-3">
+                  {item.icon}
+                  <span>{item.label}</span>
+                </span>
+                {"badge" in item && item.badge && (
+                  <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2.5 py-1 min-w-[24px] text-center shadow-lg animate-pulse">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             </li>
           ))}
 
-        {!isAdminRoute && !isSellerRoute && (
-          <li className="border-t border-gray-200 dark:border-gray-700 my-2"></li>
-        )}
-
-        {/* All Navigation Items (including overflow from mobile bottom nav) */}
-        {allNavItems.map((item) => (
-          <li key={item.id}>
-            <Link
-              href={item.href}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center justify-between"
-              onClick={handleDrawerToggle}
-            >
-              <span className="flex items-center gap-2">
-                {item.icon}
-                {item.label}
-              </span>
-              {"badge" in item && item.badge && (
-                <span className="bg-blue-600 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
+          <li className="my-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
           </li>
-        ))}
 
-        <li className="border-t border-gray-200 dark:border-gray-700 my-2"></li>
-
-        {/* Admin/Seller Panel Links (only show on customer routes) */}
-        {!isAdminRoute && user?.role === "admin" && (
-          <li>
-            <Link
-              href="/admin/dashboard"
-              className="block px-3 py-2 rounded-md text-base font-medium text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors"
-              onClick={handleDrawerToggle}
-            >
-              🛡️ Admin Panel
-            </Link>
-          </li>
-        )}
-
-        {!isSellerRoute &&
-          (user?.role === "seller" || user?.role === "admin") && (
+          {/* Admin/Seller Panel Links (only show on customer routes) */}
+          {!isAdminRoute && user?.role === "admin" && (
             <li>
               <Link
-                href="/seller/dashboard"
-                className="block px-3 py-2 rounded-md text-base font-medium text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors"
+                href="/admin/dashboard"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-xl hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-600/30 transition-all duration-200"
                 onClick={handleDrawerToggle}
               >
-                🏪 Seller Panel
+                <ShieldCheck className="w-5 h-5" />
+                <span>Admin Panel</span>
               </Link>
             </li>
           )}
 
-        {!user && (
-          <li>
-            <Link
-              href="/login"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              onClick={handleDrawerToggle}
-            >
-              Sign In
-            </Link>
-          </li>
-        )}
-      </ul>
+          {!isSellerRoute &&
+            (user?.role === "seller" || user?.role === "admin") && (
+              <li>
+                <Link
+                  href="/seller/dashboard"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-xl hover:from-green-700 hover:to-green-800 shadow-lg shadow-green-600/30 transition-all duration-200"
+                  onClick={handleDrawerToggle}
+                >
+                  <Store className="w-5 h-5" />
+                  <span>Seller Panel</span>
+                </Link>
+              </li>
+            )}
+
+          {!user && (
+            <li>
+              <Link
+                href="/login"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-xl hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-600/30 transition-all duration-200"
+                onClick={handleDrawerToggle}
+              >
+                <LogIn className="w-5 h-5" />
+                <span>Sign In</span>
+              </Link>
+            </li>
+          )}
+        </ul>
+      </div>
+
+      {/* Drawer Footer */}
+      {user && (
+        <div className="border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-850 p-4">
+          <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/50 dark:bg-gray-900/50">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+              {user.name?.charAt(0).toUpperCase() || "U"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                {user.name || "User"}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 
@@ -359,10 +427,11 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center py-3 gap-4">
               {/* Left: Mobile menu + Logo */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
+                {/* Hamburger menu - Hidden on desktop (lg and above) */}
                 <button
                   onClick={handleDrawerToggle}
-                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
                   aria-label="open drawer"
                 >
                   <Menu className="h-6 w-6" />
@@ -370,10 +439,10 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
                 <Link
                   href="/"
-                  className="flex items-center gap-2 font-bold text-gray-900 dark:text-white no-underline text-xl md:text-2xl flex-shrink-0"
+                  className="flex items-center gap-2 font-bold text-gray-900 dark:text-white no-underline text-lg md:text-xl flex-shrink-0"
                 >
-                  <span className="text-2xl">🎯</span>
-                  <span>HobbiesSpot</span>
+                  <span className="text-2xl leading-none">🎯</span>
+                  <span className="leading-none">HobbiesSpot</span>
                 </Link>
               </div>
 
@@ -385,10 +454,10 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
                         pathname === item.href
-                          ? "bg-blue-600 text-white shadow-lg"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/20"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"
                       }`}
                     >
                       {item.name}
@@ -400,7 +469,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 <div className="relative hidden md:block">
                   <button
                     onClick={() => setCurrencyMenuOpen(!currencyMenuOpen)}
-                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md rounded-lg transition-all duration-200"
                   >
                     <Globe className="h-4 w-4" />
                     <span>{selectedCurrency.code}</span>
@@ -413,15 +482,15 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                         className="fixed inset-0 z-10"
                         onClick={() => setCurrencyMenuOpen(false)}
                       ></div>
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-20">
                         {currencies.map((currency) => (
                           <button
                             key={currency.code}
                             onClick={() => handleCurrencyChange(currency.code)}
-                            className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-200 ${
                               selectedCurrency.code === currency.code
-                                ? "bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-medium"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                ? "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 text-blue-700 dark:text-blue-300 font-semibold"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                             }`}
                           >
                             <span className="font-mono">{currency.symbol}</span>{" "}
@@ -436,7 +505,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {/* Search Button */}
                 <button
                   onClick={handleSearchToggle}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md transition-all duration-200"
                   aria-label="search"
                 >
                   <Search className="h-5 w-5" />
@@ -445,7 +514,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {/* Theme Toggle */}
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md transition-all duration-200"
                   aria-label="toggle theme"
                 >
                   {mode === "dark" ? (

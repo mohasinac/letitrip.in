@@ -35,10 +35,10 @@ export default function FloatingCart() {
 
   return (
     <>
-      {/* Floating Cart Button */}
+      {/* Floating Cart Button - Higher position on mobile */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 bg-primary text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 z-50 group ${
+        className={`fixed bottom-24 md:bottom-6 right-6 bg-primary text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 z-50 group ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
         }`}
         aria-label="Open cart"
