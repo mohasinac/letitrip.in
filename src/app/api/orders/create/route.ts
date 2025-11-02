@@ -270,15 +270,22 @@ export async function POST(request: NextRequest) {
       const productDoc = await productRef.get();
       const productData = productDoc.data();
       
-      // Update both stock and quantity fields for compatibility
+      // Update all possible quantity fields for compatibility
       const updates: any = {
         updatedAt: new Date(),
       };
       
+      // Update nested inventory.quantity if it exists
+      if (productData?.inventory?.quantity !== undefined) {
+        updates['inventory.quantity'] = FieldValue.increment(-item.quantity);
+      }
+      
+      // Update stock field if it exists
       if (productData?.stock !== undefined) {
         updates.stock = FieldValue.increment(-item.quantity);
       }
       
+      // Update quantity field if it exists
       if (productData?.quantity !== undefined) {
         updates.quantity = FieldValue.increment(-item.quantity);
       }
