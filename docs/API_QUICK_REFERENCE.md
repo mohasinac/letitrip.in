@@ -214,10 +214,11 @@ api.storage; // File uploads
 
 ## 🔗 Documentation Links
 
-- **Full Architecture:** `docs/API_CLIENT_ARCHITECTURE.md`
-- **Implementation Summary:** `docs/API_CLIENT_IMPLEMENTATION_SUMMARY.md`
+- **Main Summary:** `docs/API_CLIENT_IMPLEMENTATION_SUMMARY.md`
+- **Final Summary:** `docs/API_FINAL_SUMMARY.md` ⭐
 - **Middleware Guide:** `docs/MIDDLEWARE_AND_STORAGE_API.md`
-- **Complete Reference:** `docs/API_COMPLETE_IMPLEMENTATION.md`
+- **Standalone APIs:** `docs/STANDALONE_APIS_SUMMARY.md`
+- **Full Architecture:** `docs/API_CLIENT_ARCHITECTURE.md`
 - **Step-by-Step Guide:** `docs/API_CLIENT_IMPLEMENTATION_GUIDE.md`
 
 ---

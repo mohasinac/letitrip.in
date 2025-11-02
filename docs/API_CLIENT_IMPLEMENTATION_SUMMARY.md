@@ -294,6 +294,47 @@ const result = await api.storage.uploadImage(
 // Result: { url, path, fileName, size, contentType }
 ```
 
+### Example 7: Global Search **NEW**
+
+```tsx
+import { api } from "@/lib/api/services";
+
+const results = await api.system.search("laptop", {
+  type: "all",
+  limit: 10,
+});
+
+console.log("Products:", results.products);
+console.log("Categories:", results.categories);
+console.log("Total:", results.total);
+```
+
+### Example 8: Razorpay Payment **NEW**
+
+```tsx
+// 1. Create order
+const order = await api.payment.createRazorpayOrder(orderId, amount, "INR");
+
+// 2. Open Razorpay checkout
+const rzp = new Razorpay({
+  key: order.key,
+  amount: order.amount,
+  order_id: order.id,
+  handler: async (response) => {
+    // 3. Verify payment
+    const result = await api.payment.verifyRazorpayPayment({
+      razorpay_order_id: response.razorpay_order_id,
+      razorpay_payment_id: response.razorpay_payment_id,
+      razorpay_signature: response.razorpay_signature,
+      orderId,
+    });
+
+    if (result.success) toast.success("Payment successful!");
+  },
+});
+rzp.open();
+```
+
 ---
 
 ## 📋 Next Steps
@@ -440,6 +481,13 @@ Update API routes to use controllers:
 - Secure file deletion
 - Progress tracking for uploads
 
+### 10. **Unified Services** **NEW**
+
+- All APIs in single `api` object
+- Contact, search, payments in one place
+- Consistent interface across all services
+- Removed unused/duplicate code
+
 ---
 
 ## 📊 Coverage Summary
@@ -451,6 +499,9 @@ Update API routes to use controllers:
 - ✅ Users (100%)
 - ✅ Categories (100%)
 - ✅ Reviews (100%)
+- ✅ Storage (100%)
+- ✅ System/Contact (100%) **NEW**
+- ✅ Payments (100%) **NEW**
 
 ### Features Covered:
 
@@ -461,18 +512,26 @@ Update API routes to use controllers:
 - ✅ Error handling
 - ✅ Type safety
 - ✅ Caching
-- ✅ Custom hooks
+- ✅ File uploads
+- ✅ Global search **NEW**
+- ✅ Payment gateways **NEW**
+- ✅ Error logging **NEW**
 
 ### Files Created:
 
 - **Foundation:** 2 files
-- **Validators:** 2 files (+ 3 to do)
-- **Services:** 6 files
+- **Validators:** 5 files (+ 3 to do)
+- **Services:** 8 files **UPDATED**
 - **Hooks:** 3 files
-- **Middleware:** 3 files **NEW**
-- **Storage (Model, Controller, Validator):** 3 files **NEW**
-- **Documentation:** 2 files **NEW**
-- **Total:** 21 files created ✅
+- **Middleware:** 3 files
+- **Storage (Model, Controller, Validator):** 3 files
+- **Documentation:** 4 files **UPDATED**
+- **Total:** 28 files created ✅ **UPDATED**
+
+### Files Removed: **NEW**
+
+- **Unused API routes:** 3 files (sessions, cookies, content)
+- **Unused endpoints:** 3 constants removed
 
 ---
 
@@ -498,6 +557,15 @@ const user = await api.users.updateProfile({ name: "John" });
 
 // Delete data
 await api.products.delete(productId);
+
+// Search **NEW**
+const results = await api.system.search("laptop");
+
+// Payment **NEW**
+const order = await api.payment.createRazorpayOrder(orderId, amount, "INR");
+
+// Contact **NEW**
+await api.system.submitContactForm(contactData);
 ```
 
 ### 3. Use Hooks for Auto-Fetching
@@ -533,7 +601,8 @@ try {
 ### Full Documentation:
 
 - **Architecture:** `docs/API_CLIENT_ARCHITECTURE.md`
-- **Middleware & Storage:** `docs/MIDDLEWARE_AND_STORAGE_API.md` **NEW**
+- **Middleware & Storage:** `docs/MIDDLEWARE_AND_STORAGE_API.md`
+- **Standalone APIs:** `docs/STANDALONE_APIS_SUMMARY.md` **NEW**
 - **API Routes:** `docs/core/API_ROUTES_REFERENCE.md`
 - **Bugs & Solutions:** `docs/core/BUGS_AND_SOLUTIONS.md`
 - **Code Patterns:** `docs/core/INCORRECT_CODE_PATTERNS.md`
@@ -550,6 +619,9 @@ See individual service files:
 - `src/lib/api/services/orders.service.ts`
 - `src/lib/api/services/users.service.ts`
 - `src/lib/api/services/reviews.service.ts`
+- `src/lib/api/services/storage.service.ts`
+- `src/lib/api/services/system.service.ts` **NEW**
+- `src/lib/api/services/payment.service.ts` **NEW**
 
 ---
 
@@ -646,4 +718,5 @@ If you encounter issues:
 
 **Last Updated:** November 3, 2025  
 **Status:** Phase 1 & 1.5 Complete, Ready for Phase 2  
-**New in v1.5:** Error handling, logging, rate limiting, storage API with RBAC
+**Version:** 1.6  
+**New in v1.6:** System service (contact, search, consent), Payment service (Razorpay, PayPal), Removed unused APIs (3 routes), Cleaned up endpoints
