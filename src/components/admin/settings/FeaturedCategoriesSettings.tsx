@@ -149,15 +149,23 @@ export default function FeaturedCategoriesSettings() {
         sortOrder: cat.sortOrder,
       }));
 
+      console.log("Sending category updates:", updates);
+
       // Send batch update
-      await apiClient.post("/admin/categories/batch-update", { updates });
+      const response = await apiClient.post("/admin/categories/batch-update", {
+        updates,
+      });
+
+      console.log("Category update response:", response);
 
       setSuccess("Featured categories updated successfully");
       setHasChanges(false);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to save changes");
-      console.error(err);
+      console.error("Error saving categories:", err);
+      setError(
+        err.response?.data?.error || err.message || "Failed to save changes"
+      );
     } finally {
       setSaving(false);
     }

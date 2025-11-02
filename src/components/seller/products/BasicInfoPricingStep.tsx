@@ -236,6 +236,10 @@ export default function BasicInfoPricingStep({
             checked={data.inventory.isUnique || false}
             onChange={(e) => {
               const isUnique = e.target.checked;
+              console.log(
+                "[BasicInfoPricingStep] isUnique checkbox changed:",
+                isUnique
+              );
               onChange({
                 inventory: {
                   ...data.inventory,

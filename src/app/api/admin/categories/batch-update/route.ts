@@ -16,6 +16,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { updates } = body;
 
+    console.log("Batch update request received:", { 
+      updatesCount: updates?.length,
+      updates: JSON.stringify(updates, null, 2)
+    });
+
     if (!updates || !Array.isArray(updates)) {
       return NextResponse.json(
         { error: "Updates array is required" },
@@ -42,6 +47,7 @@ export async function POST(request: NextRequest) {
       // Prepare update data
       const updateData: any = {
         updatedAt: new Date().toISOString(),
+        updatedBy: user.uid,
       };
 
       if (typeof featured === "boolean") {
@@ -56,11 +62,14 @@ export async function POST(request: NextRequest) {
         updateData.sortOrder = sortOrder;
       }
 
+      console.log(`Updating category ${id}:`, updateData);
       batch.update(categoryRef, updateData);
     }
 
     // Commit all updates
     await batch.commit();
+
+    console.log(`Successfully updated ${updates.length} categories`);
 
     return NextResponse.json({
       success: true,

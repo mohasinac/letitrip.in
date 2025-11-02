@@ -197,10 +197,13 @@ export function ProductsList({
         const calculatedStats = {
           total: products.length,
           active: products.filter((p) => p.status === "active").length,
-          outOfStock: products.filter((p) => p.quantity === 0).length,
-          lowStock: products.filter(
-            (p) => p.quantity > 0 && p.quantity < p.lowStockThreshold
-          ).length,
+          outOfStock: products.filter((p) => getProductQuantity(p) === 0)
+            .length,
+          lowStock: products.filter((p) => {
+            const quantity = getProductQuantity(p);
+            const threshold = getProductLowStockThreshold(p);
+            return quantity > 0 && quantity < threshold;
+          }).length,
         };
         setStats(calculatedStats);
       }
@@ -311,11 +314,23 @@ export function ProductsList({
   };
 
   const getStockStatus = (stock: number, lowStockThreshold: number) => {
-    if (stock === 0)
+    if (stock === 0 || stock === undefined || stock === null)
       return { label: "Out of Stock", variant: "error" as const };
     if (stock < lowStockThreshold)
       return { label: "Low Stock", variant: "warning" as const };
     return { label: "In Stock", variant: "success" as const };
+  };
+
+  // Helper to get quantity from product (handles both nested and flattened structures)
+  const getProductQuantity = (product: any): number => {
+    return product.inventory?.quantity ?? product.quantity ?? 0;
+  };
+
+  // Helper to get lowStockThreshold from product (handles both nested and flattened structures)
+  const getProductLowStockThreshold = (product: any): number => {
+    return (
+      product.inventory?.lowStockThreshold ?? product.lowStockThreshold ?? 1
+    );
   };
 
   // Table columns
@@ -350,9 +365,10 @@ export function ProductsList({
     {
       key: "sku",
       label: "SKU",
-      render: (_, product) => (
-        <span className="text-sm text-text">{product.sku || "—"}</span>
-      ),
+      render: (_, product) => {
+        const sku = (product as any).inventory?.sku || product.sku || "—";
+        return <span className="text-sm text-text">{sku}</span>;
+      },
     },
     ...(showSellerInfo
       ? [
@@ -378,31 +394,33 @@ export function ProductsList({
       label: "Price",
       align: "right" as const,
       sortable: true,
-      render: (_, product) => (
-        <div className="text-right">
-          <p className="font-semibold text-text">
-            ₹{product.price?.toLocaleString() || "0"}
-          </p>
-          {product.compareAtPrice && (
-            <p className="text-xs text-textSecondary line-through">
-              ₹{product.compareAtPrice.toLocaleString()}
-            </p>
-          )}
-        </div>
-      ),
+      render: (_, product) => {
+        const price = (product as any).pricing?.price ?? product.price ?? 0;
+        const compareAtPrice =
+          (product as any).pricing?.compareAtPrice ?? product.compareAtPrice;
+        return (
+          <div className="text-right">
+            <p className="font-semibold text-text">₹{price.toLocaleString()}</p>
+            {compareAtPrice && (
+              <p className="text-xs text-textSecondary line-through">
+                ₹{compareAtPrice.toLocaleString()}
+              </p>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "inventory",
       label: "Stock",
       sortable: true,
       render: (_, product) => {
-        const stockStatus = getStockStatus(
-          product.quantity,
-          product.lowStockThreshold
-        );
+        const quantity = getProductQuantity(product);
+        const threshold = getProductLowStockThreshold(product);
+        const stockStatus = getStockStatus(quantity, threshold);
         return (
           <div>
-            <p className="font-semibold text-text mb-1">{product.quantity}</p>
+            <p className="font-semibold text-text mb-1">{quantity}</p>
             <UnifiedBadge size="sm" variant={stockStatus.variant}>
               {stockStatus.label}
             </UnifiedBadge>

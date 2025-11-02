@@ -378,6 +378,8 @@ export async function PUT(
         quantity: parseInt(body.inventory.quantity) || 0,
         lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 1,
         trackInventory: body.inventory.trackInventory !== false,
+        isUnique: body.inventory.isUnique || false,
+        sku: body.inventory.sku || body.sku || "",
       };
     }
 

@@ -164,7 +164,7 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
               product.inventory?.trackInventory ??
               product.trackInventory ??
               true,
-            isUnique: product.inventory?.isUnique ?? product.isUnique ?? true,
+            isUnique: product.inventory?.isUnique ?? product.isUnique ?? false,
           },
 
           pickupAddressId: product.pickupAddressId,
@@ -212,6 +212,11 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
         };
 
         console.log("Transformed form data:", transformedData);
+        console.log("Product isUnique value:", {
+          fromInventory: product.inventory?.isUnique,
+          fromRoot: product.isUnique,
+          final: transformedData.inventory.isUnique,
+        });
         setFormData(transformedData);
       } else {
         setError("Product not found");
@@ -349,6 +354,10 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
       };
 
       console.log("Sending product update:", apiPayload);
+      console.log("Product isUnique being saved:", {
+        inventoryIsUnique: apiPayload.inventory.isUnique,
+        formDataIsUnique: formData.inventory.isUnique,
+      });
 
       const response = await apiPut<any>(
         `/api/seller/products/${productId}`,
