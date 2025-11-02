@@ -14,6 +14,81 @@ export interface ApiError extends Error {
 }
 
 /**
+ * Custom error classes for better error handling
+ */
+export class ValidationError extends Error {
+  statusCode = 422;
+  code = 'VALIDATION_ERROR';
+  errors: Record<string, string[]>;
+
+  constructor(errors: Record<string, string[]> | string) {
+    super(typeof errors === 'string' ? errors : 'Validation failed');
+    this.name = 'ValidationError';
+    this.errors = typeof errors === 'string' ? {} : errors;
+  }
+}
+
+export class AuthenticationError extends Error {
+  statusCode = 401;
+  code = 'AUTHENTICATION_ERROR';
+
+  constructor(message: string = 'Authentication required') {
+    super(message);
+    this.name = 'AuthenticationError';
+  }
+}
+
+export class AuthorizationError extends Error {
+  statusCode = 403;
+  code = 'AUTHORIZATION_ERROR';
+
+  constructor(message: string = 'Access forbidden') {
+    super(message);
+    this.name = 'AuthorizationError';
+  }
+}
+
+export class NotFoundError extends Error {
+  statusCode = 404;
+  code = 'NOT_FOUND';
+
+  constructor(resource: string = 'Resource') {
+    super(`${resource} not found`);
+    this.name = 'NotFoundError';
+  }
+}
+
+export class ConflictError extends Error {
+  statusCode = 409;
+  code = 'CONFLICT';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConflictError';
+  }
+}
+
+export class RateLimitError extends Error {
+  statusCode = 429;
+  code = 'RATE_LIMIT_EXCEEDED';
+
+  constructor(message: string = 'Too many requests') {
+    super(message);
+    this.name = 'RateLimitError';
+  }
+}
+
+export class InternalServerError extends Error {
+  statusCode = 500;
+  code = 'INTERNAL_SERVER_ERROR';
+
+  constructor(message: string = 'Internal server error') {
+    super(message);
+    this.name = 'InternalServerError';
+  }
+}
+
+/**
  * Standard API response format
  */
 export interface ApiResponse<T = any> {
@@ -127,6 +202,30 @@ export function withErrorHandler<T extends any[]>(
       console.error("Unhandled API error:", error);
 
       // Handle specific error types
+      if (error instanceof ValidationError) {
+        return ResponseHelper.validationError(error.message, error.errors);
+      }
+
+      if (error instanceof AuthenticationError) {
+        return ResponseHelper.unauthorized(error.message);
+      }
+
+      if (error instanceof AuthorizationError) {
+        return ResponseHelper.forbidden(error.message);
+      }
+
+      if (error instanceof NotFoundError) {
+        return ResponseHelper.notFound(error.message);
+      }
+
+      if (error instanceof ConflictError) {
+        return ResponseHelper.conflict(error.message);
+      }
+
+      if (error instanceof RateLimitError) {
+        return ResponseHelper.tooManyRequests(error.message);
+      }
+
       if (error instanceof ZodError) {
         return ResponseHelper.validationError(
           "Validation failed",

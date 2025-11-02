@@ -27,11 +27,11 @@ export interface StorageUploadRequest {
 
 export class StorageService {
   /**
-   * Upload image to Firebase Storage
-   * @param request - Upload configuration with file and folder
-   * @returns Upload response with file path and URL
-   */
-  static async uploadImage(
+ * Upload image to Firebase Storage
+ * @param request - Upload configuration with file and folder
+ * @returns Upload response with file path and URL
+ */
+  async uploadImage(
     request: StorageUploadRequest,
   ): Promise<StorageUploadResponse> {
     try {
@@ -85,7 +85,7 @@ export class StorageService {
    * @param path - File path in storage
    * @param cacheDuration - Cache duration in seconds (default: 24 hours)
    */
-  static getImageUrl(path: string, cacheDuration: number = 86400): string {
+  getImageUrl(path: string, cacheDuration: number = 86400): string {
     if (!path) return "";
 
     // If it's already a full URL, return as-is
@@ -104,7 +104,7 @@ export class StorageService {
    * Get direct Firebase Storage public URL
    * @param path - File path in storage
    */
-  static getPublicUrl(path: string): string {
+  getPublicUrl(path: string): string {
     if (!path) return "";
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
@@ -120,7 +120,7 @@ export class StorageService {
    * Download file from storage (client-side)
    * @param path - File path in storage
    */
-  static async downloadFile(path: string): Promise<Blob> {
+  async downloadFile(path: string): Promise<Blob> {
     try {
       const response = await fetch(
         `/api/storage/get?path=${encodeURIComponent(path)}`,
@@ -141,7 +141,7 @@ export class StorageService {
    * Delete file from storage (requires admin auth)
    * @param path - File path in storage
    */
-  static async deleteFile(path: string): Promise<void> {
+  async deleteFile(path: string): Promise<void> {
     try {
       await apiClient.delete(
         `/storage/delete?path=${encodeURIComponent(path)}`,
@@ -152,5 +152,8 @@ export class StorageService {
     }
   }
 }
+
+// Export singleton instance
+export const storageService = new StorageService();
 
 export default StorageService;

@@ -9,6 +9,13 @@ export {
   withErrorHandler,
   createApiError,
   throwApiError,
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  ConflictError,
+  RateLimitError,
+  InternalServerError,
   type ApiResponse,
   type ApiError,
 } from "./error-handler";
@@ -47,3 +54,18 @@ export {
   ApiResponse as LegacyApiResponse,
   withRateLimit,
 } from "@/lib/auth/middleware";
+
+// Logging
+export {
+  logger,
+  withLogging,
+  logPerformance,
+  logDatabaseQuery,
+  LOG_LEVEL,
+} from "./logger";
+
+// Rate limiting
+export {
+  checkRateLimit,
+  RATE_LIMITS,
+} from "./rate-limiter";
