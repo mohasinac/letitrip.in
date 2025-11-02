@@ -407,13 +407,20 @@ function ProductCard({
   viewMode: ViewMode;
   formatPrice: (price: number) => string;
 }) {
-  const isOutOfStock = product.quantity === 0;
+  // Handle both nested and flat structures
+  const productData = product as any;
+  const productPrice = productData.pricing?.price ?? productData.price ?? 0;
+  const productCompareAtPrice =
+    productData.pricing?.compareAtPrice ?? productData.compareAtPrice;
+  const productQuantity =
+    productData.inventory?.quantity ?? productData.quantity ?? 0;
+
+  const isOutOfStock = productQuantity === 0;
   const hasDiscount =
-    product.compareAtPrice && product.compareAtPrice > product.price;
+    productCompareAtPrice && productCompareAtPrice > productPrice;
   const discountPercent = hasDiscount
     ? Math.round(
-        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
-          100
+        ((productCompareAtPrice - productPrice) / productCompareAtPrice) * 100
       )
     : 0;
 
@@ -458,11 +465,11 @@ function ProductCard({
             )}
             <div className="flex items-center gap-2 mb-2">
               <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatPrice(product.price)}
+                {formatPrice(productPrice)}
               </span>
               {hasDiscount && (
                 <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                  {formatPrice(product.compareAtPrice!)}
+                  {formatPrice(productCompareAtPrice!)}
                 </span>
               )}
             </div>
@@ -487,7 +494,7 @@ function ProductCard({
               product={{
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: productPrice,
                 image: getProductImageUrl(
                   product,
                   0,
@@ -567,7 +574,7 @@ function ProductCard({
           product={{
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: productPrice,
             image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
             slug: product.slug,
           }}

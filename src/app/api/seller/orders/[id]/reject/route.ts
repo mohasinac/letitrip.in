@@ -104,9 +104,20 @@ export async function POST(
       createdAt: FieldValue.serverTimestamp(),
     });
 
+    // Get updated order
+    const updatedOrderDoc = await orderRef.get();
+    const updatedOrder = {
+      id: updatedOrderDoc.id,
+      ...updatedOrderDoc.data(),
+      createdAt: updatedOrderDoc.data()?.createdAt?.toDate?.(),
+      updatedAt: updatedOrderDoc.data()?.updatedAt?.toDate?.(),
+      rejectedAt: updatedOrderDoc.data()?.rejectedAt?.toDate?.(),
+    };
+
     return NextResponse.json({
       success: true,
       message: "Order rejected successfully",
+      data: updatedOrder,
     });
   } catch (error: any) {
     console.error("Error rejecting order:", error);

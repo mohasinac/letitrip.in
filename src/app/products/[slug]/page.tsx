@@ -504,6 +504,19 @@ export default function ProductDetailPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {variantProducts.slice(0, 6).map((variant) => {
                     const isCurrentProduct = variant.id === product.id;
+                    // Handle both nested and flat structures
+                    const variantData = variant as any;
+                    const variantImages =
+                      variantData.media?.images || variantData.images || [];
+                    const variantImageUrl =
+                      variantImages[0]?.url || "/assets/placeholder.png";
+                    const variantQuantity =
+                      variantData.inventory?.quantity ??
+                      variantData.quantity ??
+                      0;
+                    const variantPrice =
+                      variantData.pricing?.price ?? variantData.price ?? 0;
+
                     return (
                       <Link
                         key={variant.id}
@@ -516,15 +529,12 @@ export default function ProductDetailPage() {
                       >
                         <div className="relative aspect-square mb-2 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
                           <Image
-                            src={
-                              variant.images[0]?.url ||
-                              "/assets/placeholder.png"
-                            }
+                            src={variantImageUrl}
                             alt={variant.name}
                             fill
                             className="object-cover"
                           />
-                          {variant.quantity === 0 && (
+                          {variantQuantity === 0 && (
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                               <span className="text-white text-xs font-semibold">
                                 Out of Stock
@@ -536,7 +546,7 @@ export default function ProductDetailPage() {
                           {variant.name}
                         </p>
                         <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                          {formatPrice(variant.price)}
+                          {formatPrice(variantPrice)}
                         </p>
                       </Link>
                     );
@@ -891,13 +901,26 @@ export default function ProductDetailPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {variantProducts.map((variant) => {
+                // Handle both nested and flat structures
+                const variantData = variant as any;
+                const variantImages =
+                  variantData.media?.images || variantData.images || [];
+                const variantImageUrl =
+                  variantImages[0]?.url || "/assets/placeholder.png";
+                const variantQuantity =
+                  variantData.inventory?.quantity ?? variantData.quantity ?? 0;
+                const variantPrice =
+                  variantData.pricing?.price ?? variantData.price ?? 0;
+                const variantCompareAtPrice =
+                  variantData.pricing?.compareAtPrice ??
+                  variantData.compareAtPrice;
+
                 const variantHasDiscount =
-                  variant.compareAtPrice &&
-                  variant.compareAtPrice > variant.price;
+                  variantCompareAtPrice && variantCompareAtPrice > variantPrice;
                 const variantDiscountPercent = variantHasDiscount
                   ? Math.round(
-                      ((variant.compareAtPrice! - variant.price) /
-                        variant.compareAtPrice!) *
+                      ((variantCompareAtPrice - variantPrice) /
+                        variantCompareAtPrice) *
                         100
                     )
                   : 0;
@@ -912,9 +935,7 @@ export default function ProductDetailPage() {
                       className="block relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden"
                     >
                       <Image
-                        src={
-                          variant.images[0]?.url || "/assets/placeholder.png"
-                        }
+                        src={variantImageUrl}
                         alt={variant.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -924,7 +945,7 @@ export default function ProductDetailPage() {
                           -{variantDiscountPercent}% OFF
                         </span>
                       )}
-                      {variant.quantity === 0 && (
+                      {variantQuantity === 0 && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           <span className="px-3 py-1 bg-gray-900 text-white text-sm font-semibold rounded">
                             Out of Stock
@@ -962,11 +983,11 @@ export default function ProductDetailPage() {
                       )}
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-xl font-bold text-gray-900 dark:text-white">
-                          {formatPrice(variant.price)}
+                          {formatPrice(variantPrice)}
                         </span>
                         {variantHasDiscount && (
                           <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                            {formatPrice(variant.compareAtPrice!)}
+                            {formatPrice(variantCompareAtPrice!)}
                           </span>
                         )}
                       </div>
@@ -991,53 +1012,60 @@ export default function ProductDetailPage() {
               You May Also Like
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((relProduct) => (
-                <Link
-                  key={relProduct.id}
-                  href={`/products/${relProduct.slug}`}
-                  className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow group"
-                >
-                  <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                    <Image
-                      src={getProductImageUrl(
-                        relProduct,
-                        0,
-                        "/assets/placeholder.png"
-                      )}
-                      alt={relProduct.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                      {relProduct.name}
-                    </h3>
-                    {relProduct.rating && (
-                      <div className="flex items-center gap-1 mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-3 h-3 ${
-                                i < Math.floor(relProduct.rating!)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
+              {relatedProducts.map((relProduct) => {
+                // Handle both nested and flat structures
+                const relProductData = relProduct as any;
+                const relProductPrice =
+                  relProductData.pricing?.price ?? relProductData.price ?? 0;
+
+                return (
+                  <Link
+                    key={relProduct.id}
+                    href={`/products/${relProduct.slug}`}
+                    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow group"
+                  >
+                    <div className="relative h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                      <Image
+                        src={getProductImageUrl(
+                          relProduct,
+                          0,
+                          "/assets/placeholder.png"
+                        )}
+                        alt={relProduct.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                        {relProduct.name}
+                      </h3>
+                      {relProduct.rating && (
+                        <div className="flex items-center gap-1 mb-2">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-3 h-3 ${
+                                  i < Math.floor(relProduct.rating!)
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                            ({relProduct.reviewCount || 0})
+                          </span>
                         </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          ({relProduct.reviewCount || 0})
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">
-                      {formatPrice(relProduct.price)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                      )}
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        {formatPrice(relProductPrice)}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

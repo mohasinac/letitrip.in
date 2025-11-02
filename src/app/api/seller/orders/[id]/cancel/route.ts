@@ -141,9 +141,21 @@ export async function POST(
       });
     }
 
+    // Get updated order
+    const updatedOrderDoc = await orderRef.get();
+    const updatedOrder = {
+      id: updatedOrderDoc.id,
+      ...updatedOrderDoc.data(),
+      createdAt: updatedOrderDoc.data()?.createdAt?.toDate?.(),
+      updatedAt: updatedOrderDoc.data()?.updatedAt?.toDate?.(),
+      cancelledAt: updatedOrderDoc.data()?.cancelledAt?.toDate?.(),
+      paidAt: updatedOrderDoc.data()?.paidAt?.toDate?.(),
+    };
+
     return NextResponse.json({
       success: true,
       message: "Order cancelled successfully",
+      data: updatedOrder,
     });
   } catch (error: any) {
     console.error("Error cancelling order:", error);

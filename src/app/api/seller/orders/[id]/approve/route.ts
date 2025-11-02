@@ -92,9 +92,20 @@ export async function POST(
       createdAt: FieldValue.serverTimestamp(),
     });
 
+    // Get updated order
+    const updatedOrderDoc = await orderRef.get();
+    const updatedOrder = {
+      id: updatedOrderDoc.id,
+      ...updatedOrderDoc.data(),
+      createdAt: updatedOrderDoc.data()?.createdAt?.toDate?.(),
+      updatedAt: updatedOrderDoc.data()?.updatedAt?.toDate?.(),
+      approvedAt: updatedOrderDoc.data()?.approvedAt?.toDate?.(),
+    };
+
     return NextResponse.json({
       success: true,
       message: "Order approved successfully",
+      data: updatedOrder,
     });
   } catch (error: any) {
     console.error("Error approving order:", error);
