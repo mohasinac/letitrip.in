@@ -126,7 +126,7 @@ function NewProductContent() {
       sku: "",
       quantity: 1,
       lowStockThreshold: 10,
-      trackInventory: true,
+      trackInventory: false,
       isUnique: true,
     },
     pickupAddressId: undefined,
@@ -252,19 +252,50 @@ function NewProductContent() {
       const uploadedImages = await uploadPendingImages();
       const uploadedVideos = await uploadPendingVideos();
 
-      const finalFormData = {
-        ...formData,
+      // Transform formData to match API expectations
+      const apiPayload = {
+        name: formData.name,
+        shortDescription: formData.shortDescription,
+        fullDescription: formData.fullDescription,
+        categoryId: formData.categoryId,
+        tags: formData.tags,
+        sku: formData.inventory.sku,
+
+        // Pricing fields (flattened)
+        pricing: formData.pricing,
+
+        // Inventory fields (flattened)
+        inventory: formData.inventory,
+
+        pickupAddressId: formData.pickupAddressId,
+
+        // Media
         media: {
-          ...formData.media,
           images: uploadedImages,
           videos: uploadedVideos,
         },
+
+        // Product details
+        condition: formData.condition,
+        isReturnable: formData.returnable,
+        returnPeriodDays: formData.returnPeriod,
+
+        // Shipping
+        hasFreeShipping: formData.shipping.isFree,
+        shippingMethod: formData.shipping.method,
+        dimensions: formData.shipping.dimensions,
+
+        features: formData.features,
+        specifications: formData.specifications,
+        seo: formData.seo,
+        startDate: formData.startDate,
+        expirationDate: formData.expirationDate,
+        status: formData.status,
       };
 
-      const response = await apiPost<any>(
-        "/api/seller/products",
-        finalFormData
-      );
+      console.log("Creating new product:", apiPayload);
+
+      const response = await apiPost<any>("/api/seller/products", apiPayload);
 
       if (response.success) {
         // Clean up blob URLs
@@ -282,10 +313,22 @@ function NewProductContent() {
 
         router.push("/seller/products");
       } else {
-        setError(response.error || "Failed to create product");
+        const errorMessage =
+          response.error || response.message || "Failed to create product";
+        console.error("Product creation failed:", response);
+        setError(errorMessage);
+
+        // Scroll to top to show error
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error: any) {
-      setError(error.message || "An error occurred while creating the product");
+      console.error("Error creating product:", error);
+      const errorMessage =
+        error.message || "An error occurred while creating the product";
+      setError(errorMessage);
+
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setLoading(false);
     }

@@ -131,50 +131,77 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
       setFetchingData(true);
       const response = await apiGet<any>(`/api/seller/products/${productId}`);
 
+      console.log("Fetched product data from API:", response.data);
+
       if (response.success && response.data) {
         const product = response.data;
 
-        // Transform API data to form data structure
-        setFormData({
+        // Transform API data (flattened structure) to form data (nested structure)
+        const transformedData = {
           name: product.name || "",
           shortDescription: product.shortDescription || "",
-          fullDescription: product.fullDescription || "",
+          fullDescription: product.fullDescription || product.description || "",
           categoryId: product.categoryId || "",
           tags: product.tags || [],
+
+          // Pricing - API returns pricing object
           pricing: {
-            price: product.price || 0,
-            compareAtPrice: product.compareAtPrice,
-            cost: product.cost,
+            price: product.pricing?.price || product.price || 0,
+            compareAtPrice:
+              product.pricing?.compareAtPrice || product.compareAtPrice,
+            cost: product.pricing?.cost || product.cost,
           },
+
+          // Inventory - API returns inventory object + flattened sku
           inventory: {
-            sku: product.sku || "",
-            quantity: product.quantity || 1,
-            lowStockThreshold: product.lowStockThreshold || 10,
-            trackInventory: product.trackInventory ?? true,
-            isUnique: product.isUnique ?? true,
+            sku: product.sku || product.inventory?.sku || "",
+            quantity: product.inventory?.quantity || product.quantity || 1,
+            lowStockThreshold:
+              product.inventory?.lowStockThreshold ||
+              product.lowStockThreshold ||
+              1,
+            trackInventory:
+              product.inventory?.trackInventory ??
+              product.trackInventory ??
+              true,
+            isUnique: product.inventory?.isUnique ?? product.isUnique ?? true,
           },
+
           pickupAddressId: product.pickupAddressId,
+
+          // Media - API returns media object or flattened arrays
           media: {
-            images: product.images || [],
-            videos: product.videos || [],
+            images: product.media?.images || product.images || [],
+            videos: product.media?.videos || product.videos || [],
           },
+
           condition: product.condition || "new",
-          returnable: product.returnable ?? true,
-          returnPeriod: product.returnPeriod || 7,
+
+          // Returnable - API uses isReturnable and returnPeriodDays
+          returnable: product.isReturnable ?? product.returnable ?? true,
+          returnPeriod: product.returnPeriodDays || product.returnPeriod || 7,
+
+          // Shipping - API uses flattened hasFreeShipping, shippingMethod
           shipping: {
-            isFree: product.shipping?.isFree ?? false,
-            method: product.shipping?.method || "seller",
-            weight: product.shipping?.weight,
-            dimensions: product.shipping?.dimensions,
+            isFree:
+              product.hasFreeShipping ?? product.shipping?.isFree ?? false,
+            method:
+              product.shippingMethod || product.shipping?.method || "seller",
+            weight: product.shipping?.weight || product.weight,
+            dimensions: product.dimensions || product.shipping?.dimensions,
           },
+
           features: product.features || [],
           specifications: product.specifications || [],
+
+          // SEO - API returns seo object + flattened slug
           seo: {
             title: product.seo?.title || "",
             description: product.seo?.description || "",
             keywords: product.seo?.keywords || [],
-            slug: product.slug || "",
+            slug: product.seo?.slug || product.slug || "",
           },
+
           startDate: product.startDate
             ? new Date(product.startDate)
             : new Date(),
@@ -182,7 +209,10 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
             ? new Date(product.expirationDate)
             : undefined,
           status: product.status || "draft",
-        });
+        };
+
+        console.log("Transformed form data:", transformedData);
+        setFormData(transformedData);
       } else {
         setError("Product not found");
         setTimeout(() => router.push(SELLER_ROUTES.PRODUCTS), 2000);
@@ -277,18 +307,52 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
       const uploadedImages = await uploadPendingImages();
       const uploadedVideos = await uploadPendingVideos();
 
-      const finalFormData = {
-        ...formData,
+      // Transform formData to match API expectations
+      const apiPayload = {
+        name: formData.name,
+        shortDescription: formData.shortDescription,
+        fullDescription: formData.fullDescription,
+        categoryId: formData.categoryId,
+        tags: formData.tags,
+        sku: formData.inventory.sku,
+
+        // Pricing fields (flattened)
+        pricing: formData.pricing,
+
+        // Inventory fields (flattened)
+        inventory: formData.inventory,
+
+        pickupAddressId: formData.pickupAddressId,
+
+        // Media
         media: {
-          ...formData.media,
           images: uploadedImages,
           videos: uploadedVideos,
         },
+
+        // Product details
+        condition: formData.condition,
+        isReturnable: formData.returnable,
+        returnPeriodDays: formData.returnPeriod,
+
+        // Shipping
+        hasFreeShipping: formData.shipping.isFree,
+        shippingMethod: formData.shipping.method,
+        dimensions: formData.shipping.dimensions,
+
+        features: formData.features,
+        specifications: formData.specifications,
+        seo: formData.seo,
+        startDate: formData.startDate,
+        expirationDate: formData.expirationDate,
+        status: formData.status,
       };
+
+      console.log("Sending product update:", apiPayload);
 
       const response = await apiPut<any>(
         `/api/seller/products/${productId}`,
-        finalFormData
+        apiPayload
       );
 
       if (response.success) {
@@ -314,10 +378,23 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
         // Show success message but don't navigate away
         // This allows sellers to continue editing if needed
       } else {
-        setError(response.error || "Failed to update product");
+        // Show detailed error message from API
+        const errorMessage =
+          response.error || response.message || "Failed to update product";
+        console.error("Product update failed:", response);
+        setError(errorMessage);
+
+        // Scroll to top to show error
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error: any) {
-      setError(error.message || "An error occurred while updating the product");
+      console.error("Error updating product:", error);
+      const errorMessage =
+        error.message || "An error occurred while updating the product";
+      setError(errorMessage);
+
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setLoading(false);
     }

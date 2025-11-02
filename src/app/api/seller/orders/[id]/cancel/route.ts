@@ -9,7 +9,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify authentication
@@ -27,7 +27,9 @@ export async function POST(
     const uid = decodedToken.uid;
     const role = decodedToken.role || "user";
     const sellerId = uid;
-    const orderId = params.id;
+    
+    // Await params in Next.js 15
+    const { id: orderId } = await params;
 
     // Only sellers and admins can access
     if (role !== "seller" && role !== "admin") {

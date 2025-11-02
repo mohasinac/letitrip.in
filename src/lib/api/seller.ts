@@ -83,17 +83,22 @@ export async function apiPost<T>(url: string, data: any): Promise<T> {
       method: "POST",
       body: JSON.stringify(data),
     });
+    
+    const jsonResponse = await response.json();
+    
+    // Return the response regardless of status - let caller handle errors
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Request failed");
+      return { success: false, error: jsonResponse.error || jsonResponse.message || "Request failed" } as T;
     }
-    return response.json();
+    
+    return jsonResponse;
   } catch (error: any) {
     // If it's an authentication error, return a structured error response
     if (error.message?.includes("not authenticated")) {
       return { success: false, error: "Authentication required" } as T;
     }
-    throw error;
+    // Return structured error for any other errors
+    return { success: false, error: error.message || "Request failed" } as T;
   }
 }
 
@@ -106,17 +111,22 @@ export async function apiPut<T>(url: string, data: any): Promise<T> {
       method: "PUT",
       body: JSON.stringify(data),
     });
+    
+    const jsonResponse = await response.json();
+    
+    // Return the response regardless of status - let caller handle errors
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Request failed");
+      return { success: false, error: jsonResponse.error || jsonResponse.message || "Request failed" } as T;
     }
-    return response.json();
+    
+    return jsonResponse;
   } catch (error: any) {
     // If it's an authentication error, return a structured error response
     if (error.message?.includes("not authenticated")) {
       return { success: false, error: "Authentication required" } as T;
     }
-    throw error;
+    // Return structured error for any other errors
+    return { success: false, error: error.message || "Request failed" } as T;
   }
 }
 
