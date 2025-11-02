@@ -167,12 +167,6 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
     // Customer navigation - Mobile: Home, Shop, Orders, Profile
     allNavItems = [
       {
-        id: "home",
-        label: "Home",
-        icon: <Home className="w-6 h-6" />,
-        href: "/",
-      },
-      {
         id: "products",
         label: "Shop",
         icon: <ShoppingBag className="w-6 h-6" />,
@@ -213,12 +207,6 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
         icon: <Heart className="w-6 h-6" />,
         href: "/wishlist",
         badge: wishlistCount > 0 ? wishlistCount : undefined,
-      },
-      {
-        id: "categories",
-        label: "Categories",
-        icon: <ShoppingBag className="w-6 h-6" />,
-        href: "/categories",
       },
     ];
     bottomNavItems = allNavItems.slice(0, 4); // First 4 for mobile bottom nav

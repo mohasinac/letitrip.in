@@ -36,9 +36,32 @@ export async function POST(request: NextRequest) {
       couponCode,
     } = body;
 
+    // Validate required fields
+    if (!items || items.length === 0) {
+      return NextResponse.json(
+        { error: "Cart is empty" },
+        { status: 400 }
+      );
+    }
+
+    if (!shippingAddress) {
+      return NextResponse.json(
+        { error: "Shipping address is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!paymentMethod) {
+      return NextResponse.json(
+        { error: "Payment method is required" },
+        { status: 400 }
+      );
+    }
+
     // Validate items
     const validation = validateOrderItems(items);
     if (!validation.valid) {
+      console.error("Order validation failed:", validation.errors);
       return NextResponse.json(
         { error: "Invalid order items", details: validation.errors },
         { status: 400 }
@@ -46,9 +69,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate addresses
-    if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.city) {
+    if (!shippingAddress.fullName || !shippingAddress.city) {
       return NextResponse.json(
-        { error: "Invalid shipping address" },
+        { error: "Invalid shipping address - fullName and city are required" },
         { status: 400 }
       );
     }

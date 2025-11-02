@@ -10,10 +10,13 @@ import {
   ChevronDown,
   Loader2,
   ShoppingBag,
+  ShoppingCart,
+  Plus,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
@@ -407,6 +410,8 @@ function ProductCard({
   viewMode: ViewMode;
   formatPrice: (price: number) => string;
 }) {
+  const { addItem } = useCart();
+
   // Handle both nested and flat structures
   const productData = product as any;
   const productPrice = productData.pricing?.price ?? productData.price ?? 0;
@@ -423,6 +428,32 @@ function ProductCard({
         ((productCompareAtPrice - productPrice) / productCompareAtPrice) * 100
       )
     : 0;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isOutOfStock) {
+      toast.error("This product is out of stock");
+      return;
+    }
+
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: productPrice,
+      quantity: 1,
+      image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+      slug: product.slug,
+      sku: product.sku || "",
+      sellerId: product.seller?.id || "default-seller",
+      sellerName:
+        product.seller?.storeName || product.seller?.name || "JustForView",
+    });
+
+    toast.success("Added to cart!");
+  };
 
   if (viewMode === "list") {
     return (
@@ -474,7 +505,7 @@ function ProductCard({
               )}
             </div>
             {product.rating && (
-              <div className="flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1 text-sm mb-2">
                 <span className="text-yellow-500">★</span>
                 <span className="text-gray-700 dark:text-gray-300">
                   {product.rating.toFixed(1)}
@@ -486,6 +517,19 @@ function ProductCard({
                 )}
               </div>
             )}
+            {/* Add to Cart Button for List View */}
+            <button
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+              className={`mt-2 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors ${
+                isOutOfStock
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+            </button>
           </div>
 
           {/* Wishlist Button */}
@@ -511,9 +555,22 @@ function ProductCard({
 
   // Grid view
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow group">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow group relative">
+      {/* Wishlist Button */}
+      <div className="absolute top-2 right-2 z-10">
+        <WishlistButton
+          product={{
+            id: product.id,
+            name: product.name,
+            price: productPrice,
+            image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+            slug: product.slug,
+          }}
+        />
+      </div>
+
+      {/* Image - Clickable */}
       <Link href={`/products/${product.slug}`} className="block no-underline">
-        {/* Image */}
         <div className="relative w-full h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
           <Image
             src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
@@ -534,51 +591,57 @@ function ProductCard({
             </div>
           )}
         </div>
+      </Link>
 
-        {/* Content */}
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem]">
-            {product.name}
-          </h3>
+      {/* Content - Clickable */}
+      <Link
+        href={`/products/${product.slug}`}
+        className="block no-underline p-4"
+      >
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem]">
+          {product.name}
+        </h3>
 
-          {product.rating && (
-            <div className="flex items-center gap-1 text-sm mb-2">
-              <span className="text-yellow-500">★</span>
-              <span className="text-gray-700 dark:text-gray-300">
-                {product.rating.toFixed(1)}
-              </span>
-              {product.reviewCount && (
-                <span className="text-gray-500 dark:text-gray-400">
-                  ({product.reviewCount})
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {formatPrice(product.price)}
+        {product.rating && (
+          <div className="flex items-center gap-1 text-sm mb-2">
+            <span className="text-yellow-500">★</span>
+            <span className="text-gray-700 dark:text-gray-300">
+              {product.rating.toFixed(1)}
             </span>
-            {hasDiscount && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                {formatPrice(product.compareAtPrice!)}
+            {product.reviewCount && (
+              <span className="text-gray-500 dark:text-gray-400">
+                ({product.reviewCount})
               </span>
             )}
           </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+            {formatPrice(productPrice)}
+          </span>
+          {hasDiscount && (
+            <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+              {formatPrice(productCompareAtPrice!)}
+            </span>
+          )}
         </div>
       </Link>
 
-      {/* Wishlist Button */}
-      <div className="absolute top-2 right-2">
-        <WishlistButton
-          product={{
-            id: product.id,
-            name: product.name,
-            price: productPrice,
-            image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
-            slug: product.slug,
-          }}
-        />
+      {/* Action Button - Not clickable for navigation */}
+      <div className="px-4 pb-4">
+        <button
+          onClick={handleAddToCart}
+          disabled={isOutOfStock}
+          className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors ${
+            isOutOfStock
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          <ShoppingCart className="w-4 h-4" />
+          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+        </button>
       </div>
     </div>
   );

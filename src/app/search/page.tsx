@@ -4,10 +4,19 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Loader2, Package, Grid, List } from "lucide-react";
+import {
+  Search,
+  Loader2,
+  Package,
+  Grid,
+  List,
+  ShoppingCart,
+} from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import { getProductImageUrl } from "@/utils/product";
+import toast from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -167,6 +176,8 @@ function ProductCard({
   product: Product;
   formatPrice: (price: number) => string;
 }) {
+  const { addItem } = useCart();
+
   // Handle both nested and flat structures
   const productData = product as any;
   const productPrice = productData.pricing?.price ?? productData.price ?? 0;
@@ -183,6 +194,34 @@ function ProductCard({
       )
     : 0;
   const isOutOfStock = productQuantity === 0;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isOutOfStock) {
+      toast.error("This product is out of stock");
+      return;
+    }
+
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: productPrice,
+      quantity: 1,
+      image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
+      slug: product.slug,
+      sku: productData.sku || "",
+      sellerId: productData.seller?.id || "default-seller",
+      sellerName:
+        productData.seller?.storeName ||
+        productData.seller?.name ||
+        "JustForView",
+    });
+
+    toast.success("Added to cart!");
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all group">
@@ -247,12 +286,18 @@ function ProductCard({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/products/${product.slug}`}
-            className="flex-1 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+          <button
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+            className={`flex-1 py-2 text-center rounded-lg transition-colors font-medium text-sm flex items-center justify-center gap-2 ${
+              isOutOfStock
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
-            View Details
-          </Link>
+            <ShoppingCart className="w-4 h-4" />
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          </button>
           <WishlistButton
             product={{
               id: product.id,
