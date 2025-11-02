@@ -227,30 +227,31 @@ export default function UnifiedSidebar({
 
   return (
     <aside
-      className={`h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col sticky top-0 ${
+      className={`h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col sticky top-0 shadow-xl ${
         isCollapsed ? "w-20" : "w-64"
       }`}
       style={{ minWidth: isCollapsed ? "5rem" : "16rem" }}
     >
       {/* Sidebar Header */}
-      <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 min-h-16">
+      <div
+        className={`p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 min-h-16 bg-gradient-to-r ${gradientFrom} ${gradientTo}`}
+      >
         {!isCollapsed && (
-          <h2
-            className={`text-base font-bold bg-gradient-to-r ${gradientFrom} ${gradientTo} bg-clip-text text-transparent`}
-          >
-            {headerTitle}
+          <h2 className="text-base font-bold text-white flex items-center gap-2">
+            {isAdminRoute ? "🛡️" : isSellerRoute ? "🏪" : "👤"}
+            <span className="leading-none">{headerTitle}</span>
           </h2>
         )}
         <button
           onClick={handleToggleCollapse}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
+          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 group"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+            <ChevronRight className="h-5 w-5 text-white" />
           ) : (
-            <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+            <ChevronLeft className="h-5 w-5 text-white" />
           )}
         </button>
       </div>
@@ -266,12 +267,12 @@ export default function UnifiedSidebar({
             <React.Fragment key={item.href}>
               <Link
                 href={item.href}
-                className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group ${
+                className={`flex items-center px-3 py-3 mx-3 rounded-xl transition-all duration-200 no-underline group ${
                   isCollapsed ? "justify-center" : ""
                 } ${
                   isActive
-                    ? `bg-gradient-to-r ${activeGradient} text-white shadow-lg`
-                    : `text-gray-700 dark:text-gray-300 ${hoverColor} dark:hover:bg-gray-800`
+                    ? `bg-gradient-to-r ${activeGradient} text-white shadow-lg shadow-blue-600/30 scale-105`
+                    : `text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 ${hoverColor} dark:hover:bg-gray-700 hover:shadow-md hover:scale-105`
                 }`}
                 title={isCollapsed ? item.label : undefined}
               >
@@ -279,19 +280,21 @@ export default function UnifiedSidebar({
                   <Icon
                     className={`h-5 w-5 ${
                       isActive
-                        ? "text-white animate-pulse"
+                        ? "text-white"
                         : "group-hover:scale-110 transition-transform"
                     }`}
                   />
                   {showBadge && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-bounce"></span>
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-bounce shadow-lg"></span>
                   )}
                 </div>
                 {!isCollapsed && (
-                  <span className="ml-3 flex-1 font-medium">{item.label}</span>
+                  <span className="ml-3 flex-1 font-medium text-sm">
+                    {item.label}
+                  </span>
                 )}
                 {!isCollapsed && showBadge && (
-                  <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse">
                     {unreadAlerts > 99
                       ? "99+"
                       : unreadAlerts > 9
@@ -302,10 +305,10 @@ export default function UnifiedSidebar({
               </Link>
               {/* Add separators for logical grouping */}
               {isAdminRoute && (index === 1 || index === 5 || index === 10) && (
-                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent my-3 mx-4"></div>
               )}
               {isSellerRoute && (index === 1 || index === 4 || index === 7) && (
-                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent my-3 mx-4"></div>
               )}
             </React.Fragment>
           );
@@ -314,18 +317,20 @@ export default function UnifiedSidebar({
         {/* User-specific items shown on all routes */}
         {!isAdminRoute && !isSellerRoute && (
           <>
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent my-3 mx-4"></div>
 
             {/* Show admin/seller panel links if user has those roles */}
             {user?.role === "admin" && (
               <Link
                 href="/admin"
-                className="flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800"
+                className="flex items-center px-3 py-3 mx-3 rounded-xl transition-all duration-200 no-underline group text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg hover:scale-105 shadow-md shadow-purple-600/20"
                 title={isCollapsed ? "Admin Panel" : undefined}
               >
-                <Shield className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <Shield className="h-5 w-5" />
                 {!isCollapsed && (
-                  <span className="ml-3 flex-1 font-medium">Admin Panel</span>
+                  <span className="ml-3 flex-1 font-medium text-sm">
+                    Admin Panel
+                  </span>
                 )}
               </Link>
             )}
@@ -333,27 +338,29 @@ export default function UnifiedSidebar({
             {(user?.role === "seller" || user?.role === "admin") && (
               <Link
                 href="/seller/dashboard"
-                className="flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
+                className="flex items-center px-3 py-3 mx-3 rounded-xl transition-all duration-200 no-underline group text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 hover:shadow-lg hover:scale-105 shadow-md shadow-green-600/20 mt-2"
                 title={isCollapsed ? "Seller Panel" : undefined}
               >
-                <Store className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <Store className="h-5 w-5" />
                 {!isCollapsed && (
-                  <span className="ml-3 flex-1 font-medium">Seller Panel</span>
+                  <span className="ml-3 flex-1 font-medium text-sm">
+                    Seller Panel
+                  </span>
                 )}
               </Link>
             )}
 
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent my-3 mx-4"></div>
 
             {/* Logout button */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-800"
+              className="w-full flex items-center px-3 py-3 mx-3 rounded-xl transition-all duration-200 no-underline group text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-950 border-2 border-red-200 dark:border-red-900 hover:border-red-500 dark:hover:border-red-500 hover:shadow-md hover:scale-105"
               title={isCollapsed ? "Logout" : undefined}
             >
-              <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
+              <LogOut className="h-5 w-5" />
               {!isCollapsed && (
-                <span className="ml-3 flex-1 font-medium">Logout</span>
+                <span className="ml-3 flex-1 font-medium text-sm">Logout</span>
               )}
             </button>
           </>
@@ -362,16 +369,16 @@ export default function UnifiedSidebar({
 
       {/* Sidebar Footer */}
       <div
-        className={`p-4 border-t border-gray-200 dark:border-gray-800 ${
+        className={`p-4 border-t border-gray-200 dark:border-gray-800 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 ${
           isCollapsed ? "text-center" : ""
         }`}
       >
         {!isCollapsed ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {/* User info */}
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-md">
               <div
-                className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center text-white font-bold text-sm`}
+                className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
               >
                 {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
               </div>
@@ -379,7 +386,7 @@ export default function UnifiedSidebar({
                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                   {user?.name || "User"}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                   {user?.email}
                 </p>
               </div>
@@ -387,42 +394,48 @@ export default function UnifiedSidebar({
 
             {/* Version and status */}
             {(isAdminRoute || isSellerRoute) && (
-              <>
-                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>{isSellerRoute ? "Store Status" : "Version"}</span>
+              <div className="space-y-2 px-1">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">
+                    {isSellerRoute ? "Store Status" : "Version"}
+                  </span>
                   {isSellerRoute ? (
-                    <span className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold">
-                      <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+                    <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400 font-semibold">
+                      <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse shadow-lg shadow-green-600/50"></span>
                       Active
                     </span>
                   ) : (
-                    <span className="font-semibold">v1.2.0</span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                      v1.2.0
+                    </span>
                   )}
                 </div>
                 {!isSellerRoute && (
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden shadow-inner">
                       <div
-                        className="bg-blue-600 h-1.5 rounded-full"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full shadow-lg transition-all duration-300"
                         style={{ width: "75%" }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
                       75%
                     </span>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         ) : (
           <div
-            className={`w-8 h-8 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center`}
+            className={`w-10 h-10 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg`}
           >
             {isSellerRoute ? (
-              <Store className="h-4 w-4 text-white" />
+              <Store className="h-5 w-5 text-white" />
+            ) : isAdminRoute ? (
+              <Shield className="h-5 w-5 text-white" />
             ) : (
-              <Shield className="h-4 w-4 text-white" />
+              <UserCircle className="h-5 w-5 text-white" />
             )}
           </div>
         )}

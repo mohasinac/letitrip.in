@@ -423,7 +423,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
       <div className="flex flex-col flex-grow w-full">
         {/* Header */}
-        <header className="sticky top-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 z-50">
+        <header className="sticky top-0 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50 shadow-sm">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center py-3 gap-4">
               {/* Left: Mobile menu + Logo */}
@@ -431,7 +431,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {/* Hamburger menu - Hidden on desktop (lg and above) */}
                 <button
                   onClick={handleDrawerToggle}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
+                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-gray-800 transition-all duration-200 lg:hidden hover:shadow-md"
                   aria-label="open drawer"
                 >
                   <Menu className="h-6 w-6" />
@@ -439,25 +439,27 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
 
                 <Link
                   href="/"
-                  className="flex items-center gap-2 font-bold text-gray-900 dark:text-white no-underline text-lg md:text-xl flex-shrink-0"
+                  className="flex items-center gap-2 font-bold text-gray-900 dark:text-white no-underline text-lg md:text-xl flex-shrink-0 hover:scale-105 transition-transform duration-200"
                 >
                   <span className="text-2xl leading-none">🎯</span>
-                  <span className="leading-none">HobbiesSpot</span>
+                  <span className="leading-none bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    HobbiesSpot
+                  </span>
                 </Link>
               </div>
 
               {/* Right: Navigation + Actions */}
               <div className="flex items-center gap-2 md:gap-4">
                 {/* Desktop Navigation */}
-                <nav className="hidden lg:flex gap-1">
+                <nav className="hidden lg:flex gap-2">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
+                      className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 no-underline ${
                         pathname === item.href
-                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/20"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30 scale-105"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-gray-800 hover:shadow-md hover:scale-105"
                       }`}
                     >
                       {item.name}
@@ -469,7 +471,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 <div className="relative hidden md:block">
                   <button
                     onClick={() => setCurrencyMenuOpen(!currencyMenuOpen)}
-                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md rounded-lg transition-all duration-200"
+                    className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-gray-800 hover:shadow-md rounded-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
                   >
                     <Globe className="h-4 w-4" />
                     <span>{selectedCurrency.code}</span>
@@ -482,19 +484,25 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                         className="fixed inset-0 z-10"
                         onClick={() => setCurrencyMenuOpen(false)}
                       ></div>
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-20">
+                      <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-20 backdrop-blur-xl">
                         {currencies.map((currency) => (
                           <button
                             key={currency.code}
                             onClick={() => handleCurrencyChange(currency.code)}
-                            className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-200 ${
+                            className={`w-full text-left px-4 py-3 text-sm transition-all duration-200 ${
                               selectedCurrency.code === currency.code
-                                ? "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 text-blue-700 dark:text-blue-300 font-semibold"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold shadow-md"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-700"
                             }`}
                           >
-                            <span className="font-mono">{currency.symbol}</span>{" "}
-                            {currency.code} - {currency.name}
+                            <span className="font-mono font-bold">
+                              {currency.symbol}
+                            </span>{" "}
+                            <span className="font-medium">{currency.code}</span>{" "}
+                            -{" "}
+                            <span className="text-xs opacity-80">
+                              {currency.name}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -505,7 +513,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {/* Search Button */}
                 <button
                   onClick={handleSearchToggle}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md transition-all duration-200"
+                  className="p-2.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-gray-800 hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-700"
                   aria-label="search"
                 >
                   <Search className="h-5 w-5" />
@@ -514,7 +522,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {/* Theme Toggle */}
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md transition-all duration-200"
+                  className="p-2.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-gray-800 hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-700"
                   aria-label="toggle theme"
                 >
                   {mode === "dark" ? (
@@ -528,7 +536,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                 {!user && !loading && (
                   <Link
                     href="/login"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium no-underline"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 hover:shadow-lg hover:scale-105 transition-all duration-200 text-sm font-semibold no-underline shadow-md shadow-blue-600/30"
                   >
                     <LogIn className="h-4 w-4" />
                     <span className="hidden md:inline">Sign In</span>
