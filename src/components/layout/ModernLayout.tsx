@@ -177,20 +177,19 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
         label: "Shop",
         icon: <ShoppingBag className="w-6 h-6" />,
         href: "/products",
-      },
-      ...(user
+      },          ...(user
         ? [
             {
               id: "orders",
               label: "Orders",
               icon: <Package className="w-6 h-6" />,
-              href: "/account/orders",
+              href: "/profile/orders",
             },
             {
               id: "account",
               label: "Profile",
               icon: <User className="w-6 h-6" />,
-              href: "/account/profile",
+              href: "/profile",
             },
           ]
         : [
@@ -198,7 +197,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               id: "orders",
               label: "Orders",
               icon: <Package className="w-6 h-6" />,
-              href: "/account/orders",
+              href: "/profile/orders",
             },
             {
               id: "login",
@@ -701,8 +700,8 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
                   {[
                     { name: "Contact Us", href: "/contact" },
                     { name: "FAQ", href: "/faq" },
-                    { name: "Track Order", href: "/account/track-order" },
-                    { name: "Shipping Info", href: "/shipping" },
+                    { name: "Track Order", href: "/profile/track-order" },
+                    { name: "Shipping Info", href: "/help/shipping" },
                   ].map((item) => (
                     <Link
                       key={item.name}

@@ -146,12 +146,18 @@ const sellerMenuItems = [
 // User menu items (for logged-in users on non-admin/seller routes)
 const userMenuItems = [
   { label: "Profile", icon: User, href: "/profile", badge: false },
-  { label: "Orders", icon: Package, href: "/account/orders", badge: false },
-  { label: "Wishlist", icon: Heart, href: "/account/wishlist", badge: false },
+  { label: "Orders", icon: Package, href: "/profile/orders", badge: false },
+  { label: "Wishlist", icon: Heart, href: "/wishlist", badge: false },
+  {
+    label: "Addresses",
+    icon: MapPin,
+    href: "/profile/addresses",
+    badge: false,
+  },
   {
     label: "Track Order",
-    icon: MapPin,
-    href: "/account/track-order",
+    icon: Truck,
+    href: "/profile/track-order",
     badge: false,
   },
 ];
