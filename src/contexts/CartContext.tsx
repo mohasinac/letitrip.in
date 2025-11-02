@@ -78,16 +78,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             setItems(merged);
 
             // Save merged cart to database
-            await fetch("/api/cart", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: user.id,
-                items: merged,
-              }),
-            });
+            if (typeof user.getIdToken === "function") {
+              const token = await user.getIdToken();
+              await fetch("/api/cart", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  items: merged,
+                }),
+              });
+            }
 
             // Clear guest cart
             GuestCartManager.clear();
@@ -110,17 +113,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const saveCart = async () => {
         try {
           if (user) {
-            // Logged-in user: save to database
-            await fetch("/api/cart", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: user.id,
-                items,
-              }),
-            });
+            // Check if user has getIdToken method (Firebase user)
+            if (typeof user.getIdToken === "function") {
+              // Logged-in user: save to database
+              const token = await user.getIdToken();
+              await fetch("/api/cart", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  items,
+                }),
+              });
+            } else {
+              // Fallback to guest storage if no token method
+              GuestCartManager.save(items);
+            }
           } else {
             // Guest: save to cookies/localStorage
             GuestCartManager.save(items);

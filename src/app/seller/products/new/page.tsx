@@ -107,6 +107,7 @@ function NewProductContent() {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [addresses, setAddresses] = useState<any[]>([]);
 
@@ -493,6 +494,15 @@ function NewProductContent() {
           { label: "Products", href: SELLER_ROUTES.PRODUCTS },
           { label: "Add Product" },
         ]}
+        actions={
+          <UnifiedButton
+            variant="outline"
+            onClick={() => router.push(SELLER_ROUTES.PRODUCTS)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Products
+          </UnifiedButton>
+        }
       />
 
       {/* Error Alert */}

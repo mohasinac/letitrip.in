@@ -115,6 +115,7 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
   const [formData, setFormData] = useState<ProductFormData | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Fetch product data and dependencies
   useEffect(() => {
@@ -304,7 +305,14 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
           }
         });
 
-        router.push(SELLER_ROUTES.PRODUCTS);
+        setError(null);
+        setSuccessMessage("Product updated successfully!");
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000);
+        // Refresh product data to show latest changes
+        await fetchProductData();
+        // Show success message but don't navigate away
+        // This allows sellers to continue editing if needed
       } else {
         setError(response.error || "Failed to update product");
       }
@@ -620,6 +628,13 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="flex gap-2">
             <UnifiedButton
               variant="outline"
+              icon={<ArrowLeft />}
+              onClick={() => router.push(SELLER_ROUTES.PRODUCTS)}
+            >
+              Back to Products
+            </UnifiedButton>
+            <UnifiedButton
+              variant="outline"
               icon={<Archive />}
               onClick={() => setArchiveDialogOpen(true)}
             >
@@ -640,6 +655,13 @@ function EditProductContent({ params }: { params: Promise<{ id: string }> }) {
       {error && (
         <UnifiedAlert variant="error" onClose={() => setError(null)}>
           {error}
+        </UnifiedAlert>
+      )}
+
+      {/* Success Alert */}
+      {successMessage && (
+        <UnifiedAlert variant="success" onClose={() => setSuccessMessage(null)}>
+          {successMessage}
         </UnifiedAlert>
       )}
 
