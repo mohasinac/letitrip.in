@@ -30,6 +30,14 @@ export async function POST(
     // Await params in Next.js 15
     const { id: orderId } = await params;
 
+    // Validate orderId
+    if (!orderId || typeof orderId !== "string" || orderId.trim() === "") {
+      return NextResponse.json(
+        { success: false, error: "Invalid order ID" },
+        { status: 400 },
+      );
+    }
+
     // Only sellers and admins can access
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
@@ -72,12 +80,12 @@ export async function POST(
       );
     }
 
-    // Check if order is in pending status
-    if (orderData?.status !== "pending") {
+    // Check if order is in pending_approval status
+    if (orderData?.status !== "pending_approval") {
       return NextResponse.json(
         {
           success: false,
-          error: "Only pending orders can be rejected",
+          error: "Only pending_approval orders can be rejected",
         },
         { status: 400 },
       );

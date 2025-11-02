@@ -31,6 +31,14 @@ export async function POST(
     // Await params in Next.js 15
     const { id: orderId } = await params;
 
+    // Validate orderId
+    if (!orderId || typeof orderId !== "string" || orderId.trim() === "") {
+      return NextResponse.json(
+        { success: false, error: "Invalid order ID" },
+        { status: 400 },
+      );
+    }
+
     // Only sellers and admins can access
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
