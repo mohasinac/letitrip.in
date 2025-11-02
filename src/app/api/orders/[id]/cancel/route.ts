@@ -3,13 +3,13 @@ import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 /**
- * POST /api/seller/orders/[id]/cancel
- * Cancel an order (Seller)
- * Rule: Sellers can only cancel within 3 days of payment
+ * POST /api/orders/[id]/cancel
+ * Cancel an order (Customer)
+ * Rule: Customers can only cancel within 1 day of payment
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -17,7 +17,7 @@ export async function POST(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -25,17 +25,9 @@ export async function POST(
     const auth = getAdminAuth();
     const decodedToken = await auth.verifyIdToken(token);
     const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-    const sellerId = uid;
-    const orderId = params.id;
 
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Access denied. Seller role required." },
-        { status: 403 },
-      );
-    }
+    const resolvedParams = await params;
+    const orderId = resolvedParams.id;
 
     const adminDb = getAdminDb();
 
@@ -50,17 +42,17 @@ export async function POST(
     if (!orderDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Order not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
     const orderData = orderDoc.data();
 
-    // Verify order belongs to this seller (unless admin)
-    if (role !== "admin" && orderData?.sellerId !== sellerId) {
+    // Verify order belongs to this user
+    if (orderData?.userId !== uid) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -75,12 +67,12 @@ export async function POST(
           success: false,
           error: "Cannot cancel delivered, refunded, or already cancelled orders",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Check if payment was made and enforce 3-day rule (only for sellers, not admins)
-    if (role === "seller" && orderData?.paidAt) {
+    // Check if payment was made and enforce 1-day rule
+    if (orderData?.paidAt) {
       const paidAt = orderData.paidAt instanceof Timestamp
         ? orderData.paidAt.toDate()
         : new Date(orderData.paidAt);
@@ -89,11 +81,11 @@ export async function POST(
       const timeDiff = now.getTime() - paidAt.getTime();
       const daysSincePayment = timeDiff / (1000 * 60 * 60 * 24);
 
-      if (daysSincePayment > 3) {
+      if (daysSincePayment > 1) {
         return NextResponse.json(
           {
             success: false,
-            error: "Cancellation window expired. Sellers can only cancel orders within 3 days of payment. Please contact admin for assistance.",
+            error: "Cancellation window expired. You can only cancel orders within 1 day of payment. Please contact support for assistance.",
           },
           { status: 400 }
         );
@@ -104,40 +96,38 @@ export async function POST(
     await orderRef.update({
       status: "cancelled",
       cancelledAt: FieldValue.serverTimestamp(),
-      cancelledBy: role === "admin" ? "admin" : "seller",
-      cancellationReason: reason || `Cancelled by ${role}`,
+      cancelledBy: "customer",
+      cancellationReason: reason || "Cancelled by customer",
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    // Create alert for seller (if cancelled by admin)
-    if (role === "admin" && orderData?.sellerId) {
+    // Create notification for seller
+    if (orderData?.sellerId) {
       await adminDb.collection("alerts").add({
         sellerId: orderData.sellerId,
         orderId,
         orderNumber: orderData?.orderNumber,
         type: "order_cancelled",
-        title: "Order Cancelled by Admin",
-        message: `Order ${orderData?.orderNumber} has been cancelled by admin`,
+        title: "Order Cancelled by Customer",
+        message: `Order ${orderData?.orderNumber} has been cancelled by the customer`,
         severity: "warning",
         isRead: false,
         createdAt: FieldValue.serverTimestamp(),
       });
     }
 
-    // Create alert for customer
-    if (orderData?.userId) {
-      await adminDb.collection("alerts").add({
-        userId: orderData.userId,
-        orderId,
-        orderNumber: orderData?.orderNumber,
-        type: "order_cancelled",
-        title: "Order Cancelled",
-        message: `Your order ${orderData?.orderNumber} has been cancelled`,
-        severity: "warning",
-        isRead: false,
-        createdAt: FieldValue.serverTimestamp(),
-      });
-    }
+    // Create notification for customer
+    await adminDb.collection("alerts").add({
+      userId: uid,
+      orderId,
+      orderNumber: orderData?.orderNumber,
+      type: "order_cancelled",
+      title: "Order Cancelled",
+      message: `Your order ${orderData?.orderNumber} has been cancelled successfully`,
+      severity: "info",
+      isRead: false,
+      createdAt: FieldValue.serverTimestamp(),
+    });
 
     return NextResponse.json({
       success: true,
@@ -150,7 +140,7 @@ export async function POST(
         success: false,
         error: error.message || "Failed to cancel order",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

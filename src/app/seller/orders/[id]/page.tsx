@@ -103,6 +103,7 @@ interface Order {
   shippedAt?: string;
   deliveredAt?: string;
   cancelledAt?: string;
+  paidAt?: string;
 }
 
 export default function OrderDetailPage({
@@ -132,12 +133,54 @@ export default function OrderDetailPage({
     variant: "success",
   });
 
+  // Get user role
+  const userRole = user?.role || "seller";
+
   // Action dialogs
   const [approveDialog, setApproveDialog] = useState(false);
   const [rejectDialog, setRejectDialog] = useState(false);
   const [cancelDialog, setCancelDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [cancelReason, setCancelReason] = useState("");
+
+  // Calculate if cancellation is allowed based on role and time
+  const canCancelOrder = () => {
+    if (!order) return false;
+    
+    // Admin can always cancel (no time limit)
+    if (userRole === "admin") return true;
+    
+    // Cannot cancel if already delivered, cancelled, or rejected
+    if (["delivered", "cancelled", "rejected"].includes(order.status)) {
+      return false;
+    }
+    
+    // For sellers, check 3-day limit from payment date
+    if (userRole === "seller" && order.paymentStatus === "paid" && order.paidAt) {
+      const paidAt = new Date(order.paidAt);
+      const now = new Date();
+      const daysSincePayment = (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60 * 24);
+      return daysSincePayment <= 3;
+    }
+    
+    return true; // For unpaid orders, allow cancellation
+  };
+
+  const getCancellationTimeInfo = () => {
+    if (!order || userRole === "admin") return null;
+    
+    if (order.paymentStatus === "paid" && order.paidAt) {
+      const paidAt = new Date(order.paidAt);
+      const now = new Date();
+      const hoursRemaining = 72 - ((now.getTime() - paidAt.getTime()) / (1000 * 60 * 60));
+      
+      if (hoursRemaining <= 0) return "expired";
+      if (hoursRemaining < 24) return `${Math.floor(hoursRemaining)} hours`;
+      return `${Math.floor(hoursRemaining / 24)} days`;
+    }
+    
+    return null;
+  };
 
   // Fetch order details
   useEffect(() => {
@@ -524,12 +567,13 @@ export default function OrderDetailPage({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
-            {order.status === "pending" && (
+            {order.status === "pending_approval" && (
               <>
                 <UnifiedButton
                   variant="success"
                   icon={<CheckCircle />}
                   onClick={() => setApproveDialog(true)}
+                  disabled={actionLoading}
                 >
                   Approve Order
                 </UnifiedButton>
@@ -537,6 +581,7 @@ export default function OrderDetailPage({
                   variant="destructive"
                   icon={<XCircle />}
                   onClick={() => setRejectDialog(true)}
+                  disabled={actionLoading}
                 >
                   Reject Order
                 </UnifiedButton>
@@ -544,18 +589,48 @@ export default function OrderDetailPage({
             )}
 
             {order.status === "processing" && (
+              <>
+                <UnifiedButton
+                  variant="primary"
+                  icon={<Truck />}
+                  onClick={() => {
+                    setAlert({
+                      show: true,
+                      message: "Shipment feature coming soon!",
+                      variant: "info",
+                    });
+                  }}
+                >
+                  Mark as Shipped
+                </UnifiedButton>
+                <UnifiedButton
+                  variant="outline"
+                  icon={<Package />}
+                  onClick={() => {
+                    window.open(
+                      `/seller/shipments/create?orderId=${order.id}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  Create Shipment
+                </UnifiedButton>
+              </>
+            )}
+
+            {order.status === "shipped" && (
               <UnifiedButton
-                variant="primary"
-                icon={<Truck />}
+                variant="success"
+                icon={<CheckCircle2 />}
                 onClick={() => {
                   setAlert({
                     show: true,
-                    message: "Shipment feature coming soon!",
+                    message: "Mark as delivered feature coming soon!",
                     variant: "info",
                   });
                 }}
               >
-                Initiate Shipment
+                Mark as Delivered
               </UnifiedButton>
             )}
 
@@ -564,6 +639,7 @@ export default function OrderDetailPage({
                 variant="destructive"
                 icon={<X />}
                 onClick={() => setCancelDialog(true)}
+                disabled={actionLoading}
               >
                 Cancel Order
               </UnifiedButton>
@@ -576,6 +652,49 @@ export default function OrderDetailPage({
               disabled={loading}
             >
               {loading ? "Generating..." : "Generate Invoice"}
+            </UnifiedButton>
+
+            <UnifiedButton
+              variant="outline"
+              icon={<ShoppingBag />}
+              onClick={() => {
+                const packingSlipUrl = `/seller/orders/${order.id}/packing-slip`;
+                window.open(packingSlipUrl, "_blank");
+              }}
+            >
+              Packing Slip
+            </UnifiedButton>
+
+            {order.shippingAddress && (
+              <UnifiedButton
+                variant="outline"
+                icon={<Truck />}
+                onClick={() => {
+                  const address = order.shippingAddress;
+                  const addressString = `${address.addressLine1}, ${address.city}, ${address.state} ${address.pincode}, ${address.country}`;
+                  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    addressString
+                  )}`;
+                  window.open(mapsUrl, "_blank");
+                }}
+              >
+                View on Map
+              </UnifiedButton>
+            )}
+
+            <UnifiedButton
+              variant="outline"
+              icon={<CreditCard />}
+              onClick={() => {
+                navigator.clipboard.writeText(order.orderNumber);
+                setAlert({
+                  show: true,
+                  message: "Order number copied to clipboard!",
+                  variant: "success",
+                });
+              }}
+            >
+              Copy Order #
             </UnifiedButton>
           </div>
         </div>
