@@ -95,6 +95,12 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
       return pathname === href || pathname?.startsWith(`${href}/`);
     };
 
+    // Split items into rows if there are more than 4 items
+    const itemsPerRow = 4;
+    const hasMultipleRows = items.length > itemsPerRow;
+    const firstRowItems = hasMultipleRows ? items.slice(0, itemsPerRow) : items;
+    const secondRowItems = hasMultipleRows ? items.slice(itemsPerRow) : [];
+
     return (
       <nav
         ref={ref}
@@ -108,11 +114,18 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
         )}
       >
         <div className="relative">
-          <div className="flex items-center justify-around h-16 px-2">
-            {items.map((item, index) => {
+          {/* First Row */}
+          <div
+            className={cn(
+              "flex items-center justify-around px-2",
+              hasMultipleRows ? "h-14" : "h-16"
+            )}
+          >
+            {firstRowItems.map((item, index) => {
               const isActive = isItemActive(item.href);
               const isCenterItem =
-                floatingAction && index === Math.floor(items.length / 2);
+                floatingAction &&
+                index === Math.floor(firstRowItems.length / 2);
 
               return (
                 <React.Fragment key={item.id}>
@@ -123,7 +136,7 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
                     href={item.href}
                     className={cn(
                       "flex flex-col items-center justify-center gap-1",
-                      "min-w-[64px] px-3 py-2 rounded-lg",
+                      "min-w-[64px] px-2 py-1.5 rounded-lg",
                       "transition-all duration-200",
                       isActive
                         ? "text-white"
@@ -134,7 +147,7 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
                     <div className="relative">
                       <div
                         className={cn(
-                          "flex items-center justify-center w-7 h-7",
+                          "flex items-center justify-center w-6 h-6",
                           "transition-all duration-200",
                           isActive && "scale-110"
                         )}
@@ -178,6 +191,74 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
               );
             })}
           </div>
+
+          {/* Second Row (if needed) */}
+          {hasMultipleRows && secondRowItems.length > 0 && (
+            <div className="flex items-center justify-around h-14 px-2 border-t border-white/5">
+              {secondRowItems.map((item) => {
+                const isActive = isItemActive(item.href);
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-1",
+                      "min-w-[64px] px-2 py-1.5 rounded-lg",
+                      "transition-all duration-200",
+                      isActive
+                        ? "text-white"
+                        : "text-white/50 hover:text-white/70",
+                      item.disabled && "opacity-50 pointer-events-none"
+                    )}
+                  >
+                    <div className="relative">
+                      <div
+                        className={cn(
+                          "flex items-center justify-center w-6 h-6",
+                          "transition-all duration-200",
+                          isActive && "scale-110"
+                        )}
+                      >
+                        {item.icon}
+                      </div>
+
+                      {/* Badge */}
+                      {item.badge !== undefined && (
+                        <span
+                          className={cn(
+                            "absolute -top-1 -right-1",
+                            "min-w-[18px] h-[18px] px-1",
+                            "flex items-center justify-center",
+                            "text-[10px] font-bold",
+                            "bg-error text-white rounded-full"
+                          )}
+                        >
+                          {typeof item.badge === "number" && item.badge > 9
+                            ? "9+"
+                            : item.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    <span
+                      className={cn(
+                        "text-[10px] font-medium truncate max-w-full",
+                        isActive && "font-semibold"
+                      )}
+                    >
+                      {item.label}
+                    </span>
+
+                    {/* Active indicator */}
+                    {isActive && (
+                      <div className="absolute -top-px left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           {/* Floating Action Button */}
           {floatingAction && (

@@ -58,65 +58,176 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Determine if we're on admin/seller routes to hide bottom nav
-  const hideBottomNav =
-    pathname?.startsWith("/admin") ||
-    pathname?.startsWith("/seller") ||
-    pathname?.startsWith("/game");
+  // Determine current route context
+  const isAdminRoute = pathname?.startsWith("/admin") || false;
+  const isSellerRoute = pathname?.startsWith("/seller") || false;
+  const isGameRoute = pathname?.startsWith("/game") || false;
 
-  // Bottom navigation items based on user state
-  const bottomNavItems = [
-    {
-      id: "home",
-      label: "Home",
-      icon: <Home className="w-6 h-6" />,
-      href: "/",
-    },
-    {
-      id: "products",
-      label: "Shop",
-      icon: <ShoppingBag className="w-6 h-6" />,
-      href: "/products",
-    },
-    {
-      id: "wishlist",
-      label: "Wishlist",
-      icon: <Heart className="w-6 h-6" />,
-      href: "/wishlist",
-      badge: wishlistCount > 0 ? wishlistCount : undefined,
-    },
-    ...(user
-      ? [
-          {
-            id: "orders",
-            label: "Orders",
-            icon: <Package className="w-6 h-6" />,
-            href: "/account/orders",
-          },
-          {
-            id: "account",
-            label: "Account",
-            icon: <User className="w-6 h-6" />,
-            href: "/account",
-          },
-        ]
-      : [
-          {
-            id: "login",
-            label: "Login",
-            icon: <User className="w-6 h-6" />,
-            href: "/login",
-          },
-        ]),
-  ];
+  // Hide bottom nav only on game route
+  const hideBottomNav = isGameRoute;
+
+  // Bottom navigation items based on route and user role
+  let bottomNavItems = [];
+  let allNavItems = [];
+
+  if (isAdminRoute && user?.role === "admin") {
+    // Admin panel navigation - Mobile: Dashboard, Products, Categories, Analytics
+    allNavItems = [
+      {
+        id: "admin-dashboard",
+        label: "Dashboard",
+        icon: <Home className="w-6 h-6" />,
+        href: "/admin/dashboard",
+      },
+      {
+        id: "admin-products",
+        label: "Products",
+        icon: <Package className="w-6 h-6" />,
+        href: "/admin/products",
+      },
+      {
+        id: "admin-categories",
+        label: "Categories",
+        icon: <ShoppingBag className="w-6 h-6" />,
+        href: "/admin/categories",
+      },
+      {
+        id: "admin-analytics",
+        label: "Analytics",
+        icon: <User className="w-6 h-6" />,
+        href: "/admin/analytics",
+      },
+      {
+        id: "admin-orders",
+        label: "Orders",
+        icon: <ShoppingBag className="w-6 h-6" />,
+        href: "/admin/orders",
+      },
+      {
+        id: "admin-users",
+        label: "Users",
+        icon: <User className="w-6 h-6" />,
+        href: "/admin/users",
+      },
+      {
+        id: "admin-settings",
+        label: "Settings",
+        icon: <User className="w-6 h-6" />,
+        href: "/admin/settings",
+      },
+    ];
+    bottomNavItems = allNavItems.slice(0, 4); // First 4 for mobile bottom nav
+  } else if (
+    isSellerRoute &&
+    (user?.role === "seller" || user?.role === "admin")
+  ) {
+    // Seller panel navigation - Mobile: Products, Orders, Analytics, Shipments
+    allNavItems = [
+      {
+        id: "seller-products",
+        label: "Products",
+        icon: <Package className="w-6 h-6" />,
+        href: "/seller/products",
+      },
+      {
+        id: "seller-orders",
+        label: "Orders",
+        icon: <ShoppingBag className="w-6 h-6" />,
+        href: "/seller/orders",
+      },
+      {
+        id: "seller-analytics",
+        label: "Analytics",
+        icon: <User className="w-6 h-6" />,
+        href: "/seller/analytics",
+      },
+      {
+        id: "seller-shipments",
+        label: "Shipments",
+        icon: <Package className="w-6 h-6" />,
+        href: "/seller/shipments",
+      },
+      {
+        id: "seller-dashboard",
+        label: "Dashboard",
+        icon: <Home className="w-6 h-6" />,
+        href: "/seller/dashboard",
+      },
+      {
+        id: "seller-settings",
+        label: "Settings",
+        icon: <User className="w-6 h-6" />,
+        href: "/seller/settings",
+      },
+    ];
+    bottomNavItems = allNavItems.slice(0, 4); // First 4 for mobile bottom nav
+  } else {
+    // Customer navigation - Mobile: Home, Shop, Orders, Profile
+    allNavItems = [
+      {
+        id: "home",
+        label: "Home",
+        icon: <Home className="w-6 h-6" />,
+        href: "/",
+      },
+      {
+        id: "products",
+        label: "Shop",
+        icon: <ShoppingBag className="w-6 h-6" />,
+        href: "/products",
+      },
+      ...(user
+        ? [
+            {
+              id: "orders",
+              label: "Orders",
+              icon: <Package className="w-6 h-6" />,
+              href: "/account/orders",
+            },
+            {
+              id: "account",
+              label: "Profile",
+              icon: <User className="w-6 h-6" />,
+              href: "/account/profile",
+            },
+          ]
+        : [
+            {
+              id: "orders",
+              label: "Orders",
+              icon: <Package className="w-6 h-6" />,
+              href: "/account/orders",
+            },
+            {
+              id: "login",
+              label: "Login",
+              icon: <User className="w-6 h-6" />,
+              href: "/login",
+            },
+          ]),
+      {
+        id: "wishlist",
+        label: "Wishlist",
+        icon: <Heart className="w-6 h-6" />,
+        href: "/wishlist",
+        badge: wishlistCount > 0 ? wishlistCount : undefined,
+      },
+      {
+        id: "categories",
+        label: "Categories",
+        icon: <ShoppingBag className="w-6 h-6" />,
+        href: "/categories",
+      },
+    ];
+    bottomNavItems = allNavItems.slice(0, 4); // First 4 for mobile bottom nav
+  }
 
   // Sync selected currency with context
   const selectedCurrency =
     currencies.find((c) => c.code === contextCurrency) || currencies[3]; // Default to INR
 
-  const isAdminRoute = pathname?.startsWith("/admin") || false;
-  const isSellerRoute = pathname?.startsWith("/seller") || false;
-  const shouldShowSidebar = user && (isAdminRoute || isSellerRoute || user);
+  // Show sidebar for all logged-in users on desktop, hide on mobile
+  const shouldShowSidebar = !!user;
 
   const handleCurrencyChange = async (currencyCode: string) => {
     await setCurrency(currencyCode, user?.id);
@@ -144,18 +255,74 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
   const drawer = (
     <nav className="w-64 p-4">
       <ul className="space-y-2">
-        {navigation.map((item) => (
-          <li key={item.name}>
+        {/* Main Navigation for Customer Routes */}
+        {!isAdminRoute &&
+          !isSellerRoute &&
+          navigation.map((item) => (
+            <li key={item.name}>
+              <Link
+                href={item.href}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                onClick={handleDrawerToggle}
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
+
+        {!isAdminRoute && !isSellerRoute && (
+          <li className="border-t border-gray-200 dark:border-gray-700 my-2"></li>
+        )}
+
+        {/* All Navigation Items (including overflow from mobile bottom nav) */}
+        {allNavItems.map((item) => (
+          <li key={item.id}>
             <Link
               href={item.href}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center justify-between"
               onClick={handleDrawerToggle}
             >
-              {item.name}
+              <span className="flex items-center gap-2">
+                {item.icon}
+                {item.label}
+              </span>
+              {"badge" in item && item.badge && (
+                <span className="bg-blue-600 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           </li>
         ))}
+
         <li className="border-t border-gray-200 dark:border-gray-700 my-2"></li>
+
+        {/* Admin/Seller Panel Links (only show on customer routes) */}
+        {!isAdminRoute && user?.role === "admin" && (
+          <li>
+            <Link
+              href="/admin/dashboard"
+              className="block px-3 py-2 rounded-md text-base font-medium text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors"
+              onClick={handleDrawerToggle}
+            >
+              🛡️ Admin Panel
+            </Link>
+          </li>
+        )}
+
+        {!isSellerRoute &&
+          (user?.role === "seller" || user?.role === "admin") && (
+            <li>
+              <Link
+                href="/seller/dashboard"
+                className="block px-3 py-2 rounded-md text-base font-medium text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors"
+                onClick={handleDrawerToggle}
+              >
+                🏪 Seller Panel
+              </Link>
+            </li>
+          )}
+
         {!user && (
           <li>
             <Link
@@ -195,7 +362,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleDrawerToggle}
-                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
+                  className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   aria-label="open drawer"
                 >
                   <Menu className="h-6 w-6" />
@@ -336,21 +503,23 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
           </div>
         </header>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Drawer - Overlay on all screen sizes */}
         {mobileMenuOpen && (
           <>
             <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
               onClick={handleDrawerToggle}
             ></div>
-            <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out lg:hidden shadow-xl">
+            <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out shadow-xl overflow-y-auto">
               {drawer}
             </div>
           </>
         )}
 
         {/* Main Content */}
-        <main className="flex-grow">{children}</main>
+        <main className={`flex-grow ${!hideBottomNav ? "pb-20 md:pb-0" : ""}`}>
+          {children}
+        </main>
 
         {/* Floating Cart */}
         <ClientOnly>
@@ -518,7 +687,7 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
           </div>
         </footer>
 
-        {/* Mobile Bottom Navigation - Only show on customer routes */}
+        {/* Mobile Bottom Navigation - Show first 4 items only */}
         {!hideBottomNav && (
           <ClientOnly>
             <BottomNav items={bottomNavItems} autoHide={true} blur={true} />
