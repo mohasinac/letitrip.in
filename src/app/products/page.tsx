@@ -438,6 +438,7 @@ function ProductCard({
       return;
     }
 
+    const productAny = product as any;
     addItem({
       id: product.id,
       productId: product.id,
@@ -447,9 +448,12 @@ function ProductCard({
       image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
       slug: product.slug,
       sku: product.sku || "",
-      sellerId: product.seller?.id || "default-seller",
+      sellerId: productAny.sellerId || product.seller?.id || "unknown",
       sellerName:
-        product.seller?.storeName || product.seller?.name || "JustForView",
+        productAny.sellerName ||
+        product.seller?.storeName ||
+        product.seller?.name ||
+        "JustForView",
     });
 
     toast.success("Added to cart!");

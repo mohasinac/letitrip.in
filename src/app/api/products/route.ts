@@ -150,6 +150,9 @@ export async function GET(request: NextRequest) {
       quantity: getProductQuantity(product),
       sku: product.inventory?.sku ?? product.sku,
       lowStockThreshold: product.inventory?.lowStockThreshold ?? product.lowStockThreshold ?? 1,
+      // Include seller information for cart
+      sellerId: product.sellerId,
+      sellerName: product.sellerName,
     }));
 
     return NextResponse.json({

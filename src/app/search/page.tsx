@@ -213,11 +213,8 @@ function ProductCard({
       image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
       slug: product.slug,
       sku: productData.sku || "",
-      sellerId: productData.seller?.id || "default-seller",
-      sellerName:
-        productData.seller?.storeName ||
-        productData.seller?.name ||
-        "JustForView",
+      sellerId: productData.sellerId || "unknown",
+      sellerName: productData.sellerName || "JustForView",
     });
 
     toast.success("Added to cart!");

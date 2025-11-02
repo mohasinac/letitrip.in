@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body: CreateOrderInput = await request.json();
+    console.log("Order creation request body:", JSON.stringify(body, null, 2));
+    
     const {
       items,
       shippingAddress,
@@ -93,7 +95,16 @@ export async function POST(request: NextRequest) {
       }
 
       const product = productDoc.data();
-      const currentStock = product?.stock ?? product?.quantity ?? 0;
+      // Check stock using the same helper pattern as products API
+      const currentStock = product?.inventory?.quantity ?? product?.stock ?? product?.quantity ?? 0;
+      
+      console.log(`Stock check for ${item.name}:`, {
+        inventoryQuantity: product?.inventory?.quantity,
+        stock: product?.stock,
+        quantity: product?.quantity,
+        currentStock,
+        requestedQuantity: item.quantity
+      });
       
       if (currentStock < item.quantity) {
         return NextResponse.json(

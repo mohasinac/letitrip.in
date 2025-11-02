@@ -380,7 +380,10 @@ export default function CheckoutPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to create order");
+        console.error("Order creation failed:", error);
+        throw new Error(
+          error.error || error.message || "Failed to create order"
+        );
       }
 
       const data = await response.json();
