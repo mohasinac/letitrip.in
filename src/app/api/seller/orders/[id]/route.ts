@@ -62,12 +62,39 @@ export async function GET(
       );
     }
 
+    // Convert Firestore Timestamps to ISO strings for JSON serialization
+    const sanitizedOrder = {
+      id: orderDoc.id,
+      ...orderData,
+      createdAt: orderData?.createdAt?.toDate?.() 
+        ? orderData.createdAt.toDate().toISOString() 
+        : orderData?.createdAt || new Date().toISOString(),
+      updatedAt: orderData?.updatedAt?.toDate?.() 
+        ? orderData.updatedAt.toDate().toISOString() 
+        : orderData?.updatedAt || new Date().toISOString(),
+      approvedAt: orderData?.approvedAt?.toDate?.() 
+        ? orderData.approvedAt.toDate().toISOString() 
+        : orderData?.approvedAt,
+      shippedAt: orderData?.shippedAt?.toDate?.() 
+        ? orderData.shippedAt.toDate().toISOString() 
+        : orderData?.shippedAt,
+      deliveredAt: orderData?.deliveredAt?.toDate?.() 
+        ? orderData.deliveredAt.toDate().toISOString() 
+        : orderData?.deliveredAt,
+      cancelledAt: orderData?.cancelledAt?.toDate?.() 
+        ? orderData.cancelledAt.toDate().toISOString() 
+        : orderData?.cancelledAt,
+      paidAt: orderData?.paidAt?.toDate?.() 
+        ? orderData.paidAt.toDate().toISOString() 
+        : orderData?.paidAt,
+      refundedAt: orderData?.refundedAt?.toDate?.() 
+        ? orderData.refundedAt.toDate().toISOString() 
+        : orderData?.refundedAt,
+    };
+
     return NextResponse.json({
       success: true,
-      data: {
-        id: orderDoc.id,
-        ...orderData,
-      },
+      data: sanitizedOrder,
     });
   } catch (error: any) {
     console.error("Error fetching order:", error);

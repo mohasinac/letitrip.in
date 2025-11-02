@@ -40,6 +40,27 @@ export async function GET(
     const order = {
       id: orderDoc.id,
       ...orderData,
+      createdAt: orderData?.createdAt?.toDate?.() 
+        ? orderData.createdAt.toDate().toISOString() 
+        : orderData?.createdAt || new Date().toISOString(),
+      updatedAt: orderData?.updatedAt?.toDate?.() 
+        ? orderData.updatedAt.toDate().toISOString() 
+        : orderData?.updatedAt || new Date().toISOString(),
+      approvedAt: orderData?.approvedAt?.toDate?.() 
+        ? orderData.approvedAt.toDate().toISOString() 
+        : orderData?.approvedAt,
+      shippedAt: orderData?.shippedAt?.toDate?.() 
+        ? orderData.shippedAt.toDate().toISOString() 
+        : orderData?.shippedAt,
+      deliveredAt: orderData?.deliveredAt?.toDate?.() 
+        ? orderData.deliveredAt.toDate().toISOString() 
+        : orderData?.deliveredAt,
+      cancelledAt: orderData?.cancelledAt?.toDate?.() 
+        ? orderData.cancelledAt.toDate().toISOString() 
+        : orderData?.cancelledAt,
+      paidAt: orderData?.paidAt?.toDate?.() 
+        ? orderData.paidAt.toDate().toISOString() 
+        : orderData?.paidAt,
     };
 
     return NextResponse.json({ success: true, order });

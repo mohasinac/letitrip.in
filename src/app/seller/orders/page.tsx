@@ -550,7 +550,7 @@ function OrdersListContent() {
         columns={columns}
         loading={loading}
         searchable={false} // We have custom search above
-        rowActions={getRowActions as any}
+        rowActions={getRowActions}
         currentPage={page}
         pageSize={pageSize}
         onPageChange={setPage}

@@ -67,8 +67,12 @@ export async function GET(request: NextRequest) {
       return {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate?.() || data.createdAt,
-        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+        createdAt: data.createdAt?.toDate?.() 
+          ? data.createdAt.toDate().toISOString() 
+          : data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.() 
+          ? data.updatedAt.toDate().toISOString() 
+          : data.updatedAt || new Date().toISOString(),
       };
     });
 

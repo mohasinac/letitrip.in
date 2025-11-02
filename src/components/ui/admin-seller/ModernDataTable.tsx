@@ -263,7 +263,8 @@ export function ModernDataTable<T extends Record<string, any>>({
               ))}
 
               {/* Actions column */}
-              {rowActions.length > 0 && (
+              {((Array.isArray(rowActions) && rowActions.length > 0) ||
+                typeof rowActions === "function") && (
                 <th className="px-4 py-3 w-12 text-center text-sm font-semibold text-text">
                   Actions
                 </th>
@@ -358,10 +359,11 @@ export function ModernDataTable<T extends Record<string, any>>({
 
                     {/* Row actions */}
                     {(() => {
-                      const actions = typeof rowActions === 'function' 
-                        ? rowActions(row) 
-                        : rowActions;
-                      
+                      const actions =
+                        typeof rowActions === "function"
+                          ? rowActions(row)
+                          : rowActions;
+
                       return actions.length > 0 ? (
                         <td className="px-4 py-3 text-center">
                           <UnifiedDropdown

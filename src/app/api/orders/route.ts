@@ -24,10 +24,19 @@ export async function GET(request: NextRequest) {
       .orderBy("createdAt", "desc")
       .get();
 
-    const orders = ordersSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const orders = ordersSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() 
+          ? data.createdAt.toDate().toISOString() 
+          : data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.() 
+          ? data.updatedAt.toDate().toISOString() 
+          : data.updatedAt || new Date().toISOString(),
+      };
+    });
 
     return NextResponse.json({ success: true, orders });
   } catch (error: any) {

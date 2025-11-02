@@ -63,11 +63,20 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
 
-    // Map documents to orders
-    let orders = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Map documents to orders and convert timestamps
+    let orders = snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() 
+          ? data.createdAt.toDate().toISOString() 
+          : data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.() 
+          ? data.updatedAt.toDate().toISOString() 
+          : data.updatedAt || new Date().toISOString(),
+      };
+    });
 
     // Apply search filter if provided (client-side for flexibility)
     if (search) {

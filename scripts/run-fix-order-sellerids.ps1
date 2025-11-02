@@ -55,7 +55,8 @@ node scripts/fix-order-sellerids.js
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
     Write-Host "✅ Script completed successfully!" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host ""
     Write-Host "❌ Script failed with exit code $LASTEXITCODE" -ForegroundColor Red
     exit $LASTEXITCODE

@@ -648,7 +648,7 @@ export default function OrderDetailPage({
                           </td>
                           <td className="py-3 px-2 text-right">
                             <p className="text-sm font-semibold text-text">
-                              ₹{item.total.toLocaleString()}
+                              ₹{(item.price * item.quantity).toLocaleString()}
                             </p>
                           </td>
                         </tr>
