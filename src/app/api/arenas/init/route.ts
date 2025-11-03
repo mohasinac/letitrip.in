@@ -1,42 +1,66 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import { AuthorizationError } from '../../_lib/middleware/error-handler';
+
 /**
- * API Route: Initialize default arena
+ * Helper function to verify admin authentication
  */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
 
-import { createApiHandler, successResponse } from "@/lib/api";
-import { arenaService } from "@/lib/database/arenaService";
-import { ArenaConfig } from "@/types/arenaConfig";
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
 
-const DEFAULT_ARENA: Omit<ArenaConfig, "id"> = {
-  name: "Classic Stadium",
-  description:
-    "The standard battle arena - perfect for beginners and competitive play",
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: 'admin' as const,
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+const DEFAULT_ARENA = {
+  name: 'Classic Stadium',
+  description: 'The standard battle arena - perfect for beginners and competitive play',
   width: 50,
   height: 50,
-  shape: "circle",
-  theme: "metrocity",
-  gameMode: "player-vs-ai",
-  aiDifficulty: "medium",
-
+  shape: 'circle',
+  theme: 'metrocity',
+  gameMode: 'player-vs-ai',
+  aiDifficulty: 'medium',
   loops: [
     {
       radius: 15,
-      shape: "circle",
+      shape: 'circle',
       speedBoost: 1.2,
       spinBoost: 2,
       frictionMultiplier: 0.9,
-      color: "#3b82f6",
+      color: '#3b82f6',
     },
     {
       radius: 20,
-      shape: "circle",
+      shape: 'circle',
       speedBoost: 1.0,
       frictionMultiplier: 1.0,
-      color: "#10b981",
+      color: '#10b981',
     },
   ],
-
   exits: [],
-
   wall: {
     enabled: true,
     baseDamage: 5,
@@ -47,30 +71,85 @@ const DEFAULT_ARENA: Omit<ArenaConfig, "id"> = {
     springRecoilMultiplier: 1.0,
     thickness: 0.5,
   },
-
   obstacles: [],
   pits: [],
   laserGuns: [],
   goalObjects: [],
   requireAllGoalsDestroyed: false,
   backgroundLayers: [],
-
   gravity: 0,
   airResistance: 0.01,
   surfaceFriction: 0.02,
-
-  difficulty: "easy", // Mark as default
+  difficulty: 'easy',
 };
 
-export const POST = createApiHandler(async (request) => {
-  // Check if already exists
-  const existing = await arenaService.getArenaById("classic_stadium");
+/**
+ * POST /api/arenas/init
+ * Initialize default arena (admin only)
+ */
+export async function POST(request: NextRequest) {
+  try {
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+    const db = getAdminDb();
 
-  if (existing) {
-    return successResponse(existing, "Default arena already exists");
+    // Check if already exists
+    const existingSnap = await db
+      .collection('arenas')
+      .where('name', '==', 'Classic Stadium')
+      .limit(1)
+      .get();
+
+    if (!existingSnap.empty) {
+      const doc = existingSnap.docs[0];
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: doc.id,
+          ...doc.data(),
+        },
+        message: 'Default arena already exists',
+      });
+    }
+
+    // Create new default arena
+    const arenaData = {
+      ...DEFAULT_ARENA,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const arenaRef = await db.collection('arenas').add(arenaData);
+    const arenaSnap = await arenaRef.get();
+
+    const newArena = {
+      id: arenaRef.id,
+      ...arenaSnap.data(),
+      createdAt: arenaSnap.data()?.createdAt?.toDate
+        ? arenaSnap.data()?.createdAt.toDate().toISOString()
+        : arenaSnap.data()?.createdAt,
+      updatedAt: arenaSnap.data()?.updatedAt?.toDate
+        ? arenaSnap.data()?.updatedAt.toDate().toISOString()
+        : arenaSnap.data()?.updatedAt,
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: newArena,
+      message: 'Default arena created successfully',
+    });
+  } catch (error: any) {
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error initializing default arena:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to initialize default arena' },
+      { status: 500 }
+    );
   }
-
-  // Create new default arena
-  const arena = await arenaService.createArena(DEFAULT_ARENA);
-  return successResponse(arena, "Default arena created successfully");
-});
+}

@@ -1,67 +1,95 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import {
+  AuthorizationError,
+  ValidationError,
+} from '../../_lib/middleware/error-handler';
 
 /**
- * Get seller alerts
- * GET /api/seller/alerts?type=all|new_order|pending_approval|low_stock&isRead=true|false&limit=50
+ * Helper function to verify seller authentication
  */
-export async function GET(req: NextRequest) {
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * GET /api/seller/alerts?type=all|new_order|pending_approval|low_stock&isRead=true|false&limit=50
+ * Get seller alerts with filters
+ */
+export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
     // Get query params
-    const { searchParams } = new URL(req.url);
-    const type = searchParams.get("type") || "all";
-    const isReadParam = searchParams.get("isRead");
-    const limitParam = parseInt(searchParams.get("limit") || "50");
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type') || 'all';
+    const isReadParam = searchParams.get('isRead');
+    const limitParam = parseInt(searchParams.get('limit') || '50');
 
-    // Build query using Admin SDK
-    const db = getAdminDb();
-    let alertsQuery = db.collection("alerts").orderBy("createdAt", "desc");
-
-    if (userRole !== "admin") {
-      alertsQuery = alertsQuery.where("sellerId", "==", userId);
+    // Validate limit
+    if (limitParam < 1 || limitParam > 500) {
+      throw new ValidationError('Limit must be between 1 and 500');
     }
 
-    if (type !== "all") {
-      alertsQuery = alertsQuery.where("type", "==", type);
+    // Build query
+    let alertsQuery: any = db.collection('alerts').orderBy('createdAt', 'desc');
+
+    // Admin sees all, sellers see only theirs
+    if (seller.role !== 'admin') {
+      alertsQuery = alertsQuery.where('sellerId', '==', seller.uid);
     }
 
+    // Type filter
+    if (type !== 'all') {
+      alertsQuery = alertsQuery.where('type', '==', type);
+    }
+
+    // Read status filter
     if (isReadParam !== null) {
-      alertsQuery = alertsQuery.where("isRead", "==", isReadParam === "true");
+      alertsQuery = alertsQuery.where('isRead', '==', isReadParam === 'true');
     }
 
+    // Apply limit
     alertsQuery = alertsQuery.limit(limitParam);
 
     const alertsSnap = await alertsQuery.get();
-    const alerts = alertsSnap.docs.map((doc) => ({
+    const alerts = alertsSnap.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+      createdAt: doc.data().createdAt?.toDate?.() || doc.data().createdAt,
     }));
 
-    // Get stats using Admin SDK
-    const statsQuery = userRole !== "admin" 
-      ? db.collection("alerts").where("sellerId", "==", userId)
-      : db.collection("alerts");
+    // Calculate stats
+    let statsQuery: any = db.collection('alerts');
+    if (seller.role !== 'admin') {
+      statsQuery = statsQuery.where('sellerId', '==', seller.uid);
+    }
 
     const statsSnap = await statsQuery.get();
     let totalAlerts = 0;
@@ -69,12 +97,12 @@ export async function GET(req: NextRequest) {
     let newOrders = 0;
     let lowStock = 0;
 
-    statsSnap.docs.forEach((doc) => {
+    statsSnap.docs.forEach((doc: any) => {
       const data = doc.data();
       totalAlerts++;
       if (!data.isRead) unreadAlerts++;
-      if (data.type === "new_order") newOrders++;
-      if (data.type === "low_stock") lowStock++;
+      if (data.type === 'new_order') newOrders++;
+      if (data.type === 'low_stock') lowStock++;
     });
 
     return NextResponse.json({
@@ -88,13 +116,20 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Error fetching alerts:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error fetching alerts:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to fetch alerts",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch alerts' },
+      { status: 500 }
     );
   }
 }

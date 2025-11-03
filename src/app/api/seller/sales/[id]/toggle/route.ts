@@ -1,6 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { Timestamp } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * POST /api/seller/sales/[id]/toggle
@@ -8,60 +44,32 @@ import { Timestamp } from "firebase-admin/firestore";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can toggle
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
-
-    const adminDb = getAdminDb();
-
-    const { id } = params;
+    const seller = await verifySellerAuth(request);
+    const { id } = await context.params;
+    const db = getAdminDb();
 
     // Get sale document
-    const docRef = adminDb.collection("sales").doc(id);
+    const docRef = db.collection('sales').doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Sale not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Sale not found');
     }
 
     const saleData = doc.data();
 
     // Verify ownership (unless admin)
-    if (role !== "admin" && saleData?.sellerId !== uid) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Not your sale" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && saleData?.sellerId !== seller.uid) {
+      throw new AuthorizationError('Not your sale');
     }
 
     // Toggle status
-    const currentStatus = saleData?.status || "active";
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const currentStatus = saleData?.status || 'active';
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
     // Update status
     await docRef.update({
@@ -72,16 +80,24 @@ export async function POST(
     return NextResponse.json({
       success: true,
       data: { status: newStatus },
-      message: `Sale ${newStatus === "active" ? "activated" : "deactivated"} successfully`,
+      message: `Sale ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
     });
   } catch (error: any) {
-    console.error("Error toggling sale status:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error toggling sale status:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to toggle sale status",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to toggle sale status' },
+      { status: 500 }
     );
   }
 }

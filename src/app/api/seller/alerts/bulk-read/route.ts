@@ -1,75 +1,90 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import {
+  AuthorizationError,
+  ValidationError,
+} from '../../../_lib/middleware/error-handler';
 
 /**
- * Mark multiple alerts as read
- * POST /api/seller/alerts/bulk-read
+ * Helper function to verify seller authentication
  */
-export async function POST(req: NextRequest) {
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * POST /api/seller/alerts/bulk-read
+ * Mark multiple alerts as read
+ */
+export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
-
-    const body = await req.json();
+    // Parse body
+    const body = await request.json();
     const { alertIds = [] } = body;
 
+    // Validate
     if (!Array.isArray(alertIds) || alertIds.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "No alert IDs provided" },
-        { status: 400 },
-      );
+      throw new ValidationError('No alert IDs provided');
     }
 
-    // Firestore batch has a limit of 500 operations
     if (alertIds.length > 500) {
-      return NextResponse.json(
-        { success: false, error: "Maximum 500 alerts can be updated at once" },
-        { status: 400 },
-      );
+      throw new ValidationError('Maximum 500 alerts can be updated at once');
     }
 
-    // Verify ownership and update in batch using Admin SDK
-    const db = getAdminDb();
+    // Process alerts in batch
     const batch = db.batch();
     let updatedCount = 0;
 
     for (const alertId of alertIds) {
-      const alertRef = db.collection("alerts").doc(alertId);
+      const alertRef = db.collection('alerts').doc(alertId);
       const alertSnap = await alertRef.get();
 
+      // Skip if doesn't exist
       if (!alertSnap.exists) {
-        continue; // Skip non-existent alerts
+        continue;
       }
 
-      const alertData = alertSnap.data()!;
+      const alertData = alertSnap.data();
 
-      // Verify ownership (unless admin)
-      if (userRole !== "admin" && alertData.sellerId !== userId) {
-        continue; // Skip alerts not owned by user
+      // Skip if not owned by seller (unless admin)
+      if (seller.role !== 'admin' && alertData?.sellerId !== seller.uid) {
+        continue;
       }
 
+      // Add to batch
       batch.update(alertRef, {
         isRead: true,
-        readAt: new Date(),
+        readAt: Timestamp.now(),
       });
-
       updatedCount++;
     }
 
@@ -82,13 +97,17 @@ export async function POST(req: NextRequest) {
       updatedCount,
     });
   } catch (error: any) {
-    console.error("Error bulk updating alerts:", error);
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error bulk updating alerts:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to bulk update alerts",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to bulk update alerts' },
+      { status: 500 }
     );
   }
 }

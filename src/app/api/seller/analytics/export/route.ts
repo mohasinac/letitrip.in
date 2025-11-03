@@ -1,78 +1,95 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import { AuthorizationError } from '../../../_lib/middleware/error-handler';
 
 /**
- * Export analytics data
- * POST /api/seller/analytics/export
+ * Helper function to verify seller authentication
  */
-export async function POST(req: NextRequest) {
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * POST /api/seller/analytics/export
+ * Export analytics data as CSV
+ */
+export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
-
-    const body = await req.json();
-    const { period = "30days" } = body;
+    // Parse body
+    const body = await request.json();
+    const { period = '30days' } = body;
 
     // Calculate date range
     const now = new Date();
     let startDate = new Date();
 
     switch (period) {
-      case "7days":
+      case '7days':
         startDate.setDate(now.getDate() - 7);
         break;
-      case "30days":
+      case '30days':
         startDate.setDate(now.getDate() - 30);
         break;
-      case "90days":
+      case '90days':
         startDate.setDate(now.getDate() - 90);
         break;
-      case "1year":
+      case '1year':
         startDate.setFullYear(now.getFullYear() - 1);
         break;
-      case "all":
-        startDate = new Date(0);
+      case 'all':
+        startDate = new Date(0); // Beginning of time
         break;
       default:
         startDate.setDate(now.getDate() - 30);
     }
 
-    const startTimestamp = startDate;
+    const startTimestamp = Timestamp.fromDate(startDate);
 
-    // Get orders using Admin SDK
-    const db = getAdminDb();
-    let ordersQuery = db
-      .collection("orders")
-      .where("createdAt", ">=", startTimestamp)
-      .orderBy("createdAt", "desc");
+    // Build orders query
+    let ordersQuery: any = db
+      .collection('orders')
+      .where('createdAt', '>=', startTimestamp)
+      .orderBy('createdAt', 'desc');
 
-    if (userRole !== "admin") {
-      ordersQuery = ordersQuery.where("sellerId", "==", userId);
+    if (seller.role !== 'admin') {
+      ordersQuery = ordersQuery.where('sellerId', '==', seller.uid);
     }
 
     const ordersSnap = await ordersQuery.get();
-    const orders = ordersSnap.docs.map((doc) => {
+    const orders = ordersSnap.docs.map((doc: any) => {
       const data = doc.data();
       return {
         orderNumber: data.orderNumber,
-        date: data.createdAt?.toDate?.()?.toLocaleDateString() || "N/A",
+        date: data.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A',
         customerName: data.customerName,
         customerEmail: data.customerEmail,
         items: data.items?.length || 0,
@@ -89,22 +106,22 @@ export async function POST(req: NextRequest) {
 
     // Generate CSV
     const csvHeaders = [
-      "Order Number",
-      "Date",
-      "Customer Name",
-      "Customer Email",
-      "Items",
-      "Subtotal",
-      "Discount",
-      "Shipping",
-      "Tax",
-      "Total",
-      "Status",
-      "Payment Method",
-      "Payment Status",
+      'Order Number',
+      'Date',
+      'Customer Name',
+      'Customer Email',
+      'Items',
+      'Subtotal',
+      'Discount',
+      'Shipping',
+      'Tax',
+      'Total',
+      'Status',
+      'Payment Method',
+      'Payment Status',
     ];
 
-    const csvRows = orders.map((order) => [
+    const csvRows = orders.map((order: any) => [
       order.orderNumber,
       order.date,
       order.customerName,
@@ -121,11 +138,11 @@ export async function POST(req: NextRequest) {
     ]);
 
     const csvContent = [
-      csvHeaders.join(","),
-      ...csvRows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      csvHeaders.join(','),
+      ...csvRows.map((row: any) =>
+        row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(','),
       ),
-    ].join("\n");
+    ].join('\n');
 
     // Return CSV data
     return NextResponse.json({
@@ -137,13 +154,17 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Error exporting analytics:", error);
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error exporting analytics:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to export analytics",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to export analytics' },
+      { status: 500 }
     );
   }
 }

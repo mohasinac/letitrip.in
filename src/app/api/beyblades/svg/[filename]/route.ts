@@ -1,17 +1,22 @@
+/**
+ * API Route: Serve Beyblade SVG images
+ * GET /api/beyblades/svg/[filename] (public access)
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
 /**
- * API Route: Serve Beyblade SVG images
  * GET /api/beyblades/svg/[filename]
+ * Serve beyblade SVG files (public access, no authentication required)
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ filename: string }> },
+  context: { params: Promise<{ filename: string }> }
 ) {
   try {
-    const { filename } = await params;
+    const { filename } = await context.params;
 
     // Validate filename to prevent directory traversal
     if (
@@ -35,7 +40,7 @@ export async function GET(
       "assets",
       "svg",
       "beyblades",
-      filename,
+      filename
     );
 
     // Check if file exists
@@ -51,7 +56,7 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=31536000, immutable", // Cache for 1 year
+        "Cache-Control": "public, max-age=31536000, immutable",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Allow-Headers": "Content-Type",
@@ -59,6 +64,9 @@ export async function GET(
     });
   } catch (error) {
     console.error("Error serving SVG:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(
+      error instanceof Error ? error.message : "Internal Server Error",
+      { status: 500 }
+    );
   }
 }

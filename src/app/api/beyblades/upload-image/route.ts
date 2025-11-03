@@ -1,29 +1,56 @@
 /**
  * API Route: Upload Beyblade Image
- * POST /api/beyblades/upload-image
+ * POST /api/beyblades/upload-image (admin only)
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { storageService } from "@/lib/storage/firebase";
+import { getAdminAuth, getAdminStorage } from "../../_lib/database/admin";
+import { AuthorizationError, ValidationError } from "../../_lib/middleware/error-handler";
 
+const auth = getAdminAuth();
+const storage = getAdminStorage();
+
+/**
+ * Helper function to verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new AuthorizationError("Missing or invalid authorization header");
+  }
+
+  const token = authHeader.substring(7);
+  const decodedToken = await auth.verifyIdToken(token);
+
+  // Check if user is admin
+  if (!decodedToken.admin && decodedToken.role !== "admin") {
+    throw new AuthorizationError("Admin access required");
+  }
+
+  return decodedToken;
+}
+
+/**
+ * POST /api/beyblades/upload-image
+ * Upload beyblade image (admin only)
+ */
 export async function POST(request: NextRequest) {
   try {
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const beybladeId = formData.get("beybladeId") as string;
 
+    // Validate file
     if (!file) {
-      return NextResponse.json(
-        { success: false, error: "No file provided" },
-        { status: 400 },
-      );
+      throw new ValidationError("No file provided");
     }
 
+    // Validate beybladeId
     if (!beybladeId) {
-      return NextResponse.json(
-        { success: false, error: "No Beyblade ID provided" },
-        { status: 400 },
-      );
+      throw new ValidationError("No Beyblade ID provided");
     }
 
     // Validate file type
@@ -35,56 +62,70 @@ export async function POST(request: NextRequest) {
       "image/webp",
     ];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid file type. Only PNG, JPG, SVG, and WebP are allowed.",
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Invalid file type. Only PNG, JPG, SVG, and WebP are allowed."
       );
     }
 
     // Validate file size (10MB max)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json(
-        { success: false, error: "File size exceeds 10MB limit" },
-        { status: 400 },
-      );
+      throw new ValidationError("File size exceeds 10MB limit");
     }
 
     // Convert File to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Firebase Storage
-    const filename = `beyblade-${beybladeId}-${Date.now()}.png`;
-    const folder = "beyblades";
-    const userId = "admin"; // TODO: Get from session/auth
+    // Generate filename
+    const ext = file.type.split("/")[1];
+    const filename = `beyblade-${beybladeId}-${Date.now()}.${ext}`;
 
-    const metadata = await storageService.uploadFile(
-      buffer,
-      filename,
-      folder,
-      userId,
-      "image/png",
-      true, // Make public
-    );
+    // Upload to Firebase Storage
+    const bucket = storage.bucket();
+    const fileRef = bucket.file(`beyblades/${filename}`);
+
+    await fileRef.save(buffer, {
+      metadata: {
+        contentType: file.type,
+      },
+      public: true,
+    });
+
+    // Make the file publicly accessible
+    await fileRef.makePublic();
+
+    // Get public URL
+    const imageUrl = `https://storage.googleapis.com/${bucket.name}/beyblades/${filename}`;
 
     return NextResponse.json({
       success: true,
-      imageUrl: metadata.url,
-      metadata,
+      imageUrl,
+      message: "Image uploaded successfully",
     });
   } catch (error) {
-    console.error("Error uploading Beyblade image:", error);
+    console.error("Error uploading beyblade image:", error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.message.includes("Missing or invalid") ? 401 : 403 }
+      );
+    }
+
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to upload image",
+        error: error instanceof Error ? error.message : "Failed to upload image",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

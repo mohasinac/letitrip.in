@@ -1,25 +1,47 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * API Route: Universal Search
+ * GET /api/search - Search across products, categories, and stores (public access)
+ * 
+ * Query Parameters:
+ * - q: Search query (min 2 characters)
+ * 
+ * Returns:
+ * - products: Up to 5 matching products
+ * - categories: Up to 3 matching categories
+ * - stores: Up to 3 matching seller stores
+ */
 
-// Helper to get product price (handles both nested and flattened structures)
+import { NextRequest, NextResponse } from "next/server";
+import { getAdminDb } from "../_lib/database/admin";
+import { ValidationError } from "../_lib/middleware/error-handler";
+
+const db = getAdminDb();
+
+/**
+ * Helper to get product price (handles both nested and flattened structures)
+ */
 const getProductPrice = (product: any): number => {
   return product.pricing?.price ?? product.price ?? 0;
 };
 
+/**
+ * GET /api/search
+ * Universal search endpoint (public access, no authentication required)
+ */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get("q");
 
-    if (!query || query.trim().length < 2) {
-      return NextResponse.json({
-        products: [],
-        categories: [],
-        stores: [],
-      });
+    // Validate query parameter
+    if (!query) {
+      throw new ValidationError("Search query is required");
     }
 
-    const db = getAdminDb();
+    if (query.trim().length < 2) {
+      throw new ValidationError("Search query must be at least 2 characters");
+    }
+
     const searchTerm = query.toLowerCase().trim();
 
     // Search products (limit to 5 results)
@@ -31,7 +53,7 @@ export async function GET(request: NextRequest) {
       .get();
 
     const products = productsSnapshot.docs
-      .filter((doc: any) => {
+      .filter((doc) => {
         const data = doc.data();
         const name = (data.name || "").toLowerCase();
         const description = (data.description || "").toLowerCase();
@@ -43,7 +65,7 @@ export async function GET(request: NextRequest) {
         );
       })
       .slice(0, 5)
-      .map((doc: any) => {
+      .map((doc) => {
         const data = doc.data();
         return {
           type: "product",
@@ -52,6 +74,7 @@ export async function GET(request: NextRequest) {
           slug: data.slug,
           image: data.images?.[0]?.url || data.media?.images?.[0]?.url,
           price: getProductPrice(data),
+          category: data.category,
         };
       });
 
@@ -64,14 +87,14 @@ export async function GET(request: NextRequest) {
       .get();
 
     const categories = categoriesSnapshot.docs
-      .filter((doc: any) => {
+      .filter((doc) => {
         const data = doc.data();
         const name = (data.name || "").toLowerCase();
         const description = (data.description || "").toLowerCase();
         return name.includes(searchTerm) || description.includes(searchTerm);
       })
       .slice(0, 3)
-      .map((doc: any) => {
+      .map((doc) => {
         const data = doc.data();
         return {
           type: "category",
@@ -80,6 +103,7 @@ export async function GET(request: NextRequest) {
           slug: data.slug,
           description: data.description,
           image: data.image,
+          productCount: data.productCount || 0,
         };
       });
 
@@ -93,7 +117,7 @@ export async function GET(request: NextRequest) {
       .get();
 
     const stores = storesSnapshot.docs
-      .filter((doc: any) => {
+      .filter((doc) => {
         const data = doc.data();
         const storeName = (data.storeName || "").toLowerCase();
         const storeDescription = (data.storeDescription || "").toLowerCase();
@@ -102,7 +126,7 @@ export async function GET(request: NextRequest) {
         );
       })
       .slice(0, 3)
-      .map((doc: any) => {
+      .map((doc) => {
         const data = doc.data();
         return {
           type: "store",
@@ -110,18 +134,43 @@ export async function GET(request: NextRequest) {
           name: data.storeName,
           slug: data.storeSlug || doc.id,
           description: data.storeDescription,
+          rating: data.rating || 0,
+          productCount: data.productCount || 0,
         };
       });
 
     return NextResponse.json({
-      products,
-      categories,
-      stores,
+      success: true,
+      data: {
+        query: searchTerm,
+        results: {
+          products,
+          categories,
+          stores,
+        },
+        counts: {
+          products: products.length,
+          categories: categories.length,
+          stores: stores.length,
+          total: products.length + categories.length + stores.length,
+        },
+      },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Search error:", error);
+
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Search failed", details: error.message },
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Search failed",
+      },
       { status: 500 }
     );
   }

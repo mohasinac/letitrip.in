@@ -1,55 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
+import {
+  AuthorizationError,
+  NotFoundError,
+} from '../../../_lib/middleware/error-handler';
 
 /**
- * Delete alert
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
  * DELETE /api/seller/alerts/[id]
+ * Delete a specific alert
  */
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
-
-    // Get alert using Admin SDK
+    const seller = await verifySellerAuth(request);
+    const { id } = await context.params;
     const db = getAdminDb();
-    const alertRef = db.collection("alerts").doc(params.id);
+
+    // Get alert
+    const alertRef = db.collection('alerts').doc(id);
     const alertSnap = await alertRef.get();
 
     if (!alertSnap.exists) {
-      return NextResponse.json(
-        { success: false, error: "Alert not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Alert not found');
     }
 
-    const alertData = alertSnap.data()!;
+    const alertData = alertSnap.data();
 
     // Verify ownership (unless admin)
-    if (userRole !== "admin" && alertData.sellerId !== userId) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && alertData?.sellerId !== seller.uid) {
+      throw new AuthorizationError('Not your alert');
     }
 
     // Delete alert
@@ -57,16 +70,20 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Alert deleted successfully",
+      message: 'Alert deleted successfully',
     });
   } catch (error: any) {
-    console.error("Error deleting alert:", error);
+    if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error deleting alert:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to delete alert",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to delete alert' },
+      { status: 500 }
     );
   }
 }
