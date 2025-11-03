@@ -225,3 +225,17 @@ export function validateProductUpdate(data: unknown) {
 export function validateProductFilters(data: unknown) {
   return productFiltersSchema.parse(data);
 }
+
+// ============================================================================
+// TypeScript Types (inferred from schemas)
+// ============================================================================
+
+export type ProductImage = z.infer<typeof productImageSchema>;
+export type ProductVideo = z.infer<typeof productVideoSchema>;
+export type ProductDimensions = z.infer<typeof productDimensionsSchema>;
+export type ProductSEO = z.infer<typeof productSEOSchema>;
+export type CreateProductInput = z.infer<typeof createProductSchema>;
+export type UpdateProductInput = z.infer<typeof updateProductSchema>;
+export type ProductFilters = z.infer<typeof productFiltersSchema>;
+export type BulkDeleteProducts = z.infer<typeof bulkDeleteProductsSchema>;
+export type BulkUpdateProductStatus = z.infer<typeof bulkUpdateProductStatusSchema>;

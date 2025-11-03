@@ -170,57 +170,65 @@ src/
 ## 🎯 Architecture Layers
 
 ### Layer 1: API Routes (`src/app/api/*/route.ts`)
+
 **Purpose:** Thin HTTP handlers  
 **Responsibilities:**
+
 - Accept HTTP requests
 - Call validators
 - Call controllers
 - Return HTTP responses
 
 **Example:**
+
 ```typescript
 // src/app/api/products/route.ts
-import { withErrorHandler, withLogging, withRateLimit, RATE_LIMITS, ResponseHelper } from '../_lib/middleware';
-import { validateCreateProduct } from '../_lib/validators/product.validator';
-import { ProductController } from '../_lib/controllers/product.controller';
+import {
+  withErrorHandler,
+  withLogging,
+  withRateLimit,
+  RATE_LIMITS,
+  ResponseHelper,
+} from "../_lib/middleware";
+import { validateCreateProduct } from "../_lib/validators/product.validator";
+import { ProductController } from "../_lib/controllers/product.controller";
 
 export const GET = withErrorHandler(
   withLogging(
-    withRateLimit(RATE_LIMITS.READ)(
-      async (request: NextRequest) => {
-        const controller = new ProductController();
-        const products = await controller.getAllProducts();
-        return ResponseHelper.success(products);
-      }
-    )
+    withRateLimit(RATE_LIMITS.READ)(async (request: NextRequest) => {
+      const controller = new ProductController();
+      const products = await controller.getAllProducts();
+      return ResponseHelper.success(products);
+    })
   )
 );
 
 export const POST = withErrorHandler(
   withLogging(
-    withRateLimit(RATE_LIMITS.WRITE)(
-      async (request: NextRequest) => {
-        const body = await request.json();
-        const validated = validateCreateProduct(body);
-        
-        const controller = new ProductController();
-        const product = await controller.createProduct(validated);
-        
-        return ResponseHelper.success(product, 'Product created', 201);
-      }
-    )
+    withRateLimit(RATE_LIMITS.WRITE)(async (request: NextRequest) => {
+      const body = await request.json();
+      const validated = validateCreateProduct(body);
+
+      const controller = new ProductController();
+      const product = await controller.createProduct(validated);
+
+      return ResponseHelper.success(product, "Product created", 201);
+    })
   )
 );
 ```
 
 ### Layer 2: Validators (`src/app/api/_lib/validators/`)
+
 **Purpose:** Request/response validation  
 **Responsibilities:**
+
 - Validate request data with Zod
 - Type-safe data parsing
 - Sanitize inputs
 
 **Example:**
+
 ```typescript
 // Already exists: src/app/api/_lib/validators/product.validator.ts
 export const createProductSchema = z.object({
@@ -235,18 +243,21 @@ export function validateCreateProduct(data: unknown) {
 ```
 
 ### Layer 3: Controllers (`src/app/api/_lib/controllers/`)
+
 **Purpose:** Business logic & orchestration  
 **Responsibilities:**
+
 - Business rules
 - Permission checks (RBAC)
 - Orchestrate model calls
 - Handle complex operations
 
 **Example:**
+
 ```typescript
 // TODO: Create src/app/api/_lib/controllers/product.controller.ts
-import { AuthorizationError } from '../middleware';
-import { ProductModel } from '../models/product.model';
+import { AuthorizationError } from "../middleware";
+import { ProductModel } from "../models/product.model";
 
 export class ProductController {
   private model: ProductModel;
@@ -257,8 +268,8 @@ export class ProductController {
 
   async createProduct(data: CreateProductInput, userId: string, role: string) {
     // Business rule: Only sellers and admins can create products
-    if (role !== 'seller' && role !== 'admin') {
-      throw new AuthorizationError('Only sellers can create products');
+    if (role !== "seller" && role !== "admin") {
+      throw new AuthorizationError("Only sellers can create products");
     }
 
     // Add seller ID
@@ -278,21 +289,24 @@ export class ProductController {
 ```
 
 ### Layer 4: Models (`src/app/api/_lib/models/`)
+
 **Purpose:** Database operations  
 **Responsibilities:**
+
 - Firestore CRUD operations
 - Query building
 - Data transformation
 - No business logic
 
 **Example:**
+
 ```typescript
 // TODO: Create src/app/api/_lib/models/product.model.ts
-import { db } from '../database/admin';
-import { NotFoundError } from '../middleware';
+import { db } from "../database/admin";
+import { NotFoundError } from "../middleware";
 
 export class ProductModel {
-  private collection = db.collection('products');
+  private collection = db.collection("products");
 
   async create(data: any) {
     const docRef = await this.collection.add(data);
@@ -300,20 +314,20 @@ export class ProductModel {
   }
 
   async findAll(filters?: any) {
-    let query = this.collection.where('isActive', '==', true);
-    
+    let query = this.collection.where("isActive", "==", true);
+
     if (filters?.category) {
-      query = query.where('category', '==', filters.category);
+      query = query.where("category", "==", filters.category);
     }
 
     const snapshot = await query.get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
   async findById(id: string) {
     const doc = await this.collection.doc(id).get();
     if (!doc.exists) {
-      throw new NotFoundError('Product not found');
+      throw new NotFoundError("Product not found");
     }
     return { id: doc.id, ...doc.data() };
   }
@@ -334,7 +348,9 @@ export class ProductModel {
 ## 🚀 What's Already Done
 
 ### ✅ Completed
+
 1. **All Validators (9 files)**
+
    - product.validator.ts
    - order.validator.ts
    - user.validator.ts
@@ -346,17 +362,19 @@ export class ProductModel {
    - system.validator.ts
 
 2. **Middleware Layer (4 files)**
+
    - error-handler.ts (7 error classes + ResponseHelper)
    - logger.ts (request/response/error logging)
    - rate-limiter.ts (5 rate limit configs)
    - index.ts (unified exports)
 
 3. **Storage MVC (3 files)**
+
    - storage.validator.ts
    - storage.model.ts
    - storage.controller.ts
 
-4. **Backend Infrastructure (moved to api/_lib)**
+4. **Backend Infrastructure (moved to api/\_lib)**
    - Database utilities
    - Auth utilities
    - Payment utilities
@@ -367,6 +385,7 @@ export class ProductModel {
 ### 📋 TODO: Create Models & Controllers
 
 **Priority 1: Core Collections**
+
 1. `src/app/api/_lib/models/product.model.ts`
 2. `src/app/api/_lib/controllers/product.controller.ts`
 3. `src/app/api/_lib/models/order.model.ts`
@@ -374,24 +393,16 @@ export class ProductModel {
 5. `src/app/api/_lib/models/user.model.ts`
 6. `src/app/api/_lib/controllers/user.controller.ts`
 
-**Priority 2: Supporting Collections**
-7. `src/app/api/_lib/models/review.model.ts`
-8. `src/app/api/_lib/controllers/review.controller.ts`
-9. `src/app/api/_lib/models/category.model.ts`
-10. `src/app/api/_lib/controllers/category.controller.ts`
+**Priority 2: Supporting Collections** 7. `src/app/api/_lib/models/review.model.ts` 8. `src/app/api/_lib/controllers/review.controller.ts` 9. `src/app/api/_lib/models/category.model.ts` 10. `src/app/api/_lib/controllers/category.controller.ts`
 
-**Priority 3: Refactor API Routes**
-11. Refactor `src/app/api/products/route.ts` to use controller
-12. Refactor `src/app/api/orders/route.ts` to use controller
-13. Refactor `src/app/api/users/route.ts` to use controller
-14. Refactor `src/app/api/reviews/route.ts` to use controller
-15. Refactor `src/app/api/categories/route.ts` to use controller
+**Priority 3: Refactor API Routes** 11. Refactor `src/app/api/products/route.ts` to use controller 12. Refactor `src/app/api/orders/route.ts` to use controller 13. Refactor `src/app/api/users/route.ts` to use controller 14. Refactor `src/app/api/reviews/route.ts` to use controller 15. Refactor `src/app/api/categories/route.ts` to use controller
 
 ---
 
 ## 💡 Key Principles
 
 ### ✅ DO
+
 - Keep ALL backend code in `src/app/api/_lib/`
 - Use middleware on ALL routes (error handler, logging, rate limiting)
 - Follow the layer pattern: Route → Validator → Controller → Model → Database
@@ -401,6 +412,7 @@ export class ProductModel {
 - Keep UI utilities in `src/lib/`
 
 ### ❌ DON'T
+
 - Put backend code in `src/lib/`
 - Use Firebase Admin SDK in UI code
 - Skip validation
@@ -415,6 +427,7 @@ export class ProductModel {
 ## 📊 File Migration Summary
 
 ### Moved from `src/lib/` to `src/app/api/_lib/`
+
 - ✅ `backend/validators/*` → `api/_lib/validators/` (9 files)
 - ✅ `backend/models/*` → `api/_lib/models/` (1 file)
 - ✅ `backend/controllers/*` → `api/_lib/controllers/` (1 file)
@@ -428,6 +441,7 @@ export class ProductModel {
 - ✅ Backend utils → `api/_lib/utils/` (4 files)
 
 ### Kept in `src/lib/` (UI Only)
+
 - ✅ `validations/*` - Form validation for UI
 - ✅ `utils.ts` - UI utilities (cn, formatCurrency, etc.)
 - ✅ `utils/cookies.ts` - Client-side cookie helpers
@@ -441,6 +455,7 @@ export class ProductModel {
 - ✅ `debug/*` - Debug utilities
 
 ### Created New
+
 - ✅ `api/_lib/middleware/error-handler.ts`
 - ✅ `api/_lib/middleware/logger.ts`
 - ✅ `api/_lib/middleware/rate-limiter.ts`
@@ -451,21 +466,25 @@ export class ProductModel {
 ## 🎯 Next Steps
 
 ### Step 1: Create Product Model & Controller
+
 ```powershell
 # Create the files following storage.model.ts and storage.controller.ts patterns
 ```
 
 ### Step 2: Refactor Product API Routes
+
 ```powershell
 # Update src/app/api/products/route.ts to use new architecture
 ```
 
 ### Step 3: Repeat for Other Collections
+
 ```powershell
 # Orders → Users → Reviews → Categories
 ```
 
 ### Step 4: Update All Imports
+
 ```powershell
 # Find and replace old import paths
 # Old: from '@/lib/backend/validators/...'
@@ -473,6 +492,7 @@ export class ProductModel {
 ```
 
 ### Step 5: Test Everything
+
 ```powershell
 # Test all API endpoints
 # Verify middleware is working
