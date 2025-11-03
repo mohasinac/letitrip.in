@@ -9,14 +9,17 @@
 ## 🎯 Objectives
 
 ### Goal
+
 Optimize application performance through load testing, query optimization, caching implementation, and rate limiting.
 
 ### Time Allocation
+
 - **Morning (3-4 hours)**: Performance testing and query optimization
 - **Afternoon (3-4 hours)**: Caching implementation and rate limiting
 - **Evening (1-2 hours)**: Image optimization and final benchmarks
 
 ### Success Criteria
+
 - ✅ All routes respond < 200ms (90th percentile)
 - ✅ Caching implemented for static data
 - ✅ Rate limiting active on all routes
@@ -30,6 +33,7 @@ Optimize application performance through load testing, query optimization, cachi
 ### Phase 1: Performance Testing (1.5 hours)
 
 #### Load Testing with Apache Bench
+
 ```bash
 # Install Apache Bench (if not already installed)
 # Windows: Download from Apache HTTP Server
@@ -47,35 +51,37 @@ ab -n 500 -c 5 -H "Authorization: Bearer ADMIN_TOKEN" http://localhost:3000/api/
 ```
 
 #### Alternative: k6 Load Testing
+
 ```javascript
 // load-test.js
-import http from 'k6/http';
-import { check, sleep } from 'k6';
+import http from "k6/http";
+import { check, sleep } from "k6";
 
 export let options = {
   stages: [
-    { duration: '30s', target: 20 },  // Ramp up to 20 users
-    { duration: '1m', target: 50 },   // Stay at 50 users
-    { duration: '30s', target: 0 },   // Ramp down
+    { duration: "30s", target: 20 }, // Ramp up to 20 users
+    { duration: "1m", target: 50 }, // Stay at 50 users
+    { duration: "30s", target: 0 }, // Ramp down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<200'], // 95% of requests < 200ms
+    http_req_duration: ["p(95)<200"], // 95% of requests < 200ms
   },
 };
 
 export default function () {
   // Test product listing
-  let res = http.get('http://localhost:3000/api/products');
+  let res = http.get("http://localhost:3000/api/products");
   check(res, {
-    'status is 200': (r) => r.status === 200,
-    'response time < 200ms': (r) => r.timings.duration < 200,
+    "status is 200": (r) => r.status === 200,
+    "response time < 200ms": (r) => r.timings.duration < 200,
   });
-  
+
   sleep(1);
 }
 ```
 
 #### Metrics to Collect
+
 - [ ] Response times (p50, p90, p95, p99)
 - [ ] Requests per second (RPS)
 - [ ] Error rate
@@ -84,13 +90,16 @@ export default function () {
 - [ ] Concurrent user capacity
 
 #### Target Routes for Load Testing
+
 1. **Public Routes** (high traffic)
+
    - `GET /api/products` (product listing)
    - `GET /api/products/[slug]` (product details)
    - `GET /api/categories` (category listing)
    - `GET /api/search` (universal search)
 
 2. **Authenticated Routes** (medium traffic)
+
    - `GET /api/cart` (cart operations)
    - `GET /api/orders` (order listing)
    - `GET /api/user/profile` (user profile)
@@ -105,6 +114,7 @@ export default function () {
 ### Phase 2: Query Optimization (1.5-2 hours)
 
 #### Identify Slow Queries
+
 - [ ] Profile all Firestore queries
 - [ ] Find queries with > 100ms response time
 - [ ] Check for missing indexes
@@ -113,6 +123,7 @@ export default function () {
 #### Optimization Strategies
 
 **1. Add Composite Indexes**
+
 ```javascript
 // firestore.indexes.json
 {
@@ -149,53 +160,55 @@ export default function () {
 ```
 
 **2. Optimize Pagination**
+
 ```typescript
 // Before: Offset-based pagination (slow)
 const products = await adminDb
-  .collection('products')
-  .orderBy('createdAt', 'desc')
+  .collection("products")
+  .orderBy("createdAt", "desc")
   .offset(page * limit)
   .limit(limit)
   .get();
 
 // After: Cursor-based pagination (fast)
 const products = await adminDb
-  .collection('products')
-  .orderBy('createdAt', 'desc')
+  .collection("products")
+  .orderBy("createdAt", "desc")
   .startAfter(lastDocSnapshot)
   .limit(limit)
   .get();
 ```
 
 **3. Reduce Field Reads**
+
 ```typescript
 // Before: Read all fields
-const products = await adminDb
-  .collection('products')
-  .get();
+const products = await adminDb.collection("products").get();
 
 // After: Select only needed fields
 const products = await adminDb
-  .collection('products')
-  .select('id', 'name', 'price', 'image', 'status')
+  .collection("products")
+  .select("id", "name", "price", "image", "status")
   .get();
 ```
 
 **4. Batch Requests**
+
 ```typescript
 // Before: Multiple individual requests
 for (const productId of productIds) {
-  const product = await adminDb.collection('products').doc(productId).get();
+  const product = await adminDb.collection("products").doc(productId).get();
 }
 
 // After: Batch read
-const productRefs = productIds.map(id => 
-  adminDb.collection('products').doc(id)
+const productRefs = productIds.map((id) =>
+  adminDb.collection("products").doc(id)
 );
 const products = await adminDb.getAll(...productRefs);
 ```
 
 #### Tasks
+
 - [ ] Create `firestore.indexes.json` with composite indexes
 - [ ] Deploy indexes to Firebase: `firebase deploy --only firestore:indexes`
 - [ ] Update pagination to cursor-based
@@ -210,9 +223,10 @@ const products = await adminDb.getAll(...productRefs);
 ### Phase 3: Caching Implementation (2 hours)
 
 #### Setup In-Memory Cache
+
 ```typescript
 // _lib/utils/cache.ts
-import NodeCache from 'node-cache';
+import NodeCache from "node-cache";
 
 // Create cache instance
 const cache = new NodeCache({
@@ -222,10 +236,10 @@ const cache = new NodeCache({
 });
 
 export const CacheKeys = {
-  CATEGORIES: 'categories',
-  SETTINGS: 'settings',
-  HERO_SETTINGS: 'hero-settings',
-  THEME_SETTINGS: 'theme-settings',
+  CATEGORIES: "categories",
+  SETTINGS: "settings",
+  HERO_SETTINGS: "hero-settings",
+  THEME_SETTINGS: "theme-settings",
   PRODUCT_LIST: (filters: string) => `products:${filters}`,
   PRODUCT_DETAIL: (slug: string) => `product:${slug}`,
 };
@@ -262,26 +276,30 @@ export default cacheService;
 #### Cache Strategy by Route Type
 
 **1. Static Data (long TTL: 1 hour)**
+
 - Categories
 - Site settings
 - Theme settings
 - Hero settings
 
 **2. Dynamic Data (short TTL: 5 minutes)**
+
 - Product listings
 - Search results
 
 **3. User-Specific Data (no cache)**
+
 - Cart
 - Orders
 - User profile
 - Addresses
 
 #### Implement Caching Middleware
+
 ```typescript
 // _lib/middleware/cache.middleware.ts
-import { NextRequest, NextResponse } from 'next/server';
-import cacheService from '@/lib/utils/cache';
+import { NextRequest, NextResponse } from "next/server";
+import cacheService from "@/lib/utils/cache";
 
 export function withCache(
   handler: Function,
@@ -305,24 +323,24 @@ export function withCache(
     if (cached) {
       return NextResponse.json(cached, {
         headers: {
-          'X-Cache': 'HIT',
-          'Cache-Control': 'public, max-age=300',
+          "X-Cache": "HIT",
+          "Cache-Control": "public, max-age=300",
         },
       });
     }
 
     // Execute handler
     const response = await handler(req, context);
-    
+
     // Cache successful responses
     if (response.status === 200) {
       const data = await response.json();
       cacheService.set(cacheKey, data, options.ttl);
-      
+
       return NextResponse.json(data, {
         headers: {
-          'X-Cache': 'MISS',
-          'Cache-Control': 'public, max-age=300',
+          "X-Cache": "MISS",
+          "Cache-Control": "public, max-age=300",
         },
       });
     }
@@ -333,6 +351,7 @@ export function withCache(
 ```
 
 #### Tasks
+
 - [ ] Install node-cache: `npm install node-cache`
 - [ ] Create cache utility (`_lib/utils/cache.ts`)
 - [ ] Create cache middleware (`_lib/middleware/cache.middleware.ts`)
@@ -347,9 +366,10 @@ export function withCache(
 ### Phase 4: Rate Limiting (1.5 hours)
 
 #### Setup Rate Limiter
+
 ```typescript
 // _lib/utils/rate-limiter.ts
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
 interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
@@ -397,21 +417,26 @@ export async function checkRateLimit(
 
 export function getClientIdentifier(req: NextRequest): string {
   // Use IP address or user ID as identifier
-  const forwarded = req.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
+  const forwarded = req.headers.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0] : "unknown";
   return ip;
 }
 ```
 
 #### Rate Limiting Middleware
+
 ```typescript
 // _lib/middleware/rate-limit.middleware.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { checkRateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/utils/rate-limiter';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  checkRateLimit,
+  getClientIdentifier,
+  rateLimitConfigs,
+} from "@/lib/utils/rate-limiter";
 
 export function withRateLimit(
   handler: Function,
-  config: 'public' | 'authenticated' | 'admin' = 'public'
+  config: "public" | "authenticated" | "admin" = "public"
 ) {
   return async (req: NextRequest, context?: any) => {
     const identifier = getClientIdentifier(req);
@@ -426,16 +451,16 @@ export function withRateLimit(
       return NextResponse.json(
         {
           success: false,
-          message: 'Rate limit exceeded. Please try again later.',
-          error: 'RATE_LIMIT_EXCEEDED',
+          message: "Rate limit exceeded. Please try again later.",
+          error: "RATE_LIMIT_EXCEEDED",
         },
         {
           status: 429,
           headers: {
-            'X-RateLimit-Limit': limitConfig.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': resetAt.toString(),
-            'Retry-After': Math.ceil((resetAt - Date.now()) / 1000).toString(),
+            "X-RateLimit-Limit": limitConfig.maxRequests.toString(),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": resetAt.toString(),
+            "Retry-After": Math.ceil((resetAt - Date.now()) / 1000).toString(),
           },
         }
       );
@@ -443,9 +468,12 @@ export function withRateLimit(
 
     // Add rate limit headers to response
     const response = await handler(req, context);
-    response.headers.set('X-RateLimit-Limit', limitConfig.maxRequests.toString());
-    response.headers.set('X-RateLimit-Remaining', remaining.toString());
-    response.headers.set('X-RateLimit-Reset', resetAt.toString());
+    response.headers.set(
+      "X-RateLimit-Limit",
+      limitConfig.maxRequests.toString()
+    );
+    response.headers.set("X-RateLimit-Remaining", remaining.toString());
+    response.headers.set("X-RateLimit-Reset", resetAt.toString());
 
     return response;
   };
@@ -453,6 +481,7 @@ export function withRateLimit(
 ```
 
 #### Tasks
+
 - [ ] Create rate limiter utility (`_lib/utils/rate-limiter.ts`)
 - [ ] Create rate limit middleware (`_lib/middleware/rate-limit.middleware.ts`)
 - [ ] Apply rate limiting to public routes (100/hour)
@@ -468,9 +497,10 @@ export function withRateLimit(
 ### Phase 5: Image Optimization (1 hour)
 
 #### Image Compression on Upload
+
 ```typescript
 // _lib/utils/image-optimizer.ts
-import sharp from 'sharp';
+import sharp from "sharp";
 
 export async function optimizeImage(
   buffer: Buffer,
@@ -478,19 +508,19 @@ export async function optimizeImage(
     maxWidth?: number;
     maxHeight?: number;
     quality?: number;
-    format?: 'jpeg' | 'png' | 'webp';
+    format?: "jpeg" | "png" | "webp";
   } = {}
 ): Promise<Buffer> {
   const {
     maxWidth = 1920,
     maxHeight = 1080,
     quality = 80,
-    format = 'webp',
+    format = "webp",
   } = options;
 
   return sharp(buffer)
     .resize(maxWidth, maxHeight, {
-      fit: 'inside',
+      fit: "inside",
       withoutEnlargement: true,
     })
     .toFormat(format, { quality })
@@ -503,15 +533,16 @@ export async function generateThumbnail(
 ): Promise<Buffer> {
   return sharp(buffer)
     .resize(size, size, {
-      fit: 'cover',
-      position: 'center',
+      fit: "cover",
+      position: "center",
     })
-    .toFormat('webp', { quality: 70 })
+    .toFormat("webp", { quality: 70 })
     .toBuffer();
 }
 ```
 
 #### Tasks
+
 - [ ] Install sharp: `npm install sharp`
 - [ ] Create image optimizer utility
 - [ ] Update product image upload to optimize images
@@ -525,6 +556,7 @@ export async function generateThumbnail(
 ### Phase 6: Final Benchmarks & Documentation (1 hour)
 
 #### Performance Benchmarks
+
 - [ ] Run load tests on all optimized routes
 - [ ] Measure cache hit rates
 - [ ] Measure rate limit effectiveness
@@ -532,22 +564,26 @@ export async function generateThumbnail(
 - [ ] Document performance improvements
 
 #### Create Performance Report
+
 ```markdown
 # Performance Optimization Report
 
 ## Before Optimization
+
 - Average response time: XXXms
 - P95 response time: XXXms
 - Requests per second: XXX
 - Firestore reads per request: XXX
 
 ## After Optimization
+
 - Average response time: XXms (XX% improvement)
 - P95 response time: XXms (XX% improvement)
 - Requests per second: XXX (XX% improvement)
 - Firestore reads per request: XXX (XX% reduction)
 
 ## Optimizations Applied
+
 1. Composite indexes added
 2. Cursor-based pagination implemented
 3. Caching for static data (5min TTL)
@@ -555,11 +591,13 @@ export async function generateThumbnail(
 5. Image optimization (WebP, compression)
 
 ## Cache Statistics
+
 - Hit rate: XX%
 - Miss rate: XX%
 - Average cache size: XXX items
 
 ## Rate Limit Statistics
+
 - Blocked requests: XXX
 - Average remaining quota: XXX
 ```
@@ -569,6 +607,7 @@ export async function generateThumbnail(
 ## 📊 Success Criteria
 
 ### Performance Targets
+
 - [x] All routes < 200ms (p95)
 - [ ] Product listing < 100ms
 - [ ] Product details < 50ms
@@ -577,6 +616,7 @@ export async function generateThumbnail(
 - [ ] Admin queries < 150ms
 
 ### Caching Targets
+
 - [ ] Cache hit rate > 60%
 - [ ] Categories cached (1 hour)
 - [ ] Settings cached (1 hour)
@@ -584,6 +624,7 @@ export async function generateThumbnail(
 - [ ] Cache size < 100MB
 
 ### Rate Limiting Targets
+
 - [ ] Public routes: 100 req/hour
 - [ ] Authenticated: 1000 req/hour
 - [ ] Admin routes: 5000 req/hour
@@ -591,6 +632,7 @@ export async function generateThumbnail(
 - [ ] 429 status on limit exceeded
 
 ### Image Optimization Targets
+
 - [ ] Images compressed (< 500KB)
 - [ ] WebP format used
 - [ ] Thumbnails generated
@@ -601,6 +643,7 @@ export async function generateThumbnail(
 ## 🎯 Day 28 Deliverables
 
 ### Code Deliverables
+
 1. ✅ Cache utility (`_lib/utils/cache.ts`)
 2. ✅ Cache middleware (`_lib/middleware/cache.middleware.ts`)
 3. ✅ Rate limiter utility (`_lib/utils/rate-limiter.ts`)
@@ -609,6 +652,7 @@ export async function generateThumbnail(
 6. ✅ Firestore indexes (`firestore.indexes.json`)
 
 ### Documentation Deliverables
+
 1. ✅ Performance benchmarks (before/after)
 2. ✅ Cache statistics report
 3. ✅ Rate limit configuration guide
@@ -616,6 +660,7 @@ export async function generateThumbnail(
 5. ✅ Day 28 completion summary
 
 ### Metrics Deliverables
+
 - ✅ Load test results
 - ✅ Response time improvements
 - ✅ Cache hit rates
@@ -627,12 +672,14 @@ export async function generateThumbnail(
 ## 📝 Notes
 
 ### Tools Required
+
 - Apache Bench or k6 (load testing)
 - node-cache (caching)
 - sharp (image optimization)
 - Firebase CLI (index deployment)
 
 ### Best Practices
+
 1. **Caching**: Cache static data aggressively, user data never
 2. **Rate Limiting**: Different limits for different user roles
 3. **Images**: Always optimize on upload, not on request
@@ -640,6 +687,7 @@ export async function generateThumbnail(
 5. **Monitoring**: Track cache hit rates and rate limit hits
 
 ### Common Pitfalls
+
 - ❌ Caching user-specific data
 - ❌ Too aggressive rate limits
 - ❌ Missing cache invalidation
@@ -650,6 +698,7 @@ export async function generateThumbnail(
 **Status**: Ready to begin Day 28 - Performance & Optimization! 🚀
 
 **Next Steps**:
+
 1. Install required packages (`node-cache`, `sharp`)
 2. Run baseline load tests
 3. Implement caching layer

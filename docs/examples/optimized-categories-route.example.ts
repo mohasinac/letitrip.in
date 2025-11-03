@@ -1,13 +1,18 @@
 /**
- * Categories API Route - GET, POST (OPTIMIZED)
+ * EXAMPLE: Optimized Categories API Route
  * 
- * GET: Public access - List all categories (tree or list format)
- *      ✅ Cache: 1 hour TTL (static data)
- *      ✅ Rate Limit: 100 req/hr (public), 1000 req/hr (authenticated)
+ * This is an example showing how to apply cache and rate limit middleware
+ * to the categories API route for improved performance.
  * 
- * POST: Admin only - Create new category
- *       ✅ Rate Limit: 5000 req/hr (admin)
- *       ✅ Cache Invalidation: Clears category caches
+ * Performance improvements:
+ * - Cache middleware: Reduces database queries for repeated requests
+ * - Rate limiting: Prevents API abuse
+ * - Proper cache headers: Enables browser caching
+ * 
+ * To use this optimized version:
+ * 1. Copy this file to: src/app/api/categories/route.ts
+ * 2. Test the performance improvements
+ * 3. Apply similar patterns to other routes
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,27 +24,25 @@ import {
   NotFoundError 
 } from '../_lib/middleware/error-handler';
 
-// Import performance middleware
-import { withCache } from '@/_lib/middleware/cache.middleware';
-import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
+// Import middleware
+import { withCache, generateUrlCacheKey } from '@/_lib/middleware/cache.middleware';
+import { withRateLimit, getRateLimitConfigByRole } from '@/_lib/middleware/rate-limit.middleware';
 import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
 import cacheService, { CacheKeys, CacheTTL } from '@/_lib/utils/cache';
 
 /**
- * GET /api/categories (OPTIMIZED)
- * Public endpoint - List all categories
- * Query params: format (tree/list), search, limit
+ * GET /api/categories (WITH CACHING + RATE LIMITING)
  * 
- * Performance:
- * - Cache: 1 hour for static categories
- * - Rate Limit: 100 req/hr (public), 1000 req/hr (authenticated)
- * - Expected: < 10ms (cached), < 100ms (uncached)
+ * Optimizations:
+ * - Cache: 1 hour TTL for category data
+ * - Rate Limit: 100 req/hour for public, 1000 for authenticated
+ * - Cache headers: Public, max-age=3600
  */
 const getCategoriesHandler = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     
-    const format = searchParams.get('format'); // 'tree' or 'list'
+    const format = searchParams.get('format');
     const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '1000');
 
@@ -47,7 +50,7 @@ const getCategoriesHandler = async (request: NextRequest) => {
     const filters = {
       search: search || undefined,
       limit,
-      isActive: true, // Public only sees active categories
+      isActive: true,
       sortBy: 'sortOrder' as const,
       sortOrder: 'asc' as const,
     };
@@ -63,6 +66,7 @@ const getCategoriesHandler = async (request: NextRequest) => {
     return NextResponse.json({
       success: true,
       data: result,
+      cached: false, // Will be set by cache middleware
     });
 
   } catch (error: any) {
@@ -75,34 +79,28 @@ const getCategoriesHandler = async (request: NextRequest) => {
   }
 };
 
-// Apply cache and rate limit middleware to GET
+// Apply middleware to GET handler
 export const GET = withRateLimit(
   withCache(getCategoriesHandler, {
     keyGenerator: (req) => {
       const url = new URL(req.url);
       const format = url.searchParams.get('format') || 'list';
       const search = url.searchParams.get('search') || '';
-      
-      // Don't cache search results (they change frequently)
-      if (search) {
-        return `categories:search:${search}`;
-      }
-      
-      // Cache tree and list separately
-      return format === 'tree' 
-        ? CacheKeys.CATEGORIES_TREE 
-        : CacheKeys.CATEGORIES;
+      return search 
+        ? CacheKeys.SEARCH_RESULTS(`categories:${format}:${search}`)
+        : `categories:${format}`;
     },
-    ttl: CacheTTL.STATIC, // 1 hour for static data
+    ttl: CacheTTL.STATIC, // 1 hour
     skip: (req) => {
-      // Don't cache search queries
+      // Don't cache if search query present (search results change frequently)
       const url = new URL(req.url);
       return !!url.searchParams.get('search');
     },
   }),
   {
     config: (req) => {
-      // Higher limit for authenticated users
+      // Public access: 100 req/hour
+      // Authenticated: 1000 req/hour
       const authHeader = req.headers.get('authorization');
       return authHeader 
         ? rateLimitConfigs.authenticated 
@@ -112,13 +110,11 @@ export const GET = withRateLimit(
 );
 
 /**
- * POST /api/categories (OPTIMIZED)
- * Protected endpoint - Create new category
- * Authorization: Admin only
+ * POST /api/categories (WITH RATE LIMITING ONLY)
  * 
- * Performance:
- * - Rate Limit: 5000 req/hr (admin only)
- * - Cache Invalidation: Clears all category caches on create
+ * Optimizations:
+ * - Rate Limit: Admin only, 5000 req/hour
+ * - Cache invalidation: Clear category cache on create
  */
 const postCategoriesHandler = async (request: NextRequest) => {
   try {
@@ -141,9 +137,8 @@ const postCategoriesHandler = async (request: NextRequest) => {
       role: user.role as 'admin' | 'seller' | 'user',
     });
 
-    // 🔥 Invalidate category caches after creation
+    // Invalidate category caches
     cacheService.invalidatePattern('categories:*');
-    console.log('[Cache] Invalidated category caches after POST');
 
     return NextResponse.json({
       success: true,
@@ -175,7 +170,40 @@ const postCategoriesHandler = async (request: NextRequest) => {
   }
 };
 
-// Apply rate limiting to POST (admin only, 5000 req/hr)
+// Apply rate limiting to POST handler
 export const POST = withRateLimit(postCategoriesHandler, {
-  config: rateLimitConfigs.admin,
+  config: rateLimitConfigs.admin, // Admin: 5000 req/hour
 });
+
+/**
+ * PERFORMANCE NOTES:
+ * 
+ * Cache Strategy:
+ * - GET requests with format=tree: Cached for 1 hour
+ * - GET requests with format=list: Cached for 1 hour
+ * - GET requests with search: NOT cached (dynamic results)
+ * - POST requests: Invalidate all category caches
+ * 
+ * Rate Limiting:
+ * - Public GET: 100 requests/hour
+ * - Authenticated GET: 1000 requests/hour
+ * - Admin POST: 5000 requests/hour
+ * 
+ * Expected Improvements:
+ * - First request: ~200-300ms (database query)
+ * - Cached requests: ~5-10ms (cache hit)
+ * - Cache hit rate: 70-80% for popular categories
+ * - Reduced database load: 70-80%
+ * 
+ * Testing:
+ * ```bash
+ * # Test without cache
+ * curl -H "Cache-Control: no-cache" http://localhost:3000/api/categories
+ * 
+ * # Test with cache
+ * curl http://localhost:3000/api/categories
+ * 
+ * # Test rate limiting
+ * for i in {1..150}; do curl http://localhost:3000/api/categories; done
+ * ```
+ */

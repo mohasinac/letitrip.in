@@ -1,8 +1,13 @@
 /**
- * Products API Route - GET, POST
+ * Products API Route - GET, POST (OPTIMIZED)
  * 
- * Public access for GET (listing products)
- * Seller/Admin only for POST (create product)
+ * GET: Public access for listing products
+ *      ✅ Cache: 5 minutes TTL (dynamic data)
+ *      ✅ Rate Limit: 100 req/hr (public), 1000 req/hr (authenticated)
+ * 
+ * POST: Seller/Admin only for creating products
+ *       ✅ Rate Limit: 1000 req/hr (seller), 5000 req/hr (admin)
+ *       ✅ Cache Invalidation: Clears product caches
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,12 +19,23 @@ import {
   NotFoundError 
 } from '../_lib/middleware/error-handler';
 
+// Import performance middleware
+import { withCache } from '@/_lib/middleware/cache.middleware';
+import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
+import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
+import cacheService, { CacheKeys, CacheTTL } from '@/_lib/utils/cache';
+
 /**
- * GET /api/products
+ * GET /api/products (OPTIMIZED)
  * Public endpoint - List all products with filtering
  * Query params: search, category, minPrice, maxPrice, sort, inStock, page, limit
+ * 
+ * Performance:
+ * - Cache: 5 minutes for product listings
+ * - Rate Limit: 100 req/hr (public), 1000 req/hr (authenticated)
+ * - Expected: < 20ms (cached), < 150ms (uncached)
  */
-export async function GET(request: NextRequest) {
+const getProductsHandler = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     
@@ -84,14 +100,50 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+// Apply cache and rate limit middleware to GET
+export const GET = withRateLimit(
+  withCache(getProductsHandler, {
+    keyGenerator: (req) => {
+      const url = new URL(req.url);
+      // Create cache key from all query params
+      const params = Array.from(url.searchParams.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+      
+      return params 
+        ? CacheKeys.PRODUCT_LIST(params)
+        : CacheKeys.PRODUCT_LIST('default');
+    },
+    ttl: CacheTTL.SHORT, // 5 minutes for product listings
+    skip: (req) => {
+      // Don't cache search queries (they change frequently)
+      const url = new URL(req.url);
+      return !!url.searchParams.get('search');
+    },
+  }),
+  {
+    config: (req) => {
+      const authHeader = req.headers.get('authorization');
+      return authHeader 
+        ? rateLimitConfigs.authenticated 
+        : rateLimitConfigs.public;
+    },
+  }
+);
 
 /**
- * POST /api/products
+ * POST /api/products (OPTIMIZED)
  * Protected endpoint - Create a new product
  * Authorization: Seller (own products) or Admin (any seller)
+ * 
+ * Performance:
+ * - Rate Limit: 1000 req/hr (seller), 5000 req/hr (admin)
+ * - Cache Invalidation: Clears product caches on create
  */
-export async function POST(request: NextRequest) {
+const postProductsHandler = async (request: NextRequest) => {
   try {
     // Authenticate user
     const user = await authenticateUser(request);
@@ -118,6 +170,10 @@ export async function POST(request: NextRequest) {
       sellerId: userData?.sellerId,
       email: userData?.email,
     });
+
+    // 🔥 Invalidate product caches after creation
+    cacheService.invalidatePattern('products:*');
+    console.log('[Cache] Invalidated product caches after POST');
 
     return NextResponse.json({
       success: true,
@@ -147,4 +203,14 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+// Apply rate limiting to POST (seller: 1000 req/hr, admin: 5000 req/hr)
+export const POST = withRateLimit(postProductsHandler, {
+  config: (req) => {
+    const role = req.headers.get('x-user-role');
+    return role === 'admin' 
+      ? rateLimitConfigs.admin 
+      : rateLimitConfigs.seller;
+  },
+});
