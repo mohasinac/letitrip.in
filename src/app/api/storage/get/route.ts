@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminStorage } from "@/lib/database/admin";
+import { getAdminStorage } from "@/app/api/_lib/database/admin";
 
 export const config = {
   api: {

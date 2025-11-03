@@ -10,7 +10,7 @@ import {
   GoogleAuthProvider,
   signInWithCustomToken,
 } from "firebase/auth";
-import { auth as firebaseAuth } from "@/lib/database/config";
+import { auth as firebaseAuth } from "@/app/api/_lib/database/config";
 import { authCookies } from "@/lib/auth/cookies";
 import toast from "react-hot-toast";
 

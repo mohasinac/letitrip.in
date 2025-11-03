@@ -15,7 +15,7 @@ import {
   getDoc,
   getDocs,
 } from "firebase/firestore";
-import { db } from "@/lib/database/config";
+import { db } from "@/app/api/_lib/database/config";
 import { Product, Auction, User } from "@/lib/database/services";
 
 // Products Hook

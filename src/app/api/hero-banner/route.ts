@@ -1,7 +1,7 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;

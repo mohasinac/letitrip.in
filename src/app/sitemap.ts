@@ -5,7 +5,7 @@
  */
 
 import { MetadataRoute } from "next";
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
 

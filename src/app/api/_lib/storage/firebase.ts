@@ -4,7 +4,7 @@
  * Server-side operations using Firebase Admin SDK
  */
 
-import { getAdminStorage, getAdminDb } from "@/lib/database/admin";
+import { getAdminStorage, getAdminDb } from "@/app/api/_lib/database/admin";
 import { STORAGE_CONSTANTS, DATABASE_CONSTANTS } from "@/constants/app";
 
 interface FileMetadata {

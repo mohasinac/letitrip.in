@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb, getAdminAuth } from "@/lib/database/admin";
+import { getAdminDb, getAdminAuth } from "@/app/api/_lib/database/admin";
 
 export interface FirebaseUser {
   uid: string;

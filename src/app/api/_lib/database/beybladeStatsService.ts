@@ -3,7 +3,7 @@
  * Handles CRUD operations for Beyblade data in Firestore
  */
 
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 import { BeybladeStats, validateTypeDistribution } from "@/types/beybladeStats";
 import { DEFAULT_BEYBLADE_STATS } from "@/constants/beybladeStatsData";
 

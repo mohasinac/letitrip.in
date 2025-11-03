@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { getAdminStorage, getAdminDb } from "@/lib/database/admin";
+import { getAdminStorage, getAdminDb } from "@/app/api/_lib/database/admin";
 import { v4 as uuidv4 } from "uuid";
 
 // Next.js 13+ route configuration

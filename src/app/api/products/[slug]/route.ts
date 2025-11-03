@@ -13,15 +13,20 @@ import {
   AuthorizationError, 
   NotFoundError 
 } from '../../_lib/middleware/error-handler';
+import { withCache } from '@/_lib/middleware/cache.middleware';
+import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
+import { CacheKeys, CacheTTL, cacheService } from '@/_lib/utils/cache';
+import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
 
 /**
  * GET /api/products/[slug]
  * Public endpoint - Get product by slug
+ * Optimized with caching (5 minutes TTL) and rate limiting
  */
-export async function GET(
+const getProductHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
-) {
+) => {
   try {
     const { slug } = await params;
 
@@ -55,17 +60,36 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+};
+
+export const GET = withRateLimit(
+  withCache(getProductHandler, {
+    keyGenerator: (req) => {
+      // Extract slug from URL path
+      const slug = req.nextUrl.pathname.split('/').pop() || 'unknown';
+      return CacheKeys.PRODUCT_DETAIL(slug);
+    },
+    ttl: CacheTTL.SHORT, // 5 minutes for product details
+    skip: (req) => false, // Always cache product details
+  }),
+  {
+    config: (req) => {
+      const authHeader = req.headers.get('authorization');
+      return authHeader ? rateLimitConfigs.authenticated : rateLimitConfigs.public;
+    }
+  }
+);
 
 /**
  * PUT /api/products/[slug]
  * Protected endpoint - Update product
  * Authorization: Owner (seller) or Admin
+ * Optimized with rate limiting and cache invalidation
  */
-export async function PUT(
+const putProductHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
-) {
+) => {
   try {
     const { slug } = await params;
 
@@ -106,6 +130,10 @@ export async function PUT(
       }
     );
 
+    // Invalidate cache for this product and product list
+    cacheService.invalidatePattern('products:*');
+    cacheService.invalidatePattern(`product:${slug}`);
+
     return NextResponse.json({
       success: true,
       product,
@@ -141,17 +169,25 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+};
+
+export const PUT = withRateLimit(putProductHandler, {
+  config: (req) => {
+    // Check user role from auth token or use seller config as default
+    return rateLimitConfigs.seller; // Sellers can update frequently, admins inherit higher limits
+  }
+});
 
 /**
  * DELETE /api/products/[slug]
  * Protected endpoint - Delete product (soft delete)
  * Authorization: Owner (seller) or Admin
+ * Optimized with rate limiting and cache invalidation
  */
-export async function DELETE(
+const deleteProductHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
-) {
+) => {
   try {
     const { slug } = await params;
 
@@ -188,6 +224,10 @@ export async function DELETE(
       }
     );
 
+    // Invalidate cache for this product and product list
+    cacheService.invalidatePattern('products:*');
+    cacheService.invalidatePattern(`product:${slug}`);
+
     return NextResponse.json({
       success: true,
       message: 'Product deleted successfully',
@@ -215,4 +255,10 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+};
+
+export const DELETE = withRateLimit(deleteProductHandler, {
+  config: (req) => {
+    return rateLimitConfigs.seller; // Same limits as PUT
+  }
+});

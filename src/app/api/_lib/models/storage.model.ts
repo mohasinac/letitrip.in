@@ -4,7 +4,7 @@
  */
 
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
-import { getAdminStorage } from '@/lib/database/admin';
+import { getAdminStorage } from '@/app/api/_lib/database/admin';
 import { logger, logPerformance } from '../../../lib/api/middleware/logger';
 import {
   validateImageFile,

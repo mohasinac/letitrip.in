@@ -2,7 +2,7 @@ import InteractiveHeroBanner from "@/components/home/InteractiveHeroBanner";
 import ModernFeaturedCategories from "@/components/home/ModernFeaturedCategories";
 import ModernWhyChooseUs from "@/components/home/ModernWhyChooseUs";
 import ModernCustomerReviews from "@/components/home/ModernCustomerReviews";
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 import type { Category } from "@/types";
 
 interface CategoryWithCount extends Category {

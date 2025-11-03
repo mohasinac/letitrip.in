@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { auth } from "@/lib/database/config";
+import { auth } from "@/app/api/_lib/database/config";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { apiClient } from "@/lib/api/client";

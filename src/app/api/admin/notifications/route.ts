@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 
 // GET /api/admin/notifications - Get all notifications with filters
 export async function GET(request: NextRequest) {

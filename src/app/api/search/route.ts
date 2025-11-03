@@ -9,11 +9,17 @@
  * - products: Up to 5 matching products
  * - categories: Up to 3 matching categories
  * - stores: Up to 3 matching seller stores
+ * 
+ * Optimized with caching (2 minutes TTL) and rate limiting
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "../_lib/database/admin";
 import { ValidationError } from "../_lib/middleware/error-handler";
+import { withCache } from '@/_lib/middleware/cache.middleware';
+import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
+import { CacheKeys, CacheTTL } from '@/_lib/utils/cache';
+import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
 
 const db = getAdminDb();
 
@@ -27,8 +33,9 @@ const getProductPrice = (product: any): number => {
 /**
  * GET /api/search
  * Universal search endpoint (public access, no authentication required)
+ * Optimized with short TTL cache (2 minutes) and rate limiting
  */
-export async function GET(request: NextRequest) {
+const searchHandler = async (request: NextRequest) => {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get("q");
@@ -174,4 +181,25 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+export const GET = withRateLimit(
+  withCache(searchHandler, {
+    keyGenerator: (req) => {
+      const query = req.nextUrl.searchParams.get('q') || '';
+      return CacheKeys.SEARCH_RESULTS(query.toLowerCase().trim());
+    },
+    ttl: 120, // 2 minutes for search results
+    skip: (req) => {
+      // Skip cache for very short queries or empty queries
+      const query = req.nextUrl.searchParams.get('q') || '';
+      return query.trim().length < 2;
+    },
+  }),
+  {
+    config: (req) => {
+      const authHeader = req.headers.get('authorization');
+      return authHeader ? rateLimitConfigs.authenticated : rateLimitConfigs.public;
+    }
+  }
+);

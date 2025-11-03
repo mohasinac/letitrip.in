@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/database/config";
+import { auth } from "@/app/api/_lib/database/config";
 import { apiClient } from "@/lib/api/client";
 import {
   StorageManager,

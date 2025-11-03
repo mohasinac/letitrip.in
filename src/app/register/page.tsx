@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithCustomToken,
 } from "firebase/auth";
-import { auth } from "@/lib/database/config";
+import { auth } from "@/app/api/_lib/database/config";
 import { apiClient } from "@/lib/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Phone, Mail, ArrowLeft, User } from "lucide-react";

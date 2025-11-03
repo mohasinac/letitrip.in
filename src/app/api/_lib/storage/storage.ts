@@ -1,5 +1,5 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/database/config";
+import { storage } from "@/app/api/_lib/database/config";
 
 /**
  * Upload a file to Firebase Storage

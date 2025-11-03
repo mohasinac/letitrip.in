@@ -3,7 +3,7 @@
  * Handles CRUD operations for Arena data in Firestore
  */
 
-import { getAdminDb } from "@/lib/database/admin";
+import { getAdminDb } from "@/app/api/_lib/database/admin";
 import { ArenaConfig, validateArenaConfig } from "@/types/arenaConfig";
 
 export class ArenaService {

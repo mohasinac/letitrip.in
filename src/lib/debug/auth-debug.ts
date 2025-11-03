@@ -3,7 +3,7 @@
  * Helps diagnose authentication issues in development
  */
 
-import { auth } from "@/lib/database/config";
+import { auth } from "@/app/api/_lib/database/config";
 
 export async function debugAuthStatus(): Promise<void> {
   if (typeof window === "undefined") {

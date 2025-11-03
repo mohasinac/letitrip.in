@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { getAdminAuth, getAdminDb } from "@/app/api/_lib/database/admin";
 
 /**
  * GET /api/admin/support/stats
