@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
+import { useAuth } from "@/contexts/AuthContext";
+import { WishlistService } from "@/lib/api/services/wishlist.service";
 
 export interface WishlistItem {
   id: string;
@@ -32,34 +34,71 @@ const WishlistContext = createContext<WishlistContextType | undefined>(
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  // Load wishlist from localStorage on mount
+  // Load wishlist on mount and when user changes
   useEffect(() => {
-    try {
-      const savedWishlist = localStorage.getItem("wishlist");
-      if (savedWishlist) {
-        const parsed = JSON.parse(savedWishlist);
-        setItems(parsed);
-      }
-    } catch (error) {
-      console.error("Failed to load wishlist from localStorage:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    const loadWishlist = async () => {
+      try {
+        setIsLoading(true);
 
-  // Save wishlist to localStorage whenever it changes
+        if (user) {
+          // Logged-in user: load from database using API service
+          const wishlistData = await WishlistService.getWishlist();
+          setItems(wishlistData.items || []);
+        } else {
+          // Guest: load from localStorage
+          const savedWishlist = localStorage.getItem("wishlist");
+          if (savedWishlist) {
+            const parsed = JSON.parse(savedWishlist);
+            setItems(parsed);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load wishlist:", error);
+        // If API fails for logged-in user, fall back to localStorage
+        if (user) {
+          try {
+            const savedWishlist = localStorage.getItem("wishlist");
+            if (savedWishlist) {
+              const parsed = JSON.parse(savedWishlist);
+              setItems(parsed);
+            }
+          } catch (e) {
+            console.error("Failed to load wishlist from localStorage:", e);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWishlist();
+  }, [user]);
+
+  // Save wishlist to localStorage or API whenever it changes
   useEffect(() => {
     if (!isLoading) {
-      try {
-        localStorage.setItem("wishlist", JSON.stringify(items));
-      } catch (error) {
-        console.error("Failed to save wishlist to localStorage:", error);
-      }
-    }
-  }, [items, isLoading]);
+      const saveWishlist = async () => {
+        try {
+          // Always save to localStorage for quick access
+          localStorage.setItem("wishlist", JSON.stringify(items));
 
-  const addItem = (product: any) => {
+          // If user is logged in, also sync to database
+          if (user) {
+            // Note: The API will be called when adding/removing items
+            // This is just for localStorage backup
+          }
+        } catch (error) {
+          console.error("Failed to save wishlist to localStorage:", error);
+        }
+      };
+
+      saveWishlist();
+    }
+  }, [items, isLoading, user]);
+
+  const addItem = async (product: any) => {
     if (!product || !product.id) {
       toast.error("Invalid product");
       return;
@@ -83,18 +122,51 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       addedAt: new Date().toISOString(),
     };
 
+    // Optimistically update UI
     setItems([...items, newItem]);
     toast.success("Added to wishlist");
+
+    // Sync with API if user is logged in
+    if (user) {
+      try {
+        await WishlistService.addItem(newItem);
+      } catch (error) {
+        console.error("Failed to sync wishlist with API:", error);
+        // UI is already updated, so no need to revert
+      }
+    }
   };
 
-  const removeItem = (itemId: string) => {
+  const removeItem = async (itemId: string) => {
+    // Optimistically update UI
     setItems(items.filter((item) => item.id !== itemId));
     toast.success("Removed from wishlist");
+
+    // Sync with API if user is logged in
+    if (user) {
+      try {
+        await WishlistService.removeItem(itemId);
+      } catch (error) {
+        console.error("Failed to sync wishlist removal with API:", error);
+        // UI is already updated, so no need to revert
+      }
+    }
   };
 
-  const clearWishlist = () => {
+  const clearWishlist = async () => {
+    // Optimistically update UI
     setItems([]);
     toast.success("Wishlist cleared");
+
+    // Sync with API if user is logged in
+    if (user) {
+      try {
+        await WishlistService.clearWishlist();
+      } catch (error) {
+        console.error("Failed to sync wishlist clear with API:", error);
+        // UI is already updated, so no need to revert
+      }
+    }
   };
 
   const isInWishlist = (productId: string): boolean => {

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
 import { GuestCartManager } from "@/utils/guestCart";
 import { useAuth } from "@/contexts/AuthContext";
+import { CartService } from "@/lib/api/services/cart.service";
 
 export interface CartItem {
   id: string;
@@ -45,12 +46,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const loadCart = async () => {
       try {
         if (user) {
-          // Logged-in user: load from database
-          const response = await fetch(`/api/cart?userId=${user.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setItems(data.items || []);
-          }
+          // Logged-in user: load from database using API service
+          const cartData = await CartService.getCart();
+          setItems(cartData.items || []);
         } else {
           // Guest: load from cookies/localStorage
           const guestCart = GuestCartManager.load();
@@ -58,6 +56,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Failed to load cart:", error);
+        // If API fails for logged-in user, fall back to guest cart
+        if (user) {
+          const guestCart = GuestCartManager.load();
+          setItems(guestCart);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -73,24 +76,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
           const guestCart = GuestCartManager.load();
           if (guestCart.length > 0) {
-            // Merge with current user cart
-            const merged = GuestCartManager.merge(guestCart, items);
-            setItems(merged);
-
-            // Save merged cart to database
-            if (typeof user.getIdToken === "function") {
-              const token = await user.getIdToken();
-              await fetch("/api/cart", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  items: merged,
-                }),
-              });
-            }
+            // Use API service to merge carts
+            const cartData = await CartService.mergeGuestCart(guestCart);
+            setItems(cartData.items);
 
             // Clear guest cart
             GuestCartManager.clear();
@@ -98,6 +86,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (error) {
           console.error("Failed to merge guest cart:", error);
+          // Fallback to local merge if API fails
+          const guestCartData = GuestCartManager.load();
+          const merged = GuestCartManager.merge(guestCartData, items);
+          setItems(merged);
+          GuestCartManager.clear();
         } finally {
           setCartMerged(true);
         }
@@ -113,30 +106,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const saveCart = async () => {
         try {
           if (user) {
-            // Check if user has getIdToken method (Firebase user)
-            if (typeof user.getIdToken === "function") {
-              // Logged-in user: save to database
-              const token = await user.getIdToken();
-              await fetch("/api/cart", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  items,
-                }),
-              });
-            } else {
-              // Fallback to guest storage if no token method
-              GuestCartManager.save(items);
-            }
+            // Logged-in user: save to database using API service
+            await CartService.saveCart(items);
           } else {
             // Guest: save to cookies/localStorage
             GuestCartManager.save(items);
           }
         } catch (error) {
           console.error("Failed to save cart:", error);
+          // Fallback to guest storage if API fails
+          GuestCartManager.save(items);
         }
       };
 
