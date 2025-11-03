@@ -1,140 +1,134 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin User By ID API
+ * GET /api/admin/users/[userId] - Get user by ID
+ * PUT /api/admin/users/[userId] - Update user
+ */
 
+import { NextRequest, NextResponse } from 'next/server';
+import { userController } from '../../../_lib/controllers/user.controller';
+import { getAdminAuth } from '../../../_lib/database/admin';
+import { AuthorizationError, NotFoundError, ValidationError } from '../../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * GET /api/admin/users/[userId]
+ * Get specific user by ID
+ */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = await params;
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    try {
-      const token = authHeader.substring(7);
-      const auth = getAdminAuth();
-      const decodedToken = await auth.verifyIdToken(token);
+    // Get user ID from params
+    const { userId } = await context.params;
 
-      // Check if user is admin
-      const db = getAdminDb();
-      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
-      const userData = userDoc.data();
+    // Get user using controller
+    const targetUser = await userController.getUserByIdAdmin(userId, user);
 
-      if (!userData || userData.role !== "admin") {
-        return NextResponse.json(
-          { success: false, error: "Admin access required" },
-          { status: 403 },
-        );
-      }
-
-      // Get specific user
-      const targetUserDoc = await db.collection("users").doc(userId).get();
-      if (!targetUserDoc.exists) {
-        return NextResponse.json(
-          { success: false, error: "User not found" },
-          { status: 404 },
-        );
-      }
-
-      const user = {
-        id: targetUserDoc.id,
-        uid: targetUserDoc.id,
-        ...targetUserDoc.data(),
-      };
-
-      return NextResponse.json(user);
-    } catch (error: any) {
-      console.error("Firebase token verification error:", error);
-      return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
-      );
-    }
+    return NextResponse.json(targetUser);
   } catch (error: any) {
-    console.error("Get user error:", error);
+    console.error('Error in GET /api/admin/users/[userId]:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: "Failed to fetch user" },
-      { status: 500 },
+      { success: false, error: error.message || 'Failed to get user' },
+      { status: 500 }
     );
   }
 }
 
+/**
+ * PUT /api/admin/users/[userId]
+ * Update user details (role, ban status, etc.)
+ */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = await params;
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
+    // Get user ID from params
+    const { userId } = await context.params;
+
+    // Parse request body
     const body = await request.json();
-    const { role, isBanned } = body;
 
-    try {
-      const token = authHeader.substring(7);
-      const auth = getAdminAuth();
-      const decodedToken = await auth.verifyIdToken(token);
+    // Update user using controller
+    const updatedUser = await userController.updateUserAdmin(userId, body, user);
 
-      // Check if user is admin
-      const db = getAdminDb();
-      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
-      const userData = userDoc.data();
+    return NextResponse.json({
+      success: true,
+      message: 'User updated successfully',
+      data: updatedUser,
+    });
+  } catch (error: any) {
+    console.error('Error in PUT /api/admin/users/[userId]:', error);
 
-      if (!userData || userData.role !== "admin") {
-        return NextResponse.json(
-          { success: false, error: "Admin access required" },
-          { status: 403 },
-        );
-      }
-
-      // Update user
-      const updateData: any = {};
-      if (role) {
-        updateData.role = role;
-      }
-      if (isBanned !== undefined) {
-        updateData.isBanned = isBanned;
-      }
-
-      if (Object.keys(updateData).length === 0) {
-        return NextResponse.json(
-          { success: false, error: "No update data provided" },
-          { status: 400 },
-        );
-      }
-
-      updateData.updatedAt = new Date().toISOString();
-
-      await db.collection("users").doc(userId).update(updateData);
-
-      return NextResponse.json({
-        success: true,
-        message: "User updated successfully",
-        data: updateData,
-      });
-    } catch (error: any) {
-      console.error("Firebase token verification error:", error);
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
       return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
+        { success: false, error: error.message },
+        { status: error.statusCode }
       );
     }
-  } catch (error: any) {
-    console.error("Update user error:", error);
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: "Failed to update user" },
-      { status: 500 },
+      { success: false, error: error.message || 'Failed to update user' },
+      { status: 500 }
     );
   }
 }

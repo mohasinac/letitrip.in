@@ -1,34 +1,72 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Product Migration API
+ * POST /api/admin/migrate-products - Migrate products from seller_products to products collection
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { AuthorizationError } from '../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * POST /api/admin/migrate-products
  * Migrates products from seller_products to products collection
- * Admin only endpoint
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add admin authentication check here
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
     const db = getAdminDb();
 
-    console.log("?? Starting migration: seller_products ? products");
+    console.log('🚀 Starting migration: seller_products → products');
 
     // Get all seller_products
-    const sellerProductsSnapshot = await db.collection("seller_products").get();
+    const sellerProductsSnapshot = await db.collection('seller_products').get();
 
     if (sellerProductsSnapshot.empty) {
       return NextResponse.json({
         success: false,
-        message: "No products found in seller_products collection",
+        message: 'No products found in seller_products collection',
       });
     }
 
-    console.log(`?? Found ${sellerProductsSnapshot.size} products in seller_products`);
+    console.log(`📦 Found ${sellerProductsSnapshot.size} products in seller_products`);
 
     const batch = db.batch();
     let migratedCount = 0;
     let skippedCount = 0;
-    const errors = [];
+    const errors: Array<{ product: string; error: string }> = [];
 
     for (const doc of sellerProductsSnapshot.docs) {
       const data = doc.data() as any;
@@ -36,10 +74,10 @@ export async function POST(request: NextRequest) {
 
       try {
         // Check if product already exists
-        const existingProduct = await db.collection("products").doc(productId).get();
+        const existingProduct = await db.collection('products').doc(productId).get();
 
         if (existingProduct.exists) {
-          console.log(`??  Skipping ${data.name} - already exists`);
+          console.log(`⏭️  Skipping ${data.name} - already exists`);
           skippedCount++;
           continue;
         }
@@ -47,17 +85,17 @@ export async function POST(request: NextRequest) {
         // Transform the data structure
         const productData = {
           // Basic Info
-          name: data.name || "",
-          slug: data.seo?.slug || data.slug || "",
-          description: data.description || "",
+          name: data.name || '',
+          slug: data.seo?.slug || data.slug || '',
+          description: data.description || '',
 
           // Seller Info
-          sellerId: data.sellerId || "",
-          sellerName: data.sellerName || "",
+          sellerId: data.sellerId || '',
+          sellerName: data.sellerName || '',
 
           // Category (use 'category' as primary field)
-          category: data.categoryId || data.category || "",
-          categoryId: data.categoryId || data.category || "",
+          category: data.categoryId || data.category || '',
+          categoryId: data.categoryId || data.category || '',
 
           // Pricing
           price: data.pricing?.price || data.price || 0,
@@ -67,15 +105,15 @@ export async function POST(request: NextRequest) {
 
           // Inventory
           quantity: data.inventory?.quantity || data.quantity || 0,
-          sku: data.inventory?.sku || data.sku || "",
-          barcode: data.inventory?.barcode || "",
+          sku: data.inventory?.sku || data.sku || '',
+          barcode: data.inventory?.barcode || '',
           trackQuantity: data.inventory?.trackQuantity !== false,
 
           // Images
           images: data.images || [],
 
           // Status & Visibility
-          status: data.status || "draft",
+          status: data.status || 'draft',
           featured: data.featured || false,
 
           // SEO
@@ -97,19 +135,19 @@ export async function POST(request: NextRequest) {
         };
 
         // Add to batch
-        const productRef = db.collection("products").doc(productId);
+        const productRef = db.collection('products').doc(productId);
         batch.set(productRef, productData);
 
-        console.log(`? Queued: ${data.name}`);
+        console.log(`✓ Queued: ${data.name}`);
         migratedCount++;
 
         // Commit batch every 450 operations (Firestore limit is 500)
         if (migratedCount % 450 === 0) {
           await batch.commit();
-          console.log(`?? Committed batch of ${migratedCount} products`);
+          console.log(`💾 Committed batch of ${migratedCount} products`);
         }
       } catch (error: any) {
-        console.error(`? Error processing ${data.name}:`, error.message);
+        console.error(`❌ Error processing ${data.name}:`, error.message);
         errors.push({ product: data.name, error: error.message });
       }
     }
@@ -117,26 +155,32 @@ export async function POST(request: NextRequest) {
     // Commit remaining items
     if (migratedCount % 450 !== 0) {
       await batch.commit();
-      console.log(`?? Committed final batch`);
+      console.log(`💾 Committed final batch`);
     }
 
     return NextResponse.json({
       success: true,
-      message: "Migration completed",
+      message: 'Migration completed successfully',
       stats: {
         migrated: migratedCount,
         skipped: skippedCount,
         errors: errors.length,
+        total: sellerProductsSnapshot.size,
       },
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error: any) {
-    console.error("Migration failed:", error);
+    console.error('Migration failed:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Migration failed",
-      },
+      { success: false, error: 'Migration failed' },
       { status: 500 }
     );
   }

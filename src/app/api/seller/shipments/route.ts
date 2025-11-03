@@ -1,71 +1,74 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../_lib/middleware/error-handler';
+
+/**
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * Get all shipments for seller
  * GET /api/seller/shipments?status=all|pending|in_transit|delivered
  */
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
-    
-    console.log("Shipments API - User ID:", userId, "Role:", userRole);
-
-    // Get admin Firestore instance (bypasses security rules)
+    const seller = await verifySellerAuth(request);
     const db = getAdminDb();
 
     // Get query params
-    const { searchParams } = new URL(req.url);
-    const statusFilter = searchParams.get("status") || "all";
+    const { searchParams } = new URL(request.url);
+    const statusFilter = searchParams.get('status') || 'all';
 
     // Build query
-    let shipmentsQuery;
-    if (userRole === "admin") {
-      if (statusFilter !== "all") {
-        shipmentsQuery = db
-          .collection("shipments")
-          .where("status", "==", statusFilter)
-          .orderBy("createdAt", "desc");
-      } else {
-        shipmentsQuery = db
-          .collection("shipments")
-          .orderBy("createdAt", "desc");
-      }
-    } else {
-      if (statusFilter !== "all") {
-        shipmentsQuery = db
-          .collection("shipments")
-          .where("sellerId", "==", userId)
-          .where("status", "==", statusFilter)
-          .orderBy("createdAt", "desc");
-      } else {
-        shipmentsQuery = db
-          .collection("shipments")
-          .where("sellerId", "==", userId)
-          .orderBy("createdAt", "desc");
-      }
+    let shipmentsQuery: any = db.collection('shipments');
+
+    // Admin sees all, sellers see only their shipments
+    if (seller.role !== 'admin') {
+      shipmentsQuery = shipmentsQuery.where('sellerId', '==', seller.uid);
     }
 
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      shipmentsQuery = shipmentsQuery.where('status', '==', statusFilter);
+    }
+
+    // Order by creation date
+    shipmentsQuery = shipmentsQuery.orderBy('createdAt', 'desc');
+
     const shipmentsSnap = await shipmentsQuery.get();
-    const shipments = shipmentsSnap.docs.map((doc) => ({
+    const shipments = shipmentsSnap.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
@@ -75,46 +78,45 @@ export async function GET(req: NextRequest) {
     }));
 
     // Calculate stats
-    let statsQuery;
-    if (userRole === "admin") {
-      statsQuery = db.collection("shipments");
-    } else {
-      statsQuery = db
-        .collection("shipments")
-        .where("sellerId", "==", userId);
+    let statsQuery: any = db.collection('shipments');
+    if (seller.role !== 'admin') {
+      statsQuery = statsQuery.where('sellerId', '==', seller.uid);
     }
 
     const statsSnap = await statsQuery.get();
-    let total = 0;
-    let pending = 0;
-    let pickup_scheduled = 0;
-    let in_transit = 0;
-    let out_for_delivery = 0;
-    let delivered = 0;
-    let failed = 0;
+    const stats = {
+      total: 0,
+      pending: 0,
+      pickup_scheduled: 0,
+      in_transit: 0,
+      out_for_delivery: 0,
+      delivered: 0,
+      failed: 0,
+    };
 
-    statsSnap.docs.forEach((doc) => {
+    statsSnap.docs.forEach((doc: any) => {
       const data = doc.data();
-      total++;
+      stats.total++;
+      
       switch (data.status) {
-        case "pending":
-          pending++;
+        case 'pending':
+          stats.pending++;
           break;
-        case "pickup_scheduled":
-          pickup_scheduled++;
+        case 'pickup_scheduled':
+          stats.pickup_scheduled++;
           break;
-        case "in_transit":
-          in_transit++;
+        case 'in_transit':
+          stats.in_transit++;
           break;
-        case "out_for_delivery":
-          out_for_delivery++;
+        case 'out_for_delivery':
+          stats.out_for_delivery++;
           break;
-        case "delivered":
-          delivered++;
+        case 'delivered':
+          stats.delivered++;
           break;
-        case "failed":
-        case "returned":
-          failed++;
+        case 'failed':
+        case 'returned':
+          stats.failed++;
           break;
       }
     });
@@ -122,24 +124,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: shipments,
-      stats: {
-        total,
-        pending,
-        pickup_scheduled,
-        in_transit,
-        out_for_delivery,
-        delivered,
-        failed,
-      },
+      stats,
     });
   } catch (error: any) {
-    console.error("Error fetching shipments:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error fetching shipments:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to fetch shipments",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch shipments' },
+      { status: 500 }
     );
   }
 }

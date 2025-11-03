@@ -1,6 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth } from "@/lib/database/admin";
-import { getStorage } from "firebase-admin/storage";
+/**
+ * Seller Product Media API
+ * POST /api/seller/products/media - Upload product images/videos to Firebase Storage
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth } from '../../../_lib/database/admin';
+import { getStorage } from 'firebase-admin/storage';
+import { AuthorizationError, ValidationError } from '../../../_lib/middleware/error-handler';
+
+/**
+ * Verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * POST /api/seller/products/media
@@ -8,73 +45,31 @@ import { getStorage } from "firebase-admin/storage";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await getAdminAuth().verifyIdToken(token);
-    const sellerId = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can upload
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(request);
+    const sellerId = seller.uid;
 
     // Parse form data
     const formData = await request.formData();
-    const files = formData.getAll("files") as File[];
-    const slug = formData.get("slug") as string;
-    const type = formData.get("type") as string; // 'image' or 'video'
+    const files = formData.getAll('files') as File[];
+    const slug = formData.get('slug') as string;
+    const type = formData.get('type') as string; // 'image' or 'video'
 
-    console.log("Media upload request received:", {
-      filesCount: files.length,
-      slug,
-      type,
-      fileDetails: files.map((f, idx) => ({
-        index: idx,
-        name: f?.name,
-        size: f?.size,
-        type: f?.type,
-        isFile: f instanceof File,
-        isBlob: f instanceof Blob,
-        constructor: f?.constructor?.name,
-        keys: Object.keys(f || {}),
-      })),
-    });
-
+    // Validate inputs
     if (!files || files.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "No files provided" },
-        { status: 400 },
-      );
+      throw new ValidationError('No files provided');
     }
 
     if (!slug) {
-      return NextResponse.json(
-        { success: false, error: "Product slug is required" },
-        { status: 400 },
-      );
+      throw new ValidationError('Product slug is required');
     }
 
-    // Validate slug format (must start with 'buy-')
-    if (!slug.startsWith("buy-")) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid slug format - must start with 'buy-'",
-        },
-        { status: 400 },
-      );
+    if (!slug.startsWith('buy-')) {
+      throw new ValidationError("Invalid slug format - must start with 'buy-'");
+    }
+
+    if (!type || !['image', 'video'].includes(type)) {
+      throw new ValidationError("Type must be 'image' or 'video'");
     }
 
     const bucket = getStorage().bucket();
@@ -90,46 +85,28 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
-      console.log(`Processing file ${i + 1}/${files.length}:`, {
-        name: file?.name,
-        size: file?.size,
-        type: file?.type,
-        hasTypeProperty: "type" in file,
-        allProperties: Object.getOwnPropertyNames(file || {}),
-      });
-
       // Validate file size: 10MB for images, 50MB for videos
-      const maxSize = type === "video" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+      const maxSize = type === 'video' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `File ${file.name} exceeds maximum size of ${type === "video" ? "50MB" : "10MB"}`,
-          },
-          { status: 400 },
+        throw new ValidationError(
+          `File ${file.name} exceeds maximum size of ${type === 'video' ? '50MB' : '10MB'}`
         );
       }
 
       // Validate file type
-      if (type === "image" && file.type && !file.type.startsWith("image/")) {
-        return NextResponse.json(
-          { success: false, error: `File ${file.name} is not an image` },
-          { status: 400 },
-        );
+      if (type === 'image' && file.type && !file.type.startsWith('image/')) {
+        throw new ValidationError(`File ${file.name} is not an image`);
       }
 
-      if (type === "video" && file.type && !file.type.startsWith("video/")) {
-        return NextResponse.json(
-          { success: false, error: `File ${file.name} is not a video` },
-          { status: 400 },
-        );
+      if (type === 'video' && file.type && !file.type.startsWith('video/')) {
+        throw new ValidationError(`File ${file.name} is not a video`);
       }
 
       // Generate file path
       const timestamp = Date.now();
-      const extension = file.name.split(".").pop();
+      const extension = file.name.split('.').pop();
       const fileName =
-        type === "image"
+        type === 'image'
           ? `img${i + 1}-${timestamp}.${extension}`
           : `v${i + 1}-${timestamp}.${extension}`;
 
@@ -173,30 +150,18 @@ export async function POST(request: NextRequest) {
       message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
     });
   } catch (error: any) {
-    console.error("Error uploading media:", error);
+    console.error('Error in POST /api/seller/products/media:', error);
 
-    // Handle specific Firebase errors
-    if (error.code === "auth/id-token-expired") {
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
       return NextResponse.json(
-        { success: false, error: "Token expired - Please login again" },
-        { status: 401 },
-      );
-    }
-
-    if (error.code === "auth/argument-error") {
-      return NextResponse.json(
-        { success: false, error: "Invalid token format" },
-        { status: 401 },
+        { success: false, error: error.message },
+        { status: error.statusCode }
       );
     }
 
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to upload media",
-        details: error.message,
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to upload media' },
+      { status: 500 }
     );
   }
 }

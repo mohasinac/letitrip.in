@@ -1,6 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { Timestamp } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../_lib/middleware/error-handler';
+
+/**
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/seller/sales
@@ -9,48 +45,27 @@ import { Timestamp } from "firebase-admin/firestore";
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
-
-    const adminDb = getAdminDb();
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
     // Get query parameters
-    const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get("status"); // 'active', 'inactive', 'scheduled', 'expired'
-    const search = searchParams.get("search");
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const search = searchParams.get('search');
 
     // Build query
-    let query = adminDb.collection("sales").where("sellerId", "==", uid);
+    let query: any = db.collection('sales').where('sellerId', '==', seller.uid);
 
     // Filter by status
     if (status) {
-      query = query.where("status", "==", status);
+      query = query.where('status', '==', status);
     }
 
     // Execute query
-    const snapshot = await query.orderBy("createdAt", "desc").get();
+    const snapshot = await query.orderBy('createdAt', 'desc').get();
 
     // Map documents to sales array
-    const sales = snapshot.docs.map((doc) => {
+    const sales = snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -69,7 +84,7 @@ export async function GET(request: NextRequest) {
       filteredSales = sales.filter(
         (sale: any) =>
           sale.name?.toLowerCase().includes(searchLower) ||
-          sale.description?.toLowerCase().includes(searchLower),
+          sale.description?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -78,10 +93,21 @@ export async function GET(request: NextRequest) {
       data: filteredSales,
     });
   } catch (error: any) {
-    console.error("Error listing sales:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error listing sales:', error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to list sales" },
-      { status: 500 },
+      { success: false, error: 'Failed to list sales' },
+      { status: 500 }
     );
   }
 }
@@ -93,105 +119,63 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can create sales
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
-
-    const adminDb = getAdminDb();
-
+    // Parse request body
     const body = await request.json();
 
     // Validate required fields
-    const requiredFields = ["name", "discountType", "discountValue", "applyTo"];
+    const requiredFields = ['name', 'discountType', 'discountValue', 'applyTo'];
     for (const field of requiredFields) {
       if (!body[field]) {
-        return NextResponse.json(
-          { success: false, error: `Missing required field: ${field}` },
-          { status: 400 },
-        );
+        throw new ValidationError(`Missing required field: ${field}`);
       }
     }
 
     // Validate discount type
-    if (!["percentage", "fixed"].includes(body.discountType)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid discount type. Must be 'percentage' or 'fixed'",
-        },
-        { status: 400 },
+    if (!['percentage', 'fixed'].includes(body.discountType)) {
+      throw new ValidationError(
+        "Invalid discount type. Must be 'percentage' or 'fixed'"
       );
     }
 
     // Validate applyTo
     if (
-      !["all", "specific_products", "specific_categories"].includes(
-        body.applyTo,
+      !['all', 'specific_products', 'specific_categories'].includes(
+        body.applyTo
       )
     ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Invalid applyTo value. Must be 'all', 'specific_products', or 'specific_categories'",
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Invalid applyTo value. Must be 'all', 'specific_products', or 'specific_categories'"
       );
     }
 
     // Validate that products/categories are provided when needed
     if (
-      body.applyTo === "specific_products" &&
+      body.applyTo === 'specific_products' &&
       !body.applicableProducts?.length
     ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Products must be specified when applyTo is 'specific_products'",
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Products must be specified when applyTo is 'specific_products'"
       );
     }
 
     if (
-      body.applyTo === "specific_categories" &&
+      body.applyTo === 'specific_categories' &&
       !body.applicableCategories?.length
     ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Categories must be specified when applyTo is 'specific_categories'",
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Categories must be specified when applyTo is 'specific_categories'"
       );
     }
 
     // Prepare sale data
     const now = Timestamp.now();
     const saleData = {
-      sellerId: uid,
+      sellerId: seller.uid,
       name: body.name,
-      description: body.description || "",
+      description: body.description || '',
       discountType: body.discountType,
       discountValue: parseFloat(body.discountValue),
       applyTo: body.applyTo,
@@ -203,7 +187,7 @@ export async function POST(request: NextRequest) {
         ? Timestamp.fromDate(new Date(body.startDate))
         : now,
       endDate: body.endDate ? Timestamp.fromDate(new Date(body.endDate)) : null,
-      status: body.status || "active",
+      status: body.status || 'active',
       stats: {
         ordersCount: 0,
         revenue: 0,
@@ -214,7 +198,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create sale in Firestore
-    const docRef = await adminDb.collection("sales").add(saleData);
+    const docRef = await db.collection('sales').add(saleData);
 
     // Return created sale
     const createdSale = {
@@ -230,15 +214,26 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: createdSale,
-        message: "Sale created successfully",
+        message: 'Sale created successfully',
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error: any) {
-    console.error("Error creating sale:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error creating sale:', error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create sale" },
-      { status: 500 },
+      { success: false, error: 'Failed to create sale' },
+      { status: 500 }
     );
   }
 }

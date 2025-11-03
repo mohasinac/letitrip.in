@@ -1,11 +1,45 @@
-"use server";
+/**
+ * Admin Hero Settings API
+ * GET /api/admin/hero-settings - Get hero settings
+ * POST /api/admin/hero-settings - Update hero settings
+ * PATCH /api/admin/hero-settings - Modify hero settings item
+ */
 
-import { NextRequest, NextResponse } from "next/server";
-import { verifyAdmin } from "@/lib/auth/firebase-api-auth";
-import { getAdminDb } from "@/lib/database/admin";
-import { DATABASE_CONSTANTS } from "@/constants/app";
+import { NextRequest, NextResponse } from 'next/server';
+import { settingsController } from '../../_lib/controllers/settings.controller';
+import { getAdminAuth } from '../../_lib/database/admin';
+import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
 
-const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/admin/hero-settings
@@ -13,42 +47,29 @@ const SETTINGS_COLLECTION = DATABASE_CONSTANTS.COLLECTIONS.SETTINGS;
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await verifyAdmin(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 },
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const db = getAdminDb();
-    const doc = await db
-      .collection(SETTINGS_COLLECTION)
-      .doc("hero-settings")
-      .get();
-
-    if (!doc.exists) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          products: [],
-          carousels: [],
-        },
-      });
-    }
+    // Get hero settings
+    const data = await settingsController.getHeroSettings(user);
 
     return NextResponse.json({
       success: true,
-      data: doc.data(),
+      data,
     });
-  } catch (error) {
-    console.error("Error fetching hero settings:", error);
+  } catch (error: any) {
+    console.error('Error in GET /api/admin/hero-settings:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch settings",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch settings' },
+      { status: 500 }
     );
   }
 }
@@ -59,151 +80,76 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await verifyAdmin(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 },
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const db = getAdminDb();
+    // Parse request body
     const body = await request.json();
-    const { type, data } = body; // type: 'products' or 'carousels'
+    const { type, data } = body;
 
-    if (!type || !data) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Type and data are required",
-        },
-        { status: 400 },
-      );
-    }
-
-    const updateData: any = {
-      updatedAt: new Date().toISOString(),
-      updatedBy: user.uid,
-    };
-
-    if (type === "products") {
-      updateData.products = data;
-    } else if (type === "carousels") {
-      updateData.carousels = data;
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid type",
-        },
-        { status: 400 },
-      );
-    }
-
-    await db
-      .collection(SETTINGS_COLLECTION)
-      .doc("hero-settings")
-      .set(updateData, { merge: true });
+    // Update hero settings
+    const updatedData = await settingsController.updateHeroSettings(type, data, user);
 
     return NextResponse.json({
       success: true,
-      data: updateData,
+      data: updatedData,
     });
-  } catch (error) {
-    console.error("Error saving hero settings:", error);
+  } catch (error: any) {
+    console.error('Error in POST /api/admin/hero-settings:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to save settings",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to save settings' },
+      { status: 500 }
     );
   }
 }
 
 /**
  * PATCH /api/admin/hero-settings
- * Update specific hero setting
+ * Update specific hero setting item
  */
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await verifyAdmin(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 },
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const db = getAdminDb();
+    // Parse request body
     const body = await request.json();
-    const { type, item, itemId, action } = body; // action: 'add', 'update', 'delete'
+    const { type, item, itemId, action } = body;
 
-    if (!type || !action) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Type and action are required",
-        },
-        { status: 400 },
-      );
-    }
-
-    const doc = await db
-      .collection(SETTINGS_COLLECTION)
-      .doc("hero-settings")
-      .get();
-
-    const savedData = doc.exists ? doc.data() : null;
-    const currentData = savedData || { products: [], carousels: [] };
-    const items = currentData[type as keyof typeof currentData] || [];
-
-    let updatedItems;
-
-    if (action === "add") {
-      updatedItems = [
-        ...items,
-        { ...item, id: item.id || `${type}_${Date.now()}` },
-      ];
-    } else if (action === "update" && itemId) {
-      updatedItems = items.map((i: any) =>
-        i.id === itemId ? { ...i, ...item } : i,
-      );
-    } else if (action === "delete" && itemId) {
-      updatedItems = items.filter((i: any) => i.id !== itemId);
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid action",
-        },
-        { status: 400 },
-      );
-    }
-
-    const updateData: any = {
-      [type]: updatedItems,
-      updatedAt: new Date().toISOString(),
-      updatedBy: user.uid,
-    };
-
-    await db
-      .collection(SETTINGS_COLLECTION)
-      .doc("hero-settings")
-      .set(updateData, { merge: true });
+    // Modify hero settings item
+    const updatedItems = await settingsController.modifyHeroSettingsItem(
+      type,
+      action,
+      item,
+      itemId,
+      user
+    );
 
     return NextResponse.json({
       success: true,
       data: updatedItems,
     });
-  } catch (error) {
-    console.error("Error updating hero settings:", error);
+  } catch (error: any) {
+    console.error('Error in PATCH /api/admin/hero-settings:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to update settings",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to update settings' },
+      { status: 500 }
     );
   }
 }

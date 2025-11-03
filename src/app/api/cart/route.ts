@@ -1,55 +1,84 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { FieldValue } from "firebase-admin/firestore";
+/**
+ * Cart API Route
+ * 
+ * GET: Get user's cart
+ * POST: Save/update cart
+ * DELETE: Clear cart
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import {
+  getCart,
+  saveCart,
+  clearCart,
+  addItemToCart,
+  syncCart,
+  mergeGuestCart,
+  getCartSummary,
+} from '../_lib/controllers/cart.controller';
+import { authenticateUser } from '../_lib/auth/middleware';
+import { ValidationError, NotFoundError } from '../_lib/middleware/error-handler';
 
 /**
  * GET /api/cart
- * Get user's cart from database
- * Requires authentication
+ * Protected endpoint - Get user's cart
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    // Authenticate user
+    const user = await authenticateUser(request);
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
+        { success: false, error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const userId = decodedToken.uid;
+    // Check for sync parameter
+    const { searchParams } = new URL(request.url);
+    const shouldSync = searchParams.get('sync') === 'true';
 
-    const adminDb = getAdminDb();
+    // Fetch user data
+    const { getAdminDb } = await import('../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
 
-    // Get cart document
-    const cartRef = adminDb.collection("carts").doc(userId);
-    const cartSnap = await cartRef.get();
+    if (shouldSync) {
+      // Sync cart with current prices and availability
+      const result = await syncCart({
+        userId: user.userId,
+        role: user.role as 'admin' | 'seller' | 'user',
+        email: userData?.email,
+      });
 
-    if (!cartSnap.exists) {
-      return NextResponse.json({ items: [] });
+      return NextResponse.json({
+        success: true,
+        data: result.cart,
+        changes: result.changes,
+        message: result.changes.length > 0 
+          ? 'Cart synced with changes' 
+          : 'Cart synced successfully',
+      });
     }
 
-    const cartData = cartSnap.data();
-    return NextResponse.json({
-      items: cartData?.items || [],
-      updatedAt: cartData?.updatedAt,
+    // Get cart using controller
+    const cart = await getCart({
+      userId: user.userId,
+      role: user.role as 'admin' | 'seller' | 'user',
+      email: userData?.email,
     });
+
+    return NextResponse.json({
+      success: true,
+      data: cart,
+    });
+
   } catch (error: any) {
-    console.error("Error fetching cart:", error);
-    
-    if (error.code === "auth/id-token-expired") {
-      return NextResponse.json(
-        { error: "Token expired - Please login again" },
-        { status: 401 }
-      );
-    }
+    console.error('Error in GET /api/cart:', error);
 
     return NextResponse.json(
-      { error: "Failed to fetch cart" },
+      { success: false, error: error.message || 'Failed to fetch cart' },
       { status: 500 }
     );
   }
@@ -57,60 +86,89 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/cart
- * Save/update user's cart in database
- * Requires authentication
+ * Protected endpoint - Save/update cart or add item
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    // Authenticate user
+    const user = await authenticateUser(request);
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
+        { success: false, error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    const adminDb = getAdminDb();
+    // Get request body
     const body = await request.json();
-    const { items } = body;
+    const { items, action, item, guestCartItems } = body;
 
-    if (!Array.isArray(items)) {
+    // Fetch user data
+    const { getAdminDb } = await import('../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
+
+    const context = {
+      userId: user.userId,
+      role: user.role as 'admin' | 'seller' | 'user',
+      email: userData?.email,
+    };
+
+    // Handle different actions
+    if (action === 'add' && item) {
+      // Add single item to cart
+      const cart = await addItemToCart(item, context);
+      
+      return NextResponse.json({
+        success: true,
+        data: cart,
+        message: 'Item added to cart',
+      });
+    } else if (action === 'merge' && guestCartItems) {
+      // Merge guest cart with user cart
+      const cart = await mergeGuestCart(guestCartItems, context);
+      
+      return NextResponse.json({
+        success: true,
+        data: cart,
+        message: 'Carts merged successfully',
+      });
+    } else if (items) {
+      // Save entire cart
+      const cart = await saveCart(items, context);
+      
+      return NextResponse.json({
+        success: true,
+        data: cart,
+        message: 'Cart saved successfully',
+      });
+    } else {
       return NextResponse.json(
-        { error: "Items must be an array" },
+        { success: false, error: 'Invalid request: provide items, item with action=add, or guestCartItems with action=merge' },
         { status: 400 }
       );
     }
 
-    // Save cart document
-    const cartRef = adminDb.collection("carts").doc(userId);
-    await cartRef.set({
-      userId,
-      items,
-      updatedAt: FieldValue.serverTimestamp(),
-    }, { merge: true });
-
-    return NextResponse.json({
-      success: true,
-      message: "Cart saved successfully",
-    });
   } catch (error: any) {
-    console.error("Error saving cart:", error);
-    
-    if (error.code === "auth/id-token-expired") {
+    console.error('Error in POST /api/cart:', error);
+
+    if (error instanceof ValidationError) {
       return NextResponse.json(
-        { error: "Token expired - Please login again" },
-        { status: 401 }
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { error: "Failed to save cart" },
+      { success: false, error: error.message || 'Failed to save cart' },
       { status: 500 }
     );
   }
@@ -118,51 +176,43 @@ export async function POST(request: NextRequest) {
 
 /**
  * DELETE /api/cart
- * Clear user's cart
- * Requires authentication
+ * Protected endpoint - Clear user's cart
  */
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    // Authenticate user
+    const user = await authenticateUser(request);
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
+        { success: false, error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const userId = decodedToken.uid;
+    // Fetch user data
+    const { getAdminDb } = await import('../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
 
-    const adminDb = getAdminDb();
-
-    // Clear cart document
-    const cartRef = adminDb.collection("carts").doc(userId);
-    await cartRef.set({
-      userId,
-      items: [],
-      updatedAt: FieldValue.serverTimestamp(),
+    // Clear cart using controller
+    const cart = await clearCart({
+      userId: user.userId,
+      role: user.role as 'admin' | 'seller' | 'user',
+      email: userData?.email,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Cart cleared successfully",
+      data: cart,
+      message: 'Cart cleared successfully',
     });
+
   } catch (error: any) {
-    console.error("Error clearing cart:", error);
-    
-    if (error.code === "auth/id-token-expired") {
-      return NextResponse.json(
-        { error: "Token expired - Please login again" },
-        { status: 401 }
-      );
-    }
+    console.error('Error in DELETE /api/cart:', error);
 
     return NextResponse.json(
-      { error: "Failed to clear cart" },
+      { success: false, error: error.message || 'Failed to clear cart' },
       { status: 500 }
     );
   }

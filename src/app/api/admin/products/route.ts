@@ -1,149 +1,87 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Products API
+ * GET /api/admin/products - List all products (with filters)
+ * POST /api/admin/products - Create new product
+ * DELETE /api/admin/products - Bulk delete products
+ */
 
-// Helper functions to handle both nested and flattened data structures
-const getProductQuantity = (product: any): number => {
-  return product.inventory?.quantity ?? product.quantity ?? 0;
-};
+import { NextRequest, NextResponse } from 'next/server';
+import { productController } from '../../_lib/controllers/product.controller';
+import { getAdminAuth } from '../../_lib/database/admin';
+import { AuthorizationError } from '../../_lib/middleware/error-handler';
 
-const getProductLowStockThreshold = (product: any): number => {
-  return product.inventory?.lowStockThreshold ?? product.lowStockThreshold ?? 1;
-};
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
 
-const getProductPrice = (product: any): number => {
-  return product.pricing?.price ?? product.price ?? 0;
-};
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/admin/products
- * List all products from all sellers with filtering, search, and pagination
+ * List all products with advanced filtering
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const adminDb = getAdminDb();
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get("status");
-    const sellerId = searchParams.get("sellerId");
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
-    const stockStatus = searchParams.get("stockStatus"); // inStock, outOfStock, lowStock
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const filters = {
+      status: (searchParams.get('status') as any) || 'all',
+      sellerId: searchParams.get('sellerId') || 'all',
+      category: searchParams.get('category') || 'all',
+      search: searchParams.get('search') || undefined,
+      stockStatus: (searchParams.get('stockStatus') as any) || 'all',
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '50'),
+    };
 
-    // Build query - fetch from products collection
-    let firestoreQuery: any = adminDb.collection("products");
-
-    // Apply filters
-    if (status && status !== "all") {
-      firestoreQuery = firestoreQuery.where("status", "==", status);
-    }
-    if (sellerId && sellerId !== "all") {
-      firestoreQuery = firestoreQuery.where("sellerId", "==", sellerId);
-    }
-    if (category && category !== "all") {
-      firestoreQuery = firestoreQuery.where("categoryId", "==", category);
-    }
-
-    // Execute query with ordering and limit
-    const snapshot = await firestoreQuery.orderBy("createdAt", "desc").limit(limit * page).get();
-
-    // Map documents to products array
-    let products = snapshot.docs.map((doc: any) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.() || data.createdAt,
-        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
-        startDate: data.startDate?.toDate?.() || data.startDate,
-        expirationDate: data.expirationDate?.toDate?.() || data.expirationDate,
-      };
-    });
-
-    // Apply stock status filter (client-side)
-    if (stockStatus && stockStatus !== "all") {
-      if (stockStatus === "outOfStock") {
-        products = products.filter((p: any) => getProductQuantity(p) === 0);
-      } else if (stockStatus === "lowStock") {
-        products = products.filter(
-          (p: any) => {
-            const qty = getProductQuantity(p);
-            const threshold = getProductLowStockThreshold(p);
-            return qty > 0 && qty < threshold;
-          }
-        );
-      } else if (stockStatus === "inStock") {
-        products = products.filter((p: any) => {
-          const qty = getProductQuantity(p);
-          const threshold = getProductLowStockThreshold(p);
-          return qty >= threshold;
-        });
-      }
-    }
-
-    // Apply search filter (client-side for flexibility)
-    if (search) {
-      const searchLower = search.toLowerCase();
-      products = products.filter(
-        (product: any) =>
-          product.name?.toLowerCase().includes(searchLower) ||
-          product.sku?.toLowerCase().includes(searchLower) ||
-          product.seo?.slug?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Implement pagination on filtered results
-    const startIndex = (page - 1) * limit;
-    const paginatedProducts = products.slice(startIndex, startIndex + limit);
-
-    // Transform products to ensure consistent structure
-    const transformedProducts = paginatedProducts.map((product: any) => ({
-      ...product,
-      // Ensure flattened fields are available for backward compatibility
-      price: getProductPrice(product),
-      quantity: getProductQuantity(product),
-      lowStockThreshold: getProductLowStockThreshold(product),
-      sku: product.inventory?.sku ?? product.sku,
-    }));
+    // Get products using controller
+    const result = await productController.getAllProductsAdmin(filters, user);
 
     return NextResponse.json({
       success: true,
-      data: transformedProducts,
-      pagination: {
-        page,
-        limit,
-        total: products.length,
-        totalPages: Math.ceil(products.length / limit),
-      },
+      data: result.products,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    console.error("Error listing admin products:", error);
+    console.error('Error in GET /api/admin/products:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to list products" },
+      { success: false, error: error.message || 'Failed to get products' },
       { status: 500 }
     );
   }
@@ -155,147 +93,77 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const adminDb = getAdminDb();
+    // Parse request body
     const body = await request.json();
 
-    // Validate required fields
-    if (!body.name || !body.sellerId || !body.categoryId) {
-      return NextResponse.json(
-        { success: false, error: "Missing required fields: name, sellerId, categoryId" },
-        { status: 400 }
-      );
-    }
-
-    const now = new Date();
-    const productData = {
-      name: body.name,
-      slug: body.slug || body.name.toLowerCase().replace(/\s+/g, "-"),
-      description: body.description || "",
-      shortDescription: body.shortDescription || "",
-      price: parseFloat(body.price) || 0,
-      compareAtPrice: body.compareAtPrice ? parseFloat(body.compareAtPrice) : null,
-      sku: body.sku || `SKU-${Date.now()}`,
-      quantity: parseInt(body.quantity) || 0,
-      stock: parseInt(body.quantity) || 0, // Alias for compatibility
-      lowStockThreshold: parseInt(body.lowStockThreshold) || 10,
-      weight: parseFloat(body.weight) || 0,
-      weightUnit: body.weightUnit || "kg",
-      categoryId: body.categoryId,
-      category: body.category || body.categoryId,
-      tags: body.tags || [],
-      status: body.status || "draft",
-      sellerId: body.sellerId,
-      images: body.images || [],
-      seo: body.seo || { title: body.name, description: "", keywords: [], slug: body.slug },
-      stats: {
-        views: 0,
-        sales: 0,
-        revenue: 0,
-      },
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    // Create product in Firestore
-    const docRef = await adminDb.collection("products").add(productData);
+    // Create product using controller
+    const product = await productController.createProductAdmin(body, user);
 
     return NextResponse.json({
       success: true,
-      data: {
-        id: docRef.id,
-        ...productData,
-      },
-      message: "Product created successfully",
-    });
+      data: product,
+      message: 'Product created successfully',
+    }, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating admin product:", error);
+    console.error('Error in POST /api/admin/products:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create product" },
+      { success: false, error: error.message || 'Failed to create product' },
       { status: 500 }
     );
   }
 }
 
 /**
- * DELETE /api/admin/products (bulk delete)
- * Delete multiple products by IDs
+ * DELETE /api/admin/products
+ * Bulk delete multiple products
  */
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
+    // Parse request body
     const body = await request.json();
     const { ids } = body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
-        { success: false, error: "No product IDs provided" },
+        { success: false, error: 'No product IDs provided' },
         { status: 400 }
       );
     }
 
-    const adminDb = getAdminDb();
-    const batch = adminDb.batch();
-
-    // Delete each product
-    ids.forEach((id: string) => {
-      const docRef = adminDb.collection("products").doc(id);
-      batch.delete(docRef);
-    });
-
-    await batch.commit();
+    // Delete products using controller
+    const result = await productController.bulkDeleteProducts(ids, user);
 
     return NextResponse.json({
       success: true,
-      message: `${ids.length} product(s) deleted successfully`,
-      deletedCount: ids.length,
+      message: `${result.deletedCount} product(s) deleted successfully`,
+      deletedCount: result.deletedCount,
     });
   } catch (error: any) {
-    console.error("Error bulk deleting products:", error);
+    console.error('Error in DELETE /api/admin/products:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to delete products" },
+      { success: false, error: error.message || 'Failed to delete products' },
       { status: 500 }
     );
   }

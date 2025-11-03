@@ -1,6 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { FieldValue } from "firebase-admin/firestore";
+/**
+ * Seller Order Reject API
+ * POST /api/seller/orders/[id]/reject - Reject pending order
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../../_lib/database/admin';
+import { FieldValue } from 'firebase-admin/firestore';
+import { AuthorizationError, ValidationError, NotFoundError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * POST /api/seller/orders/[id]/reject
@@ -8,42 +45,18 @@ import { FieldValue } from "firebase-admin/firestore";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(request);
+    const sellerId = seller.uid;
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-    const sellerId = uid;
-    
-    // Await params in Next.js 15
-    const { id: orderId } = await params;
+    const { id: orderId } = await context.params;
 
     // Validate orderId
-    if (!orderId || typeof orderId !== "string" || orderId.trim() === "") {
-      return NextResponse.json(
-        { success: false, error: "Invalid order ID" },
-        { status: 400 },
-      );
-    }
-
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Access denied. Seller role required." },
-        { status: 403 },
-      );
+    if (!orderId || typeof orderId !== 'string' || orderId.trim() === '') {
+      throw new ValidationError('Invalid order ID');
     }
 
     const adminDb = getAdminDb();
@@ -53,61 +66,46 @@ export async function POST(
     const { reason } = body;
 
     if (!reason || reason.trim().length === 0) {
-      return NextResponse.json(
-        { success: false, error: "Rejection reason is required" },
-        { status: 400 },
-      );
+      throw new ValidationError('Rejection reason is required');
     }
 
     // Get order document
-    const orderRef = adminDb.collection("orders").doc(orderId);
+    const orderRef = adminDb.collection('orders').doc(orderId);
     const orderDoc = await orderRef.get();
 
     if (!orderDoc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Order not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Order not found');
     }
 
     const orderData = orderDoc.data();
 
     // Verify order belongs to this seller (unless admin)
-    if (role !== "admin" && orderData?.sellerId !== sellerId) {
-      return NextResponse.json(
-        { success: false, error: "Access denied" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && orderData?.sellerId !== sellerId) {
+      throw new AuthorizationError('Access denied');
     }
 
     // Check if order is in pending_approval status
-    if (orderData?.status !== "pending_approval") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Only pending_approval orders can be rejected",
-        },
-        { status: 400 },
-      );
+    if (orderData?.status !== 'pending_approval') {
+      throw new ValidationError('Only pending_approval orders can be rejected');
     }
 
     // Update order status to rejected
     await orderRef.update({
-      status: "rejected",
+      status: 'rejected',
       rejectedAt: FieldValue.serverTimestamp(),
       rejectionReason: reason,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
     // Create alert for seller
-    await adminDb.collection("alerts").add({
+    await adminDb.collection('alerts').add({
       sellerId,
       orderId,
       orderNumber: orderData?.orderNumber,
-      type: "order_rejected",
-      title: "Order Rejected",
+      type: 'order_rejected',
+      title: 'Order Rejected',
       message: `Order ${orderData?.orderNumber} has been rejected`,
-      severity: "error",
+      severity: 'error',
       isRead: false,
       createdAt: FieldValue.serverTimestamp(),
     });
@@ -124,17 +122,26 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: "Order rejected successfully",
+      message: 'Order rejected successfully',
       data: updatedOrder,
     });
   } catch (error: any) {
-    console.error("Error rejecting order:", error);
+    console.error('Error in POST /api/seller/orders/[id]/reject:', error);
+
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to reject order",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to reject order' },
+      { status: 500 }
     );
   }
 }

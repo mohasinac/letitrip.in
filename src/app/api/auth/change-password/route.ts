@@ -1,75 +1,95 @@
-import { NextRequest } from "next/server";
-import {
-  createApiHandler,
-  successResponse,
-  errorResponse,
-  unauthorizedResponse,
-} from "@/lib/api";
-import { getAdminAuth } from "@/lib/database/admin";
-import { z } from "zod";
-
 /**
- * Password change validation schema
+ * Auth Change Password API Route - POST
+ * 
+ * POST: Change user's password
  */
-const PasswordChangeSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-});
+
+import { NextRequest, NextResponse } from 'next/server';
+import { changePassword } from '../../_lib/controllers/auth.controller';
+import { authenticateUser } from '../../_lib/auth/middleware';
+import {
+  ValidationError,
+  AuthorizationError,
+} from '../../_lib/middleware/error-handler';
 
 /**
  * POST /api/auth/change-password
- * Change user password
+ * Protected endpoint - Change password
  */
-export const POST = createApiHandler(async (request: NextRequest) => {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return unauthorizedResponse("Not authenticated");
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-
+export async function POST(request: NextRequest) {
   try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const body = await request.json();
+    // Authenticate user
+    const user = await authenticateUser(request);
 
-    // Validate input
-    const validationResult = PasswordChangeSchema.safeParse(body);
-    if (!validationResult.success) {
-      return errorResponse(validationResult.error.errors[0].message, 400);
-    }
-
-    const { currentPassword, newPassword } = validationResult.data;
-
-    // Check if new password is different from current
-    if (currentPassword === newPassword) {
-      return errorResponse(
-        "New password must be different from current password",
-        400,
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
       );
     }
 
-    // Update password in Firebase Auth
-    await auth.updateUser(decodedToken.uid, {
-      password: newPassword,
-    });
+    // Get request body
+    const body = await request.json();
 
-    return successResponse({
-      message: "Password changed successfully",
-    });
-  } catch (error: any) {
-    console.error("Error changing password:", error);
-
-    // Handle specific Firebase errors
-    if (error.code === "auth/wrong-password") {
-      return errorResponse("Current password is incorrect", 401);
+    // Validate required fields
+    if (!body.currentPassword) {
+      return NextResponse.json(
+        { success: false, error: 'Current password is required' },
+        { status: 400 }
+      );
     }
 
-    return errorResponse(error.message || "Failed to change password");
+    if (!body.newPassword) {
+      return NextResponse.json(
+        { success: false, error: 'New password is required' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch user data
+    const { getAdminDb } = await import('../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
+
+    // Change password using controller
+    const result = await changePassword(
+      user.userId,
+      {
+        currentPassword: body.currentPassword,
+        newPassword: body.newPassword,
+      },
+      {
+        userId: user.userId,
+        role: user.role as 'admin' | 'seller' | 'user',
+        email: userData?.email,
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: result.message,
+    });
+
+  } catch (error: any) {
+    console.error('Error in POST /api/auth/change-password:', error);
+
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to change password' },
+      { status: 500 }
+    );
   }
-});
+}

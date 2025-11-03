@@ -1,35 +1,132 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Reviews API
+ * GET /api/admin/reviews - Get all reviews with filters
+ * PATCH /api/admin/reviews - Update review status
+ * DELETE /api/admin/reviews - Delete review
+ */
 
-// GET /api/admin/reviews - Get all reviews with filters
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * Update product rating based on approved reviews
+ */
+async function updateProductRating(productId: string) {
+  try {
+    const db = getAdminDb();
+
+    // Get all approved reviews for this product
+    const reviewsSnapshot = await db
+      .collection('reviews')
+      .where('productId', '==', productId)
+      .where('status', '==', 'approved')
+      .get();
+
+    const reviews = reviewsSnapshot.docs.map((doc: any) => doc.data());
+
+    if (reviews.length === 0) {
+      // No approved reviews, set rating to 0
+      await db.collection('products').doc(productId).update({
+        rating: 0,
+        reviewCount: 0,
+        updatedAt: new Date(),
+      });
+      return;
+    }
+
+    // Calculate average rating
+    const totalRating = reviews.reduce(
+      (sum: number, review: any) => sum + (review.rating || 0),
+      0
+    );
+    const averageRating = totalRating / reviews.length;
+
+    // Update product
+    await db.collection('products').doc(productId).update({
+      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+      reviewCount: reviews.length,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Error updating product rating:', error);
+    // Don't throw error - this is a background task
+  }
+}
+
+/**
+ * GET /api/admin/reviews
+ * Get all reviews with filtering
+ */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
-    const productId = searchParams.get("productId");
-    const rating = searchParams.get("rating");
-    const search = searchParams.get("search");
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
+    const searchParams = request.nextUrl.searchParams;
+    const status = searchParams.get('status');
+    const productId = searchParams.get('productId');
+    const rating = searchParams.get('rating');
+    const search = searchParams.get('search');
 
     const db = getAdminDb();
-    let query = db.collection("reviews");
+    let query: any = db.collection('reviews');
 
     // Apply filters
-    if (status && status !== "all") {
-      query = query.where("status", "==", status) as any;
+    if (status && status !== 'all') {
+      query = query.where('status', '==', status);
     }
     if (productId) {
-      query = query.where("productId", "==", productId) as any;
+      query = query.where('productId', '==', productId);
     }
     if (rating) {
-      query = query.where("rating", "==", parseInt(rating)) as any;
+      query = query.where('rating', '==', parseInt(rating));
     }
 
-    const snapshot = await query.orderBy("createdAt", "desc").get();
+    // Execute query
+    const snapshot = await query.orderBy('createdAt', 'desc').get();
 
-    let reviews = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Map reviews with proper date handling
+    let reviews = snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+      };
+    });
 
     // Apply search filter (client-side for flexible searching)
     if (search) {
@@ -43,38 +140,56 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(reviews);
+    return NextResponse.json({
+      success: true,
+      data: reviews,
+    });
   } catch (error: any) {
-    console.error("Error fetching reviews:", error);
+    console.error('Error in GET /api/admin/reviews:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { error: error.message || "Failed to fetch reviews" },
+      { success: false, error: 'Failed to fetch reviews' },
       { status: 500 }
     );
   }
 }
 
-// PATCH /api/admin/reviews - Update review status
+/**
+ * PATCH /api/admin/reviews
+ * Update review status (query: ?id=reviewId, body: {status, adminNote?})
+ */
 export async function PATCH(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const reviewId = searchParams.get("id");
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
+    const searchParams = request.nextUrl.searchParams;
+    const reviewId = searchParams.get('id');
 
     if (!reviewId) {
-      return NextResponse.json(
-        { error: "Review ID is required" },
-        { status: 400 }
-      );
+      throw new ValidationError('Review ID is required');
     }
 
     const body = await request.json();
     const { status, adminNote } = body;
 
+    if (!status) {
+      throw new ValidationError('Status is required');
+    }
+
     const db = getAdminDb();
-    const reviewRef = db.collection("reviews").doc(reviewId);
+    const reviewRef = db.collection('reviews').doc(reviewId);
 
     const updateData: any = {
       status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     };
 
     if (adminNote) {
@@ -84,7 +199,7 @@ export async function PATCH(request: NextRequest) {
     await reviewRef.update(updateData);
 
     // If approved, update product rating
-    if (status === "approved") {
+    if (status === 'approved') {
       const reviewDoc = await reviewRef.get();
       const reviewData = reviewDoc.data();
 
@@ -93,31 +208,45 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: 'Review updated successfully',
+    });
   } catch (error: any) {
-    console.error("Error updating review:", error);
+    console.error('Error in PATCH /api/admin/reviews:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { error: error.message || "Failed to update review" },
+      { success: false, error: 'Failed to update review' },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/admin/reviews - Delete review
+/**
+ * DELETE /api/admin/reviews
+ * Delete review (query: ?id=reviewId)
+ */
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const reviewId = searchParams.get("id");
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
+    const searchParams = request.nextUrl.searchParams;
+    const reviewId = searchParams.get('id');
 
     if (!reviewId) {
-      return NextResponse.json(
-        { error: "Review ID is required" },
-        { status: 400 }
-      );
+      throw new ValidationError('Review ID is required');
     }
 
     const db = getAdminDb();
-    const reviewRef = db.collection("reviews").doc(reviewId);
+    const reviewRef = db.collection('reviews').doc(reviewId);
 
     // Get review data before deleting
     const reviewDoc = await reviewRef.get();
@@ -126,59 +255,27 @@ export async function DELETE(request: NextRequest) {
     await reviewRef.delete();
 
     // Update product rating if review was approved
-    if (reviewData?.status === "approved" && reviewData?.productId) {
+    if (reviewData?.status === 'approved' && reviewData?.productId) {
       await updateProductRating(reviewData.productId);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: 'Review deleted successfully',
+    });
   } catch (error: any) {
-    console.error("Error deleting review:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to delete review" },
-      { status: 500 }
-    );
-  }
-}
+    console.error('Error in DELETE /api/admin/reviews:', error);
 
-// Helper function to update product rating
-async function updateProductRating(productId: string) {
-  try {
-    const db = getAdminDb();
-
-    // Get all approved reviews for this product
-    const reviewsSnapshot = await db
-      .collection("reviews")
-      .where("productId", "==", productId)
-      .where("status", "==", "approved")
-      .get();
-
-    const reviews = reviewsSnapshot.docs.map((doc: any) => doc.data());
-
-    if (reviews.length === 0) {
-      // No approved reviews, set rating to 0
-      await db.collection("products").doc(productId).update({
-        rating: 0,
-        reviewCount: 0,
-        updatedAt: new Date().toISOString(),
-      });
-      return;
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
     }
 
-    // Calculate average rating
-    const totalRating = reviews.reduce(
-      (sum: number, review: any) => sum + review.rating,
-      0
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete review' },
+      { status: 500 }
     );
-    const averageRating = totalRating / reviews.length;
-
-    // Update product
-    await db.collection("products").doc(productId).update({
-      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
-      reviewCount: reviews.length,
-      updatedAt: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("Error updating product rating:", error);
-    // Don't throw error - this is a background task
   }
 }

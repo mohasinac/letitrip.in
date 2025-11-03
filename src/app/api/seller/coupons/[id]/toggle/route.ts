@@ -1,55 +1,80 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { Timestamp } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth } from '../../../../_lib/database/admin';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../../../_lib/middleware/error-handler';
+import { couponController } from '../../../../_lib/controllers/coupon.controller';
 
-// POST /api/seller/coupons/[id]/toggle - Toggle coupon active/inactive status
+/**
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+      sellerId: decodedToken.uid,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * POST /api/seller/coupons/[id]/toggle - Toggle coupon active/inactive status
+ */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // Verify authentication
+    const seller = await verifySellerAuth(request);
+    const { id } = await context.params;
 
-    const token = authHeader.split("Bearer ")[1];
-    const adminAuth = getAdminAuth();
-    const adminDb = getAdminDb();
-    const decodedToken = await adminAuth.verifyIdToken(token);
-    const sellerId = decodedToken.uid;
-
-    const couponDoc = await adminDb
-      .collection("coupons")
-      .doc(params.id)
-      .get();
-
-    if (!couponDoc.exists) {
-      return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
-    }
-
-    const couponData = couponDoc.data();
-    if (couponData?.sellerId !== sellerId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    const currentStatus = couponData.status;
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
-
-    await adminDb.collection("coupons").doc(params.id).update({
-      status: newStatus,
-      updatedAt: Timestamp.now(),
-    });
+    // Use controller to toggle coupon status
+    const coupon = await couponController.toggleCouponStatus(id, seller);
 
     return NextResponse.json({
-      message: `Coupon ${newStatus === "active" ? "activated" : "deactivated"} successfully`,
-      status: newStatus,
+      success: true,
+      message: `Coupon ${coupon.status === 'active' ? 'activated' : 'deactivated'} successfully`,
+      status: coupon.status,
     });
   } catch (error: any) {
-    console.error("Error toggling coupon:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error toggling coupon:', error);
     return NextResponse.json(
-      { error: error.message || "Failed to toggle coupon" },
-      { status: 500 },
+      { success: false, error: 'Failed to toggle coupon' },
+      { status: 500 }
     );
   }
 }

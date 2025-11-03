@@ -1,56 +1,74 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { DiscountCalculator, CartItem } from "@/lib/utils/discountCalculator";
-import { SellerCoupon } from "@/types";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
+import { DiscountCalculator, CartItem } from '@/lib/utils/discountCalculator';
+import { SellerCoupon } from '@/types';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../../_lib/middleware/error-handler';
+
+/**
+ * Helper function to verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * POST /api/seller/coupons/validate
  * Validate and calculate discount for a coupon with cart items
- * 
- * Body:
- * - couponCode: string
- * - cartItems: CartItem[]
- * - cartSubtotal: number
  */
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // Verify authentication
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
 
-    const token = authHeader.split("Bearer ")[1];
-    const adminAuth = getAdminAuth();
-    const adminDb = getAdminDb();
-    const decodedToken = await adminAuth.verifyIdToken(token);
-    const userId = decodedToken.uid;
-
+    // Parse request body
     const body = await request.json();
     const { couponCode, cartItems, cartSubtotal } = body;
 
     if (!couponCode || !cartItems || cartSubtotal === undefined) {
-      return NextResponse.json(
-        { error: "Missing required fields: couponCode, cartItems, cartSubtotal" },
-        { status: 400 }
+      throw new ValidationError(
+        'Missing required fields: couponCode, cartItems, cartSubtotal'
       );
     }
 
     // Find the coupon
-    const couponSnapshot = await adminDb
-      .collection("coupons")
-      .where("code", "==", couponCode.toUpperCase())
-      .where("status", "==", "active")
+    const couponSnapshot = await db
+      .collection('coupons')
+      .where('code', '==', couponCode.toUpperCase())
+      .where('status', '==', 'active')
       .limit(1)
       .get();
 
     if (couponSnapshot.empty) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: "Coupon not found or inactive" 
-        },
-        { status: 404 }
-      );
+      throw new NotFoundError('Coupon not found or inactive');
     }
 
     const couponDoc = couponSnapshot.docs[0];
@@ -64,13 +82,7 @@ export async function POST(request: NextRequest) {
     if (!coupon.isPermanent && coupon.endDate) {
       const endDate = new Date(coupon.endDate);
       if (endDate < new Date()) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: "Coupon has expired" 
-          },
-          { status: 400 }
-        );
+        throw new ValidationError('Coupon has expired');
       }
     }
 
@@ -78,37 +90,14 @@ export async function POST(request: NextRequest) {
     if (coupon.startDate) {
       const startDate = new Date(coupon.startDate);
       if (startDate > new Date()) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: "Coupon is not yet active" 
-          },
-          { status: 400 }
-        );
+        throw new ValidationError('Coupon is not yet active');
       }
     }
 
     // Check usage limits
     if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: "Coupon usage limit reached" 
-        },
-        { status: 400 }
-      );
+      throw new ValidationError('Coupon usage limit reached');
     }
-
-    // Check per-user usage limits (TODO: implement tracking)
-    // if (coupon.maxUsesPerUser) {
-    //   const userUsageCount = await getCouponUsageCount(userId, coupon.id);
-    //   if (userUsageCount >= coupon.maxUsesPerUser) {
-    //     return NextResponse.json(
-    //       { success: false, error: "You have reached the usage limit for this coupon" },
-    //       { status: 400 }
-    //     );
-    //   }
-    // }
 
     // Apply the coupon using DiscountCalculator
     const result = DiscountCalculator.applyCoupon(
@@ -118,13 +107,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (!result.success) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: result.message || "Coupon cannot be applied"
-        },
-        { status: 400 }
-      );
+      throw new ValidationError(result.message || 'Coupon cannot be applied');
     }
 
     // Get human-readable description
@@ -146,9 +129,20 @@ export async function POST(request: NextRequest) {
       message: result.message,
     });
   } catch (error: any) {
-    console.error("Error validating coupon:", error);
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error validating coupon:', error);
     return NextResponse.json(
-      { error: error.message || "Failed to validate coupon" },
+      { success: false, error: 'Failed to validate coupon' },
       { status: 500 }
     );
   }

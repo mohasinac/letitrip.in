@@ -1,61 +1,122 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Sales API
+ * GET /api/admin/sales - List all sales campaigns
+ * DELETE /api/admin/sales - Delete a sale campaign
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * Enrich sales with seller information
+ */
+async function enrichSalesWithSellerInfo(sales: any[]) {
+  const db = getAdminDb();
+  
+  return Promise.all(
+    sales.map(async (sale) => {
+      if (!sale.sellerId) {
+        return sale;
+      }
+
+      try {
+        const sellerDoc = await db.collection('users').doc(sale.sellerId).get();
+        const sellerData = sellerDoc.data();
+
+        let shopName = 'Unknown Shop';
+        if (sellerData?.shopId) {
+          const shopDoc = await db.collection('shops').doc(sellerData.shopId).get();
+          shopName = shopDoc.data()?.name || 'Unknown Shop';
+        }
+
+        return {
+          ...sale,
+          sellerEmail: sellerData?.email || 'Unknown',
+          shopName,
+        };
+      } catch (error) {
+        return {
+          ...sale,
+          sellerEmail: 'Unknown',
+          shopName: 'Unknown Shop',
+        };
+      }
+    })
+  );
+}
 
 /**
  * GET /api/admin/sales
- * List all sales from all sellers with filtering and search
+ * List all sales campaigns from all sellers with filtering and search
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
+    // Verify admin authentication
+    await verifyAdminAuth(request);
 
     const db = getAdminDb();
-
-    // Get query parameters
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get("status");
-    const search = searchParams.get("search");
+    const status = searchParams.get('status');
+    const search = searchParams.get('search');
 
-    // Build query - fetch from sales collection
-    let firestoreQuery: any = db.collection("sales");
+    // Build Firestore query
+    let query: any = db.collection('sales');
 
     // Apply status filter
-    if (status && status !== "all") {
-      firestoreQuery = firestoreQuery.where("status", "==", status);
+    if (status && status !== 'all') {
+      query = query.where('status', '==', status);
     }
 
     // Order by creation date
-    firestoreQuery = firestoreQuery.orderBy("createdAt", "desc");
+    query = query.orderBy('createdAt', 'desc');
 
-    const snapshot = await firestoreQuery.get();
-    let sales = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
-      updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt,
-      startDate: doc.data().startDate?.toDate?.()?.toISOString() || doc.data().startDate,
-      endDate: doc.data().endDate?.toDate?.()?.toISOString() || doc.data().endDate,
-    }));
+    // Execute query
+    const snapshot = await query.get();
+    
+    // Map sales with proper date handling
+    let sales = snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+        startDate: data.startDate?.toDate?.()?.toISOString() || data.startDate,
+        endDate: data.endDate?.toDate?.()?.toISOString() || data.endDate,
+      };
+    });
 
     // Apply search filter (client-side)
     if (search) {
@@ -67,103 +128,65 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch seller info for each sale
-    const salesWithSeller = await Promise.all(
-      sales.map(async (sale: any) => {
-        if (sale.sellerId) {
-          try {
-            const sellerDoc = await db.collection("users").doc(sale.sellerId).get();
-            const sellerData = sellerDoc.data();
-
-            // Get shop info if available
-            let shopName = "Unknown Shop";
-            if (sellerData?.shopId) {
-              const shopDoc = await db.collection("shops").doc(sellerData.shopId).get();
-              shopName = shopDoc.data()?.name || "Unknown Shop";
-            }
-
-            return {
-              ...sale,
-              sellerEmail: sellerData?.email || "Unknown",
-              shopName,
-            };
-          } catch (error) {
-            return {
-              ...sale,
-              sellerEmail: "Unknown",
-              shopName: "Unknown Shop",
-            };
-          }
-        }
-        return sale;
-      })
-    );
+    // Enrich with seller information
+    const salesWithSeller = await enrichSalesWithSellerInfo(sales);
 
     return NextResponse.json({
       success: true,
       data: salesWithSeller,
     });
   } catch (error: any) {
-    console.error("Error fetching admin sales:", error);
+    console.error('Error in GET /api/admin/sales:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch sales" },
+      { success: false, error: 'Failed to fetch sales' },
       { status: 500 }
     );
   }
 }
 
 /**
- * DELETE /api/admin/sales (body: {id})
- * Delete a sale
+ * DELETE /api/admin/sales
+ * Delete a sale campaign (body: {id})
  */
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const db = getAdminDb();
-
-    // Get sale ID from request body
     const body = await request.json();
     const { id } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { success: false, error: "Sale ID is required" },
-        { status: 400 }
-      );
+      throw new ValidationError('Sale ID is required');
     }
 
-    // Delete the sale
-    await db.collection("sales").doc(id).delete();
+    const db = getAdminDb();
+    await db.collection('sales').doc(id).delete();
 
     return NextResponse.json({
       success: true,
-      message: "Sale deleted successfully",
+      message: 'Sale deleted successfully',
     });
   } catch (error: any) {
-    console.error("Error deleting sale:", error);
+    console.error('Error in DELETE /api/admin/sales:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to delete sale" },
+      { success: false, error: 'Failed to delete sale' },
       { status: 500 }
     );
   }

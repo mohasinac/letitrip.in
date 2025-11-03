@@ -1,102 +1,39 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
+import {
+  AuthorizationError,
+  ValidationError,
+  NotFoundError,
+} from '../../../_lib/middleware/error-handler';
 
 /**
- * Generate bulk manifest for multiple shipments
- * POST /api/seller/shipments/bulk-manifest
+ * Helper function to verify seller authentication
  */
-export async function POST(req: NextRequest) {
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+
   try {
-    // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
     }
 
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
-
-    const body = await req.json();
-    const { shipmentIds = [] } = body;
-
-    if (!Array.isArray(shipmentIds) || shipmentIds.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "No shipment IDs provided" },
-        { status: 400 },
-      );
-    }
-
-    // Get all shipments using Admin SDK
-    const db = getAdminDb();
-    const shipments: any[] = [];
-    for (const shipmentId of shipmentIds) {
-      const shipmentSnap = await db
-        .collection("shipments")
-        .doc(shipmentId)
-        .get();
-
-      if (!shipmentSnap.exists) {
-        continue;
-      }
-
-      const shipmentData = shipmentSnap.data()!;
-
-      // Verify ownership (unless admin)
-      if (userRole !== "admin" && shipmentData.sellerId !== userId) {
-        continue;
-      }
-
-      shipments.push({
-        id: shipmentSnap.id,
-        ...shipmentData,
-      });
-    }
-
-    if (shipments.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "No valid shipments found" },
-        { status: 404 },
-      );
-    }
-
-    // Generate manifest HTML
-    const manifestHtml = generateManifestHtml(shipments);
-
-    // In a real application, you would:
-    // 1. Generate PDF using puppeteer/playwright
-    // 2. Upload to Firebase Storage
-    // 3. Return download URL
-    //
-    // For now, return HTML that can be printed
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        manifestHtml,
-        shipmentCount: shipments.length,
-        generatedAt: new Date().toISOString(),
-      },
-    });
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
   } catch (error: any) {
-    console.error("Error generating manifest:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to generate manifest",
-      },
-      { status: 500 },
-    );
+    throw new AuthorizationError('Invalid or expired token');
   }
 }
 
@@ -105,10 +42,10 @@ export async function POST(req: NextRequest) {
  */
 function generateManifestHtml(shipments: any[]): string {
   const now = new Date();
-  const manifestDate = now.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const manifestDate = now.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 
   return `
@@ -200,15 +137,15 @@ function generateManifestHtml(shipments: any[]): string {
       <span>Total Shipments</span>
     </div>
     <div>
-      <strong>${shipments.filter((s) => s.status === "pending").length}</strong>
+      <strong>${shipments.filter((s) => s.status === 'pending').length}</strong>
       <span>Pending</span>
     </div>
     <div>
-      <strong>${shipments.filter((s) => s.status === "pickup_scheduled").length}</strong>
+      <strong>${shipments.filter((s) => s.status === 'pickup_scheduled').length}</strong>
       <span>Pickup Scheduled</span>
     </div>
     <div>
-      <strong>${shipments.filter((s) => s.status === "in_transit").length}</strong>
+      <strong>${shipments.filter((s) => s.status === 'in_transit').length}</strong>
       <span>In Transit</span>
     </div>
   </div>
@@ -232,25 +169,100 @@ function generateManifestHtml(shipments: any[]): string {
           (shipment, index) => `
         <tr>
           <td>${index + 1}</td>
-          <td>${shipment.orderId || "N/A"}</td>
-          <td>${shipment.trackingNumber || "N/A"}</td>
-          <td>${shipment.carrier || "N/A"}</td>
-          <td>${shipment.toAddress?.name || "N/A"}</td>
-          <td>${shipment.toAddress?.city || "N/A"}, ${shipment.toAddress?.state || "N/A"}</td>
+          <td>${shipment.orderId || 'N/A'}</td>
+          <td>${shipment.trackingNumber || 'N/A'}</td>
+          <td>${shipment.carrier || 'N/A'}</td>
+          <td>${shipment.toAddress?.name || 'N/A'}</td>
+          <td>${shipment.toAddress?.city || 'N/A'}, ${shipment.toAddress?.state || 'N/A'}</td>
           <td>${shipment.weight || 0} kg</td>
-          <td>${(shipment.status || "pending").replace(/_/g, " ").toUpperCase()}</td>
+          <td>${(shipment.status || 'pending').replace(/_/g, ' ').toUpperCase()}</td>
         </tr>
-      `,
+      `
         )
-        .join("")}
+        .join('')}
     </tbody>
   </table>
 
   <div class="footer">
     <p>This is a computer-generated manifest. No signature required.</p>
-    <p>© ${now.getFullYear()} hobbiesspot.com - All rights reserved</p>
+    <p>Â© ${now.getFullYear()} hobbiesspot.com - All rights reserved</p>
   </div>
 </body>
 </html>
   `.trim();
+}
+
+/**
+ * Generate bulk manifest for multiple shipments
+ * POST /api/seller/shipments/bulk-manifest
+ */
+export async function POST(request: NextRequest) {
+  try {
+    // Verify authentication
+    const seller = await verifySellerAuth(request);
+    const db = getAdminDb();
+
+    // Parse request body
+    const body = await request.json();
+    const { shipmentIds = [] } = body;
+
+    if (!Array.isArray(shipmentIds) || shipmentIds.length === 0) {
+      throw new ValidationError('No shipment IDs provided');
+    }
+
+    // Get all shipments
+    const shipments: any[] = [];
+    for (const shipmentId of shipmentIds) {
+      const shipmentSnap = await db.collection('shipments').doc(shipmentId).get();
+
+      if (!shipmentSnap.exists) {
+        continue;
+      }
+
+      const shipmentData = shipmentSnap.data()!;
+
+      // Verify ownership (unless admin)
+      if (seller.role !== 'admin' && shipmentData.sellerId !== seller.uid) {
+        continue;
+      }
+
+      shipments.push({
+        id: shipmentSnap.id,
+        ...shipmentData,
+      });
+    }
+
+    if (shipments.length === 0) {
+      throw new NotFoundError('No valid shipments found');
+    }
+
+    // Generate manifest HTML
+    const manifestHtml = generateManifestHtml(shipments);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        manifestHtml,
+        shipmentCount: shipments.length,
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error: any) {
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    console.error('Error generating manifest:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to generate manifest' },
+      { status: 500 }
+    );
+  }
 }

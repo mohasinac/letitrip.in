@@ -1,5 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Seller Order Invoice API
+ * GET /api/seller/orders/[id]/invoice - Get invoice details
+ * POST /api/seller/orders/[id]/invoice - Generate invoice
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../../_lib/database/admin';
+import { AuthorizationError, NotFoundError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 // Interface definitions
 interface InvoiceData {
@@ -46,57 +84,36 @@ interface InvoiceData {
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(req);
 
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
+    const { id: orderId } = await context.params;
 
     // Get order using Admin SDK
     const db = getAdminDb();
-    const orderSnap = await db.collection("orders").doc(params.id).get();
+    const orderSnap = await db.collection('orders').doc(orderId).get();
 
     if (!orderSnap.exists) {
-      return NextResponse.json(
-        { success: false, error: "Order not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Order not found');
     }
 
     const orderData = orderSnap.data()!;
 
     // Verify seller owns this order (unless admin)
-    if (userRole !== "admin" && orderData.sellerId !== userId) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && orderData.sellerId !== seller.uid) {
+      throw new AuthorizationError('Forbidden');
     }
 
     // Get seller information
-    const sellerSnap = await db.collection("users").doc(orderData.sellerId).get();
+    const sellerSnap = await db.collection('users').doc(orderData.sellerId).get();
     const sellerData = sellerSnap.exists ? sellerSnap.data() : null;
 
     // Generate invoice number (format: INV-YYYYMMDD-XXXXX)
     const invoiceDate = new Date();
-    const dateStr = invoiceDate.toISOString().split("T")[0].replace(/-/g, "");
+    const dateStr = invoiceDate.toISOString().split('T')[0].replace(/-/g, '');
     const randomId = Math.random().toString(36).substr(2, 5).toUpperCase();
     const invoiceNumber = `INV-${dateStr}-${randomId}`;
 
@@ -106,10 +123,8 @@ export async function POST(
 
     // Format addresses
     const formatAddress = (addr: any) => {
-      if (!addr) return "N/A";
-      return `${addr.line1 || ""}${addr.line2 ? ", " + addr.line2 : ""}, ${
-        addr.city || ""
-      }, ${addr.state || ""} ${addr.postalCode || ""}, ${addr.country || ""}`;
+      if (!addr) return 'N/A';
+      return `${addr.line1 || ''}${addr.line2 ? ', ' + addr.line2 : ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.postalCode || ''}, ${addr.country || ''}`;
     };
 
     // Prepare invoice data
@@ -119,27 +134,27 @@ export async function POST(
       invoiceDate: invoiceDate.toISOString(),
       dueDate: dueDate.toISOString(),
       seller: {
-        name: sellerData?.shopName || sellerData?.displayName || "N/A",
-        email: sellerData?.email || "N/A",
-        phone: sellerData?.phone || "N/A",
+        name: sellerData?.shopName || sellerData?.displayName || 'N/A',
+        email: sellerData?.email || 'N/A',
+        phone: sellerData?.phone || 'N/A',
         address:
           sellerData?.shopAddress ||
           formatAddress(sellerData?.address) ||
-          "N/A",
+          'N/A',
         gstin: sellerData?.gstin,
       },
       customer: {
         name: orderData.customerName,
         email: orderData.customerEmail,
-        phone: orderData.customerPhone || "N/A",
+        phone: orderData.customerPhone || 'N/A',
         shippingAddress: formatAddress(orderData.shippingAddress),
         billingAddress: formatAddress(
-          orderData.billingAddress || orderData.shippingAddress,
+          orderData.billingAddress || orderData.shippingAddress
         ),
       },
       items: (orderData.items || []).map((item: any) => ({
         name: item.name,
-        sku: item.sku || "N/A",
+        sku: item.sku || 'N/A',
         quantity: item.quantity,
         price: item.price,
         tax: item.tax || 0,
@@ -154,7 +169,7 @@ export async function POST(
       paymentMethod: orderData.paymentMethod,
       paymentStatus: orderData.paymentStatus,
       notes: `Payment via ${orderData.paymentMethod}. Order placed on ${new Date(
-        orderData.createdAt,
+        orderData.createdAt
       ).toLocaleDateString()}.`,
     };
 
@@ -179,13 +194,18 @@ export async function POST(
       },
     });
   } catch (error: any) {
-    console.error("Error generating invoice:", error);
+    console.error('Error in POST /api/seller/orders/[id]/invoice:', error);
+
+    if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to generate invoice",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to generate invoice' },
+      { status: 500 }
     );
   }
 }
@@ -524,48 +544,27 @@ function generateInvoiceHtml(data: InvoiceData): string {
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(req);
 
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 },
-      );
-    }
-
-    const userId = decoded.uid;
-    const userRole = (decoded as any).role || "user";
+    const { id: orderId } = await context.params;
 
     // Get order using Admin SDK
     const db = getAdminDb();
-    const orderSnap = await db.collection("orders").doc(params.id).get();
+    const orderSnap = await db.collection('orders').doc(orderId).get();
 
     if (!orderSnap.exists) {
-      return NextResponse.json(
-        { success: false, error: "Order not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Order not found');
     }
 
     const orderData = orderSnap.data()!;
 
     // Verify seller owns this order (unless admin)
-    if (userRole !== "admin" && orderData.sellerId !== userId) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && orderData.sellerId !== seller.uid) {
+      throw new AuthorizationError('Forbidden');
     }
 
     // Check if invoice exists in order metadata
@@ -582,16 +581,21 @@ export async function GET(
 
     return NextResponse.json({
       success: false,
-      error: "Invoice not yet generated for this order",
+      error: 'Invoice not yet generated for this order',
     });
   } catch (error: any) {
-    console.error("Error fetching invoice:", error);
+    console.error('Error in GET /api/seller/orders/[id]/invoice:', error);
+
+    if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to fetch invoice",
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch invoice' },
+      { status: 500 }
     );
   }
 }

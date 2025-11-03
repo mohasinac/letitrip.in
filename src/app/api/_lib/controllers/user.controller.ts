@@ -224,6 +224,222 @@ export class UserController {
 
   /**
    * Get all users (Admin only)
+   * - Pagination support
+   * - Filter by role
+   */
+  async getAllUsersAdmin(
+    filters: {
+      role?: 'admin' | 'seller' | 'user';
+      page?: number;
+      limit?: number;
+    },
+    user: UserContext
+  ): Promise<{ users: UserWithVersion[]; pagination: any }> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    const page = filters.page || 1;
+    const limit = filters.limit || 100;
+
+    // Fetch all users (we'll filter client-side for now)
+    const allUsers = await userModel.findAll({});
+
+    let filteredUsers = allUsers;
+
+    // Apply role filter
+    if (filters.role) {
+      filteredUsers = filteredUsers.filter((u) => u.role === filters.role);
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * limit;
+    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
+
+    return {
+      users: paginatedUsers,
+      pagination: {
+        page,
+        limit,
+        total: filteredUsers.length,
+        totalPages: Math.ceil(filteredUsers.length / limit),
+      },
+    };
+  }
+
+  /**
+   * Search users (Admin only)
+   * - Search by email or name
+   */
+  async searchUsersAdmin(
+    query: string,
+    user: UserContext
+  ): Promise<UserWithVersion[]> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    if (!query || query.trim().length === 0) {
+      throw new ValidationError('Search query is required');
+    }
+
+    // Fetch all users and filter client-side
+    const allUsers = await userModel.findAll({});
+    const searchLower = query.toLowerCase();
+
+    const results = allUsers.filter(
+      (u) =>
+        u.email?.toLowerCase().includes(searchLower) ||
+        u.name?.toLowerCase().includes(searchLower)
+    );
+
+    return results;
+  }
+
+  /**
+   * Get user by ID (Admin only)
+   * - Full user details
+   */
+  async getUserByIdAdmin(
+    userId: string,
+    user: UserContext
+  ): Promise<UserWithVersion> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    const targetUser = await userModel.findById(userId);
+
+    if (!targetUser) {
+      throw new NotFoundError('User not found');
+    }
+
+    return targetUser;
+  }
+
+  /**
+   * Update user role (Admin only)
+   * - Change user role (user, seller, admin)
+   * - Prevents admin from demoting themselves
+   */
+  async updateUserRoleAdmin(
+    userId: string,
+    newRole: 'admin' | 'seller' | 'user',
+    user: UserContext
+  ): Promise<UserWithVersion> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    // Validate role
+    if (!['admin', 'seller', 'user'].includes(newRole)) {
+      throw new ValidationError('Invalid role. Must be: admin, seller, or user');
+    }
+
+    // Prevent admin from changing their own role
+    if (userId === user.uid) {
+      throw new AuthorizationError('You cannot change your own role');
+    }
+
+    // Check if user exists
+    const targetUser = await userModel.findById(userId);
+    if (!targetUser) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Update role
+    const updatedUser = await userModel.update(userId, {
+      role: newRole,
+    });
+
+    return updatedUser;
+  }
+
+  /**
+   * Ban/Unban user (Admin only)
+   * - Toggle user ban status
+   * - Prevents admin from banning themselves
+   */
+  async banUserAdmin(
+    userId: string,
+    isBanned: boolean,
+    user: UserContext
+  ): Promise<UserWithVersion> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    // Prevent admin from banning themselves
+    if (userId === user.uid) {
+      throw new AuthorizationError('You cannot ban yourself');
+    }
+
+    // Check if user exists
+    const targetUser = await userModel.findById(userId);
+    if (!targetUser) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Update ban status
+    const updatedUser = await userModel.update(userId, {
+      isBanned: isBanned,
+    } as any);
+
+    return updatedUser;
+  }
+
+  /**
+   * Update user details (Admin only)
+   * - Admin can update any user field
+   * - Includes role and ban status
+   */
+  async updateUserAdmin(
+    userId: string,
+    data: {
+      role?: 'admin' | 'seller' | 'user';
+      isBanned?: boolean;
+      name?: string;
+      phone?: string;
+      [key: string]: any;
+    },
+    user: UserContext
+  ): Promise<UserWithVersion> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    // Prevent admin from modifying themselves in critical ways
+    if (userId === user.uid) {
+      if (data.role !== undefined || data.isBanned !== undefined) {
+        throw new AuthorizationError('You cannot change your own role or ban status');
+      }
+    }
+
+    // Check if user exists
+    const targetUser = await userModel.findById(userId);
+    if (!targetUser) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Validate role if provided
+    if (data.role && !['admin', 'seller', 'user'].includes(data.role)) {
+      throw new ValidationError('Invalid role. Must be: admin, seller, or user');
+    }
+
+    // Update user
+    const updatedUser = await userModel.update(userId, data);
+
+    return updatedUser;
+  }
+
+  /**
+   * Get all users (Admin only)
    */
   async getAllUsers(
     filters?: {
@@ -246,165 +462,6 @@ export class UserController {
 
     const users = await userModel.findAll(filters, pagination);
     return users;
-  }
-
-  /**
-   * Search users (Admin only)
-   */
-  async searchUsers(
-    query: string,
-    filters?: {
-      role?: 'admin' | 'user' | 'seller';
-      status?: 'active' | 'inactive' | 'suspended' | 'banned';
-    },
-    requestingUser?: UserContext
-  ): Promise<UserWithVersion[]> {
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    if (!query || query.trim().length < 2) {
-      throw new ValidationError('Search query must be at least 2 characters');
-    }
-
-    const users = await userModel.search(query, filters);
-    return users;
-  }
-
-  /**
-   * Update user role (Admin only)
-   */
-  async updateUserRole(
-    targetUserId: string,
-    role: 'admin' | 'user' | 'seller',
-    requestingUser: UserContext
-  ): Promise<UserWithVersion> {
-    if (requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    // Business rule: Admins cannot change their own role
-    if (targetUserId === requestingUser.uid) {
-      throw new ConflictError('You cannot change your own role');
-    }
-
-    // Validate role
-    const validRoles: Array<'admin' | 'user' | 'seller'> = ['admin', 'user', 'seller'];
-    if (!validRoles.includes(role)) {
-      throw new ValidationError('Invalid role');
-    }
-
-    const user = await userModel.updateRole(targetUserId, role);
-
-    console.log(
-      `[UserController] Role updated: ${targetUserId} to ${role} by admin: ${requestingUser.uid}`
-    );
-    return user;
-  }
-
-  /**
-   * Ban user (Admin only)
-   */
-  async banUser(
-    targetUserId: string,
-    reason: string,
-    requestingUser: UserContext
-  ): Promise<UserWithVersion> {
-    if (requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    // Business rule: Admins cannot ban themselves
-    if (targetUserId === requestingUser.uid) {
-      throw new ConflictError('You cannot ban yourself');
-    }
-
-    // Validate reason
-    if (!reason || reason.trim().length < 10) {
-      throw new ValidationError('Ban reason must be at least 10 characters');
-    }
-
-    const user = await userModel.ban(targetUserId, reason, requestingUser.uid);
-
-    console.log(
-      `[UserController] User banned: ${targetUserId} by admin: ${requestingUser.uid}, reason: ${reason}`
-    );
-    return user;
-  }
-
-  /**
-   * Unban user (Admin only)
-   */
-  async unbanUser(targetUserId: string, requestingUser: UserContext): Promise<UserWithVersion> {
-    if (requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    const user = await userModel.unban(targetUserId);
-
-    console.log(`[UserController] User unbanned: ${targetUserId} by admin: ${requestingUser.uid}`);
-    return user;
-  }
-
-  /**
-   * Suspend user temporarily (Admin only)
-   */
-  async suspendUser(
-    targetUserId: string,
-    reason: string,
-    suspendedUntil: string,
-    requestingUser: UserContext
-  ): Promise<UserWithVersion> {
-    if (requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    // Business rule: Admins cannot suspend themselves
-    if (targetUserId === requestingUser.uid) {
-      throw new ConflictError('You cannot suspend yourself');
-    }
-
-    // Validate reason
-    if (!reason || reason.trim().length < 10) {
-      throw new ValidationError('Suspension reason must be at least 10 characters');
-    }
-
-    // Validate suspension date
-    const suspensionDate = new Date(suspendedUntil);
-    if (isNaN(suspensionDate.getTime())) {
-      throw new ValidationError('Invalid suspension end date');
-    }
-
-    if (suspensionDate <= new Date()) {
-      throw new ValidationError('Suspension end date must be in the future');
-    }
-
-    const user = await userModel.suspend(targetUserId, reason, suspendedUntil);
-
-    console.log(
-      `[UserController] User suspended: ${targetUserId} until ${suspendedUntil} by admin: ${requestingUser.uid}`
-    );
-    return user;
-  }
-
-  /**
-   * Permanently delete user (Admin only)
-   */
-  async permanentlyDeleteUser(targetUserId: string, requestingUser: UserContext): Promise<void> {
-    if (requestingUser.role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    // Business rule: Admins cannot delete themselves
-    if (targetUserId === requestingUser.uid) {
-      throw new ConflictError('You cannot delete your own account');
-    }
-
-    await userModel.permanentDelete(targetUserId);
-
-    console.log(
-      `[UserController] User permanently deleted: ${targetUserId} by admin: ${requestingUser.uid}`
-    );
   }
 
   /**
@@ -516,6 +573,53 @@ export class UserController {
         throw new ValidationError('Invalid currency');
       }
     }
+  }
+
+  /**
+   * Create or update user document (admin only)
+   * Useful when Firebase Auth user exists but no Firestore document
+   */
+  async createUserDocumentAdmin(
+    userId: string,
+    data: {
+      email?: string;
+      name?: string;
+      phone?: string;
+      role?: 'user' | 'seller' | 'admin';
+    },
+    user: UserContext
+  ): Promise<any> {
+    // RBAC check
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    // Validate role if provided
+    if (data.role && !['user', 'seller', 'admin'].includes(data.role)) {
+      throw new ValidationError('Invalid role. Must be user, seller, or admin');
+    }
+
+    // Create user document with default values
+    const userDocData: any = {
+      uid: userId,
+      email: data.email || '',
+      name: data.name || 'User',
+      phone: data.phone || undefined,
+      role: data.role || 'user',
+      isEmailVerified: false,
+      isPhoneVerified: false,
+      addresses: [],
+      profile: {},
+      isBanned: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastLogin: new Date().toISOString(),
+    };
+
+    // Create or merge document (use update without version check for creation)
+    const updatedUser = await userModel.update(userId, userDocData);
+
+    return updatedUser;
   }
 }
 

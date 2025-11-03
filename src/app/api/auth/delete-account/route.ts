@@ -1,83 +1,63 @@
-import { NextRequest } from "next/server";
-import {
-  createApiHandler,
-  successResponse,
-  errorResponse,
-  unauthorizedResponse,
-} from "@/lib/api";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Auth Delete Account API Route - DELETE, POST
+ * 
+ * DELETE/POST: Delete user account
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { deleteAccount } from '../../_lib/controllers/auth.controller';
+import { authenticateUser } from '../../_lib/auth/middleware';
+import { AuthorizationError } from '../../_lib/middleware/error-handler';
 
 /**
  * DELETE /api/auth/delete-account
- * Delete user account and all associated data
+ * Protected endpoint - Delete account
  */
-export const DELETE = createApiHandler(async (request: NextRequest) => {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return unauthorizedResponse("Not authenticated");
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-
+export async function DELETE(request: NextRequest) {
   try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const db = getAdminDb();
-    const userId = decodedToken.uid;
+    // Authenticate user
+    const user = await authenticateUser(request);
 
-    // Delete user data from Firestore
-    const userRef = db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-
-    if (userDoc.exists) {
-      await userRef.delete();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    // Delete other user-related data
-    // Orders
-    const ordersSnapshot = await db
-      .collection("orders")
-      .where("userId", "==", userId)
-      .get();
-    const orderBatch = db.batch();
-    ordersSnapshot.docs.forEach((doc) => {
-      orderBatch.delete(doc.ref);
+    // Fetch user data
+    const { getAdminDb } = await import('../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
+
+    // Delete account using controller
+    const result = await deleteAccount(user.userId, {
+      userId: user.userId,
+      role: user.role as 'admin' | 'seller' | 'user',
+      email: userData?.email,
     });
-    if (!ordersSnapshot.empty) {
-      await orderBatch.commit();
-    }
 
-    // Cart
-    const cartRef = db.collection("carts").doc(userId);
-    const cartDoc = await cartRef.get();
-    if (cartDoc.exists) {
-      await cartRef.delete();
-    }
-
-    // Reviews
-    const reviewsSnapshot = await db
-      .collection("reviews")
-      .where("userId", "==", userId)
-      .get();
-    const reviewBatch = db.batch();
-    reviewsSnapshot.docs.forEach((doc) => {
-      reviewBatch.delete(doc.ref);
+    return NextResponse.json({
+      success: true,
+      message: result.message,
     });
-    if (!reviewsSnapshot.empty) {
-      await reviewBatch.commit();
-    }
 
-    // Delete user from Firebase Auth
-    await auth.deleteUser(userId);
-
-    return successResponse({
-      message: "Account deleted successfully",
-    });
   } catch (error: any) {
-    console.error("Error deleting account:", error);
-    return errorResponse(error.message || "Failed to delete account");
+    console.error('Error in DELETE /api/auth/delete-account:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to delete account' },
+      { status: 500 }
+    );
   }
-});
+}
 
 /**
  * POST /api/auth/delete-account

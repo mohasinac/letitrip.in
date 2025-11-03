@@ -1,64 +1,110 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
-import * as XLSX from "xlsx";
+/**
+ * Admin Bulk Operations API
+ * GET /api/admin/bulk - List all bulk jobs
+ * POST /api/admin/bulk - Create bulk operation (update, delete, import)
+ */
 
-const adminDb = getAdminDb();
-const BULK_JOBS_COLLECTION = "bulk_jobs";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
 
-// Interfaces
 interface BulkJob {
   id: string;
-  type: "import" | "export" | "update" | "delete";
-  entity: "products" | "inventory" | "categories" | "orders";
-  status: "pending" | "processing" | "completed" | "failed";
+  type: 'import' | 'export' | 'update' | 'delete';
+  entity: 'products' | 'inventory' | 'categories' | 'orders';
+  status: 'pending' | 'processing' | 'completed' | 'failed';
   totalItems: number;
   processedItems: number;
   successCount: number;
   errorCount: number;
   errors: Array<{ itemId: string; error: string }>;
   userId: string;
-  startedAt: string;
-  completedAt?: string;
-  duration?: number; // seconds
+  startedAt: Date;
+  completedAt?: Date;
+  duration?: number;
   fileUrl?: string;
   downloadUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// GET /api/admin/bulk - List all bulk jobs
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * GET /api/admin/bulk
+ * List all bulk jobs with filtering and pagination
+ */
 export async function GET(request: NextRequest) {
   try {
+    // Verify admin authentication
+    await verifyAdminAuth(request);
+
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
-    const type = searchParams.get("type");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const status = searchParams.get('status');
+    const type = searchParams.get('type');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
     const offset = (page - 1) * limit;
 
-    let query = adminDb.collection(BULK_JOBS_COLLECTION).orderBy("createdAt", "desc");
+    const db = getAdminDb();
+    let query = db.collection('bulk_jobs').orderBy('createdAt', 'desc');
 
     // Apply filters
     if (status) {
-      query = query.where("status", "==", status) as any;
+      query = query.where('status', '==', status) as any;
     }
     if (type) {
-      query = query.where("type", "==", type) as any;
+      query = query.where('type', '==', type) as any;
     }
 
     // Get paginated results
     const snapshot = await query.limit(limit).offset(offset).get();
 
-    const jobs: BulkJob[] = [];
-    snapshot.forEach((doc) => {
+    const jobs: any[] = [];
+    snapshot.forEach((doc: any) => {
+      const data = doc.data();
       jobs.push({
         id: doc.id,
-        ...doc.data(),
-      } as BulkJob);
+        ...data,
+        // Convert Firestore timestamps to ISO strings
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+        startedAt: data.startedAt?.toDate?.()?.toISOString() || data.startedAt,
+        completedAt: data.completedAt?.toDate?.()?.toISOString() || data.completedAt,
+      });
     });
 
     // Get total count
-    const totalSnapshot = await adminDb.collection(BULK_JOBS_COLLECTION).count().get();
+    const totalSnapshot = await db.collection('bulk_jobs').count().get();
     const total = totalSnapshot.data().count;
     const totalPages = Math.ceil(total / limit);
 
@@ -73,64 +119,89 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Error fetching bulk jobs:", error);
+    console.error('Error in GET /api/admin/bulk:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch bulk jobs" },
+      { success: false, error: 'Failed to fetch bulk jobs' },
       { status: 500 }
     );
   }
 }
 
-// POST /api/admin/bulk - Create bulk operation
+/**
+ * POST /api/admin/bulk
+ * Create and execute bulk operation
+ */
 export async function POST(request: NextRequest) {
   try {
+    // Verify admin authentication
+    const admin = await verifyAdminAuth(request);
+
     const body = await request.json();
     const { operation, entity, data, options } = body;
 
     // Validate required fields
     if (!operation || !entity) {
-      return NextResponse.json(
-        { success: false, error: "Operation and entity are required" },
-        { status: 400 }
-      );
+      throw new ValidationError('Operation and entity are required');
     }
 
-    // Create bulk job
-    const jobId = adminDb.collection(BULK_JOBS_COLLECTION).doc().id;
-    const now = new Date().toISOString();
+    if (!['update', 'delete', 'import'].includes(operation)) {
+      throw new ValidationError('Operation must be update, delete, or import');
+    }
 
-    const job: BulkJob = {
+    if (!['products', 'inventory', 'categories', 'orders'].includes(entity)) {
+      throw new ValidationError('Invalid entity type');
+    }
+
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new ValidationError('Data array is required and must not be empty');
+    }
+
+    const db = getAdminDb();
+
+    // Create bulk job
+    const jobId = db.collection('bulk_jobs').doc().id;
+    const now = new Date();
+
+    const job: Partial<BulkJob> = {
       id: jobId,
-      type: operation,
-      entity,
-      status: "pending",
-      totalItems: Array.isArray(data) ? data.length : 0,
+      type: operation as any,
+      entity: entity as any,
+      status: 'pending',
+      totalItems: data.length,
       processedItems: 0,
       successCount: 0,
       errorCount: 0,
       errors: [],
-      userId: "admin", // TODO: Get from auth
+      userId: admin.uid,
       startedAt: now,
       createdAt: now,
       updatedAt: now,
     };
 
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).set(job);
+    await db.collection('bulk_jobs').doc(jobId).set(job);
 
     // Process based on operation type
     let result;
     switch (operation) {
-      case "update":
+      case 'update':
         result = await processBulkUpdate(jobId, entity, data, options);
         break;
-      case "delete":
+      case 'delete':
         result = await processBulkDelete(jobId, entity, data);
         break;
-      case "import":
+      case 'import':
         result = await processBulkImport(jobId, entity, data, options);
         break;
       default:
-        throw new Error(`Unsupported operation: ${operation}`);
+        throw new ValidationError(`Unsupported operation: ${operation}`);
     }
 
     return NextResponse.json({
@@ -139,23 +210,35 @@ export async function POST(request: NextRequest) {
         jobId,
         ...result,
       },
+      message: `Bulk ${operation} operation completed`,
     });
   } catch (error: any) {
-    console.error("Error creating bulk operation:", error);
+    console.error('Error in POST /api/admin/bulk:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create bulk operation" },
+      { success: false, error: 'Failed to create bulk operation' },
       { status: 500 }
     );
   }
 }
 
-// Helper: Process bulk update
+/**
+ * Process bulk update operation
+ */
 async function processBulkUpdate(
   jobId: string,
   entity: string,
   data: any[],
   options?: any
 ) {
+  const db = getAdminDb();
   const startTime = Date.now();
   let successCount = 0;
   let errorCount = 0;
@@ -163,24 +246,24 @@ async function processBulkUpdate(
 
   try {
     // Update job status to processing
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "processing",
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'processing',
+      updatedAt: new Date(),
     });
 
     const collectionName = getCollectionName(entity);
-    const batch = adminDb.batch();
+    const batch = db.batch();
     let batchCount = 0;
 
     for (let i = 0; i < data.length; i++) {
       const item = data[i];
       try {
         if (!item.id) {
-          throw new Error("Item ID is required");
+          throw new Error('Item ID is required');
         }
 
-        const docRef = adminDb.collection(collectionName).doc(item.id);
-        const updates = { ...item.updates, updatedAt: new Date().toISOString() };
+        const docRef = db.collection(collectionName).doc(item.id);
+        const updates = { ...item.updates, updatedAt: new Date() };
         
         batch.update(docRef, updates);
         batchCount++;
@@ -199,12 +282,12 @@ async function processBulkUpdate(
 
       // Update progress every 10 items
       if ((i + 1) % 10 === 0) {
-        await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
+        await db.collection('bulk_jobs').doc(jobId).update({
           processedItems: i + 1,
           successCount,
           errorCount,
           errors: errors.slice(0, 100), // Store max 100 errors
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         });
       }
     }
@@ -217,59 +300,62 @@ async function processBulkUpdate(
     const duration = Math.floor((Date.now() - startTime) / 1000);
 
     // Update job as completed
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: successCount > 0 ? "completed" : "failed",
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: successCount > 0 ? 'completed' : 'failed',
       processedItems: data.length,
       successCount,
       errorCount,
       errors: errors.slice(0, 100),
-      completedAt: new Date().toISOString(),
+      completedAt: new Date(),
       duration,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     });
 
     return {
-      status: successCount > 0 ? "completed" : "failed",
+      status: successCount > 0 ? 'completed' : 'failed',
       totalItems: data.length,
       successCount,
       errorCount,
       duration,
     };
   } catch (error: any) {
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "failed",
-      errors: [{ itemId: "system", error: error.message }],
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'failed',
+      errors: [{ itemId: 'system', error: error.message }],
+      updatedAt: new Date(),
     });
     throw error;
   }
 }
 
-// Helper: Process bulk delete
+/**
+ * Process bulk delete operation
+ */
 async function processBulkDelete(jobId: string, entity: string, data: any[]) {
+  const db = getAdminDb();
   const startTime = Date.now();
   let successCount = 0;
   let errorCount = 0;
   const errors: Array<{ itemId: string; error: string }> = [];
 
   try {
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "processing",
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'processing',
+      updatedAt: new Date(),
     });
 
     const collectionName = getCollectionName(entity);
-    const batch = adminDb.batch();
+    const batch = db.batch();
     let batchCount = 0;
 
     for (let i = 0; i < data.length; i++) {
-      const id = typeof data[i] === "string" ? data[i] : data[i].id;
+      const id = typeof data[i] === 'string' ? data[i] : data[i].id;
       try {
         if (!id) {
-          throw new Error("Item ID is required");
+          throw new Error('Item ID is required');
         }
 
-        const docRef = adminDb.collection(collectionName).doc(id);
+        const docRef = db.collection(collectionName).doc(id);
         batch.delete(docRef);
         batchCount++;
 
@@ -285,12 +371,12 @@ async function processBulkDelete(jobId: string, entity: string, data: any[]) {
       }
 
       if ((i + 1) % 10 === 0) {
-        await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
+        await db.collection('bulk_jobs').doc(jobId).update({
           processedItems: i + 1,
           successCount,
           errorCount,
           errors: errors.slice(0, 100),
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         });
       }
     }
@@ -301,54 +387,57 @@ async function processBulkDelete(jobId: string, entity: string, data: any[]) {
 
     const duration = Math.floor((Date.now() - startTime) / 1000);
 
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: successCount > 0 ? "completed" : "failed",
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: successCount > 0 ? 'completed' : 'failed',
       processedItems: data.length,
       successCount,
       errorCount,
       errors: errors.slice(0, 100),
-      completedAt: new Date().toISOString(),
+      completedAt: new Date(),
       duration,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     });
 
     return {
-      status: successCount > 0 ? "completed" : "failed",
+      status: successCount > 0 ? 'completed' : 'failed',
       totalItems: data.length,
       successCount,
       errorCount,
       duration,
     };
   } catch (error: any) {
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "failed",
-      errors: [{ itemId: "system", error: error.message }],
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'failed',
+      errors: [{ itemId: 'system', error: error.message }],
+      updatedAt: new Date(),
     });
     throw error;
   }
 }
 
-// Helper: Process bulk import
+/**
+ * Process bulk import operation
+ */
 async function processBulkImport(
   jobId: string,
   entity: string,
   data: any[],
   options?: any
 ) {
+  const db = getAdminDb();
   const startTime = Date.now();
   let successCount = 0;
   let errorCount = 0;
   const errors: Array<{ itemId: string; error: string }> = [];
 
   try {
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "processing",
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'processing',
+      updatedAt: new Date(),
     });
 
     const collectionName = getCollectionName(entity);
-    const batch = adminDb.batch();
+    const batch = db.batch();
     let batchCount = 0;
 
     for (let i = 0; i < data.length; i++) {
@@ -357,10 +446,10 @@ async function processBulkImport(
         // Validate required fields based on entity
         validateEntityData(entity, item);
 
-        const id = item.id || adminDb.collection(collectionName).doc().id;
-        const docRef = adminDb.collection(collectionName).doc(id);
+        const id = item.id || db.collection(collectionName).doc().id;
+        const docRef = db.collection(collectionName).doc(id);
 
-        const now = new Date().toISOString();
+        const now = new Date();
         const docData = {
           ...item,
           id,
@@ -387,12 +476,12 @@ async function processBulkImport(
       }
 
       if ((i + 1) % 10 === 0) {
-        await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
+        await db.collection('bulk_jobs').doc(jobId).update({
           processedItems: i + 1,
           successCount,
           errorCount,
           errors: errors.slice(0, 100),
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         });
       }
     }
@@ -403,58 +492,62 @@ async function processBulkImport(
 
     const duration = Math.floor((Date.now() - startTime) / 1000);
 
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: successCount > 0 ? "completed" : "failed",
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: successCount > 0 ? 'completed' : 'failed',
       processedItems: data.length,
       successCount,
       errorCount,
       errors: errors.slice(0, 100),
-      completedAt: new Date().toISOString(),
+      completedAt: new Date(),
       duration,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     });
 
     return {
-      status: successCount > 0 ? "completed" : "failed",
+      status: successCount > 0 ? 'completed' : 'failed',
       totalItems: data.length,
       successCount,
       errorCount,
       duration,
     };
   } catch (error: any) {
-    await adminDb.collection(BULK_JOBS_COLLECTION).doc(jobId).update({
-      status: "failed",
-      errors: [{ itemId: "system", error: error.message }],
-      updatedAt: new Date().toISOString(),
+    await db.collection('bulk_jobs').doc(jobId).update({
+      status: 'failed',
+      errors: [{ itemId: 'system', error: error.message }],
+      updatedAt: new Date(),
     });
     throw error;
   }
 }
 
-// Helper: Get collection name
+/**
+ * Helper: Get collection name from entity type
+ */
 function getCollectionName(entity: string): string {
   const collectionMap: { [key: string]: string } = {
-    products: "products",
-    inventory: "inventory_items",
-    categories: "categories",
-    orders: "orders",
+    products: 'products',
+    inventory: 'inventory_items',
+    categories: 'categories',
+    orders: 'orders',
   };
   return collectionMap[entity] || entity;
 }
 
-// Helper: Validate entity data
+/**
+ * Helper: Validate entity data before import
+ */
 function validateEntityData(entity: string, data: any): void {
   switch (entity) {
-    case "products":
-      if (!data.name) throw new Error("Product name is required");
-      if (!data.price) throw new Error("Product price is required");
+    case 'products':
+      if (!data.name) throw new Error('Product name is required');
+      if (!data.price) throw new Error('Product price is required');
       break;
-    case "inventory":
-      if (!data.productId) throw new Error("Product ID is required");
-      if (data.quantity === undefined) throw new Error("Quantity is required");
+    case 'inventory':
+      if (!data.productId) throw new Error('Product ID is required');
+      if (data.quantity === undefined) throw new Error('Quantity is required');
       break;
-    case "categories":
-      if (!data.name) throw new Error("Category name is required");
+    case 'categories':
+      if (!data.name) throw new Error('Category name is required');
       break;
   }
 }

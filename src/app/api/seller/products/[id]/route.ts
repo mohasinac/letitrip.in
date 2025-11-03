@@ -1,10 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  getAdminAuth,
-  getAdminDb,
-  getAdminStorage,
-} from "@/lib/database/admin";
-import { Timestamp } from "firebase-admin/firestore";
+/**
+ * Seller Product Detail API
+ * GET /api/seller/products/[id] - Get product by ID
+ * PUT /api/seller/products/[id] - Update product
+ * DELETE /api/seller/products/[id] - Delete product
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb, getAdminStorage } from '../../../_lib/database/admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import { AuthorizationError, ValidationError, NotFoundError } from '../../../_lib/middleware/error-handler';
+
+/**
+ * Verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * Helper: Delete all files in a storage folder
@@ -41,7 +76,7 @@ async function deleteStorageFolder(sellerId: string, slug: string) {
 async function renameStorageFolder(
   sellerId: string,
   oldSlug: string,
-  newSlug: string,
+  newSlug: string
 ) {
   try {
     const storage = getAdminStorage();
@@ -49,9 +84,7 @@ async function renameStorageFolder(
     const oldFolderPath = `sellers/${sellerId}/products/${oldSlug}/`;
     const newFolderPath = `sellers/${sellerId}/products/${newSlug}/`;
 
-    console.log(
-      `Renaming storage folder: ${oldFolderPath} -> ${newFolderPath}`,
-    );
+    console.log(`Renaming storage folder: ${oldFolderPath} -> ${newFolderPath}`);
 
     // List all files in the old folder
     const [files] = await bucket.getFiles({ prefix: oldFolderPath });
@@ -65,7 +98,7 @@ async function renameStorageFolder(
     await Promise.all(
       files.map(async (file) => {
         const oldPath = file.name;
-        const fileName = oldPath.replace(oldFolderPath, "");
+        const fileName = oldPath.replace(oldFolderPath, '');
         const newPath = `${newFolderPath}${fileName}`;
 
         // Copy to new location
@@ -74,7 +107,7 @@ async function renameStorageFolder(
         await file.delete();
 
         console.log(`Moved: ${oldPath} -> ${newPath}`);
-      }),
+      })
     );
 
     console.log(`Renamed folder with ${files.length} files`);
@@ -107,14 +140,8 @@ function updateMediaURLs(media: any, oldSlug: string, newSlug: string): any {
     updatedMedia.videos = updatedMedia.videos.map((video: any) => ({
       ...video,
       url: video.url?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
-      thumbnail: video.thumbnail?.replace(
-        `/products/${oldSlug}/`,
-        `/products/${newSlug}/`,
-      ),
-      path: video.path?.replace(
-        `/products/${oldSlug}/`,
-        `/products/${newSlug}/`,
-      ),
+      thumbnail: video.thumbnail?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
+      path: video.path?.replace(`/products/${oldSlug}/`, `/products/${newSlug}/`),
     }));
   }
 
@@ -127,54 +154,29 @@ function updateMediaURLs(media: any, oldSlug: string, newSlug: string): any {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(request);
+    const sellerId = seller.uid;
 
     const adminDb = getAdminDb();
-    const { id } = await params; // Await params
+    const { id } = await context.params;
 
     // Get product document
-    const docRef = adminDb.collection("products").doc(id);
+    const docRef = adminDb.collection('products').doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Product not found');
     }
 
     const productData = doc.data();
 
     // Verify ownership (unless admin)
-    if (role !== "admin" && productData?.sellerId !== uid) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && productData?.sellerId !== sellerId) {
+      throw new AuthorizationError('Not your product');
     }
 
     // Convert Firestore timestamps to dates
@@ -184,8 +186,7 @@ export async function GET(
       createdAt: productData?.createdAt?.toDate?.() || productData?.createdAt,
       updatedAt: productData?.updatedAt?.toDate?.() || productData?.updatedAt,
       startDate: productData?.startDate?.toDate?.() || productData?.startDate,
-      expirationDate:
-        productData?.expirationDate?.toDate?.() || productData?.expirationDate,
+      expirationDate: productData?.expirationDate?.toDate?.() || productData?.expirationDate,
     };
 
     return NextResponse.json({
@@ -193,10 +194,22 @@ export async function GET(
       data: product,
     });
   } catch (error: any) {
-    console.error("Error fetching product:", error);
+    console.error('Error in GET /api/seller/products/[id]:', error);
+
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch product" },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch product' },
+      { status: 500 }
     );
   }
 }
@@ -207,97 +220,63 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can update
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(request);
+    const sellerId = seller.uid;
 
     const adminDb = getAdminDb();
-    const { id } = await params; // Await params
+    const { id } = await context.params;
     const body = await request.json();
 
     // Get existing product
-    const docRef = adminDb.collection("products").doc(id);
+    const docRef = adminDb.collection('products').doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Product not found');
     }
 
     const existingProduct = doc.data();
 
     // Verify ownership (unless admin)
-    if (role !== "admin" && existingProduct?.sellerId !== uid) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && existingProduct?.sellerId !== sellerId) {
+      throw new AuthorizationError('Not your product');
     }
 
     // Validate SKU uniqueness if changed
     if (body.sku && body.sku !== existingProduct?.sku) {
       const existingSkuProduct = await adminDb
-        .collection("products")
-        .where("sellerId", "==", uid)
-        .where("sku", "==", body.sku)
+        .collection('products')
+        .where('sellerId', '==', sellerId)
+        .where('sku', '==', body.sku)
         .limit(1)
         .get();
 
       if (!existingSkuProduct.empty) {
-        return NextResponse.json(
-          { success: false, error: "SKU already exists for your products" },
-          { status: 400 },
-        );
+        throw new ValidationError('SKU already exists for your products');
       }
     }
 
     // Validate slug uniqueness if changed
     if (body.seo?.slug && body.seo.slug !== existingProduct?.seo?.slug) {
       const existingSlug = await adminDb
-        .collection("products")
-        .where("seo.slug", "==", body.seo.slug)
+        .collection('products')
+        .where('seo.slug', '==', body.seo.slug)
         .limit(1)
         .get();
 
       if (!existingSlug.empty) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Slug already exists. Please use a different one.",
-          },
-          { status: 400 },
-        );
+        throw new ValidationError('Slug already exists. Please use a different one.');
       }
 
       // Rename storage folder if slug changed
       const oldSlug = existingProduct?.seo?.slug;
       const newSlug = body.seo.slug;
       if (oldSlug && newSlug && oldSlug !== newSlug) {
-        await renameStorageFolder(uid, oldSlug, newSlug);
+        await renameStorageFolder(sellerId, oldSlug, newSlug);
 
         // Update media URLs in the update data if media exists
         if (body.media || existingProduct?.media) {
@@ -310,39 +289,25 @@ export async function PUT(
     // Validate that categoryId is a leaf category if being updated
     if (body.categoryId && body.categoryId !== existingProduct?.categoryId) {
       const categoryDoc = await adminDb
-        .collection("categories")
+        .collection('categories')
         .doc(body.categoryId)
         .get();
 
       if (!categoryDoc.exists) {
-        return NextResponse.json(
-          { success: false, error: "Invalid category. Category not found." },
-          { status: 400 },
-        );
+        throw new ValidationError('Invalid category. Category not found.');
       }
 
       const categoryData = categoryDoc.data();
       const childIds = categoryData?.childIds || [];
 
       if (childIds.length > 0) {
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Invalid category. Products can only be assigned to leaf categories (categories without sub-categories).",
-          },
-          { status: 400 },
+        throw new ValidationError(
+          'Invalid category. Products can only be assigned to leaf categories (categories without sub-categories).'
         );
       }
 
       if (!categoryData?.isActive) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Invalid category. Selected category is not active.",
-          },
-          { status: 400 },
-        );
+        throw new ValidationError('Invalid category. Selected category is not active.');
       }
     }
 
@@ -353,13 +318,10 @@ export async function PUT(
 
     // Only update fields that are provided
     if (body.name !== undefined) updateData.name = body.name;
-    if (body.shortDescription !== undefined)
-      updateData.shortDescription = body.shortDescription;
-    if (body.description !== undefined)
-      updateData.description = body.description;
+    if (body.shortDescription !== undefined) updateData.shortDescription = body.shortDescription;
+    if (body.description !== undefined) updateData.description = body.description;
     if (body.categoryId !== undefined) updateData.categoryId = body.categoryId;
-    if (body.categoryName !== undefined)
-      updateData.categoryName = body.categoryName;
+    if (body.categoryName !== undefined) updateData.categoryName = body.categoryName;
     if (body.tags !== undefined) updateData.tags = body.tags;
     if (body.sku !== undefined) updateData.sku = body.sku;
 
@@ -379,25 +341,19 @@ export async function PUT(
         lowStockThreshold: parseInt(body.inventory.lowStockThreshold) || 1,
         trackInventory: body.inventory.trackInventory !== false,
         isUnique: body.inventory.isUnique || false,
-        sku: body.inventory.sku || body.sku || "",
+        sku: body.inventory.sku || body.sku || '',
       };
     }
 
-    if (body.pickupAddressId !== undefined)
-      updateData.pickupAddressId = body.pickupAddressId;
+    if (body.pickupAddressId !== undefined) updateData.pickupAddressId = body.pickupAddressId;
     if (body.media !== undefined) updateData.media = body.media;
     if (body.condition !== undefined) updateData.condition = body.condition;
-    if (body.isReturnable !== undefined)
-      updateData.isReturnable = body.isReturnable;
-    if (body.returnPeriodDays !== undefined)
-      updateData.returnPeriodDays = body.returnPeriodDays;
-    if (body.hasFreeShipping !== undefined)
-      updateData.hasFreeShipping = body.hasFreeShipping;
-    if (body.shippingMethod !== undefined)
-      updateData.shippingMethod = body.shippingMethod;
+    if (body.isReturnable !== undefined) updateData.isReturnable = body.isReturnable;
+    if (body.returnPeriodDays !== undefined) updateData.returnPeriodDays = body.returnPeriodDays;
+    if (body.hasFreeShipping !== undefined) updateData.hasFreeShipping = body.hasFreeShipping;
+    if (body.shippingMethod !== undefined) updateData.shippingMethod = body.shippingMethod;
     if (body.features !== undefined) updateData.features = body.features;
-    if (body.specifications !== undefined)
-      updateData.specifications = body.specifications;
+    if (body.specifications !== undefined) updateData.specifications = body.specifications;
     if (body.dimensions !== undefined) updateData.dimensions = body.dimensions;
 
     if (body.seo !== undefined) {
@@ -434,13 +390,25 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       data: updatedProduct,
-      message: "Product updated successfully",
+      message: 'Product updated successfully',
     });
   } catch (error: any) {
-    console.error("Error updating product:", error);
+    console.error('Error in PUT /api/seller/products/[id]:', error);
+
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update product" },
-      { status: 500 },
+      { success: false, error: 'Failed to update product' },
+      { status: 500 }
     );
   }
 }
@@ -451,60 +419,35 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can delete
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Seller access required" },
-        { status: 403 },
-      );
-    }
+    // Verify seller authentication
+    const seller = await verifySellerAuth(request);
+    const sellerId = seller.uid;
 
     const adminDb = getAdminDb();
-    const { id } = await params; // Await params
+    const { id } = await context.params;
 
     // Get product document
-    const docRef = adminDb.collection("products").doc(id);
+    const docRef = adminDb.collection('products').doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+      throw new NotFoundError('Product not found');
     }
 
     const productData = doc.data();
 
     // Verify ownership (unless admin)
-    if (role !== "admin" && productData?.sellerId !== uid) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Not your product" },
-        { status: 403 },
-      );
+    if (seller.role !== 'admin' && productData?.sellerId !== sellerId) {
+      throw new AuthorizationError('Not your product');
     }
 
     // Delete associated media from Firebase Storage
     const slug = productData?.seo?.slug;
     if (slug) {
-      await deleteStorageFolder(uid, slug);
+      await deleteStorageFolder(sellerId, slug);
     }
 
     // Delete the product document
@@ -512,13 +455,25 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Product deleted successfully",
+      message: 'Product deleted successfully',
     });
   } catch (error: any) {
-    console.error("Error deleting product:", error);
+    console.error('Error in DELETE /api/seller/products/[id]:', error);
+
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError
+    ) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to delete product" },
-      { status: 500 },
+      { success: false, error: 'Failed to delete product' },
+      { status: 500 }
     );
   }
 }

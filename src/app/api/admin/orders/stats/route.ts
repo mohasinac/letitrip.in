@@ -1,5 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Order Stats API
+ * GET /api/admin/orders/stats - Get order statistics
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { orderController } from '../../../_lib/controllers/order.controller';
+import { getAdminAuth } from '../../../_lib/database/admin';
+import { AuthorizationError } from '../../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/admin/orders/stats
@@ -7,82 +45,28 @@ import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      console.error("[Orders Stats] No authorization header found");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    
-    let decodedToken;
-    try {
-      decodedToken = await auth.verifyIdToken(token);
-    } catch (verifyError: any) {
-      console.error("[Orders Stats] Token verification failed:", verifyError.message);
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 }
-      );
-    }
-    
-    const role = decodedToken.role || "user";
-    console.log("[Orders Stats] User role:", role, "Token claims:", decodedToken);
-
-    // Only admins can access
-    if (role !== "admin") {
-      console.error("[Orders Stats] Access denied. Role:", role, "Required: admin");
-      return NextResponse.json(
-        { success: false, error: `Unauthorized: Admin access required. Your role: ${role}` },
-        { status: 403 }
-      );
-    }
-
-    const adminDb = getAdminDb();
-
-    // Fetch all orders from orders collection
-    const ordersSnapshot = await adminDb.collection("orders").get();
-
-    const allOrders = ordersSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Get unique seller count
-    const uniqueSellers = new Set(allOrders.map((o: any) => o.sellerId));
-
-    // Calculate statistics
-    const stats = {
-      total: allOrders.length,
-      pending: allOrders.filter((o: any) => o.status === "pending" || o.status === "pending_approval").length,
-      processing: allOrders.filter((o: any) => o.status === "processing").length,
-      shipped: allOrders.filter((o: any) => o.status === "shipped").length,
-      delivered: allOrders.filter((o: any) => o.status === "delivered").length,
-      cancelled: allOrders.filter((o: any) => o.status === "cancelled").length,
-      totalRevenue: allOrders
-        .filter((o: any) => o.status === "delivered")
-        .reduce((sum, o: any) => sum + (o.total || 0), 0),
-      totalSellers: uniqueSellers.size,
-      codOrders: allOrders.filter((o: any) => o.paymentMethod === "cod").length,
-      prepaidOrders: allOrders.filter((o: any) => o.paymentMethod === "prepaid" || o.paymentMethod === "online").length,
-      avgOrderValue: allOrders.length > 0
-        ? allOrders.reduce((sum, o: any) => sum + (o.total || 0), 0) / allOrders.length
-        : 0,
-    };
+    // Get stats using controller
+    const stats = await orderController.getOrderStatsAdmin(user);
 
     return NextResponse.json({
       success: true,
       data: stats,
     });
   } catch (error: any) {
-    console.error("Error fetching order stats:", error);
+    console.error('Error in GET /api/admin/orders/stats:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch order stats" },
+      { success: false, error: error.message || 'Failed to get order stats' },
       { status: 500 }
     );
   }

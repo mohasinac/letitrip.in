@@ -1,79 +1,97 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Create User Document API
+ * POST /api/admin/users/[userId]/create-document - Create or update user Firestore document
+ */
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+import { NextRequest, NextResponse } from 'next/server';
+import { userController } from '../../../../_lib/controllers/user.controller';
+import { getAdminAuth } from '../../../../_lib/database/admin';
+import { AuthorizationError, NotFoundError, ValidationError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
   try {
-    const { userId } = await params;
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
-      );
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
     }
 
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * POST /api/admin/users/[userId]/create-document
+ * Create or update user Firestore document
+ * Useful when Firebase Auth user exists but no Firestore document
+ */
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ userId: string }> }
+) {
+  try {
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
+
+    // Get user ID from params
+    const { userId } = await context.params;
+
+    // Parse request body
     const body = await request.json();
     const { email, name, phone, role } = body;
 
-    try {
-      const token = authHeader.substring(7);
-      const auth = getAdminAuth();
-      const decodedToken = await auth.verifyIdToken(token);
+    // Create user document using controller
+    const userDoc = await userController.createUserDocumentAdmin(
+      userId,
+      { email, name, phone, role },
+      user
+    );
 
-      // Check if user is admin
-      const db = getAdminDb();
-      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
-      const userData = userDoc.data();
+    return NextResponse.json({
+      success: true,
+      message: 'User document created/updated successfully',
+      data: userDoc,
+    });
+  } catch (error: any) {
+    console.error('Error in POST /api/admin/users/[userId]/create-document:', error);
 
-      if (!userData || userData.role !== "admin") {
-        return NextResponse.json(
-          { success: false, error: "Admin access required" },
-          { status: 403 },
-        );
-      }
-
-      // Create or update user document
-      const userDocData = {
-        uid: userId,
-        email: email || "",
-        name: name || "User",
-        phone: phone || null,
-        role: role || "user",
-        isEmailVerified: false,
-        isPhoneVerified: false,
-        addresses: [],
-        profile: {},
-        isBanned: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-      };
-
-      await db
-        .collection("users")
-        .doc(userId)
-        .set(userDocData, { merge: true });
-
-      return NextResponse.json({
-        success: true,
-        message: "User document created/updated successfully",
-        data: userDocData,
-      });
-    } catch (error: any) {
-      console.error("Firebase token verification error:", error);
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
       return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
+        { success: false, error: error.message },
+        { status: error.statusCode }
       );
     }
-  } catch (error: any) {
-    console.error("Create user document error:", error);
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: "Failed to create user document" },
-      { status: 500 },
+      { success: false, error: error.message || 'Failed to create user document' },
+      { status: 500 }
     );
   }
 }
+

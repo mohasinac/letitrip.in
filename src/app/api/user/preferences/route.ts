@@ -1,69 +1,146 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * User Preferences API Route - GET, PUT
+ * 
+ * GET: Get user preferences (self or admin)
+ * PUT: Update user preferences (self or admin)
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { userController } from '../../_lib/controllers/user.controller';
+import { authenticateUser } from '../../_lib/auth/middleware';
+import { 
+  ValidationError, 
+  AuthorizationError, 
+  NotFoundError 
+} from '../../_lib/middleware/error-handler';
 
 /**
- * PUT /api/user/preferences
- * Update user preferences (currency, notifications, etc.)
+ * GET /api/user/preferences
+ * Protected endpoint - Get user preferences
+ * Authorization: Self or Admin
  */
-export async function PUT(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    // Verify Firebase token
-    const user = await verifyFirebaseToken(request);
+    // Authenticate user
+    const user = await authenticateUser(request);
+    
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Authentication required" },
+        { success: false, error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const body = await request.json();
-    const {
-      preferredCurrency,
-      emailNotifications,
-      orderUpdates,
-      promotionalEmails,
-    } = body;
+    // Fetch user data
+    const { getAdminDb } = await import('../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
 
-    // Validate currency if provided
-    const validCurrencies = ["INR", "USD", "EUR", "GBP"];
-    if (preferredCurrency && !validCurrencies.includes(preferredCurrency)) {
+    // Get preferences using controller
+    const preferences = await userController.getUserPreferences(user.userId, {
+      uid: user.userId,
+      role: user.role as 'admin' | 'seller' | 'user',
+      sellerId: userData?.sellerId,
+      email: userData?.email,
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: preferences,
+    });
+
+  } catch (error: any) {
+    console.error('Error in GET /api/user/preferences:', error);
+    
+    if (error instanceof NotFoundError) {
       return NextResponse.json(
-        { error: "Invalid currency code" },
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch preferences' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PUT /api/user/preferences
+ * Protected endpoint - Update user preferences
+ * Authorization: Self or Admin
+ */
+export async function PUT(request: NextRequest) {
+  try {
+    // Authenticate user
+    const user = await authenticateUser(request);
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Get request body
+    const body = await request.json();
+
+    // Fetch user data
+    const { getAdminDb } = await import('../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
+
+    // Update preferences using controller
+    await userController.updateUserPreferences(
+      user.userId,
+      body,
+      {
+        uid: user.userId,
+        role: user.role as 'admin' | 'seller' | 'user',
+        sellerId: userData?.sellerId,
+        email: userData?.email,
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: 'Preferences updated successfully',
+    });
+
+  } catch (error: any) {
+    console.error('Error in PUT /api/user/preferences:', error);
+    
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
         { status: 400 }
       );
     }
 
-    // Prepare update object
-    const updates: any = {
-      updatedAt: new Date().toISOString(),
-    };
-
-    if (preferredCurrency !== undefined) {
-      updates.preferredCurrency = preferredCurrency;
-    }
-    if (emailNotifications !== undefined) {
-      updates.emailNotifications = emailNotifications;
-    }
-    if (orderUpdates !== undefined) {
-      updates.orderUpdates = orderUpdates;
-    }
-    if (promotionalEmails !== undefined) {
-      updates.promotionalEmails = promotionalEmails;
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 403 }
+      );
     }
 
-    // Update user document using Admin SDK
-    const db = getAdminDb();
-    await db.collection("users").doc(user.uid).update(updates);
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json({
-      success: true,
-      message: "Preferences updated successfully",
-    });
-  } catch (error: any) {
-    console.error("Error updating user preferences:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update preferences" },
+      { success: false, error: error.message || 'Failed to update preferences' },
       { status: 500 }
     );
   }

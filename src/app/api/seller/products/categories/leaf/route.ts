@@ -1,5 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Seller Product Categories API
+ * GET /api/seller/products/categories/leaf - Get all leaf categories for product assignment
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminAuth, getAdminDb } from '../../../../_lib/database/admin';
+import { AuthorizationError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify seller authentication
+ */
+async function verifySellerAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'seller' && role !== 'admin') {
+      throw new AuthorizationError('Seller access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'seller' | 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/seller/products/categories/leaf
@@ -8,41 +45,23 @@ import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized - No token provided" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await getAdminAuth().verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden - Seller access required" },
-        { status: 403 },
-      );
-    }
+    // Verify seller authentication
+    await verifySellerAuth(request);
 
     const db = getAdminDb();
 
     // Get all active categories
     const categoriesSnapshot = await db
-      .collection("categories")
-      .where("isActive", "==", true)
-      .orderBy("name", "asc")
+      .collection('categories')
+      .where('isActive', '==', true)
+      .orderBy('name', 'asc')
       .get();
 
     if (categoriesSnapshot.empty) {
       return NextResponse.json({
         success: true,
         data: [],
-        message: "No categories found",
+        message: 'No categories found',
       });
     }
 
@@ -69,7 +88,6 @@ export async function GET(request: NextRequest) {
       let current: any = cat;
 
       // Build path from leaf to root
-      // Note: For many-to-many relationships, we use the first parent in the path
       while (current) {
         path.unshift({
           id: current.id,
@@ -91,10 +109,10 @@ export async function GET(request: NextRequest) {
         id: cat.id,
         name: cat.name,
         slug: cat.slug,
-        description: cat.description || "",
+        description: cat.description || '',
         level: cat.level || 0,
         path: path,
-        pathString: path.map((p) => p.name).join(" > "),
+        pathString: path.map((p) => p.name).join(' > '),
         icon: cat.icon || null,
         image: cat.image || null,
         sortOrder: cat.sortOrder || 0,
@@ -103,7 +121,7 @@ export async function GET(request: NextRequest) {
 
     // Sort by path string for better organization
     leafCategoriesWithPath.sort((a: any, b: any) =>
-      a.pathString.localeCompare(b.pathString),
+      a.pathString.localeCompare(b.pathString)
     );
 
     return NextResponse.json({
@@ -113,30 +131,18 @@ export async function GET(request: NextRequest) {
       message: `Found ${leafCategoriesWithPath.length} leaf categories`,
     });
   } catch (error: any) {
-    console.error("Error fetching leaf categories:", error);
+    console.error('Error in GET /api/seller/products/categories/leaf:', error);
 
-    // Handle specific Firebase errors
-    if (error.code === "auth/id-token-expired") {
+    if (error instanceof AuthorizationError) {
       return NextResponse.json(
-        { success: false, error: "Token expired - Please login again" },
-        { status: 401 },
-      );
-    }
-
-    if (error.code === "auth/argument-error") {
-      return NextResponse.json(
-        { success: false, error: "Invalid token format" },
-        { status: 401 },
+        { success: false, error: error.message },
+        { status: error.statusCode }
       );
     }
 
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch leaf categories",
-        details: error.message,
-      },
-      { status: 500 },
+      { success: false, error: 'Failed to fetch leaf categories' },
+      { status: 500 }
     );
   }
 }

@@ -100,65 +100,268 @@ export class ProductController {
   }
 
   /**
-   * List products with filters
-   * Authorization: Users see active products, sellers see their own, admins see all
+   * Get all products with filtering
+   * Authorization: Public sees active only, sellers see their own, admins see all
    */
-  async listProducts(
+  async getAllProducts(
     filters?: {
+      search?: string;
       category?: string;
       sellerId?: string;
-      tags?: string[];
-      status?: 'active' | 'draft' | 'archived';
-      isFeatured?: boolean;
       minPrice?: number;
       maxPrice?: number;
-    },
-    pagination?: {
-      limit?: number;
-      offset?: number;
+      inStock?: boolean;
+      status?: 'active' | 'draft' | 'archived';
+      sortBy?: 'createdAt' | 'price' | 'name';
+      sortOrder?: 'asc' | 'desc';
     },
     user?: UserContext
-  ): Promise<ProductWithVersion[]> {
+  ): Promise<{ products: ProductWithVersion[]; total: number }> {
     // Apply RBAC filters
-    const effectiveFilters = { ...filters };
+    const effectiveFilters: any = { ...filters };
 
+    // Public and regular users only see active products
     if (!user || user.role === 'user') {
-      // Public users only see active products
       effectiveFilters.status = 'active';
     } else if (user.role === 'seller') {
       // Sellers only see their own products
       effectiveFilters.sellerId = user.sellerId;
     }
-    // Admins see all (no additional filters)
+    // Admins see all products
 
-    const products = await productModel.findAll(effectiveFilters, pagination);
-    return products;
+    // Get products from model
+    let products = await productModel.findAll(effectiveFilters);
+
+    // Apply search filter (in-memory if needed)
+    if (filters?.search) {
+      const searchLower = filters.search.toLowerCase();
+      products = products.filter(
+        (product) =>
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.tags?.some((tag: string) =>
+            tag.toLowerCase().includes(searchLower)
+          ) ||
+          product.sku?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply stock filter
+    if (filters?.inStock) {
+      products = products.filter((product) => product.quantity > 0);
+    }
+
+    // Apply sorting
+    if (filters?.sortBy) {
+      products.sort((a, b) => {
+        let comparison = 0;
+        
+        switch (filters.sortBy) {
+          case 'price':
+            comparison = a.price - b.price;
+            break;
+          case 'name':
+            comparison = (a.name || '').localeCompare(b.name || '');
+            break;
+          case 'createdAt':
+          default:
+            comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            break;
+        }
+
+        return filters.sortOrder === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    return {
+      products,
+      total: products.length,
+    };
   }
 
   /**
-   * Search products
-   * Authorization: Users search active only, sellers search their own, admins search all
+   * Get all products (Admin only)
+   * - Advanced filtering (seller, category, stock status, status)
+   * - Search by name/SKU/slug
+   * - Pagination
    */
-  async searchProducts(
-    query: string,
-    filters?: {
-      category?: string;
+  async getAllProductsAdmin(
+    filters: {
+      status?: 'active' | 'draft' | 'archived' | 'all';
       sellerId?: string;
-      status?: 'active' | 'draft' | 'archived';
+      category?: string;
+      search?: string;
+      stockStatus?: 'inStock' | 'outOfStock' | 'lowStock' | 'all';
+      page?: number;
+      limit?: number;
     },
-    user?: UserContext
-  ): Promise<ProductWithVersion[]> {
-    // Apply RBAC filters
-    const effectiveFilters = { ...filters };
-
-    if (!user || user.role === 'user') {
-      effectiveFilters.status = 'active';
-    } else if (user.role === 'seller') {
-      effectiveFilters.sellerId = user.sellerId;
+    user: UserContext
+  ): Promise<{ products: ProductWithVersion[]; pagination: any }> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
     }
 
-    const products = await productModel.search(query, effectiveFilters);
-    return products;
+    const page = filters.page || 1;
+    const limit = filters.limit || 50;
+
+    // Fetch products with filters
+    const allProducts = await productModel.findAll({
+      status: filters.status !== 'all' ? filters.status : undefined,
+      sellerId: filters.sellerId !== 'all' ? filters.sellerId : undefined,
+      category: filters.category !== 'all' ? filters.category : undefined,
+    });
+
+    let filteredProducts = allProducts;
+
+    // Apply stock status filter
+    if (filters.stockStatus && filters.stockStatus !== 'all') {
+      filteredProducts = filteredProducts.filter((p) => {
+        const qty = p.quantity ?? 0;
+        const threshold = p.lowStockThreshold ?? 1;
+
+        if (filters.stockStatus === 'outOfStock') {
+          return qty === 0;
+        } else if (filters.stockStatus === 'lowStock') {
+          return qty > 0 && qty < threshold;
+        } else if (filters.stockStatus === 'inStock') {
+          return qty >= threshold;
+        }
+        return true;
+      });
+    }
+
+    // Apply search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filteredProducts = filteredProducts.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(searchLower) ||
+          p.sku?.toLowerCase().includes(searchLower) ||
+          p.slug?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * limit;
+    const paginatedProducts = filteredProducts.slice(startIndex, startIndex + limit);
+
+    return {
+      products: paginatedProducts,
+      pagination: {
+        page,
+        limit,
+        total: filteredProducts.length,
+        totalPages: Math.ceil(filteredProducts.length / limit),
+      },
+    };
+  }
+
+  /**
+   * Get product statistics (Admin only)
+   * - Total products, status breakdown
+   * - Stock status breakdown
+   * - Total value (no revenue/sales in Product type)
+   * - Unique seller count
+   */
+  async getProductStatsAdmin(user: UserContext): Promise<any> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    const allProducts = await productModel.findAll({});
+
+    // Get unique sellers
+    const uniqueSellers = new Set(allProducts.map((p) => p.sellerId));
+
+    // Calculate stats
+    const stats = {
+      total: allProducts.length,
+      active: allProducts.filter((p) => p.status === 'active').length,
+      draft: allProducts.filter((p) => p.status === 'draft').length,
+      archived: allProducts.filter((p) => p.status === 'archived').length,
+      outOfStock: allProducts.filter((p) => (p.quantity ?? 0) === 0).length,
+      lowStock: allProducts.filter((p) => {
+        const qty = p.quantity ?? 0;
+        const threshold = p.lowStockThreshold ?? 1;
+        return qty > 0 && qty < threshold;
+      }).length,
+      inStock: allProducts.filter((p) => {
+        const qty = p.quantity ?? 0;
+        const threshold = p.lowStockThreshold ?? 1;
+        return qty >= threshold;
+      }).length,
+      totalValue: allProducts.reduce((sum, p) => {
+        const price = p.price ?? 0;
+        const qty = p.quantity ?? 0;
+        return sum + price * qty;
+      }, 0),
+      totalRevenue: 0, // Not tracked in Product type
+      totalSales: 0, // Not tracked in Product type
+      totalSellers: uniqueSellers.size,
+    };
+
+    return stats;
+  }
+
+  /**
+   * Create product as admin (for any seller)
+   * - Admin can specify sellerId
+   * - Auto-generates slug if not provided
+   */
+  async createProductAdmin(
+    data: Partial<Product> & { sellerId: string; category: string },
+    user: UserContext
+  ): Promise<ProductWithVersion> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    // Validate required fields
+    if (!data.name || !data.sellerId || !data.category) {
+      throw new ValidationError('Missing required fields: name, sellerId, category');
+    }
+
+    // Generate slug if not provided
+    const slug = data.slug || data.name.toLowerCase().replace(/\s+/g, '-').trim();
+
+    // Check slug uniqueness
+    const existingProduct = await productModel.findBySlug(slug);
+    if (existingProduct) {
+      throw new ConflictError(`Product with slug "${slug}" already exists`);
+    }
+
+    // Prepare product data
+    const productData: Partial<Product> & { slug: string; sellerId: string } = {
+      name: data.name.trim(),
+      slug,
+      description: data.description?.trim() || '',
+      shortDescription: data.shortDescription?.trim() || '',
+      price: parseFloat(String(data.price ?? 0)),
+      compareAtPrice: data.compareAtPrice ? parseFloat(String(data.compareAtPrice)) : undefined,
+      sku: data.sku || `SKU-${Date.now()}`,
+      quantity: parseInt(String(data.quantity ?? 0)),
+      lowStockThreshold: parseInt(String(data.lowStockThreshold ?? 10)),
+      weight: parseFloat(String(data.weight ?? 0)),
+      weightUnit: (data.weightUnit as any) || 'kg',
+      category: data.category,
+      categorySlug: data.categorySlug,
+      tags: data.tags || [],
+      status: (data.status as any) || 'draft',
+      sellerId: data.sellerId,
+      images: data.images || [],
+      isFeatured: data.isFeatured ?? false,
+      seo: data.seo || {
+        title: data.name,
+        description: '',
+        keywords: [],
+      },
+    };
+
+    const newProduct = await productModel.create(productData);
+    return newProduct;
   }
 
   /**
@@ -270,6 +473,28 @@ export class ProductController {
     await productModel.bulkUpdate(updates);
 
     console.log(`[ProductController] Bulk update: ${updates.length} products by user: ${user.uid}`);
+  }
+
+  /**
+   * Bulk delete products (Admin only)
+   * - Delete multiple products by IDs
+   */
+  async bulkDeleteProducts(
+    ids: string[],
+    user: UserContext
+  ): Promise<{ deletedCount: number }> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    if (!ids || ids.length === 0) {
+      throw new ValidationError('No product IDs provided');
+    }
+
+    await productModel.bulkDelete(ids);
+
+    return { deletedCount: ids.length };
   }
 
   /**

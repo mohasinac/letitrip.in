@@ -1,103 +1,76 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { verifyRazorpaySignature, fetchRazorpayPayment } from "@/lib/payment/razorpay-utils";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * Razorpay Verify Payment API Route
+ * POST: Verify Razorpay payment signature and update order
+ */
 
-const ORDERS_COLLECTION = "orders";
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyRazorpayPaymentHandler } from '../../../_lib/controllers/payment.controller';
+import { authenticateUser } from '../../../_lib/auth/middleware';
+import { ValidationError } from '../../../_lib/middleware/error-handler';
 
 /**
  * POST /api/payment/razorpay/verify
- * Verify Razorpay payment signature and update order status
+ * Protected endpoint - Verify Razorpay payment
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await verifyFirebaseToken(request);
+    // Authenticate user
+    const user = await authenticateUser(request);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
+    // Get request body
     const body = await request.json();
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      orderId, // Our internal order ID
+      orderId,
     } = body;
 
-    // Validate required fields
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return NextResponse.json(
-        { error: "Missing payment details" },
-        { status: 400 }
-      );
-    }
+    // Fetch user data
+    const { getAdminDb } = await import('../../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
 
-    // Verify signature
-    const isValid = verifyRazorpaySignature(
+    // Verify payment using controller
+    const result = await verifyRazorpayPaymentHandler(
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature
+      razorpay_signature,
+      orderId,
+      {
+        userId: user.userId,
+        role: user.role as 'admin' | 'seller' | 'user',
+        email: userData?.email,
+      }
     );
-
-    if (!isValid) {
-      return NextResponse.json(
-        { error: "Invalid payment signature" },
-        { status: 400 }
-      );
-    }
-
-    // Fetch payment details from Razorpay
-    const paymentDetails = await fetchRazorpayPayment(razorpay_payment_id);
-
-    // Update order in database if orderId is provided
-    if (orderId) {
-      const db = getAdminDb();
-      const orderRef = db.collection(ORDERS_COLLECTION).doc(orderId);
-      const orderDoc = await orderRef.get();
-
-      if (!orderDoc.exists) {
-        return NextResponse.json(
-          { error: "Order not found" },
-          { status: 404 }
-        );
-      }
-
-      // Verify order ownership
-      if (orderDoc.data()?.userId !== user.uid) {
-        return NextResponse.json(
-          { error: "Unauthorized to update this order" },
-          { status: 403 }
-        );
-      }
-
-      // Update order with payment details
-      await orderRef.update({
-        paymentStatus: "paid",
-        paymentId: razorpay_payment_id,
-        razorpayOrderId: razorpay_order_id,
-        transactionId: paymentDetails.id,
-        status: "pending_approval", // Move to next stage
-        paidAt: new Date().toISOString(),
-        updatedAt: new Date(),
-      });
-    }
 
     return NextResponse.json({
       success: true,
-      verified: true,
-      paymentId: razorpay_payment_id,
-      orderId,
-      status: paymentDetails.status,
-      amount: paymentDetails.amount,
+      data: result,
+      message: 'Payment verified successfully',
     });
-  } catch (error) {
-    console.error("Error verifying Razorpay payment:", error);
+
+  } catch (error: any) {
+    console.error('Error in POST /api/payment/razorpay/verify:', error);
+
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      {
-        error: "Failed to verify payment",
-        details: error instanceof Error ? error.message : "Unknown error",
+      { 
+        success: false, 
+        error: error.message || 'Failed to verify payment',
       },
       { status: 500 }
     );

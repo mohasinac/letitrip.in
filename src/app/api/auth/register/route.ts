@@ -1,130 +1,78 @@
-import {
-  createApiHandler,
-  successResponse,
-  errorResponse,
-  validationErrorResponse,
-  getCorsHeaders,
-  HTTP_STATUS,
-} from "@/lib/api";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/database/config";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
-import { z } from "zod";
-
 /**
- * Handle OPTIONS request for CORS preflight
- * REFACTORED: Uses standardized CORS utilities
+ * Auth Register API Route - POST
+ * 
+ * POST: Register new user with email/password
  */
-export async function OPTIONS() {
-  return new Response(null, { headers: getCorsHeaders() });
-}
 
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email format"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .optional(),
-  phone: z.string().nullable().optional(),
-  role: z.enum(["admin", "seller", "user"]).default("user"),
-});
+import { NextRequest, NextResponse } from 'next/server';
+import { registerWithEmail } from '../../_lib/controllers/auth.controller';
+import {
+  ValidationError,
+  ConflictError,
+} from '../../_lib/middleware/error-handler';
 
 /**
  * POST /api/auth/register
- * REFACTORED: Uses standardized API utilities
+ * Public endpoint - Register new user
  */
-export const POST = createApiHandler(async (request) => {
-  const body = await request.json();
-
-  // Validate input
-  const validation = registerSchema.safeParse(body);
-  if (!validation.success) {
-    return validationErrorResponse(validation.error);
-  }
-
-  const validatedData = validation.data;
-
-  const { name, email, password, phone, role } = validatedData;
-
-  // Use Firebase Admin SDK for server-side user creation
-  const adminAuth = getAdminAuth();
-  const adminDb = getAdminDb();
-
-  // Check if user already exists
+export async function POST(request: NextRequest) {
   try {
-    await adminAuth.getUserByEmail(email);
-    return errorResponse(
-      "User already exists with this email",
-      HTTP_STATUS.BAD_REQUEST,
-    );
-  } catch (error: any) {
-    // User doesn't exist, continue with registration
-    if (error.code !== "auth/user-not-found") {
-      throw error;
+    // Get request body
+    const body = await request.json();
+
+    // Validate required fields
+    if (!body.email) {
+      return NextResponse.json(
+        { success: false, error: 'Email is required' },
+        { status: 400 }
+      );
     }
-  }
 
-  // Create user with Firebase Admin
-  const createUserParams: any = {
-    email,
-    displayName: name,
-    phoneNumber: phone || undefined,
-  };
+    if (!body.name) {
+      return NextResponse.json(
+        { success: false, error: 'Name is required' },
+        { status: 400 }
+      );
+    }
 
-  // Only add password if provided (for email/password signup)
-  // For social logins, password is not required
-  if (password) {
-    createUserParams.password = password;
-  }
+    // Register user using controller
+    const result = await registerWithEmail({
+      email: body.email,
+      password: body.password,
+      name: body.name,
+      phone: body.phone,
+      role: 'user', // Force role to user for public registration
+      provider: 'email',
+    });
 
-  const userRecord = await adminAuth.createUser(createUserParams);
-
-  // Create user document in Firestore
-  const now = new Date().toISOString();
-  const userData = {
-    id: userRecord.uid,
-    userId: userRecord.uid, // Add userId field for consistency
-    name,
-    email,
-    phone: phone || null,
-    role,
-    isEmailVerified: false,
-    isPhoneVerified: false,
-    addresses: [],
-    createdAt: now,
-    updatedAt: now,
-    lastLogin: null,
-    profile: {
-      avatar: null,
-      bio: null,
-      preferences: {
-        notifications: true,
-        marketing: false,
+    return NextResponse.json({
+      success: true,
+      data: {
+        user: result.user,
       },
-    },
-  };
+      message: result.message,
+    }, { status: 201 });
 
-  await adminDb.collection("users").doc(userRecord.uid).set(userData);
+  } catch (error: any) {
+    console.error('Error in POST /api/auth/register:', error);
 
-  // Set custom claims for role-based access
-  await adminAuth.setCustomUserClaims(userRecord.uid, { role });
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
 
-  // Return user data (excluding sensitive info)
-  const responseData = {
-    id: userRecord.uid,
-    name,
-    email,
-    phone: phone || null,
-    role,
-    isEmailVerified: false,
-    isPhoneVerified: false,
-    createdAt: new Date(),
-  };
+    if (error instanceof ConflictError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 409 }
+      );
+    }
 
-  return successResponse(
-    { user: responseData },
-    "User registered successfully",
-  );
-});
+    return NextResponse.json(
+      { success: false, error: error.message || 'Registration failed' },
+      { status: 500 }
+    );
+  }
+}

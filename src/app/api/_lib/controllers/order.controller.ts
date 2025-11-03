@@ -12,7 +12,7 @@
  */
 
 import { orderModel, OrderWithVersion } from '../models/order.model';
-import { Order } from '@/types/order';
+import { Order, OrderStatus, PaymentMethod } from '@/types/order';
 import { 
   ValidationError, 
   AuthorizationError, 
@@ -157,6 +157,143 @@ export class OrderController {
 
     const orders = await orderModel.findAll(filters, pagination);
     return orders;
+  }
+
+  /**
+   * Get all orders (Admin only)
+   * - Filter by status, seller, payment method
+   * - Search by order number, customer name/email
+   * - Pagination
+   */
+  async getAllOrdersAdmin(
+    filters: {
+      status?: OrderStatus | 'all';
+      sellerId?: string;
+      paymentMethod?: PaymentMethod | 'all';
+      search?: string;
+      page?: number;
+      limit?: number;
+    },
+    user: UserContext
+  ): Promise<{ orders: OrderWithVersion[]; pagination: any }> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    const page = filters.page || 1;
+    const limit = filters.limit || 50;
+
+    // Fetch orders with filters
+    const allOrders = await orderModel.findAll({
+      status: filters.status !== 'all' ? (filters.status as OrderStatus) : undefined,
+      sellerId: filters.sellerId !== 'all' ? filters.sellerId : undefined,
+      paymentMethod: filters.paymentMethod !== 'all' ? (filters.paymentMethod as PaymentMethod) : undefined,
+    });
+
+    let filteredOrders = allOrders;
+
+    // Apply search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filteredOrders = filteredOrders.filter(
+        (o) =>
+          o.orderNumber?.toLowerCase().includes(searchLower) ||
+          o.shippingAddress?.fullName?.toLowerCase().includes(searchLower) ||
+          o.userEmail?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * limit;
+    const paginatedOrders = filteredOrders.slice(startIndex, startIndex + limit);
+
+    return {
+      orders: paginatedOrders,
+      pagination: {
+        page,
+        limit,
+        total: filteredOrders.length,
+        totalPages: Math.ceil(filteredOrders.length / limit),
+      },
+    };
+  }
+
+  /**
+   * Get order statistics (Admin only)
+   * - Total orders, status breakdown
+   * - Revenue, payment method breakdown
+   * - Unique seller count
+   */
+  async getOrderStatsAdmin(user: UserContext): Promise<any> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    const allOrders = await orderModel.findAll({});
+
+    // Get unique sellers
+    const uniqueSellers = new Set(allOrders.map((o) => o.sellerId));
+
+    // Calculate stats
+    const stats = {
+      total: allOrders.length,
+      pending: allOrders.filter((o) => o.status === 'pending_payment' || o.status === 'pending_approval').length,
+      processing: allOrders.filter((o) => o.status === 'processing').length,
+      shipped: allOrders.filter((o) => o.status === 'shipped').length,
+      delivered: allOrders.filter((o) => o.status === 'delivered').length,
+      cancelled: allOrders.filter((o) => o.status === 'cancelled').length,
+      totalRevenue: allOrders
+        .filter((o) => o.status === 'delivered')
+        .reduce((sum, o) => sum + (o.total ?? 0), 0),
+      totalSellers: uniqueSellers.size,
+      codOrders: allOrders.filter((o) => o.paymentMethod === 'cod').length,
+      prepaidOrders: allOrders.filter(
+        (o) => o.paymentMethod === 'razorpay' || o.paymentMethod === 'paypal'
+      ).length,
+      avgOrderValue:
+        allOrders.length > 0
+          ? allOrders.reduce((sum, o) => sum + (o.total ?? 0), 0) / allOrders.length
+          : 0,
+    };
+
+    return stats;
+  }
+
+  /**
+   * Bulk update order status (Admin only)
+   * - Update multiple orders to the same status
+   */
+  async bulkUpdateOrderStatus(
+    ids: string[],
+    status: Order['status'],
+    user: UserContext
+  ): Promise<{ updatedCount: number }> {
+    // RBAC: Admin only
+    if (user.role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    if (!ids || ids.length === 0) {
+      throw new ValidationError('No order IDs provided');
+    }
+
+    if (!status) {
+      throw new ValidationError('Status is required');
+    }
+
+    // Update each order
+    for (const id of ids) {
+      try {
+        await orderModel.updateStatus(id, status);
+      } catch (error) {
+        console.error(`Failed to update order ${id}:`, error);
+        // Continue with other orders even if one fails
+      }
+    }
+
+    return { updatedCount: ids.length };
   }
 
   /**
@@ -431,8 +568,8 @@ export class OrderController {
       pending_payment: ['pending_approval', 'cancelled'],
       pending_approval: ['processing', 'cancelled'],
       processing: ['shipped', 'cancelled'],
-      shipped: ['in_transit', 'cancelled'],
-      in_transit: ['out_for_delivery', 'delivered'],
+      shipped: ['in_transit', 'delivered', 'cancelled'],
+      in_transit: ['out_for_delivery', 'delivered', 'cancelled'],
       out_for_delivery: ['delivered'],
       delivered: ['refunded'], // Only if return requested
       cancelled: ['refunded'],

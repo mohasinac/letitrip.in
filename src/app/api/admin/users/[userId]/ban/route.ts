@@ -1,65 +1,99 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin User Ban API
+ * PUT /api/admin/users/[userId]/ban - Ban or unban user
+ */
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+import { NextRequest, NextResponse } from 'next/server';
+import { userController } from '../../../../_lib/controllers/user.controller';
+import { getAdminAuth } from '../../../../_lib/database/admin';
+import { AuthorizationError, NotFoundError, ValidationError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
   try {
-    const { userId } = await params;
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
-      );
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
     }
 
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * PUT /api/admin/users/[userId]/ban
+ * Ban or unban a user
+ */
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ userId: string }> }
+) {
+  try {
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
+
+    // Get user ID from params
+    const { userId } = await context.params;
+
+    // Parse request body
     const body = await request.json();
     const { isBanned } = body;
 
-    try {
-      const token = authHeader.substring(7);
-      const auth = getAdminAuth();
-      const decodedToken = await auth.verifyIdToken(token);
-
-      // Check if user is admin
-      const db = getAdminDb();
-      const userDoc = await db.collection("users").doc(decodedToken.uid).get();
-      const userData = userDoc.data();
-
-      if (!userData || userData.role !== "admin") {
-        return NextResponse.json(
-          { success: false, error: "Admin access required" },
-          { status: 403 },
-        );
-      }
-
-      // Update ban status
-      await db
-        .collection("users")
-        .doc(userId)
-        .update({
-          isBanned: Boolean(isBanned),
-          updatedAt: new Date().toISOString(),
-        });
-
-      return NextResponse.json({
-        success: true,
-        message: `User ${isBanned ? "banned" : "unbanned"} successfully`,
-      });
-    } catch (error: any) {
-      console.error("Firebase token verification error:", error);
+    if (typeof isBanned !== 'boolean') {
       return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 },
+        { success: false, error: 'isBanned must be a boolean value' },
+        { status: 400 }
       );
     }
+
+    // Update ban status using controller
+    const updatedUser = await userController.banUserAdmin(userId, isBanned, user);
+
+    return NextResponse.json({
+      success: true,
+      message: isBanned ? 'User has been banned' : 'User has been unbanned',
+      data: updatedUser,
+    });
   } catch (error: any) {
-    console.error("Ban user error:", error);
+    console.error('Error in PUT /api/admin/users/[userId]/ban:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: "Failed to ban/unban user" },
-      { status: 500 },
+      { success: false, error: error.message || 'Failed to update user ban status' },
+      { status: 500 }
     );
   }
 }
+

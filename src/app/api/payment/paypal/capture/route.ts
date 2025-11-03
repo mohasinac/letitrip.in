@@ -1,99 +1,69 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { capturePayPalPayment } from "@/lib/payment/paypal-utils";
-import { getAdminDb } from "@/lib/database/admin";
+/**
+ * PayPal Capture Payment API Route
+ * POST: Capture PayPal payment and update order
+ */
 
-const ORDERS_COLLECTION = "orders";
+import { NextRequest, NextResponse } from 'next/server';
+import { capturePayPalPaymentHandler } from '../../../_lib/controllers/payment.controller';
+import { authenticateUser } from '../../../_lib/auth/middleware';
+import { ValidationError } from '../../../_lib/middleware/error-handler';
 
 /**
  * POST /api/payment/paypal/capture
- * Capture PayPal payment and update order status
+ * Protected endpoint - Capture PayPal payment
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await verifyFirebaseToken(request);
+    // Authenticate user
+    const user = await authenticateUser(request);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
+    // Get request body
     const body = await request.json();
     const { paypalOrderId, orderId } = body;
 
-    // Validate required fields
-    if (!paypalOrderId) {
-      return NextResponse.json(
-        { error: "Missing PayPal order ID" },
-        { status: 400 }
-      );
-    }
+    // Fetch user data
+    const { getAdminDb } = await import('../../../_lib/database/admin');
+    const userDoc = await getAdminDb().collection('users').doc(user.userId).get();
+    const userData = userDoc.data();
 
-    // Capture the payment
-    const captureData = await capturePayPalPayment(paypalOrderId);
-
-    // Check if capture was successful
-    if (captureData.status !== "COMPLETED") {
-      return NextResponse.json(
-        {
-          error: "Payment capture failed",
-          status: captureData.status,
-        },
-        { status: 400 }
-      );
-    }
-
-    // Update order in database if orderId is provided
-    if (orderId) {
-      const db = getAdminDb();
-      const orderRef = db.collection(ORDERS_COLLECTION).doc(orderId);
-      const orderDoc = await orderRef.get();
-
-      if (!orderDoc.exists) {
-        return NextResponse.json(
-          { error: "Order not found" },
-          { status: 404 }
-        );
+    // Capture payment using controller
+    const result = await capturePayPalPaymentHandler(
+      paypalOrderId,
+      orderId,
+      {
+        userId: user.userId,
+        role: user.role as 'admin' | 'seller' | 'user',
+        email: userData?.email,
       }
-
-      // Verify order ownership
-      if (orderDoc.data()?.userId !== user.uid) {
-        return NextResponse.json(
-          { error: "Unauthorized to update this order" },
-          { status: 403 }
-        );
-      }
-
-      // Extract capture ID from response
-      const captureId =
-        captureData.purchase_units[0]?.payments?.captures[0]?.id;
-
-      // Update order with payment details
-      await orderRef.update({
-        paymentStatus: "paid",
-        paymentId: captureId,
-        paypalOrderId: paypalOrderId,
-        transactionId: captureId,
-        status: "pending_approval", // Move to next stage
-        paidAt: new Date().toISOString(),
-        updatedAt: new Date(),
-      });
-    }
+    );
 
     return NextResponse.json({
       success: true,
-      captured: true,
-      paypalOrderId,
-      orderId,
-      status: captureData.status,
-      captureId: captureData.purchase_units[0]?.payments?.captures[0]?.id,
+      data: result,
+      message: 'Payment captured successfully',
     });
-  } catch (error) {
-    console.error("Error capturing PayPal payment:", error);
+
+  } catch (error: any) {
+    console.error('Error in POST /api/payment/paypal/capture:', error);
+
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      {
-        error: "Failed to capture payment",
-        details: error instanceof Error ? error.message : "Unknown error",
+      { 
+        success: false, 
+        error: error.message || 'Failed to capture payment',
       },
       { status: 500 }
     );

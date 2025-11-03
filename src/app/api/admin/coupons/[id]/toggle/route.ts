@@ -1,63 +1,92 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Coupon Toggle Status API
+ * POST /api/admin/coupons/[id]/toggle - Toggle coupon status
+ */
 
+import { NextRequest, NextResponse } from 'next/server';
+import { couponController } from '../../../../_lib/controllers/coupon.controller';
+import { getAdminAuth } from '../../../../_lib/database/admin';
+import { AuthorizationError, NotFoundError, ValidationError } from '../../../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
+
+/**
+ * POST /api/admin/coupons/[id]/toggle
+ * Toggle coupon active status
+ */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const db = getAdminDb();
-    const { id } = params;
+    // Get coupon ID from params
+    const { id } = await context.params;
 
     if (!id) {
-      return NextResponse.json({ error: "Coupon ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Coupon ID is required' },
+        { status: 400 }
+      );
     }
 
-    // Get current coupon
-    const couponDoc = await db.collection("coupons").doc(id).get();
-    if (!couponDoc.exists) {
-      return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
-    }
-
-    const couponData = couponDoc.data();
-    const newStatus = !couponData?.isActive;
-
-    // Update coupon status
-    await db.collection("coupons").doc(id).update({
-      isActive: newStatus,
-      updatedAt: new Date().toISOString(),
-    });
+    // Toggle coupon status using controller
+    const updatedCoupon = await couponController.toggleCouponStatusAdmin(id, user);
 
     return NextResponse.json({
-      message: "Coupon status updated successfully",
-      isActive: newStatus,
+      message: 'Coupon status updated successfully',
+      isActive: (updatedCoupon as any).isActive,
     });
   } catch (error: any) {
-    console.error("Error toggling coupon status:", error);
+    console.error('Error in POST /api/admin/coupons/[id]/toggle:', error);
+
+    if (error instanceof AuthorizationError || error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    if (error instanceof NotFoundError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error.message || "Failed to toggle coupon status" },
+      { error: error.message || 'Failed to toggle coupon status' },
       { status: 500 }
     );
   }

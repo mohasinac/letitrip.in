@@ -431,6 +431,32 @@ export class ProductModel {
   }
 
   /**
+   * Bulk delete products (batch operation)
+   */
+  async bulkDelete(ids: string[]): Promise<void> {
+    if (!ids || ids.length === 0) {
+      return;
+    }
+
+    const db = getAdminDb();
+    const batch = db.batch();
+
+    try {
+      // Add all deletes to batch
+      ids.forEach((id) => {
+        const docRef = this.collection.doc(id);
+        batch.delete(docRef);
+      });
+
+      // Commit batch
+      await batch.commit();
+    } catch (error) {
+      console.error('[ProductModel] Bulk delete error:', error);
+      throw new InternalServerError('Failed to bulk delete products');
+    }
+  }
+
+  /**
    * Bulk update products (batch operation for performance)
    */
   async bulkUpdate(

@@ -1,183 +1,137 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+/**
+ * Admin Orders API
+ * GET /api/admin/orders - List all orders (with filters)
+ * PATCH /api/admin/orders - Bulk update order status
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { orderController } from '../../_lib/controllers/order.controller';
+import { getAdminAuth } from '../../_lib/database/admin';
+import { AuthorizationError } from '../../_lib/middleware/error-handler';
+
+/**
+ * Verify admin authentication
+ */
+async function verifyAdminAuth(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new AuthorizationError('Authentication required');
+  }
+
+  const token = authHeader.substring(7);
+  const auth = getAdminAuth();
+  
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const role = decodedToken.role || 'user';
+
+    if (role !== 'admin') {
+      throw new AuthorizationError('Admin access required');
+    }
+
+    return {
+      uid: decodedToken.uid,
+      role: role as 'admin',
+      email: decodedToken.email,
+    };
+  } catch (error: any) {
+    throw new AuthorizationError('Invalid or expired token');
+  }
+}
 
 /**
  * GET /api/admin/orders
- * List all orders from all sellers with filtering and pagination
- * Reuses seller orders logic but without seller filter
+ * List all orders with filtering and pagination
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const adminDb = getAdminDb();
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
     // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
-    const sellerId = searchParams.get("sellerId");
-    const search = searchParams.get("search");
-    const paymentMethod = searchParams.get("paymentMethod");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const searchParams = request.nextUrl.searchParams;
+    const filters = {
+      status: (searchParams.get('status') as any) || 'all',
+      sellerId: searchParams.get('sellerId') || 'all',
+      paymentMethod: (searchParams.get('paymentMethod') as any) || 'all',
+      search: searchParams.get('search') || undefined,
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '50'),
+    };
 
-    // Build query - fetch from orders collection
-    let firestoreQuery: any = adminDb.collection("orders");
-
-    // Apply filters
-    if (status && status !== "all") {
-      firestoreQuery = firestoreQuery.where("status", "==", status);
-    }
-    if (sellerId && sellerId !== "all") {
-      firestoreQuery = firestoreQuery.where("sellerId", "==", sellerId);
-    }
-    if (paymentMethod && paymentMethod !== "all") {
-      firestoreQuery = firestoreQuery.where("paymentMethod", "==", paymentMethod);
-    }
-
-    // Order by creation date (newest first) and apply pagination
-    firestoreQuery = firestoreQuery.orderBy("createdAt", "desc").limit(limit * page);
-
-    // Execute query
-    const snapshot = await firestoreQuery.get();
-
-    // Map documents to orders
-    let orders = snapshot.docs.map((doc: any) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.() 
-          ? data.createdAt.toDate().toISOString() 
-          : data.createdAt || new Date().toISOString(),
-        updatedAt: data.updatedAt?.toDate?.() 
-          ? data.updatedAt.toDate().toISOString() 
-          : data.updatedAt || new Date().toISOString(),
-      };
-    });
-
-    // Apply search filter (client-side for flexibility)
-    if (search) {
-      const searchLower = search.toLowerCase();
-      orders = orders.filter(
-        (order: any) =>
-          order.orderNumber?.toLowerCase().includes(searchLower) ||
-          order.customerName?.toLowerCase().includes(searchLower) ||
-          order.customerEmail?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Implement pagination on filtered results
-    const startIndex = (page - 1) * limit;
-    const paginatedOrders = orders.slice(startIndex, startIndex + limit);
+    // Get orders using controller
+    const result = await orderController.getAllOrdersAdmin(filters, user);
 
     return NextResponse.json({
       success: true,
-      data: paginatedOrders,
-      pagination: {
-        page,
-        limit,
-        total: orders.length,
-        totalPages: Math.ceil(orders.length / limit),
-      },
+      data: result.orders,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    console.error("Error listing admin orders:", error);
+    console.error('Error in GET /api/admin/orders:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to list orders" },
+      { success: false, error: error.message || 'Failed to get orders' },
       { status: 500 }
     );
   }
 }
 
 /**
- * PATCH /api/admin/orders (bulk status update)
- * Update status for multiple orders
+ * PATCH /api/admin/orders
+ * Bulk update order status
  */
 export async function PATCH(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Verify admin authentication
+    const user = await verifyAdminAuth(request);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || "user";
-
-    // Only admins can access
-    if (role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized: Admin access required" },
-        { status: 403 }
-      );
-    }
-
+    // Parse request body
     const body = await request.json();
     const { ids, status } = body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
-        { success: false, error: "No order IDs provided" },
+        { success: false, error: 'No order IDs provided' },
         { status: 400 }
       );
     }
 
     if (!status) {
       return NextResponse.json(
-        { success: false, error: "Status is required" },
+        { success: false, error: 'Status is required' },
         { status: 400 }
       );
     }
 
-    const adminDb = getAdminDb();
-    const batch = adminDb.batch();
-
-    // Update each order
-    ids.forEach((id: string) => {
-      const docRef = adminDb.collection("orders").doc(id);
-      batch.update(docRef, {
-        status,
-        updatedAt: new Date(),
-      });
-    });
-
-    await batch.commit();
+    // Update orders using controller
+    const result = await orderController.bulkUpdateOrderStatus(ids, status, user);
 
     return NextResponse.json({
       success: true,
-      message: `${ids.length} order(s) updated successfully`,
-      updatedCount: ids.length,
+      message: `${result.updatedCount} order(s) updated successfully`,
+      updatedCount: result.updatedCount,
     });
   } catch (error: any) {
-    console.error("Error bulk updating orders:", error);
+    console.error('Error in PATCH /api/admin/orders:', error);
+
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update orders" },
+      { success: false, error: error.message || 'Failed to update orders' },
       { status: 500 }
     );
   }
