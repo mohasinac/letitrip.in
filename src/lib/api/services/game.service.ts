@@ -165,16 +165,12 @@ export class GameService {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/beyblades/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await apiClient.upload<{ url: string }>(
+        '/api/beyblades/upload-image',
+        formData
+      );
 
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      return await response.json();
+      return response;
     } catch (error) {
       console.error("GameService.uploadBeybladeImage error:", error);
       throw error;

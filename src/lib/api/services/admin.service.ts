@@ -459,19 +459,12 @@ export class AdminService {
    */
   static async exportData(type: string, filters?: any): Promise<Blob> {
     try {
-      const response = await fetch('/api/admin/bulk/export', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ type, filters }),
-      });
+      const response = await apiClient.post<Blob>(
+        '/api/admin/bulk/export',
+        { type, filters }
+      );
 
-      if (!response.ok) {
-        throw new Error('Failed to export data');
-      }
-
-      return await response.blob();
+      return response;
     } catch (error) {
       console.error("AdminService.exportData error:", error);
       throw error;

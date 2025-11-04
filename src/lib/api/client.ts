@@ -5,7 +5,7 @@
  */
 
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from "axios";
-import { auth } from "@/app/api/_lib/database/config";
+import { auth } from "@/app/(backend)/api/_lib/database/config";
 
 export interface ApiResponse<T = any> {
   success: boolean;

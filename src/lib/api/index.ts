@@ -18,6 +18,11 @@ import { GameService } from "./services/game.service";
 import { SellerService } from "./services/seller.service";
 import { AdminService } from "./services/admin.service";
 import { UploadService } from "./services/upload.service";
+import { StorageService } from "./services/storage.service";
+import { ConsentService } from "./services/consent.service";
+import { ContactService } from "./services/contact.service";
+import { HeroBannerService } from "./services/hero-banner.service";
+import { ContentService } from "./services/content.service";
 
 // Export API Client
 export { apiClient } from "./client";
@@ -38,6 +43,11 @@ export { GameService } from "./services/game.service";
 export { SellerService } from "./services/seller.service";
 export { AdminService } from "./services/admin.service";
 export { UploadService } from "./services/upload.service";
+export { StorageService } from "./services/storage.service";
+export { ConsentService } from "./services/consent.service";
+export { ContactService } from "./services/contact.service";
+export { HeroBannerService } from "./services/hero-banner.service";
+export { ContentService } from "./services/content.service";
 
 // Export types from client
 export type { ApiResponse, ApiClientConfig } from "./client";
@@ -132,6 +142,28 @@ export type {
   UploadResponse,
   UploadOptions
 } from "./services/upload.service";
+export type {
+  StorageUploadResponse,
+  StorageUploadOptions
+} from "./services/storage.service";
+export type {
+  ConsentData,
+  ConsentSettings
+} from "./services/consent.service";
+export type {
+  ContactFormData,
+  ContactSubmissionResponse
+} from "./services/contact.service";
+export type {
+  HeroBanner,
+  CreateHeroBannerData,
+  UpdateHeroBannerData
+} from "./services/hero-banner.service";
+export type {
+  ContentPage,
+  CreateContentPageData,
+  UpdateContentPageData
+} from "./services/content.service";
 
 // Convenience object for accessing all services
 export const api = {
@@ -150,4 +182,9 @@ export const api = {
   seller: SellerService,
   admin: AdminService,
   upload: UploadService,
+  storage: StorageService,
+  consent: ConsentService,
+  contact: ContactService,
+  heroBanner: HeroBannerService,
+  content: ContentService,
 } as const;

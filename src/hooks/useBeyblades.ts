@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BeybladeStats } from "@/types/beybladeStats";
+import { GameService } from "@/lib/api";
 
 export function useBeyblades() {
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
@@ -13,18 +14,12 @@ export function useBeyblades() {
   const fetchBeyblades = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/beyblades");
-      if (!response.ok) {
-        throw new Error("Failed to fetch Beyblades");
-      }
-      const data = await response.json();
-      // API returns { success: true, data: [...beyblades] }
-      setBeyblades(data.data || []);
+      const data = await GameService.getBeyblades();
+      setBeyblades(data as any || []);
       setError(null);
     } catch (err) {
       console.error("Error fetching beyblades:", err);
       setError(err instanceof Error ? err.message : "Failed to load Beyblades");
-      // Set empty array as fallback
       setBeyblades([]);
     } finally {
       setLoading(false);
