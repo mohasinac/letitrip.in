@@ -26,6 +26,7 @@ import RecentlyViewed from "@/components/products/RecentlyViewed";
 import toast from "react-hot-toast";
 import { getProductImageUrl, getProductImages } from "@/utils/product";
 import { Product } from "@/types";
+import { api } from "@/lib/api";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -59,23 +60,17 @@ export default function ProductDetailPage() {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/${slug}`);
-
-      if (!response.ok) {
-        throw new Error("Product not found");
-      }
-
-      const data = await response.json();
-      setProduct(data.product);
+      const product = await api.products.getProduct(slug);
+      setProduct(product as any);
 
       // Fetch variant products (same leaf-level category) and related products
-      if (data.product.category) {
-        fetchVariantProducts(data.product.category, data.product.id);
-        fetchRelatedProducts(data.product.category, data.product.id);
+      if (product.category) {
+        fetchVariantProducts(product.category, product.id);
+        fetchRelatedProducts(product.id);
       }
 
       // Track recently viewed
-      trackRecentlyViewed(data.product);
+      trackRecentlyViewed(product as any);
     } catch (error: any) {
       console.error("Error fetching product:", error);
       toast.error("Failed to load product");
@@ -85,18 +80,10 @@ export default function ProductDetailPage() {
     }
   };
 
-  const fetchRelatedProducts = async (category: string, excludeId: string) => {
+  const fetchRelatedProducts = async (productId: string) => {
     try {
-      const response = await fetch(
-        `/api/products?category=${category}&limit=4`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const filtered = data.products.filter(
-          (p: Product) => p.id !== excludeId
-        );
-        setRelatedProducts(filtered.slice(0, 4));
-      }
+      const products = await api.products.getRelatedProducts(productId);
+      setRelatedProducts(products.slice(0, 4) as any);
     } catch (error) {
       console.error("Error fetching related products:", error);
     }
@@ -105,17 +92,11 @@ export default function ProductDetailPage() {
   const fetchVariantProducts = async (category: string, excludeId: string) => {
     try {
       // Fetch products from the same leaf-level category (variants)
-      const response = await fetch(
-        `/api/products?category=${category}&limit=8`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Filter out current product and limit to 6 variants
-        const filtered = data.products.filter(
-          (p: Product) => p.id !== excludeId
-        );
-        setVariantProducts(filtered.slice(0, 6));
-      }
+      const data = await api.products.getProductsByCategory(category, {
+        limit: 8,
+      });
+      const filtered = data.products.filter((p: any) => p.id !== excludeId);
+      setVariantProducts(filtered.slice(0, 8) as any);
     } catch (error) {
       console.error("Error fetching variant products:", error);
     }

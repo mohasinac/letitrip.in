@@ -12,6 +12,7 @@ import {
   Package,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { api } from "@/lib/api";
 
 interface Category {
   id: string;
@@ -40,22 +41,14 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/categories?format=tree");
+      // Use the Category API service
+      const categoryTree = await api.categories.getCategoryTree();
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch categories");
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        // Flatten tree and filter only root categories (no parents) and featured
-        const rootCategories = data.data
-          .filter(
-            (cat: Category) => !cat.parentIds || cat.parentIds.length === 0
-          )
-          .filter((cat: Category) => cat.isActive);
-        setCategories(rootCategories);
-      }
+      // Filter only root categories (no parent) that are active
+      const rootCategories = categoryTree.filter(
+        (cat) => !cat.parentId && cat.isActive
+      );
+      setCategories(rootCategories as any);
     } catch (error: any) {
       console.error("Error fetching categories:", error);
       toast.error("Failed to load categories");

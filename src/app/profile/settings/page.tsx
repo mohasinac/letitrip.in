@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { api } from "@/lib/api";
 
 const currencies = [
   { code: "USD", symbol: "$", name: "US Dollar" },
@@ -72,16 +73,17 @@ export default function SettingsPage() {
       // Save to localStorage
       localStorage.setItem("userPreferences", JSON.stringify(preferences));
 
-      // Optionally save to backend
-      if (user && (user as any).getIdToken) {
-        const token = await (user as any).getIdToken();
-        await fetch("/api/user/preferences", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      // Save to backend using API service
+      if (user) {
+        await api.user.updateProfile({
+          preferences: {
+            currency: currency,
+            notifications: {
+              email: emailNotifications,
+              sms: orderUpdates,
+              push: promotionalEmails,
+            },
           },
-          body: JSON.stringify(preferences),
         });
       }
 

@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { api } from "@/lib/api";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -48,21 +49,10 @@ export default function ProfilePage() {
 
   const fetchUserData = async () => {
     try {
-      if (!user || !user.getIdToken) return;
+      if (!user) return;
 
-      const token = await user.getIdToken();
-      const response = await fetch("/api/user/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-
-      const data = await response.json();
-      setUserData(data.data || user);
+      const profile = await api.user.getProfile();
+      setUserData(profile || user);
     } catch (error: any) {
       console.error("Error fetching user data:", error);
       // Fallback to auth context user
@@ -74,50 +64,32 @@ export default function ProfilePage() {
 
   const fetchUserStats = async () => {
     try {
-      if (!user || !user.getIdToken) return;
+      if (!user) return;
 
-      const token = await user.getIdToken();
+      // Try to fetch user stats using the API service
+      try {
+        const userStats = await api.user.getUserStats();
+        const addresses = await api.user.getAddresses();
+        setStats({
+          orders: userStats.totalOrders || 0,
+          wishlist: userStats.wishlistCount || 0,
+          addresses: addresses.length || 0,
+        });
+      } catch (error) {
+        // Fallback: Try individual calls
+        const [orders, wishlist, addresses] = await Promise.allSettled([
+          api.orders.getOrders({ limit: 1 }),
+          api.wishlist.getWishlist(),
+          api.user.getAddresses(),
+        ]);
 
-      // Fetch orders count
-      const ordersResponse = await fetch("/api/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (ordersResponse.ok) {
-        const ordersData = await ordersResponse.json();
-        setStats((prev) => ({
-          ...prev,
-          orders: ordersData.orders?.length || 0,
-        }));
-      }
-
-      // Fetch wishlist count
-      const wishlistResponse = await fetch("/api/wishlist", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (wishlistResponse.ok) {
-        const wishlistData = await wishlistResponse.json();
-        setStats((prev) => ({
-          ...prev,
-          wishlist: wishlistData.items?.length || 0,
-        }));
-      }
-
-      // Fetch addresses count
-      const addressesResponse = await fetch("/api/addresses", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (addressesResponse.ok) {
-        const addressesData = await addressesResponse.json();
-        setStats((prev) => ({
-          ...prev,
-          addresses: addressesData.addresses?.length || 0,
-        }));
+        setStats({
+          orders: orders.status === "fulfilled" ? orders.value.total || 0 : 0,
+          wishlist:
+            wishlist.status === "fulfilled" ? wishlist.value.itemCount || 0 : 0,
+          addresses:
+            addresses.status === "fulfilled" ? addresses.value.length || 0 : 0,
+        });
       }
     } catch (error: any) {
       console.error("Error fetching user stats:", error);

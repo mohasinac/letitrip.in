@@ -18,6 +18,7 @@ import Image from "next/image";
 import { Order } from "@/types/order";
 import { getOrderStatusInfo } from "@/lib/order/order-utils";
 import toast from "react-hot-toast";
+import { api } from "@/lib/api";
 
 export default function OrderConfirmationPage() {
   const router = useRouter();
@@ -42,24 +43,13 @@ export default function OrderConfirmationPage() {
 
   const fetchOrder = async () => {
     try {
-      if (!user || !user.getIdToken) return;
+      if (!user) return;
 
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch order");
-      }
-
-      const data = await response.json();
-      setOrder(data.order);
+      const orderData = await api.orders.getOrder(orderId);
+      setOrder(orderData);
     } catch (error: any) {
       console.error("Error fetching order:", error);
-      toast.error(error.message || "Failed to load order details");
+      toast.error(error.message || "Failed to load order");
     } finally {
       setLoading(false);
     }

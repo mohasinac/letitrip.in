@@ -18,6 +18,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
+import { api } from "@/lib/api";
 
 interface Product {
   id: string;
@@ -97,16 +98,13 @@ export default function CategoryDetailPage({
   const fetchCategoryData = async () => {
     try {
       setLoading(true);
-      // Fetch category info
-      const response = await fetch(`/api/categories/${slug}`);
+      // Use Category API service
+      const categoryData = await api.categories.getCategory(slug);
+      setCategory(categoryData as any);
 
-      if (!response.ok) {
-        throw new Error("Category not found");
-      }
-
-      const data = await response.json();
-      setCategory(data.category);
-      setSubcategories(data.subcategories || []);
+      // Fetch subcategories
+      const subcats = await api.categories.getSubcategories(categoryData.id);
+      setSubcategories(subcats as any);
     } catch (error: any) {
       console.error("Error fetching category:", error);
       toast.error("Failed to load category");
@@ -124,32 +122,30 @@ export default function CategoryDetailPage({
         setLoadingMore(true);
       }
 
-      const params = new URLSearchParams({
-        category: category!.id,
-        page: page.toString(),
-        limit: "20",
+      // Use Product API service
+      const filters: any = {
+        page,
+        limit: 20,
         ...(searchQuery && { search: searchQuery }),
-        ...(sortBy && { sort: sortBy }),
-        ...(minPrice && { minPrice }),
-        ...(maxPrice && { maxPrice }),
-        ...(inStockOnly && { inStock: "true" }),
-      });
+        ...(sortBy && sortBy !== "relevance" && { sortBy }),
+        ...(minPrice && { minPrice: parseInt(minPrice) }),
+        ...(maxPrice && { maxPrice: parseInt(maxPrice) }),
+        ...(inStockOnly && { inStock: true }),
+      };
 
-      const response = await fetch(`/api/products?${params}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-
-      const data = await response.json();
+      const data = await api.products.getProductsByCategory(
+        category!.id,
+        filters
+      );
 
       if (page === 1) {
-        setProducts(data.products);
+        setProducts(data.products as any);
       } else {
-        setProducts((prev) => [...prev, ...data.products]);
+        setProducts((prev) => [...prev, ...(data.products as any)]);
       }
 
-      setHasMore(data.hasMore);
+      // Calculate if there are more pages
+      setHasMore(page < data.totalPages);
     } catch (error: any) {
       console.error("Error fetching products:", error);
       toast.error("Failed to load products");

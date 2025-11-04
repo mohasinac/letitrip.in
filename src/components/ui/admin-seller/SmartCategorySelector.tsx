@@ -7,6 +7,7 @@ import { UnifiedInput } from "@/components/ui/unified/Input";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import type { Category, CategorySEO } from "@/types";
+import { api } from "@/lib/api";
 
 export interface SelectedCategory {
   id: string;
@@ -66,11 +67,11 @@ export function SmartCategorySelector({
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/categories?includeSeo=true");
-        const data = await response.json();
-        if (data.success) {
-          setCategories(data.data || []);
-        }
+        // Use API service to fetch categories
+        const fetchedCategories = await api.categories.getCategories({
+          active: true,
+        });
+        setCategories(fetchedCategories as any);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       } finally {

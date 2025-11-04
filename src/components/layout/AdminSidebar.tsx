@@ -19,6 +19,8 @@ import {
   FileText,
   TrendingUp,
   Shield,
+  Truck,
+  Database,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,6 +58,11 @@ const adminMenuItems = [
     href: "/admin/orders",
   },
   {
+    label: "Shipments",
+    icon: Truck,
+    href: "/admin/shipments",
+  },
+  {
     label: "Users",
     icon: Users,
     href: "/admin/users",
@@ -84,6 +91,11 @@ const adminMenuItems = [
     label: "Notifications",
     icon: Bell,
     href: "/admin/notifications",
+  },
+  {
+    label: "Bulk Operations",
+    icon: Database,
+    href: "/admin/bulk",
   },
   {
     label: "Game",
@@ -186,7 +198,7 @@ export default function AdminSidebar({
                 )}
               </Link>
               {/* Add dividers for visual grouping */}
-              {(index === 1 || index === 5 || index === 10) && (
+              {(index === 1 || index === 6 || index === 12) && (
                 <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
               )}
             </React.Fragment>

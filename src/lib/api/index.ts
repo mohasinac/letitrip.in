@@ -10,6 +10,14 @@ import { OrderService } from "./services/order.service";
 import { ReviewService } from "./services/review.service";
 import { UserService } from "./services/user.service";
 import { CategoryService } from "./services/category.service";
+import { AuthService } from "./services/auth.service";
+import { AddressService } from "./services/address.service";
+import { PaymentService } from "./services/payment.service";
+import { SearchService } from "./services/search.service";
+import { GameService } from "./services/game.service";
+import { SellerService } from "./services/seller.service";
+import { AdminService } from "./services/admin.service";
+import { UploadService } from "./services/upload.service";
 
 // Export API Client
 export { apiClient } from "./client";
@@ -22,6 +30,14 @@ export { OrderService } from "./services/order.service";
 export { ReviewService } from "./services/review.service";
 export { UserService } from "./services/user.service";
 export { CategoryService } from "./services/category.service";
+export { AuthService } from "./services/auth.service";
+export { AddressService } from "./services/address.service";
+export { PaymentService } from "./services/payment.service";
+export { SearchService } from "./services/search.service";
+export { GameService } from "./services/game.service";
+export { SellerService } from "./services/seller.service";
+export { AdminService } from "./services/admin.service";
+export { UploadService } from "./services/upload.service";
 
 // Export types from client
 export type { ApiResponse, ApiClientConfig } from "./client";
@@ -60,6 +76,62 @@ export type {
   Category, 
   CategoryFilters 
 } from "./services/category.service";
+export type {
+  AuthUser,
+  RegisterData,
+  SendOtpData,
+  VerifyOtpData,
+  ChangePasswordData as AuthChangePasswordData
+} from "./services/auth.service";
+export type {
+  Address as ServiceAddress,
+  CreateAddressData as ServiceCreateAddressData,
+  UpdateAddressData
+} from "./services/address.service";
+export type {
+  RazorpayOrderData,
+  RazorpayOrderResponse,
+  RazorpayVerifyData,
+  PayPalOrderData,
+  PayPalOrderResponse,
+  PayPalCaptureData
+} from "./services/payment.service";
+export type {
+  SearchResults,
+  Store
+} from "./services/search.service";
+export type {
+  Beyblade,
+  CreateBeybladeData,
+  UpdateBeybladeData,
+  Arena,
+  CreateArenaData,
+  UpdateArenaData
+} from "./services/game.service";
+export type {
+  SellerProductStats,
+  SellerOrderStats,
+  SellerAnalytics,
+  Coupon,
+  CreateCouponData,
+  Shipment,
+  SellerShop,
+  SellerAlert
+} from "./services/seller.service";
+export type {
+  AdminUser,
+  AdminProductStats,
+  AdminOrderStats,
+  SiteSettings,
+  HeroSettings,
+  HeroSlide,
+  ThemeSettings,
+  BulkOperation
+} from "./services/admin.service";
+export type {
+  UploadResponse,
+  UploadOptions
+} from "./services/upload.service";
 
 // Convenience object for accessing all services
 export const api = {
@@ -70,4 +142,12 @@ export const api = {
   reviews: ReviewService,
   user: UserService,
   categories: CategoryService,
+  auth: AuthService,
+  addresses: AddressService,
+  payment: PaymentService,
+  search: SearchService,
+  game: GameService,
+  seller: SellerService,
+  admin: AdminService,
+  upload: UploadService,
 } as const;

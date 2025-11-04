@@ -20,6 +20,7 @@ import { useCart } from "@/contexts/CartContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
+import { api } from "@/lib/api";
 
 interface Product {
   id: string;
@@ -99,31 +100,29 @@ export default function ProductsPage() {
     try {
       setLoading(true);
 
-      // Build query params
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (selectedCategory) params.append("category", selectedCategory);
-      if (minPrice) params.append("minPrice", minPrice);
-      if (maxPrice) params.append("maxPrice", maxPrice);
-      if (sortBy) params.append("sort", sortBy);
-      if (inStockOnly) params.append("inStock", "true");
-      params.append("page", page.toString());
-      params.append("limit", "20");
+      // Build filters object
+      const filters: any = {
+        page,
+        limit: 20,
+      };
 
-      const response = await fetch(`/api/products?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
+      if (searchQuery) filters.search = searchQuery;
+      if (selectedCategory) filters.category = selectedCategory;
+      if (minPrice) filters.minPrice = Number(minPrice);
+      if (maxPrice) filters.maxPrice = Number(maxPrice);
+      if (sortBy) filters.sortBy = sortBy;
+      if (inStockOnly) filters.inStock = true;
 
-      const data = await response.json();
+      // Use API service instead of direct fetch
+      const data = await api.products.getProducts(filters);
 
       if (page === 1) {
-        setProducts(data.products || []);
+        setProducts((data.products as any) || []);
       } else {
-        setProducts((prev) => [...prev, ...(data.products || [])]);
+        setProducts((prev) => [...prev, ...((data.products as any) || [])]);
       }
 
-      setHasMore(data.hasMore || false);
+      setHasMore(data.total > page * 20);
     } catch (error: any) {
       console.error("Error fetching products:", error);
       toast.error("Failed to load products");

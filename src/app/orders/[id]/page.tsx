@@ -30,6 +30,7 @@ import Image from "next/image";
 import { Order } from "@/types/order";
 import { getOrderStatusInfo } from "@/lib/order/order-utils";
 import toast from "react-hot-toast";
+import { api } from "@/lib/api";
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>;
@@ -44,6 +45,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -64,58 +68,37 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   const fetchOrder = async () => {
     try {
-      if (!user || !user.getIdToken || !orderId) return;
+      if (!user) return;
 
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch order");
-      }
-
-      const data = await response.json();
-      setOrder(data.order);
+      setLoading(true);
+      const orderData = await api.orders.getOrder(orderId);
+      setOrder(orderData);
     } catch (error: any) {
       console.error("Error fetching order:", error);
       toast.error(error.message || "Failed to load order");
+      router.push("/profile/orders");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancelOrder = async () => {
-    if (!order || !orderId) return;
+    if (!cancelReason.trim()) {
+      toast.error("Please provide a reason for cancellation");
+      return;
+    }
 
-    if (!confirm("Are you sure you want to cancel this order?")) return;
-
-    setActionLoading(true);
     try {
-      if (!user?.getIdToken) return;
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}/cancel`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to cancel order");
-      }
-
+      setCancelLoading(true);
+      await api.orders.cancelOrder(orderId, cancelReason);
       toast.success("Order cancelled successfully");
-      fetchOrder();
+      setShowCancelModal(false);
+      fetchOrder(); // Refresh order data
     } catch (error: any) {
       console.error("Error cancelling order:", error);
       toast.error(error.message || "Failed to cancel order");
     } finally {
-      setActionLoading(false);
+      setCancelLoading(false);
     }
   };
 
@@ -188,13 +171,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const canCancel = ["pending_approval", "approved", "processing"].includes(
     order.status
   );
-  
+
   // Check if within 1-day cancellation window
   const canCancelWithinTimeLimit = (() => {
     if (!canCancel || !order.paidAt) return false;
     const paidAt = new Date(order.paidAt);
     const now = new Date();
-    const hoursSincePayment = (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60);
+    const hoursSincePayment =
+      (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60);
     return hoursSincePayment <= 24;
   })();
 
@@ -202,7 +186,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     if (!order.paidAt) return null;
     const paidAt = new Date(order.paidAt);
     const now = new Date();
-    const hoursRemaining = 24 - ((now.getTime() - paidAt.getTime()) / (1000 * 60 * 60));
+    const hoursRemaining =
+      24 - (now.getTime() - paidAt.getTime()) / (1000 * 60 * 60);
     if (hoursRemaining <= 0) return null;
     if (hoursRemaining < 1) return `${Math.floor(hoursRemaining * 60)} minutes`;
     return `${Math.floor(hoursRemaining)} hours`;
@@ -339,20 +324,27 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
             {canCancel && (
               <div className="ml-auto flex flex-col items-end gap-1">
-                {!canCancelWithinTimeLimit && cancellationTimeRemaining === null ? (
+                {!canCancelWithinTimeLimit &&
+                cancellationTimeRemaining === null ? (
                   <div className="text-xs text-red-600 dark:text-red-400 text-right mb-1">
                     Cancellation window expired (1 day limit)
                   </div>
-                ) : cancellationTimeRemaining && (
-                  <div className="text-xs text-yellow-600 dark:text-yellow-400 text-right mb-1">
-                    Cancel within: {cancellationTimeRemaining}
-                  </div>
+                ) : (
+                  cancellationTimeRemaining && (
+                    <div className="text-xs text-yellow-600 dark:text-yellow-400 text-right mb-1">
+                      Cancel within: {cancellationTimeRemaining}
+                    </div>
+                  )
                 )}
                 <button
                   onClick={handleCancelOrder}
                   className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={actionLoading || !canCancelWithinTimeLimit}
-                  title={!canCancelWithinTimeLimit ? "Cancellation window expired. Contact support for assistance." : "Cancel this order"}
+                  title={
+                    !canCancelWithinTimeLimit
+                      ? "Cancellation window expired. Contact support for assistance."
+                      : "Cancel this order"
+                  }
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

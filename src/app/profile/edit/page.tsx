@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import WhatsAppImageEditor, {
   WhatsAppCropData,
 } from "@/components/seller/products/WhatsAppImageEditor";
+import { api } from "@/lib/api";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -99,53 +100,24 @@ export default function EditProfilePage() {
     setLoading(true);
 
     try {
-      if (!user || !user.getIdToken) {
+      if (!user) {
         throw new Error("User not authenticated");
       }
 
-      const token = await user.getIdToken();
       let photoURL = formData.photoURL;
 
       // Upload photo if changed
       if (photoFile) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("file", photoFile);
-        formDataToSend.append("type", "profile");
-
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formDataToSend,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error("Failed to upload photo");
-        }
-
-        const uploadData = await uploadResponse.json();
-        photoURL = uploadData.url;
+        const uploadResult = await api.user.uploadAvatar(photoFile);
+        photoURL = uploadResult.url;
       }
 
       // Update profile
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
-          photoURL,
-          photoCropData: photoCropData || undefined,
-        }),
+      await api.user.updateProfile({
+        name: formData.name,
+        phone: formData.phone,
+        avatar: photoURL,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
 
       toast.success("Profile updated successfully");
       router.push("/profile");

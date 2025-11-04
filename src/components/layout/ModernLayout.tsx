@@ -37,6 +37,7 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Products", href: "/products" },
   { name: "Categories", href: "/categories" },
+  { name: "Game", href: "/game" },
   { name: "Contact", href: "/contact" },
 ];
 
