@@ -1,43 +1,4 @@
-/**
- * Admin Users Search API
- * GET /api/admin/users/search - Search users by email or name
- */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { userController } from '../../../_lib/controllers/user.controller';
-import { getAdminAuth } from '../../../_lib/database/admin';
-import { AuthorizationError, ValidationError } from '../../../_lib/middleware/error-handler';
-
-/**
- * Verify admin authentication
- */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/admin/users/search
@@ -46,7 +7,23 @@ async function verifyAdminAuth(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    // Verify authentication using session
+
+    const sessionOrError = await requireAuthentication(request);
+
+    
+
+    // If it's a NextResponse, it's an error response
+
+    if (sessionOrError instanceof NextResponse) {
+
+      return sessionOrError;
+
+    }
+
+    
+
+    const session = sessionOrError;
 
     // Get search query
     const searchQuery = request.nextUrl.searchParams.get('q') || '';
@@ -59,7 +36,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Search users using controller
-    const results = await userController.searchUsersAdmin(searchQuery, user);
+    const results = await userController.searchUsersAdmin(searchQuery, {
+      uid: session.userId,
+      role: session.role,
+      email: session.email || undefined,
+    });
 
     return NextResponse.json(results);
   } catch (error: any) {
