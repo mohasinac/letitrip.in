@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { COOKIE_CONSTANTS } from "@/constants/app";
+import { getSessionFromRequest } from "@/lib/auth/session";
 
 // Define routes that require authentication
 const protectedRoutes = [
@@ -28,35 +28,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
-  // Create or update session cookie if not present
-  const sessionCookie = request.cookies.get(
-    COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
-  );
-  if (!sessionCookie) {
-    const sessionData = {
-      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    response.cookies.set(
-      COOKIE_CONSTANTS.SESSION_COOKIE_NAME,
-      JSON.stringify(sessionData),
-      {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: COOKIE_CONSTANTS.SESSION_EXPIRY_DAYS * 24 * 60 * 60,
-        path: COOKIE_CONSTANTS.PATH,
-      },
-    );
-  }
-
-  // Get Firebase token from Authorization header or cookie
-  const authHeader = request.headers.get("authorization");
-  const authCookie = request.cookies.get("firebase-token");
-
-  const isAuthenticated = !!(authHeader?.startsWith("Bearer ") || authCookie);
+  // Get session from HTTP-only cookie
+  const session = getSessionFromRequest(request);
+  const isAuthenticated = !!session;
 
   // Check if the current path requires authentication
   const isPublicRoute = publicRoutes.some((route) =>
@@ -84,8 +58,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
-  // For role-based routes, we'll let the client-side components handle the role checking
-  // since we'd need to verify the token to get user role, which is better done client-side
+  // Check admin access
+  if (isAdminRoute && isAuthenticated && session.role !== 'admin') {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // Check seller access
+  if (isSellerRoute && isAuthenticated && !['seller', 'admin'].includes(session.role)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
   return response;
 }

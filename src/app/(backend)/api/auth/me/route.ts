@@ -1,12 +1,11 @@
 /**
  * Auth Me API Route - GET
- * 
- * GET: Get current authenticated user's information
+ * Session-based authentication with HTTP-only cookies
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '../../_lib/controllers/auth.controller';
-import { AuthorizationError } from '../../_lib/middleware/error-handler';
+import { getSession } from '@/lib/auth/session';
+import { getAdminDb } from '../../_lib/database/admin';
 
 /**
  * GET /api/auth/me
@@ -14,35 +13,48 @@ import { AuthorizationError } from '../../_lib/middleware/error-handler';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get token from Authorization header
-    const authHeader = request.headers.get('authorization');
+    // Get session from HTTP-only cookie
+    const session = await getSession();
     
-    if (!authHeader?.startsWith('Bearer ')) {
+    if (!session) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const token = authHeader.substring(7);
+    // Get user data from Firestore
+    const db = getAdminDb();
+    const userDoc = await db.collection('users').doc(session.userId).get();
+    
+    if (!userDoc.exists) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      );
+    }
 
-    // Get user using controller
-    const user = await getCurrentUser(token);
+    const userData = userDoc.data();
 
     return NextResponse.json({
       success: true,
-      data: user,
+      data: {
+        id: session.userId,
+        uid: session.userId,
+        email: session.email,
+        role: session.role,
+        name: userData?.name,
+        displayName: userData?.name,
+        avatar: userData?.avatar,
+        phone: userData?.phone,
+        isEmailVerified: userData?.isEmailVerified,
+        createdAt: userData?.createdAt,
+        updatedAt: userData?.updatedAt,
+      },
     });
 
   } catch (error: any) {
     console.error('Error in GET /api/auth/me:', error);
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 }
-      );
-    }
 
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to get user information' },

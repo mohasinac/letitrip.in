@@ -1,7 +1,6 @@
 /**
  * Auth Register API Route - POST
- * 
- * POST: Register new user with email/password
+ * Session-based authentication with HTTP-only cookies
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,6 +9,7 @@ import {
   ValidationError,
   ConflictError,
 } from '../../_lib/middleware/error-handler';
+import { createSession } from '@/lib/auth/session';
 
 /**
  * POST /api/auth/register
@@ -44,6 +44,9 @@ export async function POST(request: NextRequest) {
       role: 'user', // Force role to user for public registration
       provider: 'email',
     });
+
+    // Create server-side session with HTTP-only cookie
+    await createSession(result.user.id, result.user.email, result.user.role as 'admin' | 'seller' | 'user');
 
     return NextResponse.json({
       success: true,

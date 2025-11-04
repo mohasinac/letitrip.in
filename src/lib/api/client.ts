@@ -1,11 +1,10 @@
 /**
  * API Client for frontend
  * Centralized service for making authenticated API requests
- * Handles Firebase tokens, retries, error handling, and caching
+ * Uses HTTP-only cookies for session-based authentication
  */
 
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from "axios";
-import { auth } from "@/app/(backend)/api/_lib/database/config";
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -64,7 +63,6 @@ class ApiClient {
   private client: AxiosInstance;
   private maxRetries: number = 3;
   private retryDelay: number = 1000;
-  private tokenPromise: Promise<string | null> | null = null;
 
   constructor(config?: ApiClientConfig) {
     const baseURL = config?.baseURL || "";
@@ -77,20 +75,13 @@ class ApiClient {
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true,
+      withCredentials: true, // Important: Send cookies with requests
     });
 
-    // Request interceptor to add authentication token
+    // Request interceptor - no token handling needed
     this.client.interceptors.request.use(
       async (config) => {
-        try {
-          const token = await this.getTokenWithRetry();
-          if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-          }
-        } catch (error) {
-          console.error("Error getting authentication token:", error);
-        }
+        // Cookies are automatically sent with withCredentials: true
         return config;
       },
       (error) => Promise.reject(error),
@@ -102,9 +93,15 @@ class ApiClient {
       async (error: AxiosError<ApiResponse>) => {
         const config = error.config as any;
 
-        // Handle 401 - Unauthorized
+        // Handle 401 - Unauthorized (session expired)
         if (error.response?.status === 401) {
-          console.warn("Unauthorized access");
+          console.warn("Unauthorized access - session expired");
+          
+          // Redirect to login if on client side
+          if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+            window.location.href = "/login?error=session-expired";
+          }
+          
           return Promise.reject(error);
         }
 
@@ -298,7 +295,11 @@ class ApiClient {
       console.error(`Message:`, message);
 
       if (status === 401) {
-        console.error("🔒 Authentication Error: Token may be missing or invalid");
+        console.error("🔒 Authentication Error: Session may be expired");
+        // Session expired - redirect to login if on client
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
       } else if (status === 403) {
         console.error("⛔ Authorization Error: User may not have required permissions");
       } else if (status === 404) {
@@ -308,46 +309,6 @@ class ApiClient {
       console.error("Error:", error.message);
     } else {
       console.error("Unknown error:", error);
-    }
-  }
-
-  /**
-   * Get authentication token with retry logic
-   */
-  private async getTokenWithRetry(maxAttempts: number = 5): Promise<string | null> {
-    // Reuse existing promise if one is in flight
-    if (this.tokenPromise) {
-      return this.tokenPromise;
-    }
-
-    this.tokenPromise = (async () => {
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const user = auth.currentUser;
-          
-          if (!user) {
-            return null;
-          }
-
-          const token = await user.getIdToken();
-          return token;
-        } catch (error) {
-          console.warn(`Token fetch attempt ${attempt}/${maxAttempts} failed:`, error);
-          
-          if (attempt < maxAttempts) {
-            const delay = 200 * Math.pow(2, attempt - 1);
-            await new Promise((resolve) => setTimeout(resolve, delay));
-          }
-        }
-      }
-      
-      return null;
-    })();
-
-    try {
-      return await this.tokenPromise;
-    } finally {
-      this.tokenPromise = null;
     }
   }
 
