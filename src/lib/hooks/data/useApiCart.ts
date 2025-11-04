@@ -5,8 +5,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CartService, CartData } from "@/lib/api";
-import { useAuth } from '@/contexts/SessionAuthContext';
-import type { CartItem } from '@/lib/contexts/CartContext";
+import { useAuth } from "@/contexts/SessionAuthContext";
+import type { CartItem } from "@/contexts/CartContext";
 
 export function useApiCart() {
   const { user } = useAuth();

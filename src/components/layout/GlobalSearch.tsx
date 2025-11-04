@@ -13,7 +13,7 @@ import {
   Store,
   Clock,
 } from "lucide-react";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface SearchResult {
   type: "product" | "category" | "store";

@@ -167,14 +167,27 @@ export function SessionAuthProvider({
       const required = StorageManager.isCookieConsentRequired();
       dispatch({ type: "SET_COOKIE_CONSENT_REQUIRED", payload: required });
 
-      // Track last visited page
-      saveLastVisitedPageIfValid();
+      // Track last visited page (only if not on auth pages)
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+        const isAuthPage = [
+          "/login",
+          "/register",
+          "/reset-password",
+          "/verify-email",
+        ].some((page) => currentPath.startsWith(page));
+
+        if (!isAuthPage && !currentPath.startsWith("/api/")) {
+          StorageManager.setItem("last_visited_page", currentPath);
+        }
+      }
 
       // Load current session
       await checkAuth();
     };
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Check authentication status
@@ -201,6 +214,7 @@ export function SessionAuthProvider({
       }
     } catch (error: any) {
       console.error("Error checking auth:", error);
+      // Silently fail - user is just not authenticated
       dispatch({ type: "SET_USER", payload: null });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
@@ -257,16 +271,18 @@ export function SessionAuthProvider({
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const redirectParam = urlParams.get("redirect");
-        const lastVisitedPage = StorageManager.getItem("last_visited_page");
+        const lastVisitedPage =
+          StorageManager.getItem("last_visited_page") ||
+          sessionStorage.getItem("auth_redirect_after_login");
 
         redirectPath =
           redirectParam ||
           lastVisitedPage ||
           getDefaultRedirectPath(sessionUser.role);
 
-        // Clear stored redirect
+        // Clear stored redirects
         StorageManager.removeItem("last_visited_page");
-        StorageManager.removeItem("auth_redirect_after_login");
+        sessionStorage.removeItem("auth_redirect_after_login");
       } else {
         redirectPath = getDefaultRedirectPath(sessionUser.role);
       }
@@ -324,16 +340,18 @@ export function SessionAuthProvider({
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const redirectParam = urlParams.get("redirect");
-        const lastVisitedPage = StorageManager.getItem("last_visited_page");
+        const lastVisitedPage =
+          StorageManager.getItem("last_visited_page") ||
+          sessionStorage.getItem("auth_redirect_after_login");
 
         redirectPath =
           redirectParam ||
           lastVisitedPage ||
           getDefaultRedirectPath(sessionUser.role);
 
-        // Clear stored redirect
+        // Clear stored redirects
         StorageManager.removeItem("last_visited_page");
-        StorageManager.removeItem("auth_redirect_after_login");
+        sessionStorage.removeItem("auth_redirect_after_login");
       } else {
         redirectPath = getDefaultRedirectPath(sessionUser.role);
       }

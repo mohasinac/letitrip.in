@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/SessionAuthContext";
 import { Eye, EyeOff, Phone, Mail, ArrowLeft, User } from "lucide-react";
@@ -49,7 +49,21 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect");
-  const { register } = useAuth();
+  const { register: registerUser, user, loading: authLoading } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      const redirectPath =
+        redirect ||
+        (user.role === "admin"
+          ? "/admin"
+          : user.role === "seller"
+          ? "/seller/dashboard"
+          : "/");
+      router.push(redirectPath);
+    }
+  }, [user, authLoading, redirect, router]);
 
   // Validation functions
   const validateName = (value: string): string => {
@@ -263,7 +277,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       // Session-based registration - no Firebase client-side auth needed
-      await register(name, email, password, selectedRole);
+      await registerUser(name, email, password, selectedRole);
       // Success toast and redirect are handled by the auth context
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -365,6 +379,18 @@ export default function RegisterPage() {
     setOtp("");
     setVerificationId("");
   };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">

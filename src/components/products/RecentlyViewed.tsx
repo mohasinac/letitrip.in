@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, History } from "lucide-react";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { getProductImageUrl } from "@/utils/product";
 
 interface RecentlyViewedProduct {

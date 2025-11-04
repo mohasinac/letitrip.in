@@ -10,8 +10,8 @@ import {
   Globe,
   ChevronDown,
 } from "lucide-react";
-import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
-import { useAuth } from '@/contexts/SessionAuthContext';
+import { useModernTheme } from "@/contexts/ModernThemeContext";
+import { useAuth } from "@/contexts/SessionAuthContext";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";
@@ -451,4 +451,3 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
     </div>
   );
 }
-

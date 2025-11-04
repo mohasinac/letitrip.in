@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useBreadcrumb } from '@/lib/contexts/BreadcrumbContext";
+import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 
 /**

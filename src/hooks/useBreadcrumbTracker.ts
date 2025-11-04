@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { BreadcrumbItem } from "@/components/shared/Breadcrumb";
-import { useBreadcrumb } from '@/lib/contexts/BreadcrumbContext";
+import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { Category } from "@/types/shared";
 
 interface UseBreadcrumbTrackerOptions {

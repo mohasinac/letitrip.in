@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ShoppingCart,
   Users,
@@ -18,9 +18,9 @@ import {
   Store,
   CheckCircle,
 } from "lucide-react";
-import { useAuth } from '@/contexts/SessionAuthContext';
+import { useAuth } from "@/contexts/SessionAuthContext";
 import { apiClient } from "@/lib/api/client";
-import { apiGet } from "@/lib/api/seller";
+import { SellerService } from "@/lib/api/services/seller.service";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
@@ -154,9 +154,10 @@ export function Dashboard({
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
 
-  // Fetch dashboard stats
-  const fetchStats = async () => {
+  // Fetch dashboard stats - memoized to prevent infinite loops
+  const fetchStats = useCallback(async () => {
     if (!user || authLoading) return;
 
     try {
@@ -214,16 +215,18 @@ export function Dashboard({
       } else {
         // Fetch seller stats
         const [ordersResponse, productsResponse] = await Promise.all([
-          apiGet<{ success: boolean; data: any[]; stats?: any }>(
-            "/api/seller/orders"
-          ).catch(() => ({ success: false, data: [], stats: {} })),
-          apiGet<{ success: boolean; data: any[] }>(
-            "/api/seller/products"
-          ).catch(() => ({ success: false, data: [] })),
+          apiClient
+            .get<{ success: boolean; data: any[]; stats?: any }>(
+              "/api/seller/orders"
+            )
+            .catch(() => ({ success: false, data: [], stats: {} })),
+          apiClient
+            .get<{ success: boolean; data: any[] }>("/api/seller/products")
+            .catch(() => ({ success: false, data: [] })),
         ]);
 
-        const ordersStats = ordersResponse.stats || {};
-        const products = productsResponse.data || [];
+        const ordersStats = ordersResponse?.stats || {};
+        const products = productsResponse?.data || [];
 
         setStats({
           totalOrders: ordersStats.total || 0,
@@ -245,14 +248,16 @@ export function Dashboard({
       setError(err.message || "Failed to load dashboard data");
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
-  };
+  }, [context]);
 
   useEffect(() => {
-    if (user && !authLoading) {
+    // Only fetch once when user is available and we haven't fetched yet
+    if (user && !authLoading && !hasFetched) {
       fetchStats();
     }
-  }, [user, authLoading, context]);
+  }, [user, authLoading, hasFetched, fetchStats]);
 
   // Admin stats configuration
   const adminStats = [
@@ -510,4 +515,3 @@ export function Dashboard({
     </div>
   );
 }
-

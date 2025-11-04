@@ -27,12 +27,10 @@ import { BottomNav } from "@/components/ui/navigation/BottomNav";
 import { usePathname } from "next/navigation";
 import FloatingCart from "@/components/cart/FloatingCart";
 
-import {
-  useCart,
-  useWishlist,
-  useCurrency,
-  useModernTheme,
-} from "@/lib/contexts";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 interface ModernLayoutProps {
   children: React.ReactNode;

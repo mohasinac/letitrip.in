@@ -95,11 +95,27 @@ class ApiClient {
 
         // Handle 401 - Unauthorized (session expired)
         if (error.response?.status === 401) {
-          console.warn("Unauthorized access - session expired");
+          const isAuthCheckEndpoint = config.url?.includes("/api/auth/me");
           
-          // Redirect to login if on client side
-          if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
-            window.location.href = "/login?error=session-expired";
+          // Only log and redirect if NOT an auth check endpoint
+          if (!isAuthCheckEndpoint) {
+            console.warn("Unauthorized access - session expired");
+            
+            // Only redirect to login if NOT already on auth pages and NOT an auth API call
+            if (typeof window !== "undefined") {
+              const currentPath = window.location.pathname;
+              const isAuthPage = ["/login", "/register", "/reset-password"].some(page => 
+                currentPath.startsWith(page)
+              );
+              const isAuthApiCall = config.url?.includes("/api/auth/");
+              
+              // Don't redirect if we're already on an auth page or calling auth APIs
+              if (!isAuthPage && !isAuthApiCall) {
+                // Save current page for redirect after login
+                sessionStorage.setItem("auth_redirect_after_login", currentPath);
+                window.location.href = "/login?error=session-expired";
+              }
+            }
           }
           
           return Promise.reject(error);
@@ -165,7 +181,17 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      this.handleError(error);
+      // Don't log expected 401 errors for auth check endpoints
+      if (axios.isAxiosError(error)) {
+        const isAuthCheckEndpoint = error.config?.url?.includes("/api/auth/me");
+        const is401 = error.response?.status === 401;
+        
+        if (!(isAuthCheckEndpoint && is401)) {
+          this.handleError(error);
+        }
+      } else {
+        this.handleError(error);
+      }
       throw error;
     }
   }
@@ -291,19 +317,25 @@ class ApiClient {
       const url = error.config?.url || "unknown";
       const method = error.config?.method?.toUpperCase() || "REQUEST";
 
-      console.error(`API Error [${status}]: ${method} ${url}`);
-      console.error(`Message:`, message);
-
+      // Don't log 401 errors for auth check endpoints (expected behavior)
+      const isAuthCheckEndpoint = url.includes("/api/auth/me");
+      
       if (status === 401) {
-        console.error("🔒 Authentication Error: Session may be expired");
-        // Session expired - redirect to login if on client
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        if (!isAuthCheckEndpoint) {
+          console.warn(`🔒 Authentication required: ${method} ${url}`);
         }
+        // Don't auto-redirect here, let the interceptor handle it
       } else if (status === 403) {
-        console.error("⛔ Authorization Error: User may not have required permissions");
+        console.error(`⛔ Authorization Error [${status}]: ${method} ${url}`);
+        console.error(`Message:`, message);
       } else if (status === 404) {
-        console.error("❓ Not Found: API endpoint may not exist");
+        console.warn(`❓ Not Found [${status}]: ${method} ${url}`);
+      } else if (status && status >= 500) {
+        console.error(`🔥 Server Error [${status}]: ${method} ${url}`);
+        console.error(`Message:`, message);
+      } else if (status) {
+        console.error(`API Error [${status}]: ${method} ${url}`);
+        console.error(`Message:`, message);
       }
     } else if (error instanceof Error) {
       console.error("Error:", error.message);

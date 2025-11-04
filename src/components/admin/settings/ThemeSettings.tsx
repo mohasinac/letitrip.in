@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
+import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 export default function ThemeSettings() {
   const { themeName, setTheme, mode } = useModernTheme();

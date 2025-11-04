@@ -12,8 +12,8 @@ import {
   List,
   ShoppingCart,
 } from "lucide-react";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
-import { useCart } from '@/lib/contexts/CartContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import { getProductImageUrl } from "@/utils/product";
 import toast from "react-hot-toast";

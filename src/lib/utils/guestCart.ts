@@ -3,7 +3,7 @@
  * Handle guest cart storage and merging with user cart on login
  */
 
-import { CartItem } from '@/lib/contexts/CartContext";
+import { CartItem } from "@/contexts/CartContext";
 import { cookieStorage } from "@/lib/storage/cookieStorage";
 
 const GUEST_CART_COOKIE = "guest_cart";

@@ -2,8 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { hasRoleAccess, UserRole } from "@/lib/auth/roles";
-import { useEnhancedAuth } from '@/lib/hooks/auth/useEnhancedAuth";
+import { useAuth } from "@/contexts/SessionAuthContext";
+
+export type UserRole = "admin" | "seller" | "user";
+
+/**
+ * Check if a user has access to a specific role's features
+ * Role hierarchy: admin > seller > user
+ */
+function hasRoleAccess(userRole: UserRole, requiredRole: UserRole): boolean {
+  const roleHierarchy: Record<UserRole, number> = {
+    admin: 3,
+    seller: 2,
+    user: 1,
+  };
+
+  return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
+}
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -18,8 +33,7 @@ export default function RoleGuard({
   fallbackUrl = "/login",
   loadingComponent,
 }: RoleGuardProps) {
-  const { user, loading, isRole, canAccess, setStorageItem } =
-    useEnhancedAuth();
+  const { user, loading } = useAuth();
   const [hasAccess, setHasAccess] = useState(false);
   const router = useRouter();
 
@@ -29,17 +43,14 @@ export default function RoleGuard({
     if (!user) {
       // Store the current path for redirect after login
       const currentPath = window.location.pathname + window.location.search;
-      setStorageItem("auth_redirect_after_login", currentPath);
+      sessionStorage.setItem("auth_redirect_after_login", currentPath);
 
       router.push(`${fallbackUrl}?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 
-    // Check if user has required role access using enhanced auth
-    const access =
-      hasRoleAccess(user.role as UserRole, requiredRole) ||
-      isRole(requiredRole as any) ||
-      canAccess(`${requiredRole}_panel`);
+    // Check if user has required role access
+    const access = hasRoleAccess(user.role as UserRole, requiredRole);
 
     setHasAccess(access);
 
@@ -47,16 +58,7 @@ export default function RoleGuard({
       router.push(fallbackUrl === "/login" ? "/unauthorized" : fallbackUrl);
       return;
     }
-  }, [
-    user,
-    loading,
-    requiredRole,
-    fallbackUrl,
-    router,
-    isRole,
-    canAccess,
-    setStorageItem,
-  ]);
+  }, [user, loading, requiredRole, fallbackUrl, router]);
 
   if (loading) {
     return (

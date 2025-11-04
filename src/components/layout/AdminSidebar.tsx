@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
+import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 interface AdminSidebarProps {
   open?: boolean;

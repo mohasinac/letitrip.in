@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/SessionAuthContext";
-import { useCart } from "@/lib/contexts/CartContext";
-import { useCurrency } from "@/lib/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAddresses } from "@/hooks/useAddresses";
 import AddressCard from "@/components/address/AddressCard";
 import AddressForm from "@/components/address/AddressForm";

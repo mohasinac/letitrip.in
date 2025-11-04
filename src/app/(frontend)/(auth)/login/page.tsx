@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/SessionAuthContext";
 import { Eye, EyeOff, Phone, Mail, ArrowLeft } from "lucide-react";
@@ -37,7 +37,21 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect");
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      const redirectPath =
+        redirect ||
+        (user.role === "admin"
+          ? "/admin"
+          : user.role === "seller"
+          ? "/seller/dashboard"
+          : "/");
+      router.push(redirectPath);
+    }
+  }, [user, authLoading, redirect, router]);
 
   // Validation functions
   const validateEmail = (value: string): string => {
@@ -219,6 +233,18 @@ export default function LoginPage() {
     setOtp("");
     setVerificationId("");
   };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

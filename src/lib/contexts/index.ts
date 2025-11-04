@@ -3,8 +3,8 @@
  * Central export point for all React contexts
  */
 
-// Auth Context
-export { AuthProvider, useAuth } from "./AuthContext";
+// Note: Auth context is in @/contexts/SessionAuthContext
+// Import it directly: import { useAuth } from "@/contexts/SessionAuthContext";
 
 // Cart Context
 export { CartProvider, useCart } from "./CartContext";

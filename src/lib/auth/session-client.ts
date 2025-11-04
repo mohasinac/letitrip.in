@@ -72,10 +72,13 @@ export async function getCurrentSessionUser(): Promise<SessionUser | null> {
     const response = await apiClient.get<SessionUser>('/api/auth/me');
     return response;
   } catch (error: any) {
-    if (error.response?.status === 401) {
+    // 401 is expected when user is not logged in
+    if (error.response?.status === 401 || error?.status === 401) {
       return null;
     }
-    throw error;
+    // Only log unexpected errors
+    console.debug('Error checking session:', error.message || 'Unknown error');
+    return null;
   }
 }
 
