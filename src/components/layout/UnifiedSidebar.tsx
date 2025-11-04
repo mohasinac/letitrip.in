@@ -31,8 +31,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { SELLER_ROUTES } from "@/constants/routes";
 
 interface UnifiedSidebarProps {

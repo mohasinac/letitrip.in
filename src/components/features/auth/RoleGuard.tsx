@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { hasRoleAccess, UserRole } from "@/lib/auth/roles";
-import { useEnhancedAuth } from "@/hooks/auth/useEnhancedAuth";
+import { useEnhancedAuth } from '@/lib/hooks/auth/useEnhancedAuth";
 
 interface RoleGuardProps {
   children: React.ReactNode;

@@ -4,7 +4,7 @@
  */
 
 import { getAdminDb } from '../database/admin';
-import { Coupon } from '@/types';
+import { Coupon } from "@/types/shared";
 import { NotFoundError, ValidationError, ConflictError } from '../middleware/error-handler';
 
 export class CouponModel {

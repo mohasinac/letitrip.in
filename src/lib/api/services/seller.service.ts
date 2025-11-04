@@ -4,100 +4,31 @@
  */
 
 import { apiClient } from "../client";
-import type { Product } from "./product.service";
+import type { Product } from "@/types/shared";
 import type { Order } from "./order.service";
+import type {
+  SellerProductStats,
+  SellerOrderStats,
+  SellerAnalytics,
+  Coupon,
+  CreateCouponData,
+  SellerShop,
+  SellerAlert
+} from "@/types/shared";
+
+// Re-export types for convenience (these are already defined in shared)
+export type {
+  SellerProductStats,
+  SellerOrderStats,
+  SellerAnalytics,
+  Coupon,
+  CreateCouponData,
+  SellerShop,
+  SellerAlert
+} from "@/types/shared";
 
 // ============================================
-// Seller Product Types
-// ============================================
-
-export interface SellerProductStats {
-  total: number;
-  active: number;
-  draft: number;
-  archived: number;
-  lowStock: number;
-  outOfStock: number;
-}
-
-// ============================================
-// Seller Order Types
-// ============================================
-
-export interface SellerOrderStats {
-  total: number;
-  pending: number;
-  processing: number;
-  shipped: number;
-  delivered: number;
-  cancelled: number;
-}
-
-// ============================================
-// Seller Analytics Types
-// ============================================
-
-export interface SellerAnalytics {
-  revenue: {
-    total: number;
-    thisMonth: number;
-    lastMonth: number;
-    growth: number;
-  };
-  orders: {
-    total: number;
-    thisMonth: number;
-    lastMonth: number;
-    growth: number;
-  };
-  products: {
-    total: number;
-    active: number;
-    lowStock: number;
-  };
-  topProducts: Array<{
-    id: string;
-    name: string;
-    sales: number;
-    revenue: number;
-  }>;
-}
-
-// ============================================
-// Seller Coupon Types
-// ============================================
-
-export interface Coupon {
-  id: string;
-  code: string;
-  type: 'percentage' | 'fixed';
-  value: number;
-  minOrderValue?: number;
-  maxDiscount?: number;
-  usageLimit?: number;
-  usageCount: number;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-  sellerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateCouponData {
-  code: string;
-  type: 'percentage' | 'fixed';
-  value: number;
-  minOrderValue?: number;
-  maxDiscount?: number;
-  usageLimit?: number;
-  startDate: string;
-  endDate: string;
-  isActive?: boolean;
-}
-
-// ============================================
-// Seller Shipment Types
+// Seller Shipment Types (local to service)
 // ============================================
 
 export interface Shipment {
@@ -110,40 +41,6 @@ export interface Shipment {
   actualDelivery?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-// ============================================
-// Seller Shop Types
-// ============================================
-
-export interface SellerShop {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  logo?: string;
-  banner?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  rating?: number;
-  reviewCount?: number;
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// ============================================
-// Seller Alert Types
-// ============================================
-
-export interface SellerAlert {
-  id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-  title: string;
-  message: string;
-  isRead: boolean;
-  createdAt: string;
 }
 
 // ============================================

@@ -4,50 +4,14 @@
  */
 
 import { apiClient } from "../client";
-
-export interface RazorpayOrderData {
-  amount: number;
-  currency?: string;
-  receipt?: string;
-  notes?: Record<string, string>;
-}
-
-export interface RazorpayOrderResponse {
-  id: string;
-  entity: string;
-  amount: number;
-  currency: string;
-  receipt: string;
-  status: string;
-}
-
-export interface RazorpayVerifyData {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-  orderId: string;
-}
-
-export interface PayPalOrderData {
-  amount: number;
-  currency?: string;
-  orderId: string;
-}
-
-export interface PayPalOrderResponse {
-  id: string;
-  status: string;
-  links: Array<{
-    href: string;
-    rel: string;
-    method: string;
-  }>;
-}
-
-export interface PayPalCaptureData {
-  paypalOrderId: string;
-  orderId: string;
-}
+import type {
+  RazorpayOrderData,
+  RazorpayOrderResponse,
+  RazorpayVerifyData,
+  PayPalOrderData,
+  PayPalOrderResponse,
+  PayPalCaptureData
+} from "@/types/shared";
 
 export class PaymentService {
   // ============================================

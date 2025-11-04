@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
 
 export default function NotFound() {
   const { mode } = useModernTheme();

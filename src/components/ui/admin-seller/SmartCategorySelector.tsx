@@ -6,7 +6,7 @@ import { UnifiedButton } from "@/components/ui/unified/Button";
 import { UnifiedInput } from "@/components/ui/unified/Input";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { UnifiedCard } from "@/components/ui/unified/Card";
-import type { Category, CategorySEO } from "@/types";
+import type { Category, CategorySEO } from "@/types/shared";
 import { api } from "@/lib/api";
 
 export interface SelectedCategory {

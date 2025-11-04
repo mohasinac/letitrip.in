@@ -13,7 +13,7 @@ import {
   UserCheck,
   Ban,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { ModernDataTable } from "@/components/ui/admin-seller/ModernDataTable";

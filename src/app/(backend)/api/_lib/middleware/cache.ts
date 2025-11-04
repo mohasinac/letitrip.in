@@ -15,7 +15,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import cacheService from '@/_lib/utils/cache';
+import cacheService from '../utils/cache';
 
 export interface CacheOptions {
   /**

@@ -11,7 +11,7 @@
  */
 
 import { productModel, ProductWithVersion } from '../models/product.model';
-import { Product } from '@/types';
+import { Product } from "@/types/shared";
 import { 
   ValidationError, 
   AuthorizationError, 

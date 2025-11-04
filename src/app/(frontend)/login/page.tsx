@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/app/(backend)/api/_lib/database/config";
 import { apiClient } from "@/lib/api/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { Eye, EyeOff, Phone, Mail, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";

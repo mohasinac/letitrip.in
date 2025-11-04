@@ -13,9 +13,9 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 
 interface CategoryWithMeta extends Category {
   productCount?: number;

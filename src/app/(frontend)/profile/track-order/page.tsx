@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import {
   Search,
   Package,
@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { Order } from "@/types/order";
 import { getOrderStatusInfo } from "@/lib/order/order-utils";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCurrency } from '@/lib/contexts/CurrencyContext";
 import toast from "react-hot-toast";
 
 export default function TrackOrderPage() {

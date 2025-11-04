@@ -1,5 +1,5 @@
-import { CartItem } from "@/contexts/CartContext";
-import { OrderItem, OrderSummary } from "@/types/order";
+import { CartItem } from "@/lib/contexts/CartContext";
+import { OrderItem, OrderSummary } from "@/types/shared/order";
 
 /**
  * Generate a unique order number

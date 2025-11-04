@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { Edit, Trash2, Eye, EyeOff, Search, Database } from "lucide-react";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 
 interface CategoryListViewProps {
   categories: Category[];

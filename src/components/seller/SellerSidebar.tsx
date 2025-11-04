@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
 import { SELLER_ROUTES } from "@/constants/routes";
 
 interface SellerSidebarProps {

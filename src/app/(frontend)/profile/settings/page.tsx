@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
+import { useCurrency } from '@/lib/contexts/CurrencyContext";
 import {
   Settings,
   Globe,

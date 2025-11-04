@@ -2,7 +2,7 @@
 import React from "react";
 import { ArrowRight, TrendingUp, Package } from "lucide-react";
 import NextLink from "next/link";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 import {
   UnifiedCard,
   CardMedia,

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiGet } from "@/lib/api/seller";
 import { useSearchParams } from "next/navigation";
 

@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import rateLimitService, { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
+import rateLimitService, { rateLimitConfigs } from '../utils/rate-limiter';
 
 // Import the RateLimitConfig type
 type RateLimitConfig = {

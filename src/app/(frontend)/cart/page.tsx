@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from '@/lib/contexts/CartContext";
+import { useWishlist } from '@/lib/contexts/WishlistContext";
+import { useCurrency } from '@/lib/contexts/CurrencyContext";
 import Link from "next/link";
 import Image from "next/image";
 import {

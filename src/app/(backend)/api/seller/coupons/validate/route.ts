@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminDb } from '../../../_lib/database/admin';
 import { DiscountCalculator, CartItem } from '@/lib/utils/discountCalculator';
-import { SellerCoupon } from '@/types';
+import { SellerCoupon } from "@/types/shared";
 import {
   AuthorizationError,
   ValidationError,

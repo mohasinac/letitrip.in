@@ -13,7 +13,7 @@
  */
 
 import { getAdminDb } from '../database/admin';
-import { Review } from '@/types';
+import { Review } from "@/types/shared";
 import { ConflictError, NotFoundError, ValidationError } from '../middleware/error-handler';
 
 // Extend Review with version for concurrency control

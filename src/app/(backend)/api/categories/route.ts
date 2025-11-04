@@ -20,10 +20,10 @@ import {
 } from '../_lib/middleware/error-handler';
 
 // Import performance middleware
-import { withCache } from '@/_lib/middleware/cache.middleware';
-import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
-import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
-import cacheService, { CacheKeys, CacheTTL } from '@/_lib/utils/cache';
+import { withCache } from '../_lib/middleware/cache';
+import { withRateLimit } from '../_lib/middleware/rate-limit';
+import { rateLimitConfigs } from '../_lib/utils/rate-limiter';
+import cacheService, { CacheKeys, CacheTTL } from '../_lib/utils/cache';
 
 /**
  * GET /api/categories (OPTIMIZED)

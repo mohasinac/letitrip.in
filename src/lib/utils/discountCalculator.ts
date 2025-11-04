@@ -3,7 +3,7 @@
  * Supports Buy X Get Y, Tiered Discounts, Bundle Discounts, etc.
  */
 
-import { SellerCoupon } from "@/types";
+import { SellerCoupon } from "@/types/shared";
 
 export interface CartItem {
   productId: string;

@@ -23,7 +23,7 @@ import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { apiClient } from "@/lib/api/client";
 import { apiGet, apiDelete, apiPost } from "@/lib/api/seller";
 import type { TableColumn } from "@/components/ui/admin-seller/ModernDataTable";
-import type { SellerCoupon } from "@/types";
+import type { SellerCoupon } from "@/types/shared";
 
 interface CouponStats {
   total: number;

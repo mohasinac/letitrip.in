@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Search, Tag, ToggleRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/seller";
 import { apiClient } from "@/lib/api/client";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { ModernDataTable } from "@/components/ui/admin-seller/ModernDataTable";
 import { UnifiedAlert } from "@/components/ui/unified";
-import type { SellerSale } from "@/types";
+import type { SellerSale } from "@/types/shared";
 
 interface SaleStats {
   total: number;

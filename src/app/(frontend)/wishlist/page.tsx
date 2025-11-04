@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { useCart } from "@/contexts/CartContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { useWishlist } from '@/lib/contexts/WishlistContext";
+import { useCart } from '@/lib/contexts/CartContext";
+import { useCurrency } from '@/lib/contexts/CurrencyContext";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ShoppingCart, Trash2, ArrowLeft } from "lucide-react";

@@ -18,7 +18,7 @@ import {
   DollarSign,
   Clock,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
 import {

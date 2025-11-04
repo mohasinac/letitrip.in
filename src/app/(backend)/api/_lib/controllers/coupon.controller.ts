@@ -4,7 +4,7 @@
  */
 
 import { couponModel } from '../models/coupon.model';
-import { Coupon } from '@/types';
+import { Coupon } from "@/types/shared";
 import { AuthorizationError, ValidationError, NotFoundError } from '../middleware/error-handler';
 
 interface UserContext {

@@ -13,7 +13,7 @@
  */
 
 import { userModel, UserWithVersion } from '../models/user.model';
-import { User } from '@/types';
+import { User } from "@/types/shared";
 import { 
   ValidationError, 
   AuthorizationError, 

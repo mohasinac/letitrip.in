@@ -18,7 +18,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import { apiGet } from "@/lib/api/seller";
 import { UnifiedCard } from "@/components/ui/unified/Card";

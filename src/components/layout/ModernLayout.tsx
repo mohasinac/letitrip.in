@@ -17,11 +17,11 @@ import {
   ShieldCheck,
   Store,
 } from "lucide-react";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
+import { useCurrency } from '@/lib/contexts/CurrencyContext";
+import { useCart } from '@/lib/contexts/CartContext";
+import { useWishlist } from '@/lib/contexts/WishlistContext";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";

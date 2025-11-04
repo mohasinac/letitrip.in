@@ -17,7 +17,7 @@ import {
   Package,
   Loader2,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiGet, apiPost } from "@/lib/api/seller";
 import { apiClient } from "@/lib/api/client";
 import Link from "next/link";

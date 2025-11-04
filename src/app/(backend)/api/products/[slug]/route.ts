@@ -13,10 +13,10 @@ import {
   AuthorizationError, 
   NotFoundError 
 } from '../../_lib/middleware/error-handler';
-import { withCache } from '@/_lib/middleware/cache.middleware';
-import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
-import { CacheKeys, CacheTTL, cacheService } from '@/_lib/utils/cache';
-import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
+import { withCache } from '../../_lib/middleware/cache';
+import { withRateLimit } from '../../_lib/middleware/rate-limit';
+import { CacheKeys, CacheTTL, cacheService } from '../../_lib/utils/cache';
+import { rateLimitConfigs } from '../../_lib/utils/rate-limiter';
 
 /**
  * GET /api/products/[slug]

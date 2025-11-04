@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiGet, apiPost, uploadWithAuth } from "@/lib/api/seller";
 import BasicInfoPricingStep from "@/components/seller/products/BasicInfoPricingStep";
 import MediaUploadStep from "@/components/seller/products/MediaUploadStep";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { auth } from "@/app/(backend)/api/_lib/database/config";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";

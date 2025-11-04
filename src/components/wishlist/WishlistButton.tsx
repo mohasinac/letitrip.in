@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Heart } from "lucide-react";
-import { useWishlist } from "@/contexts/WishlistContext";
+import { useWishlist } from '@/lib/contexts/WishlistContext";
 
 interface WishlistButtonProps {
   product: {

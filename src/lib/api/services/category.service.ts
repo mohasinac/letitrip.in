@@ -4,31 +4,7 @@
  */
 
 import { apiClient } from "../client";
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  icon?: string;
-  parentId?: string;
-  level: number;
-  children?: Category[];
-  productCount?: number;
-  sortOrder: number;
-  isActive: boolean;
-  isFeatured?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CategoryFilters {
-  parentId?: string;
-  level?: number;
-  featured?: boolean;
-  active?: boolean;
-}
+import type { Category, CategoryFilters } from "@/types/shared";
 
 export class CategoryService {
   /**

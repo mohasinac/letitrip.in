@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 
 /**
  * Category validation schemas

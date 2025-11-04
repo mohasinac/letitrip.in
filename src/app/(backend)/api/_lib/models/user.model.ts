@@ -13,7 +13,7 @@
  */
 
 import { getAdminDb, getAdminAuth } from '../database/admin';
-import { User } from '@/types';
+import { User } from "@/types/shared";
 import { ConflictError, NotFoundError, InternalServerError } from '../middleware/error-handler';
 
 // Extend User with version for concurrency control

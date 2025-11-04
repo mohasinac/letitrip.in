@@ -12,7 +12,7 @@ import {
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
 import { SELLER_ROUTES } from "@/constants/routes";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiGet, apiPost } from "@/lib/api/seller";
 import { useRouter } from "next/navigation";
 import {

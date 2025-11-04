@@ -8,7 +8,7 @@ import {
   categoryFormSchema,
   generateSlugFromName,
 } from "@/lib/validations/category";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 import ImageUploader from "./ImageUploader";
 import {
   IconPreview,

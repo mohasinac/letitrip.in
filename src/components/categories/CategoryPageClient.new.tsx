@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import NextLink from "next/link";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 import {
   useBreadcrumbTracker,
   buildCategoryBreadcrumb,

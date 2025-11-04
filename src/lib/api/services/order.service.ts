@@ -4,69 +4,24 @@
  */
 
 import { apiClient } from "../client";
+import type {
+  Order,
+  OrderItem,
+  OrderAddress,
+  CreateOrderInput,
+  OrderFilters
+} from "@/types/shared";
 
-export interface OrderItem {
-  productId: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  sellerId: string;
-}
-
-export interface ShippingAddress {
-  name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-}
-
-export interface Order {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  userName?: string;
-  items: OrderItem[];
-  subtotal: number;
-  tax: number;
-  shippingFee: number;
-  total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethod: string;
-  shippingAddress: ShippingAddress;
-  trackingNumber?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateOrderData {
-  items: OrderItem[];
-  shippingAddress: ShippingAddress;
-  paymentMethod: string;
-  notes?: string;
-}
-
-export interface OrderFilters {
-  status?: Order['status'];
-  paymentStatus?: Order['paymentStatus'];
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  limit?: number;
-}
-
+// Local response type for this service
 export interface OrderListResponse {
   orders: Order[];
   total: number;
   page: number;
   limit: number;
 }
+
+// Re-export for convenience
+export type { Order, OrderItem, OrderAddress as ShippingAddress, CreateOrderInput as CreateOrderData };
 
 export class OrderService {
   /**
@@ -111,7 +66,7 @@ export class OrderService {
   /**
    * Create new order
    */
-  static async createOrder(orderData: CreateOrderData): Promise<Order> {
+  static async createOrder(orderData: CreateOrderInput): Promise<Order> {
     try {
       const response = await apiClient.post<Order>("/api/orders", orderData);
       return response;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Address } from "@/types";
+import { Address } from "@/types/shared";
 import {
   MapPin,
   Plus,

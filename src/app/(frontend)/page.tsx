@@ -3,7 +3,7 @@ import ModernFeaturedCategories from "@/components/home/ModernFeaturedCategories
 import ModernWhyChooseUs from "@/components/home/ModernWhyChooseUs";
 import ModernCustomerReviews from "@/components/home/ModernCustomerReviews";
 import { getAdminDb } from "@/app/(backend)/api/_lib/database/admin";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 
 interface CategoryWithCount extends Category {
   productCount: number;

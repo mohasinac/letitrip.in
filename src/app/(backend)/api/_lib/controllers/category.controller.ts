@@ -18,7 +18,7 @@
  */
 
 import { categoryModel, CategoryWithVersion } from '../models/category.model';
-import { CategoryTreeNode } from '@/types';
+import { CategoryTreeNode } from "@/types/shared";
 import {
   AuthorizationError,
   ValidationError,

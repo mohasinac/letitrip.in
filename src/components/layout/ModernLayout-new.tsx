@@ -10,8 +10,8 @@ import {
   Globe,
   ChevronDown,
 } from "lucide-react";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";

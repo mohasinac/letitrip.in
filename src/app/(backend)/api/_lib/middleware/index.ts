@@ -25,9 +25,8 @@ export {
   withLogging,
 } from './logger';
 
-// Rate Limiter
-export {
-  checkRateLimit,
-  withRateLimit,
-  RATE_LIMITS,
-} from './rate-limiter';
+// Cache Middleware (HOC style)
+export { withCache, generateUrlCacheKey, skipIfAuthenticated, cacheOnlyGet } from './cache';
+
+// Rate Limit Middleware (HOC style)
+export { withRateLimit, getRateLimitConfigByRole, skipForAdmin, createRateLimitResponse } from './rate-limit';

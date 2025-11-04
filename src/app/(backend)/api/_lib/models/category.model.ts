@@ -12,7 +12,7 @@
  */
 
 import { getAdminDb } from '../database/admin';
-import { Category, CategoryTreeNode } from '@/types';
+import { Category, CategoryTreeNode } from "@/types/shared";
 import { ConflictError, NotFoundError, ValidationError } from '../middleware/error-handler';
 import admin from 'firebase-admin';
 

@@ -18,7 +18,7 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import { apiGet, apiDelete } from "@/lib/api/seller";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedModal } from "@/components/ui/unified/Modal";
 import { UnifiedAlert } from "@/components/ui/unified/Alert";
-import type { SellerProduct } from "@/types";
+import type { SellerProduct } from "@/types/shared";
 import { getProductImageUrl } from "@/utils/product";
 
 // Placeholder image

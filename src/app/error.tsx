@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
+import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
 
 export default function Error({
   error,

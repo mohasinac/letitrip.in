@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/lib/contexts/AuthContext";
 import { apiClient } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { UnifiedAlert } from "@/components/ui/unified";
 import { UnifiedButton } from "@/components/ui/unified/Button";
 import { SimpleTabs } from "@/components/ui/unified/Tabs";
-import type { Category } from "@/types";
+import type { Category } from "@/types/shared";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
 import CategoryTreeView from "@/components/admin/categories/CategoryTreeView";
 import CategoryListView from "@/components/admin/categories/CategoryListView";

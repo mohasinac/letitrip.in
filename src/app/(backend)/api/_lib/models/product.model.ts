@@ -12,7 +12,7 @@
  */
 
 import { getAdminDb } from '../database/admin';
-import { Product } from '@/types';
+import { Product } from "@/types/shared";
 import { ConflictError, NotFoundError, InternalServerError } from '../middleware/error-handler';
 
 // Extend Product with version for concurrency control
