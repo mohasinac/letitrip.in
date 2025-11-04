@@ -1,10 +1,11 @@
-# _lib Directory Consolidation Plan
+# \_lib Directory Consolidation Plan
 
 ## Current State
 
 Your project has TWO separate `_lib` directories:
 
 ### 1. Root Level: `src/_lib/` (5 files)
+
 ```
 src/_lib/
 ├── middleware/
@@ -19,6 +20,7 @@ src/_lib/
 **Pattern**: Higher-Order Component (HOC) style middleware
 **Usage**: Wraps route handlers with functionality
 **Example**:
+
 ```typescript
 export const GET = withCache(
   withRateLimit(handler, { config: RATE_LIMITS.READ }),
@@ -27,6 +29,7 @@ export const GET = withCache(
 ```
 
 ### 2. Backend API: `src/app/(backend)/api/_lib/` (65+ files)
+
 ```
 src/app/(backend)/api/_lib/
 ├── auth/                    - Authentication & authorization (7 files)
@@ -49,10 +52,11 @@ src/app/(backend)/api/_lib/
 **Pattern**: Direct function calls and error classes
 **Usage**: Import and call directly within handlers
 **Example**:
+
 ```typescript
 const handler = async (req) => {
   const result = checkRateLimit(key, RATE_LIMITS.READ);
-  if (!result.allowed) throw new RateLimitError('Too many requests');
+  if (!result.allowed) throw new RateLimitError("Too many requests");
   // ... handler logic
 };
 ```
@@ -60,6 +64,7 @@ const handler = async (req) => {
 ## The Problem
 
 ### Duplication
+
 - **Rate limiting**: Two different implementations
   - `src/_lib/utils/rate-limiter.ts` - Full-featured with role-based configs
   - `src/app/(backend)/api/_lib/middleware/rate-limiter.ts` - Simpler version
@@ -67,54 +72,63 @@ const handler = async (req) => {
 - **Confusion**: Unclear which should be used where
 
 ### Current Usage
+
 Based on imports found in the codebase:
 
 **Using `src/_lib/` (Root)**:
+
 - `src/app/(backend)/api/search/route.ts`
 - `src/app/(backend)/api/products/route.ts`
 - `src/app/(backend)/api/products/[slug]/route.ts`
 - `src/app/(backend)/api/categories/route.ts`
 
 **Using `src/app/(backend)/api/_lib/` (Backend)**:
-- Most other API routes use the direct imports from backend _lib
+
+- Most other API routes use the direct imports from backend \_lib
 
 ## Recommended Consolidation Strategy
 
 ### Option 1: Merge Everything into Backend `_lib` ✅ RECOMMENDED
 
 **Rationale**:
+
 - Backend `_lib` is more comprehensive (65+ files vs 5 files)
 - Follows Next.js conventions better (inside `(backend)` route group)
 - Enforces backend-only code isolation
 - Single source of truth for backend utilities
 
 **Actions**:
+
 1. **Move HOC middleware** from `src/_lib/middleware/` to `src/app/(backend)/api/_lib/middleware/`
+
    - Move `cache.middleware.ts` → `_lib/middleware/cache.ts`
    - Move `rate-limit.middleware.ts` → `_lib/middleware/rate-limit.ts`
    - Delete duplicate `rate-limiter.ts` (keep the simpler one, import from utils)
 
 2. **Move utilities** from `src/_lib/utils/` to `src/app/(backend)/api/_lib/utils/`
+
    - Move `cache.ts` (keep as is)
    - Move `rate-limiter.ts` (keep as is)
    - Move `image-optimizer.ts` (keep as is)
 
 3. **Update imports** in API routes:
+
    ```typescript
    // FROM:
-   import { withCache } from '@/_lib/middleware/cache.middleware';
-   import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
-   import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
-   import cacheService from '@/_lib/utils/cache';
-   
+   import { withCache } from "@/_lib/middleware/cache.middleware";
+   import { withRateLimit } from "@/_lib/middleware/rate-limit.middleware";
+   import { rateLimitConfigs } from "@/_lib/utils/rate-limiter";
+   import cacheService from "@/_lib/utils/cache";
+
    // TO:
-   import { withCache } from '../_lib/middleware/cache';
-   import { withRateLimit } from '../_lib/middleware/rate-limit';
-   import { rateLimitConfigs } from '../_lib/utils/rate-limiter';
-   import cacheService from '../_lib/utils/cache';
+   import { withCache } from "../_lib/middleware/cache";
+   import { withRateLimit } from "../_lib/middleware/rate-limit";
+   import { rateLimitConfigs } from "../_lib/utils/rate-limiter";
+   import cacheService from "../_lib/utils/cache";
    ```
 
 4. **Delete empty directory**:
+
    ```powershell
    Remove-Item -Path "d:\proj\justforview.in\src\_lib" -Recurse -Force
    ```
@@ -124,7 +138,7 @@ Based on imports found in the codebase:
    {
      "paths": {
        "@/app/*": ["./src/app/*"],
-       "@/_lib/*": ["./src/app/(backend)/api/_lib/*"]  // Update this
+       "@/_lib/*": ["./src/app/(backend)/api/_lib/*"] // Update this
      }
    }
    ```
@@ -132,10 +146,12 @@ Based on imports found in the codebase:
 ### Option 2: Keep Root `_lib` for Shared Utilities
 
 **Rationale**:
+
 - Keep middleware wrappers at root level as they could be used by non-API routes
 - Keep backend-specific code in backend `_lib`
 
 **Actions**:
+
 1. Delete duplicate `src/app/(backend)/api/_lib/middleware/rate-limiter.ts`
 2. Keep `src/_lib/` for middleware wrappers and shared utilities
 3. No import changes needed
@@ -145,6 +161,7 @@ Based on imports found in the codebase:
 ## Implementation Steps (Option 1 - Recommended)
 
 ### Step 1: Move Files
+
 ```powershell
 # Create target directories if needed
 New-Item -ItemType Directory -Force -Path "d:\proj\justforview.in\src\app\(backend)\api\_lib\middleware"
@@ -164,30 +181,37 @@ Remove-Item "d:\proj\justforview.in\src\app\(backend)\api\_lib\middleware\rate-l
 ```
 
 ### Step 2: Update Imports in API Routes
+
 Files to update:
+
 - `src/app/(backend)/api/search/route.ts`
 - `src/app/(backend)/api/products/route.ts`
 - `src/app/(backend)/api/products/[slug]/route.ts`
 - `src/app/(backend)/api/categories/route.ts`
 
 ### Step 3: Update Middleware Index
+
 Update `src/app/(backend)/api/_lib/middleware/index.ts`:
+
 ```typescript
 // Export all middleware
-export * from './error-handler';
-export * from './logger';
-export * from './cache';
-export * from './rate-limit';
+export * from "./error-handler";
+export * from "./logger";
+export * from "./cache";
+export * from "./rate-limit";
 ```
 
 ### Step 4: Clean Up
+
 ```powershell
 # Remove empty root _lib directory
 Remove-Item -Path "d:\proj\justforview.in\src\_lib" -Recurse -Force
 ```
 
 ### Step 5: Test
+
 Run tests to ensure everything still works:
+
 ```powershell
 npm run build
 npm run test
@@ -205,11 +229,13 @@ npm run test
 ## File Count Comparison
 
 **Before**:
+
 - Root `_lib`: 5 files
 - Backend `_lib`: 65 files
 - **Total: 70 files in 2 locations** ❌
 
 **After**:
+
 - Root `_lib`: ~~DELETED~~
 - Backend `_lib`: 69 files (consolidated)
 - **Total: 69 files in 1 location** ✅
