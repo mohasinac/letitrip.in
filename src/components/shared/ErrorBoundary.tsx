@@ -1,10 +1,11 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { errorLogger } from "@/lib/utils/errorLogger";
+
 import { PrimaryButton, OutlineButton } from "@/components/ui/unified";
 import { UnifiedCard, CardContent } from "@/components/ui/unified";
 import { UnifiedAlert } from "@/components/ui/unified";
+import { errorLoggingService } from "@/lib/api/services/error-logging.service";
 
 interface Props {
   children: ReactNode;
@@ -41,11 +42,15 @@ class ErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // Log the error using our error logger
-    errorLogger.logError(error, errorInfo, {
-      source: "ErrorBoundary",
-      componentStack: errorInfo.componentStack,
-    });
+    // Log the error using our error logging service
+    errorLoggingService
+      .logComponentError(error, errorInfo, {
+        boundaryName: this.constructor.name,
+      })
+      .catch((logError) => {
+        // Fail silently to avoid infinite loops
+        console.error("Failed to log error:", logError);
+      });
   }
 
   private handleReset = () => {

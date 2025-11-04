@@ -17,7 +17,7 @@ import {
   Package,
   Loader2,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiGet, apiPost } from "@/lib/api/seller";
 import { apiClient } from "@/lib/api/client";
 import Link from "next/link";
@@ -604,3 +604,4 @@ export default function Shipments({
     </div>
   );
 }
+

@@ -1,17 +1,11 @@
 /**
  * Enhanced Auth Hook
  * Provides convenient access to authentication state and storage methods
+ * Uses session-based authentication - no client-side Firebase
  */
 
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { useState, useCallback } from "react";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithCustomToken,
-} from "firebase/auth";
-import { auth as firebaseAuth } from "@/app/(backend)/api/_lib/database/config";
-import { authCookies } from "@/lib/auth/cookies";
 import toast from "react-hot-toast";
 
 export interface PhoneAuthCredentials {
@@ -110,6 +104,7 @@ export const useEnhancedAuth = (): AuthHookReturn => {
 
         const response = await fetch("/api/auth/send-otp", {
           method: "POST",
+          credentials: "include", // Include cookies for session
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phoneNumber: formattedPhone,
@@ -141,6 +136,7 @@ export const useEnhancedAuth = (): AuthHookReturn => {
 
       const response = await fetch("/api/auth/verify-otp", {
         method: "POST",
+        credentials: "include", // Include cookies for session
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           verificationId: credentials.verificationId,
@@ -155,10 +151,9 @@ export const useEnhancedAuth = (): AuthHookReturn => {
         throw new Error(data.error || "OTP verification failed");
       }
 
-      // Sign in with custom token if provided
-      if (data.data.customToken) {
-        await signInWithCustomToken(firebaseAuth, data.data.customToken);
-      }
+      // Session is created by backend
+      // Trigger auth context refresh
+      await auth.checkAuth();
 
       toast.success("Phone verification successful!");
     } catch (error: any) {
@@ -167,54 +162,19 @@ export const useEnhancedAuth = (): AuthHookReturn => {
     } finally {
       setEnhancedLoading(false);
     }
-  }, []);
+  }, [auth]);
 
-  // Google authentication
+  // Google authentication - TODO: Implement backend OAuth flow
   const loginWithGoogle = useCallback(async () => {
     try {
       setEnhancedLoading(true);
-
-      const provider = new GoogleAuthProvider();
-      provider.addScope("email");
-      provider.addScope("profile");
-
-      const result = await signInWithPopup(firebaseAuth, provider);
-      const firebaseUser = result.user;
-
-      // Check if user exists, create if not
-      const token = await firebaseUser.getIdToken();
-      const response = await fetch("/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        // User doesn't exist, create account
-        const userData = {
-          name:
-            firebaseUser.displayName ||
-            firebaseUser.email?.split("@")[0] ||
-            "User",
-          email: firebaseUser.email,
-          phone: firebaseUser.phoneNumber,
-          role: "user",
-          isOver18: true,
-        };
-
-        const registerResponse = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-
-        if (!registerResponse.ok) {
-          const errorData = await registerResponse.json();
-          throw new Error(errorData.error || "Failed to create account");
-        }
-      }
-
-      toast.success("Google login successful!");
+      
+      // TODO: Implement session-based Google OAuth
+      // This requires backend OAuth flow, not client-side Firebase
+      toast("Google login coming soon!", { icon: "ℹ️" });
+      
+      // For now, show that this needs backend implementation
+      throw new Error("Google OAuth needs backend implementation");
     } catch (error: any) {
       toast.error(error.message || "Google login failed");
       throw error;
@@ -223,18 +183,13 @@ export const useEnhancedAuth = (): AuthHookReturn => {
     }
   }, []);
 
-  // Get authentication token
+  // Get authentication token - sessions use HTTP-only cookies
   const getToken = useCallback(async (): Promise<string | null> => {
-    if (auth.user && auth.user.getIdToken) {
-      try {
-        return await auth.user.getIdToken();
-      } catch (error) {
-        console.error("Error getting token:", error);
-        return null;
-      }
-    }
-    return authCookies.getAuthToken() || null;
-  }, [auth.user]);
+    // With session-based auth, tokens are not accessible to client
+    // Sessions are managed via HTTP-only cookies automatically
+    console.warn("getToken() is deprecated with session-based auth. Sessions use HTTP-only cookies.");
+    return null;
+  }, []);
 
   return {
     ...auth,
@@ -279,3 +234,4 @@ export const useUserAuth = () => {
     canAccessProfile: auth.canAccess("user_profile"),
   };
 };
+

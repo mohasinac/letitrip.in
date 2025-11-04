@@ -1,6 +1,9 @@
 /**
  * Session-based Auth Client
  * Client-side utilities for session authentication
+ * 
+ * Uses backend session management from:
+ * src/app/(backend)/api/_lib/auth/session.ts
  */
 
 import { apiClient } from '@/lib/api/client';
@@ -40,7 +43,7 @@ export async function registerWithSession(
   name: string,
   email: string,
   password: string,
-  role?: 'user' | 'seller'
+  role?: 'admin' | 'seller' | 'user'
 ): Promise<SessionUser> {
   const response = await apiClient.post<{ user: SessionUser }>('/api/auth/register', {
     name,

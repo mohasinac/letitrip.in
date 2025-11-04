@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../_lib/database/config';
 import { getAdminDb } from '../../_lib/database/admin';
-import { createSession } from '@/lib/auth/session';
+import { createSession } from '../../_lib/auth/session';
 
 /**
  * POST /api/auth/login

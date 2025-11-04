@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { destroySession } from '@/lib/auth/session';
+import { destroySession } from '../../_lib/auth/session';
 
 /**
  * POST /api/auth/logout

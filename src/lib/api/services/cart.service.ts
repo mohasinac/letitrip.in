@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from "../client";
-import type { CartItem } from '@/lib/contexts/CartContext";
+import type { CartItem } from "@/contexts/CartContext";
 
 export interface CartData {
   items: CartItem[];

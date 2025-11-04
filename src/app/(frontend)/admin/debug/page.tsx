@@ -1,22 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from '@/lib/contexts/AuthContext";
-import { auth } from "@/app/(backend)/api/_lib/database/config";
+import { useAuth } from "@/contexts/SessionAuthContext";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { UnifiedBadge } from "@/components/ui/unified/Badge";
 import { apiClient } from "@/lib/api/client";
 
 interface DebugInfo {
-  firebaseAuth: boolean;
+  sessionAuth: boolean;
   currentUser: boolean;
   userEmail: string | null;
   userUID: string | null;
-  tokenAvailable: boolean;
-  tokenLength: number;
-  tokenPreview: string;
   userRole: string;
-  customClaims: any;
+  userPermissions: any;
   apiTests: {
     endpoint: string;
     status: number;
@@ -33,31 +29,21 @@ export default function AdminDebugPage() {
   const runDiagnostics = async () => {
     setTesting(true);
     const info: DebugInfo = {
-      firebaseAuth: !!auth,
-      currentUser: !!auth?.currentUser,
-      userEmail: auth?.currentUser?.email || null,
-      userUID: auth?.currentUser?.uid || null,
-      tokenAvailable: false,
-      tokenLength: 0,
-      tokenPreview: "",
-      userRole: "unknown",
-      customClaims: {},
+      sessionAuth: !!user,
+      currentUser: !!user,
+      userEmail: user?.email || null,
+      userUID: user?.uid || null,
+      userRole: user?.role || "unknown",
+      userPermissions: {
+        isAdmin: user?.role === "admin",
+        isSeller: user?.role === "seller",
+        isUser: user?.role === "user",
+      },
       apiTests: [],
     };
 
     try {
-      if (auth?.currentUser) {
-        const token = await auth.currentUser.getIdToken();
-        info.tokenAvailable = !!token;
-        info.tokenLength = token?.length || 0;
-        info.tokenPreview = token ? `${token.substring(0, 30)}...` : "None";
-
-        const tokenResult = await auth.currentUser.getIdTokenResult();
-        info.userRole = (tokenResult.claims.role as string) || "No role set";
-        info.customClaims = tokenResult.claims;
-      }
-
-      // Test API endpoints
+      // Test API endpoints - apiClient sends session cookies automatically
       const endpoints = [
         "/api/admin/orders/stats",
         "/api/admin/products/stats",
@@ -135,16 +121,16 @@ export default function AdminDebugPage() {
 
       {debugInfo && (
         <div className="space-y-6">
-          {/* Firebase Auth Status */}
+          {/* Session Auth Status */}
           <UnifiedCard className="p-6">
-            <h2 className="text-xl font-bold mb-4">Firebase Authentication</h2>
+            <h2 className="text-xl font-bold mb-4">Session Authentication</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-textSecondary">
-                  Firebase Auth Initialized
+                  Session Auth Active
                 </p>
                 <p className="font-semibold">
-                  {debugInfo.firebaseAuth ? "✅ Yes" : "❌ No"}
+                  {debugInfo.sessionAuth ? "✅ Yes" : "❌ No"}
                 </p>
               </div>
               <div>
@@ -166,34 +152,34 @@ export default function AdminDebugPage() {
             </div>
           </UnifiedCard>
 
-          {/* Token Status */}
+          {/* Session Info */}
           <UnifiedCard className="p-6">
-            <h2 className="text-xl font-bold mb-4">Token Information</h2>
+            <h2 className="text-xl font-bold mb-4">Session Information</h2>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-textSecondary">Token Available</p>
+                <p className="text-sm text-textSecondary">
+                  Authentication Method
+                </p>
+                <p className="font-semibold">✅ HTTP-Only Session Cookies</p>
+              </div>
+              <div>
+                <p className="text-sm text-textSecondary">Token Storage</p>
                 <p className="font-semibold">
-                  {debugInfo.tokenAvailable ? "✅ Yes" : "❌ No"}
+                  🔒 Server-Side (Not Accessible to Client)
                 </p>
               </div>
               <div>
-                <p className="text-sm text-textSecondary">Token Length</p>
-                <p className="font-semibold">
-                  {debugInfo.tokenLength} characters
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-textSecondary">Token Preview</p>
+                <p className="text-sm text-textSecondary">Security</p>
                 <p className="font-mono text-xs bg-surface p-2 rounded">
-                  {debugInfo.tokenPreview}
+                  XSS Protected - Tokens not accessible via JavaScript
                 </p>
               </div>
             </div>
           </UnifiedCard>
 
-          {/* User Role & Claims */}
+          {/* User Role & Permissions */}
           <UnifiedCard className="p-6">
-            <h2 className="text-xl font-bold mb-4">User Role & Claims</h2>
+            <h2 className="text-xl font-bold mb-4">User Role & Permissions</h2>
             <div className="space-y-3">
               <div>
                 <p className="text-sm text-textSecondary">User Role</p>
@@ -206,9 +192,9 @@ export default function AdminDebugPage() {
                 </UnifiedBadge>
               </div>
               <div>
-                <p className="text-sm text-textSecondary mb-2">Custom Claims</p>
+                <p className="text-sm text-textSecondary mb-2">Permissions</p>
                 <pre className="bg-surface p-4 rounded text-xs overflow-auto">
-                  {JSON.stringify(debugInfo.customClaims, null, 2)}
+                  {JSON.stringify(debugInfo.userPermissions, null, 2)}
                 </pre>
               </div>
             </div>

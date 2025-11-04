@@ -18,7 +18,7 @@ import {
   DollarSign,
   Clock,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
 import {
@@ -584,3 +584,4 @@ export function OrdersList({
     </div>
   );
 }
+

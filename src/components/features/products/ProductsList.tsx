@@ -18,7 +18,7 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import { apiGet, apiDelete } from "@/lib/api/seller";
 import { useRouter } from "next/navigation";
@@ -736,3 +736,4 @@ export function ProductsList({
     </div>
   );
 }
+

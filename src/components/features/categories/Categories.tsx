@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { UnifiedAlert } from "@/components/ui/unified";
@@ -275,3 +275,4 @@ export default function Categories({
     </div>
   );
 }
+

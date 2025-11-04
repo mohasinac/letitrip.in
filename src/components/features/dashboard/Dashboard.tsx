@@ -18,7 +18,7 @@ import {
   Store,
   CheckCircle,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import { apiGet } from "@/lib/api/seller";
 import { UnifiedCard } from "@/components/ui/unified/Card";
@@ -510,3 +510,4 @@ export function Dashboard({
     </div>
   );
 }
+

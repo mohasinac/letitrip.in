@@ -23,6 +23,7 @@ import { ConsentService } from "./services/consent.service";
 import { ContactService } from "./services/contact.service";
 import { HeroBannerService } from "./services/hero-banner.service";
 import { ContentService } from "./services/content.service";
+import { errorLoggingService } from "./services/error-logging.service";
 
 // Export API Client
 export { apiClient } from "./client";
@@ -48,6 +49,7 @@ export { ConsentService } from "./services/consent.service";
 export { ContactService } from "./services/contact.service";
 export { HeroBannerService } from "./services/hero-banner.service";
 export { ContentService } from "./services/content.service";
+export { errorLoggingService } from "./services/error-logging.service";
 
 // Export types from client
 export type { ApiResponse, ApiClientConfig } from "./client";
@@ -164,6 +166,10 @@ export type {
   CreateContentPageData,
   UpdateContentPageData
 } from "./services/content.service";
+export type {
+  ErrorLogEntry,
+  LogErrorOptions
+} from "./services/error-logging.service";
 
 // Convenience object for accessing all services
 export const api = {
@@ -187,4 +193,5 @@ export const api = {
   contact: ContactService,
   heroBanner: HeroBannerService,
   content: ContentService,
+  errorLogging: errorLoggingService,
 } as const;

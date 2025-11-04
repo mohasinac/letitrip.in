@@ -9,7 +9,7 @@ import {
   ValidationError,
   ConflictError,
 } from '../../_lib/middleware/error-handler';
-import { createSession } from '@/lib/auth/session';
+import { createSession } from '../../_lib/auth/session';
 
 /**
  * POST /api/auth/register

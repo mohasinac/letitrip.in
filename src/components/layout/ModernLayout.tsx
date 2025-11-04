@@ -17,17 +17,22 @@ import {
   ShieldCheck,
   Store,
 } from "lucide-react";
-import { useModernTheme } from '@/lib/contexts/ModernThemeContext";
-import { useAuth } from '@/lib/contexts/AuthContext";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
-import { useCart } from '@/lib/contexts/CartContext";
-import { useWishlist } from '@/lib/contexts/WishlistContext";
+
+import { useAuth } from "@/contexts/SessionAuthContext";
+
 import Link from "next/link";
 import ClientOnly from "@/components/shared/ClientOnly";
 import UnifiedSidebar from "@/components/layout/UnifiedSidebar";
 import { BottomNav } from "@/components/ui/navigation/BottomNav";
 import { usePathname } from "next/navigation";
 import FloatingCart from "@/components/cart/FloatingCart";
+
+import {
+  useCart,
+  useWishlist,
+  useCurrency,
+  useModernTheme,
+} from "@/lib/contexts";
 
 interface ModernLayoutProps {
   children: React.ReactNode;

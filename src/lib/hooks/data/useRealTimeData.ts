@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 
 export interface UseRealTimeDataOptions {
   enabled?: boolean;
@@ -386,3 +386,4 @@ export function useRealTimeStats(role: "admin" | "seller") {
     interval: 30000, // 30 seconds
   });
 }
+

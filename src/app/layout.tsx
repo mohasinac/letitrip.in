@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./modern-globals.css";
-import { AuthProvider } from '@/lib/contexts/AuthContext";
-import { ModernThemeProvider } from '@/lib/contexts/ModernThemeContext";
-import { BreadcrumbProvider } from '@/lib/contexts/BreadcrumbContext";
-import { CurrencyProvider } from '@/lib/contexts/CurrencyContext";
-import { CartProvider } from '@/lib/contexts/CartContext";
-import { WishlistProvider } from '@/lib/contexts/WishlistContext";
+import { SessionAuthProvider } from "@/contexts/SessionAuthContext";
+import { ModernThemeProvider } from "@/lib/contexts/ModernThemeContext";
+import { BreadcrumbProvider } from "@/lib/contexts/BreadcrumbContext";
+import { CurrencyProvider } from "@/lib/contexts/CurrencyContext";
+import { CartProvider } from "@/lib/contexts/CartContext";
+import { WishlistProvider } from "@/lib/contexts/WishlistContext";
 import ModernLayout from "@/components/layout/ModernLayout";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
 import { Toaster } from "react-hot-toast";
-
-// Import debug utilities in development
-if (process.env.NODE_ENV === "development") {
-  import("@/lib/debug/auth-debug");
-}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -173,7 +168,7 @@ export default function RootLayout({
             "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <AuthProvider>
+        <SessionAuthProvider>
           <ModernThemeProvider>
             <BreadcrumbProvider>
               <CurrencyProvider>
@@ -216,7 +211,7 @@ export default function RootLayout({
               }}
             />
           </ModernThemeProvider>
-        </AuthProvider>
+        </SessionAuthProvider>
       </body>
     </html>
   );

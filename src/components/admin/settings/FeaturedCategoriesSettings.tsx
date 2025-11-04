@@ -13,7 +13,7 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types/shared";
 
@@ -499,3 +499,4 @@ function CategoryItem({
     </div>
   );
 }
+

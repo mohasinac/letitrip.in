@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '../../_lib/auth/session';
 import { getAdminDb } from '../../_lib/database/admin';
 
 /**

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RoleGuard from "@/components/features/auth/RoleGuard";
 import SettingsLayout from "@/components/admin/settings/SettingsLayout";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import type { Category } from "@/types/shared";
 import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
@@ -508,3 +508,4 @@ export default function FeaturedCategoriesPage() {
     </RoleGuard>
   );
 }
+

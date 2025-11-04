@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CartService, CartData } from "@/lib/api";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import type { CartItem } from '@/lib/contexts/CartContext";
 
 export function useApiCart() {
@@ -112,3 +112,4 @@ export function useApiCart() {
     refetch: fetchCart,
   };
 }
+

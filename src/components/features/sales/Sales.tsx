@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Search, Tag, ToggleRight } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiGet, apiPost, apiDelete } from "@/lib/api/seller";
 import { apiClient } from "@/lib/api/client";
 import Link from "next/link";
@@ -494,3 +494,4 @@ export default function Sales({
     </div>
   );
 }
+

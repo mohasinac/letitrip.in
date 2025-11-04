@@ -13,7 +13,7 @@ import {
   UserCheck,
   Ban,
 } from "lucide-react";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { apiClient } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/admin-seller/PageHeader";
 import { ModernDataTable } from "@/components/ui/admin-seller/ModernDataTable";
@@ -578,3 +578,4 @@ export default function Users({
     </div>
   );
 }
+

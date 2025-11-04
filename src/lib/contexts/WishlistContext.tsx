@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { WishlistService } from "@/lib/api/services/wishlist.service";
 
 export interface WishlistItem {
@@ -245,3 +245,4 @@ export const useWishlist = () => {
   }
   return context;
 };
+

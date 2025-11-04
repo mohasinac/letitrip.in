@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from "../client";
-import type { WishlistItem } from '@/lib/contexts/WishlistContext";
+import type { WishlistItem } from "@/contexts/WishlistContext";
 
 export interface WishlistData {
   items: WishlistItem[];

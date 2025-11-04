@@ -1,8 +1,8 @@
 "use client";
 
 import { X, ShoppingBag, Trash2, Heart } from "lucide-react";
-import { useCart } from '@/lib/contexts/CartContext";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect } from "react";

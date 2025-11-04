@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
 import { GuestCartManager } from "@/utils/guestCart";
-import { useAuth } from '@/lib/contexts/AuthContext";
+import { useAuth } from '@/contexts/SessionAuthContext';
 import { CartService } from "@/lib/api/services/cart.service";
 
 export interface CartItem {
@@ -266,3 +266,4 @@ export const useCart = () => {
   }
   return context;
 };
+
