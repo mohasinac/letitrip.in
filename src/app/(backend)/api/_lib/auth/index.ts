@@ -5,7 +5,7 @@
  * Location: src/app/(backend)/api/_lib/auth/index.ts
  */
 
-// Session management (server-side)
+// Session management (server-side with Edge-compatible crypto)
 export {
   createSession,
   getSession,

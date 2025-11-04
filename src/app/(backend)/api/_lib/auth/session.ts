@@ -1,13 +1,13 @@
 /**
  * Session Management
  * Server-side session handling with HTTP-only cookies
+ * Uses Edge-compatible Web Crypto API
  * 
  * Location: src/app/(backend)/api/_lib/auth/session.ts
  * Following backend architecture conventions
  */
 
 import { cookies } from 'next/headers';
-import { randomBytes } from 'crypto';
 
 // Session configuration
 const SESSION_COOKIE_NAME = 'session';
@@ -37,10 +37,12 @@ setInterval(() => {
 }, 60 * 60 * 1000); // Clean up every hour
 
 /**
- * Generate a secure session ID
+ * Generate a secure session ID using Web Crypto API (Edge-compatible)
  */
 function generateSessionId(): string {
-  return randomBytes(32).toString('hex');
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -115,8 +117,8 @@ export async function getSession(): Promise<SessionData | null> {
 }
 
 /**
- * Get session from request (for middleware)
- * Used in middleware.ts where cookies() is not async
+ * Get session from request (Edge-compatible - for middleware)
+ * Used in middleware.ts where cookies() is synchronous
  */
 export function getSessionFromRequest(request: Request): SessionData | null {
   try {

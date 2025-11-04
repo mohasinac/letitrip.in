@@ -15,12 +15,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCurrency } from '@/lib/contexts/CurrencyContext";
-import { useCart } from '@/lib/contexts/CartContext";
+
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import toast from "react-hot-toast";
 import { getProductImageUrl } from "@/utils/product";
 import { api } from "@/lib/api";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCart } from "@/contexts/CartContext";
 
 interface Product {
   id: string;
