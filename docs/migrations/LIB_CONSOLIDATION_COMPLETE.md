@@ -1,4 +1,4 @@
-# _lib Directory Consolidation - COMPLETE ✅
+# \_lib Directory Consolidation - COMPLETE ✅
 
 ## Summary
 
@@ -9,10 +9,12 @@ Successfully consolidated duplicate `_lib` directories into a single, organized 
 ### 1. Moved Files from Root `_lib` to Backend `_lib`
 
 **Middleware** (`src/_lib/middleware/` → `src/app/(backend)/api/_lib/middleware/`):
+
 - ✅ `cache.middleware.ts` → `cache.ts`
 - ✅ `rate-limit.middleware.ts` → `rate-limit.ts`
 
 **Utilities** (`src/_lib/utils/` → `src/app/(backend)/api/_lib/utils/`):
+
 - ✅ `cache.ts` (NodeCache service)
 - ✅ `rate-limiter.ts` (Rate limiting service)
 - ✅ `image-optimizer.ts` (Sharp-based image processing)
@@ -25,6 +27,7 @@ Successfully consolidated duplicate `_lib` directories into a single, organized 
 ### 3. Updated Imports
 
 **Files Updated:**
+
 1. `src/app/(backend)/api/search/route.ts`
 2. `src/app/(backend)/api/products/route.ts`
 3. `src/app/(backend)/api/products/[slug]/route.ts`
@@ -34,34 +37,47 @@ Successfully consolidated duplicate `_lib` directories into a single, organized 
 7. `src/app/(backend)/api/_lib/middleware/index.ts`
 
 **Import Changes:**
+
 ```typescript
 // BEFORE:
-import { withCache } from '@/_lib/middleware/cache.middleware';
-import { withRateLimit } from '@/_lib/middleware/rate-limit.middleware';
-import { CacheKeys, CacheTTL } from '@/_lib/utils/cache';
-import { rateLimitConfigs } from '@/_lib/utils/rate-limiter';
+import { withCache } from "@/_lib/middleware/cache.middleware";
+import { withRateLimit } from "@/_lib/middleware/rate-limit.middleware";
+import { CacheKeys, CacheTTL } from "@/_lib/utils/cache";
+import { rateLimitConfigs } from "@/_lib/utils/rate-limiter";
 
 // AFTER:
-import { withCache } from '../_lib/middleware/cache';
-import { withRateLimit } from '../_lib/middleware/rate-limit';
-import { CacheKeys, CacheTTL } from '../_lib/utils/cache';
-import { rateLimitConfigs } from '../_lib/utils/rate-limiter';
+import { withCache } from "../_lib/middleware/cache";
+import { withRateLimit } from "../_lib/middleware/rate-limit";
+import { CacheKeys, CacheTTL } from "../_lib/utils/cache";
+import { rateLimitConfigs } from "../_lib/utils/rate-limiter";
 ```
 
 ### 4. Updated Middleware Index
 
 Added exports for the new middleware modules in `src/app/(backend)/api/_lib/middleware/index.ts`:
+
 ```typescript
 // Cache Middleware (HOC style)
-export { withCache, generateUrlCacheKey, skipIfAuthenticated, cacheOnlyGet } from './cache';
+export {
+  withCache,
+  generateUrlCacheKey,
+  skipIfAuthenticated,
+  cacheOnlyGet,
+} from "./cache";
 
 // Rate Limit Middleware (HOC style)
-export { withRateLimit, getRateLimitConfigByRole, skipForAdmin, createRateLimitResponse } from './rate-limit';
+export {
+  withRateLimit,
+  getRateLimitConfigByRole,
+  skipForAdmin,
+  createRateLimitResponse,
+} from "./rate-limit";
 ```
 
 ## Final Structure
 
 ### Before Consolidation
+
 ```
 src/
 ├── _lib/                                  ❌ REMOVED
@@ -83,6 +99,7 @@ src/
 ```
 
 ### After Consolidation
+
 ```
 src/
 └── app/
@@ -117,37 +134,42 @@ src/
 ## Benefits Achieved
 
 ### 1. ✅ Single Source of Truth
+
 - All backend utilities now in **one location**: `src/app/(backend)/api/_lib/`
 - No more searching across multiple directories
 - Clear ownership and responsibility
 
 ### 2. ✅ No Duplication
+
 - Removed duplicate rate-limiter implementation
 - Consolidated middleware patterns
 - Consistent approach across all API routes
 
 ### 3. ✅ Better Organization
+
 - Follows Next.js App Router conventions
 - Backend code clearly isolated in `(backend)` route group
 - Private directory (`_lib`) won't be treated as routes
 
 ### 4. ✅ Clearer Architecture
+
 - Enforces separation: frontend cannot import from `api/_lib`
 - Backend-only code is explicitly marked
 - Easier to understand for new developers
 
 ### 5. ✅ Easier Maintenance
+
 - Changes only need to be made in one place
 - Import paths are relative and consistent
 - Less cognitive overhead
 
 ## File Count
 
-| Category | Before | After | Change |
-|----------|--------|-------|--------|
-| Root `_lib` | 5 files | 0 files | -5 |
-| Backend `_lib` | 65 files | 69 files | +4 |
-| **Total** | **70 files (2 locations)** | **69 files (1 location)** | **-1** ✅ |
+| Category       | Before                     | After                     | Change    |
+| -------------- | -------------------------- | ------------------------- | --------- |
+| Root `_lib`    | 5 files                    | 0 files                   | -5        |
+| Backend `_lib` | 65 files                   | 69 files                  | +4        |
+| **Total**      | **70 files (2 locations)** | **69 files (1 location)** | **-1** ✅ |
 
 ## Testing Checklist
 
@@ -179,19 +201,21 @@ These routes now use the consolidated middleware from `api/_lib`:
 ## Middleware Patterns Now Available
 
 ### 1. Cache Middleware (`withCache`)
+
 ```typescript
-import { withCache, CacheKeys, CacheTTL } from '../_lib/middleware/cache';
+import { withCache, CacheKeys, CacheTTL } from "../_lib/middleware/cache";
 
 export const GET = withCache(handler, {
-  keyGenerator: (req) => CacheKeys.PRODUCT_LIST('default'),
+  keyGenerator: (req) => CacheKeys.PRODUCT_LIST("default"),
   ttl: CacheTTL.SHORT, // 5 minutes
   skip: (req) => false, // Always cache
 });
 ```
 
 ### 2. Rate Limit Middleware (`withRateLimit`)
+
 ```typescript
-import { withRateLimit, rateLimitConfigs } from '../_lib/middleware/rate-limit';
+import { withRateLimit, rateLimitConfigs } from "../_lib/middleware/rate-limit";
 
 export const GET = withRateLimit(handler, {
   config: rateLimitConfigs.public, // 100 req/hr
@@ -199,6 +223,7 @@ export const GET = withRateLimit(handler, {
 ```
 
 ### 3. Combined (Composable)
+
 ```typescript
 export const GET = withRateLimit(
   withCache(handler, cacheOptions),
@@ -210,11 +235,12 @@ export const GET = withRateLimit(
 
 - ✅ Created `LIB_CONSOLIDATION_PLAN.md` - Planning document
 - ✅ Created `LIB_CONSOLIDATION_COMPLETE.md` - This completion summary
-- ℹ️  Consider updating `ARCHITECTURE.md` to reflect the single `_lib` location
+- ℹ️ Consider updating `ARCHITECTURE.md` to reflect the single `_lib` location
 
 ## Next Steps (Optional)
 
 ### 1. Update Path Aliases (if needed)
+
 If you have TypeScript path aliases configured, update `tsconfig.json`:
 
 ```json
@@ -229,9 +255,11 @@ If you have TypeScript path aliases configured, update `tsconfig.json`:
 ```
 
 ### 2. Add Barrel Exports
+
 Consider adding barrel exports in `_lib/utils/index.ts` and `_lib/middleware/index.ts` for cleaner imports.
 
 ### 3. Update Documentation
+
 Update the main `ARCHITECTURE.md` to document the consolidated structure.
 
 ---
