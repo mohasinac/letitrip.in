@@ -27,7 +27,7 @@ export default function AddressesPage() {
       setShowForm(false);
       return true;
     } catch (error) {
-      console.error('Failed to add address:', error);
+      console.error("Failed to add address:", error);
       return false;
     }
   };
@@ -39,7 +39,7 @@ export default function AddressesPage() {
       setEditingAddress(null);
       return true;
     } catch (error) {
-      console.error('Failed to update address:', error);
+      console.error("Failed to update address:", error);
       return false;
     }
   };
