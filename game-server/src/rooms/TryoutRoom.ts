@@ -22,7 +22,7 @@ export class TryoutRoom extends Room<GameState> {
     this.state.mode = "tryout";
     this.state.status = "waiting";
 
-    // Load arena from Firestore
+    // Load arena from Firestore or use defaults
     const arenaData = await loadArena(options.arenaId);
     if (arenaData) {
       this.state.arena.id = arenaData.id;
@@ -33,6 +33,18 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.gravity = arenaData.gravity;
       this.state.arena.airResistance = arenaData.airResistance;
       this.state.arena.surfaceFriction = arenaData.surfaceFriction;
+      console.log(`✅ Loaded arena: ${arenaData.name}`);
+    } else {
+      // Use default arena if not found
+      console.log(`⚠️ Arena not found: ${options.arenaId}, using defaults`);
+      this.state.arena.id = options.arenaId || "default";
+      this.state.arena.name = "Standard Arena";
+      this.state.arena.width = 800;
+      this.state.arena.height = 800;
+      this.state.arena.shape = "circle";
+      this.state.arena.gravity = 0;
+      this.state.arena.airResistance = 0.01;
+      this.state.arena.surfaceFriction = 0.01;
     }
 
     // Initialize physics engine
@@ -66,14 +78,9 @@ export class TryoutRoom extends Room<GameState> {
   async onJoin(client: Client, options: any) {
     console.log(`Client ${client.sessionId} joined tryout room`);
 
-    // Load beyblade from Firestore
+    // Load beyblade from Firestore or use defaults
     const beybladeData = await loadBeyblade(options.beybladeId);
-    if (!beybladeData) {
-      console.error("Failed to load beyblade");
-      client.leave();
-      return;
-    }
-
+    
     // Create beyblade entity
     const beyblade = new Beyblade();
     beyblade.id = client.sessionId;
@@ -82,9 +89,17 @@ export class TryoutRoom extends Room<GameState> {
     beyblade.beybladeId = options.beybladeId;
     beyblade.isAI = false;
 
-    // Set stats from database
-    beyblade.mass = beybladeData.mass;
-    beyblade.radius = beybladeData.radius;
+    // Set stats from database or use defaults
+    if (beybladeData) {
+      beyblade.mass = beybladeData.mass;
+      beyblade.radius = beybladeData.radius;
+      console.log(`✅ Loaded beyblade: ${beybladeData.displayName}`);
+    } else {
+      console.log(`⚠️ Beyblade not found: ${options.beybladeId}, using defaults`);
+      beyblade.mass = 20;
+      beyblade.radius = 40;
+    }
+    
     beyblade.health = 100;
     beyblade.stamina = 100;
 
