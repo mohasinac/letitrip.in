@@ -139,6 +139,7 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 - Rewards for team completion
 
 **Phases:**
+
 - Wave 1: 1 Boss (normal difficulty)
 - Wave 2: 2 Bosses (increased HP)
 - Wave 3: 1 Super Boss (rage mode + special moves)
@@ -185,14 +186,12 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
   - 4, 8, or 16 bracket sizes
   - AI difficulty increases each round
   - Unlock rewards and achievements
-  
 - **PvP Tournament (vs Players)** - Competitive player brackets
   - 8, 16, 32, or 64 player brackets
   - Seeding based on ELO rating
   - Registration window + start time
   - Prize pools and rankings
   - Spectator mode for live matches
-  
 - **Mixed Tournament (Players + AI)** - Hybrid mode
   - Fill empty bracket slots with AI
   - AI difficulty scales with player rank
@@ -938,7 +937,15 @@ interface Arena {
 ```typescript
 interface Match {
   id: string;
-  mode: "tryout" | "single-battle-ai" | "single-battle-pvp" | "1vmany" | "raid" | "ffa" | "tournament-ai" | "tournament-pvp";
+  mode:
+    | "tryout"
+    | "single-battle-ai"
+    | "single-battle-pvp"
+    | "1vmany"
+    | "raid"
+    | "ffa"
+    | "tournament-ai"
+    | "tournament-pvp";
 
   // Players (flexible array for different modes)
   players: Array<{
@@ -966,18 +973,18 @@ interface Match {
       teamLives: number;
       mvpPlayerId: string;
     };
-    
+
     // For 1vMany
     oneVsMany?: {
       hostId: string;
       opponentIds: string[];
     };
-    
+
     // For FFA
     ffa?: {
       placementOrder: string[]; // playerIds in elimination order
     };
-    
+
     // For Tournament
     tournament?: {
       tournamentId: string;
@@ -1127,7 +1134,7 @@ interface Tournament {
 
   // Seeding (for PvP tournaments)
   seedingMethod?: "elo" | "random" | "manual";
-  
+
   // Players
   registeredPlayers: Array<{
     userId: string;
@@ -1160,7 +1167,7 @@ interface Tournament {
     third: { coins: number; items?: string[]; title?: string };
     participation: { coins: number };
   };
-  
+
   // Entry requirements (for PvP tournaments)
   entryRequirements?: {
     minElo?: number;
