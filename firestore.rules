@@ -1,10 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection - users can read/write their own data
+    // Users collection - users can read/write their own data, admins can read all
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     (request.auth.uid == userId || isAdmin());
       allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && 
+                       (request.auth.uid == userId || isAdmin());
+      allow delete: if request.auth != null && isAdmin();
     }
     
     // Products collection - public read, sellers can manage their own, admins manage all
@@ -128,14 +132,26 @@ service cloud.firestore {
                        (request.auth.uid == resource.data.userId || isAdmin());
     }
     
-    // Stores collection - public read, seller write own store, admin write all
+    // Stores/Sellers collection - public read active stores, seller write own store, admin write all
     match /stores/{storeId} {
-      allow read: if resource.data.isActive == true || isAdmin() || isSeller();
+      allow read: if resource.data.isActive == true || isAdmin() || 
+                     (request.auth != null && resource.data.ownerId == request.auth.uid);
       allow create: if request.auth != null && 
                        isSeller() &&
                        request.resource.data.ownerId == request.auth.uid;
       allow update: if request.auth != null && 
                        (isAdmin() || resource.data.ownerId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+    
+    // Sellers collection (alternative naming)
+    match /sellers/{sellerId} {
+      allow read: if true; // Public read for active sellers
+      allow create: if request.auth != null && 
+                       isSeller() &&
+                       request.auth.uid == sellerId;
+      allow update: if request.auth != null && 
+                       (isAdmin() || request.auth.uid == sellerId);
       allow delete: if isAdmin();
     }
     
@@ -244,6 +260,38 @@ service cloud.firestore {
     // Only the backend API (using Admin SDK) can access this
     match /sessions/{sessionId} {
       allow read, write: if false; // No client access - backend only
+    }
+    
+    // Contact form submissions - create only for authenticated users
+    match /contacts/{contactId} {
+      allow read: if request.auth != null && isAdmin();
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && isAdmin();
+    }
+    
+    // Support tickets
+    match /support_tickets/{ticketId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || isAdmin());
+      allow delete: if request.auth != null && isAdmin();
+    }
+    
+    // Settings collection - admin only
+    match /settings/{settingId} {
+      allow read: if true; // Public read for site settings
+      allow write: if request.auth != null && isAdmin();
+    }
+    
+    // Analytics collection - admin and seller read own data
+    match /analytics/{analyticsId} {
+      allow read: if request.auth != null && 
+                     (isAdmin() || 
+                      (isSeller() && resource.data.sellerId == request.auth.uid));
+      allow write: if false; // Only backend can write analytics
     }
     
     // Helper functions

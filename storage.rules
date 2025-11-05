@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// Firebase Storage Security Rules for HobbiesSpot.com
-// Last Updated: 2025-10-26
+// Firebase Storage Security Rules for JustForView.in (HobbiesSpot.com)
+// Last Updated: 2025-11-05
 // 
 // Storage Structure:
 // - /products/{productId}/... - Product images (sellers & admin)
@@ -13,6 +13,9 @@ rules_version = '2';
 // - /categories/{categoryId}/... - Category images (admin only)
 // - /banners/... - Homepage/promotional banners (admin only)
 // - /temp/{userId}/... - Temporary uploads (auto-cleanup)
+// - /reviews/{reviewId}/... - Review images (authenticated users)
+// - /blog/{postId}/... - Blog/CMS assets (admin only)
+// - /messages/{conversationId}/... - Chat attachments (authenticated)
 
 service firebase.storage {
   match /b/{bucket}/o {
@@ -33,7 +36,7 @@ service firebase.storage {
     // Check if user is seller
     function isSeller() {
       return isAuthenticated() && 
-             request.auth.token.role == 'seller';
+             (request.auth.token.role == 'seller' || request.auth.token.role == 'admin');
     }
     
     // Check if user is the owner of the resource
