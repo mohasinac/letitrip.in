@@ -346,402 +346,1047 @@
 
 ---
 
-## 🔄 Data Flow
+## 🌐 Advanced Multiplayer Modes (Future - Phase 4+)
 
-### Client → Server → Client Loop
+### Overview of Multiplayer Modes
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Client (Browser)                      │
+│                  MULTIPLAYER MODE MATRIX                     │
 │                                                              │
-│  User presses 'W' key                                        │
-│         │                                                    │
-│         ▼                                                    │
-│  Input Handler captures: { key: 'W', timestamp: 123 }       │
-│         │                                                    │
-│         ▼                                                    │
-│  Send via WebSocket: room.send("input", { direction: {     │
-│    x: 0, y: -1 }, action: null })                           │
-│                                                              │
-└────────────────────────┬─────────────────────────────────────┘
-                         │ WebSocket (10-20ms latency)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       Server (Node.js)                       │
-│                                                              │
-│  onMessage(client, "input", data)                           │
-│         │                                                    │
-│         ▼                                                    │
-│  Validate input (prevent cheating)                          │
-│         │                                                    │
-│         ▼                                                    │
-│  Apply force to beyblade physics body                       │
-│  Matter.Body.applyForce(body, force)                        │
-│         │                                                    │
-│         ▼                                                    │
-│  Physics engine updates (60 FPS)                            │
-│  • New position calculated                                  │
-│  • Collisions checked                                       │
-│  • State updated                                            │
-│         │                                                    │
-│         ▼                                                    │
-│  Broadcast new state (60 Hz)                                │
-│  this.broadcast("gameState", state)                         │
-│                                                              │
-└────────────────────────┬─────────────────────────────────────┘
-                         │ WebSocket (state updates)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                        Client (Browser)                      │
-│                                                              │
-│  Receive state update                                        │
-│         │                                                    │
-│         ▼                                                    │
-│  Update React state                                          │
-│  setBeybladePosition({ x: newX, y: newY })                  │
-│         │                                                    │
-│         ▼                                                    │
-│  Interpolate for smooth movement                            │
-│  displayX = lerp(oldX, newX, 0.3)                           │
-│         │                                                    │
-│         ▼                                                    │
-│  Render to screen (Canvas/DOM)                              │
-│  <div style={{ left: displayX, top: displayY }}>           │
-│    <Beyblade />                                             │
-│  </div>                                                      │
-│                                                              │
+│  Mode              │ Players │ AI  │ Room Size │ Phase      │
+│  ─────────────────────────────────────────────────────────  │
+│  1v1 PvP           │    2    │  0  │     2     │ Phase 3    │
+│  1vMany PvP        │   2-4   │  0  │    2-4    │ Phase 4    │
+│  Co-op (Raid)      │   2-4   │ 1-N │    2-5    │ Phase 5    │
+│  FFA (Free-for-All)│   3-8   │  0  │    3-8    │ Phase 5    │
+│  Team Battle       │    4    │  0  │     4     │ Phase 5    │
+│  Tournament PvP    │  8-64   │  0  │  Dynamic  │ Phase 6    │
 └─────────────────────────────────────────────────────────────┘
-
-Repeat every 16.67ms (60 FPS)
 ```
 
 ---
 
-## 🎯 State Synchronization
+### Mode 1: 1v1 PvP (Player vs Player)
 
-### Without Colyseus (Manual)
+**Description:** Two players battle head-to-head in real-time
 
 ```
-Server State:
-{
-  player1: { x: 100, y: 200, spin: 1500 },
-  player2: { x: 300, y: 400, spin: 1800 }
-}
-
-Server needs to:
-1. Serialize state to JSON (manual)
-2. Calculate delta (what changed) (manual)
-3. Send only delta to reduce bandwidth (manual)
-4. Handle edge cases (manual)
-
-❌ Complex, error-prone, 100+ lines of code
+┌─────────────┐                         ┌─────────────┐
+│  Player 1   │                         │  Player 2   │
+└──────┬──────┘                         └──────┬──────┘
+       │                                       │
+       │ 1. Queue for ranked/unranked         │
+       └───────────────┬───────────────────────┘
+                       │
+                       ▼
+       ┌───────────────────────────────────────┐
+       │      Matchmaking Service              │
+       │  • Find opponent (similar ELO)        │
+       │  • Create private room                │
+       │  • Notify both players                │
+       └───────────────┬───────────────────────┘
+                       │
+                       ▼
+       ┌───────────────────────────────────────┐
+       │        Match Setup Phase              │
+       │  Both players:                        │
+       │  • Select Beyblade                    │
+       │  • Select Arena (or vote)             │
+       │  • Ready up                           │
+       └───────────────┬───────────────────────┘
+                       │
+                       ▼
+       ┌───────────────────────────────────────┐
+       │         Battle Phase                  │
+       │  • Real-time combat                   │
+       │  • Server-authoritative physics       │
+       │  • 60Hz state sync                    │
+       │  • Collision detection                │
+       │  • Win condition check                │
+       └───────────────┬───────────────────────┘
+                       │
+                       ▼
+       ┌───────────────────────────────────────┐
+       │         Results Phase                 │
+       │  • Winner announced                   │
+       │  • ELO update (ranked)                │
+       │  • Stats saved                        │
+       │  • Rematch option                     │
+       └───────────────────────────────────────┘
 ```
 
-### With Colyseus (Automatic)
-
+**Technical Architecture:**
 ```typescript
-// Define schema once
-class GameState extends Schema {
-  @type({ map: Beyblade }) beyblades = new MapSchema<Beyblade>();
-}
-
-// Update state
-this.state.beyblades.get("player1").x = 100;
-
-// ✅ Colyseus automatically:
-// - Serializes state
-// - Calculates delta
-// - Sends only changes
-// - Handles edge cases
-// - Type-safe
-
-Just 3 lines of code!
-```
-
----
-
-## 🏃 Performance Optimization
-
-### Client-Side Prediction (Optional Advanced Feature)
-
-```
-Without prediction:
-User Input → Server (20ms) → Physics → Response (20ms) → Render
-Total: 40ms lag (feels sluggish)
-
-With prediction:
-User Input → Predict locally → Render (0ms, instant feedback)
-           └→ Server (20ms) → Verify → Reconcile if needed
-Total: 0ms apparent lag (feels responsive)
-
-Implementation:
-1. Client predicts movement locally
-2. Server calculates authoritative position
-3. If positions differ > threshold:
-   - Smoothly interpolate to correct position
-   - Don't "snap" (causes jittery movement)
-```
-
-### State Interpolation
-
-```javascript
-// Current state from server
-const currentX = 100;
-const currentY = 200;
-
-// Last known state
-let displayX = 90;
-let displayY = 190;
-
-// Smooth interpolation (every frame)
-function render() {
-  // Move 30% closer to target each frame
-  displayX = displayX + (currentX - displayX) * 0.3;
-  displayY = displayY + (currentY - displayY) * 0.3;
-
-  // Render at interpolated position
-  renderBeyblade(displayX, displayY);
-
-  requestAnimationFrame(render);
-}
-
-Result: Smooth 60 FPS movement even with 20 FPS network updates
-```
-
----
-
-## 🔐 Security & Anti-Cheat
-
-### Attack Vectors
-
-```
-Client-Side Physics (Current):
-Attacker modifies local code:
-• Infinite health
-• Super speed
-• No collision detection
-• Auto-win
-
-Server-Authoritative (Recommended):
-Attacker modifies local code:
-• Visual only (doesn't affect game)
-• Server rejects invalid moves
-• Server validates all actions
-✅ Cannot cheat game logic
-```
-
-### Server-Side Validation
-
-```javascript
-// Client sends input
-socket.send("move", { direction: { x: 100, y: 0 } });
-
-// Server validates
-onMessage(client, "move", data) {
-  // Validate: direction must be normalized (-1 to 1)
-  if (Math.abs(data.direction.x) > 1 || Math.abs(data.direction.y) > 1) {
-    console.warn("Invalid input from", client.id);
-    return; // Ignore cheating attempt
+// Server: PvPBattleRoom.ts
+export class PvPBattleRoom extends Room<GameState> {
+  maxClients = 2;
+  
+  onCreate(options: { mode: 'ranked' | 'unranked' }) {
+    this.setState(new GameState());
+    this.matchmakingMode = options.mode;
+    
+    // Wait for both players to join
+    this.waitingForPlayers = true;
   }
-
-  // Validate: player must be alive
-  if (this.state.players.get(client.id).health <= 0) {
-    return; // Dead players can't move
+  
+  onJoin(client: Client, options: any) {
+    const playerNumber = this.clients.length;
+    
+    // Create player slot
+    const player = new Player();
+    player.id = client.sessionId;
+    player.username = options.username;
+    player.playerNumber = playerNumber;
+    
+    this.state.players.set(client.sessionId, player);
+    
+    // Start when both players joined
+    if (this.clients.length === 2) {
+      this.startMatchSetup();
+    }
   }
+  
+  startMatchSetup() {
+    this.state.phase = "setup";
+    this.broadcast("matchReady", {
+      opponent: /* opponent info */
+    });
+  }
+  
+  onMessage(client: Client, type: string, message: any) {
+    switch(type) {
+      case "selectBeyblade":
+        this.handleBeybladeSelect(client, message);
+        break;
+      case "ready":
+        this.handlePlayerReady(client);
+        break;
+      case "input":
+        this.handlePlayerInput(client, message);
+        break;
+    }
+  }
+  
+  handlePlayerReady(client: Client) {
+    const player = this.state.players.get(client.sessionId);
+    player.isReady = true;
+    
+    // Start battle when both ready
+    if (this.allPlayersReady()) {
+      this.startBattle();
+    }
+  }
+  
+  startBattle() {
+    this.state.phase = "battle";
+    
+    // Initialize physics for both beyblades
+    this.initializePhysics();
+    
+    // Start game loop
+    this.setSimulationInterval((deltaTime) => {
+      this.updatePhysics(deltaTime);
+      this.checkWinCondition();
+    }, 1000 / 60);
+  }
+  
+  checkWinCondition() {
+    const players = Array.from(this.state.players.values());
+    const alivePlayers = players.filter(p => p.health > 0);
+    
+    if (alivePlayers.length === 1) {
+      this.endBattle(alivePlayers[0]);
+    }
+  }
+  
+  endBattle(winner: Player) {
+    this.state.phase = "results";
+    this.state.winner = winner.id;
+    
+    // Update ELO (if ranked)
+    if (this.matchmakingMode === 'ranked') {
+      this.updatePlayerELO(winner, /* loser */);
+    }
+    
+    // Save match to database
+    this.saveMatchResults();
+    
+    this.broadcast("gameOver", {
+      winner: winner.id,
+      stats: /* ... */
+    });
+  }
+}
+```
 
-  // Valid input - apply force
-  this.applyForce(client.id, data.direction);
+**Matchmaking Logic:**
+```typescript
+// Server: MatchmakingService.ts
+export class MatchmakingService {
+  private queue: Map<string, QueueEntry> = new Map();
+  
+  addToQueue(userId: string, options: {
+    mode: 'ranked' | 'unranked';
+    eloRating?: number;
+    region?: string;
+  }) {
+    const entry: QueueEntry = {
+      userId,
+      ...options,
+      joinedAt: Date.now(),
+    };
+    
+    this.queue.set(userId, entry);
+    
+    // Try to find match
+    this.findMatch(entry);
+  }
+  
+  findMatch(player1: QueueEntry) {
+    // Find suitable opponent
+    for (const [id, player2] of this.queue) {
+      if (id === player1.userId) continue;
+      
+      // Check if ELO difference acceptable (ranked only)
+      if (player1.mode === 'ranked') {
+        const eloDiff = Math.abs(
+          player1.eloRating - player2.eloRating
+        );
+        
+        // Allow up to 200 ELO difference
+        if (eloDiff > 200) continue;
+      }
+      
+      // Match found!
+      this.createMatch(player1, player2);
+      return;
+    }
+  }
+  
+  async createMatch(player1: QueueEntry, player2: QueueEntry) {
+    // Remove from queue
+    this.queue.delete(player1.userId);
+    this.queue.delete(player2.userId);
+    
+    // Create battle room
+    const room = await colyseus.createRoom("pvp_battle", {
+      mode: player1.mode,
+      player1Id: player1.userId,
+      player2Id: player2.userId,
+    });
+    
+    // Notify players
+    this.notifyPlayers(player1, player2, room.id);
+  }
 }
 ```
 
 ---
 
-## 📡 Network Protocol
+### Mode 2: 1vMany PvP (1 vs 2-3 Players)
 
-### Message Types (Client → Server)
+**Description:** One player vs multiple opponents simultaneously
 
-```typescript
-// 1. Join room
-room.join("battle_room", {
-  beybladeId: "dragoon_gt",
-  arenaId: "default_arena",
-});
-
-// 2. Player input
-room.send("input", {
-  direction: { x: 0, y: -1 }, // Normalized vector
-  timestamp: Date.now(),
-});
-
-// 3. Action
-room.send("action", {
-  type: "special-attack",
-  targetId: "opponent_id",
-});
-
-// 4. Ready signal
-room.send("ready");
-
-// 5. Leave room
-room.leave();
+```
+┌─────────────┐
+│  Player 1   │  (The "One")
+└──────┬──────┘
+       │
+       │ Host creates room
+       ▼
+┌──────────────────────────────┐
+│     Create 1vMany Room       │
+│  • Room code generated       │
+│  • Set max opponents (2-3)   │
+│  • Select beyblade           │
+└──────┬───────────────────────┘
+       │
+       │ Share room code
+       ▼
+┌──────────────────────────────┐
+│   Other players join         │
+│  Player 2 ───┐               │
+│  Player 3 ───┼─→ Join code   │
+│  Player 4 ───┘               │
+└──────┬───────────────────────┘
+       │
+       │ All ready
+       ▼
+┌──────────────────────────────┐
+│      Battle Royale           │
+│  1 vs Many                   │
+│  • Shared HP pool (Many)     │
+│  • Or individual HP          │
+│  • Last standing wins        │
+└──────┬───────────────────────┘
+       │
+       ▼
+┌──────────────────────────────┐
+│    Results                   │
+│  • The One won, or           │
+│  • The Many won              │
+└──────────────────────────────┘
 ```
 
-### Message Types (Server → Client)
-
+**Server Architecture:**
 ```typescript
-// 1. State update (60 Hz)
-room.onStateChange((state) => {
-  // Entire game state
-  console.log(state.beyblades);
-});
+// Server: OneVsManyRoom.ts
+export class OneVsManyRoom extends Room<GameState> {
+  maxClients = 4; // 1 host + 3 opponents
+  
+  onCreate(options: { hostId: string; maxOpponents: number }) {
+    this.setState(new GameState());
+    
+    this.state.mode = "1vMany";
+    this.state.hostId = options.hostId;
+    this.state.maxOpponents = options.maxOpponents;
+    
+    // Generate room code
+    this.roomCode = this.generateRoomCode();
+    
+    this.metadata = {
+      roomCode: this.roomCode,
+      hostId: options.hostId,
+      openSlots: options.maxOpponents,
+    };
+  }
+  
+  onJoin(client: Client, options: any) {
+    const isHost = client.sessionId === this.state.hostId;
+    
+    const player = new Player();
+    player.id = client.sessionId;
+    player.username = options.username;
+    player.role = isHost ? "host" : "opponent";
+    
+    this.state.players.set(client.sessionId, player);
+    
+    // Update open slots
+    if (!isHost) {
+      this.metadata.openSlots--;
+    }
+    
+    this.broadcast("playerJoined", {
+      playerId: client.sessionId,
+      username: options.username,
+      role: player.role,
+    });
+  }
+  
+  startBattle() {
+    // Initialize physics
+    const hostPlayer = this.state.players.get(this.state.hostId);
+    const opponents = Array.from(this.state.players.values())
+      .filter(p => p.role === "opponent");
+    
+    // Host gets centered position
+    this.createBeyblade(hostPlayer, { x: 400, y: 400 });
+    
+    // Opponents spawn around the edge
+    opponents.forEach((opp, index) => {
+      const angle = (Math.PI * 2 / opponents.length) * index;
+      const radius = 250;
+      const pos = {
+        x: 400 + Math.cos(angle) * radius,
+        y: 400 + Math.sin(angle) * radius,
+      };
+      
+      this.createBeyblade(opp, pos);
+    });
+    
+    // Game loop
+    this.setSimulationInterval((deltaTime) => {
+      this.updatePhysics(deltaTime);
+      this.checkWinCondition();
+    }, 1000 / 60);
+  }
+  
+  checkWinCondition() {
+    const host = this.state.players.get(this.state.hostId);
+    const opponents = Array.from(this.state.players.values())
+      .filter(p => p.role === "opponent");
+    
+    const aliveOpponents = opponents.filter(p => p.health > 0);
+    
+    if (host.health <= 0) {
+      // Opponents win
+      this.endBattle("opponents");
+    } else if (aliveOpponents.length === 0) {
+      // Host wins
+      this.endBattle("host");
+    }
+  }
+}
+```
 
-// 2. Event notification
-room.onMessage("collision", (data) => {
-  // { beybladeIds: ["p1", "p2"], force: 150 }
-  playCollisionSound();
-});
+**Client Flow:**
+```typescript
+// Client: Create 1vMany room
+async function createOneVsManyRoom() {
+  const room = await client.create("one_vs_many", {
+    hostId: currentUserId,
+    maxOpponents: 3,
+  });
+  
+  // Show room code to share
+  const roomCode = room.metadata.roomCode;
+  showRoomCode(roomCode); // "ABC123"
+  
+  return room;
+}
 
-// 3. Game over
-room.onMessage("game-over", (data) => {
-  // { winner: "player1", stats: {...} }
-  showVictoryScreen(data);
-});
-
-// 4. Error
-room.onError((code, message) => {
-  console.error("Room error:", message);
-});
+// Client: Join 1vMany room
+async function joinOneVsManyRoom(roomCode: string) {
+  const rooms = await client.getAvailableRooms("one_vs_many");
+  const targetRoom = rooms.find(r => r.metadata.roomCode === roomCode);
+  
+  if (!targetRoom) {
+    throw new Error("Room not found");
+  }
+  
+  const room = await client.joinById(targetRoom.roomId, {
+    username: currentUsername,
+  });
+  
+  return room;
+}
 ```
 
 ---
 
-## 🎨 UI Flow
+### Mode 3: Co-op Raid Mode (2-4 Players + Friends vs AI Boss)
 
-### Main Menu
-
-```
-┌────────────────────────────────────────┐
-│         BEYBLADE BATTLE GAME           │
-│                                        │
-│  ┌──────────────────────────────────┐ │
-│  │         🏃 Tryout Mode           │ │
-│  │     Practice & Learn Controls    │ │
-│  └──────────────────────────────────┘ │
-│                                        │
-│  ┌──────────────────────────────────┐ │
-│  │        ⚔️  Single Battle         │ │
-│  │      1v1 Against AI or Player    │ │
-│  └──────────────────────────────────┘ │
-│                                        │
-│  ┌──────────────────────────────────┐ │
-│  │       🏆 Tournament Mode         │ │
-│  │    Compete in Brackets (Soon)    │ │
-│  └──────────────────────────────────┘ │
-│                                        │
-│  ┌──────────────────────────────────┐ │
-│  │         📊 My Stats              │ │
-│  └──────────────────────────────────┘ │
-│                                        │
-└────────────────────────────────────────┘
-```
-
-### Game UI (During Battle)
+**Description:** Team of players vs powerful AI boss(es)
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│ Player HP: ████████████░░░░░░░░ 60%    Timer: 01:23      │
-│ Spin: 1500 | Power: 15/25                                  │
-├────────────────────────────────────────────────────────────┤
-│                                                            │
-│                     ⚪ Arena View                         │
-│                                                            │
-│        🔵 Player Beyblade                                 │
-│                                                            │
-│                           🔴 Opponent                     │
-│                                                            │
-│                                                            │
-├────────────────────────────────────────────────────────────┤
-│ Opponent HP: ████████████████░░ 80%                       │
-│ Special Moves: [Q] Dash [E] Shield [R] Special            │
-└────────────────────────────────────────────────────────────┘
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Player 1   │  │  Player 2   │  │  Player 3   │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │
+       │  Create/Join Raid Room          │
+       └────────────────┼────────────────┘
+                        │
+                        ▼
+        ┌───────────────────────────────────────┐
+        │        Raid Lobby                     │
+        │  • Select raid difficulty             │
+        │    - Easy (1 AI)                      │
+        │    - Medium (1 strong AI)             │
+        │    - Hard (2 AIs)                     │
+        │    - Nightmare (3 AIs)                │
+        │  • Choose beyblades                   │
+        │  • Team coordination                  │
+        └───────────────┬───────────────────────┘
+                        │
+                        ▼
+        ┌───────────────────────────────────────┐
+        │         Raid Battle                   │
+        │                                       │
+        │  👥👥👥  (Players)                    │
+        │           vs                          │
+        │  🤖🤖   (Boss AIs)                    │
+        │                                       │
+        │  • Shared objectives                  │
+        │  • Boss has massive HP                │
+        │  • Special boss moves                 │
+        │  • Team respawn pool (3 lives total) │
+        └───────────────┬───────────────────────┘
+                        │
+                        ▼
+        ┌───────────────────────────────────────┐
+        │         Raid Results                  │
+        │  • Victory (shared rewards)           │
+        │  • Defeat (try again)                 │
+        │  • MVP player                         │
+        │  • Contribution stats                 │
+        └───────────────────────────────────────┘
+```
+
+**Server Implementation:**
+```typescript
+// Server: RaidRoom.ts
+export class RaidRoom extends Room<GameState> {
+  maxClients = 4; // Up to 4 players
+  bossAIs: AIController[] = [];
+  
+  onCreate(options: { 
+    difficulty: 'easy' | 'medium' | 'hard' | 'nightmare';
+  }) {
+    this.setState(new GameState());
+    
+    this.state.mode = "raid";
+    this.state.difficulty = options.difficulty;
+    
+    // Configure boss based on difficulty
+    this.configureBoss(options.difficulty);
+  }
+  
+  configureBoss(difficulty: string) {
+    const bossConfigs = {
+      easy: {
+        aiCount: 1,
+        aiHP: 300,
+        aiDifficulty: "medium",
+        teamLives: 5,
+      },
+      medium: {
+        aiCount: 1,
+        aiHP: 500,
+        aiDifficulty: "hard",
+        teamLives: 4,
+      },
+      hard: {
+        aiCount: 2,
+        aiHP: 400,
+        aiDifficulty: "hard",
+        teamLives: 3,
+      },
+      nightmare: {
+        aiCount: 3,
+        aiHP: 350,
+        aiDifficulty: "expert",
+        teamLives: 2,
+      },
+    };
+    
+    this.bossConfig = bossConfigs[difficulty];
+  }
+  
+  startRaid() {
+    // Create player beyblades (team)
+    const players = Array.from(this.state.players.values());
+    players.forEach((player, index) => {
+      const angle = (Math.PI * 2 / players.length) * index;
+      const radius = 200;
+      const pos = {
+        x: 400 + Math.cos(angle) * radius,
+        y: 400 + Math.sin(angle) * radius,
+      };
+      
+      this.createBeyblade(player, pos);
+    });
+    
+    // Create boss AI beyblades
+    for (let i = 0; i < this.bossConfig.aiCount; i++) {
+      const bossAI = new AIController({
+        difficulty: this.bossConfig.aiDifficulty,
+        type: "boss",
+      });
+      
+      const boss = new Beyblade();
+      boss.id = `boss_${i}`;
+      boss.health = this.bossConfig.aiHP;
+      boss.position = { x: 400, y: 400 }; // Center
+      boss.isBoss = true;
+      
+      this.state.beyblades.set(boss.id, boss);
+      this.bossAIs.push(bossAI);
+    }
+    
+    // Initialize team lives
+    this.state.teamLives = this.bossConfig.teamLives;
+    
+    // Start game loop
+    this.setSimulationInterval((deltaTime) => {
+      // Update boss AI
+      this.bossAIs.forEach(ai => {
+        const action = ai.calculateAction(this.state);
+        this.applyAIAction(ai, action);
+      });
+      
+      this.updatePhysics(deltaTime);
+      this.checkRaidConditions();
+    }, 1000 / 60);
+  }
+  
+  onPlayerDefeat(playerId: string) {
+    this.state.teamLives--;
+    
+    if (this.state.teamLives > 0) {
+      // Respawn player after 5 seconds
+      setTimeout(() => {
+        this.respawnPlayer(playerId);
+      }, 5000);
+      
+      this.broadcast("playerDefeat", {
+        playerId,
+        remainingLives: this.state.teamLives,
+        respawnIn: 5,
+      });
+    } else {
+      // No more team lives - raid failed
+      this.endRaid(false);
+    }
+  }
+  
+  checkRaidConditions() {
+    const bosses = Array.from(this.state.beyblades.values())
+      .filter(b => b.isBoss);
+    const aliveBosses = bosses.filter(b => b.health > 0);
+    
+    if (aliveBosses.length === 0) {
+      // All bosses defeated - raid success
+      this.endRaid(true);
+    }
+    
+    // Check if all players defeated
+    const players = Array.from(this.state.players.values());
+    const alivePlayers = players.filter(p => p.health > 0);
+    
+    if (alivePlayers.length === 0 && this.state.teamLives <= 0) {
+      // Team wiped - raid failed
+      this.endRaid(false);
+    }
+  }
+  
+  endRaid(success: boolean) {
+    this.state.phase = "results";
+    
+    if (success) {
+      // Calculate rewards
+      const rewards = this.calculateRaidRewards();
+      
+      // Determine MVP
+      const mvp = this.calculateMVP();
+      
+      this.broadcast("raidComplete", {
+        success: true,
+        rewards,
+        mvp,
+        stats: this.calculateTeamStats(),
+      });
+    } else {
+      this.broadcast("raidFailed", {
+        success: false,
+        stats: this.calculateTeamStats(),
+      });
+    }
+  }
+  
+  calculateMVP(): string {
+    // MVP = player with most damage dealt
+    const players = Array.from(this.state.players.values());
+    
+    let mvp = players[0];
+    let maxDamage = 0;
+    
+    players.forEach(player => {
+      if (player.stats.damageDealt > maxDamage) {
+        maxDamage = player.stats.damageDealt;
+        mvp = player;
+      }
+    });
+    
+    return mvp.id;
+  }
+  
+  calculateRaidRewards() {
+    const baseReward = {
+      coins: 100,
+      experience: 50,
+    };
+    
+    // Multiply by difficulty
+    const multipliers = {
+      easy: 1,
+      medium: 1.5,
+      hard: 2,
+      nightmare: 3,
+    };
+    
+    const mult = multipliers[this.state.difficulty];
+    
+    return {
+      coins: baseReward.coins * mult,
+      experience: baseReward.experience * mult,
+    };
+  }
+}
+```
+
+**Boss AI Behavior:**
+```typescript
+// Server: BossAI.ts
+export class BossAI extends AIController {
+  specialMoveTimer = 0;
+  rageMode = false;
+  
+  calculateAction(gameState: GameState): AIAction {
+    const boss = this.beyblade;
+    const players = this.getAlivePlayers(gameState);
+    
+    // Enter rage mode when HP < 30%
+    if (boss.health < boss.maxHealth * 0.3) {
+      this.rageMode = true;
+    }
+    
+    // Special move every 10 seconds
+    if (this.specialMoveTimer >= 10) {
+      this.specialMoveTimer = 0;
+      return this.useBossSpecialMove();
+    }
+    
+    // Rage mode: more aggressive, faster attacks
+    if (this.rageMode) {
+      return this.rageModeBehavior(players);
+    }
+    
+    // Normal mode: target weakest player
+    const weakestPlayer = this.findWeakestPlayer(players);
+    return this.pursueAndAttack(weakestPlayer);
+  }
+  
+  useBossSpecialMove(): AIAction {
+    const specialMoves = [
+      "aoe_spin_attack",    // Damages all players in radius
+      "meteor_strike",      // High damage to one player
+      "shield_regenerate",  // Regain HP
+      "speed_boost",        // Temporary speed increase
+    ];
+    
+    const move = specialMoves[
+      Math.floor(Math.random() * specialMoves.length)
+    ];
+    
+    return { type: "special", move };
+  }
+}
 ```
 
 ---
 
-## 📚 File Structure
+### Mode 4: Free-For-All (3-8 Players)
+
+**Description:** Battle royale style - last Beyblade standing wins
 
 ```
-project-root/
-│
-├── game-server/                 # ⭐ NEW: Colyseus game server
-│   ├── src/
-│   │   ├── rooms/
-│   │   │   ├── TryoutRoom.ts    # Tryout mode room
-│   │   │   ├── BattleRoom.ts    # Battle mode room
-│   │   │   ├── TournamentRoom.ts # Tournament room (future)
-│   │   │   └── schema/
-│   │   │       ├── GameState.ts  # State schema
-│   │   │       ├── Beyblade.ts   # Beyblade schema
-│   │   │       └── Arena.ts      # Arena schema
-│   │   │
-│   │   ├── physics/
-│   │   │   ├── PhysicsEngine.ts  # Matter.js wrapper
-│   │   │   ├── BeybladePhysics.ts
-│   │   │   └── ArenaSetup.ts
-│   │   │
-│   │   ├── ai/
-│   │   │   ├── AIController.ts   # Main AI logic
-│   │   │   ├── behaviors/
-│   │   │   │   ├── AttackBehavior.ts
-│   │   │   │   ├── DefenseBehavior.ts
-│   │   │   │   └── StaminaBehavior.ts
-│   │   │   └── difficulty.ts     # Difficulty levels
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── firebase.ts       # Firestore client
-│   │   │   ├── validation.ts     # Input validation
-│   │   │   └── logger.ts         # Logging
-│   │   │
-│   │   └── index.ts              # Server entry point
-│   │
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── .env
-│
-├── src/
-│   ├── app/
-│   │   ├── game/
-│   │   │   ├── tryout/
-│   │   │   │   └── page.tsx      # Tryout mode UI
-│   │   │   ├── battle/
-│   │   │   │   └── page.tsx      # Battle mode UI
-│   │   │   ├── tournament/
-│   │   │   │   └── page.tsx      # Tournament UI (future)
-│   │   │   └── components/
-│   │   │       ├── BeybladeRenderer.tsx
-│   │   │       ├── ArenaRenderer.tsx
-│   │   │       ├── GameHUD.tsx
-│   │   │       └── ModeSelector.tsx
-│   │   │
-│   │   └── (backend)/
-│   │       └── api/
-│   │           ├── beyblades/    # Existing
-│   │           ├── arenas/       # Existing
-│   │           ├── matches/      # NEW: Match history
-│   │           └── stats/        # NEW: Player stats
-│   │
-│   └── lib/
-│       └── game/
-│           ├── client.ts         # Colyseus client wrapper
-│           └── types.ts          # Shared types
-│
-└── docs/
-    └── game/
-        ├── README.md                           # This file!
-        ├── GAME_MODES_IMPLEMENTATION_PLAN.md   # Detailed plan
-        ├── QUICK_START_GUIDE.md                # Quick start
-        ├── TECHNOLOGY_COMPARISON.md            # Tech comparison
-        └── ARCHITECTURE_DIAGRAMS.md            # This diagram file
+┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐
+│ P1 │ │ P2 │ │ P3 │ │ P4 │ │ P5 │ │ P6 │
+└─┬──┘ └─┬──┘ └─┬──┘ └─┬──┘ └─┬──┘ └─┬──┘
+  │      │      │      │      │      │
+  └──────┴──────┴──────┴──────┴──────┘
+                 │
+                 ▼
+     ┌───────────────────────────┐
+     │   FFA Battle Arena        │
+     │                           │
+     │   🔵 🔴 🟢 🟡 🟣 🟠     │
+     │                           │
+     │  • Everyone vs Everyone   │
+     │  • No teams               │
+     │  • Alliances allowed      │
+     │  • Last standing wins     │
+     └───────────────────────────┘
+```
+
+---
+
+### Mode 5: Tournament Mode (8-64 Players) - PvP Edition
+
+**Description:** Organized bracket-style tournament with real players
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│              TOURNAMENT BRACKET (16 Players)                  │
+│                                                              │
+│  Registration Phase:                                         │
+│  Player 1-16 register                                        │
+│         │                                                    │
+│         ▼                                                    │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │           Bracket Generation                     │        │
+│  │  • Single/Double elimination                     │        │
+│  │  • Seeding (by ELO if ranked)                    │        │
+│  │  • Random if casual                              │        │
+│  └────────────────┬────────────────────────────────┘        │
+│                   │                                          │
+│                   ▼                                          │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │              Round 1 (16→8)                      │        │
+│  │                                                  │        │
+│  │  Match 1: P1  vs P16  →  Winner A               │        │
+│  │  Match 2: P8  vs P9   →  Winner B               │        │
+│  │  Match 3: P5  vs P12  →  Winner C               │        │
+│  │  Match 4: P4  vs P13  →  Winner D               │        │
+│  │  Match 5: P3  vs P14  →  Winner E               │        │
+│  │  Match 6: P6  vs P11  →  Winner F               │        │
+│  │  Match 7: P7  vs P10  →  Winner G               │        │
+│  │  Match 8: P2  vs P15  →  Winner H               │        │
+│  └────────────────┬────────────────────────────────┘        │
+│                   │                                          │
+│                   ▼                                          │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │          Quarter Finals (8→4)                    │        │
+│  │                                                  │        │
+│  │  QF1: Winner A vs Winner B  →  Semi 1           │        │
+│  │  QF2: Winner C vs Winner D  →  Semi 2           │        │
+│  │  QF3: Winner E vs Winner F  →  Semi 3           │        │
+│  │  QF4: Winner G vs Winner H  →  Semi 4           │        │
+│  └────────────────┬────────────────────────────────┘        │
+│                   │                                          │
+│                   ▼                                          │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │           Semi Finals (4→2)                      │        │
+│  │                                                  │        │
+│  │  SF1: Semi 1 vs Semi 2  →  Finalist 1           │        │
+│  │  SF2: Semi 3 vs Semi 4  →  Finalist 2           │        │
+│  └────────────────┬────────────────────────────────┘        │
+│                   │                                          │
+│                   ▼                                          │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │                Finals (2→1)                      │        │
+│  │                                                  │        │
+│  │     Finalist 1  vs  Finalist 2                  │        │
+│  │              ↓                                   │        │
+│  │          🏆 CHAMPION 🏆                          │        │
+│  └─────────────────────────────────────────────────┘        │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Tournament Server Architecture:**
+```typescript
+// Server: TournamentRoom.ts
+export class TournamentRoom extends Room<TournamentState> {
+  onCreate(options: {
+    type: 'single-elimination' | 'double-elimination';
+    maxPlayers: 8 | 16 | 32 | 64;
+    format: 'best-of-1' | 'best-of-3' | 'best-of-5';
+    mode: 'casual' | 'ranked';
+  }) {
+    this.setState(new TournamentState());
+    
+    this.state.config = options;
+    this.state.phase = "registration";
+    this.state.registeredPlayers = new MapSchema();
+    this.state.bracket = [];
+  }
+  
+  onJoin(client: Client, options: any) {
+    // Registration phase
+    if (this.state.phase !== "registration") {
+      client.leave(1000, "Tournament already started");
+      return;
+    }
+    
+    const player = new TournamentPlayer();
+    player.id = client.sessionId;
+    player.username = options.username;
+    player.beybladeId = options.beybladeId;
+    player.eloRating = options.eloRating;
+    
+    this.state.registeredPlayers.set(client.sessionId, player);
+    
+    // Check if tournament is full
+    if (this.state.registeredPlayers.size >= this.state.config.maxPlayers) {
+      this.startTournament();
+    }
+  }
+  
+  startTournament() {
+    this.state.phase = "bracket-generation";
+    
+    // Generate bracket with seeding
+    const players = Array.from(this.state.registeredPlayers.values());
+    
+    if (this.state.config.mode === 'ranked') {
+      // Seed by ELO rating
+      players.sort((a, b) => b.eloRating - a.eloRating);
+    } else {
+      // Random seeding
+      this.shuffleArray(players);
+    }
+    
+    // Create bracket structure
+    this.createBracket(players);
+    
+    // Start round 1
+    this.startRound(1);
+  }
+  
+  createBracket(players: TournamentPlayer[]) {
+    const rounds = Math.log2(players.length);
+    
+    // Round 1: pair all players
+    for (let i = 0; i < players.length; i += 2) {
+      const match: BracketMatch = {
+        id: `r1_m${i/2}`,
+        round: 1,
+        player1Id: players[i].id,
+        player2Id: players[i + 1].id,
+        winnerId: null,
+        roomId: null,
+        status: "pending",
+      };
+      
+      this.state.bracket.push(match);
+    }
+    
+    // Create placeholder matches for future rounds
+    for (let round = 2; round <= rounds; round++) {
+      const matchesInRound = Math.pow(2, rounds - round);
+      
+      for (let m = 0; m < matchesInRound; m++) {
+        const match: BracketMatch = {
+          id: `r${round}_m${m}`,
+          round,
+          player1Id: null, // TBD from previous round
+          player2Id: null,
+          winnerId: null,
+          roomId: null,
+          status: "pending",
+        };
+        
+        this.state.bracket.push(match);
+      }
+    }
+  }
+  
+  async startRound(roundNumber: number) {
+    this.state.currentRound = roundNumber;
+    
+    // Get all matches in this round
+    const matches = this.state.bracket.filter(m => 
+      m.round === roundNumber && m.status === "pending"
+    );
+    
+    // Create battle rooms for each match
+    for (const match of matches) {
+      if (!match.player1Id || !match.player2Id) continue;
+      
+      // Create PvP battle room
+      const battleRoom = await colyseus.createRoom("pvp_battle", {
+        mode: 'tournament',
+        tournamentId: this.roomId,
+        matchId: match.id,
+        player1Id: match.player1Id,
+        player2Id: match.player2Id,
+        format: this.state.config.format,
+      });
+      
+      match.roomId = battleRoom.roomId;
+      match.status = "in-progress";
+      
+      // Notify players
+      this.send(match.player1Id, "matchReady", {
+        matchId: match.id,
+        roomId: battleRoom.roomId,
+        opponent: this.state.registeredPlayers.get(match.player2Id),
+      });
+      
+      this.send(match.player2Id, "matchReady", {
+        matchId: match.id,
+        roomId: battleRoom.roomId,
+        opponent: this.state.registeredPlayers.get(match.player1Id),
+      });
+    }
+  }
+  
+  onMatchComplete(matchId: string, winnerId: string) {
+    const match = this.state.bracket.find(m => m.id === matchId);
+    if (!match) return;
+    
+    match.winnerId = winnerId;
+    match.status = "completed";
+    
+    // Update next round match
+    this.advanceWinner(match);
+    
+    // Check if round is complete
+    const roundMatches = this.state.bracket.filter(m => 
+      m.round === match.round
+    );
+    const completedMatches = roundMatches.filter(m => 
+      m.status === "completed"
+    );
+    
+    if (completedMatches.length === roundMatches.length) {
+      // Round complete
+      if (this.isFinalRound(match.round)) {
+        this.endTournament(winnerId);
+      } else {
+        this.startRound(match.round + 1);
+      }
+    }
+  }
+  
+  advanceWinner(completedMatch: BracketMatch) {
+    const nextRound = completedMatch.round + 1;
+    const matchNumber = Math.floor(
+      parseInt(completedMatch.id.split('_m')[1]) / 2
+    );
+    
+    const nextMatchId = `r${nextRound}_m${matchNumber}`;
+    const nextMatch = this.state.bracket.find(m => m.id === nextMatchId);
+    
+    if (nextMatch) {
+      // Determine which slot (player1 or player2)
+      const isEvenMatch = parseInt(completedMatch.id.split('_m')[1]) % 2 === 0;
+      
+      if (isEvenMatch) {
+        nextMatch.player1Id = completedMatch.winnerId;
+      } else {
+        nextMatch.player2Id = completedMatch.winnerId;
+      }
+    }
+  }
+  
+  isFinalRound(round: number): boolean {
+    const totalRounds = Math.log2(this.state.config.maxPlayers);
+    return round === totalRounds;
+  }
+  
+  endTournament(championId: string) {
+    this.state.phase = "completed";
+    this.state.championId = championId;
+    
+    // Calculate final standings
+    const standings = this.calculateStandings();
+    
+    // Distribute rewards
+    const rewards = this.calculateRewards(standings);
+    
+    this.broadcast("tournamentComplete", {
+      champion: this.state.registeredPlayers.get(championId),
+      standings,
+      rewards,
+    });
+    
+    // Save tournament results
+    this.saveTournamentResults();
+  }
+  
+  calculateStandings(): TournamentStanding[] {
+    const standings: TournamentStanding[] = [];
+    
+    // Champion (1st place)
+    standings.push({
+      rank: 1,
+      playerId: this.state.championId,
+      rounds Won: Math.log2(this.state.config.maxPlayers),
+    });
+    
+    // Runner-up (2nd place)
+    const finalMatch = this.state.bracket.find(m => 
+      this.isFinalRound(m.round)
+    );
+    const runnerId = finalMatch.player1Id === this.state.championId
+      ? finalMatch.player2Id
+      : finalMatch.player1Id;
+    
+    standings.push({
+      rank: 2,
+      playerId: runnerId,
+      roundsWon: Math.log2(this.state.config.maxPlayers) - 1,
+    });
+    
+    // Calculate rest of standings based on elimination round
+    // ... (implementation continues)
+    
+    return standings;
+  }
+}
 ```
 
 ---
