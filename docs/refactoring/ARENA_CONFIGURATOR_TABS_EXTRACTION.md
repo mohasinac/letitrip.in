@@ -292,16 +292,18 @@ interface SpeedPathsTabProps {
   - Position X/Y sliders (-490 to +490 px, center-relative)
   - Size slider (10-50px collision radius)
   - Health slider (1-5 HP before destruction)
+  - **Indestructible toggle** (makes obstacle permanent, ignores health)
   - Damage slider (5-30 damage on collision)
   - Recoil slider (0-100px knockback distance)
   - Custom color picker (optional, defaults to theme color)
   - Auto-placed flag indicator
 
 - **Destructible mechanics**:
-  - Obstacles have health points (1-5 hits)
+  - Destructible obstacles have health points (1-5 hits)
+  - Indestructible obstacles cannot be destroyed (permanent)
   - Deal damage to beyblades on collision (5-30)
   - Cause knockback/recoil (0-100px)
-  - Break after taking enough hits
+  - Destructible obstacles break after taking enough hits
 
 **Props**:
 
@@ -334,9 +336,10 @@ export interface ObstacleConfig {
   x: number; // Center-relative position
   y: number; // Center-relative position
   radius: number; // Collision size (10-50px)
-  health: number; // Hit points (1-5)
+  health: number; // Hit points (1-5) - ignored if indestructible
   damage: number; // Damage dealt (5-30)
   recoilDistance: number; // Knockback (0-100px)
+  indestructible?: boolean; // If true, obstacle cannot be destroyed
   color?: string; // Custom color
   autoPlaced?: boolean; // Auto-placed flag
 }
@@ -345,8 +348,9 @@ export interface ObstacleConfig {
 **Key Design**:
 
 - Theme determines obstacle appearance (icon emoji)
-- Obstacles are destructible hazards (not permanent like walls)
+- Obstacles can be destructible (with health) or indestructible (permanent)
 - Balance between danger (damage/recoil) and durability (health)
+- Indestructible obstacles ignore health and cannot be destroyed
 - Auto-place provides quick random distribution
 - Manual placement allows precise positioning
 - Limited to 10 obstacles for performance

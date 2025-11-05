@@ -402,14 +402,15 @@ export default function ObstaclesTab({ config, setConfig }: ObstaclesTabProps) {
           ℹ️ How Obstacles Work
         </h4>
         <ul className="text-xs text-gray-300 space-y-1">
-          <li>• Obstacles are destructible hazards themed to your arena</li>
+          <li>• Obstacles are theme-based hazards that damage beyblades on collision</li>
           <li>
-            • Each obstacle has health points - it breaks after taking enough
-            hits
+            • Destructible obstacles have health points and break after taking enough hits
           </li>
           <li>
-            • Colliding with obstacles damages your beyblade and causes
-            knockback
+            • Indestructible obstacles are permanent and cannot be destroyed
+          </li>
+          <li>
+            • Colliding with obstacles damages your beyblade and causes knockback
           </li>
           <li>• Higher damage and recoil make obstacles more dangerous</li>
           <li>• Use auto-place for quick random distribution</li>

@@ -431,6 +431,52 @@ export interface WallConfig {
 }
 
 // ============================================================================
+// TURRET CONFIGURATION
+// ============================================================================
+
+/**
+ * Turret Attack Types
+ */
+export type TurretAttackType = 
+  | "random"      // Random shots in any direction
+  | "beam"        // Continuous beam with charge period
+  | "periodic"    // Shoots bullets periodically
+  | "aoe"         // Area of effect blast (missile)
+  | "boomerang";  // Throws boomerang that returns
+
+/**
+ * Turret Configuration
+ * Defensive/offensive structures that attack beyblades
+ */
+export interface TurretConfig {
+  id?: number;
+  x: number; // X position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
+  y: number; // Y position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
+  radius: number; // Turret size in pixels (15-40px)
+  health: number; // Hit points (500-1000) - ignored if indestructible
+  indestructible?: boolean; // If true, turret cannot be destroyed
+  
+  // Attack Configuration
+  attackType: TurretAttackType;
+  attackDamage: number; // Damage per hit (10-50)
+  attackRange: number; // Attack range in pixels (100-400)
+  attackCooldown: number; // Cooldown between attacks in seconds (1-10)
+  
+  // Attack Type Specific Properties
+  beamDuration?: number; // For beam: how long beam lasts (1-5 seconds)
+  beamChargePeriod?: number; // For beam: charge time before firing (0.5-3 seconds)
+  bulletSpeed?: number; // For periodic: bullet travel speed (100-500 px/s)
+  bulletCount?: number; // For periodic: bullets per shot (1-5)
+  aoeRadius?: number; // For AOE: blast radius (50-150px)
+  aoeDamageRadius?: number; // For AOE: damage falloff radius (20-100px)
+  boomerangReturnTime?: number; // For boomerang: time to return (2-5 seconds)
+  
+  // Visual
+  color?: string; // Optional custom color (defaults to theme color)
+  autoPlaced?: boolean; // Was this turret auto-placed?
+}
+
+// ============================================================================
 // OBSTACLES CONFIGURATION
 // ============================================================================
 
@@ -508,6 +554,9 @@ export interface ArenaConfig {
   
   // ===== OBSTACLES =====
   obstacles?: ObstacleConfig[]; // Destructible obstacles (max 10)
+  
+  // ===== TURRETS =====
+  turrets?: TurretConfig[]; // Defensive turrets (max 8)
   
   // ===== METADATA =====
   createdAt?: string;
