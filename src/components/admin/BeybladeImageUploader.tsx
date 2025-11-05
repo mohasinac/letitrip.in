@@ -59,7 +59,7 @@ export default function BeybladeImageUploader({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string>("");
   const [step, setStep] = useState<"select" | "edit" | "points" | "preview">(
-    "select",
+    "select"
   );
 
   // Image editing options
@@ -70,11 +70,11 @@ export default function BeybladeImageUploader({
 
   // Points of contact
   const [pointsOfContact, setPointsOfContact] = useState<PointOfContact[]>(
-    initialPointsOfContact,
+    initialPointsOfContact
   );
   const [isPlacingPoint, setIsPlacingPoint] = useState(false);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(
-    null,
+    null
   );
 
   // Calculate total damage points (base 1.0x + 100 bonus points = 200% max)
@@ -82,7 +82,7 @@ export default function BeybladeImageUploader({
     return (
       pointsOfContact.reduce(
         (sum, point) => sum + (point.damageMultiplier - 1.0),
-        0,
+        0
       ) * 100
     );
   };
@@ -283,7 +283,7 @@ export default function BeybladeImageUploader({
   // Update selected point property
   const updateSelectedPoint = (
     property: keyof PointOfContact,
-    value: number,
+    value: number
   ) => {
     if (selectedPointIndex === null) return;
 
@@ -317,7 +317,7 @@ export default function BeybladeImageUploader({
     if (selectedPointIndex === null) return;
 
     const newPoints = pointsOfContact.filter(
-      (_, i) => i !== selectedPointIndex,
+      (_, i) => i !== selectedPointIndex
     );
     setPointsOfContact(newPoints);
     setSelectedPointIndex(null);
@@ -454,7 +454,7 @@ export default function BeybladeImageUploader({
 
   // Handle file selection
   const handleFileSelect = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -500,7 +500,7 @@ export default function BeybladeImageUploader({
       if (removeBackgroundEnabled && selectedFile.type !== "image/svg+xml") {
         processedFile = await removeBackground(
           new File([processedFile], "image.png", { type: "image/png" }),
-          backgroundTolerance,
+          backgroundTolerance
         );
       }
 
@@ -929,8 +929,8 @@ export default function BeybladeImageUploader({
                     isPlacingPoint
                       ? "bg-purple-600 text-white"
                       : pointsOfContact.length >= 10
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-purple-200 text-purple-900 hover:bg-purple-300"
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-purple-200 text-purple-900 hover:bg-purple-300"
                   }`}
                 >
                   {isPlacingPoint ? "Cancel" : "+ Add Point"}
@@ -1059,7 +1059,7 @@ export default function BeybladeImageUploader({
                           onClick={(e) => {
                             e.stopPropagation();
                             const newPoints = pointsOfContact.filter(
-                              (_, i) => i !== index,
+                              (_, i) => i !== index
                             );
                             setPointsOfContact(newPoints);
                             setSelectedPointIndex(null);
@@ -1105,7 +1105,7 @@ export default function BeybladeImageUploader({
                               onChange={(e) =>
                                 updateSelectedPoint(
                                   "angle",
-                                  Number(e.target.value),
+                                  Number(e.target.value)
                                 )
                               }
                               className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
@@ -1127,7 +1127,7 @@ export default function BeybladeImageUploader({
                                     if (value >= 1.0 && value <= 2.0) {
                                       updateSelectedPoint(
                                         "damageMultiplier",
-                                        value,
+                                        value
                                       );
                                     }
                                   }}
@@ -1152,7 +1152,7 @@ export default function BeybladeImageUploader({
                               onChange={(e) =>
                                 updateSelectedPoint(
                                   "damageMultiplier",
-                                  Number(e.target.value),
+                                  Number(e.target.value)
                                 )
                               }
                               className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
@@ -1193,7 +1193,7 @@ export default function BeybladeImageUploader({
                               onChange={(e) =>
                                 updateSelectedPoint(
                                   "width",
-                                  Number(e.target.value),
+                                  Number(e.target.value)
                                 )
                               }
                               className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"

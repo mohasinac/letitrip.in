@@ -1,4 +1,3 @@
-import InteractiveHeroBanner from "@/components/home/InteractiveHeroBanner";
 import ModernFeaturedCategories from "@/components/home/ModernFeaturedCategories";
 import ModernWhyChooseUs from "@/components/home/ModernWhyChooseUs";
 import ModernCustomerReviews from "@/components/home/ModernCustomerReviews";
@@ -75,7 +74,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <InteractiveHeroBanner />
       <ModernFeaturedCategories categories={featuredCategories} />
       <ModernWhyChooseUs />
       <ModernCustomerReviews />

@@ -1,5 +1,6 @@
 /**
  * Image Processing Utilities
+ * Client-side image manipulation using Canvas API
  * Handles SVG/PNG background removal, resizing, and cropping
  */
 

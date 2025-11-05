@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Palette, ImageIcon, Grid3x3 } from "lucide-react";
+import { Palette, Grid3x3 } from "lucide-react";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
@@ -9,11 +9,6 @@ interface SettingsLayoutProps {
 
 const settingsTabs = [
   { label: "Theme", path: "/admin/settings/theme", icon: Palette },
-  {
-    label: "Hero Slides",
-    path: "/admin/settings/hero",
-    icon: ImageIcon,
-  },
   {
     label: "Featured Categories",
     path: "/admin/settings/featured-categories",
