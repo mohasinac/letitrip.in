@@ -435,16 +435,16 @@ export default function MultiStepBeybladeEditor({
           </div>
 
           {/* Right Side - Fixed Preview */}
-          <div className="hidden lg:flex lg:w-96 bg-gray-900 p-6 flex-col border-l border-gray-700 sticky top-0 self-start max-h-screen">
+          <div className="hidden lg:flex lg:w-96 bg-gray-900 p-6 flex-col border-l border-gray-700 sticky top-0 self-start max-h-screen overflow-y-auto">
             <h3 className="text-white text-lg font-bold mb-4">Live Preview</h3>
-            <div className="flex-1 bg-gray-800 rounded-lg overflow-hidden min-h-[500px]">
+            {/* Container with aspect ratio preserved */}
+            <div className="bg-gray-800 rounded-lg overflow-hidden">
               <BeybladePreview
                 beyblade={
                   {
                     ...formData,
                     id: beyblade?.id || "preview",
                     fileName: beyblade?.fileName || "preview.svg",
-                    actualSize: (formData.radius || 4) * 10, // Calculate from radius
                     stamina: calculatedStats?.maxStamina || 2000,
                     spinStealFactor: calculatedStats?.spinStealPower || 100,
                     spinDecayRate: calculatedStats?.spinDecayRate || 1.67,

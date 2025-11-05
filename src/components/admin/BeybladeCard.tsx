@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BeybladeStats } from "@/types/beybladeStats";
 import BeybladeImageUploader from "./BeybladeImageUploader";
+import { getBeybladeDisplayRadius, getBeybladeDisplayDiameter } from "@/constants/beybladeConstants";
 
 interface BeybladeCardProps {
   beyblade: BeybladeStats;
@@ -127,15 +128,15 @@ export default function BeybladeCard({
             <div className="grid grid-cols-3 gap-2 text-sm">
               <div>
                 <p className="text-gray-500">Mass</p>
-                <p className="font-semibold">{beyblade.mass} kg</p>
+                <p className="font-semibold">{beyblade.mass}g</p>
               </div>
               <div>
                 <p className="text-gray-500">Radius</p>
-                <p className="font-semibold">{beyblade.radius} px</p>
+                <p className="font-semibold">{beyblade.radius} cm</p>
               </div>
               <div>
-                <p className="text-gray-500">Size</p>
-                <p className="font-semibold">{beyblade.actualSize} px</p>
+                <p className="text-gray-500">Display</p>
+                <p className="font-semibold">{getBeybladeDisplayDiameter(beyblade.radius).toFixed(0)}px</p>
               </div>
             </div>
           </div>
@@ -222,17 +223,49 @@ export default function BeybladeCard({
             </div>
           </div>
 
-          {/* Contact Points */}
+          {/* Contact Points & Spin Steal Points */}
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">
-              Contact Points ({beyblade.pointsOfContact.length})
+              Combat Properties
             </h4>
-            <div className="text-xs text-gray-600">
-              Max Damage:{" "}
-              {Math.max(
-                ...beyblade.pointsOfContact.map((p) => p.damageMultiplier)
-              ).toFixed(1)}
-              x
+            <div className="space-y-2">
+              {/* Contact Points */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{
+                      background: "linear-gradient(to right, #ef4444, #eab308)",
+                    }}
+                  ></div>
+                  <span className="text-xs text-gray-600">Contact Points:</span>
+                </div>
+                <span className="text-xs font-semibold text-gray-900">
+                  {beyblade.pointsOfContact.length} (Max: {Math.max(
+                    ...beyblade.pointsOfContact.map((p) => p.damageMultiplier)
+                  ).toFixed(1)}x)
+                </span>
+              </div>
+              
+              {/* Spin Steal Points */}
+              {beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0 && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{
+                        background: "linear-gradient(to right, #06b6d4, #3b82f6)",
+                      }}
+                    ></div>
+                    <span className="text-xs text-gray-600">Spin Steal Points:</span>
+                  </div>
+                  <span className="text-xs font-semibold text-gray-900">
+                    {beyblade.spinStealPoints.length} (Max: {Math.max(
+                      ...beyblade.spinStealPoints.map((p) => p.spinStealMultiplier)
+                    ).toFixed(1)}x)
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -270,7 +303,6 @@ export default function BeybladeCard({
                 spinDirection: beyblade.spinDirection,
                 radius: beyblade.radius,
                 mass: beyblade.mass,
-                actualSize: beyblade.actualSize,
               }}
             />
           </div>

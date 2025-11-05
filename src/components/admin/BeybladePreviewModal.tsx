@@ -101,24 +101,76 @@ export default function BeybladePreviewModal({
           </div>
 
           {/* Physical Properties */}
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-800 rounded-lg p-4">
               <p className="text-xs text-gray-400 mb-1">Mass</p>
-              <p className="text-lg font-bold text-white">{beyblade.mass} kg</p>
+              <p className="text-lg font-bold text-white">{beyblade.mass}g</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-4">
               <p className="text-xs text-gray-400 mb-1">Radius</p>
               <p className="text-lg font-bold text-white">
-                {beyblade.radius} px
+                {beyblade.radius} cm
               </p>
             </div>
             <div className="bg-gray-800 rounded-lg p-4">
               <p className="text-xs text-gray-400 mb-1">Contact Points</p>
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-orange-500">
                 {beyblade.pointsOfContact.length}
               </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Max: {Math.max(...beyblade.pointsOfContact.map((p) => p.damageMultiplier)).toFixed(1)}x
+              </p>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-4">
+              <p className="text-xs text-gray-400 mb-1">Spin Steal Points</p>
+              <p className="text-lg font-bold text-cyan-500">
+                {beyblade.spinStealPoints?.length || 0}
+              </p>
+              {beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Max: {Math.max(...beyblade.spinStealPoints.map((p) => p.spinStealMultiplier)).toFixed(1)}x
+                </p>
+              )}
             </div>
           </div>
+
+          {/* Combat Properties Legend */}
+          {((beyblade.pointsOfContact && beyblade.pointsOfContact.length > 0) ||
+            (beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0)) && (
+            <div className="mt-4 bg-gray-800 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-gray-300 mb-3">
+                Combat Properties
+              </h4>
+              <div className="space-y-2">
+                {beyblade.pointsOfContact && beyblade.pointsOfContact.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-16 h-2 rounded"
+                      style={{
+                        background: "linear-gradient(to right, hsl(0, 90%, 50%), hsl(60, 90%, 50%))",
+                      }}
+                    ></div>
+                    <span className="text-xs text-gray-400">
+                      💥 Contact Points (Red→Yellow) - Damage multipliers
+                    </span>
+                  </div>
+                )}
+                {beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-16 h-2 rounded"
+                      style={{
+                        background: "linear-gradient(to right, hsl(180, 90%, 50%), hsl(220, 90%, 50%))",
+                      }}
+                    ></div>
+                    <span className="text-xs text-gray-400">
+                      🌀 Spin Steal Points (Cyan→Blue) - Energy transfer
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer */}

@@ -66,9 +66,12 @@ export interface BeybladeStats {
   spinDirection: SpinDirection;
 
   // Physical Properties
+  // RESOLUTION-BASED SIZING SYSTEM:
+  // 1 cm = ARENA_RESOLUTION / 45 pixels (24px at 1080p)
+  // Example: 4cm radius = 96px diameter at 1080p (standard size)
   mass: number; // grams, affects collision physics (typical: 10-2000g, real beyblades are ~40-60g)
-  radius: number; // cm, physical radius (typical: 3-50cm, converts to pixels as radius*10)
-  actualSize?: number; // CALCULATED: pixels, visual display size = radius * 10
+  radius: number; // cm, physical radius (typical: 1.5-25cm, recommended: 3-5cm for standard)
+  actualSize?: number; // DEPRECATED: Use getBeybladeDisplayRadius(radius) from constants instead
 
   // Calculated Stats (from typeDistribution, DO NOT SET MANUALLY)
   // Base values (0 points): 100 damage, 10 speed, 10 rotation, 10 knockback,

@@ -35,7 +35,6 @@ interface BeybladeImageUploaderProps {
     spinDirection?: string;
     radius?: number;
     mass?: number;
-    actualSize?: number;
   };
 }
 

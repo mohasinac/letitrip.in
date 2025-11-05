@@ -1,12 +1,19 @@
 /**
  * Beyblade Preview Component
  * Displays live preview of Beyblade with special move animation
+ * Uses resolution-based sizing: 1cm = ARENA_RESOLUTION / 45 pixels
  */
 
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import { BeybladeStats } from "@/types/beybladeStats";
+import { 
+  getBeybladeDisplayRadius, 
+  getBeybladePreviewScale,
+  BEYBLADE_PREVIEW_SETTINGS 
+} from "@/constants/beybladeConstants";
+import { ARENA_RESOLUTION } from "@/types/arenaConfigNew";
 
 interface BeybladePreviewProps {
   beyblade: BeybladeStats;
@@ -27,6 +34,10 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isSpinning, setIsSpinning] = useState(true);
   const [zoom, setZoom] = useState(100);
+  
+  // High-res canvas size (2x for retina displays)
+  const CANVAS_RESOLUTION = 800; // High resolution for crisp rendering
+  const DISPLAY_SIZE = 400; // Display size in pixels
 
   // Auto-pause spinning when in click mode (placing contact points)
   // Also reset rotation to 0 for accurate spike placement
@@ -45,8 +56,12 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left - canvas.width / 2;
-    const y = e.clientY - rect.top - canvas.height / 2;
+    // Account for canvas resolution vs display size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const x = (e.clientX - rect.left) * scaleX - canvas.width / 2;
+    const y = (e.clientY - rect.top) * scaleY - canvas.height / 2;
 
     // Calculate angle from center
     let angle = Math.atan2(y, x) * (180 / Math.PI);
@@ -86,21 +101,34 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw stadium background
-      ctx.fillStyle = "#f3f4f6";
+      ctx.fillStyle = BEYBLADE_PREVIEW_SETTINGS.BACKGROUND_COLOR;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw center circle
+      // Draw center circle (reference) - scale to canvas resolution
+      const scaleFactor = canvas.width / DISPLAY_SIZE;
       ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, 150, 0, Math.PI * 2);
-      ctx.strokeStyle = "#d1d5db";
-      ctx.lineWidth = 2;
+      ctx.arc(
+        canvas.width / 2, 
+        canvas.height / 2, 
+        BEYBLADE_PREVIEW_SETTINGS.CENTER_CIRCLE_RADIUS * scaleFactor, 
+        0, 
+        Math.PI * 2
+      );
+      ctx.strokeStyle = BEYBLADE_PREVIEW_SETTINGS.GRID_COLOR;
+      ctx.lineWidth = 2 * scaleFactor;
       ctx.stroke();
 
-      // Draw beyblade
+      // Calculate beyblade size using resolution-based system
+      // 1 cm = ARENA_RESOLUTION / 45 pixels
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const baseSize = beyblade.actualSize || 80;
-      const size = baseSize * (zoom / 100);
+      
+      // Get display radius from beyblade's radius in cm
+      const baseRadiusPixels = getBeybladeDisplayRadius(beyblade.radius);
+      
+      // Scale to preview canvas (which is smaller than full arena)
+      const previewScale = getBeybladePreviewScale(DISPLAY_SIZE);
+      const displayRadius = baseRadiusPixels * previewScale * (zoom / 100) * scaleFactor;
 
       ctx.save();
       ctx.translate(centerX, centerY);
@@ -118,7 +146,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
 
         // Create circular clipping path
         ctx.beginPath();
-        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, displayRadius, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
 
@@ -132,18 +160,18 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
 
         if (aspectRatio > 1) {
           // Landscape image
-          imgWidth = size * imagePos.scale;
+          imgWidth = (displayRadius * 2) * imagePos.scale;
           imgHeight = imgWidth / aspectRatio;
         } else {
           // Portrait or square image
-          imgHeight = size * imagePos.scale;
+          imgHeight = (displayRadius * 2) * imagePos.scale;
           imgWidth = imgHeight * aspectRatio;
         }
 
         // Calculate position offset from center
         // imagePos x and y are from -4 to 4, convert to pixels
-        const offsetX = imagePos.x * (size / 4);
-        const offsetY = imagePos.y * (size / 4);
+        const offsetX = imagePos.x * (displayRadius / 2);
+        const offsetY = imagePos.y * (displayRadius / 2);
 
         // Draw the image with position, scale, and rotation
         ctx.drawImage(
@@ -162,23 +190,23 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
 
         // Draw border around the image
         ctx.beginPath();
-        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, displayRadius, 0, Math.PI * 2);
         ctx.strokeStyle = getTypeColor(beyblade.type);
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 4 * scaleFactor;
         ctx.stroke();
       } else {
         // Fallback: Draw colored circle with type indicator
         ctx.beginPath();
-        ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, displayRadius, 0, Math.PI * 2);
         ctx.fillStyle = getTypeColor(beyblade.type);
         ctx.fill();
         ctx.strokeStyle = "#1f2937";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3 * scaleFactor;
         ctx.stroke();
 
         // Spin direction indicator
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 20px Arial";
+        ctx.font = `bold ${20 * scaleFactor}px Arial`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(beyblade.spinDirection === "left" ? "◄" : "►", 0, 0);
@@ -203,10 +231,10 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
         ctx.translate(centerX, centerY);
         ctx.rotate(rotationRef.current);
 
-        beyblade.pointsOfContact.forEach((point) => {
+        beyblade.pointsOfContact.forEach((point, index) => {
           const angleRad = (point.angle - 90) * (Math.PI / 180);
           const widthRad = (point.width / 2) * (Math.PI / 180);
-          const contactRadius = size / 2 + 5; // Just outside the beyblade
+          const contactRadius = displayRadius + 5 * scaleFactor; // Just outside the beyblade
 
           const startAngle = angleRad - widthRad;
           const endAngle = angleRad + widthRad;
@@ -214,11 +242,31 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           // Draw contact arc
           ctx.beginPath();
           ctx.arc(0, 0, contactRadius, startAngle, endAngle);
-          ctx.lineWidth = 4;
+          ctx.lineWidth = 6 * scaleFactor; // Thicker for visibility
 
           // Color based on damage multiplier (red to yellow gradient)
           const hue = Math.min((point.damageMultiplier - 1.0) * 300, 120);
           ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+          ctx.stroke();
+          
+          // Add glow effect for contact points
+          ctx.beginPath();
+          ctx.arc(0, 0, contactRadius, startAngle, endAngle);
+          ctx.lineWidth = 12 * scaleFactor;
+          ctx.strokeStyle = `hsla(${hue}, 90%, 60%, 0.3)`;
+          ctx.stroke();
+          
+          // Add small indicator dot at the center of the contact point
+          const indicatorAngle = point.angle * (Math.PI / 180) - Math.PI / 2;
+          const indicatorX = Math.cos(indicatorAngle) * contactRadius;
+          const indicatorY = Math.sin(indicatorAngle) * contactRadius;
+          
+          ctx.beginPath();
+          ctx.arc(indicatorX, indicatorY, 3 * scaleFactor, 0, Math.PI * 2);
+          ctx.fillStyle = `hsl(${hue}, 100%, 60%)`;
+          ctx.fill();
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 1 * scaleFactor;
           ctx.stroke();
         });
 
@@ -231,23 +279,43 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
         ctx.translate(centerX, centerY);
         ctx.rotate(rotationRef.current);
 
-        beyblade.spinStealPoints.forEach((point) => {
+        beyblade.spinStealPoints.forEach((point, index) => {
           const angleRad = (point.angle - 90) * (Math.PI / 180);
           const widthRad = (point.width / 2) * (Math.PI / 180);
-          const spinStealRadius = size / 2 + 12; // Slightly further out than contact points
+          const spinStealRadius = displayRadius + 12 * scaleFactor; // Slightly further out than contact points
 
           const startAngle = angleRad - widthRad;
           const endAngle = angleRad + widthRad;
 
-          // Draw spin steal arc
+          // Draw spin steal arc with glow effect
           ctx.beginPath();
           ctx.arc(0, 0, spinStealRadius, startAngle, endAngle);
-          ctx.lineWidth = 4;
-
+          ctx.lineWidth = 6 * scaleFactor; // Thicker for visibility
+          
           // Cyan/Blue color based on spin steal multiplier
           // 1.0x = cyan (180), 2.0x = deep blue (220)
           const hue = 180 + (point.spinStealMultiplier - 1.0) * 40;
           ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+          ctx.stroke();
+          
+          // Add glow effect
+          ctx.beginPath();
+          ctx.arc(0, 0, spinStealRadius, startAngle, endAngle);
+          ctx.lineWidth = 12 * scaleFactor;
+          ctx.strokeStyle = `hsla(${hue}, 90%, 60%, 0.3)`;
+          ctx.stroke();
+          
+          // Add small indicator dot at the center of the spin steal point
+          const indicatorAngle = point.angle * (Math.PI / 180) - Math.PI / 2;
+          const indicatorX = Math.cos(indicatorAngle) * spinStealRadius;
+          const indicatorY = Math.sin(indicatorAngle) * spinStealRadius;
+          
+          ctx.beginPath();
+          ctx.arc(indicatorX, indicatorY, 3 * scaleFactor, 0, Math.PI * 2);
+          ctx.fillStyle = `hsl(${hue}, 100%, 70%)`;
+          ctx.fill();
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 1 * scaleFactor;
           ctx.stroke();
         });
 
@@ -296,23 +364,42 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
     <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
       <h3 className="text-lg font-semibold mb-4 text-gray-900">Live Preview</h3>
 
-      {/* Canvas Preview */}
-      <div className="mb-4">
+      {/* Canvas Preview - Fixed aspect ratio */}
+      <div className="mb-4 flex justify-center">
         <canvas
           ref={canvasRef}
-          width={400}
-          height={400}
+          width={CANVAS_RESOLUTION}
+          height={CANVAS_RESOLUTION}
           onClick={handleCanvasClick}
-          className={`w-full border-2 border-gray-300 rounded-lg ${
+          style={{ 
+            width: `${DISPLAY_SIZE}px`, 
+            height: `${DISPLAY_SIZE}px`,
+            maxWidth: '100%',
+            aspectRatio: '1 / 1' 
+          }}
+          className={`border-2 border-gray-300 rounded-lg ${
             clickMode ? "cursor-crosshair" : ""
           }`}
         />
-        {clickMode && (
-          <p className="text-xs text-blue-600 mt-2 text-center font-medium">
-            📍 Click on the canvas to place a spike (Spinning paused)
-          </p>
-        )}
       </div>
+      
+      {/* Aspect Ratio Notice */}
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-start gap-2">
+          <span className="text-blue-600 text-lg">ℹ️</span>
+          <div className="text-xs text-blue-800">
+            <p className="font-semibold mb-1">Gameplay Note:</p>
+            <p>During actual gameplay, beyblades maintain perfect circular shape (1:1 aspect ratio). 
+            If this preview appears squished, it's due to display container constraints and won't affect in-game rendering.</p>
+          </div>
+        </div>
+      </div>
+
+      {clickMode && (
+        <p className="text-xs text-blue-600 mb-4 text-center font-medium">
+          📍 Click on the canvas to place a spike (Spinning paused)
+        </p>
+      )}
 
       {/* Special Move Test Button */}
       {hasSpecialMove && (
@@ -400,6 +487,25 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           <span className="font-medium capitalize">
             {beyblade.spinDirection}
           </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Radius:</span>
+          <span className="font-medium">
+            {beyblade.radius} cm ({getBeybladeDisplayRadius(beyblade.radius).toFixed(0)}px)
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Mass:</span>
+          <span className="font-medium">{beyblade.mass}g</span>
+        </div>
+      </div>
+
+      {/* Resolution Info */}
+      <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
+        <div className="font-semibold mb-1">📐 Resolution System:</div>
+        <div>1 cm = {(ARENA_RESOLUTION / 45).toFixed(1)}px (at {ARENA_RESOLUTION}px arena)</div>
+        <div className="text-blue-600 mt-1">
+          Standard: 4cm = 96px diameter
         </div>
       </div>
 
