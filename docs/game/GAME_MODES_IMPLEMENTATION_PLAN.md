@@ -48,8 +48,13 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 
 ### Future Goals (Phase 3+)
 
-- Tournament Mode (multi-tiered battles)
-- Multiplayer (1v1, 1vMany, ManyvAI)
+- **Tournament Mode** (multi-tiered battles vs AI and PvP)
+- **Multiplayer Modes:**
+  - 1v1 PvP (Player vs Player matchmaking)
+  - 1vMany (1 host vs 2-3 opponents)
+  - Raid Mode (2-4 players + friends vs AI bosses)
+  - Free-For-All (3-8 players battle royale)
+  - Tournament PvP (8-64 player brackets)
 
 ---
 
@@ -85,10 +90,11 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 - **Player vs AI** - Battle against AI-controlled Beyblade
   - AI Difficulty levels: Easy, Medium, Hard, Expert
   - AI behavior patterns based on Beyblade type
-- **Player vs Player (1v1)** - Future implementation
-  - Real-time matchmaking
+- **Player vs Player (1v1 PvP)** - Real-time multiplayer battles
+  - Matchmaking with ELO rating
   - Ranked/Unranked modes
   - Custom rooms with codes
+  - Real-time state sync (<100ms latency)
 
 **Features:**
 
@@ -99,7 +105,68 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 
 ---
 
-### Mode 3: Tournament Mode (Future - Phase 3+)
+### Mode 3: 1vMany PvP (Future - Phase 4+)
+
+**Description:** Asymmetric multiplayer - 1 host vs 2-3 opponents
+
+**Features:**
+
+- Host creates private room with code
+- 1 host player vs 2-3 opponent players
+- All beyblades active simultaneously
+- Last beyblade standing wins
+- Host has slight advantage (stronger beyblade)
+
+**Use Cases:**
+
+- Boss battle feel for host player
+- Cooperative play for opponents
+- Private matches between friends
+- Skill-based challenges
+
+---
+
+### Mode 4: Raid Mode (Co-op) (Future - Phase 4+)
+
+**Description:** Cooperative multiplayer against AI boss beyblades
+
+**Features:**
+
+- 2-4 players + optional friends vs 1-3 AI bosses
+- Boss AI has special moves and rage mode
+- Team health pool with respawn mechanics
+- MVP calculation based on damage dealt
+- Rewards for team completion
+
+**Phases:**
+- Wave 1: 1 Boss (normal difficulty)
+- Wave 2: 2 Bosses (increased HP)
+- Wave 3: 1 Super Boss (rage mode + special moves)
+
+**Use Cases:**
+
+- Cooperative gameplay
+- Team-based strategy
+- PvE content for casual players
+- Daily/weekly raid events
+
+---
+
+### Mode 5: Free-For-All (Future - Phase 5+)
+
+**Description:** Battle royale with 3-8 players
+
+**Features:**
+
+- Last beyblade standing wins
+- Shrinking arena over time
+- Power-ups spawn randomly
+- Spectator mode for eliminated players
+- Solo or team-based FFA
+
+---
+
+### Mode 6: Tournament Mode (Future - Phase 3+)
 
 **Description:** Multi-round bracket-style competition
 
@@ -110,12 +177,26 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 - Progressive difficulty
 - Tournament rewards
 - Spectator mode
+- Live bracket visualization
 
 **Sub-modes:**
 
-- Solo Tournament (vs AI)
-- Multiplayer Tournament (vs Players)
-- Mixed Tournament (Players + AI)
+- **Solo Tournament (vs AI)** - Player progresses through AI opponents
+  - 4, 8, or 16 bracket sizes
+  - AI difficulty increases each round
+  - Unlock rewards and achievements
+  
+- **PvP Tournament (vs Players)** - Competitive player brackets
+  - 8, 16, 32, or 64 player brackets
+  - Seeding based on ELO rating
+  - Registration window + start time
+  - Prize pools and rankings
+  - Spectator mode for live matches
+  
+- **Mixed Tournament (Players + AI)** - Hybrid mode
+  - Fill empty bracket slots with AI
+  - AI difficulty scales with player rank
+  - Good for lower population periods
 
 ---
 
@@ -149,6 +230,26 @@ Build a scalable, real-time Beyblade battle game with multiple game modes, suppo
 │  • Room Management                                      │
 │  • Basic State Broadcasting                             │
 │  • No Physics (relies on client)                        │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           │ HTTP REST API
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                  Next.js API Routes                         │
+│  • Beyblade data (GET /api/beyblades)                      │
+│  • Arena data (GET /api/arenas)                            │
+│  • Player stats (GET /api/stats)                           │
+│  • Match history (GET /api/matches)                        │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                    Firebase Firestore                       │
+│  • Beyblades collection                                     │
+│  • Arenas collection                                        │
+│  • Players collection                                       │
+│  • Matches collection                                       │
+│  • Tournaments collection (future)                          │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -453,11 +554,12 @@ export class BattleRoom extends Room {
 
 ---
 
-### Phase 5: Future - Multiplayer (Weeks 9-12)
+### Phase 5: Future - Multiplayer PvP (Weeks 9-12)
 
 **Week 9-10: PvP Foundation**
 
-- [ ] Matchmaking system
+- [ ] Matchmaking system with ELO rating
+- [ ] PvPBattleRoom implementation
 - [ ] Ranked/Unranked queues
 - [ ] Room codes for custom games
 - [ ] Latency compensation
@@ -471,19 +573,69 @@ export class BattleRoom extends Room {
 - [ ] Replay system
 - [ ] Chat system
 
-**Deliverable:** Working Player vs Player mode
+**Deliverable:** Working Player vs Player 1v1 mode
 
 ---
 
-### Phase 6: Future - Tournament Mode (Weeks 13-16)
+### Phase 6: Future - Advanced Multiplayer (Weeks 13-16)
 
-- [ ] Tournament bracket system
-- [ ] Tournament creation/management
-- [ ] Progressive difficulty
+**Week 13: 1vMany Mode**
+
+- [ ] OneVsManyRoom implementation
+- [ ] Room code system for private matches
+- [ ] Host vs opponents logic
+- [ ] Asymmetric balancing (host advantage)
+- [ ] Simultaneous beyblade physics
+
+**Week 14: Raid Mode (Co-op)**
+
+- [ ] RaidRoom implementation
+- [ ] Boss AI with special moves
+- [ ] Rage mode mechanics
+- [ ] Team lives and respawn system
+- [ ] MVP calculation
+- [ ] Wave progression system
+
+**Week 15: Free-For-All**
+
+- [ ] FFARoom implementation (3-8 players)
+- [ ] Shrinking arena mechanics
+- [ ] Power-up spawn system
+- [ ] Spectator mode for eliminated players
+- [ ] Solo and team FFA variants
+
+**Week 16: Polish & Testing**
+
+- [ ] Balance tuning for all multiplayer modes
+- [ ] Load testing (multiple concurrent rooms)
+- [ ] Anti-cheat validation
+- [ ] Performance optimization
+
+**Deliverable:** Working 1vMany, Raid, and FFA modes
+
+---
+
+### Phase 7: Future - Tournament Modes (Weeks 17-20)
+
+**Week 17-18: AI Tournament**
+
+- [ ] Tournament bracket generation
+- [ ] AI difficulty progression
+- [ ] Best of 3/5 match system
 - [ ] Tournament rewards
-- [ ] Tournament history
+- [ ] Tournament history tracking
 
-**Deliverable:** Working Tournament System
+**Week 19-20: PvP Tournament**
+
+- [ ] TournamentRoom implementation
+- [ ] Player registration window
+- [ ] Seeding based on ELO rating
+- [ ] Bracket visualization UI
+- [ ] Live match spectating
+- [ ] Prize pool system
+- [ ] Mixed tournament (Players + AI filler)
+
+**Deliverable:** Complete Tournament System (AI and PvP)
 
 ---
 
@@ -553,9 +705,48 @@ export class BattleRoom extends Room {
 - **Phase 1-2 Modes:**
   - Tryout (solo practice)
   - Single Battle (vs AI)
-- **Future Modes:**
-  - Single Battle (vs Player)
-  - Tournament
+- **Phase 5-6 Modes (Future):**
+  - Single Battle PvP (1v1 vs Player with matchmaking)
+  - 1vMany PvP (1 host vs 2-3 opponents)
+  - Raid Mode (2-4 players + friends vs AI bosses)
+  - Free-For-All (3-8 player battle royale)
+- **Phase 7 Modes (Future):**
+  - Tournament vs AI (bracket-style progression)
+  - Tournament PvP (player tournaments with prizes)
+
+#### FR-7: Matchmaking System (Future - Phase 5+)
+
+- **Description:** ELO-based matchmaking for PvP modes
+- **Priority:** Medium (Future)
+- **Details:**
+  - ELO rating calculation per player
+  - Match players within ±100 ELO range
+  - Ranked and Unranked queues
+  - Queue timeout with AI fallback
+  - Re-queue penalty for disconnects
+
+#### FR-8: Raid Boss AI (Future - Phase 6+)
+
+- **Description:** Advanced AI for co-op raid mode
+- **Priority:** Low (Future)
+- **Details:**
+  - Special move patterns (spin attack, dash, etc.)
+  - Rage mode at 30% HP (increased damage/speed)
+  - Target switching logic
+  - Team damage tracking
+  - MVP calculation based on damage dealt
+
+#### FR-9: Tournament Brackets (Future - Phase 7+)
+
+- **Description:** Bracket generation and management
+- **Priority:** Low (Future)
+- **Details:**
+  - Bracket sizes: 4, 8, 16, 32, 64 players
+  - Single/double elimination formats
+  - Seeding based on ELO rating
+  - Automatic match scheduling
+  - Live bracket updates
+  - Prize distribution
 
 ---
 
@@ -747,52 +938,76 @@ interface Arena {
 ```typescript
 interface Match {
   id: string;
-  mode: "tryout" | "single-battle" | "tournament";
+  mode: "tryout" | "single-battle-ai" | "single-battle-pvp" | "1vmany" | "raid" | "ffa" | "tournament-ai" | "tournament-pvp";
 
-  // Players
-  player1: {
+  // Players (flexible array for different modes)
+  players: Array<{
     userId: string;
-    username: string;
-    beybladeId: string;
-    isAI: false;
-  };
-
-  player2?: {
-    userId?: string; // null for AI
     username: string;
     beybladeId: string;
     isAI: boolean;
     aiDifficulty?: "easy" | "medium" | "hard" | "expert";
-  };
+    team?: "host" | "opponents" | "team1" | "team2"; // For raid and team modes
+  }>;
 
   // Arena
   arenaId: string;
 
   // Results
-  winner: "player1" | "player2" | "draw" | null; // null if ongoing
+  winner: "player1" | "player2" | "team" | "draw" | null; // null if ongoing
   status: "waiting" | "in-progress" | "finished" | "abandoned";
 
-  // Stats
-  duration: number; // seconds
-  maxDuration: number; // seconds (timeout)
+  // Mode-specific data
+  modeData?: {
+    // For Raid mode
+    raid?: {
+      wave: number;
+      bossesDefeated: number;
+      teamLives: number;
+      mvpPlayerId: string;
+    };
+    
+    // For 1vMany
+    oneVsMany?: {
+      hostId: string;
+      opponentIds: string[];
+    };
+    
+    // For FFA
+    ffa?: {
+      placementOrder: string[]; // playerIds in elimination order
+    };
+    
+    // For Tournament
+    tournament?: {
+      tournamentId: string;
+      round: number;
+      matchNumber: number;
+      bracket: "winners" | "losers";
+    };
+  };
 
-  player1Stats: {
+  // Stats (flexible for multiple players)
+  playerStats: Array<{
+    userId: string;
     damageDealt: number;
     damageReceived: number;
     collisions: number;
     specialMovesUsed: number;
     timeInLoop: number;
     ringOuts: number;
-  };
+    placement?: number; // For FFA/Tournament
+  }>;
 
-  player2Stats?: {
-    /* same as player1Stats */
-  };
+  // Duration
+  duration: number; // seconds
+  maxDuration: number; // seconds (timeout)
 
   // Timeline (optional for replay)
   events?: Array<{
     timestamp: number;
-    type: "collision" | "special-move" | "ring-out" | "damage";
+    type: "collision" | "special-move" | "ring-out" | "damage" | "elimination";
+    playerId?: string;
     data: any;
   }>;
 
@@ -823,15 +1038,41 @@ interface PlayerStats {
       sessions: number;
       totalTime: number; // seconds
     };
-    singleBattle: {
+    singleBattleAI: {
       matches: number;
       wins: number;
       losses: number;
     };
-    tournament?: {
+    singleBattlePvP: {
+      matches: number;
+      wins: number;
+      losses: number;
+      eloRating: number;
+    };
+    oneVsMany?: {
+      asHost: { matches: number; wins: number };
+      asOpponent: { matches: number; wins: number };
+    };
+    raid?: {
+      matchesPlayed: number;
+      wavesCompleted: number;
+      mvpCount: number;
+    };
+    ffa?: {
+      matchesPlayed: number;
+      firstPlace: number;
+      topThree: number;
+    };
+    tournamentAI?: {
       participated: number;
       wins: number;
       bestPlacement: number;
+    };
+    tournamentPvP?: {
+      participated: number;
+      wins: number;
+      bestPlacement: number;
+      prizesWon: number;
     };
   };
 
@@ -851,9 +1092,9 @@ interface PlayerStats {
     timesUsed: number;
   }>;
 
-  // Ranking (future)
-  eloRating?: number;
-  rank?: string; // "Bronze", "Silver", "Gold", etc.
+  // Ranking
+  eloRating: number; // For PvP matchmaking
+  rank: string; // "Bronze", "Silver", "Gold", "Platinum", "Diamond"
   leaderboardPosition?: number;
 
   // Meta
@@ -872,7 +1113,8 @@ interface Tournament {
 
   // Structure
   type: "single-elimination" | "double-elimination";
-  maxPlayers: number; // 8, 16, 32, 64
+  tournamentType: "ai" | "pvp" | "mixed"; // AI-only, PvP, or Mixed
+  maxPlayers: number; // 4, 8, 16, 32, 64
   currentPlayers: number;
 
   // Settings
@@ -881,23 +1123,49 @@ interface Tournament {
   allowedBeybladeTypes?: Array<"attack" | "defense" | "stamina" | "balanced">;
 
   // Status
-  status: "registration" | "in-progress" | "finished";
+  status: "registration" | "seeding" | "in-progress" | "finished" | "cancelled";
+
+  // Seeding (for PvP tournaments)
+  seedingMethod?: "elo" | "random" | "manual";
+  
+  // Players
+  registeredPlayers: Array<{
+    userId: string;
+    username: string;
+    beybladeId: string;
+    eloRating?: number; // For seeding
+    seed?: number; // Assigned seed position
+    isAI: boolean;
+    aiDifficulty?: "easy" | "medium" | "hard" | "expert";
+  }>;
 
   // Bracket
   bracket: Array<{
-    round: number;
+    round: number; // 1 = Finals, 2 = Semi-finals, 3 = Quarter-finals, etc.
     matchNumber: number;
     player1Id: string;
     player2Id: string;
+    player1Seed?: number;
+    player2Seed?: number;
     winnerId?: string;
     matchId?: string; // Reference to matches collection
+    scheduledAt?: Timestamp;
+    completedAt?: Timestamp;
   }>;
 
-  // Prizes (optional)
-  rewards: {
-    first: { coins: number; items?: string[] };
-    second: { coins: number; items?: string[] };
-    third: { coins: number; items?: string[] };
+  // Prizes (for PvP tournaments)
+  rewards?: {
+    first: { coins: number; items?: string[]; title?: string };
+    second: { coins: number; items?: string[]; title?: string };
+    third: { coins: number; items?: string[]; title?: string };
+    participation: { coins: number };
+  };
+  
+  // Entry requirements (for PvP tournaments)
+  entryRequirements?: {
+    minElo?: number;
+    maxElo?: number;
+    entryCost?: number; // coins
   };
 
   // Meta
@@ -1048,7 +1316,7 @@ Response: {
 #### Client → Server
 
 ```typescript
-// Join a room
+// Join a room - Tryout/Single Battle
 client.joinOrCreate("tryout_room", {
   beybladeId: string;
   arenaId: string;
@@ -1063,6 +1331,52 @@ client.joinOrCreate("battle_room", {
   username: string;
   mode: "vs-ai" | "vs-player";
   aiDifficulty?: "easy" | "medium" | "hard" | "expert";
+});
+
+// Join PvP matchmaking
+client.joinOrCreate("pvp_battle_room", {
+  beybladeId: string;
+  arenaId: string;
+  userId: string;
+  username: string;
+  eloRating: number;
+  ranked: boolean;
+});
+
+// Join 1vMany room
+client.joinOrCreate("one_vs_many_room", {
+  beybladeId: string;
+  arenaId: string;
+  userId: string;
+  username: string;
+  role: "host" | "opponent";
+  roomCode?: string; // For joining existing room
+});
+
+// Join Raid room
+client.joinOrCreate("raid_room", {
+  beybladeId: string;
+  arenaId: string;
+  userId: string;
+  username: string;
+  partyCode?: string; // For private raids with friends
+});
+
+// Join FFA room
+client.joinOrCreate("ffa_room", {
+  beybladeId: string;
+  arenaId: string;
+  userId: string;
+  username: string;
+  teamMode: boolean; // Solo FFA or Team FFA
+});
+
+// Join Tournament
+client.joinOrCreate("tournament_room", {
+  tournamentId: string;
+  userId: string;
+  username: string;
+  beybladeId: string;
 });
 ```
 
@@ -1084,6 +1398,15 @@ room.send("action", {
 ```
 
 ```typescript
+// Matchmaking actions
+room.send("ready", {}); // Signal ready for match start
+
+room.send("cancel-queue", {}); // Cancel matchmaking
+
+room.send("chat", { message: string }); // Chat message
+```
+
+```typescript
 // Leave room
 room.leave();
 ```
@@ -1098,6 +1421,9 @@ room.onStateChange((state: GameState) => {
   // - Arena state
   // - Timer
   // - Events (collisions, special moves)
+  // - Player scores (for FFA/Raid)
+  // - Team lives (for Raid)
+  // - Boss rage mode (for Raid)
 });
 ```
 
@@ -1111,9 +1437,34 @@ room.onMessage("special-move", (data) => {
   // Show special move animation
 });
 
+room.onMessage("player-eliminated", (data) => {
+  // Show elimination notification (FFA)
+  // data: { playerId, placement, eliminatedBy }
+});
+
+room.onMessage("wave-complete", (data) => {
+  // Show wave completion (Raid)
+  // data: { wave, nextWave, teamLives }
+});
+
+room.onMessage("boss-rage", (data) => {
+  // Boss entered rage mode (Raid)
+  // data: { bossId, newStats }
+});
+
 room.onMessage("game-over", (data) => {
   // Show victory/defeat screen
-  // data: { winner, loser, stats }
+  // data: { winner, loser, stats, placement, rewards }
+});
+
+room.onMessage("match-found", (data) => {
+  // Matchmaking found a match
+  // data: { opponentName, opponentElo, countdown }
+});
+
+room.onMessage("tournament-bracket-update", (data) => {
+  // Tournament bracket updated
+  // data: { bracket, nextMatch, yourMatch }
 });
 ```
 
