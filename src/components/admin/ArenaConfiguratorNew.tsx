@@ -11,6 +11,8 @@ import BasicsTab from "./arena-tabs/BasicsTab";
 import WaterBodiesTab from "./arena-tabs/WaterBodiesTab";
 import PortalsTab from "./arena-tabs/PortalsTab";
 import PitsTab from "./arena-tabs/PitsTab";
+import WallsTab from "./arena-tabs/WallsTab";
+import SpeedPathsTab from "./arena-tabs/SpeedPathsTab";
 import {
   ArenaConfig,
   ArenaShape,
