@@ -1366,7 +1366,7 @@ export default function ArenaConfiguratorNew({
                                   id: `portal${portalNum}`,
                                   portalNumber: portalNum,
                                   position: { x, y },
-                                  radius: 15,
+                                  radius: ARENA_RESOLUTION * 0.04, // 4% of arena (43.2px @ 1080)
                                   color: colors[portalNum - 1],
                                   autoPlace: true,
                                   distanceFromCenter: distance,
@@ -1401,7 +1401,7 @@ export default function ArenaConfiguratorNew({
                                   id: `portal${portalNum}`,
                                   portalNumber: portalNum,
                                   position: { x: offset, y: 0 },
-                                  radius: 15,
+                                  radius: ARENA_RESOLUTION * 0.04, // 4% of arena (43.2px @ 1080)
                                   color: colors[portalNum - 1],
                                   autoPlace: false,
                                 },
@@ -1520,8 +1520,26 @@ export default function ArenaConfiguratorNew({
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Position X (px)
+                                  Position X: {portal.position.x.toFixed(1)} px
                                 </label>
+                                <input
+                                  type="range"
+                                  value={portal.position.x}
+                                  onChange={(e) => {
+                                    const newPortals = [...config.portals];
+                                    newPortals[idx].position.x = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({
+                                      ...config,
+                                      portals: newPortals,
+                                    });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 5}
+                                  max={ARENA_RESOLUTION / 2 - 5}
+                                  step={1}
+                                  className="w-full"
+                                />
                                 <input
                                   type="number"
                                   value={portal.position.x}
@@ -1538,14 +1556,32 @@ export default function ArenaConfiguratorNew({
                                   min={-ARENA_RESOLUTION / 2 + 5}
                                   max={ARENA_RESOLUTION / 2 - 5}
                                   step={0.5}
-                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
+                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg mt-2"
                                 />
                               </div>
 
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Position Y (px)
+                                  Position Y: {portal.position.y.toFixed(1)} px
                                 </label>
+                                <input
+                                  type="range"
+                                  value={portal.position.y}
+                                  onChange={(e) => {
+                                    const newPortals = [...config.portals];
+                                    newPortals[idx].position.y = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({
+                                      ...config,
+                                      portals: newPortals,
+                                    });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 5}
+                                  max={ARENA_RESOLUTION / 2 - 5}
+                                  step={1}
+                                  className="w-full"
+                                />
                                 <input
                                   type="number"
                                   value={portal.position.y}
@@ -1562,7 +1598,7 @@ export default function ArenaConfiguratorNew({
                                   min={-ARENA_RESOLUTION / 2 + 5}
                                   max={ARENA_RESOLUTION / 2 - 5}
                                   step={0.5}
-                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
+                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg mt-2"
                                 />
                               </div>
                             </div>
@@ -1570,8 +1606,27 @@ export default function ArenaConfiguratorNew({
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Radius (px)
+                                  Radius: {portal.radius.toFixed(1)} px (
+                                  {((portal.radius / ARENA_RESOLUTION) * 100).toFixed(1)}% of arena)
                                 </label>
+                                <input
+                                  type="range"
+                                  value={portal.radius}
+                                  onChange={(e) => {
+                                    const newPortals = [...config.portals];
+                                    newPortals[idx].radius = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({
+                                      ...config,
+                                      portals: newPortals,
+                                    });
+                                  }}
+                                  min={ARENA_RESOLUTION * 0.01}
+                                  max={ARENA_RESOLUTION * 0.1}
+                                  step={0.5}
+                                  className="w-full"
+                                />
                                 <input
                                   type="number"
                                   value={portal.radius}
@@ -1585,10 +1640,10 @@ export default function ArenaConfiguratorNew({
                                       portals: newPortals,
                                     });
                                   }}
-                                  min={1}
-                                  max={10}
+                                  min={ARENA_RESOLUTION * 0.01}
+                                  max={ARENA_RESOLUTION * 0.1}
                                   step={0.5}
-                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
+                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg mt-2"
                                 />
                               </div>
 
@@ -1662,7 +1717,7 @@ export default function ArenaConfiguratorNew({
                                   id: "pit1",
                                   type: "crater" as const,
                                   position: { x: 0, y: 0 },
-                                  radius: 4,
+                                  radius: ARENA_RESOLUTION * 0.04, // 4% of arena (43.2px @ 1080)
                                   depth: 9,
                                   spinDamagePerSecond: 25,
                                   escapeChance: 0.5,
@@ -1710,7 +1765,7 @@ export default function ArenaConfiguratorNew({
                                   id: `pit${i + 1}`,
                                   type: "edge" as const,
                                   position: { x: vertex.x, y: vertex.y },
-                                  radius: 2.5,
+                                  radius: ARENA_RESOLUTION * 0.015, // 1.5% of arena (16.2px @ 1080)
                                   depth: 7,
                                   spinDamagePerSecond: 20,
                                   escapeChance: 0.5,
@@ -1748,7 +1803,7 @@ export default function ArenaConfiguratorNew({
                                   id: `pit${pitNum}`,
                                   type: "crater",
                                   position: { x: 0, y: 0 },
-                                  radius: 3,
+                                  radius: ARENA_RESOLUTION * 0.03, // 3% of arena (32.4px @ 1080)
                                   depth: 8,
                                   spinDamagePerSecond: 25,
                                   escapeChance: 0.5,
@@ -1898,56 +1953,89 @@ export default function ArenaConfiguratorNew({
 
                         {/* Manual positioning */}
                         {!pit.autoPlace && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Position X (px)
-                              </label>
-                              <input
-                                type="number"
-                                value={pit.position.x}
-                                onChange={(e) => {
-                                  const newPits = [...config.pits];
-                                  newPits[idx].position.x = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({ ...config, pits: newPits });
-                                }}
-                                min={-ARENA_RESOLUTION / 2 + 3}
-                                max={ARENA_RESOLUTION / 2 - 3}
-                                step={0.5}
-                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
-                              />
-                            </div>
+                          <>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  Position X: {pit.position.x.toFixed(1)} px
+                                </label>
+                                <input
+                                  type="range"
+                                  value={pit.position.x}
+                                  onChange={(e) => {
+                                    const newPits = [...config.pits];
+                                    newPits[idx].position.x = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({ ...config, pits: newPits });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 3}
+                                  max={ARENA_RESOLUTION / 2 - 3}
+                                  step={1}
+                                  className="w-full"
+                                />
+                                <input
+                                  type="number"
+                                  value={pit.position.x}
+                                  onChange={(e) => {
+                                    const newPits = [...config.pits];
+                                    newPits[idx].position.x = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({ ...config, pits: newPits });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 3}
+                                  max={ARENA_RESOLUTION / 2 - 3}
+                                  step={0.5}
+                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg mt-2"
+                                />
+                              </div>
 
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Position Y (px)
-                              </label>
-                              <input
-                                type="number"
-                                value={pit.position.y}
-                                onChange={(e) => {
-                                  const newPits = [...config.pits];
-                                  newPits[idx].position.y = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({ ...config, pits: newPits });
-                                }}
-                                min={-ARENA_RESOLUTION / 2 + 3}
-                                max={ARENA_RESOLUTION / 2 - 3}
-                                step={0.5}
-                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
-                              />
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  Position Y: {pit.position.y.toFixed(1)} px
+                                </label>
+                                <input
+                                  type="range"
+                                  value={pit.position.y}
+                                  onChange={(e) => {
+                                    const newPits = [...config.pits];
+                                    newPits[idx].position.y = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({ ...config, pits: newPits });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 3}
+                                  max={ARENA_RESOLUTION / 2 - 3}
+                                  step={1}
+                                  className="w-full"
+                                />
+                                <input
+                                  type="number"
+                                  value={pit.position.y}
+                                  onChange={(e) => {
+                                    const newPits = [...config.pits];
+                                    newPits[idx].position.y = parseFloat(
+                                      e.target.value
+                                    );
+                                    setConfig({ ...config, pits: newPits });
+                                  }}
+                                  min={-ARENA_RESOLUTION / 2 + 3}
+                                  max={ARENA_RESOLUTION / 2 - 3}
+                                  step={0.5}
+                                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg mt-2"
+                                />
+                              </div>
                             </div>
-                          </div>
+                          </>
                         )}
 
                         {/* Pit properties */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium mb-2">
-                              Radius: {pit.radius} px
+                              Radius: {pit.radius.toFixed(1)} px (
+                              {((pit.radius / ARENA_RESOLUTION) * 100).toFixed(1)}% of arena)
                             </label>
                             <input
                               type="range"
@@ -1959,8 +2047,8 @@ export default function ArenaConfiguratorNew({
                                 );
                                 setConfig({ ...config, pits: newPits });
                               }}
-                              min={1}
-                              max={5}
+                              min={ARENA_RESOLUTION * 0.005}
+                              max={ARENA_RESOLUTION * 0.08}
                               step={0.5}
                               className="w-full"
                             />
