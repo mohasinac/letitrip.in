@@ -1,0 +1,8 @@
+node_modules/
+lib/
+dist/
+*.log
+.env
+serviceAccountKey.json
+.DS_Store
+*.tsbuildinfo
