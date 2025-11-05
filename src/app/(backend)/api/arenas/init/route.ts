@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '../_lib/database/admin';
-import { verifyAdminSession } from '../_lib/auth/admin-auth';
+import { getAdminDb } from '../../_lib/database/admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { AuthorizationError } from '../../_lib/middleware/error-handler';
 
-
-
+// Default arena configuration for initialization
 const DEFAULT_ARENA = {
   name: 'Classic Stadium',
   description: 'The standard battle arena - perfect for beginners and competitive play',
@@ -57,12 +54,10 @@ const DEFAULT_ARENA = {
 
 /**
  * POST /api/arenas/init
- * Initialize default arena (admin only)
+ * Initialize default arena (public access for setup)
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify admin authentication
-    await verifyAdminSession(request);
     const db = getAdminDb();
 
     // Check if already exists
@@ -111,13 +106,6 @@ export async function POST(request: NextRequest) {
       message: 'Default arena created successfully',
     });
   } catch (error: any) {
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: error.statusCode }
-      );
-    }
-
     console.error('Error initializing default arena:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to initialize default arena' },

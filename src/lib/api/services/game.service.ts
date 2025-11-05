@@ -4,70 +4,8 @@
  */
 
 import { apiClient } from "../client";
-
-// ============================================
-// Beyblade Types
-// ============================================
-
-export interface Beyblade {
-  id: string;
-  name: string;
-  type: 'attack' | 'defense' | 'stamina' | 'balance';
-  series: string;
-  attack: number;
-  defense: number;
-  stamina: number;
-  weight: number;
-  image?: string;
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CreateBeybladeData {
-  name: string;
-  type: 'attack' | 'defense' | 'stamina' | 'balance';
-  series: string;
-  attack: number;
-  defense: number;
-  stamina: number;
-  weight: number;
-  image?: string;
-  description?: string;
-}
-
-export interface UpdateBeybladeData extends Partial<CreateBeybladeData> {}
-
-// ============================================
-// Arena Types
-// ============================================
-
-export interface Arena {
-  id: string;
-  name: string;
-  type: 'standard' | 'stadium' | 'tornado' | 'beystadium';
-  diameter: number;
-  depth: number;
-  surface: string;
-  description?: string;
-  image?: string;
-  isDefault?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CreateArenaData {
-  name: string;
-  type: 'standard' | 'stadium' | 'tornado' | 'beystadium';
-  diameter: number;
-  depth: number;
-  surface: string;
-  description?: string;
-  image?: string;
-  isDefault?: boolean;
-}
-
-export interface UpdateArenaData extends Partial<CreateArenaData> {}
+import type { BeybladeStats } from "@/types/beybladeStats";
+import type { ArenaConfig } from "@/types/arenaConfig";
 
 // ============================================
 // Game Service Class
@@ -81,9 +19,9 @@ export class GameService {
   /**
    * Get all beyblades
    */
-  static async getBeyblades(): Promise<Beyblade[]> {
+  static async getBeyblades(): Promise<BeybladeStats[]> {
     try {
-      const response = await apiClient.get<Beyblade[]>('/api/beyblades');
+      const response = await apiClient.get<BeybladeStats[]>('/api/beyblades');
       return response;
     } catch (error) {
       console.error("GameService.getBeyblades error:", error);
@@ -94,9 +32,9 @@ export class GameService {
   /**
    * Get beyblade by ID
    */
-  static async getBeyblade(beybladeId: string): Promise<Beyblade> {
+  static async getBeyblade(beybladeId: string): Promise<BeybladeStats> {
     try {
-      const response = await apiClient.get<Beyblade>(`/api/beyblades/${beybladeId}`);
+      const response = await apiClient.get<BeybladeStats>(`/api/beyblades/${beybladeId}`);
       return response;
     } catch (error) {
       console.error("GameService.getBeyblade error:", error);
@@ -107,9 +45,9 @@ export class GameService {
   /**
    * Create new beyblade
    */
-  static async createBeyblade(data: CreateBeybladeData): Promise<Beyblade> {
+  static async createBeyblade(data: Partial<BeybladeStats>): Promise<BeybladeStats> {
     try {
-      const response = await apiClient.post<Beyblade>('/api/beyblades', data);
+      const response = await apiClient.post<BeybladeStats>('/api/beyblades', data);
       return response;
     } catch (error) {
       console.error("GameService.createBeyblade error:", error);
@@ -120,9 +58,9 @@ export class GameService {
   /**
    * Update beyblade
    */
-  static async updateBeyblade(beybladeId: string, data: UpdateBeybladeData): Promise<Beyblade> {
+  static async updateBeyblade(beybladeId: string, data: Partial<BeybladeStats>): Promise<BeybladeStats> {
     try {
-      const response = await apiClient.put<Beyblade>(
+      const response = await apiClient.put<BeybladeStats>(
         `/api/beyblades/${beybladeId}`,
         data
       );
@@ -141,18 +79,6 @@ export class GameService {
       await apiClient.delete<void>(`/api/beyblades/${beybladeId}`);
     } catch (error) {
       console.error("GameService.deleteBeyblade error:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Initialize default beyblades
-   */
-  static async initializeBeyblades(): Promise<void> {
-    try {
-      await apiClient.post<void>('/api/beyblades/init', {});
-    } catch (error) {
-      console.error("GameService.initializeBeyblades error:", error);
       throw error;
     }
   }
@@ -184,9 +110,9 @@ export class GameService {
   /**
    * Get all arenas
    */
-  static async getArenas(): Promise<Arena[]> {
+  static async getArenas(): Promise<ArenaConfig[]> {
     try {
-      const response = await apiClient.get<Arena[]>('/api/arenas');
+      const response = await apiClient.get<ArenaConfig[]>('/api/arenas');
       return response;
     } catch (error) {
       console.error("GameService.getArenas error:", error);
@@ -197,9 +123,9 @@ export class GameService {
   /**
    * Get arena by ID
    */
-  static async getArena(arenaId: string): Promise<Arena> {
+  static async getArena(arenaId: string): Promise<ArenaConfig> {
     try {
-      const response = await apiClient.get<Arena>(`/api/arenas/${arenaId}`);
+      const response = await apiClient.get<ArenaConfig>(`/api/arenas/${arenaId}`);
       return response;
     } catch (error) {
       console.error("GameService.getArena error:", error);
@@ -210,9 +136,9 @@ export class GameService {
   /**
    * Create new arena
    */
-  static async createArena(data: CreateArenaData): Promise<Arena> {
+  static async createArena(data: Partial<ArenaConfig>): Promise<ArenaConfig> {
     try {
-      const response = await apiClient.post<Arena>('/api/arenas', data);
+      const response = await apiClient.post<ArenaConfig>('/api/arenas', data);
       return response;
     } catch (error) {
       console.error("GameService.createArena error:", error);
@@ -223,9 +149,9 @@ export class GameService {
   /**
    * Update arena
    */
-  static async updateArena(arenaId: string, data: UpdateArenaData): Promise<Arena> {
+  static async updateArena(arenaId: string, data: Partial<ArenaConfig>): Promise<ArenaConfig> {
     try {
-      const response = await apiClient.put<Arena>(
+      const response = await apiClient.put<ArenaConfig>(
         `/api/arenas/${arenaId}`,
         data
       );
@@ -256,18 +182,6 @@ export class GameService {
       await apiClient.post<void>(`/api/arenas/${arenaId}/set-default`, {});
     } catch (error) {
       console.error("GameService.setDefaultArena error:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Initialize default arenas
-   */
-  static async initializeArenas(): Promise<void> {
-    try {
-      await apiClient.post<void>('/api/arenas/init', {});
-    } catch (error) {
-      console.error("GameService.initializeArenas error:", error);
       throw error;
     }
   }
