@@ -14,6 +14,7 @@ import PitsTab from "./arena-tabs/PitsTab";
 import WallsTab from "./arena-tabs/WallsTab";
 import SpeedPathsTab from "./arena-tabs/SpeedPathsTab";
 import ObstaclesTab from "./arena-tabs/ObstaclesTab";
+import TurretsTab from "./arena-tabs/TurretsTab";
 import {
   ArenaConfig,
   ArenaShape,
@@ -146,6 +147,7 @@ export default function ArenaConfiguratorNew({
     | "water"
     | "pits"
     | "obstacles"
+    | "turrets"
     | "preview"
   >("basics");
 
@@ -153,8 +155,8 @@ export default function ArenaConfiguratorNew({
     arena || {
       name: "New Arena",
       description: "A custom battle arena",
-      width: 1080, // Standard resolution
-      height: 1080, // Standard resolution
+      width: ARENA_RESOLUTION, // Standard resolution
+      height: ARENA_RESOLUTION, // Standard resolution
       shape: "circle",
       theme: "metrocity",
       autoRotate: false,
@@ -166,6 +168,7 @@ export default function ArenaConfiguratorNew({
       waterBodies: [],
       pits: [],
       obstacles: [],
+      turrets: [],
     }
   );
 
@@ -183,6 +186,7 @@ export default function ArenaConfiguratorNew({
       waterBodies: [], // Water body positions depend on shape
       pits: [], // Pit positions depend on shape (especially edge pits)
       obstacles: [], // Reset obstacles when shape changes
+      turrets: [], // Reset turrets when shape changes
     });
     setSelectedEdgeIndex(0);
   };
@@ -350,6 +354,7 @@ export default function ArenaConfiguratorNew({
               "water",
               "pits",
               "obstacles",
+              "turrets",
               "preview",
             ] as const
           ).map((tab) => (
@@ -430,6 +435,11 @@ export default function ArenaConfiguratorNew({
             {/* OBSTACLES TAB */}
             {currentTab === "obstacles" && (
               <ObstaclesTab config={config} setConfig={setConfig} />
+            )}
+
+            {/* TURRETS TAB */}
+            {currentTab === "turrets" && (
+              <TurretsTab config={config} setConfig={setConfig} />
             )}
 
             {/* PREVIEW TAB */}
