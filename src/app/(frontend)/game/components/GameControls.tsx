@@ -16,7 +16,6 @@ interface GameControlsProps {
   onRestart: () => void;
   availableBeyblades: Record<string, { name: string }>;
   className?: string;
-  isMultiplayer?: boolean;
 }
 
 const GameControls: React.FC<GameControlsProps> = ({
@@ -31,28 +30,7 @@ const GameControls: React.FC<GameControlsProps> = ({
   onRestart,
   availableBeyblades,
   className = "",
-  isMultiplayer = false,
 }) => {
-  // In multiplayer mode, don't show beyblade selectors
-  if (isMultiplayer) {
-    return (
-      <div
-        className={`flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-4 sm:px-0 w-full ${className}`}
-      >
-        {/* Restart Button - Disabled in multiplayer */}
-        <div className="flex flex-col items-center min-w-full sm:min-w-[200px] max-w-full sm:max-w-[250px]">
-          <button
-            onClick={onRestart}
-            disabled={true}
-            className="w-full px-8 py-3 sm:py-3.5 rounded-lg font-semibold opacity-60 bg-blue-600 text-white cursor-not-allowed"
-          >
-            Multiplayer Battle
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className={`flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-4 sm:px-0 w-full ${className}`}

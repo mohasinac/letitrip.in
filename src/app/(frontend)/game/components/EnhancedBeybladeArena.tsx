@@ -5,31 +5,22 @@ import { UnifiedButton } from "@/components/ui/unified/Button";
 import { UnifiedCard } from "@/components/ui/unified/Card";
 import { CardContent } from "@/components/ui/unified/Card";
 import { useGameState } from "../hooks/useGameState";
-import { useMultiplayer } from "../hooks/useMultiplayer";
 import GameArena from "./GameArena";
 import GameControls from "./GameControls";
 import ControlsHelp from "./ControlsHelp";
 import MobileSpecialButtons from "./MobileSpecialButtons";
 import GameInstructions from "./GameInstructions";
 import SpecialControlsHelp from "./SpecialControlsHelp";
-import MatchResultScreen from "./MatchResultScreen";
-import MultiplayerGameOverlay from "./MultiplayerGameOverlay";
 import BeybladeSelect from "@/components/game/BeybladeSelect";
 
 interface EnhancedBeybladeArenaProps {
-  gameMode?: "1p" | "2p";
-  multiplayerData?: any;
   onBackToMenu?: () => void;
   onGameEnd?: (winner: any) => void;
-  onPlayAgainMultiplayer?: () => void;
 }
 
 const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
-  gameMode = "1p",
-  multiplayerData,
   onBackToMenu,
   onGameEnd,
-  onPlayAgainMultiplayer,
 }) => {
   const theme = {
     palette: {
@@ -41,19 +32,8 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     },
   };
 
-  // Show multiplayer info if in 2P mode
-  const isMultiplayer = gameMode === "2p";
-  const playerNumber = multiplayerData?.playerNumber || 1;
-
-  // Store multiplayer instance in ref to access in useGameState
-  const multiplayerRef = React.useRef<any>(null);
-
   // Ref for arena to enable auto-scroll/focus
   const arenaRef = React.useRef<HTMLDivElement>(null);
-
-  // Track rematch state
-  const [playerWantsRematch, setPlayerWantsRematch] = React.useState(false);
-  const [opponentWantsRematch, setOpponentWantsRematch] = React.useState(false);
 
   const {
     gameState,
@@ -70,48 +50,9 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     handleTouchEnd,
     handleVirtualAction,
     isLoading,
-    setOpponentInput,
-    setOpponentSpecialAction,
-    getCurrentInput,
-    getMyBeybladeState,
-    setOpponentBeybladeState,
   } = useGameState({
     onGameEnd,
-    gameMode,
-    multiplayerData,
-    onCollision: isMultiplayer
-      ? (collisionData: any) => {
-          // Send collision event to opponent
-          if (multiplayerRef.current) {
-            multiplayerRef.current.sendCollision(collisionData);
-          }
-        }
-      : undefined,
   });
-
-  // Set beyblades from multiplayer data if available
-  useEffect(() => {
-    if (isMultiplayer && multiplayerData) {
-      const player1Data = multiplayerData.player1;
-      const player2Data = multiplayerData.player2;
-
-      if (player1Data?.beyblade && player2Data?.beyblade) {
-        // Set beyblade based on player number
-        if (playerNumber === 1) {
-          setSelectedBeyblade(player1Data.beyblade);
-          setSelectedAIBeyblade(player2Data.beyblade);
-        } else {
-          setSelectedBeyblade(player2Data.beyblade);
-          setSelectedAIBeyblade(player1Data.beyblade);
-        }
-
-        // Auto-start the game after a brief delay to ensure state is set
-        setTimeout(() => {
-          restartGame();
-        }, 100);
-      }
-    }
-  }, [isMultiplayer, multiplayerData, playerNumber, restartGame]);
 
   // Auto-scroll to arena when game starts or countdown begins
   useEffect(() => {
@@ -133,130 +74,6 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
     }
   }, [gameState.isPlaying, gameState.countdownActive]);
 
-  // Setup multiplayer if in 2P mode
-  const multiplayer =
-    isMultiplayer && multiplayerData
-      ? useMultiplayer({
-          playerNumber: multiplayerData.playerNumber,
-          roomId: multiplayerData.roomId,
-          onOpponentInput: (input: any) => {
-            // Apply opponent's input to their beyblade
-            if (input.direction) {
-              setOpponentInput(input.direction);
-            }
-            if (input.specialActions) {
-              setOpponentSpecialAction(input.specialActions);
-            }
-          },
-          onOpponentBeybladeUpdate: (data: any) => {
-            // Update opponent's beyblade state
-            setOpponentBeybladeState(data);
-          },
-          onOpponentCollision: (data: any) => {
-            // Log collision from opponent's perspective for debugging
-            console.log("Opponent collision:", data);
-          },
-          onServerCollisionResult: (result: any) => {
-            // Apply server-authoritative collision damage
-            console.log("Server collision result:", result);
-
-            // Note: This callback is called from within useMultiplayer effect
-            // We cannot directly modify gameState here - need to pass to game state hook
-            // For now, log it - will be handled by the game state's collision sync
-          },
-          onGameStateUpdate: (state: any) => {
-            // Player 2 receives game state updates from Player 1
-            console.log("Game state update received:", state);
-          },
-          onMatchResult: (result: any) => {
-            console.log("Match result:", result);
-            if (onGameEnd) {
-              onGameEnd(result.winner);
-            }
-          },
-          onOpponentDisconnected: () => {
-            alert("Opponent disconnected!");
-            if (onBackToMenu) {
-              onBackToMenu();
-            }
-          },
-          onRematchAccepted: (data: any) => {
-            console.log("Rematch accepted!", data);
-            // Reset rematch flags
-            setPlayerWantsRematch(false);
-            setOpponentWantsRematch(false);
-            // Restart the game
-            restartGame();
-          },
-          onOpponentWantsRematch: () => {
-            console.log("Opponent wants a rematch");
-            setOpponentWantsRematch(true);
-          },
-          onOpponentCancelledRematch: () => {
-            console.log("Opponent cancelled rematch");
-            setOpponentWantsRematch(false);
-          },
-        })
-      : null;
-
-  // Store multiplayer in ref for collision callback
-  React.useEffect(() => {
-    multiplayerRef.current = multiplayer;
-  }, [multiplayer]);
-
-  // Send player input to opponent in multiplayer
-  useEffect(() => {
-    if (!isMultiplayer || !multiplayer) return;
-
-    const interval = setInterval(() => {
-      const input = getCurrentInput();
-      multiplayer.sendInput(input);
-    }, 50); // Send input 20 times per second
-
-    return () => clearInterval(interval);
-  }, [isMultiplayer, multiplayer, getCurrentInput]);
-
-  // Send beyblade state to opponent in multiplayer
-  useEffect(() => {
-    if (!isMultiplayer || !multiplayer || !gameState.isPlaying) return;
-
-    const interval = setInterval(() => {
-      const beybladeState = getMyBeybladeState();
-      if (beybladeState) {
-        multiplayer.sendBeybladeState(beybladeState);
-      }
-    }, 33); // Send beyblade state 30 times per second for smooth real-time sync
-
-    return () => clearInterval(interval);
-  }, [isMultiplayer, multiplayer, gameState.isPlaying, getMyBeybladeState]);
-
-  // Send game over event in multiplayer
-  useEffect(() => {
-    if (!isMultiplayer || !multiplayer || !gameState.winner) return;
-
-    multiplayer.sendGameOver(gameState.winner);
-  }, [isMultiplayer, multiplayer, gameState.winner]);
-
-  // Handle rematch request
-  const handleRematchRequest = React.useCallback(() => {
-    if (!multiplayer) return;
-
-    setPlayerWantsRematch(true);
-    multiplayer.requestRematch();
-  }, [multiplayer]);
-
-  // Handle quit/back to menu
-  const handleQuit = React.useCallback(() => {
-    if (playerWantsRematch && multiplayer) {
-      multiplayer.cancelRematch();
-      setPlayerWantsRematch(false);
-    }
-
-    if (onBackToMenu) {
-      onBackToMenu();
-    }
-  }, [playerWantsRematch, multiplayer, onBackToMenu]);
-
   return (
     <div className="flex flex-col items-center gap-4 md:gap-8 w-full max-w-[1400px] mx-auto px-0 sm:px-4 md:px-6">
       {/* Game Controls */}
@@ -272,7 +89,6 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
         onRestart={restartGame}
         availableBeyblades={{}}
         className="w-full"
-        isMultiplayer={isMultiplayer}
       />
 
       {/* Game Arena */}
@@ -335,20 +151,8 @@ const EnhancedBeybladeArena: React.FC<EnhancedBeybladeArenaProps> = ({
           />
         </div>
 
-        {/* Multiplayer Game Over Overlay */}
-        <MultiplayerGameOverlay
-          isMultiplayer={isMultiplayer}
-          isGameOver={!gameState.isPlaying && !!gameState.winner}
-          winner={gameState.winner}
-          isPlayerWinner={gameState.winner?.isPlayer || false}
-          onQuit={handleQuit}
-          onRematch={handleRematchRequest}
-          opponentWantsRematch={opponentWantsRematch}
-          playerWantsRematch={playerWantsRematch}
-        />
-
         {/* Single Player Game Over Overlay - Show on canvas */}
-        {!isMultiplayer && !gameState.isPlaying && gameState.winner && (
+        {!gameState.isPlaying && gameState.winner && (
           <div>
             <div
               sx={{

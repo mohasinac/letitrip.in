@@ -18,9 +18,6 @@ export * from "./moves";
 // UI
 export * from "./ui";
 
-// Multiplayer
-export * from "./multiplayer";
-
 // Types
 export * from "./types";
 
