@@ -1607,7 +1607,11 @@ export default function ArenaConfiguratorNew({
                               <div>
                                 <label className="block text-sm font-medium mb-2">
                                   Radius: {portal.radius.toFixed(1)} px (
-                                  {((portal.radius / ARENA_RESOLUTION) * 100).toFixed(1)}% of arena)
+                                  {(
+                                    (portal.radius / ARENA_RESOLUTION) *
+                                    100
+                                  ).toFixed(1)}
+                                  % of arena)
                                 </label>
                                 <input
                                   type="range"
@@ -2035,7 +2039,10 @@ export default function ArenaConfiguratorNew({
                           <div>
                             <label className="block text-sm font-medium mb-2">
                               Radius: {pit.radius.toFixed(1)} px (
-                              {((pit.radius / ARENA_RESOLUTION) * 100).toFixed(1)}% of arena)
+                              {((pit.radius / ARENA_RESOLUTION) * 100).toFixed(
+                                1
+                              )}
+                              % of arena)
                             </label>
                             <input
                               type="range"
