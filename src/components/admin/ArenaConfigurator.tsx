@@ -77,7 +77,7 @@ export default function ArenaConfigurator({
       gravity: 0,
       airResistance: 0.01,
       surfaceFriction: 0.02,
-    },
+    }
   );
 
   const handleLoadPreset = (presetKey: string) => {
@@ -122,7 +122,7 @@ export default function ArenaConfigurator({
 
   const handleGenerateObstacles = () => {
     const count = Math.floor(Math.random() * 10) + 5; // 5-15 obstacles
-    
+
     // Build comprehensive exclude zones (loops, existing hazards, water)
     // Note: Don't exclude water bodies - allow obstacles ON liquid surfaces
     const excludeZones = buildExcludeZones(config, false);
@@ -131,7 +131,7 @@ export default function ArenaConfigurator({
       count,
       config.width,
       config.height,
-      excludeZones,
+      excludeZones
     );
     setConfig({ ...config, obstacles });
   };
@@ -139,13 +139,13 @@ export default function ArenaConfigurator({
   const handleGeneratePits = (placement: "edges" | "center" | "random") => {
     // Build exclude zones including obstacles (so pits don't collide with obstacles)
     const excludeZones = buildExcludeZones(config, false);
-    
+
     const pits = generateRandomPits(
       pitConfig.count,
       config.width / 2,
       placement,
       pitConfig.radius,
-      excludeZones,
+      excludeZones
     );
     setConfig({ ...config, pits });
   };
@@ -767,7 +767,7 @@ export default function ArenaConfigurator({
                                     (p) => ({
                                       ...p,
                                       target,
-                                    }),
+                                    })
                                   );
                                   handleUpdateLoop(index, {
                                     chargePoints: updatedPoints,
@@ -798,7 +798,7 @@ export default function ArenaConfigurator({
                                     (p) => ({
                                       ...p,
                                       dashSpeed: speed,
-                                    }),
+                                    })
                                   );
                                   handleUpdateLoop(index, {
                                     chargePoints: updatedPoints,
@@ -919,7 +919,7 @@ export default function ArenaConfigurator({
                             <button
                               onClick={() => {
                                 const newPortals = config.portals!.filter(
-                                  (_, i) => i !== index,
+                                  (_, i) => i !== index
                                 );
                                 setConfig({
                                   ...config,
@@ -1167,7 +1167,7 @@ export default function ArenaConfigurator({
                           <button
                             onClick={() => {
                               const newObstacles = config.obstacles.filter(
-                                (_, i) => i !== index,
+                                (_, i) => i !== index
                               );
                               setConfig({ ...config, obstacles: newObstacles });
                             }}
@@ -1279,7 +1279,7 @@ export default function ArenaConfigurator({
                           <button
                             onClick={() => {
                               const newPits = config.pits.filter(
-                                (_, i) => i !== index,
+                                (_, i) => i !== index
                               );
                               setConfig({ ...config, pits: newPits });
                             }}
@@ -1398,14 +1398,14 @@ export default function ArenaConfigurator({
                                     e.target.value === "water"
                                       ? "#4fc3f7"
                                       : e.target.value === "blood"
-                                        ? "#c62828"
-                                        : e.target.value === "lava"
-                                          ? "#ff6f00"
-                                          : e.target.value === "acid"
-                                            ? "#76ff03"
-                                            : e.target.value === "oil"
-                                              ? "#424242"
-                                              : "#00e5ff", // ice
+                                      ? "#c62828"
+                                      : e.target.value === "lava"
+                                      ? "#ff6f00"
+                                      : e.target.value === "acid"
+                                      ? "#76ff03"
+                                      : e.target.value === "oil"
+                                      ? "#424242"
+                                      : "#00e5ff", // ice
                                 },
                               })
                             }
@@ -1931,7 +1931,7 @@ export default function ArenaConfigurator({
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          JSON.stringify(config, null, 2),
+                          JSON.stringify(config, null, 2)
                         );
                         alert("Configuration copied to clipboard!");
                       }}

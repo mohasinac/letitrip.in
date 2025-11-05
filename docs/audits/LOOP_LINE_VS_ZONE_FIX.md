@@ -4,7 +4,8 @@
 
 **Problem:** Obstacles were being generated outside of loops because the code incorrectly treated loops as **zones** (filled circular areas) instead of **lines** (paths).
 
-**Impact:** 
+**Impact:**
+
 - Obstacles would not spawn inside loop areas
 - Obstacles would avoid entire circular zones around loops
 - This prevented natural obstacle distribution across the arena
@@ -14,15 +15,23 @@
 ### Changes Made
 
 #### 1. Updated `generateRandomObstacles` Function
+
 **File:** `src/types/arenaConfig.ts`
 
 **Before:**
+
 ```typescript
-excludeZones: { x: number; y: number; radius: number }[]
+excludeZones: {
+  x: number;
+  y: number;
+  radius: number;
+}
+[];
 // Treated all zones the same - avoided any point within radius + 3
 ```
 
 **After:**
+
 ```typescript
 excludeZones: { x: number; y: number; radius: number; type?: "zone" | "line" }[]
 // Now distinguishes between:
@@ -31,13 +40,16 @@ excludeZones: { x: number; y: number; radius: number; type?: "zone" | "line" }[]
 ```
 
 **New Logic:**
+
 - **Loop Lines (`type: "line"`)**: Calculate distance from the circular path, allow obstacles inside/outside, just not ON the line
 - **Water Zones (`type: "zone"`)**: Traditional zone exclusion - no obstacles within the zone
 
 #### 2. Updated `handleGenerateObstacles` Function
+
 **File:** `src/components/admin/ArenaConfigurator.tsx`
 
 **Before:**
+
 ```typescript
 const excludeZones = [
   ...config.loops.map((loop) => ({ x: 0, y: 0, radius: loop.radius })),
@@ -46,28 +58,32 @@ const excludeZones = [
 ```
 
 **After:**
+
 ```typescript
 const excludeZones = [
   // Loops are LINES, not zones
-  ...config.loops.map((loop) => ({ 
-    x: 0, 
-    y: 0, 
+  ...config.loops.map((loop) => ({
+    x: 0,
+    y: 0,
     radius: loop.radius,
     type: "line" as const,
   })),
   // Water bodies are actual ZONES
   ...(config.waterBody?.type === "center"
-    ? [{ 
-        x: 0, 
-        y: 0, 
-        radius: config.waterBody.radius || 10,
-        type: "zone" as const,
-      }]
+    ? [
+        {
+          x: 0,
+          y: 0,
+          radius: config.waterBody.radius || 10,
+          type: "zone" as const,
+        },
+      ]
     : []),
 ];
 ```
 
 #### 3. Updated Documentation
+
 **File:** `src/types/arenaConfig.ts`
 
 ```typescript
@@ -87,6 +103,7 @@ export interface ObstacleConfig {
 ### Distance Calculation Logic
 
 #### For Loop Lines (type: "line")
+
 ```typescript
 const dist = Math.sqrt((x - zone.x) ** 2 + (y - zone.y) ** 2);
 const distanceFromLine = Math.abs(dist - zone.radius);
@@ -98,6 +115,7 @@ if (distanceFromLine < 2) {
 ```
 
 **Explanation:**
+
 - `dist` = Distance from arena center (0,0) to obstacle position
 - `zone.radius` = Loop path radius
 - `distanceFromLine` = How far the obstacle is from the actual loop path
@@ -105,6 +123,7 @@ if (distanceFromLine < 2) {
 - This means obstacles can be inside the loop (dist < radius) OR outside (dist > radius)
 
 #### For Water Zones (type: "zone")
+
 ```typescript
 if (dist < zone.radius + 3) {
   // Inside the water zone - invalid position
@@ -113,12 +132,14 @@ if (dist < zone.radius + 3) {
 ```
 
 **Explanation:**
+
 - Traditional zone exclusion
 - Don't place obstacles within the water body + 3em buffer
 
 ## 📊 Before vs After
 
 ### Before Fix
+
 ```
 Arena with loop at radius 20em:
 - Obstacles avoided anywhere within ~23em of center
@@ -129,6 +150,7 @@ Example excluded area: π × 23² ≈ 1,661 em²
 ```
 
 ### After Fix
+
 ```
 Arena with loop at radius 20em:
 - Obstacles avoided only 2em band on the loop path itself
@@ -142,12 +164,14 @@ Example excluded area: π × 22² - π × 18² ≈ 501 em² (70% reduction!)
 ## 🎮 User Experience Impact
 
 ### Gameplay Improvements
+
 1. **More Strategic Options**: Obstacles both inside and outside loops create varied paths
 2. **Natural Arena Feel**: Obstacles distributed realistically across the entire space
 3. **Loop Clarity**: Loops remain clear paths without obstacles blocking them
 4. **Balanced Gameplay**: No artificial "safe zones" in the arena center
 
 ### Visual Improvements
+
 1. **Better Aesthetics**: Arenas look more natural with varied obstacle placement
 2. **Clear Loop Paths**: Loops stand out as clear speed zones
 3. **Interesting Layouts**: Mix of obstacles inside/outside loops creates variety
@@ -155,6 +179,7 @@ Example excluded area: π × 22² - π × 18² ≈ 501 em² (70% reduction!)
 ## 🔍 Testing Scenarios
 
 ### Test Case 1: Single Loop Arena
+
 ```typescript
 Arena: 60×60 em
 Loop: radius 20em at center
@@ -167,6 +192,7 @@ Expected Result:
 ```
 
 ### Test Case 2: Multi-Loop Arena
+
 ```typescript
 Arena: 80×80 em
 Loop 1: radius 15em at center
@@ -181,6 +207,7 @@ Expected Result:
 ```
 
 ### Test Case 3: Loop + Water Arena
+
 ```typescript
 Arena: 60×60 em
 Loop: radius 20em at center (type: "line")
@@ -197,11 +224,13 @@ Expected Result:
 ## 🚀 Performance Considerations
 
 ### Algorithm Efficiency
+
 - **Attempts per obstacle**: Max 50 (unchanged)
 - **Calculation complexity**: O(n) where n = number of exclude zones
 - **Memory impact**: Negligible (added 1 string field per exclude zone)
 
 ### Edge Cases Handled
+
 1. **No loops**: Works as before (all zones treated as "zone" type)
 2. **Only loops**: New behavior - obstacles everywhere except on paths
 3. **Mixed loops + water**: Correct handling of both types
@@ -210,22 +239,25 @@ Expected Result:
 ## 📝 Migration Notes
 
 ### Breaking Changes
+
 ❌ None - This is a bug fix, not a breaking change
 
 ### Deprecated Features
+
 - `canBeInsideLoop` property is now deprecated (but still exists for backwards compatibility)
 - Comment added to explain why it's deprecated
 
 ### API Changes
+
 ```typescript
 // Function signature change (backwards compatible - type is optional)
 generateRandomObstacles(
   count: number,
   arenaWidth: number,
   arenaHeight: number,
-  excludeZones: { 
-    x: number; 
-    y: number; 
+  excludeZones: {
+    x: number;
+    y: number;
     radius: number;
     type?: "zone" | "line"; // NEW - defaults to "zone" for backwards compatibility
   }[]

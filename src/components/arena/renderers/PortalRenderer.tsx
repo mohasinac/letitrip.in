@@ -1,12 +1,13 @@
 /**
  * Portal Renderer Component
- * Renders portals as 2D doors with whirlpool effect
+ * Renders linked portals - all portals are interconnected
+ * Entering any portal can teleport to any other portal based on directional input or randomly
  */
 
 "use client";
 
 import React from "react";
-import { PortalConfig } from "@/types/arenaConfig";
+import { PortalConfig } from "@/types/arenaConfigNew";
 import {
   generateWhirlpoolSpiral,
   generateParticles,
@@ -19,38 +20,24 @@ interface PortalRendererProps {
 }
 
 export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
-  const inX = portal.inPoint.x * scale;
-  const inY = portal.inPoint.y * scale;
-  const outX = portal.outPoint.x * scale;
-  const outY = portal.outPoint.y * scale;
+  const x = portal.position.x * scale;
+  const y = portal.position.y * scale;
   const radius = portal.radius * scale;
   const color = portal.color || "#8b5cf6";
+  const portalNum =
+    portal.portalNumber || parseInt(portal.id.replace(/\D/g, "")) || 1;
 
   // Generate particles
-  const inParticles = generateParticles({ x: inX, y: inY }, radius, 8);
-  const outParticles = generateParticles({ x: outX, y: outY }, radius, 8);
+  const particles = generateParticles({ x, y }, radius, 8);
 
   return (
-    <g className="portal-system">
-      {/* Connection line */}
-      <line
-        x1={inX}
-        y1={inY}
-        x2={outX}
-        y2={outY}
-        stroke={color}
-        strokeWidth={2}
-        strokeDasharray="5,5"
-        opacity={0.3}
-        className="portal-flow-animation"
-      />
-
-      {/* Entry Portal (IN) */}
-      <g className="portal-in whirlpool">
+    <g className="portal-linked">
+      {/* Portal Whirlpool */}
+      <g className="portal whirlpool">
         {/* Outer vortex ring */}
         <circle
-          cx={inX}
-          cy={inY}
+          cx={x}
+          cy={y}
           r={radius * 1.8}
           fill="none"
           stroke={color}
@@ -62,17 +49,17 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
 
         {/* Background gradient */}
         <defs>
-          <radialGradient id={`whirlpool-gradient-${portal.id}-in`}>
+          <radialGradient id={`whirlpool-gradient-${portal.id}`}>
             <stop offset="0%" stopColor="#000" stopOpacity={0.9} />
             <stop offset="40%" stopColor={color} stopOpacity={0.6} />
             <stop offset="100%" stopColor={color} stopOpacity={0.1} />
           </radialGradient>
         </defs>
         <circle
-          cx={inX}
-          cy={inY}
+          cx={x}
+          cy={y}
           r={radius}
-          fill={`url(#whirlpool-gradient-${portal.id}-in)`}
+          fill={`url(#whirlpool-gradient-${portal.id})`}
         />
 
         {/* Spiral layers */}
@@ -80,9 +67,9 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
           <path
             key={layer}
             d={generateWhirlpoolSpiral(
-              { x: inX, y: inY },
+              { x, y },
               radius * (1.5 - layer * 0.3),
-              layer * 90,
+              layer * 90
             )}
             stroke={color}
             strokeWidth={2}
@@ -93,11 +80,11 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
         ))}
 
         {/* Center vortex */}
-        <circle cx={inX} cy={inY} r={radius * 0.3} fill="#000" opacity={0.8} />
+        <circle cx={x} cy={y} r={radius * 0.3} fill="#000" opacity={0.8} />
 
         {/* Particles */}
         <g className="whirlpool-particles">
-          {inParticles.map((particle, idx) => (
+          {particles.map((particle, idx) => (
             <circle
               key={idx}
               cx={particle.x}
@@ -110,100 +97,33 @@ export default function PortalRenderer({ portal, scale }: PortalRendererProps) {
           ))}
         </g>
 
-        {/* Label */}
+        {/* Portal Number (centered) */}
         <text
-          x={inX}
-          y={inY - radius * 2 - 5}
+          x={x}
+          y={y}
           textAnchor="middle"
-          fontSize="0.8em"
+          dominantBaseline="middle"
+          fontSize="20"
           fill="white"
           fontWeight="bold"
-        >
-          IN
-        </text>
-      </g>
-
-      {/* Exit Portal (OUT) */}
-      <g className="portal-out whirlpool">
-        {/* Outer vortex ring */}
-        <circle
-          cx={outX}
-          cy={outY}
-          r={radius * 1.8}
-          fill="none"
           stroke={color}
-          strokeWidth={3}
-          opacity={0.3}
-          strokeDasharray="10,5"
-          className="whirlpool-outer-ring-reverse"
-        />
-
-        {/* Background gradient */}
-        <defs>
-          <radialGradient id={`whirlpool-gradient-${portal.id}-out`}>
-            <stop offset="0%" stopColor="#000" stopOpacity={0.9} />
-            <stop offset="40%" stopColor={color} stopOpacity={0.6} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.1} />
-          </radialGradient>
-        </defs>
-        <circle
-          cx={outX}
-          cy={outY}
-          r={radius}
-          fill={`url(#whirlpool-gradient-${portal.id}-out)`}
-        />
-
-        {/* Spiral layers (reverse rotation) */}
-        {[1, 2, 3, 4].map((layer) => (
-          <path
-            key={layer}
-            d={generateWhirlpoolSpiral(
-              { x: outX, y: outY },
-              radius * (1.5 - layer * 0.3),
-              -layer * 90,
-            )}
-            stroke={color}
-            strokeWidth={2}
-            fill="none"
-            opacity={0.6 - layer * 0.1}
-            className={`whirlpool-spiral-reverse whirlpool-layer-${layer}`}
-          />
-        ))}
-
-        {/* Center vortex */}
-        <circle
-          cx={outX}
-          cy={outY}
-          r={radius * 0.3}
-          fill="#000"
-          opacity={0.8}
-        />
-
-        {/* Particles */}
-        <g className="whirlpool-particles">
-          {outParticles.map((particle, idx) => (
-            <circle
-              key={idx}
-              cx={particle.x}
-              cy={particle.y}
-              r={2}
-              fill="white"
-              opacity={0.6}
-              className={`whirlpool-particle-reverse whirlpool-particle-${idx}`}
-            />
-          ))}
-        </g>
+          strokeWidth="2"
+        >
+          {portalNum}
+        </text>
 
         {/* Label */}
         <text
-          x={outX}
-          y={outY - radius * 2 - 5}
+          x={x}
+          y={y - radius * 2 - 5}
           textAnchor="middle"
-          fontSize="0.8em"
-          fill="white"
+          fontSize="12"
+          fill={color}
           fontWeight="bold"
+          stroke="black"
+          strokeWidth="0.5"
         >
-          OUT
+          Portal {portalNum}
         </text>
       </g>
     </g>

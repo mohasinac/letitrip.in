@@ -17,7 +17,7 @@ import {
   ArenaShape as ArenaShapeType,
   ArenaTheme,
 } from "@/types/arenaConfig";
-import LoopRenderer from "@/components/arena/renderers/LoopRenderer";
+import SpeedPathRenderer from "@/components/arena/renderers/SpeedPathRenderer";
 import ChargePointRenderer from "@/components/arena/renderers/ChargePointRenderer";
 import ObstacleRenderer from "@/components/arena/renderers/ObstacleRenderer";
 import PortalRenderer from "@/components/arena/renderers/PortalRenderer";
@@ -75,17 +75,29 @@ export default function ArenaPreview({
         theme={arena.theme}
       />
 
-      {/* 3. Water bodies */}
+      {/* 3. Loops (PATH LINES) - Render BEFORE water so they're visible */}
+      {arena.loops.map((loop, idx) => (
+        <SpeedPathRenderer
+          key={idx}
+          loop={loop}
+          centerX={centerX}
+          centerY={centerY}
+          scale={scale}
+        />
+      ))}
+
+      {/* 4. Water bodies - Render AFTER loops so loops are visible on top */}
       {arena.waterBody?.enabled && (
         <WaterBodyRenderer
           config={arena.waterBody}
+          arena={arena}
           centerX={centerX}
           centerY={centerY}
           scale={scale}
         />
       )}
 
-      {/* 4. Pits */}
+      {/* 5. Pits */}
       {arena.pits.map((pit, idx) => (
         <PitRenderer
           key={idx}
@@ -96,22 +108,11 @@ export default function ArenaPreview({
         />
       ))}
 
-      {/* 4.5 Rotation Bodies */}
+      {/* 5.5 Rotation Bodies */}
       {arena.rotationBodies?.map((rotationBody, idx) => (
         <g key={idx} transform={`translate(${centerX}, ${centerY})`}>
           <RotationBodyRenderer rotationBody={rotationBody} scale={scale} />
         </g>
-      ))}
-
-      {/* 5. Loops (PATH LINES only) */}
-      {arena.loops.map((loop, idx) => (
-        <LoopRenderer
-          key={idx}
-          loop={loop}
-          centerX={centerX}
-          centerY={centerY}
-          scale={scale}
-        />
       ))}
 
       {/* 6. Charge points on loops */}
@@ -125,7 +126,7 @@ export default function ArenaPreview({
             centerY={centerY}
             scale={scale}
           />
-        )),
+        ))
       )}
 
       {/* 7. Obstacles */}
@@ -167,6 +168,9 @@ export default function ArenaPreview({
           centerY={centerY}
           arenaRadius={arenaRadius}
           shape={arena.shape}
+          arenaWidth={arena.width}
+          arenaHeight={arena.height}
+          scale={scale}
         />
       ) : (
         arena.exits.map((exit, idx) =>
@@ -178,7 +182,7 @@ export default function ArenaPreview({
               centerY={centerY}
               arenaRadius={arenaRadius}
             />
-          ) : null,
+          ) : null
         )
       )}
 
@@ -237,7 +241,7 @@ function ArenaShape({
     { x: centerX, y: centerY },
     radius,
     width * scale,
-    height * scale,
+    height * scale
   );
 
   return (
@@ -245,7 +249,7 @@ function ArenaShape({
       d={shapePath}
       fill="rgba(255, 255, 255, 0.1)"
       stroke="#333"
-      strokeWidth={3}
+      strokeWidth={2}
     />
   );
 }
@@ -253,11 +257,13 @@ function ArenaShape({
 // Water Body Renderer
 function WaterBodyRenderer({
   config,
+  arena,
   centerX,
   centerY,
   scale,
 }: {
   config: WaterBodyConfig;
+  arena: ArenaConfig;
   centerX: number;
   centerY: number;
   scale: number;
@@ -280,7 +286,7 @@ function WaterBodyRenderer({
     const shapePath = generateShapePath(
       config.shape,
       { x: centerX, y: centerY },
-      radius,
+      radius
     );
 
     return (
@@ -293,7 +299,7 @@ function WaterBodyRenderer({
             d={generateShapePath(
               config.shape === "circle" ? "circle" : config.shape,
               { x: centerX, y: centerY },
-              radius * factor,
+              radius * factor
             )}
             fill="none"
             stroke={color}
@@ -303,38 +309,67 @@ function WaterBodyRenderer({
         ))}
       </g>
     );
-  } else if (config.type === "loop") {
-    // LOOP TYPE: Moat/ring following a circular path
-    const innerRadius = (config.innerRadius || 12) * scale;
-    const outerRadius = (config.outerRadius || 18) * scale;
+  } else if (config.type === "moat") {
+    // MOAT TYPE: Moat/ring following the loop's shape with stadium floor in center
+    const loopIndex = config.loopIndex ?? 0;
+    const loop = arena.loops[loopIndex];
+
+    if (!loop) {
+      return null; // No loop found at index
+    }
+
+    const innerRadius = (config.innerRadius || loop.radius - 3) * scale;
+    const outerRadius = (config.outerRadius || loop.radius + 3) * scale;
+    const loopWidth = loop.width ? loop.width * scale : innerRadius * 2;
+    const loopHeight = loop.height ? loop.height * scale : innerRadius * 2;
+    const rotation = loop.rotation || 0;
+
+    // Generate outer and inner shape paths based on loop shape
+    const outerPath = generateShapePath(
+      loop.shape,
+      { x: centerX, y: centerY },
+      outerRadius,
+      loopWidth * (outerRadius / innerRadius),
+      loopHeight * (outerRadius / innerRadius)
+    );
+
+    const innerPath = generateShapePath(
+      loop.shape,
+      { x: centerX, y: centerY },
+      innerRadius,
+      loopWidth,
+      loopHeight
+    );
 
     return (
-      <g className="water-body-moat">
-        {/* Outer circle */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={outerRadius}
-          fill={color}
-          opacity={0.5}
-        />
-        {/* Cut out inner circle to create ring/moat effect */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={innerRadius}
-          fill="white"
-          opacity={1}
-        />
+      <g
+        className="water-body-moat"
+        transform={`rotate(${rotation} ${centerX} ${centerY})`}
+      >
+        {/* Outer shape */}
+        <path d={outerPath} fill={color} opacity={0.5} />
+        {/* Show stadium floor in center instead of white space */}
+        <path d={innerPath} fill="rgba(255, 255, 255, 0.1)" opacity={1} />
         {/* Wave lines on moat */}
         {[0.3, 0.5, 0.7].map((factor, idx) => {
           const waveRadius = innerRadius + (outerRadius - innerRadius) * factor;
+          const waveWidth =
+            loopWidth +
+            (loopWidth * (outerRadius / innerRadius) - loopWidth) * factor;
+          const waveHeight =
+            loopHeight +
+            (loopHeight * (outerRadius / innerRadius) - loopHeight) * factor;
+
           return (
-            <circle
+            <path
               key={idx}
-              cx={centerX}
-              cy={centerY}
-              r={waveRadius}
+              d={generateShapePath(
+                loop.shape,
+                { x: centerX, y: centerY },
+                waveRadius,
+                waveWidth,
+                waveHeight
+              )}
               fill="none"
               stroke={color}
               strokeWidth={1}
@@ -345,39 +380,65 @@ function WaterBodyRenderer({
       </g>
     );
   } else if (config.type === "ring") {
-    // RING TYPE: Ring at arena edges
-    const arenaRadius = 25 * scale; // Approximate arena size
+    // RING TYPE: Ring/donut shape using the selected shape with inner and outer radius
+    const outerRadius = (config.radius || 15) * scale;
     const thickness = (config.ringThickness || 3) * scale;
-    const innerRadius = arenaRadius - thickness;
-    const outerRadius = arenaRadius;
+    const innerRadius = outerRadius - thickness;
+    const rotation = config.rotation || 0;
+
+    // For rectangle/oval, use width/height if provided
+    const outerWidth = config.width ? config.width * scale : outerRadius * 2;
+    const outerHeight = config.height ? config.height * scale : outerRadius * 2;
+    const innerWidth = config.width
+      ? (config.width - thickness * 2) * scale
+      : innerRadius * 2;
+    const innerHeight = config.height
+      ? (config.height - thickness * 2) * scale
+      : innerRadius * 2;
+
+    // Generate outer and inner shape paths based on selected shape
+    const outerPath = generateShapePath(
+      config.shape,
+      { x: centerX, y: centerY },
+      outerRadius,
+      outerWidth,
+      outerHeight
+    );
+
+    const innerPath = generateShapePath(
+      config.shape,
+      { x: centerX, y: centerY },
+      innerRadius,
+      innerWidth,
+      innerHeight
+    );
 
     return (
-      <g className="water-body-ring">
-        {/* Outer circle */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={outerRadius}
-          fill={color}
-          opacity={0.5}
-        />
-        {/* Cut out inner area */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={innerRadius}
-          fill="white"
-          opacity={1}
-        />
+      <g
+        className="water-body-ring"
+        transform={`rotate(${rotation} ${centerX} ${centerY})`}
+      >
+        {/* Outer shape */}
+        <path d={outerPath} fill={color} opacity={0.5} />
+        {/* Show stadium floor in center instead of white space */}
+        <path d={innerPath} fill="rgba(255, 255, 255, 0.1)" opacity={1} />
         {/* Wave lines on ring */}
         {[0.3, 0.5, 0.7].map((factor, idx) => {
-          const waveRadius = innerRadius + thickness * factor;
+          const waveThickness = thickness * (1 - factor);
+          const waveRadius = outerRadius - waveThickness;
+          const waveWidth = outerWidth - waveThickness * 2;
+          const waveHeight = outerHeight - waveThickness * 2;
+
           return (
-            <circle
+            <path
               key={idx}
-              cx={centerX}
-              cy={centerY}
-              r={waveRadius}
+              d={generateShapePath(
+                config.shape,
+                { x: centerX, y: centerY },
+                waveRadius,
+                waveWidth,
+                waveHeight
+              )}
               fill="none"
               stroke={color}
               strokeWidth={1}
@@ -505,6 +566,9 @@ function WallsRenderer({
   centerY,
   arenaRadius,
   shape,
+  arenaWidth,
+  arenaHeight,
+  scale,
 }: {
   exits: ExitConfig[];
   wall: WallConfig;
@@ -512,36 +576,223 @@ function WallsRenderer({
   centerY: number;
   arenaRadius: number;
   shape: ArenaShapeType;
+  arenaWidth: number;
+  arenaHeight: number;
+  scale: number;
 }) {
-  // Simple implementation: draw full boundary in black, then exits in red
-  const fullCircle = `
-    M ${centerX - arenaRadius} ${centerY}
-    A ${arenaRadius} ${arenaRadius} 0 1 0 ${centerX + arenaRadius} ${centerY}
-    A ${arenaRadius} ${arenaRadius} 0 1 0 ${centerX - arenaRadius} ${centerY}
-  `;
+  // Get wall widths (em units)
+  const wallWidths = wall.wallWidths || {};
+  const uniformWidth = wallWidths.uniform ?? wall.thickness ?? 1;
+
+  // For circle shape, use uniform width
+  if (shape === "circle") {
+    const wallWidth = uniformWidth;
+
+    if (wallWidth === 0) {
+      // No walls, entire perimeter is exit
+      return (
+        <g className="walls">
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={arenaRadius}
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth={4}
+            strokeDasharray="10,5"
+          />
+        </g>
+      );
+    }
+
+    // Draw wall segments with exits
+    return (
+      <g className="walls">
+        {/* Main wall circle */}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={arenaRadius}
+          fill="none"
+          stroke="#000"
+          strokeWidth={wallWidth * scale}
+        />
+
+        {/* Exits overlay */}
+        {exits.map(
+          (exit, idx) =>
+            exit.enabled && (
+              <ExitRenderer
+                key={idx}
+                exit={exit}
+                centerX={centerX}
+                centerY={centerY}
+                arenaRadius={arenaRadius}
+              />
+            )
+        )}
+      </g>
+    );
+  }
+
+  // For polygon shapes (rectangle, pentagon, hexagon, etc.)
+  // Draw walls on each edge based on wallWidths
+  const widthScaled = arenaWidth * scale;
+  const heightScaled = arenaHeight * scale;
+
+  // Get individual edge widths (0 = no wall = exit)
+  const topWidth = wallWidths.top ?? uniformWidth;
+  const rightWidth = wallWidths.right ?? uniformWidth;
+  const bottomWidth = wallWidths.bottom ?? uniformWidth;
+  const leftWidth = wallWidths.left ?? uniformWidth;
+
+  // Generate arena shape path for reference
+  const arenaBoundary = generateShapePath(
+    shape,
+    { x: centerX, y: centerY },
+    arenaRadius,
+    widthScaled,
+    heightScaled
+  );
 
   return (
     <g className="walls">
-      {/* Wall boundary */}
+      {/* Base arena outline (thin) */}
       <path
-        d={fullCircle}
+        d={arenaBoundary}
         fill="none"
-        stroke="#000"
-        strokeWidth={wall.thickness * 10 || 4}
+        stroke="#333"
+        strokeWidth={1}
+        opacity={0.3}
       />
 
-      {/* Exits overlay */}
-      {exits.map(
-        (exit, idx) =>
-          exit.enabled && (
-            <ExitRenderer
-              key={idx}
-              exit={exit}
-              centerX={centerX}
-              centerY={centerY}
-              arenaRadius={arenaRadius}
+      {/* For rectangle, draw individual walls on each edge */}
+      {shape === "rectangle" && (
+        <>
+          {/* Top wall */}
+          {topWidth > 0 ? (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY - heightScaled / 2}
+              stroke="#000"
+              strokeWidth={topWidth * scale}
             />
-          ),
+          ) : (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY - heightScaled / 2}
+              stroke="#ef4444"
+              strokeWidth={4}
+              strokeDasharray="10,5"
+            />
+          )}
+
+          {/* Right wall */}
+          {rightWidth > 0 ? (
+            <line
+              x1={centerX + widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#000"
+              strokeWidth={rightWidth * scale}
+            />
+          ) : (
+            <line
+              x1={centerX + widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#ef4444"
+              strokeWidth={4}
+              strokeDasharray="10,5"
+            />
+          )}
+
+          {/* Bottom wall */}
+          {bottomWidth > 0 ? (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY + heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#000"
+              strokeWidth={bottomWidth * scale}
+            />
+          ) : (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY + heightScaled / 2}
+              x2={centerX + widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#ef4444"
+              strokeWidth={4}
+              strokeDasharray="10,5"
+            />
+          )}
+
+          {/* Left wall */}
+          {leftWidth > 0 ? (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX - widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#000"
+              strokeWidth={leftWidth * scale}
+            />
+          ) : (
+            <line
+              x1={centerX - widthScaled / 2}
+              y1={centerY - heightScaled / 2}
+              x2={centerX - widthScaled / 2}
+              y2={centerY + heightScaled / 2}
+              stroke="#ef4444"
+              strokeWidth={4}
+              strokeDasharray="10,5"
+            />
+          )}
+        </>
+      )}
+
+      {/* For other polygon shapes, draw wall outline */}
+      {shape !== "rectangle" && (
+        <>
+          {uniformWidth > 0 ? (
+            <path
+              d={arenaBoundary}
+              fill="none"
+              stroke="#000"
+              strokeWidth={uniformWidth * scale}
+            />
+          ) : (
+            <path
+              d={arenaBoundary}
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth={4}
+              strokeDasharray="10,5"
+            />
+          )}
+
+          {/* Exits overlay for polygon shapes */}
+          {exits.map(
+            (exit, idx) =>
+              exit.enabled && (
+                <ExitRenderer
+                  key={idx}
+                  exit={exit}
+                  centerX={centerX}
+                  centerY={centerY}
+                  arenaRadius={arenaRadius}
+                />
+              )
+          )}
+        </>
       )}
     </g>
   );
@@ -563,7 +814,7 @@ function ExitRenderer({
     { x: centerX, y: centerY },
     arenaRadius,
     exit.angle - exit.width / 2,
-    exit.angle + exit.width / 2,
+    exit.angle + exit.width / 2
   );
 
   return (

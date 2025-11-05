@@ -103,8 +103,24 @@ export interface PortalConfig {
 export interface WallConfig {
   enabled: boolean; // If false, beyblades can exit anywhere
   allExits?: boolean; // If true and walls disabled, entire boundary is an exit; if false, closed boundary
+  
+  // Wall width configuration (0 = no wall on that edge/side)
+  // For circle: only 'uniform' applies
+  // For shapes: top, right, bottom, left apply to respective edges
+  wallWidths?: {
+    uniform?: number; // Uniform width for all sides (em units, 0 = no walls)
+    top?: number; // Top edge width (em units, 0 = no wall)
+    right?: number; // Right edge width (em units, 0 = no wall)
+    bottom?: number; // Bottom edge width (em units, 0 = no wall)
+    left?: number; // Left edge width (em units, 0 = no wall)
+  };
+  
+  randomWalls?: boolean; // If true, randomly assign wall widths to each edge
+  
+  // Legacy properties
   wallCount?: number; // Number of wall segments (for polygonal arenas, default based on shape)
   exitsBetweenWalls?: boolean; // If true, create exits between wall segments
+  
   baseDamage: number; // Damage taken when hitting wall
   recoilDistance: number; // Distance bounced back (em units)
   hasSpikes: boolean; // Spikes increase damage
@@ -140,7 +156,7 @@ export interface ObstacleConfig {
  */
 export interface WaterBodyConfig {
   enabled: boolean;
-  type: "center" | "loop" | "ring"; // Center shape, follows center loop path (moat), or ring at edges
+  type: "center" | "moat" | "ring"; // Center shape, moat around loop, or ring at edges
   shape:
     | "circle"
     | "rectangle"
@@ -445,6 +461,41 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     backgroundLayers: [],
   },
 };
+
+/**
+ * Generate random wall widths for each edge
+ * @param shape Arena shape (circle, rectangle, etc.)
+ * @returns WallWidths configuration with random values (0-2 em units)
+ */
+export function generateRandomWallWidths(shape: ArenaShape): {
+  uniform?: number;
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+} {
+  const randomWidth = () => Math.random() < 0.3 ? 0 : Math.random() * 2;
+  
+  if (shape === "circle") {
+    // For circle, only uniform applies
+    return {
+      uniform: randomWidth(),
+    };
+  } else if (shape === "rectangle") {
+    // For rectangle, generate individual edge widths
+    return {
+      top: randomWidth(),
+      right: randomWidth(),
+      bottom: randomWidth(),
+      left: randomWidth(),
+    };
+  } else {
+    // For other shapes, use uniform
+    return {
+      uniform: randomWidth(),
+    };
+  }
+}
 
 /**
  * Generate random obstacles for arena

@@ -47,6 +47,12 @@ export function generateShapePath(
     case "circle":
       return generateCirclePath(position, radius);
 
+    case "triangle":
+      return generatePolygonPath(position, radius, 3);
+
+    case "square":
+      return generatePolygonPath(position, radius, 4);
+
     case "rectangle":
       return generateRectanglePath(
         position,
@@ -60,8 +66,29 @@ export function generateShapePath(
     case "hexagon":
       return generatePolygonPath(position, radius, 6);
 
+    case "heptagon":
+      return generatePolygonPath(position, radius, 7);
+
     case "octagon":
       return generatePolygonPath(position, radius, 8);
+
+    case "star3":
+      return generateStarPath(position, radius, radius * 0.5, 3);
+
+    case "star4":
+      return generateStarPath(position, radius, radius * 0.5, 4);
+
+    case "star5":
+      return generateStarPath(position, radius, radius * 0.5, 5);
+
+    case "star6":
+      return generateStarPath(position, radius, radius * 0.5, 6);
+
+    case "star7":
+      return generateStarPath(position, radius, radius * 0.5, 7);
+
+    case "star8":
+      return generateStarPath(position, radius, radius * 0.5, 8);
 
     case "star":
       return generateStarPath(position, radius, radius * 0.5, 5);
@@ -115,16 +142,59 @@ export function generatePolygonPath(
   radius: number,
   sides: number,
 ): string {
-  const points: string[] = [];
-
-  for (let i = 0; i <= sides; i++) {
-    const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
-    const x = center.x + Math.cos(angle) * radius;
-    const y = center.y + Math.sin(angle) * radius;
-    points.push(i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`);
+  // Special case for square: use axis-aligned rectangle (no bounding box scaling)
+  if (sides === 4) {
+    return `
+      M ${center.x - radius} ${center.y - radius}
+      L ${center.x + radius} ${center.y - radius}
+      L ${center.x + radius} ${center.y + radius}
+      L ${center.x - radius} ${center.y + radius}
+      Z
+    `.trim();
   }
 
+  // For all other polygons, calculate vertices and apply bounding box scaling
+  const vertices: Point[] = [];
+  
+  // Calculate base vertices with standard orientation
+  const startAngle = sides % 2 === 0 
+    ? -Math.PI / 2  // Even sides: start at top
+    : -Math.PI / 2 + Math.PI / sides;  // Odd sides: offset for flat bottom
+
+  for (let i = 0; i < sides; i++) {
+    const angle = startAngle + (i / sides) * Math.PI * 2;
+    vertices.push({
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    });
+  }
+
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...vertices.map(v => v.x));
+  const maxX = Math.max(...vertices.map(v => v.x));
+  const minY = Math.min(...vertices.map(v => v.y));
+  const maxY = Math.max(...vertices.map(v => v.y));
+  
+  const width = maxX - minX;
+  const height = maxY - minY;
+  
+  // Scale to fit the full radius in both dimensions
+  const scaleX = (2 * radius) / width;
+  const scaleY = (2 * radius) / height;
+  
+  // Apply scaling and centering
+  const scaledVertices = vertices.map(v => ({
+    x: center.x + (v.x - (minX + maxX) / 2) * scaleX,
+    y: center.y + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+
+  // Generate path
+  const points: string[] = [];
+  scaledVertices.forEach((v, i) => {
+    points.push(i === 0 ? `M ${v.x} ${v.y}` : `L ${v.x} ${v.y}`);
+  });
   points.push("Z");
+  
   return points.join(" ");
 }
 
@@ -137,17 +207,47 @@ export function generateStarPath(
   innerRadius: number,
   points: number,
 ): string {
-  const pathPoints: string[] = [];
+  // Calculate base vertices with standard orientation
+  const baseVertices: Point[] = [];
+  const startAngle = points % 2 === 0 
+    ? -Math.PI / 2 
+    : -Math.PI / 2 + Math.PI / points;
 
   for (let i = 0; i < points * 2; i++) {
-    const angle = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
-    const radius = i % 2 === 0 ? outerRadius : innerRadius;
-    const x = center.x + Math.cos(angle) * radius;
-    const y = center.y + Math.sin(angle) * radius;
-    pathPoints.push(i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`);
+    const angle = startAngle + (i / (points * 2)) * Math.PI * 2;
+    const radius = i % 2 === 0 ? 1 : innerRadius / outerRadius; // Normalize to outer radius
+    baseVertices.push({
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    });
   }
 
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map(v => v.x));
+  const maxX = Math.max(...baseVertices.map(v => v.x));
+  const minY = Math.min(...baseVertices.map(v => v.y));
+  const maxY = Math.max(...baseVertices.map(v => v.y));
+  
+  const width = maxX - minX;
+  const height = maxY - minY;
+  
+  // Scale to fit the full outerRadius in both dimensions
+  const scaleX = (2 * outerRadius) / width;
+  const scaleY = (2 * outerRadius) / height;
+  
+  // Apply scaling and centering
+  const scaledVertices = baseVertices.map(v => ({
+    x: center.x + (v.x - (minX + maxX) / 2) * scaleX,
+    y: center.y + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+
+  // Generate path
+  const pathPoints: string[] = [];
+  scaledVertices.forEach((v, i) => {
+    pathPoints.push(i === 0 ? `M ${v.x} ${v.y}` : `L ${v.x} ${v.y}`);
+  });
   pathPoints.push("Z");
+  
   return pathPoints.join(" ");
 }
 
@@ -265,15 +365,46 @@ export function getPolygonVertices(
   radius: number,
   sides: number,
 ): Point[] {
-  const vertices: Point[] = [];
+  // Special case for square: use axis-aligned rectangle (no bounding box scaling)
+  if (sides === 4) {
+    return [
+      { x: center.x - radius, y: center.y - radius },
+      { x: center.x + radius, y: center.y - radius },
+      { x: center.x + radius, y: center.y + radius },
+      { x: center.x - radius, y: center.y + radius },
+    ];
+  }
+
+  // For all other polygons, calculate base vertices and apply bounding box scaling
+  const baseVertices: Point[] = [];
+  const startAngle = sides % 2 === 0 
+    ? -Math.PI / 2  // Even sides: start at top
+    : -Math.PI / 2 + Math.PI / sides;  // Odd sides: offset for flat bottom
 
   for (let i = 0; i < sides; i++) {
-    const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
-    vertices.push({
-      x: center.x + Math.cos(angle) * radius,
-      y: center.y + Math.sin(angle) * radius,
+    const angle = startAngle + (i / sides) * Math.PI * 2;
+    baseVertices.push({
+      x: Math.cos(angle),
+      y: Math.sin(angle),
     });
   }
 
-  return vertices;
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map(v => v.x));
+  const maxX = Math.max(...baseVertices.map(v => v.x));
+  const minY = Math.min(...baseVertices.map(v => v.y));
+  const maxY = Math.max(...baseVertices.map(v => v.y));
+  
+  const width = maxX - minX;
+  const height = maxY - minY;
+  
+  // Scale to fit the full radius in both dimensions
+  const scaleX = (2 * radius) / width;
+  const scaleY = (2 * radius) / height;
+  
+  // Apply scaling and centering
+  return baseVertices.map(v => ({
+    x: center.x + (v.x - (minX + maxX) / 2) * scaleX,
+    y: center.y + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
 }

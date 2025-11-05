@@ -1,0 +1,1303 @@
+/**
+ * Basic Arena Preview Component
+ * Renders: Name, Shape, Theme, Auto-Rotate, Walls with brick pattern, Exits with arrows
+ */
+
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import {
+  ArenaConfig,
+  ArenaShape,
+  ArenaTheme,
+  getEdgeCount,
+  LoopConfig,
+  PortalConfig,
+} from "@/types/arenaConfigNew";
+import { generateShapePath } from "@/utils/pathGeneration";
+import SpeedPathRenderer from "@/components/arena/renderers/SpeedPathRenderer";
+import PortalRenderer from "@/components/arena/renderers/PortalRenderer";
+import WaterBodyRenderer from "@/components/arena/renderers/WaterBodyRenderer";
+
+interface ArenaPreviewBasicProps {
+  arena: ArenaConfig;
+  width?: number;
+  height?: number;
+}
+
+export default function ArenaPreviewBasic({
+  arena,
+  width = 400,
+  height = 400,
+}: ArenaPreviewBasicProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const rotationRef = useRef<number>(0);
+
+  // Calculate scale - use full available space with small padding
+  const scale = Math.min(width, height) / (arena.width * 1.05);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const arenaRadius = (arena.width / 2) * scale;
+
+  // Auto-rotation animation
+  useEffect(() => {
+    if (!arena.autoRotate || !svgRef.current) return;
+
+    let animationFrameId: number;
+    const arenaGroup = svgRef.current.querySelector("#arena-rotating-group");
+
+    const animate = () => {
+      const direction = arena.rotationDirection === "clockwise" ? 1 : -1;
+      rotationRef.current += (arena.rotationSpeed / 60) * direction; // Convert to per-frame
+
+      if (arenaGroup) {
+        arenaGroup.setAttribute(
+          "transform",
+          `rotate(${rotationRef.current} ${centerX} ${centerY})`
+        );
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [
+    arena.autoRotate,
+    arena.rotationSpeed,
+    arena.rotationDirection,
+    centerX,
+    centerY,
+  ]);
+
+  return (
+    <div className="arena-preview-container">
+      {/* Arena Info Header */}
+      <div className="arena-info mb-4 p-4 bg-gray-800 rounded-lg">
+        <h2 className="text-2xl font-bold text-white mb-2">{arena.name}</h2>
+        {arena.description && (
+          <p className="text-gray-300 text-sm mb-2">{arena.description}</p>
+        )}
+        <div className="flex gap-4 text-sm text-gray-400">
+          <span>
+            Shape:{" "}
+            <span className="text-blue-400 font-semibold">{arena.shape}</span>
+          </span>
+          <span>
+            Theme:{" "}
+            <span className="text-green-400 font-semibold">{arena.theme}</span>
+          </span>
+          {arena.autoRotate && (
+            <span className="text-yellow-400">
+              ⟳ Rotating {arena.rotationDirection} ({arena.rotationSpeed}°/s)
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* SVG Arena Preview */}
+      <svg
+        ref={svgRef}
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        className="rounded-lg border-2 border-gray-700"
+        style={{
+          maxWidth: "100%",
+          height: "auto",
+          background: getThemeBackgroundColor(arena.theme),
+        }}
+      >
+        <defs>
+          {/* Brick pattern for walls */}
+          <pattern
+            id="brickPattern"
+            x="0"
+            y="0"
+            width="30"
+            height="15"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Brown brick base */}
+            <rect width="30" height="15" fill="#8B4513" />
+            {/* Top row bricks */}
+            <rect
+              x="0"
+              y="0"
+              width="14"
+              height="7"
+              fill="#A0522D"
+              stroke="#654321"
+              strokeWidth="0.5"
+            />
+            <rect
+              x="16"
+              y="0"
+              width="14"
+              height="7"
+              fill="#A0522D"
+              stroke="#654321"
+              strokeWidth="0.5"
+            />
+            {/* Bottom row bricks - offset */}
+            <rect
+              x="-8"
+              y="8"
+              width="14"
+              height="7"
+              fill="#CD853F"
+              stroke="#654321"
+              strokeWidth="0.5"
+            />
+            <rect
+              x="8"
+              y="8"
+              width="14"
+              height="7"
+              fill="#CD853F"
+              stroke="#654321"
+              strokeWidth="0.5"
+            />
+            <rect
+              x="24"
+              y="8"
+              width="14"
+              height="7"
+              fill="#CD853F"
+              stroke="#654321"
+              strokeWidth="0.5"
+            />
+          </pattern>
+
+          {/* Metal pattern for walls */}
+          <pattern
+            id="metalPattern"
+            x="0"
+            y="0"
+            width="40"
+            height="40"
+            patternUnits="userSpaceOnUse"
+          >
+            <rect width="40" height="40" fill="#9CA3AF" />
+            <line
+              x1="0"
+              y1="20"
+              x2="40"
+              y2="20"
+              stroke="#6B7280"
+              strokeWidth="2"
+            />
+            <line
+              x1="20"
+              y1="0"
+              x2="20"
+              y2="40"
+              stroke="#6B7280"
+              strokeWidth="2"
+            />
+            <circle cx="20" cy="20" r="3" fill="#4B5563" />
+            <circle cx="0" cy="0" r="2" fill="#4B5563" />
+            <circle cx="40" cy="0" r="2" fill="#4B5563" />
+            <circle cx="0" cy="40" r="2" fill="#4B5563" />
+            <circle cx="40" cy="40" r="2" fill="#4B5563" />
+          </pattern>
+
+          {/* Wood pattern for walls */}
+          <pattern
+            id="woodPattern"
+            x="0"
+            y="0"
+            width="50"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <rect width="50" height="20" fill="#8B4513" />
+            <rect x="0" y="0" width="49" height="19" fill="#A0522D" />
+            <line
+              x1="0"
+              y1="4"
+              x2="50"
+              y2="4"
+              stroke="#654321"
+              strokeWidth="0.5"
+              opacity="0.3"
+            />
+            <line
+              x1="0"
+              y1="9"
+              x2="50"
+              y2="9"
+              stroke="#654321"
+              strokeWidth="0.5"
+              opacity="0.2"
+            />
+            <line
+              x1="0"
+              y1="14"
+              x2="50"
+              y2="14"
+              stroke="#654321"
+              strokeWidth="0.5"
+              opacity="0.3"
+            />
+            <ellipse
+              cx="10"
+              cy="10"
+              rx="3"
+              ry="4"
+              fill="#654321"
+              opacity="0.2"
+            />
+            <ellipse
+              cx="30"
+              cy="8"
+              rx="2"
+              ry="3"
+              fill="#654321"
+              opacity="0.15"
+            />
+            <ellipse
+              cx="45"
+              cy="12"
+              rx="2.5"
+              ry="3.5"
+              fill="#654321"
+              opacity="0.18"
+            />
+          </pattern>
+
+          {/* Stone pattern for walls */}
+          <pattern
+            id="stonePattern"
+            x="0"
+            y="0"
+            width="45"
+            height="30"
+            patternUnits="userSpaceOnUse"
+          >
+            <rect width="45" height="30" fill="#808080" />
+            <rect
+              x="0"
+              y="0"
+              width="20"
+              height="14"
+              fill="#9E9E9E"
+              stroke="#505050"
+              strokeWidth="1"
+            />
+            <rect
+              x="22"
+              y="0"
+              width="23"
+              height="14"
+              fill="#A9A9A9"
+              stroke="#505050"
+              strokeWidth="1"
+            />
+            <rect
+              x="0"
+              y="16"
+              width="15"
+              height="14"
+              fill="#9E9E9E"
+              stroke="#505050"
+              strokeWidth="1"
+            />
+            <rect
+              x="17"
+              y="16"
+              width="28"
+              height="14"
+              fill="#A9A9A9"
+              stroke="#505050"
+              strokeWidth="1"
+            />
+          </pattern>
+
+          {/* Arrow marker for exits */}
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="10"
+            refX="9"
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <polygon points="0 0, 10 3, 0 6" fill="currentColor" />
+          </marker>
+
+          {/* Theme gradient */}
+          <radialGradient id="floorGradient">
+            <stop offset="0%" stopColor={getThemeColor(arena.theme, 0.3)} />
+            <stop offset="100%" stopColor={getThemeColor(arena.theme, 0.1)} />
+          </radialGradient>
+        </defs>
+        {/* Background floor */}
+        <rect width={width} height={height} fill="url(#floorGradient)" />{" "}
+        {/*
+          Rotating group (if auto-rotate enabled)
+          NOTE: All walls, exits, speed paths, and portals are inside this group,
+          so rotation is automatically applied to exit arrows as well.
+          Exit arrows are positioned relative to the arena geometry, not the viewport.
+        */}
+        <g id="arena-rotating-group">
+          {/* Arena floor shape */}
+          <ArenaFloor
+            shape={arena.shape}
+            centerX={centerX}
+            centerY={centerY}
+            width={arena.width}
+            height={arena.height}
+            scale={scale}
+            theme={arena.theme}
+          />
+
+          {/* Water Bodies - Render BEFORE speed paths and portals */}
+          {arena.waterBodies?.map((waterBody, idx) => (
+            <WaterBodyRenderer
+              key={waterBody.id || idx}
+              waterBody={waterBody}
+              arenaShape={arena.shape}
+              arenaRadius={arenaRadius}
+              centerX={centerX}
+              centerY={centerY}
+              scale={scale}
+              arenaWidth={arena.width}
+              arenaHeight={arena.height}
+            />
+          ))}
+
+          {/* Speed Paths (speed boost paths that players travel along) */}
+          {(arena.speedPaths || arena.loops)?.map((speedPath, idx) => (
+            <SpeedPathRenderer
+              key={idx}
+              speedPath={{ ...speedPath, id: speedPath.id || idx + 1 }}
+              centerX={centerX}
+              centerY={centerY}
+              scale={scale}
+            />
+          ))}
+
+          {/* Portals (teleportation) */}
+          {arena.portals?.map((portal, idx) => (
+            <g key={portal.id} transform={`translate(${centerX}, ${centerY})`}>
+              <PortalRenderer
+                portal={{
+                  ...portal,
+                  portalNumber: portal.portalNumber || idx + 1,
+                }}
+                scale={scale}
+              />
+            </g>
+          ))}
+
+          {/* Walls and Exits */}
+          {arena.wall.enabled && (
+            <WallsRenderer
+              wall={arena.wall}
+              shape={arena.shape}
+              centerX={centerX}
+              centerY={centerY}
+              arenaRadius={arenaRadius}
+              scale={scale}
+            />
+          )}
+        </g>
+        {/* Center dot (for visual reference) */}
+        <circle cx={centerX} cy={centerY} r={3} fill="white" opacity={0.5} />
+      </svg>
+    </div>
+  );
+}
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+function ArenaFloor({
+  shape,
+  centerX,
+  centerY,
+  width,
+  height,
+  scale,
+  theme,
+}: {
+  shape: ArenaShape;
+  centerX: number;
+  centerY: number;
+  width: number;
+  height: number;
+  scale: number;
+  theme: ArenaTheme;
+}) {
+  const radius = (width / 2) * scale;
+  const shapePath = generateShapePath(
+    shape,
+    { x: centerX, y: centerY },
+    radius,
+    width * scale,
+    height * scale
+  );
+
+  return (
+    <path
+      d={shapePath}
+      fill="rgba(255, 255, 255, 0.1)"
+      stroke={getThemeColor(theme, 0.5)}
+      strokeWidth={2}
+    />
+  );
+}
+
+function WallsRenderer({
+  wall,
+  shape,
+  centerX,
+  centerY,
+  arenaRadius,
+  scale,
+}: {
+  wall: any;
+  shape: ArenaShape;
+  centerX: number;
+  centerY: number;
+  arenaRadius: number;
+  scale: number;
+}) {
+  const edgeCount = getEdgeCount(shape);
+
+  if (shape === "circle") {
+    return (
+      <CircleWalls
+        wall={wall}
+        centerX={centerX}
+        centerY={centerY}
+        arenaRadius={arenaRadius}
+        scale={scale}
+      />
+    );
+  }
+
+  return (
+    <PolygonWalls
+      wall={wall}
+      shape={shape}
+      edgeCount={edgeCount}
+      centerX={centerX}
+      centerY={centerY}
+      arenaRadius={arenaRadius}
+      scale={scale}
+    />
+  );
+}
+
+function CircleWalls({
+  wall,
+  centerX,
+  centerY,
+  arenaRadius,
+  scale,
+}: {
+  wall: any;
+  centerX: number;
+  centerY: number;
+  arenaRadius: number;
+  scale: number;
+}) {
+  const edgeConfig = wall.edges[0]; // Circle has only 1 edge
+
+  return (
+    <g className="circle-walls">
+      {edgeConfig.walls.map((wallSegment: any, idx: number) => {
+        // Convert position and width percentages to angles
+        const startAngle = (wallSegment.position / 100) * 360;
+        const endAngle = startAngle + (wallSegment.width / 100) * 360;
+        const thickness = wallSegment.thickness * scale;
+
+        // Draw wall arc at the edge (wall extends OUTWARD)
+        const innerRadius = arenaRadius;
+        const outerRadius = arenaRadius + thickness;
+
+        // Create wall path as a filled arc segment
+        const outerStart = polarToCartesian(
+          centerX,
+          centerY,
+          outerRadius,
+          startAngle
+        );
+        const outerEnd = polarToCartesian(
+          centerX,
+          centerY,
+          outerRadius,
+          endAngle
+        );
+        const innerStart = polarToCartesian(
+          centerX,
+          centerY,
+          innerRadius,
+          startAngle
+        );
+        const innerEnd = polarToCartesian(
+          centerX,
+          centerY,
+          innerRadius,
+          endAngle
+        );
+
+        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+        const wallPath = [
+          `M ${outerStart.x} ${outerStart.y}`,
+          `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`,
+          `L ${innerEnd.x} ${innerEnd.y}`,
+          `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
+          `Z`,
+        ].join(" ");
+
+        // Calculate wall center for label
+        const midAngle = (startAngle + endAngle) / 2;
+        const labelRadius = arenaRadius + thickness / 2;
+        const labelPos = polarToCartesian(
+          centerX,
+          centerY,
+          labelRadius,
+          midAngle
+        );
+        const wallId = wallSegment.id || `W${idx + 1}`;
+
+        // Get wall pattern based on style
+        const getWallPattern = (style: string) => {
+          switch (style) {
+            case "metal":
+              return "url(#metalPattern)";
+            case "wood":
+              return "url(#woodPattern)";
+            case "stone":
+              return "url(#stonePattern)";
+            case "brick":
+            default:
+              return "url(#brickPattern)";
+          }
+        };
+
+        return (
+          <g key={idx}>
+            {/* Wall segment with pattern based on style */}
+            <path
+              d={wallPath}
+              fill={getWallPattern(wall.wallStyle)}
+              stroke="#654321"
+              strokeWidth="1"
+            />
+            {/* Shadow */}
+            <path d={wallPath} fill="rgba(0, 0, 0, 0.2)" pointerEvents="none" />
+
+            {/* Wall ID Label */}
+            <text
+              x={labelPos.x}
+              y={labelPos.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="10"
+              fontWeight="bold"
+              fill="white"
+              stroke="black"
+              strokeWidth="0.5"
+            >
+              {wallId}
+            </text>
+
+            {/* Add spikes if enabled */}
+            {wall.hasSpikes &&
+              renderCircleSpikes(
+                centerX,
+                centerY,
+                outerRadius,
+                startAngle,
+                endAngle,
+                thickness
+              )}
+          </g>
+        );
+      })}
+
+      {/* Draw exits (gaps between walls) */}
+      {getCircleExits(edgeConfig).map((exit: any, idx: number) => {
+        const exitSpan = exit.end - exit.start;
+
+        // Draw a thin red passable wall structure
+        const startAngle = exit.start;
+        const endAngle = exit.end;
+        const exitThickness = 3; // Thin red line
+
+        // Create exit arc path (thin red line at arena edge)
+        const innerRadius = arenaRadius;
+        const outerRadius = arenaRadius + exitThickness;
+
+        const outerStart = polarToCartesian(
+          centerX,
+          centerY,
+          outerRadius,
+          startAngle
+        );
+        const outerEnd = polarToCartesian(
+          centerX,
+          centerY,
+          outerRadius,
+          endAngle
+        );
+        const innerStart = polarToCartesian(
+          centerX,
+          centerY,
+          innerRadius,
+          startAngle
+        );
+        const innerEnd = polarToCartesian(
+          centerX,
+          centerY,
+          innerRadius,
+          endAngle
+        );
+
+        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+        const exitPath = [
+          `M ${outerStart.x} ${outerStart.y}`,
+          `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`,
+          `L ${innerEnd.x} ${innerEnd.y}`,
+          `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
+          `Z`,
+        ].join(" ");
+
+        // Calculate exit center for label
+        const midAngle = (startAngle + endAngle) / 2;
+        const labelRadius = arenaRadius + exitThickness / 2;
+        const labelPos = polarToCartesian(
+          centerX,
+          centerY,
+          labelRadius,
+          midAngle
+        );
+
+        return (
+          <g key={`exit-${idx}`}>
+            {/* Thin red passable wall structure */}
+            <path
+              d={exitPath}
+              fill={wall.exitColor}
+              opacity={0.6}
+              pointerEvents="none"
+            />
+            {/* Exit ID Label */}
+            <text
+              x={labelPos.x}
+              y={labelPos.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="10"
+              fontWeight="bold"
+              fill="white"
+              stroke="black"
+              strokeWidth="0.5"
+            >
+              E{idx + 1}
+            </text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+function PolygonWalls({
+  wall,
+  shape,
+  edgeCount,
+  centerX,
+  centerY,
+  arenaRadius,
+  scale,
+}: {
+  wall: any;
+  shape: ArenaShape;
+  edgeCount: number;
+  centerX: number;
+  centerY: number;
+  arenaRadius: number;
+  scale: number;
+}) {
+  // Calculate vertices based on shape type
+  let vertices;
+  if (shape.startsWith("star")) {
+    const points = parseInt(shape.replace("star", ""));
+    vertices = getStarVertices(centerX, centerY, arenaRadius, points);
+  } else {
+    vertices = getPolygonVertices(
+      shape,
+      centerX,
+      centerY,
+      arenaRadius,
+      edgeCount
+    );
+  }
+
+  return (
+    <g className="polygon-walls">
+      {wall.edges.map((edgeConfig: any, edgeIdx: number) => {
+        const v1 = vertices[edgeIdx];
+        const v2 = vertices[(edgeIdx + 1) % vertices.length];
+        const edgeLength = Math.sqrt((v2.x - v1.x) ** 2 + (v2.y - v1.y) ** 2);
+
+        return (
+          <g key={edgeIdx}>
+            {/* Draw walls on this edge */}
+            {edgeConfig.walls.map((wallSegment: any, wallIdx: number) => {
+              const startPos = (wallSegment.position / 100) * edgeLength;
+              const wallLength = (wallSegment.width / 100) * edgeLength;
+              const thickness = wallSegment.thickness * scale;
+
+              const startX = v1.x + (startPos / edgeLength) * (v2.x - v1.x);
+              const startY = v1.y + (startPos / edgeLength) * (v2.y - v1.y);
+              const endX = startX + (wallLength / edgeLength) * (v2.x - v1.x);
+              const endY = startY + (wallLength / edgeLength) * (v2.y - v1.y);
+
+              // Calculate perpendicular for wall thickness (OUTWARD from edge)
+              const edgeVecX = v2.x - v1.x;
+              const edgeVecY = v2.y - v1.y;
+              let perpX = -edgeVecY;
+              let perpY = edgeVecX;
+              const perpLen = Math.sqrt(perpX ** 2 + perpY ** 2);
+              perpX = (perpX / perpLen) * thickness;
+              perpY = (perpY / perpLen) * thickness;
+
+              // Check if perpendicular points inward to center
+              const edgeMidX = (v1.x + v2.x) / 2;
+              const edgeMidY = (v1.y + v2.y) / 2;
+              const toCenter = { x: centerX - edgeMidX, y: centerY - edgeMidY };
+              const dotProduct =
+                (perpX / thickness) * toCenter.x +
+                (perpY / thickness) * toCenter.y;
+
+              if (dotProduct > 0) {
+                // Pointing inward, flip it to point outward
+                perpX = -perpX;
+                perpY = -perpY;
+              }
+
+              // Create wall polygon (filled rectangle)
+              const wallPath = `M ${startX} ${startY} L ${endX} ${endY} L ${
+                endX + perpX
+              } ${endY + perpY} L ${startX + perpX} ${startY + perpY} Z`;
+
+              // Calculate wall center for label
+              const wallCenterX =
+                (startX + endX + startX + perpX + endX + perpX) / 4;
+              const wallCenterY =
+                (startY + endY + startY + perpY + endY + perpY) / 4;
+              const wallId = wallSegment.id || `E${edgeIdx + 1}W${wallIdx + 1}`;
+
+              // Get wall pattern based on style
+              const getWallPattern = (style: string) => {
+                switch (style) {
+                  case "metal":
+                    return "url(#metalPattern)";
+                  case "wood":
+                    return "url(#woodPattern)";
+                  case "stone":
+                    return "url(#stonePattern)";
+                  case "brick":
+                  default:
+                    return "url(#brickPattern)";
+                }
+              };
+
+              return (
+                <g key={wallIdx}>
+                  {/* Wall with pattern based on style */}
+                  <path
+                    d={wallPath}
+                    fill={getWallPattern(wall.wallStyle)}
+                    stroke="#654321"
+                    strokeWidth="1"
+                  />
+                  {/* Shadow */}
+                  <path
+                    d={wallPath}
+                    fill="rgba(0, 0, 0, 0.2)"
+                    pointerEvents="none"
+                  />
+
+                  {/* Wall ID Label */}
+                  <text
+                    x={wallCenterX}
+                    y={wallCenterY}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="10"
+                    fontWeight="bold"
+                    fill="white"
+                    stroke="black"
+                    strokeWidth="0.5"
+                  >
+                    {wallId}
+                  </text>
+
+                  {/* Add spikes if enabled */}
+                  {wall.hasSpikes &&
+                    renderPolygonSpikes(
+                      startX,
+                      startY,
+                      endX,
+                      endY,
+                      perpX,
+                      perpY,
+                      thickness
+                    )}
+                </g>
+              );
+            })}
+
+            {/* Draw exits (gaps) on this edge */}
+            {getEdgeExits(edgeConfig, v1, v2, edgeLength).map(
+              (exit: any, exitIdx: number) => {
+                const exitThickness = 3; // Thin red line
+
+                // Calculate outward direction (perpendicular to edge)
+                const edgeVecX = v2.x - v1.x;
+                const edgeVecY = v2.y - v1.y;
+
+                let perpX = -edgeVecY;
+                let perpY = edgeVecX;
+
+                const perpLen = Math.sqrt(perpX ** 2 + perpY ** 2);
+                perpX = (perpX / perpLen) * exitThickness;
+                perpY = (perpY / perpLen) * exitThickness;
+
+                const edgeMidX = (v1.x + v2.x) / 2;
+                const edgeMidY = (v1.y + v2.y) / 2;
+                const toCenter = {
+                  x: centerX - edgeMidX,
+                  y: centerY - edgeMidY,
+                };
+
+                const dotProduct = perpX * toCenter.x + perpY * toCenter.y;
+                if (dotProduct > 0) {
+                  perpX = -perpX;
+                  perpY = -perpY;
+                }
+
+                // Create thin red passable wall structure
+                const exitPath = `M ${exit.start.x} ${exit.start.y} L ${
+                  exit.end.x
+                } ${exit.end.y} L ${exit.end.x + perpX} ${
+                  exit.end.y + perpY
+                } L ${exit.start.x + perpX} ${exit.start.y + perpY} Z`;
+
+                // Calculate exit center for label
+                const exitCenterX =
+                  (exit.start.x +
+                    exit.end.x +
+                    exit.start.x +
+                    perpX +
+                    exit.end.x +
+                    perpX) /
+                  4;
+                const exitCenterY =
+                  (exit.start.y +
+                    exit.end.y +
+                    exit.start.y +
+                    perpY +
+                    exit.end.y +
+                    perpY) /
+                  4;
+
+                return (
+                  <g key={`exit-${exitIdx}`}>
+                    {/* Thin red passable wall structure */}
+                    <path
+                      d={exitPath}
+                      fill={wall.exitColor}
+                      opacity={0.6}
+                      pointerEvents="none"
+                    />
+                    {/* Exit ID Label */}
+                    <text
+                      x={exitCenterX}
+                      y={exitCenterY}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize="10"
+                      fontWeight="bold"
+                      fill="white"
+                      stroke="black"
+                      strokeWidth="0.5"
+                    >
+                      E{edgeIdx + 1}X{exitIdx + 1}
+                    </text>
+                  </g>
+                );
+              }
+            )}
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function getThemeColor(theme: ArenaTheme, alpha: number = 1): string {
+  const colors: Record<ArenaTheme, string> = {
+    forest: `rgba(34, 139, 34, ${alpha})`,
+    mountains: `rgba(112, 128, 144, ${alpha})`,
+    grasslands: `rgba(124, 252, 0, ${alpha})`,
+    metrocity: `rgba(70, 130, 180, ${alpha})`,
+    safari: `rgba(210, 180, 140, ${alpha})`,
+    prehistoric: `rgba(139, 69, 19, ${alpha})`,
+    futuristic: `rgba(138, 43, 226, ${alpha})`,
+    desert: `rgba(244, 164, 96, ${alpha})`,
+    sea: `rgba(0, 191, 255, ${alpha})`,
+    riverbank: `rgba(95, 158, 160, ${alpha})`,
+  };
+  return colors[theme] || `rgba(128, 128, 128, ${alpha})`;
+}
+
+function getThemeBackgroundColor(theme: ArenaTheme): string {
+  return getThemeColor(theme, 0.15);
+}
+
+function describeArc(
+  x: number,
+  y: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number
+): string {
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
+}
+
+function polarToCartesian(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  angleInDegrees: number
+) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+  return {
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians),
+  };
+}
+
+function getPolygonVertices(
+  shape: ArenaShape,
+  centerX: number,
+  centerY: number,
+  radius: number,
+  sides: number
+) {
+  // Special case for square: use axis-aligned rectangle (no bounding box scaling)
+  if (sides === 4) {
+    return [
+      { x: centerX - radius, y: centerY - radius },
+      { x: centerX + radius, y: centerY - radius },
+      { x: centerX + radius, y: centerY + radius },
+      { x: centerX - radius, y: centerY + radius },
+    ];
+  }
+
+  // For all other polygons, calculate base vertices and apply bounding box scaling
+  const baseVertices: Array<{ x: number; y: number }> = [];
+  const startAngle =
+    sides % 2 === 0
+      ? -Math.PI / 2 // Even sides: start at top
+      : -Math.PI / 2 + Math.PI / sides; // Odd sides: offset for flat bottom
+
+  for (let i = 0; i < sides; i++) {
+    const angle = startAngle + (i * 2 * Math.PI) / sides;
+    baseVertices.push({
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    });
+  }
+
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map((v) => v.x));
+  const maxX = Math.max(...baseVertices.map((v) => v.x));
+  const minY = Math.min(...baseVertices.map((v) => v.y));
+  const maxY = Math.max(...baseVertices.map((v) => v.y));
+
+  const width = maxX - minX;
+  const height = maxY - minY;
+
+  // Scale to fit the full radius in both dimensions
+  const scaleX = (2 * radius) / width;
+  const scaleY = (2 * radius) / height;
+
+  // Apply scaling and centering
+  return baseVertices.map((v) => ({
+    x: centerX + (v.x - (minX + maxX) / 2) * scaleX,
+    y: centerY + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+}
+
+// Get vertices for star shapes
+function getStarVertices(
+  centerX: number,
+  centerY: number,
+  outerRadius: number,
+  points: number
+) {
+  const innerRadius = outerRadius * 0.5;
+
+  // Calculate base vertices with standard orientation
+  const baseVertices: Array<{ x: number; y: number }> = [];
+  const startAngle =
+    points % 2 === 0 ? -Math.PI / 2 : -Math.PI / 2 + Math.PI / points;
+
+  for (let i = 0; i < points * 2; i++) {
+    const angle = startAngle + (i / (points * 2)) * Math.PI * 2;
+    const radius = i % 2 === 0 ? 1 : innerRadius / outerRadius; // Normalize
+    baseVertices.push({
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    });
+  }
+
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map((v) => v.x));
+  const maxX = Math.max(...baseVertices.map((v) => v.x));
+  const minY = Math.min(...baseVertices.map((v) => v.y));
+  const maxY = Math.max(...baseVertices.map((v) => v.y));
+
+  const width = maxX - minX;
+  const height = maxY - minY;
+
+  // Scale to fit the full outerRadius in both dimensions
+  const scaleX = (2 * outerRadius) / width;
+  const scaleY = (2 * outerRadius) / height;
+
+  // Apply scaling and centering
+  return baseVertices.map((v) => ({
+    x: centerX + (v.x - (minX + maxX) / 2) * scaleX,
+    y: centerY + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+}
+
+// Render spikes for circular walls
+function renderCircleSpikes(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  thickness: number
+) {
+  const spikes = [];
+  const spikeSpacing = 15; // degrees between spikes
+  const spikeCount = Math.floor((endAngle - startAngle) / spikeSpacing);
+  const spikeHeight = thickness * 0.6;
+
+  for (let i = 0; i <= spikeCount; i++) {
+    const angle = startAngle + i * spikeSpacing;
+    if (angle > endAngle) break;
+
+    // Base is at the outer edge of wall, tip points OUTWARD away from arena
+    const baseX = centerX + radius * Math.cos((angle * Math.PI) / 180);
+    const baseY = centerY + radius * Math.sin((angle * Math.PI) / 180);
+    const tipX =
+      centerX + (radius + spikeHeight) * Math.cos((angle * Math.PI) / 180);
+    const tipY =
+      centerY + (radius + spikeHeight) * Math.sin((angle * Math.PI) / 180);
+
+    const leftAngle = angle - 3;
+    const rightAngle = angle + 3;
+    const leftX = centerX + radius * Math.cos((leftAngle * Math.PI) / 180);
+    const leftY = centerY + radius * Math.sin((leftAngle * Math.PI) / 180);
+    const rightX = centerX + radius * Math.cos((rightAngle * Math.PI) / 180);
+    const rightY = centerY + radius * Math.sin((rightAngle * Math.PI) / 180);
+
+    spikes.push(
+      <path
+        key={i}
+        d={`M ${leftX} ${leftY} L ${tipX} ${tipY} L ${rightX} ${rightY} Z`}
+        fill="#654321"
+        stroke="#3d2712"
+        strokeWidth="0.5"
+      />
+    );
+  }
+
+  return <g className="spikes">{spikes}</g>;
+}
+
+// Render spikes for polygon walls
+function renderPolygonSpikes(
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number,
+  perpX: number,
+  perpY: number,
+  thickness: number
+) {
+  const spikes = [];
+  const wallLength = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+  const spikeSpacing = 15; // pixels between spikes
+  const spikeCount = Math.floor(wallLength / spikeSpacing);
+  const spikeHeight = thickness * 0.6;
+
+  // Normalize perpendicular to get spike direction (OUTWARD away from arena)
+  const perpLen = Math.sqrt(perpX ** 2 + perpY ** 2);
+  const normPerpX = -(perpX / perpLen) * spikeHeight;
+  const normPerpY = -(perpY / perpLen) * spikeHeight;
+
+  for (let i = 1; i <= spikeCount; i++) {
+    const t = i / (spikeCount + 1);
+    const baseX = startX + t * (endX - startX);
+    const baseY = startY + t * (endY - startY);
+    const tipX = baseX + normPerpX;
+    const tipY = baseY + normPerpY;
+
+    // Create triangle spike
+    const spikeWidth = 8;
+    const edgeVecX = endX - startX;
+    const edgeVecY = endY - startY;
+    const edgeLen = Math.sqrt(edgeVecX ** 2 + edgeVecY ** 2);
+    const normEdgeX = (edgeVecX / edgeLen) * spikeWidth;
+    const normEdgeY = (edgeVecY / edgeLen) * spikeWidth;
+
+    const leftX = baseX - normEdgeX / 2;
+    const leftY = baseY - normEdgeY / 2;
+    const rightX = baseX + normEdgeX / 2;
+    const rightY = baseY + normEdgeY / 2;
+
+    spikes.push(
+      <path
+        key={i}
+        d={`M ${leftX} ${leftY} L ${tipX} ${tipY} L ${rightX} ${rightY} Z`}
+        fill="#654321"
+        stroke="#3d2712"
+        strokeWidth="0.5"
+      />
+    );
+  }
+
+  return <g className="spikes">{spikes}</g>;
+}
+
+function getCircleExits(edgeConfig: any) {
+  const exits = [];
+  const walls = edgeConfig.walls.sort(
+    (a: any, b: any) => a.position - b.position
+  );
+
+  // If no walls, entire circle is an exit (0 to 360 degrees)
+  if (walls.length === 0) {
+    exits.push({ start: 0, end: 360 });
+    return exits;
+  }
+
+  // Calculate wall end positions and convert to degrees
+  const wallsInDegrees = walls.map((w: any) => ({
+    start: (w.position / 100) * 360,
+    end: ((w.position + w.width) / 100) * 360,
+  }));
+
+  // Find gaps between walls (exits)
+  // First, check gap before first wall (from 0 to first wall start)
+  if (wallsInDegrees[0].start > 0.1) {
+    // 0.1 degree threshold to avoid tiny gaps
+    exits.push({ start: 0, end: wallsInDegrees[0].start });
+  }
+
+  // Check gaps between consecutive walls
+  for (let i = 0; i < wallsInDegrees.length - 1; i++) {
+    const gapStart = wallsInDegrees[i].end;
+    const gapEnd = wallsInDegrees[i + 1].start;
+    if (gapEnd - gapStart > 0.1) {
+      // 0.1 degree threshold
+      exits.push({ start: gapStart, end: gapEnd });
+    }
+  }
+
+  // Check gap after last wall (from last wall end to 360)
+  const lastWallEnd = wallsInDegrees[wallsInDegrees.length - 1].end;
+  if (360 - lastWallEnd > 0.1) {
+    // 0.1 degree threshold
+    exits.push({ start: lastWallEnd, end: 360 });
+  }
+
+  return exits;
+}
+
+function getEdgeExits(edgeConfig: any, v1: any, v2: any, edgeLength: number) {
+  const exits = [];
+  const walls = edgeConfig.walls.sort(
+    (a: any, b: any) => a.position - b.position
+  );
+
+  // If no walls, entire edge is an exit
+  if (walls.length === 0) {
+    exits.push({ start: { x: v1.x, y: v1.y }, end: { x: v2.x, y: v2.y } });
+    return exits;
+  }
+
+  // Helper to calculate point along edge
+  const getPointAtPosition = (posPercent: number) => {
+    const t = posPercent / 100;
+    return {
+      x: v1.x + t * (v2.x - v1.x),
+      y: v1.y + t * (v2.y - v1.y),
+    };
+  };
+
+  // Before first wall (0 to first wall start)
+  if (walls[0].position > 0.1) {
+    // 0.1% threshold to avoid tiny gaps
+    exits.push({
+      start: { x: v1.x, y: v1.y },
+      end: getPointAtPosition(walls[0].position),
+    });
+  }
+
+  // Between walls
+  for (let i = 0; i < walls.length - 1; i++) {
+    const gapStart = walls[i].position + walls[i].width;
+    const gapEnd = walls[i + 1].position;
+
+    if (gapEnd - gapStart > 0.1) {
+      // 0.1% threshold
+      exits.push({
+        start: getPointAtPosition(gapStart),
+        end: getPointAtPosition(gapEnd),
+      });
+    }
+  }
+
+  // After last wall (last wall end to 100%)
+  const lastWall = walls[walls.length - 1];
+  const lastWallEnd = lastWall.position + lastWall.width;
+
+  if (100 - lastWallEnd > 0.1) {
+    // 0.1% threshold
+    exits.push({
+      start: getPointAtPosition(lastWallEnd),
+      end: { x: v2.x, y: v2.y },
+    });
+  }
+  return exits;
+}
