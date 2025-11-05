@@ -9,16 +9,16 @@
 
 ## 📏 Standard Sizes
 
-| Name | Radius | Diameter @ 1080p | Mass |
-|------|--------|------------------|------|
-| MINI | 2.5 cm | 60px | 28g |
-| SMALL | 3.0 cm | 72px | 40g |
-| **STANDARD** | **4.0 cm** | **96px** | **50g** |
-| LARGE | 5.0 cm | 120px | 78g |
-| XL | 7.5 cm | 180px | 175g |
-| XXL | 10.0 cm | 240px | 312g |
-| GIANT | 15.0 cm | 360px | 700g |
-| MEGA | 20.0 cm | 480px | 1250g |
+| Name         | Radius     | Diameter @ 1080p | Mass    |
+| ------------ | ---------- | ---------------- | ------- |
+| MINI         | 2.5 cm     | 60px             | 28g     |
+| SMALL        | 3.0 cm     | 72px             | 40g     |
+| **STANDARD** | **4.0 cm** | **96px**         | **50g** |
+| LARGE        | 5.0 cm     | 120px            | 78g     |
+| XL           | 7.5 cm     | 180px            | 175g    |
+| XXL          | 10.0 cm    | 240px            | 312g    |
+| GIANT        | 15.0 cm    | 360px            | 700g    |
+| MEGA         | 20.0 cm    | 480px            | 1250g   |
 
 ## 🔧 Key Functions
 
@@ -32,32 +32,32 @@ import {
   getRecommendedMass,
   STANDARD_BEYBLADE_SIZES,
   BEYBLADE_SIZE_CONSTRAINTS,
-  PIXELS_PER_CM
-} from '@/constants/beybladeConstants';
+  PIXELS_PER_CM,
+} from "@/constants/beybladeConstants";
 ```
 
 ### Size Conversion
 
 ```typescript
 // Convert cm to pixels
-const pixels = cmToPixels(4);  // 96px at 1080p
+const pixels = cmToPixels(4); // 96px at 1080p
 
 // Convert pixels to cm
-const cm = pixelsToCm(96);     // 4cm
+const cm = pixelsToCm(96); // 4cm
 
 // Get display radius
-const radius = getBeybladeDisplayRadius(4);  // 96px
+const radius = getBeybladeDisplayRadius(4); // 96px
 
 // Get display diameter
-const diameter = getBeybladeDisplayDiameter(4);  // 192px
+const diameter = getBeybladeDisplayDiameter(4); // 192px
 ```
 
 ### Mass Calculation
 
 ```typescript
 // Get recommended mass for size
-const mass = getRecommendedMass(4);  // 50g
-const heavyMass = getRecommendedMass(10);  // 312g
+const mass = getRecommendedMass(4); // 50g
+const heavyMass = getRecommendedMass(10); // 312g
 ```
 
 ### Preview Scaling
@@ -73,35 +73,28 @@ const scale = getBeybladePreviewScale(400);
 ### Basic Rendering
 
 ```typescript
-import { getBeybladeDisplayRadius } from '@/constants/beybladeConstants';
+import { getBeybladeDisplayRadius } from "@/constants/beybladeConstants";
 
 const BeybladeRenderer = ({ beyblade, scale }) => {
   const radius = getBeybladeDisplayRadius(beyblade.radius) * scale;
-  
-  return (
-    <circle 
-      cx={x} 
-      cy={y} 
-      r={radius} 
-      fill={color} 
-    />
-  );
+
+  return <circle cx={x} cy={y} r={radius} fill={color} />;
 };
 ```
 
 ### Canvas Drawing
 
 ```typescript
-import { 
-  getBeybladeDisplayRadius, 
-  getBeybladePreviewScale 
-} from '@/constants/beybladeConstants';
+import {
+  getBeybladeDisplayRadius,
+  getBeybladePreviewScale,
+} from "@/constants/beybladeConstants";
 
 const drawBeyblade = (ctx, beyblade, canvasSize) => {
   const baseRadius = getBeybladeDisplayRadius(beyblade.radius);
   const scale = getBeybladePreviewScale(canvasSize);
   const displayRadius = baseRadius * scale;
-  
+
   ctx.beginPath();
   ctx.arc(centerX, centerY, displayRadius, 0, Math.PI * 2);
   ctx.fill();
@@ -116,8 +109,8 @@ const drawBeyblade = (ctx, beyblade, canvasSize) => {
 const beyblade: BeybladeStats = {
   id: "std-001",
   displayName: "Standard Fighter",
-  radius: STANDARD_BEYBLADE_SIZES.STANDARD,  // 4cm
-  mass: getRecommendedMass(4),               // 50g
+  radius: STANDARD_BEYBLADE_SIZES.STANDARD, // 4cm
+  mass: getRecommendedMass(4), // 50g
   type: "balanced",
   spinDirection: "right",
   // ...
@@ -130,8 +123,8 @@ const beyblade: BeybladeStats = {
 const customBeyblade: BeybladeStats = {
   id: "custom-001",
   displayName: "Custom Size",
-  radius: 6,                      // 6cm = 144px at 1080p
-  mass: getRecommendedMass(6),    // ~112g
+  radius: 6, // 6cm = 144px at 1080p
+  mass: getRecommendedMass(6), // ~112g
   type: "defense",
   spinDirection: "left",
   // ...
@@ -141,24 +134,28 @@ const customBeyblade: BeybladeStats = {
 ## 📊 Size Categories
 
 ### Attack Types (Light & Fast)
+
 - **Recommended**: 2.5 - 3.5 cm
 - **Mass**: 28 - 50g
 - **Speed**: High
 - **Use**: Quick strikes
 
 ### Defense Types (Heavy & Stable)
+
 - **Recommended**: 4.5 - 7.5 cm
 - **Mass**: 80 - 175g
 - **Speed**: Low-Medium
 - **Use**: Tank builds
 
 ### Stamina Types (Balanced)
+
 - **Recommended**: 3.5 - 5 cm
 - **Mass**: 50 - 78g
 - **Speed**: Medium
 - **Use**: Long battles
 
 ### Balanced Types
+
 - **Recommended**: 4 cm (standard)
 - **Mass**: 50g
 - **Speed**: Medium
@@ -167,9 +164,9 @@ const customBeyblade: BeybladeStats = {
 ## ⚠️ Constraints
 
 ```typescript
-MIN_RADIUS_CM: 1.5     // 36px - Absolute minimum
-MAX_RADIUS_CM: 25      // 600px - Absolute maximum
-DEFAULT_RADIUS_CM: 4   // 96px - Standard size
+MIN_RADIUS_CM: 1.5; // 36px - Absolute minimum
+MAX_RADIUS_CM: 25; // 600px - Absolute maximum
+DEFAULT_RADIUS_CM: 4; // 96px - Standard size
 ```
 
 ## 🔄 Mass Formula
@@ -193,7 +190,7 @@ BEYBLADE_PREVIEW_SETTINGS = {
   BACKGROUND_COLOR: "#f3f4f6",
   GRID_COLOR: "#d1d5db",
   CENTER_CIRCLE_RADIUS: 150,
-}
+};
 ```
 
 ## 🎯 Best Practices
@@ -207,7 +204,7 @@ BEYBLADE_PREVIEW_SETTINGS = {
 ## 🔗 Related Constants
 
 ```typescript
-import { ARENA_RESOLUTION } from '@/types/arenaConfigNew';
+import { ARENA_RESOLUTION } from "@/types/arenaConfigNew";
 // 1080px - Base resolution for all calculations
 ```
 

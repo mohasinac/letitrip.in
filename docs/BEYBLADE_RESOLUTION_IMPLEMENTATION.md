@@ -7,9 +7,11 @@ Successfully implemented a scalable, resolution-based sizing system for beyblade
 ## Core Changes
 
 ### 1. New Constants File
+
 **File**: `src/constants/beybladeConstants.ts`
 
 **Key Features**:
+
 - `PIXELS_PER_CM = ARENA_RESOLUTION / 45` (24px at 1080p)
 - Conversion functions: `cmToPixels()`, `pixelsToCm()`
 - Display functions: `getBeybladeDisplayRadius()`, `getBeybladeDisplayDiameter()`
@@ -19,17 +21,21 @@ Successfully implemented a scalable, resolution-based sizing system for beyblade
 - Size constraints: MIN (1.5cm), MAX (25cm), DEFAULT (4cm)
 
 ### 2. Updated Type System
+
 **File**: `src/types/beybladeStats.ts`
 
 **Changes**:
+
 - Updated documentation for `radius` property (now uses cm with resolution-based conversion)
 - Deprecated `actualSize` property (calculated automatically from radius)
 - Added clear documentation about resolution system (1cm = 24px at 1080p)
 
 ### 3. Updated Preview Component
+
 **File**: `src/components/admin/BeybladePreview.tsx`
 
 **Changes**:
+
 - Imports resolution constants
 - Uses `getBeybladeDisplayRadius()` for size calculations
 - Applies `getBeybladePreviewScale()` for canvas rendering
@@ -40,15 +46,19 @@ Successfully implemented a scalable, resolution-based sizing system for beyblade
 ### 4. Updated Components
 
 **Files Updated**:
+
 - `src/components/admin/BeybladeCard.tsx`
+
   - Shows radius in cm and display size in pixels
   - Fixed mass display (was showing "kg", now shows "g")
   - Removed `actualSize` from uploader props
 
 - `src/components/admin/BeybladeImageUploader.tsx`
+
   - Removed `actualSize` from interface
 
 - `src/components/admin/MultiStepBeybladeEditor.tsx`
+
   - Removed `actualSize` calculation from preview
 
 - `src/components/admin/MultiStepBeybladeEditor_CLEAN.tsx`
@@ -57,6 +67,7 @@ Successfully implemented a scalable, resolution-based sizing system for beyblade
 ## Sizing System
 
 ### Formula
+
 ```
 displayPixels = radiusCm * (ARENA_RESOLUTION / 45)
 ```
@@ -65,18 +76,19 @@ For 1080px arena: **1 cm = 24 pixels**
 
 ### Standard Sizes
 
-| Name | Radius (cm) | Diameter @ 1080p | Mass (recommended) |
-|------|-------------|------------------|-------------------|
-| MINI | 2.5 | 60px | 28g |
-| SMALL | 3.0 | 72px | 40g |
-| **STANDARD** | **4.0** | **96px** | **50g** |
-| LARGE | 5.0 | 120px | 78g |
-| XL | 7.5 | 180px | 175g |
-| XXL | 10.0 | 240px | 312g |
-| GIANT | 15.0 | 360px | 700g |
-| MEGA | 20.0 | 480px | 1250g |
+| Name         | Radius (cm) | Diameter @ 1080p | Mass (recommended) |
+| ------------ | ----------- | ---------------- | ------------------ |
+| MINI         | 2.5         | 60px             | 28g                |
+| SMALL        | 3.0         | 72px             | 40g                |
+| **STANDARD** | **4.0**     | **96px**         | **50g**            |
+| LARGE        | 5.0         | 120px            | 78g                |
+| XL           | 7.5         | 180px            | 175g               |
+| XXL          | 10.0        | 240px            | 312g               |
+| GIANT        | 15.0        | 360px            | 700g               |
+| MEGA         | 20.0        | 480px            | 1250g              |
 
 ### Mass Formula
+
 ```typescript
 mass = (radius / 4)² * 50
 ```
@@ -95,17 +107,19 @@ This provides realistic scaling where larger beyblades are exponentially heavier
 ## Migration Notes
 
 ### Old System
+
 ```typescript
 const beyblade = {
-  radius: 8,        // Was used inconsistently
-  actualSize: 80,   // Manual pixel specification
+  radius: 8, // Was used inconsistently
+  actualSize: 80, // Manual pixel specification
 };
 ```
 
 ### New System
+
 ```typescript
 const beyblade = {
-  radius: 4,        // In centimeters (standard size)
+  radius: 4, // In centimeters (standard size)
   // actualSize removed - calculated automatically
 };
 
@@ -117,6 +131,7 @@ const displayRadius = getBeybladeDisplayRadius(4);
 ## Documentation Created
 
 1. **Main Guide**: `docs/BEYBLADE_RESOLUTION_SYSTEM.md`
+
    - Complete overview of the system
    - Implementation details
    - Examples and use cases
@@ -139,14 +154,18 @@ const displayRadius = getBeybladeDisplayRadius(4);
 ## Example Usage
 
 ### Creating a Beyblade
+
 ```typescript
-import { STANDARD_BEYBLADE_SIZES, getRecommendedMass } from '@/constants/beybladeConstants';
+import {
+  STANDARD_BEYBLADE_SIZES,
+  getRecommendedMass,
+} from "@/constants/beybladeConstants";
 
 const beyblade: BeybladeStats = {
   id: "test-001",
   displayName: "Test Beyblade",
-  radius: STANDARD_BEYBLADE_SIZES.STANDARD,  // 4cm
-  mass: getRecommendedMass(4),               // 50g
+  radius: STANDARD_BEYBLADE_SIZES.STANDARD, // 4cm
+  mass: getRecommendedMass(4), // 50g
   type: "balanced",
   spinDirection: "right",
   // ...
@@ -154,9 +173,10 @@ const beyblade: BeybladeStats = {
 ```
 
 ### Rendering a Beyblade
+
 ```typescript
-import { getBeybladeDisplayRadius } from '@/constants/beybladeConstants';
-import { ARENA_RESOLUTION } from '@/types/arenaConfigNew';
+import { getBeybladeDisplayRadius } from "@/constants/beybladeConstants";
+import { ARENA_RESOLUTION } from "@/types/arenaConfigNew";
 
 // Calculate scale
 const displaySize = Math.min(canvasWidth, canvasHeight);
@@ -173,6 +193,7 @@ ctx.arc(x, y, displayRadius, 0, Math.PI * 2);
 ## Next Steps
 
 Potential enhancements:
+
 1. Add visual size comparison tool in editor
 2. Create size-based stat modifiers
 3. Implement arena size recommendations
@@ -182,11 +203,13 @@ Potential enhancements:
 ## Files Changed
 
 ### New Files
+
 - `src/constants/beybladeConstants.ts` (new)
 - `docs/BEYBLADE_RESOLUTION_SYSTEM.md` (new)
 - `docs/BEYBLADE_CONSTANTS_REFERENCE.md` (new)
 
 ### Modified Files
+
 - `src/types/beybladeStats.ts`
 - `src/components/admin/BeybladePreview.tsx`
 - `src/components/admin/BeybladeCard.tsx`
@@ -197,6 +220,7 @@ Potential enhancements:
 ## Conclusion
 
 The beyblade system is now fully integrated with the arena resolution system, providing:
+
 - ✅ Scalable sizing (1cm = 24px at 1080p)
 - ✅ Consistent measurements across components
 - ✅ Real-world based dimensions

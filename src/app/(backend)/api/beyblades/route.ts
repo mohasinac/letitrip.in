@@ -31,8 +31,14 @@ export async function GET(request: NextRequest) {
     let query = db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS);
 
     // Filter by type if provided
-    if (type && ["attack", "defense", "stamina", "balanced"].includes(type)) {
-      query = query.where("type", "==", type) as any;
+    // Accept both "balance" and "balanced" for convenience
+    let normalizedType = type;
+    if (type === "balance") {
+      normalizedType = "balanced";
+    }
+    
+    if (normalizedType && ["attack", "defense", "stamina", "balanced"].includes(normalizedType)) {
+      query = query.where("type", "==", normalizedType) as any;
     }
 
     const snapshot = await query.get();

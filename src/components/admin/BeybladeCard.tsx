@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BeybladeStats } from "@/types/beybladeStats";
 import BeybladeImageUploader from "./BeybladeImageUploader";
-import { getBeybladeDisplayRadius, getBeybladeDisplayDiameter } from "@/constants/beybladeConstants";
+import {
+  getBeybladeDisplayRadius,
+  getBeybladeDisplayDiameter,
+} from "@/constants/beybladeConstants";
 
 interface BeybladeCardProps {
   beyblade: BeybladeStats;
@@ -136,7 +139,9 @@ export default function BeybladeCard({
               </div>
               <div>
                 <p className="text-gray-500">Display</p>
-                <p className="font-semibold">{getBeybladeDisplayDiameter(beyblade.radius).toFixed(0)}px</p>
+                <p className="font-semibold">
+                  {getBeybladeDisplayDiameter(beyblade.radius).toFixed(0)}px
+                </p>
               </div>
             </div>
           </div>
@@ -241,31 +246,41 @@ export default function BeybladeCard({
                   <span className="text-xs text-gray-600">Contact Points:</span>
                 </div>
                 <span className="text-xs font-semibold text-gray-900">
-                  {beyblade.pointsOfContact.length} (Max: {Math.max(
+                  {beyblade.pointsOfContact.length} (Max:{" "}
+                  {Math.max(
                     ...beyblade.pointsOfContact.map((p) => p.damageMultiplier)
-                  ).toFixed(1)}x)
+                  ).toFixed(1)}
+                  x)
                 </span>
               </div>
-              
+
               {/* Spin Steal Points */}
-              {beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0 && (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{
-                        background: "linear-gradient(to right, #06b6d4, #3b82f6)",
-                      }}
-                    ></div>
-                    <span className="text-xs text-gray-600">Spin Steal Points:</span>
+              {beyblade.spinStealPoints &&
+                beyblade.spinStealPoints.length > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{
+                          background:
+                            "linear-gradient(to right, #06b6d4, #3b82f6)",
+                        }}
+                      ></div>
+                      <span className="text-xs text-gray-600">
+                        Spin Steal Points:
+                      </span>
+                    </div>
+                    <span className="text-xs font-semibold text-gray-900">
+                      {beyblade.spinStealPoints.length} (Max:{" "}
+                      {Math.max(
+                        ...beyblade.spinStealPoints.map(
+                          (p) => p.spinStealMultiplier
+                        )
+                      ).toFixed(1)}
+                      x)
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold text-gray-900">
-                    {beyblade.spinStealPoints.length} (Max: {Math.max(
-                      ...beyblade.spinStealPoints.map((p) => p.spinStealMultiplier)
-                    ).toFixed(1)}x)
-                  </span>
-                </div>
-              )}
+                )}
             </div>
           </div>
         </div>

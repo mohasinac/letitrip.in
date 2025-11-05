@@ -3,6 +3,7 @@
 ## 🎯 Import Cheat Sheet
 
 ### Services (API Calls)
+
 ```typescript
 // ✅ Recommended
 import { GameService } from "@/lib/game/services";
@@ -13,6 +14,7 @@ import { GameService } from "@/lib/api"; // Backward compatible
 ```
 
 ### UI Components
+
 ```typescript
 // ✅ Recommended
 import { GameLayout } from "@/components/game/ui";
@@ -25,6 +27,7 @@ import { GameLayout } from "@/components/game"; // Via barrel export
 ```
 
 ### Dropdowns
+
 ```typescript
 // ✅ Recommended
 import { BeybladeDropdown, ArenaDropdown } from "@/components/game/dropdowns";
@@ -34,6 +37,7 @@ import { BeybladeDropdown } from "@/components/game"; // Via barrel export
 ```
 
 ### Context
+
 ```typescript
 // ✅ Recommended
 import { useGame, GameProvider } from "@/contexts/game";
@@ -70,6 +74,7 @@ src/
 ## 🚀 Common Usage Patterns
 
 ### Using GameService
+
 ```typescript
 import { GameService } from "@/lib/game/services";
 
@@ -84,18 +89,20 @@ const newBey = await GameService.createBeyblade(data);
 ```
 
 ### Using GameContext
+
 ```typescript
 import { useGame } from "@/contexts/game";
 
 function MyComponent() {
   const { settings, setBeyblade, setArena, startGame } = useGame();
-  
+
   // Use game state
   const isReady = settings.beybladeId && settings.arenaId;
 }
 ```
 
 ### Using GameLayout
+
 ```typescript
 import { GameLayout } from "@/components/game/ui";
 
@@ -104,7 +111,7 @@ export default function GamePage() {
     <GameLayout
       gameTitle="Beyblade Arena"
       enableFullscreen={true}
-      onExitGame={() => router.push('/game')}
+      onExitGame={() => router.push("/game")}
     >
       {/* Your game content */}
     </GameLayout>
@@ -113,6 +120,7 @@ export default function GamePage() {
 ```
 
 ### Using Dropdowns
+
 ```typescript
 import { BeybladeDropdown, ArenaDropdown } from "@/components/game/dropdowns";
 
@@ -124,7 +132,7 @@ function GameSetup() {
         selectedId={selectedId}
         onSelect={handleSelect}
       />
-      
+
       <ArenaDropdown
         arenas={arenas}
         selectedId={selectedId}
@@ -139,28 +147,28 @@ function GameSetup() {
 
 ## 🎯 When to Use What
 
-| Need | Use | Location |
-|------|-----|----------|
-| API calls | `GameService` | `@/lib/game/services` |
-| Game state | `useGame()` | `@/contexts/game` |
-| Layout wrapper | `GameLayout` | `@/components/game/ui` |
-| HUD display | `HUD` | `@/components/game/ui` |
-| Canvas rendering | `Canvas` | `@/components/game/ui` |
-| Select beyblade | `BeybladeDropdown` | `@/components/game/dropdowns` |
-| Select arena | `ArenaDropdown` | `@/components/game/dropdowns` |
+| Need             | Use                | Location                      |
+| ---------------- | ------------------ | ----------------------------- |
+| API calls        | `GameService`      | `@/lib/game/services`         |
+| Game state       | `useGame()`        | `@/contexts/game`             |
+| Layout wrapper   | `GameLayout`       | `@/components/game/ui`        |
+| HUD display      | `HUD`              | `@/components/game/ui`        |
+| Canvas rendering | `Canvas`           | `@/components/game/ui`        |
+| Select beyblade  | `BeybladeDropdown` | `@/components/game/dropdowns` |
+| Select arena     | `ArenaDropdown`    | `@/components/game/dropdowns` |
 
 ---
 
 ## 📝 File Locations
 
-| File | Path |
-|------|------|
-| GameService | `src/lib/game/services/game.service.ts` |
-| GameLayout | `src/components/game/ui/GameLayout.tsx` |
-| HUD | `src/components/game/ui/HUD.tsx` |
-| Canvas | `src/components/game/ui/Canvas.tsx` |
+| File                   | Path                                                       |
+| ---------------------- | ---------------------------------------------------------- |
+| GameService            | `src/lib/game/services/game.service.ts`                    |
+| GameLayout             | `src/components/game/ui/GameLayout.tsx`                    |
+| HUD                    | `src/components/game/ui/HUD.tsx`                           |
+| Canvas                 | `src/components/game/ui/Canvas.tsx`                        |
 | BeybladeArenaDropdowns | `src/components/game/dropdowns/BeybladeArenaDropdowns.tsx` |
-| GameContext | `src/contexts/game/GameContext.tsx` |
+| GameContext            | `src/contexts/game/GameContext.tsx`                        |
 
 ---
 

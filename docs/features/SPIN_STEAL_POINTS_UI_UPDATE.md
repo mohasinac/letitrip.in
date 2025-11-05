@@ -11,6 +11,7 @@ Added visual representation and information about spin steal points to the Beybl
 **File**: `src/components/admin/BeybladeCard.tsx`
 
 **Changes**:
+
 - Renamed "Contact Points" section to "Combat Properties"
 - Added visual indicators (colored dots) for both contact and spin steal points
 - Shows count and max multiplier for both types
@@ -18,12 +19,14 @@ Added visual representation and information about spin steal points to the Beybl
 - Spin Steal Points: Cyan→Blue gradient (energy transfer)
 
 **Before**:
+
 ```tsx
 <h4>Contact Points (4)</h4>
 <div>Max Damage: 1.5x</div>
 ```
 
 **After**:
+
 ```tsx
 <h4>Combat Properties</h4>
 <div>
@@ -37,6 +40,7 @@ Added visual representation and information about spin steal points to the Beybl
 **File**: `src/components/admin/BeybladePreviewModal.tsx`
 
 **Changes**:
+
 - Expanded physical properties grid from 3 to 4 columns
 - Added dedicated Spin Steal Points card
 - Shows count and max multiplier
@@ -44,7 +48,9 @@ Added visual representation and information about spin steal points to the Beybl
 - Fixed unit displays (kg → g, px → cm)
 
 **New Features**:
+
 1. **Spin Steal Points Card**
+
    - Shows count in cyan color
    - Displays max multiplier
    - Only shown if spin steal points exist
@@ -60,12 +66,14 @@ Added visual representation and information about spin steal points to the Beybl
 ### Color Coding
 
 **Contact Points** (Damage):
+
 - Color: Red (hsl(0, 90%, 50%)) → Yellow (hsl(60, 90%, 50%))
 - Gradient: `linear-gradient(to right, #ef4444, #eab308)`
 - Icon: 💥
 - Purpose: Damage multipliers on hit
 
 **Spin Steal Points** (Energy):
+
 - Color: Cyan (hsl(180, 90%, 50%)) → Blue (hsl(220, 90%, 50%))
 - Gradient: `linear-gradient(to right, #06b6d4, #3b82f6)`
 - Icon: 🌀
@@ -74,6 +82,7 @@ Added visual representation and information about spin steal points to the Beybl
 ### Layout
 
 **BeybladeCard**:
+
 ```
 Combat Properties
 ├─ 🔴→🟡 Contact Points: X (Max: Y.Yx)
@@ -81,6 +90,7 @@ Combat Properties
 ```
 
 **BeybladePreviewModal**:
+
 ```
 ┌─────────┬─────────┬─────────────┬────────────────┐
 │ Mass    │ Radius  │ Contact Pts │ Spin Steal Pts │
@@ -95,18 +105,22 @@ Combat Properties Legend
 ## Benefits
 
 1. **✅ Clear Visual Distinction**
+
    - Color-coded to match preview rendering
    - Easy to identify at a glance
 
 2. **✅ Complete Information**
+
    - Shows both count and max multiplier
    - Helps users understand beyblade capabilities
 
 3. **✅ Consistent Design**
+
    - Uses same color scheme across all components
    - Matches the preview canvas visualization
 
 4. **✅ Better UX**
+
    - Users can quickly see combat properties
    - Legend helps understand the color coding
 
@@ -117,6 +131,7 @@ Combat Properties Legend
 ## Example Display
 
 ### For a beyblade with both types:
+
 ```
 Combat Properties
 🔴→🟡 Contact Points: 4 (Max: 1.8x)
@@ -124,6 +139,7 @@ Combat Properties
 ```
 
 ### For a beyblade with only contact points:
+
 ```
 Combat Properties
 🔴→🟡 Contact Points: 6 (Max: 2.0x)
@@ -140,6 +156,7 @@ Combat Properties
 ## Files Modified
 
 - `src/components/admin/BeybladeCard.tsx`
+
   - Updated combat properties section
   - Added spin steal points display
   - Added color-coded indicators
@@ -152,6 +169,7 @@ Combat Properties
 ## Future Enhancements
 
 Potential improvements:
+
 1. Click to view detailed breakdown of each point
 2. Hover tooltips showing individual point values
 3. Visual chart comparing contact vs spin steal distribution
