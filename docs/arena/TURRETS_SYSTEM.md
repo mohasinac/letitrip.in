@@ -150,52 +150,98 @@ All turrets include visual animations to show they are active and dangerous:
 
 **🎲 Random Attack**
 - Rotating scanning line that sweeps around the turret
-- Random projectile shots fired in any direction
-- Projectiles have glowing trail effect
-- Fires at random intervals within cooldown period
+- **Cycles through other attack types**: beam, periodic, AOE, boomerang
+- Shows current attack type icon on scanning line
+- Randomly selects next attack after current one completes
+- Each attack fully executes before switching
+- Creates unpredictable threat patterns
 
 **⚡ Beam Attack**
 - Rotating barrel indicator showing aim direction
-- Continuous beam animation during attack phase
-- Beam opacity pulses to show energy
-- 360° rotation over 4 seconds
-- Charging glow when preparing to fire
+- Charging phase before beam activates
+- Continuous beam fired at random angle
+- Beam has core (white) and outer glow (turret color)
+- Pulsing opacity effect on core beam
+- Charge period: 0.5-3s (configurable)
+- Beam duration: 1-5s (configurable)
 
 **🔫 Periodic Bullets**
 - Rotating barrel showing current aim
-- Multiple projectile trails
-- Projectiles fire in bursts (1-5 bullets)
-- Faster rotation (2 second cycle)
-- Projectiles have expanding/contracting animation
+- Multiple projectile bullets (1-5 configurable)
+- Bullets spread in a cone pattern
+- Projectiles have pulsing animation
+- Fires at random direction each burst
+- Bullet speed: 100-500 px/s (configurable)
 
 **💣 AOE Missile**
-- Charging indicator (expanding circle)
-- Pulsing glow during charge-up
-- Area blast visualization
-- Explosive impact radius shown
+- **Missile Launch**: Large projectile with flame trail
+- Fires to random location within range
+- Slower travel speed than bullets (more dramatic)
+- **Explosion Animation**: Multi-layered blast effect
+  - Outer blast wave (AOE radius)
+  - Middle damage zone (damage radius)
+  - Inner core (yellow flash)
+  - Initial white flash on impact
+- Explosion expands and fades over 0.8 seconds
+- Waits for explosion to complete before next attack
 
 **🪃 Boomerang**
 - Orbiting boomerang projectile
 - Follows circular path around turret
+- Single rotation per attack (not continuous)
+- Trail effect shows path
 - Return time matches configuration (2-5s)
-- Continuous orbit animation
+- Waits for complete orbit before next attack
 
 #### Random Shooting (No Beyblade Target)
 
 When there are no beyblades in the arena (preview mode), turrets shoot randomly:
 
-1. **Random & Periodic Attacks**: Fire projectiles in random directions
-2. **Beam Attack**: Rotates continuously, activates beam periodically
-3. **AOE Attack**: Shows charging animation at random intervals
-4. **Boomerang**: Continuously orbits the turret
-5. **Cooldown Timing**: All attacks respect configured cooldown periods
+1. **Random Attack**: Cycles through all other attack types
+   - Beam: Fires beam at random angle
+   - Periodic: Fires bullet bursts at random angles
+   - AOE: Launches missiles to random locations with explosions
+   - Boomerang: Sends boomerang in orbit
+   - Shows current attack type icon on scanning line
+   - Waits for previous attack to complete before next
+
+2. **Beam Attack**: Fires beam at random angle after charge period
+3. **Periodic Attack**: Fires bullet bursts in random directions
+4. **AOE Attack**: Launches missiles to random locations with full explosion effects
+5. **Boomerang**: Completes full orbit, waits for return before next attack
+6. **Cooldown Timing**: All attacks respect configured cooldown periods
+7. **Attack Sequencing**: Each attack fully completes before next begins
 
 #### Projectile Physics
-- Smooth motion from turret to target
-- Fading opacity as projectile travels
-- Expanding/contracting size for pulse effect
-- Trail effect shows projectile path
-- Projectiles removed after 1 second
+- **Bullets**: Fast projectiles with pulsing size
+  - Smooth motion from turret to target
+  - Fading opacity as projectile travels
+  - Expanding/contracting size for pulse effect
+  - Trail effect shows projectile path
+  - Auto-removed on impact or timeout
+  
+- **Missiles**: Slower, more dramatic projectiles
+  - Larger size (2x bullets)
+  - Flame trail (orange/yellow layers)
+  - Warhead glow (pulsing yellow)
+  - Explosion on impact:
+    * Outer blast wave (configurable AOE radius)
+    * Middle damage zone (configurable damage radius)  
+    * Inner core flash (yellow)
+    * Initial white flash (first 30% of explosion)
+    * Expands and fades over 0.8 seconds
+  
+- **Beams**: Continuous laser attacks
+  - Core beam (white, pulsing)
+  - Outer glow (turret color)
+  - Fixed at random angle per attack
+  - Duration: 1-5 seconds
+  
+- **Boomerangs**: Orbital projectiles
+  - Single orbit per attack (not continuous)
+  - Circular path around turret
+  - Trail effect during orbit
+  - Returns before next attack
 
 ---
 
