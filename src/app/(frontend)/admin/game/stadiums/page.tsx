@@ -1,33 +1,32 @@
 /**
- * Admin Page: Stadium Management
- * View and manage all battle stadiums/arenas
+ * Admin Page: Stadium Management (New Schema - v2)
+ * List, create, edit, and delete stadiums using the new arena configuration system
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArenaConfig } from "@/types/arenaConfig";
-import ArenaPreview from "@/components/admin/ArenaPreview";
+import ArenaPreviewBasic from "@/components/admin/ArenaPreviewBasic";
+import { ArenaConfig } from "@/types/arenaConfigNew";
 
-export default function StadiumsPage() {
+export default function StadiumsV2Page() {
   const router = useRouter();
   const [arenas, setArenas] = useState<ArenaConfig[]>([]);
   const [loading, setLoading] = useState(true);
-  const [previewArena, setPreviewArena] = useState<ArenaConfig | null>(null);
+  const [selectedArena, setSelectedArena] = useState<ArenaConfig | null>(null);
 
   useEffect(() => {
     fetchArenas();
   }, []);
 
   const fetchArenas = async () => {
-    setLoading(true);
     try {
-      const response = await fetch("/api/arenas");
+      const response = await fetch("/api/arenas/v2");
       const data = await response.json();
 
       if (data.success) {
-        setArenas(data.data);
+        setArenas(data.data || []);
       }
     } catch (error) {
       console.error("Error fetching arenas:", error);
@@ -36,199 +35,295 @@ export default function StadiumsPage() {
     }
   };
 
-  const handleDeleteArena = async (arenaId: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this stadium?")) return;
 
     try {
-      const response = await fetch(`/api/arenas/${arenaId}`, {
+      const response = await fetch(`/api/arenas/v2/${id}`, {
         method: "DELETE",
       });
 
       const data = await response.json();
 
       if (data.success) {
-        fetchArenas();
         alert("Stadium deleted successfully!");
+        fetchArenas();
       } else {
-        alert(`Failed to delete: ${data.message}`);
+        alert(`Failed to delete stadium: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error deleting arena:", error);
+      console.error("Error deleting stadium:", error);
       alert("Failed to delete stadium");
     }
   };
 
-  const getShapeIcon = (shape: string) => {
-    switch (shape) {
-      case "circle":
-        return "⭕";
-      case "rectangle":
-        return "▭";
-      case "pentagon":
-        return "⬠";
-      case "hexagon":
-        return "⬡";
-      case "octagon":
-        return "⯃";
-      case "star":
-        return "⭐";
-      case "oval":
-        return "⬭";
-      case "loop":
-        return "🔄";
-      default:
-        return "◯";
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading Stadiums...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Stadium Management
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Create, edit, and manage battle stadium configurations
-            </p>
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Stadium Management (v2)
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">
+                New modular arena configuration system with improved
+                organization
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/admin/game/stadiums/create")}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              + Create New Stadium
+            </button>
           </div>
-          <button
-            onClick={() => router.push("/admin/game/stadiums/create")}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm"
-          >
-            + Create New Stadium
-          </button>
         </div>
+      </div>
 
-        {/* Arena Grid */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading Stadiums...</p>
-          </div>
-        ) : arenas.length === 0 ? (
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {arenas.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
-            <p className="text-gray-600 text-lg">No Stadiums found.</p>
-            <p className="text-gray-500 mt-2">
-              Click "Create New Stadium" to add your first stadium.
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              No Stadiums Yet
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Create your first stadium to get started
             </p>
+            <button
+              onClick={() => router.push("/admin/game/stadiums/create")}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Create Stadium
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {arenas.map((arena) => (
+            {arenas.map((arena: any) => (
               <div
                 key={arena.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
+                className="bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
+                onClick={() => setSelectedArena(arena)}
               >
-                {/* Arena Header & Preview */}
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-2xl">
-                      {getShapeIcon(arena.shape)}
-                    </span>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {arena.name}
-                    </h3>
+                <div className="p-6">
+                  {/* Arena Preview */}
+                  <div className="mb-4 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <ArenaPreviewBasic arena={arena} width={300} height={300} />
                   </div>
 
-                  {/* Live Preview */}
-                  <div className="bg-gray-900 rounded-lg p-4 mb-4 flex justify-center">
-                    <ArenaPreview arena={arena} width={250} height={250} />
+                  {/* Arena Info */}
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {arena.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    {arena.description || "No description"}
+                  </p>
+
+                  {/* Arena Stats */}
+                  <div className="grid grid-cols-2 gap-2 text-xs mb-4">
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Shape:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.shape}
+                      </span>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Theme:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.theme}
+                      </span>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Speed Paths:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.speedPaths?.length || 0}
+                      </span>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Portals:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.portals?.length || 0}
+                      </span>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Water Bodies:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.waterBodies?.length || 0}
+                      </span>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2">
+                      <span className="text-gray-500">Pits:</span>
+                      <span className="ml-2 font-semibold text-gray-900">
+                        {arena.pits?.length || 0}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
+                  {/* Actions */}
+                  <div className="flex gap-2">
                     <button
-                      onClick={() =>
-                        router.push(`/admin/game/stadiums/edit/${arena.id}`)
-                      }
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/admin/game/stadiums/edit/${arena.id}`);
+                      }}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => setPreviewArena(arena)}
-                      className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
-                    >
-                      Preview
-                    </button>
-                    <button
-                      onClick={() => arena.id && handleDeleteArena(arena.id)}
-                      className="col-span-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(arena.id);
+                      }}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
                     >
                       Delete
                     </button>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="p-6 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shape:</span>
-                    <span className="font-semibold capitalize">
-                      {arena.shape}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Size:</span>
-                    <span className="font-semibold">
-                      {arena.width}em × {arena.height}em
-                    </span>
-                  </div>
-                  {arena.aiDifficulty && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">AI Difficulty:</span>
-                      <span className="px-2 py-1 rounded text-xs font-semibold uppercase bg-gray-100">
-                        {arena.aiDifficulty}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Obstacles:</span>
-                    <span className="font-semibold">
-                      {arena.obstacles?.length || 0}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Loops:</span>
-                    <span className="font-semibold">
-                      {arena.loops?.length || 0}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Pits:</span>
-                    <span className="font-semibold">
-                      {arena.pits?.length || 0}
-                    </span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+      </div>
 
-        {/* Preview Modal */}
-        {previewArena && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-4xl w-full">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold">{previewArena.name}</h3>
+      {/* Preview Modal */}
+      {selectedArena && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedArena(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedArena.name}
+                </h2>
                 <button
-                  onClick={() => setPreviewArena(null)}
+                  onClick={() => setSelectedArena(null)}
                   className="text-gray-500 hover:text-gray-700 text-2xl"
                 >
                   ×
                 </button>
               </div>
-              <div className="bg-gray-900 rounded-lg p-8 flex justify-center">
-                <ArenaPreview arena={previewArena} width={600} height={600} />
+
+              <div className="flex justify-center mb-6">
+                <ArenaPreviewBasic
+                  arena={selectedArena}
+                  width={600}
+                  height={600}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    Description
+                  </h3>
+                  <p className="text-gray-600">
+                    {selectedArena.description || "No description"}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">Shape</div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.shape}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">Theme</div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.theme}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">
+                      Auto Rotate
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.autoRotate ? "Yes" : "No"}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">
+                      Speed Paths
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.speedPaths?.length || 0}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">Portals</div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.portals?.length || 0}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">
+                      Water Bodies
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.waterBodies?.length || 0}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">Pits</div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.pits?.length || 0}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-gray-500 mb-1">
+                      Wall Enabled
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {selectedArena.wall?.enabled ? "Yes" : "No"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <button
+                    onClick={() => {
+                      setSelectedArena(null);
+                      router.push(
+                        `/admin/game/stadiums/edit/${(selectedArena as any).id}`
+                      );
+                    }}
+                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Edit Stadium
+                  </button>
+                  <button
+                    onClick={() => setSelectedArena(null)}
+                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,16 @@
  */
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/**
+ * Standard arena resolution - all arenas are rendered at this resolution
+ * and scaled to fit the display device (using shortest dimension)
+ */
+export const ARENA_RESOLUTION = 1080; // 1080x1080px
+
+// ============================================================================
 // BASIC TYPES
 // ============================================================================
 
@@ -32,6 +42,7 @@ export type ArenaTheme =
   | "futuristic"
   | "desert"
   | "sea"
+  | "ocean"
   | "riverbank";
 
 // ============================================================================
@@ -339,6 +350,37 @@ export interface PortalConfig {
 }
 
 // ============================================================================
+// PIT CONFIGURATION
+// ============================================================================
+
+/**
+ * Pit Types - Different styles of pits
+ */
+export type PitType = "edge" | "crater";
+
+/**
+ * Pit Configuration
+ * Pits are hazardous zones that trap beyblades temporarily
+ * When a beyblade enters a pit:
+ * - Takes spin damage every second
+ * - Cannot be controlled
+ * - Has 50% chance each second to escape before damage is applied
+ */
+export interface PitConfig {
+  id: string; // 'pit1', 'pit2', 'pit3'
+  type: PitType;
+  position: { x: number; y: number }; // Position relative to center (em units)
+  radius: number; // Pit size (em units, 1-5)
+  depth: number; // Visual depth effect (1-10, affects appearance)
+  spinDamagePerSecond: number; // Spin damage taken per second (5-50)
+  escapeChance: number; // Chance to escape before damage (0-1, default: 0.5 = 50%)
+  color?: string; // Visual color (default: dark brown/black)
+  autoPlace?: boolean; // Auto-place at edge or random position
+  edgeOffset?: number; // Distance from edge for edge-type pits (em units)
+  angle?: number; // Angle for edge-type pits (degrees, 0-360)
+}
+
+// ============================================================================
 // WALL CONFIGURATION
 // ============================================================================
 
@@ -402,8 +444,10 @@ export interface ArenaConfig {
   description?: string;
   
   // ===== GEOMETRY =====
-  width: number; // Arena size (em units, typically 50em)
-  height: number; // Arena size (em units, typically 50em)
+  // NOTE: All arenas use ARENA_RESOLUTION (1080x1080) internally
+  // These properties are kept for backward compatibility but should use ARENA_RESOLUTION
+  width: number; // Deprecated: use ARENA_RESOLUTION instead
+  height: number; // Deprecated: use ARENA_RESOLUTION instead
   shape: ArenaShape;
   
   // ===== VISUAL & THEME =====
@@ -427,6 +471,9 @@ export interface ArenaConfig {
   
   // ===== WATER BODIES =====
   waterBodies: WaterBodyConfig[]; // Water bodies in arena (max 3)
+  
+  // ===== PITS =====
+  pits: PitConfig[]; // Pit hazards in arena (max 3)
   
   // ===== METADATA =====
   createdAt?: string;
@@ -658,5 +705,6 @@ export const DEFAULT_ARENA_CONFIG: ArenaConfig = {
   speedPaths: [],
   portals: [],
   waterBodies: [],
+  pits: [],
   difficulty: "medium",
 };

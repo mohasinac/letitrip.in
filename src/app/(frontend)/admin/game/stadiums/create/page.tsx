@@ -1,15 +1,15 @@
 /**
- * Create Stadium Page
- * Full-page form for creating a new Stadium/Arena
+ * Create Stadium Page (New Schema)
+ * Uses the new ArenaConfiguratorNew with modular tab components
  */
 
 "use client";
 
 import { useRouter } from "next/navigation";
-import ArenaConfigurator from "@/components/admin/ArenaConfigurator";
-import { ArenaConfig } from "@/types/arenaConfig";
+import ArenaConfiguratorNew from "@/components/admin/ArenaConfiguratorNew";
+import { ArenaConfig } from "@/types/arenaConfigNew";
 
-export default function CreateStadiumPage() {
+export default function CreateStadiumV2Page() {
   const router = useRouter();
 
   const handleSave = async (arena: ArenaConfig) => {
@@ -55,7 +55,7 @@ export default function CreateStadiumPage() {
                 Create New Stadium
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Configure all properties for your new battle stadium
+                Configure your battle stadium with the modular editor
               </p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function CreateStadiumPage() {
 
       {/* Editor */}
       <div className="max-w-7xl mx-auto">
-        <ArenaConfigurator
+        <ArenaConfiguratorNew
           arena={null}
           onSave={handleSave}
           onCancel={handleCancel}

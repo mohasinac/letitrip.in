@@ -13,6 +13,8 @@ import {
   getEdgeCount,
   LoopConfig,
   PortalConfig,
+  PitConfig,
+  ARENA_RESOLUTION,
 } from "@/types/arenaConfigNew";
 import { generateShapePath } from "@/utils/pathGeneration";
 import SpeedPathRenderer from "@/components/arena/renderers/SpeedPathRenderer";
@@ -33,18 +35,54 @@ export default function ArenaPreviewBasic({
   const svgRef = useRef<SVGSVGElement>(null);
   const rotationRef = useRef<number>(0);
 
-  // Calculate scale - use full available space with small padding
-  const scale = Math.min(width, height) / (arena.width * 1.05);
+  // Calculate scale using 1080x1080 resolution approach
+  // Scale to fit the shortest dimension of the display area
+  const displaySize = Math.min(width, height);
+  const scale = displaySize / ARENA_RESOLUTION;
   const centerX = width / 2;
   const centerY = height / 2;
-  const arenaRadius = (arena.width / 2) * scale;
+  const arenaRadius = (ARENA_RESOLUTION / 2) * scale;
 
   // Auto-rotation animation
   useEffect(() => {
-    if (!arena.autoRotate || !svgRef.current) return;
+    const arenaGroup = svgRef.current?.querySelector("#arena-rotating-group");
+
+    if (!arena.autoRotate) {
+      // Reset rotation to 0 when rotation is disabled
+      if (arenaGroup) {
+        // Smoothly animate back to 0
+        const currentRotation = rotationRef.current;
+        const resetDuration = 500; // 500ms animation
+        const startTime = Date.now();
+
+        const resetAnimation = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / resetDuration, 1);
+
+          // Ease out animation
+          const easeProgress = 1 - Math.pow(1 - progress, 3);
+          rotationRef.current = currentRotation * (1 - easeProgress);
+
+          arenaGroup.setAttribute(
+            "transform",
+            `rotate(${rotationRef.current} ${centerX} ${centerY})`
+          );
+
+          if (progress < 1) {
+            requestAnimationFrame(resetAnimation);
+          } else {
+            rotationRef.current = 0;
+          }
+        };
+
+        resetAnimation();
+      }
+      return;
+    }
+
+    if (!svgRef.current) return;
 
     let animationFrameId: number;
-    const arenaGroup = svgRef.current.querySelector("#arena-rotating-group");
 
     const animate = () => {
       const direction = arena.rotationDirection === "clockwise" ? 1 : -1;
@@ -352,8 +390,8 @@ export default function ArenaPreviewBasic({
             shape={arena.shape}
             centerX={centerX}
             centerY={centerY}
-            width={arena.width}
-            height={arena.height}
+            width={ARENA_RESOLUTION}
+            height={ARENA_RESOLUTION}
             scale={scale}
             theme={arena.theme}
           />
@@ -368,8 +406,8 @@ export default function ArenaPreviewBasic({
               centerX={centerX}
               centerY={centerY}
               scale={scale}
-              arenaWidth={arena.width}
-              arenaHeight={arena.height}
+              arenaWidth={ARENA_RESOLUTION}
+              arenaHeight={ARENA_RESOLUTION}
             />
           ))}
 
@@ -393,6 +431,19 @@ export default function ArenaPreviewBasic({
                   portalNumber: portal.portalNumber || idx + 1,
                 }}
                 scale={scale}
+              />
+            </g>
+          ))}
+
+          {/* Pits (hazards) - Render BEFORE walls so walls are on top */}
+          {arena.pits?.map((pit, idx) => (
+            <g key={pit.id}>
+              <PitRenderer
+                pit={pit}
+                scale={scale}
+                theme={arena.theme}
+                centerX={centerX}
+                centerY={centerY}
               />
             </g>
           ))}
@@ -511,6 +562,11 @@ function CircleWalls({
   arenaRadius: number;
   scale: number;
 }) {
+  // Handle null/undefined wall or missing edges
+  if (!wall || !wall.edges || wall.edges.length === 0) {
+    return null;
+  }
+
   const edgeConfig = wall.edges[0]; // Circle has only 1 edge
 
   return (
@@ -748,6 +804,11 @@ function PolygonWalls({
     );
   }
 
+  // Handle null/undefined wall or missing edges
+  if (!wall || !wall.edges || wall.edges.length === 0) {
+    return null;
+  }
+
   return (
     <g className="polygon-walls">
       {wall.edges.map((edgeConfig: any, edgeIdx: number) => {
@@ -956,6 +1017,229 @@ function PolygonWalls({
 // HELPER FUNCTIONS
 // ============================================================================
 
+// Pit Renderer - Renders a pit based on theme
+function PitRenderer({
+  pit,
+  scale,
+  theme,
+  centerX,
+  centerY,
+}: {
+  pit: PitConfig;
+  scale: number;
+  theme: ArenaTheme;
+  centerX: number;
+  centerY: number;
+}) {
+  const x = centerX + pit.position.x * scale;
+  const y = centerY + pit.position.y * scale;
+  const radius = pit.radius * scale;
+
+  // Get theme-specific pit colors
+  const getPitColors = (theme: ArenaTheme) => {
+    const themeColors: Record<
+      ArenaTheme,
+      { outer: string; mid: string; inner: string; shadow: string }
+    > = {
+      forest: {
+        outer: "#3d2817",
+        mid: "#2d1810",
+        inner: "#1a0f08",
+        shadow: "rgba(0, 0, 0, 0.8)",
+      },
+      mountains: {
+        outer: "#4a4a4a",
+        mid: "#2f2f2f",
+        inner: "#1a1a1a",
+        shadow: "rgba(0, 0, 0, 0.7)",
+      },
+      grasslands: {
+        outer: "#5d4a27",
+        mid: "#3d2817",
+        inner: "#1f1408",
+        shadow: "rgba(0, 0, 0, 0.8)",
+      },
+      metrocity: {
+        outer: "#3a3a3a",
+        mid: "#252525",
+        inner: "#0f0f0f",
+        shadow: "rgba(0, 0, 0, 0.9)",
+      },
+      safari: {
+        outer: "#8b7355",
+        mid: "#5d4a27",
+        inner: "#2d1810",
+        shadow: "rgba(0, 0, 0, 0.7)",
+      },
+      prehistoric: {
+        outer: "#5d3a1a",
+        mid: "#3d2010",
+        inner: "#1a0f08",
+        shadow: "rgba(0, 0, 0, 0.8)",
+      },
+      futuristic: {
+        outer: "#4a3d5c",
+        mid: "#2f1f3d",
+        inner: "#15081d",
+        shadow: "rgba(138, 43, 226, 0.3)",
+      },
+      desert: {
+        outer: "#c4a57b",
+        mid: "#8b7355",
+        inner: "#5d4a27",
+        shadow: "rgba(0, 0, 0, 0.6)",
+      },
+      sea: {
+        outer: "#1e5a7a",
+        mid: "#0d3d5a",
+        inner: "#05202d",
+        shadow: "rgba(0, 0, 0, 0.7)",
+      },
+      ocean: {
+        outer: "#1a4d6b",
+        mid: "#0c3047",
+        inner: "#051823",
+        shadow: "rgba(0, 0, 0, 0.8)",
+      },
+      riverbank: {
+        outer: "#4a6869",
+        mid: "#2d4445",
+        inner: "#152223",
+        shadow: "rgba(0, 0, 0, 0.7)",
+      },
+    };
+    return themeColors[theme] || themeColors.metrocity;
+  };
+
+  const colors = pit.color
+    ? {
+        outer: pit.color,
+        mid: adjustBrightness(pit.color, -30),
+        inner: adjustBrightness(pit.color, -60),
+        shadow: "rgba(0, 0, 0, 0.7)",
+      }
+    : getPitColors(theme);
+
+  // Create depth effect with multiple circles
+  const depthLayers = Math.min(Math.max(3, pit.depth), 10);
+
+  return (
+    <g className="pit">
+      {/* Shadow/glow around pit */}
+      <circle
+        cx={x}
+        cy={y}
+        r={radius * 1.2}
+        fill={colors.shadow}
+        opacity={0.5}
+      />
+
+      {/* Depth layers - create 3D hole effect */}
+      {Array.from({ length: depthLayers }).map((_, i) => {
+        const layerProgress = i / (depthLayers - 1);
+        const layerRadius = radius * (1 - layerProgress * 0.6);
+        const layerColor = interpolateColor(
+          colors.outer,
+          colors.inner,
+          layerProgress
+        );
+
+        return (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={layerRadius}
+            fill={layerColor}
+            opacity={0.9}
+          />
+        );
+      })}
+
+      {/* Inner dark hole */}
+      <circle cx={x} cy={y} r={radius * 0.4} fill={colors.inner} />
+
+      {/* Edge highlight for crater type */}
+      {pit.type === "crater" && (
+        <circle
+          cx={x}
+          cy={y}
+          r={radius}
+          fill="none"
+          stroke={colors.outer}
+          strokeWidth={2}
+          opacity={0.6}
+        />
+      )}
+
+      {/* Pit label */}
+      <text
+        x={x}
+        y={y + radius + 12}
+        textAnchor="middle"
+        fontSize="10"
+        fontWeight="bold"
+        fill="white"
+        stroke="black"
+        strokeWidth="0.5"
+      >
+        {pit.type === "edge" ? "🕳️" : "⚫"} {pit.id}
+      </text>
+    </g>
+  );
+}
+
+// Helper function to adjust color brightness
+function adjustBrightness(hexColor: string, percent: number): string {
+  // Convert hex to RGB
+  const hex = hexColor.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Adjust brightness
+  const newR = Math.max(0, Math.min(255, r + percent));
+  const newG = Math.max(0, Math.min(255, g + percent));
+  const newB = Math.max(0, Math.min(255, b + percent));
+
+  // Convert back to hex
+  return `#${newR.toString(16).padStart(2, "0")}${newG
+    .toString(16)
+    .padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`;
+}
+
+// Helper function to interpolate between two colors
+function interpolateColor(
+  color1: string,
+  color2: string,
+  factor: number
+): string {
+  // Convert hex to RGB
+  const hex1 = color1.replace("#", "");
+  const hex2 = color2.replace("#", "");
+
+  const r1 = parseInt(hex1.substring(0, 2), 16);
+  const g1 = parseInt(hex1.substring(2, 4), 16);
+  const b1 = parseInt(hex1.substring(4, 6), 16);
+
+  const r2 = parseInt(hex2.substring(0, 2), 16);
+  const g2 = parseInt(hex2.substring(2, 4), 16);
+  const b2 = parseInt(hex2.substring(4, 6), 16);
+
+  // Interpolate
+  const r = Math.round(r1 + (r2 - r1) * factor);
+  const g = Math.round(g1 + (g2 - g1) * factor);
+  const b = Math.round(b1 + (b2 - b1) * factor);
+
+  return `#${r.toString(16).padStart(2, "0")}${g
+    .toString(16)
+    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
 function getThemeColor(theme: ArenaTheme, alpha: number = 1): string {
   const colors: Record<ArenaTheme, string> = {
     forest: `rgba(34, 139, 34, ${alpha})`,
@@ -967,6 +1251,7 @@ function getThemeColor(theme: ArenaTheme, alpha: number = 1): string {
     futuristic: `rgba(138, 43, 226, ${alpha})`,
     desert: `rgba(244, 164, 96, ${alpha})`,
     sea: `rgba(0, 191, 255, ${alpha})`,
+    ocean: `rgba(0, 105, 148, ${alpha})`,
     riverbank: `rgba(95, 158, 160, ${alpha})`,
   };
   return colors[theme] || `rgba(128, 128, 128, ${alpha})`;

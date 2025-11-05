@@ -1,16 +1,16 @@
 /**
- * Edit Stadium Page
- * Full-page form for editing an existing Stadium/Arena
+ * Edit Stadium Page (New Schema)
+ * Uses the new ArenaConfiguratorNew with modular tab components
  */
 
 "use client";
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ArenaConfigurator from "@/components/admin/ArenaConfigurator";
-import { ArenaConfig } from "@/types/arenaConfig";
+import ArenaConfiguratorNew from "@/components/admin/ArenaConfiguratorNew";
+import { ArenaConfig } from "@/types/arenaConfigNew";
 
-export default function EditStadiumPage({
+export default function EditStadiumV2Page({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -98,7 +98,7 @@ export default function EditStadiumPage({
                 Edit Stadium: {arena?.name}
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Modify properties for this battle stadium
+                Modify your battle stadium with the modular editor
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function EditStadiumPage({
 
       {/* Editor */}
       <div className="max-w-7xl mx-auto">
-        <ArenaConfigurator
+        <ArenaConfiguratorNew
           arena={arena}
           onSave={handleSave}
           onCancel={handleCancel}

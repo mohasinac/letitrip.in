@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { verifyAdminSession } from '../../_lib/auth/admin-auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import {
   AuthorizationError,
@@ -7,8 +8,23 @@ import {
   ValidationError,
 } from '../../_lib/middleware/error-handler';
 import { DATABASE_CONSTANTS } from '@/constants/app';
+import { initializeWallConfig } from '@/types/arenaConfigNew';
 
-
+/**
+ * Migrate old arena data to v2 schema
+ * Ensures wall.edges exists for compatibility with new editor
+ */
+function migrateArenaToV2(arenaData: any): any {
+  // If wall exists but doesn't have edges, initialize proper structure
+  if (arenaData.wall && !arenaData.wall.edges) {
+    arenaData.wall = initializeWallConfig(arenaData.shape || 'circle');
+  }
+  // If wall doesn't exist at all, initialize it
+  if (!arenaData.wall) {
+    arenaData.wall = initializeWallConfig(arenaData.shape || 'circle');
+  }
+  return arenaData;
+}
 
 /**
  * GET /api/arenas/[id]
@@ -39,9 +55,10 @@ export async function GET(
         : arenaDoc.data()?.updatedAt,
     };
 
+    // Migrate to v2 schema if needed
     return NextResponse.json({
       success: true,
-      data: arena,
+      data: migrateArenaToV2(arena),
     });
   } catch (error: any) {
     if (error instanceof NotFoundError) {
@@ -86,6 +103,11 @@ export async function PUT(
     // Remove fields that shouldn't be updated
     delete updates.id;
     delete updates.createdAt;
+
+    // Ensure wall has proper v2 structure if it's being updated
+    if (updates.wall && !updates.wall.edges) {
+      updates.wall = initializeWallConfig(updates.shape || arenaDoc.data()?.shape || 'circle');
+    }
 
     // Add updatedAt timestamp
     updates.updatedAt = Timestamp.now();

@@ -4,6 +4,23 @@ import { verifyAdminSession } from '../_lib/auth/admin-auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { AuthorizationError, ValidationError } from '../_lib/middleware/error-handler';
 import { DATABASE_CONSTANTS } from '@/constants/app';
+import { initializeWallConfig } from '@/types/arenaConfigNew';
+
+/**
+ * Migrate old arena data to v2 schema
+ * Ensures wall.edges exists for compatibility with new editor
+ */
+function migrateArenaToV2(arenaData: any): any {
+  // If wall exists but doesn't have edges, initialize proper structure
+  if (arenaData.wall && !arenaData.wall.edges) {
+    arenaData.wall = initializeWallConfig(arenaData.shape || 'circle');
+  }
+  // If wall doesn't exist at all, initialize it
+  if (!arenaData.wall) {
+    arenaData.wall = initializeWallConfig(arenaData.shape || 'circle');
+  }
+  return arenaData;
+}
 
 /**
  * GET /api/arenas
@@ -19,13 +36,17 @@ export async function GET(request: NextRequest) {
       .orderBy('createdAt', 'desc')
       .get();
 
-    const arenas = arenaSnap.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate
-        ? doc.data().createdAt.toDate().toISOString()
-        : doc.data().createdAt,
-    }));
+    const arenas = arenaSnap.docs.map((doc: any) => {
+      const arenaData = {
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate
+          ? doc.data().createdAt.toDate().toISOString()
+          : doc.data().createdAt,
+      };
+      // Migrate to v2 schema if needed
+      return migrateArenaToV2(arenaData);
+    });
 
     return NextResponse.json({
       success: true,
@@ -42,7 +63,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/arenas
- * Create new arena (admin only)
+ * Create new arena (admin only) - Now using v2 schema
  */
 export async function POST(request: NextRequest) {
   try {
@@ -50,7 +71,7 @@ export async function POST(request: NextRequest) {
     await verifyAdminSession(request);
     const db = getAdminDb();
 
-    // Parse body
+    // Parse body (v2 schema)
     const body = await request.json();
     const {
       name,
@@ -59,63 +80,55 @@ export async function POST(request: NextRequest) {
       height,
       shape,
       theme,
-      gameMode,
-      aiDifficulty,
-      loops = [],
-      exits = [],
+      backgroundColor,
+      floorColor,
+      floorTexture,
+      autoRotate,
+      rotationSpeed,
+      rotationDirection,
       wall,
-      obstacles = [],
+      speedPaths = [],
+      portals = [],
+      waterBodies = [],
       pits = [],
-      laserGuns = [],
-      goalObjects = [],
-      requireAllGoalsDestroyed = false,
-      backgroundLayers = [],
-      gravity = 0,
-      airResistance = 0.01,
-      surfaceFriction = 0.02,
       difficulty = 'medium',
     } = body;
 
-    // Validate required fields
-    if (!name || !description || !width || !height || !shape) {
-      throw new ValidationError('Missing required fields: name, description, width, height, shape');
+    // Validate required fields (v2 schema)
+    if (!name || !width || !height || !shape || !theme) {
+      throw new ValidationError('Missing required fields: name, width, height, shape, theme');
     }
 
-    // Create arena document
-    const arenaData = {
+    // Ensure wall has proper v2 structure
+    const wallConfig = wall && wall.edges 
+      ? wall 
+      : initializeWallConfig(shape);
+
+    // Create arena document with v2 schema
+    const arenaData: any = {
       name,
-      description,
+      description: description || '',
       width,
       height,
       shape,
-      theme: theme || 'metrocity',
-      gameMode: gameMode || 'player-vs-ai',
-      aiDifficulty: aiDifficulty || 'medium',
-      loops,
-      exits,
-      wall: wall || {
-        enabled: true,
-        baseDamage: 5,
-        recoilDistance: 2,
-        hasSpikes: false,
-        spikeDamageMultiplier: 1.0,
-        hasSprings: false,
-        springRecoilMultiplier: 1.0,
-        thickness: 0.5,
-      },
-      obstacles,
+      theme,
+      autoRotate: autoRotate || false,
+      rotationSpeed: rotationSpeed || 6,
+      rotationDirection: rotationDirection || 'clockwise',
+      wall: wallConfig,
+      speedPaths,
+      portals,
+      waterBodies,
       pits,
-      laserGuns,
-      goalObjects,
-      requireAllGoalsDestroyed,
-      backgroundLayers,
-      gravity,
-      airResistance,
-      surfaceFriction,
       difficulty,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
+
+    // Add optional fields only if they're defined (Firestore doesn't accept undefined)
+    if (backgroundColor !== undefined) arenaData.backgroundColor = backgroundColor;
+    if (floorColor !== undefined) arenaData.floorColor = floorColor;
+    if (floorTexture !== undefined) arenaData.floorTexture = floorTexture;
 
     const arenaRef = await db.collection('arenas').add(arenaData);
     const arenaSnap = await arenaRef.get();

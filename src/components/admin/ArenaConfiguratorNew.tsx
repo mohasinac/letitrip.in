@@ -19,7 +19,108 @@ import {
   generateRandomWalls,
   initializeWallConfig,
   getEdgeCount,
+  ARENA_RESOLUTION,
 } from "@/types/arenaConfigNew";
+
+// ============================================================================
+// VERTEX CALCULATION HELPERS (same logic as ArenaPreviewBasic)
+// ============================================================================
+
+function calculatePolygonVertices(
+  shape: ArenaShape,
+  centerX: number,
+  centerY: number,
+  radius: number,
+  sides: number
+): Array<{ x: number; y: number }> {
+  // Special case for square: use axis-aligned rectangle (no bounding box scaling)
+  if (sides === 4) {
+    return [
+      { x: centerX - radius, y: centerY - radius },
+      { x: centerX + radius, y: centerY - radius },
+      { x: centerX + radius, y: centerY + radius },
+      { x: centerX - radius, y: centerY + radius },
+    ];
+  }
+
+  // For all other polygons, calculate base vertices and apply bounding box scaling
+  const baseVertices: Array<{ x: number; y: number }> = [];
+  const startAngle =
+    sides % 2 === 0
+      ? -Math.PI / 2 // Even sides: start at top
+      : -Math.PI / 2 + Math.PI / sides; // Odd sides: offset for flat bottom
+
+  for (let i = 0; i < sides; i++) {
+    const angle = startAngle + (i * 2 * Math.PI) / sides;
+    baseVertices.push({
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    });
+  }
+
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map((v) => v.x));
+  const maxX = Math.max(...baseVertices.map((v) => v.x));
+  const minY = Math.min(...baseVertices.map((v) => v.y));
+  const maxY = Math.max(...baseVertices.map((v) => v.y));
+
+  const width = maxX - minX;
+  const height = maxY - minY;
+
+  // Scale to fit the full radius in both dimensions
+  const scaleX = (2 * radius) / width;
+  const scaleY = (2 * radius) / height;
+
+  // Apply scaling and centering
+  return baseVertices.map((v) => ({
+    x: centerX + (v.x - (minX + maxX) / 2) * scaleX,
+    y: centerY + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+}
+
+function calculateStarVertices(
+  centerX: number,
+  centerY: number,
+  outerRadius: number,
+  points: number
+): Array<{ x: number; y: number }> {
+  const innerRadius = outerRadius * 0.5;
+
+  // Calculate base vertices with standard orientation
+  const baseVertices: Array<{ x: number; y: number }> = [];
+  const startAngle =
+    points % 2 === 0 ? -Math.PI / 2 : -Math.PI / 2 + Math.PI / points;
+
+  for (let i = 0; i < points * 2; i++) {
+    const angle = startAngle + (i / (points * 2)) * Math.PI * 2;
+    const radius = i % 2 === 0 ? 1 : innerRadius / outerRadius; // Normalize
+    baseVertices.push({
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    });
+  }
+
+  // Find bounding box of the normalized shape
+  const minX = Math.min(...baseVertices.map((v) => v.x));
+  const maxX = Math.max(...baseVertices.map((v) => v.x));
+  const minY = Math.min(...baseVertices.map((v) => v.y));
+  const maxY = Math.max(...baseVertices.map((v) => v.y));
+
+  const width = maxX - minX;
+  const height = maxY - minY;
+
+  // Scale to fit the full outerRadius in both dimensions
+  const scaleX = (2 * outerRadius) / width;
+  const scaleY = (2 * outerRadius) / height;
+
+  // Apply scaling and centering
+  return baseVertices.map((v) => ({
+    x: centerX + (v.x - (minX + maxX) / 2) * scaleX,
+    y: centerY + (v.y - (minY + maxY) / 2) * scaleY,
+  }));
+}
+
+// ============================================================================
 
 interface ArenaConfiguratorNewProps {
   arena?: ArenaConfig | null;
@@ -33,15 +134,15 @@ export default function ArenaConfiguratorNew({
   onCancel,
 }: ArenaConfiguratorNewProps) {
   const [currentTab, setCurrentTab] = useState<
-    "basics" | "walls" | "loops" | "portals" | "water" | "preview"
+    "basics" | "walls" | "loops" | "portals" | "water" | "pits" | "preview"
   >("basics");
 
   const [config, setConfig] = useState<ArenaConfig>(
     arena || {
       name: "New Arena",
       description: "A custom battle arena",
-      width: 50,
-      height: 50,
+      width: 1080, // Standard resolution
+      height: 1080, // Standard resolution
       shape: "circle",
       theme: "metrocity",
       autoRotate: false,
@@ -51,17 +152,23 @@ export default function ArenaConfiguratorNew({
       speedPaths: [],
       portals: [],
       waterBodies: [],
+      pits: [],
     }
   );
 
   const [selectedEdgeIndex, setSelectedEdgeIndex] = useState<number>(0);
 
-  // Handle shape change
+  // Handle shape change - reset all shape-dependent features
   const handleShapeChange = (newShape: ArenaShape) => {
     setConfig({
       ...config,
       shape: newShape,
       wall: initializeWallConfig(newShape),
+      // Reset shape-dependent features
+      speedPaths: [], // Speed paths are shape-dependent
+      portals: [], // Portal positions depend on shape
+      waterBodies: [], // Water body positions depend on shape
+      pits: [], // Pit positions depend on shape (especially edge pits)
     });
     setSelectedEdgeIndex(0);
   };
@@ -100,7 +207,7 @@ export default function ArenaConfiguratorNew({
     for (let i = 0; i < count; i++) {
       currentEdge.walls.push({
         width: segmentWidth, // Each wall takes one segment
-        thickness: 1.0,
+        thickness: 10, // 10px = 1em in old system
         position: i * segmentWidth * 2, // Position at 0%, 33.33%, 66.66% etc
       });
     }
@@ -123,7 +230,7 @@ export default function ArenaConfiguratorNew({
       // Max 3 walls per edge
       currentEdge.walls.push({
         width: 25,
-        thickness: 1.0,
+        thickness: 10, // 10px = 1em in old system
         position: 50,
       });
 
@@ -221,7 +328,15 @@ export default function ArenaConfiguratorNew({
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
           {(
-            ["basics", "walls", "loops", "portals", "water", "preview"] as const
+            [
+              "basics",
+              "walls",
+              "loops",
+              "portals",
+              "water",
+              "pits",
+              "preview",
+            ] as const
           ).map((tab) => (
             <button
               key={tab}
@@ -412,7 +527,7 @@ export default function ArenaConfiguratorNew({
 
                                 <div>
                                   <label className="block text-sm font-medium mb-2">
-                                    Thickness (em)
+                                    Thickness (px)
                                   </label>
                                   <input
                                     type="range"
@@ -424,13 +539,13 @@ export default function ArenaConfiguratorNew({
                                         parseFloat(e.target.value)
                                       )
                                     }
-                                    min={0.5}
-                                    max={3}
-                                    step={0.1}
+                                    min={5}
+                                    max={30}
+                                    step={1}
                                     className="w-full"
                                   />
                                   <div className="text-xs text-gray-400 mt-1">
-                                    {wall.thickness}em
+                                    {wall.thickness}px
                                   </div>
                                 </div>
 
@@ -473,12 +588,12 @@ export default function ArenaConfiguratorNew({
                         {/* Common Wall Thickness */}
                         <div>
                           <label className="block text-sm font-medium mb-2">
-                            Wall Thickness: {config.wall.commonThickness || 1}{" "}
-                            em
+                            Wall Thickness: {config.wall.commonThickness || 10}{" "}
+                            px
                           </label>
                           <input
                             type="range"
-                            value={config.wall.commonThickness || 1}
+                            value={config.wall.commonThickness || 10}
                             onChange={(e) => {
                               const thickness = parseFloat(e.target.value);
                               setConfig({
@@ -496,9 +611,9 @@ export default function ArenaConfiguratorNew({
                                 },
                               });
                             }}
-                            min={0.5}
-                            max={5}
-                            step={0.1}
+                            min={5}
+                            max={50}
+                            step={1}
                             className="w-full"
                           />
                           <p className="text-xs text-gray-400 mt-1">
@@ -665,7 +780,7 @@ export default function ArenaConfiguratorNew({
 
                         <div>
                           <label className="block text-sm font-medium mb-2">
-                            Recoil Distance: {config.wall.recoilDistance} em
+                            Recoil Distance: {config.wall.recoilDistance} px
                           </label>
                           <input
                             type="range"
@@ -680,8 +795,8 @@ export default function ArenaConfiguratorNew({
                               })
                             }
                             min={0}
-                            max={10}
-                            step={0.5}
+                            max={100}
+                            step={5}
                             className="w-full"
                           />
                         </div>
@@ -762,7 +877,7 @@ export default function ArenaConfiguratorNew({
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium mb-2">
-                            Radius (em)
+                            Radius (px)
                           </label>
                           <input
                             type="number"
@@ -778,7 +893,7 @@ export default function ArenaConfiguratorNew({
                               });
                             }}
                             min={5}
-                            max={config.width / 2 - 2}
+                            max={ARENA_RESOLUTION / 2 - 2}
                             step={0.5}
                             className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
                           />
@@ -919,7 +1034,7 @@ export default function ArenaConfiguratorNew({
                                     pathPosition: cpId * 33.33,
                                     target: "center",
                                     dashSpeed: 2,
-                                    radius: 1,
+                                    radius: 25, // Fixed 25px radius (will be clamped to 10-50px)
                                     color: "#fbbf24",
                                     buttonId: cpId as 1 | 2 | 3,
                                   });
@@ -1331,7 +1446,7 @@ export default function ArenaConfiguratorNew({
                         {portal.autoPlace && (
                           <div className="p-3 bg-gray-700 rounded">
                             <label className="block text-sm font-medium mb-2">
-                              Distance from Center (em)
+                              Distance from Center (px)
                             </label>
                             <input
                               type="number"
@@ -1352,7 +1467,7 @@ export default function ArenaConfiguratorNew({
                                 setConfig({ ...config, portals: newPortals });
                               }}
                               min={5}
-                              max={config.width / 2 - 5}
+                              max={ARENA_RESOLUTION / 2 - 5}
                               step={0.5}
                               className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg"
                             />
@@ -1379,7 +1494,7 @@ export default function ArenaConfiguratorNew({
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Position X (em)
+                                  Position X (px)
                                 </label>
                                 <input
                                   type="number"
@@ -1394,8 +1509,8 @@ export default function ArenaConfiguratorNew({
                                       portals: newPortals,
                                     });
                                   }}
-                                  min={-config.width / 2 + 5}
-                                  max={config.width / 2 - 5}
+                                  min={-ARENA_RESOLUTION / 2 + 5}
+                                  max={ARENA_RESOLUTION / 2 - 5}
                                   step={0.5}
                                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
                                 />
@@ -1403,7 +1518,7 @@ export default function ArenaConfiguratorNew({
 
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Position Y (em)
+                                  Position Y (px)
                                 </label>
                                 <input
                                   type="number"
@@ -1418,8 +1533,8 @@ export default function ArenaConfiguratorNew({
                                       portals: newPortals,
                                     });
                                   }}
-                                  min={-config.height / 2 + 5}
-                                  max={config.height / 2 - 5}
+                                  min={-ARENA_RESOLUTION / 2 + 5}
+                                  max={ARENA_RESOLUTION / 2 - 5}
                                   step={0.5}
                                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
                                 />
@@ -1429,7 +1544,7 @@ export default function ArenaConfiguratorNew({
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-sm font-medium mb-2">
-                                  Radius (em)
+                                  Radius (px)
                                 </label>
                                 <input
                                   type="number"
@@ -1494,647 +1609,447 @@ export default function ArenaConfiguratorNew({
               <WaterBodiesTab config={config} setConfig={setConfig} />
             )}
 
-            {/* WATER BODIES TAB - OLD (REMOVED) */}
-            {false && currentTab === "water" && (
+            {/* PITS TAB */}
+            {currentTab === "pits" && (
               <div className="space-y-6">
+                {/* Pits Header */}
                 <div className="bg-gray-800 rounded-lg p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Water Bodies</h2>
-                    <span className="text-sm text-gray-400">
-                      {config.waterBodies?.length || 0}/3 Water Bodies
-                    </span>
-                  </div>
-
-                  <p className="text-gray-400 text-sm mb-4">
-                    Add up to 3 water bodies: Moat (surrounds arena in its
-                    shape), Zone (positioned water with custom shape), or
-                    Wall-Based (water at arena edges).
-                  </p>
-
-                  {/* Add Water Body Buttons */}
-                  {(!config.waterBodies || config.waterBodies.length < 3) && (
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      <button
-                        onClick={() => {
-                          const newWater: import("@/types/arenaConfigNew").MoatWaterBodyConfig =
-                            {
-                              id: `water${
-                                (config.waterBodies?.length || 0) + 1
-                              }`,
-                              type: "moat",
-                              thickness: 3,
-                              distanceFromArena: 0,
-                              followsArenaShape: true,
-                              color: "#3b82f6",
-                              opacity: 0.6,
-                              depth: 5,
-                            };
-                          setConfig({
-                            ...config,
-                            waterBodies: [
-                              ...(config.waterBodies || []),
-                              newWater,
-                            ],
-                          });
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
-                      >
-                        + Add Moat
-                      </button>
-                      <button
-                        onClick={() => {
-                          const newWater: import("@/types/arenaConfigNew").ZoneWaterBodyConfig =
-                            {
-                              id: `water${
-                                (config.waterBodies?.length || 0) + 1
-                              }`,
-                              type: "zone",
-                              position: { x: 0, y: 0 },
-                              shape: "square",
-                              width: 10,
-                              height: 10,
-                              rotation: 0,
-                              color: "#3b82f6",
-                              opacity: 0.6,
-                              depth: 5,
-                            };
-                          setConfig({
-                            ...config,
-                            waterBodies: [
-                              ...(config.waterBodies || []),
-                              newWater,
-                            ],
-                          });
-                        }}
-                        className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm"
-                      >
-                        + Add Zone
-                      </button>
-                      <button
-                        onClick={() => {
-                          const newWater: import("@/types/arenaConfigNew").WallBasedWaterBodyConfig =
-                            {
-                              id: `water${
-                                (config.waterBodies?.length || 0) + 1
-                              }`,
-                              type: "wall-based",
-                              thickness: 2,
-                              offsetFromEdge: 0,
-                              coversExits: true,
-                              color: "#3b82f6",
-                              opacity: 0.6,
-                              depth: 5,
-                            };
-                          setConfig({
-                            ...config,
-                            waterBodies: [
-                              ...(config.waterBodies || []),
-                              newWater,
-                            ],
-                          });
-                        }}
-                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm"
-                      >
-                        + Add Wall-Based
-                      </button>
+                    <div>
+                      <h2 className="text-xl font-semibold">
+                        Pit Hazards ({config.pits?.length || 0} active)
+                      </h2>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Dangerous pits that trap beyblades and drain spin
+                      </p>
                     </div>
-                  )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          // For circle arenas, create a single center pit
+                          // For other shapes, create edge pits at equal angles
+                          if (config.shape === "circle") {
+                            setConfig({
+                              ...config,
+                              pits: [
+                                {
+                                  id: "pit1",
+                                  type: "crater" as const,
+                                  position: { x: 0, y: 0 },
+                                  radius: 4,
+                                  depth: 9,
+                                  spinDamagePerSecond: 25,
+                                  escapeChance: 0.5,
+                                  color: "#2d1810",
+                                  autoPlace: false,
+                                },
+                              ],
+                            });
+                          } else {
+                            // Create edge pits using the same vertex logic as walls
+                            const edgeCount = getEdgeCount(config.shape);
+                            const pitCount = Math.min(edgeCount, 8); // Max 8 edge pits
+                            const arenaRadius = ARENA_RESOLUTION / 2; // Use standard resolution
+                            const pitDistance = arenaRadius * 0.85; // 85% of radius (near edge)
 
-                  {/* Water Bodies List */}
-                  {(!config.waterBodies || config.waterBodies.length === 0) && (
-                    <div className="text-center py-8 text-gray-500">
-                      No water bodies added yet. Click a button above to add
-                      one.
-                    </div>
-                  )}
+                            // Calculate vertices using the same logic as walls
+                            let vertices: Array<{ x: number; y: number }>;
+                            if (config.shape.startsWith("star")) {
+                              const points = parseInt(
+                                config.shape.replace("star", "")
+                              );
+                              vertices = calculateStarVertices(
+                                0,
+                                0,
+                                pitDistance,
+                                points
+                              );
+                            } else {
+                              vertices = calculatePolygonVertices(
+                                config.shape,
+                                0,
+                                0,
+                                pitDistance,
+                                edgeCount
+                              );
+                            }
 
-                  {config.waterBodies?.map((water, idx) => (
-                    <div
-                      key={water.id}
-                      className="bg-gray-700 rounded-lg p-4 mb-4 border-l-4"
-                      style={{
-                        borderLeftColor:
-                          water.type === "moat"
-                            ? "#3b82f6"
-                            : water.type === "zone"
-                            ? "#06b6d4"
-                            : "#14b8a6",
-                      }}
-                    >
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-semibold flex items-center gap-2">
-                          {water.type === "moat" && "🌊 Moat"}
-                          {water.type === "zone" && "💧 Zone"}
-                          {water.type === "wall-based" && "🏖️ Wall-Based"}
-                          <span className="text-gray-400 text-sm">
-                            ({water.id})
-                          </span>
-                        </h3>
+                            const newPits = vertices
+                              .slice(0, pitCount)
+                              .map(
+                                (
+                                  vertex: { x: number; y: number },
+                                  i: number
+                                ) => ({
+                                  id: `pit${i + 1}`,
+                                  type: "edge" as const,
+                                  position: { x: vertex.x, y: vertex.y },
+                                  radius: 2.5,
+                                  depth: 7,
+                                  spinDamagePerSecond: 20,
+                                  escapeChance: 0.5,
+                                  color: "#3c1810",
+                                  autoPlace: true,
+                                  edgeOffset: pitDistance,
+                                  angle:
+                                    Math.atan2(vertex.y, vertex.x) *
+                                    (180 / Math.PI),
+                                })
+                              );
+
+                            setConfig({
+                              ...config,
+                              pits: newPits,
+                            });
+                          }
+                        }}
+                        disabled={(config.pits?.length || 0) > 0}
+                        className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      >
+                        {config.shape === "circle"
+                          ? "+ Add Center Pit"
+                          : "+ Add Edge Pits (All)"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          if ((config.pits?.length || 0) < 3) {
+                            const pitNum = (config.pits?.length || 0) + 1;
+                            setConfig({
+                              ...config,
+                              pits: [
+                                ...(config.pits || []),
+                                {
+                                  id: `pit${pitNum}`,
+                                  type: "crater",
+                                  position: { x: 0, y: 0 },
+                                  radius: 3,
+                                  depth: 8,
+                                  spinDamagePerSecond: 25,
+                                  escapeChance: 0.5,
+                                  color: "#2d1810",
+                                  autoPlace: false,
+                                },
+                              ],
+                            });
+                          }
+                        }}
+                        disabled={(config.pits?.length || 0) >= 3}
+                        className="px-4 py-2 bg-red-900 hover:bg-red-800 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      >
+                        + Add Crater Pit
+                      </button>
+                      {(config.pits?.length || 0) > 0 && (
                         <button
                           onClick={() => {
                             setConfig({
                               ...config,
-                              waterBodies: config.waterBodies.filter(
-                                (_, i) => i !== idx
-                              ),
+                              pits: [],
                             });
                           }}
-                          className="text-red-400 hover:text-red-300 text-sm"
+                          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition"
+                        >
+                          Clear All Pits
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Info about pits */}
+                  <div className="mt-4 p-3 bg-gray-700 rounded space-y-2">
+                    <p className="text-xs text-gray-300">
+                      <strong>⚠️ How Pits Work:</strong>
+                    </p>
+                    <ul className="text-xs text-gray-300 ml-4 list-disc space-y-1">
+                      <li>Beyblade enters pit → loses control</li>
+                      <li>Every second: 50% chance to escape before damage</li>
+                      <li>If fails escape: takes spin damage</li>
+                      <li>Continues until escape or spin reaches zero</li>
+                    </ul>
+                    <p className="text-xs text-gray-300 mt-2">
+                      <strong>Pit Types:</strong>
+                    </p>
+                    <ul className="text-xs text-gray-300 ml-4 list-disc space-y-1">
+                      <li>
+                        <strong>Circle Arena:</strong> Creates a single large
+                        center pit (classic danger zone)
+                      </li>
+                      <li>
+                        <strong>Other Shapes:</strong> Creates small pits around
+                        arena edges (all at once based on shape)
+                      </li>
+                      <li>
+                        <strong>Crater Pits:</strong> Additional manual pits
+                        that can be placed anywhere (max 3)
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Pits List */}
+                {!config.pits || config.pits.length === 0 ? (
+                  <div className="bg-gray-800 rounded-lg p-12 text-center">
+                    <p className="text-gray-400 text-lg">
+                      No pits yet. Click a button above to add one.
+                    </p>
+                  </div>
+                ) : (
+                  config.pits.map((pit, idx) => (
+                    <div
+                      key={pit.id}
+                      className="bg-gray-800 rounded-lg p-6 border-l-4"
+                      style={{
+                        borderLeftColor:
+                          pit.type === "edge" ? "#ea580c" : "#7f1d1d",
+                      }}
+                    >
+                      {/* Header */}
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                          {pit.type === "edge"
+                            ? "🕳️ Edge Pit"
+                            : "⚫ Crater Pit"}
+                          <span className="text-gray-400 text-sm">
+                            ({pit.id})
+                          </span>
+                        </h3>
+                        <button
+                          onClick={() => {
+                            const newPits = config.pits.filter(
+                              (_, i) => i !== idx
+                            );
+                            setConfig({ ...config, pits: newPits });
+                          }}
+                          className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm transition"
                         >
                           Remove
                         </button>
                       </div>
 
-                      {/* Common Properties */}
                       <div className="space-y-4">
+                        {/* Auto-placement for edge pits */}
+                        {pit.type === "edge" && pit.autoPlace && (
+                          <div className="p-3 bg-gray-700 rounded">
+                            <label className="block text-sm font-medium mb-2">
+                              Distance from Center (px)
+                            </label>
+                            <input
+                              type="number"
+                              value={pit.edgeOffset || 18}
+                              onChange={(e) => {
+                                const newPits = [...config.pits];
+                                const distance = parseFloat(e.target.value);
+                                newPits[idx].edgeOffset = distance;
+
+                                const angle = pit.angle || idx * 120;
+                                const rad = (angle * Math.PI) / 180;
+                                const x = distance * Math.cos(rad);
+                                const y = distance * Math.sin(rad);
+                                newPits[idx].position = { x, y };
+
+                                setConfig({ ...config, pits: newPits });
+                              }}
+                              min={10}
+                              max={ARENA_RESOLUTION / 2 - 3}
+                              step={0.5}
+                              className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg"
+                            />
+                            <p className="text-xs text-gray-400 mt-2">
+                              Auto-placed at {pit.angle || idx * 120}° from
+                              center
+                            </p>
+                            <button
+                              onClick={() => {
+                                const newPits = [...config.pits];
+                                newPits[idx].autoPlace = false;
+                                setConfig({ ...config, pits: newPits });
+                              }}
+                              className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
+                            >
+                              Switch to Manual Position
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Manual positioning */}
+                        {!pit.autoPlace && (
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">
+                                Position X (px)
+                              </label>
+                              <input
+                                type="number"
+                                value={pit.position.x}
+                                onChange={(e) => {
+                                  const newPits = [...config.pits];
+                                  newPits[idx].position.x = parseFloat(
+                                    e.target.value
+                                  );
+                                  setConfig({ ...config, pits: newPits });
+                                }}
+                                min={-ARENA_RESOLUTION / 2 + 3}
+                                max={ARENA_RESOLUTION / 2 - 3}
+                                step={0.5}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium mb-2">
+                                Position Y (px)
+                              </label>
+                              <input
+                                type="number"
+                                value={pit.position.y}
+                                onChange={(e) => {
+                                  const newPits = [...config.pits];
+                                  newPits[idx].position.y = parseFloat(
+                                    e.target.value
+                                  );
+                                  setConfig({ ...config, pits: newPits });
+                                }}
+                                min={-ARENA_RESOLUTION / 2 + 3}
+                                max={ARENA_RESOLUTION / 2 - 3}
+                                step={0.5}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pit properties */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium mb-2">
-                              Color
-                            </label>
-                            <input
-                              type="color"
-                              value={water.color || "#3b82f6"}
-                              onChange={(e) => {
-                                const newWaterBodies = [...config.waterBodies];
-                                newWaterBodies[idx] = {
-                                  ...newWaterBodies[idx],
-                                  color: e.target.value,
-                                };
-                                setConfig({
-                                  ...config,
-                                  waterBodies: newWaterBodies,
-                                });
-                              }}
-                              className="w-full h-10 bg-gray-600 border border-gray-500 rounded-lg cursor-pointer"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Opacity: {water.opacity?.toFixed(2) || 0.6}
+                              Radius: {pit.radius} px
                             </label>
                             <input
                               type="range"
-                              value={water.opacity || 0.6}
+                              value={pit.radius}
                               onChange={(e) => {
-                                const newWaterBodies = [...config.waterBodies];
-                                newWaterBodies[idx] = {
-                                  ...newWaterBodies[idx],
-                                  opacity: parseFloat(e.target.value),
-                                };
-                                setConfig({
-                                  ...config,
-                                  waterBodies: newWaterBodies,
-                                });
+                                const newPits = [...config.pits];
+                                newPits[idx].radius = parseFloat(
+                                  e.target.value
+                                );
+                                setConfig({ ...config, pits: newPits });
                               }}
-                              min={0.1}
-                              max={1}
-                              step={0.05}
+                              min={1}
+                              max={5}
+                              step={0.5}
+                              className="w-full"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Visual Depth: {pit.depth}
+                            </label>
+                            <input
+                              type="range"
+                              value={pit.depth}
+                              onChange={(e) => {
+                                const newPits = [...config.pits];
+                                newPits[idx].depth = parseFloat(e.target.value);
+                                setConfig({ ...config, pits: newPits });
+                              }}
+                              min={1}
+                              max={10}
+                              step={1}
                               className="w-full"
                             />
                           </div>
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Spin Damage/Second: {pit.spinDamagePerSecond}
+                            </label>
+                            <input
+                              type="range"
+                              value={pit.spinDamagePerSecond}
+                              onChange={(e) => {
+                                const newPits = [...config.pits];
+                                newPits[idx].spinDamagePerSecond = parseFloat(
+                                  e.target.value
+                                );
+                                setConfig({ ...config, pits: newPits });
+                              }}
+                              min={5}
+                              max={50}
+                              step={5}
+                              className="w-full"
+                            />
+                            <p className="text-xs text-gray-400 mt-1">
+                              Damage applied if escape fails
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Escape Chance:{" "}
+                              {(pit.escapeChance * 100).toFixed(0)}%
+                            </label>
+                            <input
+                              type="range"
+                              value={pit.escapeChance}
+                              onChange={(e) => {
+                                const newPits = [...config.pits];
+                                newPits[idx].escapeChance = parseFloat(
+                                  e.target.value
+                                );
+                                setConfig({ ...config, pits: newPits });
+                              }}
+                              min={0}
+                              max={1}
+                              step={0.05}
+                              className="w-full"
+                            />
+                            <p className="text-xs text-gray-400 mt-1">
+                              Chance to escape each second
+                            </p>
+                          </div>
+                        </div>
+
                         <div>
                           <label className="block text-sm font-medium mb-2">
-                            Depth Effect: {water.depth || 5}
+                            Pit Color
                           </label>
                           <input
-                            type="range"
-                            value={water.depth || 5}
+                            type="color"
+                            value={pit.color || "#3c1810"}
                             onChange={(e) => {
-                              const newWaterBodies = [...config.waterBodies];
-                              newWaterBodies[idx] = {
-                                ...newWaterBodies[idx],
-                                depth: parseFloat(e.target.value),
-                              };
-                              setConfig({
-                                ...config,
-                                waterBodies: newWaterBodies,
-                              });
+                              const newPits = [...config.pits];
+                              newPits[idx].color = e.target.value;
+                              setConfig({ ...config, pits: newPits });
                             }}
-                            min={0}
-                            max={10}
-                            step={0.5}
-                            className="w-full"
+                            className="w-full h-10 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"
                           />
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={water.wavyEffect || false}
-                            onChange={(e) => {
-                              const newWaterBodies = [...config.waterBodies];
-                              newWaterBodies[idx] = {
-                                ...newWaterBodies[idx],
-                                wavyEffect: e.target.checked,
-                              };
-                              setConfig({
-                                ...config,
-                                waterBodies: newWaterBodies,
-                              });
-                            }}
-                            className="w-4 h-4"
-                          />
-                          <label className="text-sm">
-                            Animated Wavy Effect
-                          </label>
+                        {/* Pit mechanics info */}
+                        <div className="bg-gray-700 rounded p-3">
+                          <p className="text-xs text-gray-300">
+                            ⚙️ <strong>Pit Mechanics:</strong>
+                          </p>
+                          <ul className="text-xs text-gray-400 ml-4 mt-1 space-y-1">
+                            <li>
+                              Every second:{" "}
+                              {(pit.escapeChance * 100).toFixed(0)}% chance to
+                              escape
+                            </li>
+                            <li>
+                              If escape fails: -{pit.spinDamagePerSecond} spin
+                              damage
+                            </li>
+                            <li>Beyblade cannot be controlled while in pit</li>
+                            <li>Continues until escape or spin reaches zero</li>
+                          </ul>
                         </div>
-
-                        {/* Type-Specific Properties */}
-                        {water.type === "moat" && (
-                          <>
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Thickness: {water.thickness} em
-                              </label>
-                              <input
-                                type="range"
-                                value={water.thickness}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const moatWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").MoatWaterBodyConfig;
-                                  moatWater.thickness = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                min={1}
-                                max={10}
-                                step={0.5}
-                                className="w-full"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Distance from Arena: {water.distanceFromArena}{" "}
-                                em
-                              </label>
-                              <input
-                                type="range"
-                                value={water.distanceFromArena}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const moatWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").MoatWaterBodyConfig;
-                                  moatWater.distanceFromArena = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                min={0}
-                                max={5}
-                                step={0.5}
-                                className="w-full"
-                              />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={water.followsArenaShape}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const moatWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").MoatWaterBodyConfig;
-                                  moatWater.followsArenaShape =
-                                    e.target.checked;
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                className="w-4 h-4"
-                              />
-                              <label className="text-sm">
-                                Follows Arena Shape (unchecked = always
-                                circular)
-                              </label>
-                            </div>
-                          </>
-                        )}
-
-                        {water.type === "zone" && (
-                          <>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-sm font-medium mb-2">
-                                  Position X: {water.position.x} em
-                                </label>
-                                <input
-                                  type="range"
-                                  value={water.position.x}
-                                  onChange={(e) => {
-                                    const newWaterBodies = [
-                                      ...config.waterBodies,
-                                    ];
-                                    const zoneWater = newWaterBodies[
-                                      idx
-                                    ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                    zoneWater.position.x = parseFloat(
-                                      e.target.value
-                                    );
-                                    setConfig({
-                                      ...config,
-                                      waterBodies: newWaterBodies,
-                                    });
-                                  }}
-                                  min={-config.width / 2 + 5}
-                                  max={config.width / 2 - 5}
-                                  step={0.5}
-                                  className="w-full"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium mb-2">
-                                  Position Y: {water.position.y} em
-                                </label>
-                                <input
-                                  type="range"
-                                  value={water.position.y}
-                                  onChange={(e) => {
-                                    const newWaterBodies = [
-                                      ...config.waterBodies,
-                                    ];
-                                    const zoneWater = newWaterBodies[
-                                      idx
-                                    ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                    zoneWater.position.y = parseFloat(
-                                      e.target.value
-                                    );
-                                    setConfig({
-                                      ...config,
-                                      waterBodies: newWaterBodies,
-                                    });
-                                  }}
-                                  min={-config.height / 2 + 5}
-                                  max={config.height / 2 - 5}
-                                  step={0.5}
-                                  className="w-full"
-                                />
-                              </div>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Shape
-                              </label>
-                              <select
-                                value={water.shape}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const zoneWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                  zoneWater.shape = e.target.value as
-                                    | "circle"
-                                    | "square"
-                                    | "rectangle"
-                                    | "oval";
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg"
-                              >
-                                <option value="circle">Circle</option>
-                                <option value="square">Square</option>
-                                <option value="rectangle">Rectangle</option>
-                                <option value="oval">Oval</option>
-                              </select>
-                            </div>
-
-                            {water.shape === "circle" && (
-                              <div>
-                                <label className="block text-sm font-medium mb-2">
-                                  Radius: {water.radius || 5} em
-                                </label>
-                                <input
-                                  type="range"
-                                  value={water.radius || 5}
-                                  onChange={(e) => {
-                                    const newWaterBodies = [
-                                      ...config.waterBodies,
-                                    ];
-                                    const zoneWater = newWaterBodies[
-                                      idx
-                                    ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                    zoneWater.radius = parseFloat(
-                                      e.target.value
-                                    );
-                                    setConfig({
-                                      ...config,
-                                      waterBodies: newWaterBodies,
-                                    });
-                                  }}
-                                  min={1}
-                                  max={20}
-                                  step={0.5}
-                                  className="w-full"
-                                />
-                              </div>
-                            )}
-
-                            {(water.shape === "square" ||
-                              water.shape === "rectangle" ||
-                              water.shape === "oval") && (
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">
-                                    Width: {water.width || 10} em
-                                  </label>
-                                  <input
-                                    type="range"
-                                    value={water.width || 10}
-                                    onChange={(e) => {
-                                      const newWaterBodies = [
-                                        ...config.waterBodies,
-                                      ];
-                                      const zoneWater = newWaterBodies[
-                                        idx
-                                      ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                      zoneWater.width = parseFloat(
-                                        e.target.value
-                                      );
-                                      setConfig({
-                                        ...config,
-                                        waterBodies: newWaterBodies,
-                                      });
-                                    }}
-                                    min={2}
-                                    max={30}
-                                    step={0.5}
-                                    className="w-full"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">
-                                    Height: {water.height || 10} em
-                                  </label>
-                                  <input
-                                    type="range"
-                                    value={water.height || 10}
-                                    onChange={(e) => {
-                                      const newWaterBodies = [
-                                        ...config.waterBodies,
-                                      ];
-                                      const zoneWater = newWaterBodies[
-                                        idx
-                                      ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                      zoneWater.height = parseFloat(
-                                        e.target.value
-                                      );
-                                      setConfig({
-                                        ...config,
-                                        waterBodies: newWaterBodies,
-                                      });
-                                    }}
-                                    min={2}
-                                    max={30}
-                                    step={0.5}
-                                    className="w-full"
-                                  />
-                                </div>
-                              </div>
-                            )}
-
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Rotation: {water.rotation || 0}°
-                              </label>
-                              <input
-                                type="range"
-                                value={water.rotation || 0}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const zoneWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").ZoneWaterBodyConfig;
-                                  zoneWater.rotation = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                min={0}
-                                max={360}
-                                step={5}
-                                className="w-full"
-                              />
-                            </div>
-                          </>
-                        )}
-
-                        {water.type === "wall-based" && (
-                          <>
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Thickness: {water.thickness} em
-                              </label>
-                              <input
-                                type="range"
-                                value={water.thickness}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const wallWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").WallBasedWaterBodyConfig;
-                                  wallWater.thickness = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                min={1}
-                                max={5}
-                                step={0.5}
-                                className="w-full"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-2">
-                                Offset from Edge: {water.offsetFromEdge} em
-                              </label>
-                              <input
-                                type="range"
-                                value={water.offsetFromEdge}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const wallWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").WallBasedWaterBodyConfig;
-                                  wallWater.offsetFromEdge = parseFloat(
-                                    e.target.value
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                min={0}
-                                max={3}
-                                step={0.5}
-                                className="w-full"
-                              />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={water.coversExits}
-                                onChange={(e) => {
-                                  const newWaterBodies = [
-                                    ...config.waterBodies,
-                                  ];
-                                  const wallWater = newWaterBodies[
-                                    idx
-                                  ] as import("@/types/arenaConfigNew").WallBasedWaterBodyConfig;
-                                  wallWater.coversExits = e.target.checked;
-                                  setConfig({
-                                    ...config,
-                                    waterBodies: newWaterBodies,
-                                  });
-                                }}
-                                className="w-4 h-4"
-                              />
-                              <label className="text-sm">
-                                Covers Exit Zones
-                              </label>
-                            </div>
-                          </>
-                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  ))
+                )}
               </div>
             )}
 

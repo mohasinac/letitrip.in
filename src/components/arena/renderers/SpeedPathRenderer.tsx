@@ -49,7 +49,7 @@ export default function SpeedPathRenderer({
         id: i + 1,
         pathPosition,
         target: "center",
-        radius: 1,
+        radius: 25, // Fixed 25px radius (will be clamped to 10-50px)
         color: "#fbbf24",
       });
     }
@@ -262,7 +262,8 @@ export default function SpeedPathRenderer({
       {/* Render charge points */}
       {chargePoints.map((cp, idx) => {
         const pos = getPointOnSpeedPath(cp.pathPosition);
-        const cpRadius = (cp.radius || 1) * scale;
+        // Fixed pixel range: 10-50px regardless of scale
+        const cpRadius = cp.radius ? Math.max(10, Math.min(50, cp.radius)) : 25;
         const cpColor = cp.color || "#fbbf24";
 
         return (
@@ -271,7 +272,7 @@ export default function SpeedPathRenderer({
             <circle
               cx={pos.x}
               cy={pos.y}
-              r={cpRadius * 3}
+              r={cpRadius}
               fill={cpColor}
               opacity={0.8}
               stroke="white"
