@@ -796,7 +796,7 @@ export class BattleRoom extends Room {
 
 ### Existing Collections
 
-#### `beybladeStats` Collection
+#### `beyblade_stats` Collection
 
 ```typescript
 interface BeybladeStats {

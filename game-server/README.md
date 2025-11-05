@@ -166,7 +166,7 @@ maxClients = 1; // Only one player for tryout mode
 
 - Make sure `GOOGLE_APPLICATION_CREDENTIALS` is set correctly
 - Check that service account key is valid
-- Verify Firestore collections exist: `beybladeStats`, `arenas`
+- Verify Firestore collections exist: `beyblade_stats`, `arenas`
 
 ### Port Already in Use
 

@@ -11,6 +11,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { AuthorizationError, ValidationError } from "../../_lib/middleware/error-handler";
 import { BeybladeStats } from "@/types/beybladeStats";
 import { verifyAdminSession } from "../../_lib/auth/admin-auth";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const db = getAdminDb();
 
@@ -27,7 +28,7 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    const doc = await db.collection("beybladeStats").doc(id).get();
+    const doc = await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).get();
 
     if (!doc.exists) {
       return NextResponse.json(
@@ -77,7 +78,7 @@ export async function PUT(
     const body = await request.json();
 
     // Get existing beyblade
-    const doc = await db.collection("beybladeStats").doc(id).get();
+    const doc = await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).get();
 
     if (!doc.exists) {
       return NextResponse.json(
@@ -115,7 +116,7 @@ export async function PUT(
     } as BeybladeStats;
 
     // Save to Firestore
-    await db.collection("beybladeStats").doc(id).set(updatedBeyblade);
+    await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).set(updatedBeyblade);
 
     return NextResponse.json({
       success: true,
@@ -164,7 +165,7 @@ export async function DELETE(
     const { id } = await context.params;
 
     // Check if beyblade exists
-    const doc = await db.collection("beybladeStats").doc(id).get();
+    const doc = await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).get();
 
     if (!doc.exists) {
       return NextResponse.json(
@@ -177,7 +178,7 @@ export async function DELETE(
     }
 
     // Delete from Firestore
-    await db.collection("beybladeStats").doc(id).delete();
+    await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).delete();
 
     return NextResponse.json({
       success: true,

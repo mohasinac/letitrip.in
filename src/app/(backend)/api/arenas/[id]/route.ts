@@ -6,6 +6,7 @@ import {
   NotFoundError,
   ValidationError,
 } from '../../_lib/middleware/error-handler';
+import { DATABASE_CONSTANTS } from '@/constants/app';
 
 
 
@@ -21,7 +22,7 @@ export async function GET(
     const { id } = await context.params;
     const db = getAdminDb();
 
-    const arenaDoc = await db.collection('arenas').doc(id).get();
+    const arenaDoc = await db.collection(DATABASE_CONSTANTS.COLLECTIONS.ARENAS).doc(id).get();
 
     if (!arenaDoc.exists) {
       throw new NotFoundError('Arena not found');

@@ -3,6 +3,7 @@ import { getAdminDb } from '../_lib/database/admin';
 import { verifyAdminSession } from '../_lib/auth/admin-auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { AuthorizationError, ValidationError } from '../_lib/middleware/error-handler';
+import { DATABASE_CONSTANTS } from '@/constants/app';
 
 /**
  * GET /api/arenas
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const db = getAdminDb();
 
     const arenaSnap = await db
-      .collection('arenas')
+      .collection(DATABASE_CONSTANTS.COLLECTIONS.ARENAS)
       .orderBy('createdAt', 'desc')
       .get();
 

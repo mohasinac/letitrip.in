@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from '../../_lib/database/admin';
 import { DEFAULT_BEYBLADE_STATS } from "@/constants/beybladeStatsData";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const db = getAdminDb();
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     const results = [];
 
     for (const [id, stats] of Object.entries(DEFAULT_BEYBLADE_STATS)) {
-      const docRef = db.collection("beybladeStats").doc(id);
+      const docRef = db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id);
       const doc = await docRef.get();
 
       // Only add if doesn't exist

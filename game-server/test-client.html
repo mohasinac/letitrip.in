@@ -111,15 +111,13 @@
     </div>
 
     <div class="section">
-        <h2>Controls</h2>
-        <button onclick="sendInput('up')">↑ Up</button>
-        <button onclick="sendInput('down')">↓ Down</button>
-        <button onclick="sendInput('left')">← Left</button>
-        <button onclick="sendInput('right')">→ Right</button>
+        <h2>Controls (NEW)</h2>
+        <p style="color: #95e1d3;">Use A/D or Arrow Left/Right to dodge, Space for Attack, Shift for Special Move</p>
+        <button onclick="sendInput('moveLeft')">⬅️ Move Left (A)</button>
+        <button onclick="sendInput('moveRight')">➡️ Move Right (D)</button>
         <br>
-        <button onclick="sendAction('charge')">⚡ Charge</button>
-        <button onclick="sendAction('dash')">🚀 Dash</button>
-        <button onclick="sendAction('special')">✨ Special</button>
+        <button onclick="sendInput('attack')">⚔️ Attack (Space)</button>
+        <button onclick="sendInput('specialMove')">✨ Special Move (Shift)</button>
     </div>
 
     <div class="section">
@@ -163,7 +161,7 @@
                 
                 client = new window.Colyseus.Client(serverUrl);
 
-                room = await client.joinOrCreate("tryout_room", {
+                room = await client.joinOrCreate("tryout", {
                     userId,
                     username,
                     beybladeId,
@@ -233,25 +231,18 @@
             stateDiv.innerHTML = html;
         }
 
-        function sendInput(direction) {
+        function sendInput(inputType) {
             if (!room) {
                 log('Not connected to a room', 'error');
                 return;
             }
 
-            const directions = {
-                'up': { x: 0, y: -1 },
-                'down': { x: 0, y: 1 },
-                'left': { x: -1, y: 0 },
-                'right': { x: 1, y: 0 }
-            };
+            const input = {};
+            input[inputType] = true;
 
-            room.send("input", {
-                direction: directions[direction],
-                timestamp: Date.now()
-            });
+            room.send("input", input);
 
-            log(`Sent input: ${direction}`, 'info');
+            log(`Sent input: ${inputType}`, 'info');
         }
 
         function sendAction(actionType) {
@@ -267,45 +258,32 @@
             log(`Sent action: ${actionType}`, 'success');
         }
 
-        // Keyboard controls
+        // Keyboard controls (NEW SCHEME)
         document.addEventListener('keydown', (e) => {
             if (!room) return;
 
             switch(e.key) {
-                case 'ArrowUp':
-                case 'w':
-                case 'W':
-                    sendInput('up');
-                    break;
-                case 'ArrowDown':
-                case 's':
-                case 'S':
-                    sendInput('down');
-                    break;
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    sendInput('left');
+                    sendInput('moveLeft');
                     break;
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    sendInput('right');
+                    sendInput('moveRight');
                     break;
                 case ' ':
-                    sendAction('charge');
+                    sendInput('attack');
+                    e.preventDefault(); // Prevent page scroll
                     break;
                 case 'Shift':
-                    sendAction('dash');
-                    break;
-                case 'e':
-                case 'E':
-                    sendAction('special');
+                    sendInput('specialMove');
                     break;
             }
         });
 
-        log('Test client loaded. Use arrow keys or WASD to move, Space to charge, Shift to dash, E for special.', 'success');
+        log('Test client loaded. Use A/D or Arrow Keys to dodge, Space to Attack, Shift for Special Move.', 'success');
     </script>
 </body>
 </html>

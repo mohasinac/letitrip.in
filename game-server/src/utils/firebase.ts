@@ -1,4 +1,6 @@
 import * as admin from "firebase-admin";
+import type { BeybladeStats, ArenaConfig } from "../types/shared";
+import { FIREBASE_COLLECTIONS } from "../constants/firebase";
 
 // Initialize Firebase Admin (if not already initialized)
 let db: admin.firestore.Firestore | null = null;
@@ -31,49 +33,6 @@ if (!admin.apps.length) {
 }
 
 /**
- * Beyblade stats interface
- */
-export interface BeybladeStats {
-  id: string;
-  displayName: string;
-  fileName: string;
-  type: "attack" | "defense" | "stamina" | "balanced";
-  spinDirection: "left" | "right";
-  mass: number;
-  radius: number;
-  actualSize: number;
-  typeDistribution: {
-    attack: number;
-    defense: number;
-    stamina: number;
-    total: number;
-  };
-  pointsOfContact: Array<{
-    angle: number;
-    damageMultiplier: number;
-    width: number;
-  }>;
-}
-
-/**
- * Arena interface
- */
-export interface Arena {
-  id: string;
-  name: string;
-  description: string;
-  width: number;
-  height: number;
-  shape: "circle" | "square" | "hexagon" | "octagon";
-  theme: string;
-  gameMode: "player-vs-ai" | "player-vs-player" | "tournament";
-  gravity: number;
-  airResistance: number;
-  surfaceFriction: number;
-  difficulty: "easy" | "medium" | "hard" | "expert";
-}
-
-/**
  * Load beyblade data from Firestore
  */
 export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | null> {
@@ -83,7 +42,7 @@ export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | 
   }
 
   try {
-    const doc = await db.collection("beybladeStats").doc(beybladeId).get();
+    const doc = await db.collection(FIREBASE_COLLECTIONS.BEYBLADE_STATS).doc(beybladeId).get();
 
     if (!doc.exists) {
       console.error(`Beyblade not found: ${beybladeId}`);
@@ -100,21 +59,21 @@ export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | 
 /**
  * Load arena data from Firestore
  */
-export async function loadArena(arenaId: string): Promise<Arena | null> {
+export async function loadArena(arenaId: string): Promise<ArenaConfig | null> {
   if (!db) {
     console.error('Firebase not initialized');
     return null;
   }
 
   try {
-    const doc = await db.collection("arenas").doc(arenaId).get();
+    const doc = await db.collection(FIREBASE_COLLECTIONS.ARENAS).doc(arenaId).get();
 
     if (!doc.exists) {
       console.error(`Arena not found: ${arenaId}`);
       return null;
     }
 
-    return doc.data() as Arena;
+    return doc.data() as ArenaConfig;
   } catch (error) {
     console.error("Error loading arena:", error);
     return null;
@@ -131,7 +90,7 @@ export async function saveMatch(matchData: any): Promise<string | null> {
   }
 
   try {
-    const docRef = await db.collection("matches").add({
+    const docRef = await db.collection(FIREBASE_COLLECTIONS.MATCHES).add({
       ...matchData,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -158,7 +117,7 @@ export async function updatePlayerStats(
   }
 
   try {
-    const docRef = db.collection("player_stats").doc(userId);
+    const docRef = db.collection(FIREBASE_COLLECTIONS.PLAYER_STATS).doc(userId);
     await docRef.set(updates, { merge: true });
 
     console.log(`Player stats updated: ${userId}`);

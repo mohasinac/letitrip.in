@@ -14,6 +14,7 @@ import { verifyAdminSession } from '../_lib/auth/admin-auth';
 import { Timestamp } from "firebase-admin/firestore";
 import { AuthorizationError, ValidationError } from "../_lib/middleware/error-handler";
 import { BeybladeStats } from "@/types/beybladeStats";
+import { DATABASE_CONSTANTS } from "@/constants/app";
 
 const db = getAdminDb();
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type");
     const search = searchParams.get("search");
 
-    let query = db.collection("beybladeStats");
+    let query = db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS);
 
     // Filter by type if provided
     if (type && ["attack", "defense", "stamina", "balanced"].includes(type)) {
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
     const id = body.displayName.toLowerCase().replace(/\s+/g, "_");
 
     // Check if beyblade already exists
-    const existingDoc = await db.collection("beybladeStats").doc(id).get();
+    const existingDoc = await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).get();
     if (existingDoc.exists) {
       throw new ValidationError(`Beyblade with name '${body.displayName}' already exists`);
     }
@@ -147,7 +148,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Save to Firestore
-    await db.collection("beybladeStats").doc(id).set(newBeyblade);
+    await db.collection(DATABASE_CONSTANTS.COLLECTIONS.BEYBLADE_STATS).doc(id).set(newBeyblade);
 
     return NextResponse.json({
       success: true,

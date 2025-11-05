@@ -70,6 +70,7 @@ export const STORAGE_CONSTANTS = {
 // Database Collections
 export const DATABASE_CONSTANTS = {
   COLLECTIONS: {
+    // E-commerce
     USERS: "users",
     SESSIONS: "sessions",
     CATEGORIES: "categories",
@@ -86,6 +87,19 @@ export const DATABASE_CONSTANTS = {
     SALES: "sales",
     NOTIFICATIONS: "notifications",
     ALERTS: "alerts",
+    
+    // Game
+    BEYBLADE_STATS: "beyblade_stats",
+    ARENAS: "arenas",
+    MATCHES: "matches",
+    PLAYER_STATS: "player_stats",
+  },
+  STORAGE_BUCKETS: {
+    PRODUCTS: "products",
+    BEYBLADES: "beyblades",
+    ARENAS: "arenas",
+    AVATARS: "avatars",
+    GENERAL: "general",
   },
   BATCH_SIZE: 500,
   QUERY_TIMEOUT_MS: 30000,

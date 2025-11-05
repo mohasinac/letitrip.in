@@ -169,7 +169,7 @@ Located in: `src/types/arenaConfig.ts`
 
 ### Beyblades API
 
-- **Collection:** `beybladeStats`
+- **Collection:** `beyblade_stats`
 - **Endpoint:** `/api/beyblades`
 - **Returns:** `BeybladeStats[]` with proper type distribution system
 
@@ -228,7 +228,7 @@ function GameSetup() {
 
 To use these in the actual game:
 
-1. Ensure Firestore has documents in `beybladeStats` and `arenas` collections
+1. Ensure Firestore has documents in `beyblade_stats` and `arenas` collections
 2. Use the dropdown components in any game setup flow
 3. Pass selected IDs to the game engine
 4. Game server can fetch full `BeybladeStats` and `ArenaConfig` by ID

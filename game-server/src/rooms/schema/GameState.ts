@@ -24,20 +24,43 @@ export class Beyblade extends Schema {
   // Angular velocity (spin speed)
   @type("number") angularVelocity: number = 0;
 
-  // Stats
-  @type("number") health: number = 100;
-  @type("number") stamina: number = 100;
+  // Stats - Full beyblade properties
+  @type("string") type: string = "balanced"; // attack, defense, stamina, balanced
+  @type("string") spinDirection: string = "right"; // left, right
   @type("number") mass: number = 50;
   @type("number") radius: number = 4;
 
-  // Combat
+  // Combat stats - Dynamic values
+  @type("number") health: number = 100;
+  @type("number") stamina: number = 100;
+  @type("number") maxStamina: number = 100;
+
+  // Combat tracking
   @type("number") damageDealt: number = 0;
   @type("number") damageReceived: number = 0;
   @type("number") collisions: number = 0;
 
-  // State
+  // Special states
   @type("boolean") isActive: boolean = true;
   @type("boolean") isRingOut: boolean = false;
+  @type("boolean") isInvulnerable: boolean = false;
+  @type("number") invulnerabilityTimer: number = 0;
+
+  // Loop state
+  @type("boolean") inLoop: boolean = false;
+  @type("number") loopIndex: number = -1;
+  @type("number") loopEntryTime: number = 0;
+
+  // Water body state
+  @type("boolean") inWater: boolean = false;
+
+  // Pit state
+  @type("boolean") inPit: boolean = false;
+  @type("string") currentPitId: string = "";
+
+  // Special move cooldown
+  @type("number") specialCooldown: number = 0;
+  @type("number") attackCooldown: number = 0;
 }
 
 /**

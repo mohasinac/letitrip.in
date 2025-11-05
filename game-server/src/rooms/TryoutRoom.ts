@@ -2,6 +2,26 @@ import { Room, Client } from "colyseus";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena } from "../utils/firebase";
+import type { BeybladeStats, ArenaConfig } from "../types/shared";
+
+/**
+ * Player Input Interface
+ */
+interface PlayerInput {
+  // Movement
+  moveLeft?: boolean;
+  moveRight?: boolean;
+  
+  // Actions
+  attack?: boolean;
+  specialMove?: boolean;
+  
+  // Legacy direction input (for backward compatibility)
+  direction?: {
+    x: number;
+    y: number;
+  };
+}
 
 /**
  * Tryout Room - Solo practice mode
@@ -23,16 +43,16 @@ export class TryoutRoom extends Room<GameState> {
     this.state.status = "waiting";
 
     // Load arena from Firestore or use defaults
-    const arenaData = await loadArena(options.arenaId);
+    const arenaData: ArenaConfig | null = await loadArena(options.arenaId);
     if (arenaData) {
-      this.state.arena.id = arenaData.id;
+      this.state.arena.id = arenaData.id || options.arenaId;
       this.state.arena.name = arenaData.name;
       this.state.arena.width = arenaData.width;
       this.state.arena.height = arenaData.height;
       this.state.arena.shape = arenaData.shape;
-      this.state.arena.gravity = arenaData.gravity;
-      this.state.arena.airResistance = arenaData.airResistance;
-      this.state.arena.surfaceFriction = arenaData.surfaceFriction;
+      this.state.arena.gravity = arenaData.gravity || 0;
+      this.state.arena.airResistance = arenaData.airResistance || 0.01;
+      this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
       console.log(`✅ Loaded arena: ${arenaData.name}`);
     } else {
       // Use default arena if not found
@@ -79,7 +99,7 @@ export class TryoutRoom extends Room<GameState> {
     console.log(`Client ${client.sessionId} joined tryout room`);
 
     // Load beyblade from Firestore or use defaults
-    const beybladeData = await loadBeyblade(options.beybladeId);
+    const beybladeData: BeybladeStats | null = await loadBeyblade(options.beybladeId);
     
     // Create beyblade entity
     const beyblade = new Beyblade();
@@ -91,17 +111,28 @@ export class TryoutRoom extends Room<GameState> {
 
     // Set stats from database or use defaults
     if (beybladeData) {
+      beyblade.type = beybladeData.type;
+      beyblade.spinDirection = beybladeData.spinDirection;
       beyblade.mass = beybladeData.mass;
       beyblade.radius = beybladeData.radius;
+      
+      // Calculate max stamina from type distribution
+      const staminaPoints = beybladeData.typeDistribution.stamina;
+      beyblade.maxStamina = Math.ceil(1000 * (1 + staminaPoints * 0.01333));
+      beyblade.stamina = beyblade.maxStamina;
+      
       console.log(`✅ Loaded beyblade: ${beybladeData.displayName}`);
     } else {
       console.log(`⚠️ Beyblade not found: ${options.beybladeId}, using defaults`);
+      beyblade.type = "balanced";
+      beyblade.spinDirection = "right";
       beyblade.mass = 20;
       beyblade.radius = 40;
+      beyblade.maxStamina = 1000;
+      beyblade.stamina = 1000;
     }
     
     beyblade.health = 100;
-    beyblade.stamina = 100;
 
     // Spawn position (center of arena)
     beyblade.x = this.state.arena.width / 2;
@@ -147,27 +178,117 @@ export class TryoutRoom extends Room<GameState> {
   }
 
   /**
-   * Handle player input
+   * Handle player input - NEW CONTROLS
    */
-  private handleInput(client: Client, message: any) {
+  private handleInput(client: Client, message: PlayerInput) {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive) return;
 
-    // Apply force based on input direction
-    const { direction } = message;
-    if (direction && (direction.x !== 0 || direction.y !== 0)) {
-      // Normalize direction
-      const magnitude = Math.sqrt(direction.x ** 2 + direction.y ** 2);
-      const normalizedX = direction.x / magnitude;
-      const normalizedY = direction.y / magnitude;
+    const forceMagnitude = 0.001 * beyblade.mass;
 
-      // Apply force (scaled by mass)
-      const forceMagnitude = 0.001 * beyblade.mass;
+    // Move Left - Strafe left (perpendicular to current direction)
+    if (message.moveLeft) {
+      const perpX = -Math.sin(beyblade.rotation);
+      const perpY = Math.cos(beyblade.rotation);
+      this.physics.applyForce(
+        beyblade.id,
+        perpX * forceMagnitude * 1.5,
+        perpY * forceMagnitude * 1.5
+      );
+    }
+
+    // Move Right - Strafe right (perpendicular to current direction)
+    if (message.moveRight) {
+      const perpX = Math.sin(beyblade.rotation);
+      const perpY = -Math.cos(beyblade.rotation);
+      this.physics.applyForce(
+        beyblade.id,
+        perpX * forceMagnitude * 1.5,
+        perpY * forceMagnitude * 1.5
+      );
+    }
+
+    // Attack - Quick burst forward
+    if (message.attack && beyblade.attackCooldown <= 0) {
+      const forwardX = Math.cos(beyblade.rotation);
+      const forwardY = Math.sin(beyblade.rotation);
+      this.physics.applyForce(
+        beyblade.id,
+        forwardX * forceMagnitude * 3,
+        forwardY * forceMagnitude * 3
+      );
+      beyblade.attackCooldown = 0.5; // 0.5 second cooldown
+      this.broadcast("attack", { playerId: client.sessionId });
+    }
+
+    // Special Move - Type-specific ability
+    if (message.specialMove && beyblade.specialCooldown <= 0) {
+      this.handleSpecialMove(beyblade);
+      beyblade.specialCooldown = 3; // 3 second cooldown
+    }
+
+    // Legacy direction input (for backward compatibility)
+    if (message.direction && (message.direction.x !== 0 || message.direction.y !== 0)) {
+      const magnitude = Math.sqrt(message.direction.x ** 2 + message.direction.y ** 2);
+      const normalizedX = message.direction.x / magnitude;
+      const normalizedY = message.direction.y / magnitude;
+
       this.physics.applyForce(
         beyblade.id,
         normalizedX * forceMagnitude,
         normalizedY * forceMagnitude
       );
+    }
+  }
+
+  /**
+   * Handle type-specific special moves
+   */
+  private handleSpecialMove(beyblade: Beyblade) {
+    switch (beyblade.type) {
+      case "attack":
+        // Attack: Spin boost + damage aura
+        const currentState = this.physics.getBodyState(beyblade.id);
+        if (currentState) {
+          this.physics.setAngularVelocity(beyblade.id, currentState.angularVelocity * 2);
+        }
+        this.broadcast("special-move", {
+          playerId: beyblade.id,
+          type: "attack-boost",
+        });
+        break;
+
+      case "defense":
+        // Defense: Temporary invulnerability
+        beyblade.isInvulnerable = true;
+        beyblade.invulnerabilityTimer = 1.5;
+        this.broadcast("special-move", {
+          playerId: beyblade.id,
+          type: "defense-shield",
+        });
+        break;
+
+      case "stamina":
+        // Stamina: Recover stamina
+        beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.3);
+        this.broadcast("special-move", {
+          playerId: beyblade.id,
+          type: "stamina-recovery",
+        });
+        break;
+
+      case "balanced":
+        // Balanced: All stats boost
+        const balancedState = this.physics.getBodyState(beyblade.id);
+        if (balancedState) {
+          this.physics.setAngularVelocity(beyblade.id, balancedState.angularVelocity * 1.5);
+        }
+        beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.15);
+        this.broadcast("special-move", {
+          playerId: beyblade.id,
+          type: "balanced-boost",
+        });
+        break;
     }
   }
 
@@ -223,9 +344,25 @@ export class TryoutRoom extends Room<GameState> {
           beyblade.velocityY = physicsState.velocityY;
           beyblade.angularVelocity = physicsState.angularVelocity;
 
-          // Decrease stamina based on spin speed
+          // Decrease stamina based on spin speed (spin decay)
           beyblade.stamina -= Math.abs(physicsState.angularVelocity) * 0.01;
           beyblade.stamina = Math.max(0, beyblade.stamina);
+
+          // Update cooldowns
+          if (beyblade.attackCooldown > 0) {
+            beyblade.attackCooldown -= this.UPDATE_INTERVAL / 1000;
+          }
+          if (beyblade.specialCooldown > 0) {
+            beyblade.specialCooldown -= this.UPDATE_INTERVAL / 1000;
+          }
+
+          // Update invulnerability
+          if (beyblade.isInvulnerable) {
+            beyblade.invulnerabilityTimer -= this.UPDATE_INTERVAL / 1000;
+            if (beyblade.invulnerabilityTimer <= 0) {
+              beyblade.isInvulnerable = false;
+            }
+          }
 
           // Check ring out
           if (this.state.arena.shape === "circle") {
