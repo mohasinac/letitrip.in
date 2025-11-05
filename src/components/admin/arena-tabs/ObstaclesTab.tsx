@@ -269,7 +269,8 @@ export default function ObstaclesTab({ config, setConfig }: ObstaclesTabProps) {
                 {/* Health */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Health: {obstacle.indestructible ? "∞" : `${obstacle.health} HP`}
+                    Health:{" "}
+                    {obstacle.indestructible ? "∞" : `${obstacle.health} HP`}
                   </label>
                   <input
                     type="range"
@@ -288,7 +289,9 @@ export default function ObstaclesTab({ config, setConfig }: ObstaclesTabProps) {
                     disabled={obstacle.indestructible}
                   />
                   <div className="text-xs text-gray-400 mt-1">
-                    {obstacle.indestructible ? "Indestructible" : "Hits before destruction"}
+                    {obstacle.indestructible
+                      ? "Indestructible"
+                      : "Hits before destruction"}
                   </div>
                 </div>
 
@@ -402,15 +405,20 @@ export default function ObstaclesTab({ config, setConfig }: ObstaclesTabProps) {
           ℹ️ How Obstacles Work
         </h4>
         <ul className="text-xs text-gray-300 space-y-1">
-          <li>• Obstacles are theme-based hazards that damage beyblades on collision</li>
           <li>
-            • Destructible obstacles have health points and break after taking enough hits
+            • Obstacles are theme-based hazards that damage beyblades on
+            collision
+          </li>
+          <li>
+            • Destructible obstacles have health points and break after taking
+            enough hits
           </li>
           <li>
             • Indestructible obstacles are permanent and cannot be destroyed
           </li>
           <li>
-            • Colliding with obstacles damages your beyblade and causes knockback
+            • Colliding with obstacles damages your beyblade and causes
+            knockback
           </li>
           <li>• Higher damage and recoil make obstacles more dangerous</li>
           <li>• Use auto-place for quick random distribution</li>

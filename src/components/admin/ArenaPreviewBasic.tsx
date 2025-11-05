@@ -1769,21 +1769,25 @@ const TurretRenderer = ({
   const [currentRandomAttack, setCurrentRandomAttack] = React.useState<
     "beam" | "periodic" | "aoe" | "boomerang" | null
   >(null);
-  const [projectiles, setProjectiles] = React.useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    targetX: number;
-    targetY: number;
-    progress: number;
-    type: "bullet" | "missile";
-  }>>([]);
-  const [missileExplosions, setMissileExplosions] = React.useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    progress: number;
-  }>>([]);
+  const [projectiles, setProjectiles] = React.useState<
+    Array<{
+      id: number;
+      x: number;
+      y: number;
+      targetX: number;
+      targetY: number;
+      progress: number;
+      type: "bullet" | "missile";
+    }>
+  >([]);
+  const [missileExplosions, setMissileExplosions] = React.useState<
+    Array<{
+      id: number;
+      x: number;
+      y: number;
+      progress: number;
+    }>
+  >([]);
   const [beamActive, setBeamActive] = React.useState(false);
   const [beamAngle, setBeamAngle] = React.useState(0);
 
@@ -1804,9 +1808,10 @@ const TurretRenderer = ({
   const color = turret.color || "#ff6b6b";
 
   // Determine effective attack type (for random attacks)
-  const effectiveAttackType = turret.attackType === "random" && currentRandomAttack
-    ? currentRandomAttack
-    : turret.attackType;
+  const effectiveAttackType =
+    turret.attackType === "random" && currentRandomAttack
+      ? currentRandomAttack
+      : turret.attackType;
 
   // Random attack selector - chooses one of the other attack types
   React.useEffect(() => {
@@ -1820,7 +1825,9 @@ const TurretRenderer = ({
     ];
 
     // Initially select a random attack
-    setCurrentRandomAttack(attackTypes[Math.floor(Math.random() * attackTypes.length)]);
+    setCurrentRandomAttack(
+      attackTypes[Math.floor(Math.random() * attackTypes.length)]
+    );
   }, [turret.attackType]);
 
   // Main attack animation loop
@@ -1842,7 +1849,8 @@ const TurretRenderer = ({
         const baseAngle = Math.random() * Math.PI * 2;
 
         for (let i = 0; i < bulletCount; i++) {
-          const angle = baseAngle + (spreadAngle * (i - bulletCount / 2)) / bulletCount;
+          const angle =
+            baseAngle + (spreadAngle * (i - bulletCount / 2)) / bulletCount;
           const distance = rangeRadius * (0.8 + Math.random() * 0.2);
           const targetX = x + Math.cos(angle) * distance;
           const targetY = y + Math.sin(angle) * distance;
@@ -1862,7 +1870,6 @@ const TurretRenderer = ({
 
         // Attack finishes when last bullet completes (1 second)
         setTimeout(() => setIsAttacking(false), 1000);
-
       } else if (attackType === "aoe") {
         // Fire missile to random location
         const angle = Math.random() * Math.PI * 2;
@@ -1894,13 +1901,14 @@ const TurretRenderer = ({
 
           // Remove explosion after animation
           setTimeout(() => {
-            setMissileExplosions((prev) => prev.filter((e) => e.id !== explosion.id));
+            setMissileExplosions((prev) =>
+              prev.filter((e) => e.id !== explosion.id)
+            );
           }, 800);
         }, 800); // Missile travel time
 
         // Attack finishes after explosion
         setTimeout(() => setIsAttacking(false), 1600);
-
       } else if (attackType === "beam") {
         // Activate beam for duration
         const beamDuration = (turret.beamDuration || 2) * 1000;
@@ -1917,12 +1925,10 @@ const TurretRenderer = ({
             setIsAttacking(false);
           }, beamDuration);
         }, chargePeriod);
-
       } else if (attackType === "boomerang") {
         // Boomerang attack completes a full orbit
         const returnTime = (turret.boomerangReturnTime || 3) * 1000;
         setTimeout(() => setIsAttacking(false), returnTime);
-
       } else {
         // Fallback for any other type
         setIsAttacking(false);
@@ -1937,14 +1943,17 @@ const TurretRenderer = ({
           "boomerang",
         ];
         const maxDelay = Math.max(
-          (turret.beamDuration || 2) * 1000 + (turret.beamChargePeriod || 1) * 1000,
+          (turret.beamDuration || 2) * 1000 +
+            (turret.beamChargePeriod || 1) * 1000,
           1600, // AOE total time
           (turret.boomerangReturnTime || 3) * 1000,
           1000 // Periodic bullets
         );
 
         setTimeout(() => {
-          setCurrentRandomAttack(attackTypes[Math.floor(Math.random() * attackTypes.length)]);
+          setCurrentRandomAttack(
+            attackTypes[Math.floor(Math.random() * attackTypes.length)]
+          );
         }, maxDelay);
       }
     };
@@ -1975,7 +1984,10 @@ const TurretRenderer = ({
       setProjectiles((prev) => {
         const updated = prev.map((p) => ({
           ...p,
-          progress: Math.min(p.progress + (p.type === "missile" ? 0.03 : 0.05), 1),
+          progress: Math.min(
+            p.progress + (p.type === "missile" ? 0.03 : 0.05),
+            1
+          ),
         }));
 
         // Remove completed projectiles
@@ -2035,7 +2047,8 @@ const TurretRenderer = ({
       />
 
       {/* Turret Barrel/Direction Indicator */}
-      {(effectiveAttackType === "beam" || effectiveAttackType === "periodic") && (
+      {(effectiveAttackType === "beam" ||
+        effectiveAttackType === "periodic") && (
         <g>
           <line
             x1={x}
@@ -2096,7 +2109,7 @@ const TurretRenderer = ({
       {projectiles.map((proj) => {
         const currentX = proj.x + (proj.targetX - proj.x) * proj.progress;
         const currentY = proj.y + (proj.targetY - proj.y) * proj.progress;
-        
+
         if (proj.type === "missile") {
           // Missile rendering - larger, with flame trail
           const missileSize = radius * 0.5;
@@ -2181,7 +2194,7 @@ const TurretRenderer = ({
         const aoeRadius = (turret.aoeRadius || 100) * scale;
         const damageRadius = (turret.aoeDamageRadius || 50) * scale;
         const explosionScale = 1 + explosion.progress * 2;
-        
+
         return (
           <g key={explosion.id} opacity={1 - explosion.progress}>
             {/* Outer blast wave */}
@@ -2204,7 +2217,7 @@ const TurretRenderer = ({
             <circle
               cx={explosion.x}
               cy={explosion.y}
-              r={(damageRadius * 0.5) * explosionScale}
+              r={damageRadius * 0.5 * explosionScale}
               fill="#ffff00"
               opacity={0.8 * (1 - explosion.progress)}
             />
@@ -2223,31 +2236,27 @@ const TurretRenderer = ({
       })}
 
       {/* AOE Charge Indicator */}
-      {effectiveAttackType === "aoe" && isAttacking && projectiles.some(p => p.type === "missile" && p.progress < 0.3) && (
-        <circle
-          cx={x}
-          cy={y}
-          r={radius * 1.5}
-          fill={color}
-          opacity={0.3}
-        >
-          <animate
-            attributeName="r"
-            values={`${radius};${radius * 2.5};${radius}`}
-            dur="0.5s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0.5;0.2;0.5"
-            dur="0.5s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      )}
+      {effectiveAttackType === "aoe" &&
+        isAttacking &&
+        projectiles.some((p) => p.type === "missile" && p.progress < 0.3) && (
+          <circle cx={x} cy={y} r={radius * 1.5} fill={color} opacity={0.3}>
+            <animate
+              attributeName="r"
+              values={`${radius};${radius * 2.5};${radius}`}
+              dur="0.5s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.5;0.2;0.5"
+              dur="0.5s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        )}
 
       {/* Boomerang Orbit */}
-      {(effectiveAttackType === "boomerang" && isAttacking) && (
+      {effectiveAttackType === "boomerang" && isAttacking && (
         <g>
           <circle
             cx={x + rangeRadius * 0.6}
@@ -2414,7 +2423,9 @@ const TurretRenderer = ({
         stroke="#3b82f6"
         strokeWidth={1}
         opacity={0.3}
-        strokeDasharray={`${(animationPhase / 4) * (2 * Math.PI * (radius + 8))},${2 * Math.PI * (radius + 8)}`}
+        strokeDasharray={`${
+          (animationPhase / 4) * (2 * Math.PI * (radius + 8))
+        },${2 * Math.PI * (radius + 8)}`}
       />
     </g>
   );

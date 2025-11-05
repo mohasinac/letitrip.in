@@ -6,7 +6,11 @@
 "use client";
 
 import React from "react";
-import { ArenaConfig, TurretConfig, TurretAttackType } from "@/types/arenaConfigNew";
+import {
+  ArenaConfig,
+  TurretConfig,
+  TurretAttackType,
+} from "@/types/arenaConfigNew";
 
 const ARENA_RESOLUTION = 1080;
 
@@ -167,7 +171,9 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
       <div className="bg-gray-800 rounded-lg p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-semibold">Turrets ({turrets.length}/8)</h2>
+            <h2 className="text-xl font-semibold">
+              Turrets ({turrets.length}/8)
+            </h2>
             <p className="text-sm text-gray-400 mt-1">
               Defensive structures that attack beyblades
             </p>
@@ -301,7 +307,11 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
                       type="range"
                       value={turret.radius}
                       onChange={(e) =>
-                        handleUpdateTurret(idx, "radius", parseFloat(e.target.value))
+                        handleUpdateTurret(
+                          idx,
+                          "radius",
+                          parseFloat(e.target.value)
+                        )
                       }
                       min={15}
                       max={40}
@@ -313,13 +323,18 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
                   {/* Health */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Health: {turret.indestructible ? "∞" : `${turret.health} HP`}
+                      Health:{" "}
+                      {turret.indestructible ? "∞" : `${turret.health} HP`}
                     </label>
                     <input
                       type="range"
                       value={turret.health}
                       onChange={(e) =>
-                        handleUpdateTurret(idx, "health", parseInt(e.target.value))
+                        handleUpdateTurret(
+                          idx,
+                          "health",
+                          parseInt(e.target.value)
+                        )
                       }
                       min={500}
                       max={1000}
@@ -336,7 +351,11 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
                         type="checkbox"
                         checked={turret.indestructible || false}
                         onChange={(e) =>
-                          handleUpdateTurret(idx, "indestructible", e.target.checked)
+                          handleUpdateTurret(
+                            idx,
+                            "indestructible",
+                            e.target.checked
+                          )
                         }
                         className="w-5 h-5 cursor-pointer"
                         id={`turret-indestructible-${idx}`}
@@ -345,7 +364,8 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
                         htmlFor={`turret-indestructible-${idx}`}
                         className="text-sm cursor-pointer font-medium"
                       >
-                        Indestructible (Cannot be destroyed by players or other turrets)
+                        Indestructible (Cannot be destroyed by players or other
+                        turrets)
                       </label>
                     </div>
                   </div>
@@ -627,18 +647,30 @@ export default function TurretsTab({ config, setConfig }: TurretsTabProps) {
         </h4>
         <ul className="text-xs text-gray-300 space-y-1">
           <li>• Turrets are automated defenses that attack beyblades</li>
-          <li>• Destructible turrets (500-1000 HP) can be destroyed by players or other turrets</li>
-          <li>• Indestructible turrets are permanent and cannot be destroyed</li>
+          <li>
+            • Destructible turrets (500-1000 HP) can be destroyed by players or
+            other turrets
+          </li>
+          <li>
+            • Indestructible turrets are permanent and cannot be destroyed
+          </li>
           <li>• Different attack types have different behaviors and dangers</li>
-          <li>• Players can avoid projectiles and position turrets to attack each other</li>
-          <li>• High health ensures players must strategically deal with turrets</li>
+          <li>
+            • Players can avoid projectiles and position turrets to attack each
+            other
+          </li>
+          <li>
+            • High health ensures players must strategically deal with turrets
+          </li>
         </ul>
         <div className="mt-3 pt-3 border-t border-blue-700">
           <h5 className="text-xs font-semibold mb-2">Attack Types:</h5>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {Object.entries(ATTACK_TYPE_INFO).map(([type, info]) => (
               <div key={type}>
-                <span className="font-semibold">{info.icon} {info.name}:</span>
+                <span className="font-semibold">
+                  {info.icon} {info.name}:
+                </span>
                 <p className="text-gray-400">{info.description}</p>
               </div>
             ))}

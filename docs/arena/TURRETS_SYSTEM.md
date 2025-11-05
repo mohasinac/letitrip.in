@@ -18,19 +18,22 @@ Turrets are automated defensive structures that actively attack beyblades in the
 ## Attack Types
 
 ### 1. 🎲 Random Attack
+
 - **Description**: Shoots projectiles in random directions
 - **Properties**: Damage, range, cooldown
 - **Strategy**: Unpredictable threat, forces constant movement
 
 ### 2. ⚡ Beam Attack
+
 - **Description**: Continuous beam with charge period
-- **Properties**: 
+- **Properties**:
   - Beam Duration: 1-5 seconds
   - Charge Period: 0.5-3 seconds
   - Damage, range, cooldown
 - **Strategy**: Predictable charge gives warning, sustained damage during beam
 
 ### 3. 🔫 Periodic Bullets
+
 - **Description**: Shoots bullets periodically at regular intervals
 - **Properties**:
   - Bullet Speed: 100-500 px/s
@@ -39,6 +42,7 @@ Turrets are automated defensive structures that actively attack beyblades in the
 - **Strategy**: Avoidable projectiles, multiple bullets increase hit chance
 
 ### 4. 💣 AOE Missile
+
 - **Description**: Area of effect blast at target location
 - **Properties**:
   - AOE Radius: 50-150px (blast area)
@@ -47,6 +51,7 @@ Turrets are automated defensive structures that actively attack beyblades in the
 - **Strategy**: Large damage zone, affects multiple targets
 
 ### 5. 🪃 Boomerang
+
 - **Description**: Throws boomerang that returns to turret
 - **Properties**:
   - Return Time: 2-5 seconds
@@ -58,6 +63,7 @@ Turrets are automated defensive structures that actively attack beyblades in the
 ## Turret Configuration
 
 ### Common Properties
+
 - **Position**: X/Y coordinates (center-relative, ±540px max)
 - **Size**: 15-40px radius
 - **Health**: 500-1000 HP
@@ -65,12 +71,14 @@ Turrets are automated defensive structures that actively attack beyblades in the
 - **Color**: Custom or theme-based
 
 ### Attack Properties
+
 - **Attack Type**: Dropdown selector (5 types)
 - **Attack Damage**: 10-50 per hit
 - **Attack Range**: 100-400px
 - **Attack Cooldown**: 1-10 seconds between attacks
 
 ### Type-Specific Properties
+
 Each attack type has additional controls based on its mechanics (see Attack Types section above).
 
 ---
@@ -78,15 +86,18 @@ Each attack type has additional controls based on its mechanics (see Attack Type
 ## Spawn Options
 
 ### 1. Spawn at Center
+
 - Places single turret at arena center (0, 0)
 - Useful for central defensive point
 
 ### 2. Manual Placement
+
 - Add turrets at specific positions
 - Full control over position and properties
 - Adjust X/Y with sliders (-490 to +490px)
 
 ### 3. Shape-Based Generation
+
 - Generate multiple turrets evenly around arena
 - Options: 2, 3, 4, 6, or 8 turrets
 - Places at 35% from center (80% of arena radius)
@@ -97,16 +108,18 @@ Each attack type has additional controls based on its mechanics (see Attack Type
 ## Destructible vs Indestructible
 
 ### Destructible Turrets
+
 - **Health**: 500-1000 HP
 - **Vulnerable to**: Players AND other turrets
 - **Strategy**: Can be eliminated tactically
 - **Visual**: Dashed health ring
-- **Use Cases**: 
+- **Use Cases**:
   - Temporary defenses
   - Strategic positioning puzzles
   - Resource management challenges
 
 ### Indestructible Turrets
+
 - **Health**: Infinite (∞)
 - **Vulnerable to**: Nothing
 - **Strategy**: Must be avoided, cannot be destroyed
@@ -123,12 +136,14 @@ Each attack type has additional controls based on its mechanics (see Attack Type
 Destructible turrets can damage each other, enabling strategic positioning:
 
 ### Tactical Considerations
+
 1. **Crossfire Zones**: Position turrets to accidentally hit each other
 2. **Player-Triggered**: Players can bait turrets into attacking each other
 3. **Defensive Cascades**: Destroying one turret may expose another
 4. **Attack Range Overlap**: Turrets with overlapping ranges may conflict
 
 ### Example Scenarios
+
 - **Beam + Periodic**: Beam turret charges while periodic fires, bullets may hit beam turret
 - **AOE + Clustered**: AOE blast may damage nearby turrets
 - **Random + Random**: Unpredictable crossfire between random attackers
@@ -142,6 +157,7 @@ Destructible turrets can damage each other, enabling strategic positioning:
 All turrets include visual animations to show they are active and dangerous:
 
 #### Common Animations
+
 - **Pulsing Attack Range**: Range indicator gently pulses to show active zone
 - **Cooldown Indicator**: Circular progress indicator around turret showing cooldown progress
 - **Health Ring Glow**: Indestructible turrets have a pulsing yellow glow
@@ -149,6 +165,7 @@ All turrets include visual animations to show they are active and dangerous:
 #### Attack Type Specific Animations
 
 **🎲 Random Attack**
+
 - Rotating scanning line that sweeps around the turret
 - **Cycles through other attack types**: beam, periodic, AOE, boomerang
 - Shows current attack type icon on scanning line
@@ -157,6 +174,7 @@ All turrets include visual animations to show they are active and dangerous:
 - Creates unpredictable threat patterns
 
 **⚡ Beam Attack**
+
 - Rotating barrel indicator showing aim direction
 - Charging phase before beam activates
 - Continuous beam fired at random angle
@@ -166,6 +184,7 @@ All turrets include visual animations to show they are active and dangerous:
 - Beam duration: 1-5s (configurable)
 
 **🔫 Periodic Bullets**
+
 - Rotating barrel showing current aim
 - Multiple projectile bullets (1-5 configurable)
 - Bullets spread in a cone pattern
@@ -174,6 +193,7 @@ All turrets include visual animations to show they are active and dangerous:
 - Bullet speed: 100-500 px/s (configurable)
 
 **💣 AOE Missile**
+
 - **Missile Launch**: Large projectile with flame trail
 - Fires to random location within range
 - Slower travel speed than bullets (more dramatic)
@@ -186,6 +206,7 @@ All turrets include visual animations to show they are active and dangerous:
 - Waits for explosion to complete before next attack
 
 **🪃 Boomerang**
+
 - Orbiting boomerang projectile
 - Follows circular path around turret
 - Single rotation per attack (not continuous)
@@ -198,6 +219,7 @@ All turrets include visual animations to show they are active and dangerous:
 When there are no beyblades in the arena (preview mode), turrets shoot randomly:
 
 1. **Random Attack**: Cycles through all other attack types
+
    - Beam: Fires beam at random angle
    - Periodic: Fires bullet bursts at random angles
    - AOE: Launches missiles to random locations with explosions
@@ -213,30 +235,28 @@ When there are no beyblades in the arena (preview mode), turrets shoot randomly:
 7. **Attack Sequencing**: Each attack fully completes before next begins
 
 #### Projectile Physics
+
 - **Bullets**: Fast projectiles with pulsing size
   - Smooth motion from turret to target
   - Fading opacity as projectile travels
   - Expanding/contracting size for pulse effect
   - Trail effect shows projectile path
   - Auto-removed on impact or timeout
-  
 - **Missiles**: Slower, more dramatic projectiles
   - Larger size (2x bullets)
   - Flame trail (orange/yellow layers)
   - Warhead glow (pulsing yellow)
   - Explosion on impact:
-    * Outer blast wave (configurable AOE radius)
-    * Middle damage zone (configurable damage radius)  
-    * Inner core flash (yellow)
-    * Initial white flash (first 30% of explosion)
-    * Expands and fades over 0.8 seconds
-  
+    - Outer blast wave (configurable AOE radius)
+    - Middle damage zone (configurable damage radius)
+    - Inner core flash (yellow)
+    - Initial white flash (first 30% of explosion)
+    - Expands and fades over 0.8 seconds
 - **Beams**: Continuous laser attacks
   - Core beam (white, pulsing)
   - Outer glow (turret color)
   - Fixed at random angle per attack
   - Duration: 1-5 seconds
-  
 - **Boomerangs**: Orbital projectiles
   - Single orbit per attack (not continuous)
   - Circular path around turret
@@ -248,27 +268,33 @@ When there are no beyblades in the arena (preview mode), turrets shoot randomly:
 ## Visual Indicators (Preview)
 
 ### Turret Base
+
 - Circle filled with turret color (40% opacity)
 - Stroke with full color (2px width)
 
 ### Health Ring
+
 - **Destructible**: Dashed ring (1.5px, 60% opacity)
 - **Indestructible**: Solid yellow ring (2px, 90% opacity)
 
 ### Attack Range
+
 - Dashed circle showing attack range
 - 20% opacity in turret color
 - 5px dash pattern
 
 ### Attack Type Icon
+
 - Large emoji centered in turret (1.2x radius)
 - Shows attack behavior at a glance
 
 ### Health Display
+
 - **Destructible**: Green text above turret (e.g., "750 HP")
 - **Indestructible**: Yellow infinity symbol (∞)
 
 ### Damage Display
+
 - Red text below turret with sword icon (⚔️)
 - Shows attack damage value
 
@@ -277,9 +303,9 @@ When there are no beyblades in the arena (preview mode), turrets shoot randomly:
 ## Type Definitions
 
 ```typescript
-export type TurretAttackType = 
+export type TurretAttackType =
   | "random"
-  | "beam" 
+  | "beam"
   | "periodic"
   | "aoe"
   | "boomerang";
@@ -291,13 +317,13 @@ export interface TurretConfig {
   radius: number;
   health: number; // 500-1000
   indestructible?: boolean;
-  
+
   // Attack configuration
   attackType: TurretAttackType;
   attackDamage: number; // 10-50
   attackRange: number; // 100-400px
   attackCooldown: number; // 1-10 seconds
-  
+
   // Type-specific properties
   beamDuration?: number; // 1-5s (beam only)
   beamChargePeriod?: number; // 0.5-3s (beam only)
@@ -306,7 +332,7 @@ export interface TurretConfig {
   aoeRadius?: number; // 50-150px (aoe only)
   aoeDamageRadius?: number; // 20-100px (aoe only)
   boomerangReturnTime?: number; // 2-5s (boomerang only)
-  
+
   color?: string;
   autoPlaced?: boolean;
 }
@@ -317,6 +343,7 @@ export interface TurretConfig {
 ## Files Modified
 
 ### Created
+
 - `src/components/admin/arena-tabs/TurretsTab.tsx` (~600 lines)
   - Spawn options UI
   - Attack type selector
@@ -324,12 +351,15 @@ export interface TurretConfig {
   - Type-specific property controls
 
 ### Updated
+
 - `src/types/arenaConfigNew.ts`
+
   - Added `TurretAttackType` type
   - Added `TurretConfig` interface
   - Added `turrets?: TurretConfig[]` to `ArenaConfig`
 
 - `src/components/admin/ArenaPreviewBasic.tsx`
+
   - Added `TurretRenderer` component
   - Renders turrets with attack range, health ring, icons
 
@@ -344,6 +374,7 @@ export interface TurretConfig {
 ## Design Philosophy
 
 ### Balance Considerations
+
 1. **High Health (500-1000)**: Prevents instant elimination, requires strategic engagement
 2. **Attack Cooldowns**: Gives players windows to act safely
 3. **Attack Ranges**: Limited to prevent unavoidable scenarios
@@ -351,12 +382,14 @@ export interface TurretConfig {
 5. **Inter-Turret Combat**: Rewards positioning and baiting strategies
 
 ### Gameplay Impact
+
 - **Increased Complexity**: Players juggle battle + turret threats
 - **Strategic Depth**: Turret positioning affects battle flow
 - **Risk/Reward**: Destructible turrets can be eliminated for safer zones
 - **Skill Expression**: Dodging projectiles, timing movements, baiting attacks
 
 ### Arena Design Options
+
 - **Light Defense**: 1-2 turrets with low damage, high cooldown
 - **Heavy Defense**: 6-8 turrets with overlapping ranges
 - **Puzzle Arena**: Strategic turret positioning for inter-turret combat
@@ -386,8 +419,9 @@ export interface TurretConfig {
 ## Future Enhancements
 
 ### Potential Additions
+
 1. **Attack Animation Preview**: Show projectile paths in preview
-2. **Turret Targeting Modes**: 
+2. **Turret Targeting Modes**:
    - Closest target
    - Lowest health target
    - Random target
@@ -404,6 +438,7 @@ export interface TurretConfig {
 6. **Turret Networks**: Linked turrets with synchronized attacks
 
 ### Performance Considerations
+
 - Limit to 8 turrets to prevent visual clutter
 - Attack calculations happen server-side (game-server)
 - Preview only shows static visualization
