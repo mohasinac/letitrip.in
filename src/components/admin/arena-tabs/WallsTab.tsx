@@ -146,7 +146,9 @@ export default function WallsTab({
             {currentEdge.walls.length === 0 ? (
               <div className="text-center py-8 text-gray-400">
                 <p className="text-lg">No walls on this edge</p>
-                <p className="text-sm mt-2">This edge is a complete exit zone</p>
+                <p className="text-sm mt-2">
+                  This edge is a complete exit zone
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -307,8 +309,7 @@ export default function WallsTab({
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Spike Damage Multiplier:{" "}
-                  {config.wall.spikeDamageMultiplier}x
+                  Spike Damage Multiplier: {config.wall.spikeDamageMultiplier}x
                 </label>
                 <input
                   type="range"
@@ -408,9 +409,7 @@ export default function WallsTab({
 
           {/* Collision Settings */}
           <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Collision Properties
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Collision Properties</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">

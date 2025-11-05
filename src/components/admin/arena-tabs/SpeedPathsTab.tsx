@@ -335,8 +335,8 @@ export default function SpeedPathsTab({
                             value={cp.target}
                             onChange={(e) => {
                               const newSpeedPaths = [...config.speedPaths];
-                              newSpeedPaths[idx].chargePoints![cpIdx].target =
-                                e.target.value as "center" | "opponent";
+                              newSpeedPaths[idx].chargePoints![cpIdx].target = e
+                                .target.value as "center" | "opponent";
                               setConfig({
                                 ...config,
                                 speedPaths: newSpeedPaths,

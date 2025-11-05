@@ -16,6 +16,8 @@ import {
   PortalConfig,
   PitConfig,
   ARENA_RESOLUTION,
+  OBSTACLE_ICONS,
+  ObstacleConfig,
 } from "@/types/arenaConfigNew";
 import { generateShapePath } from "@/utils/pathGeneration";
 import SpeedPathRenderer from "@/components/arena/renderers/SpeedPathRenderer";
@@ -480,6 +482,19 @@ export default function ArenaPreviewBasic({
                 pit={pit}
                 scale={scale}
                 theme={arena.theme}
+                centerX={centerX}
+                centerY={centerY}
+              />
+            </g>
+          ))}
+
+          {/* Obstacles - Render after pits but before walls */}
+          {arena.obstacles?.map((obstacle, idx) => (
+            <g key={obstacle.id || idx}>
+              <ObstacleRenderer
+                obstacle={obstacle}
+                theme={arena.theme}
+                scale={scale}
                 centerX={centerX}
                 centerY={centerY}
               />
@@ -1623,4 +1638,101 @@ function getEdgeExits(edgeConfig: any, v1: any, v2: any, edgeLength: number) {
     });
   }
   return exits;
+}
+
+// ============================================================================
+// OBSTACLE RENDERER
+// ============================================================================
+
+function ObstacleRenderer({
+  obstacle,
+  theme,
+  scale,
+  centerX,
+  centerY,
+}: {
+  obstacle: ObstacleConfig;
+  theme: ArenaTheme;
+  scale: number;
+  centerX: number;
+  centerY: number;
+}) {
+  const obstacleIcon = OBSTACLE_ICONS[theme] || "🔷";
+
+  // Scale the obstacle position and size
+  const scaledX = centerX + obstacle.x * scale;
+  const scaledY = centerY + obstacle.y * scale;
+  const scaledRadius = obstacle.radius * scale;
+
+  // Get theme color or use custom color
+  const color = obstacle.color || getThemeColor(theme, 0.8);
+
+  return (
+    <g>
+      {/* Obstacle circle/collision area */}
+      <circle
+        cx={scaledX}
+        cy={scaledY}
+        r={scaledRadius}
+        fill={color}
+        fillOpacity={0.3}
+        stroke={color}
+        strokeWidth={2 * scale}
+        strokeOpacity={0.8}
+      />
+
+      {/* Health indicator ring - only show for destructible obstacles */}
+      {!obstacle.indestructible && (
+        <circle
+          cx={scaledX}
+          cy={scaledY}
+          r={scaledRadius + 3 * scale}
+          fill="none"
+          stroke={color}
+          strokeWidth={1 * scale}
+          strokeOpacity={0.5}
+          strokeDasharray={`${(obstacle.health / 5) * 100}, 100`}
+        />
+      )}
+
+      {/* Indestructible indicator - thick solid ring */}
+      {obstacle.indestructible && (
+        <circle
+          cx={scaledX}
+          cy={scaledY}
+          r={scaledRadius + 3 * scale}
+          fill="none"
+          stroke={color}
+          strokeWidth={2 * scale}
+          strokeOpacity={0.9}
+        />
+      )}
+
+      {/* Icon text - centered */}
+      <text
+        x={scaledX}
+        y={scaledY}
+        fontSize={scaledRadius * 1.5}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill="white"
+        style={{ userSelect: "none", pointerEvents: "none" }}
+      >
+        {obstacleIcon}
+      </text>
+
+      {/* Damage indicator (small text below) */}
+      <text
+        x={scaledX}
+        y={scaledY + scaledRadius + 8 * scale}
+        fontSize={8 * scale}
+        textAnchor="middle"
+        fill="rgba(255, 100, 100, 0.8)"
+        fontWeight="bold"
+        style={{ userSelect: "none", pointerEvents: "none" }}
+      >
+        {obstacle.damage}
+      </text>
+    </g>
+  );
 }

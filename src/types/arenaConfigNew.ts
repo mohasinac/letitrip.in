@@ -431,12 +431,43 @@ export interface WallConfig {
 }
 
 // ============================================================================
-// ARENA CONFIGURATION
+// OBSTACLES CONFIGURATION
 // ============================================================================
 
 /**
- * Complete Arena Configuration
+ * Obstacle Icon Mapping by Theme
  */
+export const OBSTACLE_ICONS = {
+  metrocity: "🏢", // Skyscrapers
+  forest: "🌲", // Trees
+  sea: "⚓", // Anchors
+  ocean: "⚓", // Anchors
+  prehistoric: "🦴", // Bones
+  futuristic: "👽", // Aliens
+  mountains: "🗻", // Mountains
+  grasslands: "🌾", // Grass/crops
+  safari: "🌴", // Palm trees
+  desert: "🌵", // Cactus
+  riverbank: "🪨", // Rocks
+} as const;
+
+/**
+ * Obstacle Configuration
+ * Theme-based destructible obstacles that damage beyblades on collision
+ */
+export interface ObstacleConfig {
+  id?: number;
+  x: number; // X position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
+  y: number; // Y position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
+  radius: number; // Size in pixels (10-50px)
+  health: number; // Hit points before destruction (1-5) - ignored if indestructible
+  damage: number; // Damage dealt on collision (5-30)
+  recoilDistance: number; // Knockback distance in pixels (0-100)
+  indestructible?: boolean; // If true, obstacle cannot be destroyed (ignores health)
+  color?: string; // Optional custom color (defaults to theme color)
+  autoPlaced?: boolean; // Was this obstacle auto-placed?
+}
+
 export interface ArenaConfig {
   // ===== BASIC PROPERTIES =====
   id?: string;
@@ -474,6 +505,9 @@ export interface ArenaConfig {
   
   // ===== PITS =====
   pits: PitConfig[]; // Pit hazards in arena (max 3)
+  
+  // ===== OBSTACLES =====
+  obstacles?: ObstacleConfig[]; // Destructible obstacles (max 10)
   
   // ===== METADATA =====
   createdAt?: string;
