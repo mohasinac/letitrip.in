@@ -22,7 +22,7 @@ export default function StadiumsV2Page() {
 
   const fetchArenas = async () => {
     try {
-      const response = await fetch("/api/arenas/v2");
+      const response = await fetch("/api/arenas");
       const data = await response.json();
 
       if (data.success) {
@@ -39,7 +39,7 @@ export default function StadiumsV2Page() {
     if (!confirm("Are you sure you want to delete this stadium?")) return;
 
     try {
-      const response = await fetch(`/api/arenas/v2/${id}`, {
+      const response = await fetch(`/api/arenas/${id}`, {
         method: "DELETE",
       });
 
@@ -76,11 +76,10 @@ export default function StadiumsV2Page() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Stadium Management (v2)
+                Stadium Management
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                New modular arena configuration system with improved
-                organization
+                Create and manage battle stadiums with advanced features
               </p>
             </div>
             <button

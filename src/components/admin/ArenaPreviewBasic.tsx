@@ -1,11 +1,12 @@
 /**
  * Basic Arena Preview Component
  * Renders: Name, Shape, Theme, Auto-Rotate, Walls with brick pattern, Exits with arrows
+ * With zoom controls for actual resolution viewing
  */
 
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ArenaConfig,
   ArenaShape,
@@ -25,20 +26,24 @@ interface ArenaPreviewBasicProps {
   arena: ArenaConfig;
   width?: number;
   height?: number;
+  showZoomControls?: boolean; // New prop for zoom controls
 }
 
 export default function ArenaPreviewBasic({
   arena,
   width = 400,
   height = 400,
+  showZoomControls = false,
 }: ArenaPreviewBasicProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const rotationRef = useRef<number>(0);
+  const [zoom, setZoom] = useState<number>(1); // Zoom level: 0.5 to 2
 
   // Calculate scale using 1080x1080 resolution approach
   // Scale to fit the shortest dimension of the display area
   const displaySize = Math.min(width, height);
-  const scale = displaySize / ARENA_RESOLUTION;
+  const baseScale = displaySize / ARENA_RESOLUTION;
+  const scale = baseScale * zoom; // Apply zoom multiplier
   const centerX = width / 2;
   const centerY = height / 2;
   const arenaRadius = (ARENA_RESOLUTION / 2) * scale;
@@ -114,7 +119,40 @@ export default function ArenaPreviewBasic({
   ]);
 
   return (
-    <div className="arena-preview-container">
+    <div className="arena-preview-container relative">
+      {/* Zoom Controls */}
+      {showZoomControls && (
+        <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 bg-gray-800 rounded-lg p-2 shadow-lg">
+          <button
+            onClick={() => setZoom(Math.min(2, zoom + 0.25))}
+            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold"
+            title="Zoom In"
+          >
+            +
+          </button>
+          <div className="text-white text-xs text-center font-mono">
+            {Math.round(zoom * 100)}%
+          </div>
+          <button
+            onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
+            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold"
+            title="Zoom Out"
+          >
+            −
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs"
+            title="Reset Zoom"
+          >
+            Reset
+          </button>
+          <div className="text-gray-400 text-xs text-center border-t border-gray-600 pt-2 mt-1">
+            {ARENA_RESOLUTION}×{ARENA_RESOLUTION}
+          </div>
+        </div>
+      )}
+      
       {/* Arena Info Header */}
       <div className="arena-info mb-4 p-4 bg-gray-800 rounded-lg">
         <h2 className="text-2xl font-bold text-white mb-2">{arena.name}</h2>
