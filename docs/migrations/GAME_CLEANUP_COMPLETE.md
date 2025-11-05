@@ -11,6 +11,7 @@ Successfully removed old client-side physics and collision code from the fronten
 ## 🗑️ Files Removed
 
 ### Physics Engine (src/lib/game/physics/)
+
 - ✅ **Deleted entire directory** - `src/lib/game/physics/`
   - `gamePhysics.ts` - Old client-side physics engine
   - `collision.ts` - Client-side collision detection
@@ -19,23 +20,28 @@ Successfully removed old client-side physics and collision code from the fronten
   - `index.ts` - Physics exports
 
 ### Utils (src/lib/game/utils/)
+
 - ✅ `collisionUtils.ts` - Client-side collision utilities
 - ✅ `beybladeUtils.ts` - Beyblade physics and movement
 
 ### Special Moves (src/lib/game/moves/)
+
 - ✅ `specialMovesManager.ts` - Client-side special move physics
 
 ### Duplicate Files (src/app/game/utils/)
+
 - ✅ `physicsCollision.ts` - Duplicate physics calculations
 - ✅ `collisionUtils.ts` - Duplicate collision detection
 - ✅ `gamePhysics.ts` - Duplicate physics wrapper
 - ✅ `beybladeUtils.ts` - Duplicate beyblade utilities
 
 ### Old Multiplayer
+
 - ✅ `server.js` - Old Socket.IO standalone server (ROOT)
 - ⚠️ `useMultiplayer.ts` - Not found (may have been deleted earlier)
 
 ### Duplicate Directories
+
 - ✅ `src/app/(frontend)/game/` - Removed entire duplicate directory
 
 ---
@@ -43,30 +49,36 @@ Successfully removed old client-side physics and collision code from the fronten
 ## ✅ Files Kept (Frontend)
 
 ### Game Hooks (`src/lib/game/hooks/`)
+
 - `index.ts` - Exports
 - `useArenas.ts` - Load arena data
 - `useBeyblades.ts` - Load beyblade data
 - `useGameState.ts` - Game state management (will be updated to use Colyseus)
 
 ### Rendering (`src/lib/game/rendering/`)
+
 - `index.ts` - Exports
 - `arenaRenderer.ts` - Canvas rendering for arenas
 - `beybladeRenderer.ts` - Canvas rendering for beyblades
 
 ### UI (`src/lib/game/ui/`)
+
 - `index.ts` - Exports
 - `floatingNumbers.ts` - Damage/heal number animations
 - `visualIndicators.ts` - Visual effects and indicators
 
 ### Special Moves (`src/lib/game/moves/`)
+
 - `index.ts` - Updated exports (removed physics)
 - `cinematicSpecialMoves.ts` - **Visual effects only** (no physics)
 
 ### Types (`src/lib/game/types/`)
+
 - `index.ts` - Exports
 - `game.ts` - TypeScript type definitions
 
 ### Utils (`src/lib/game/utils/`)
+
 - `index.ts` - **Empty now** (physics removed, note added)
 
 ---
@@ -74,15 +86,18 @@ Successfully removed old client-side physics and collision code from the fronten
 ## 📝 Updated Files
 
 ### `src/lib/game/index.ts`
+
 - ❌ Removed: `export * from "./physics"`
 - ❌ Removed: `export * from "./utils"`
 - ✅ Added note: Physics now handled server-side
 
 ### `src/lib/game/utils/index.ts`
+
 - ❌ Removed all physics exports
 - ✅ Added note: Physics moved to game-server
 
 ### `src/lib/game/moves/index.ts`
+
 - ❌ Removed: `specialMovesManager` export
 - ✅ Kept: `cinematicSpecialMoves` (visual effects only)
 - ✅ Added note: Server handles mechanics
@@ -92,6 +107,7 @@ Successfully removed old client-side physics and collision code from the fronten
 ## 🎯 New Architecture
 
 ### Server Authority (game-server/)
+
 ```
 game-server/
 ├── src/
@@ -106,6 +122,7 @@ game-server/
 ```
 
 **Server Handles:**
+
 - ✅ Physics simulation (Matter.js)
 - ✅ Collision detection
 - ✅ Damage calculations
@@ -115,6 +132,7 @@ game-server/
 - ✅ Game state synchronization
 
 ### Client Display (src/)
+
 ```
 src/lib/game/
 ├── hooks/                          ✅ React hooks
@@ -126,6 +144,7 @@ src/lib/game/
 ```
 
 **Client Handles:**
+
 - ✅ Rendering beyblades on canvas
 - ✅ Rendering arenas on canvas
 - ✅ Visual effects (special moves)
@@ -139,17 +158,20 @@ src/lib/game/
 ## 🔄 What Needs Updating
 
 ### 1. Game Components
+
 - [ ] Update `EnhancedBeybladeArena.tsx` to use Colyseus client
 - [ ] Remove local physics calculations
 - [ ] Connect to game-server WebSocket
 - [ ] Listen to server state updates
 
 ### 2. Game Hooks
+
 - [ ] `useGameState.ts` - Remove physics, use Colyseus state
 - [ ] Add `useColyseusClient.ts` - Connect to game server
 - [ ] Add `useGameRoom.ts` - Join/leave Colyseus rooms
 
 ### 3. Special Moves
+
 - [ ] Keep visual effects in `cinematicSpecialMoves.ts`
 - [ ] Send special move trigger to server
 - [ ] Receive and display server's move results
@@ -169,6 +191,7 @@ src/lib/game/
 ## 🧪 Testing Checklist
 
 After cleanup, verify:
+
 - [ ] Build completes without errors: `npm run build`
 - [ ] No broken imports or missing files
 - [ ] Test client can still render (without game server initially)

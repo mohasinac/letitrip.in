@@ -6,6 +6,9 @@
  * This library only exports client-side rendering, UI, and hooks
  */
 
+// Client (Colyseus)
+export * from "./client";
+
 // Hooks
 export * from "./hooks";
 
