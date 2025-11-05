@@ -25,16 +25,10 @@ import {
 //TODO: update to use the latest state with beys and arena coming from backend so now we pass that as well 
 interface UseGameStateOptions {
   onGameEnd?: (winner: GameBeyblade | null) => void;
-  gameMode?: "1p" | "2p";
-  multiplayerData?: {
-    playerNumber: number;
-    roomId: string;
-  };
-  onCollision?: (collisionData: any) => void;
 }
 
 export const useGameState = (options: UseGameStateOptions = {}) => {
-  const { onGameEnd, gameMode = "1p", multiplayerData, onCollision } = options;
+  const { onGameEnd } = options;
 
   const gameLoopRef = useRef<number>();
   const gameLoopFunctionRef = useRef<((time: number) => void) | null>(null);
@@ -62,22 +56,6 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     selectChargePoint2: false,
     selectChargePoint3: false,
   });
-
-  // Multiplayer state
-  const opponentInputRef = useRef<Vector2D>({ x: 0, y: 0 });
-  const opponentSpecialActionsRef = useRef<{
-    dodgeRight: boolean;
-    dodgeLeft: boolean;
-    heavyAttack: boolean;
-    ultimateAttack: boolean;
-  }>({
-    dodgeRight: false,
-    dodgeLeft: false,
-    heavyAttack: false,
-    ultimateAttack: false,
-  });
-  const isMultiplayer = gameMode === "2p";
-  const playerNumber = multiplayerData?.playerNumber || 1;
 
   const [gameState, setGameState] = useState<GameState>(() => {
     return createInitialGameState();
@@ -1268,12 +1246,6 @@ export const useGameState = (options: UseGameStateOptions = {}) => {
     handleTouchEnd,
     handleVirtualAction,
     isLoading,
-    // Multiplayer functions
-    setOpponentInput,
-    setOpponentSpecialAction,
-    getCurrentInput,
-    getMyBeybladeState,
-    setOpponentBeybladeState,
   };
 };
 

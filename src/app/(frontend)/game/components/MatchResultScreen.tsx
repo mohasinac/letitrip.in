@@ -7,20 +7,16 @@ interface MatchResultScreenProps {
   winner: GameBeyblade | null;
   isPlayerWinner: boolean;
   gameTime: number;
-  isMultiplayer?: boolean;
   onPlayAgain?: () => void;
   onBackToMenu: () => void;
-  onPlayAgainMultiplayer?: () => void; // New: For multiplayer rematch
 }
 
 const MatchResultScreen: React.FC<MatchResultScreenProps> = ({
   winner,
   isPlayerWinner,
   gameTime,
-  isMultiplayer = false,
   onPlayAgain,
   onBackToMenu,
-  onPlayAgainMultiplayer,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 p-6">
@@ -67,32 +63,17 @@ const MatchResultScreen: React.FC<MatchResultScreenProps> = ({
               </p>
             </>
           )}
-          {isMultiplayer && (
-            <p className="text-blue-600 dark:text-blue-400 mt-2 font-bold text-sm">
-              Online Multiplayer Match
-            </p>
-          )}
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-4">
-          {/* Play Again for Single Player */}
-          {onPlayAgain && !isMultiplayer && (
+          {/* Play Again */}
+          {onPlayAgain && (
             <button
               onClick={onPlayAgain}
               className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               Play Again
-            </button>
-          )}
-
-          {/* Play Again for Multiplayer - Rejoin Matchmaking */}
-          {isMultiplayer && onPlayAgainMultiplayer && (
-            <button
-              onClick={onPlayAgainMultiplayer}
-              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              🎮 Find New Opponent
             </button>
           )}
 
