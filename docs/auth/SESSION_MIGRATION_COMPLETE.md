@@ -11,7 +11,7 @@
 
 ### 🔄 Automated Migration
 
-The automated migration script (`scripts/migrate-auth.js`) successfully converted **68 API route files** from Firebase Bearer token authentication to HTTP-only session cookie authentication.
+An automated migration script successfully converted **68 API route files** from Firebase Bearer token authentication to HTTP-only session cookie authentication.
 
 ### 📝 Migration Details
 
@@ -153,7 +153,6 @@ export async function GET(request: NextRequest) {
 - `docs/AUTH_MIGRATION_STATUS.md` - Complete migration tracking document
 - `docs/SESSION_AUTH_ARCHITECTURE.md` - Session authentication architecture
 - `docs/SESSION_AUTH_QUICK_START.md` - Quick start guide
-- `scripts/migrate-auth.js` - Automated migration script
 
 ### 🎯 Next Steps
 
@@ -188,8 +187,7 @@ export async function GET(request: NextRequest) {
 If you encounter any issues or need to migrate additional routes:
 
 1. **Manual Migration**: Follow the pattern in `docs/AUTH_MIGRATION_STATUS.md`
-2. **Automated Migration**: Run `node scripts/migrate-auth.js` again
-3. **Report Issues**: Check console for 401/403 errors and migrate those specific routes
+2. **Report Issues**: Check console for 401/403 errors and migrate those specific routes
 
 ### 📞 Support
 
