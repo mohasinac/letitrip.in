@@ -14,7 +14,7 @@ import { AuthService } from "./services/auth.service";
 import { AddressService } from "./services/address.service";
 import { PaymentService } from "./services/payment.service";
 import { SearchService } from "./services/search.service";
-import { GameService } from "./services/game.service";
+import { GameService } from "../game/services";
 import { SellerService } from "./services/seller.service";
 import { AdminService } from "./services/admin.service";
 import { UploadService } from "./services/upload.service";
@@ -40,7 +40,7 @@ export { AuthService } from "./services/auth.service";
 export { AddressService } from "./services/address.service";
 export { PaymentService } from "./services/payment.service";
 export { SearchService } from "./services/search.service";
-export { GameService } from "./services/game.service";
+export { GameService } from "../game/services";
 export { SellerService } from "./services/seller.service";
 export { AdminService } from "./services/admin.service";
 export { UploadService } from "./services/upload.service";
@@ -112,14 +112,6 @@ export type {
   SearchResults,
   Store
 } from "./services/search.service";
-export type {
-  Beyblade,
-  CreateBeybladeData,
-  UpdateBeybladeData,
-  Arena,
-  CreateArenaData,
-  UpdateArenaData
-} from "./services/game.service";
 export type {
   SellerProductStats,
   SellerOrderStats,

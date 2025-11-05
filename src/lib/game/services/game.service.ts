@@ -3,7 +3,7 @@
  * Handles all game-related API operations (Beyblades & Arenas)
  */
 
-import { apiClient } from "../client";
+import { apiClient } from "../../api/client";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import type { ArenaConfig } from "@/types/arenaConfig";
 
