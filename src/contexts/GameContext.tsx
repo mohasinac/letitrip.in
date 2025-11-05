@@ -17,6 +17,7 @@ interface GameContextType {
   setGameMode: (mode: GameSettings["gameMode"]) => void;
   setDifficulty: (difficulty: GameSettings["difficulty"]) => void;
   setOpponent: (opponentId: string) => void;
+  setGameConfig: (config: Partial<GameSettings>) => void;
   startGame: (mode: GameSettings["gameMode"]) => void;
   resetGame: () => void;
   isReady: boolean;
@@ -47,9 +48,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setSettings((prev) => ({ ...prev, gameMode: mode }));
   }, []);
 
-  const setDifficulty = useCallback((difficulty: GameSettings["difficulty"]) => {
-    setSettings((prev) => ({ ...prev, difficulty }));
-  }, []);
+  const setDifficulty = useCallback(
+    (difficulty: GameSettings["difficulty"]) => {
+      setSettings((prev) => ({ ...prev, difficulty }));
+    },
+    []
+  );
 
   const setOpponent = useCallback((opponentId: string) => {
     setSettings((prev) => ({ ...prev, opponentId }));
@@ -63,10 +67,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setSettings(defaultSettings);
   }, []);
 
+  const setGameConfig = useCallback((config: Partial<GameSettings>) => {
+    setSettings((prev) => ({ ...prev, ...config }));
+  }, []);
+
   const isReady = Boolean(
-    settings.beybladeId && 
-    settings.arenaId && 
-    settings.gameMode
+    settings.beybladeId && settings.arenaId && settings.gameMode
   );
 
   const value: GameContextType = {
@@ -76,6 +82,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setGameMode,
     setDifficulty,
     setOpponent,
+    setGameConfig,
     startGame,
     resetGame,
     isReady,

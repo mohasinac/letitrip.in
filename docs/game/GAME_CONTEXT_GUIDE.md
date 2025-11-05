@@ -18,7 +18,7 @@ import { useGame } from "@/contexts/GameContext";
 
 function MyComponent() {
   const { settings, setBeyblade, setArena, startGame, isReady } = useGame();
-  
+
   // Use the context...
 }
 ```
@@ -40,6 +40,7 @@ interface GameSettings {
 ### Methods
 
 #### `setBeyblade(beybladeId: string)`
+
 Set the selected beyblade.
 
 ```tsx
@@ -47,6 +48,7 @@ setBeyblade("dragoon_gt");
 ```
 
 #### `setArena(arenaId: string)`
+
 Set the selected arena.
 
 ```tsx
@@ -54,6 +56,7 @@ setArena("standard_arena");
 ```
 
 #### `setGameMode(mode: GameMode)`
+
 Set the game mode.
 
 ```tsx
@@ -61,6 +64,7 @@ setGameMode("tryout");
 ```
 
 #### `setDifficulty(difficulty: "easy" | "medium" | "hard")`
+
 Set AI difficulty (for single-battle mode).
 
 ```tsx
@@ -68,6 +72,7 @@ setDifficulty("hard");
 ```
 
 #### `setOpponent(opponentId: string)`
+
 Set opponent player ID (for PvP mode).
 
 ```tsx
@@ -75,6 +80,7 @@ setOpponent("player_456");
 ```
 
 #### `startGame(mode: GameMode)`
+
 Convenience method to set game mode and prepare to start.
 
 ```tsx
@@ -82,6 +88,7 @@ startGame("pvp");
 ```
 
 #### `resetGame()`
+
 Reset all game settings to defaults.
 
 ```tsx
@@ -91,6 +98,7 @@ resetGame();
 ### Properties
 
 #### `settings: GameSettings`
+
 Current game settings.
 
 ```tsx
@@ -98,6 +106,7 @@ const { beybladeId, arenaId, gameMode } = settings;
 ```
 
 #### `isReady: boolean`
+
 Whether the game has all required settings (beyblade, arena, and mode selected).
 
 ```tsx
@@ -119,17 +128,15 @@ import { useGame } from "@/contexts/GameContext";
 export default function SelectPage() {
   const { setBeyblade, setArena, setGameMode } = useGame();
   const router = useRouter();
-  
+
   const handleStart = () => {
     setBeyblade("dragoon_gt");
     setArena("standard_arena");
     setGameMode("tryout");
     router.push("/game/tryout");
   };
-  
-  return (
-    <button onClick={handleStart}>Start Game</button>
-  );
+
+  return <button onClick={handleStart}>Start Game</button>;
 }
 ```
 
@@ -140,14 +147,14 @@ import { useGame } from "@/contexts/GameContext";
 
 export default function TryoutPage() {
   const { settings, isReady } = useGame();
-  
+
   // Redirect if not ready
   useEffect(() => {
     if (!isReady) {
       router.push("/game/tryout/select");
     }
   }, [isReady, router]);
-  
+
   return (
     <TryoutModeGame
       beybladeId={settings.beybladeId!}
@@ -160,21 +167,24 @@ export default function TryoutPage() {
 ## Benefits Over URL Parameters
 
 ### Before (URL Parameters)
+
 ❌ URL pollution: `/game/tryout?beyblade=dragoon_gt&arena=standard_arena`  
 ❌ Manual parsing required  
 ❌ Lost on page refresh  
-❌ Hard to share complex state  
+❌ Hard to share complex state
 
 ### After (Context)
+
 ✅ Clean URLs: `/game/tryout`  
 ✅ Type-safe API  
 ✅ Centralized state management  
 ✅ Persistent across navigation  
-✅ Easy to extend  
+✅ Easy to extend
 
 ## Game Mode Patterns
 
 ### Tryout Mode
+
 ```tsx
 setBeyblade("dragoon_gt");
 setArena("standard_arena");
@@ -183,6 +193,7 @@ router.push("/game/tryout");
 ```
 
 ### Single Battle (vs AI)
+
 ```tsx
 setBeyblade("dragoon_gt");
 setArena("standard_arena");
@@ -192,6 +203,7 @@ router.push("/game/single-battle");
 ```
 
 ### PvP Mode
+
 ```tsx
 setBeyblade("dragoon_gt");
 setArena("standard_arena");
@@ -201,6 +213,7 @@ router.push("/game/pvp");
 ```
 
 ### Tournament Mode
+
 ```tsx
 setBeyblade("dragoon_gt");
 setGameMode("tournament");
