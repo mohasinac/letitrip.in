@@ -8,6 +8,7 @@
  */
 
 import { cookies } from 'next/headers';
+import { AUTH_CONSTANTS } from '@/constants/app';
 import {
   storeSession,
   getStoredSession,
@@ -94,8 +95,8 @@ export async function getSession(): Promise<SessionData | null> {
     }
     
     // Update last activity (session sliding expiration)
-    // Only update if last activity is older than 5 minutes (reduce writes)
-    if (now - session.lastActivity > 5 * 60 * 1000) {
+    // Only update if last activity is older than threshold (reduce writes)
+    if (now - session.lastActivity > AUTH_CONSTANTS.SESSION_ACTIVITY_UPDATE_THRESHOLD_MS) {
       await updateStoredSession(sessionId, {
         lastActivity: now,
         expiresAt: now + (SESSION_MAX_AGE * 1000),
@@ -137,7 +138,7 @@ export function getSessionFromRequest(request: Request): SessionData | null {
     // This means recently created sessions might not be visible in middleware
     // For full accuracy, the client should retry or use API routes
     const cached = (getStoredSession as any).cache?.get(sessionId);
-    if (cached && Date.now() - cached.cachedAt < 5 * 60 * 1000) {
+    if (cached && Date.now() - cached.cachedAt < AUTH_CONSTANTS.CACHE_TTL_MS) {
       if (cached.data.expiresAt > Date.now()) {
         return cached.data;
       }

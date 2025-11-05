@@ -372,8 +372,8 @@ Protected Resources
 
 - [Service Layer Complete](./SERVICE_LAYER_COMPLETE.md)
 - [Migration Complete](./MIGRATION_COMPLETE.md)
-- [API Services Guide](./docs/API_SERVICES_COMPLETE_GUIDE.md)
-- [Quick Reference](./docs/migrations/QUICK_REFERENCE.md)
+- [API Services Guide](./docs/api/API_SERVICES_COMPLETE_GUIDE.md)
+- [Quick Reference](./docs/guides/QUICK_REFERENCE.md)
 
 ---
 

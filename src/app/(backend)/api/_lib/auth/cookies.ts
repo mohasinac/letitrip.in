@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { AUTH_CONSTANTS } from '@/constants/app';
 
 export interface CookieOptions {
   expires?: number | Date;
@@ -10,14 +11,14 @@ export interface CookieOptions {
 }
 
 class AuthCookieManager {
-  private readonly AUTH_TOKEN_KEY = "firebase-token";
-  private readonly REFRESH_TOKEN_KEY = "firebase-refresh-token";
-  private readonly USER_DATA_KEY = "user-data";
-  private readonly SESSION_KEY = "session-id";
+  private readonly AUTH_TOKEN_KEY = AUTH_CONSTANTS.AUTH_TOKEN_COOKIE;
+  private readonly REFRESH_TOKEN_KEY = AUTH_CONSTANTS.REFRESH_TOKEN_COOKIE;
+  private readonly USER_DATA_KEY = AUTH_CONSTANTS.USER_DATA_COOKIE;
+  private readonly SESSION_KEY = AUTH_CONSTANTS.SESSION_COOKIE_NAME;
 
   // Default cookie options for security
   private readonly defaultOptions: CookieOptions = {
-    expires: 7, // 7 days
+    expires: AUTH_CONSTANTS.SESSION_DURATION_DAYS,
     path: "/",
     secure: process.env.NODE_ENV === "production", // Only HTTPS in production
     sameSite: "lax",
@@ -43,7 +44,7 @@ class AuthCookieManager {
   setRefreshToken(token: string, options?: CookieOptions): void {
     const cookieOptions = {
       ...this.defaultOptions,
-      expires: 30, // 30 days for refresh token
+      expires: AUTH_CONSTANTS.REFRESH_TOKEN_DURATION_DAYS,
       ...options,
     };
     Cookies.set(this.REFRESH_TOKEN_KEY, token, cookieOptions);

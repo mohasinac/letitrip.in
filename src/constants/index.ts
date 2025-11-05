@@ -69,3 +69,6 @@ export type {
 
 // App constants
 export * from "./app";
+
+// Type exports
+export type { UserRole, HttpStatusCode } from "./app";

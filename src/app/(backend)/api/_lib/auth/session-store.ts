@@ -11,6 +11,7 @@
  */
 
 import { getAdminDb } from '../database/admin';
+import { AUTH_CONSTANTS, DATABASE_CONSTANTS } from '@/constants/app';
 
 export interface SessionData {
   userId: string;
@@ -21,12 +22,12 @@ export interface SessionData {
   lastActivity: number;
 }
 
-// Session configuration constants
-export const SESSION_COOKIE_NAME = 'session';
-export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
+// Session configuration constants - imported from centralized constants
+export const SESSION_COOKIE_NAME = AUTH_CONSTANTS.SESSION_COOKIE_NAME;
+export const SESSION_MAX_AGE = AUTH_CONSTANTS.SESSION_MAX_AGE;
 
-// In-memory cache with TTL (5 minutes) - per serverless function instance
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// In-memory cache with TTL - per serverless function instance
+const CACHE_TTL = AUTH_CONSTANTS.CACHE_TTL_MS;
 const sessionCache = new Map<string, { data: SessionData; cachedAt: number }>();
 
 // Clean up expired cache entries periodically (per function instance)
@@ -38,7 +39,7 @@ if (typeof setInterval !== 'undefined') {
         sessionCache.delete(sessionId);
       }
     }
-  }, 60 * 1000); // Clean every minute
+  }, AUTH_CONSTANTS.CACHE_CLEANUP_INTERVAL_MS);
 }
 
 /**
@@ -46,7 +47,7 @@ if (typeof setInterval !== 'undefined') {
  */
 function getSessionsCollection() {
   const db = getAdminDb();
-  return db.collection('sessions');
+  return db.collection(DATABASE_CONSTANTS.COLLECTIONS.SESSIONS);
 }
 
 /**
@@ -201,7 +202,10 @@ export async function cleanupExpiredSessions(): Promise<number> {
     const sessionsRef = getSessionsCollection();
     const now = Date.now();
     
-    const snapshot = await sessionsRef.where('expiresAt', '<', now).limit(500).get();
+    const snapshot = await sessionsRef
+      .where('expiresAt', '<', now)
+      .limit(AUTH_CONSTANTS.EXPIRED_SESSION_CLEANUP_LIMIT)
+      .get();
     
     let count = 0;
     const batch = getAdminDb().batch();
@@ -228,7 +232,10 @@ export async function getAllActiveSessions(): Promise<Array<SessionData & { sess
     const sessionsRef = getSessionsCollection();
     const now = Date.now();
     
-    const snapshot = await sessionsRef.where('expiresAt', '>', now).limit(1000).get();
+    const snapshot = await sessionsRef
+      .where('expiresAt', '>', now)
+      .limit(AUTH_CONSTANTS.ACTIVE_SESSION_QUERY_LIMIT)
+      .get();
     
     return snapshot.docs.map(doc => {
       const data = doc.data();
@@ -258,7 +265,9 @@ export async function getSessionStats() {
     
     return {
       total: sessions.length,
-      active: sessions.filter(s => s.lastActivity > now - 30 * 60 * 1000).length,
+      active: sessions.filter(
+        s => s.lastActivity > now - AUTH_CONSTANTS.RECENT_ACTIVITY_THRESHOLD_MS
+      ).length,
       byRole: {
         admin: sessions.filter(s => s.role === 'admin').length,
         seller: sessions.filter(s => s.role === 'seller').length,

@@ -5,6 +5,7 @@
 
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { AUTH_CONSTANTS } from '@/constants/app';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
@@ -95,11 +96,11 @@ export async function isAdmin(): Promise<boolean> {
  */
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set("auth_token", token, {
+  cookieStore.set(AUTH_CONSTANTS.AUTH_TOKEN_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax", // Changed from 'strict' to 'lax' for better compatibility
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: AUTH_CONSTANTS.SESSION_MAX_AGE,
     path: "/",
   });
 }
@@ -109,5 +110,5 @@ export async function setAuthCookie(token: string): Promise<void> {
  */
 export async function clearAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete("auth_token");
+  cookieStore.delete(AUTH_CONSTANTS.AUTH_TOKEN_COOKIE);
 }

@@ -5,14 +5,28 @@
 
 // Authentication & Session
 export const AUTH_CONSTANTS = {
-  SESSION_COOKIE_NAME: "user_session",
+  // Cookie Names
+  SESSION_COOKIE_NAME: "session",
   AUTH_TOKEN_COOKIE: "auth_token",
   REFRESH_TOKEN_COOKIE: "refresh_token",
   USER_DATA_COOKIE: "user_data",
   LAST_VISITED_PAGE_COOKIE: "last_visited_page",
-  SESSION_DURATION_DAYS: 30,
+  
+  // Session Duration (in seconds)
+  SESSION_MAX_AGE: 60 * 60 * 24 * 7, // 7 days
+  SESSION_DURATION_DAYS: 7,
   REFRESH_TOKEN_DURATION_DAYS: 90,
   COOKIE_CONSENT_DURATION_DAYS: 365,
+  
+  // Cache Settings
+  CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutes
+  SESSION_ACTIVITY_UPDATE_THRESHOLD_MS: 5 * 60 * 1000, // 5 minutes
+  CACHE_CLEANUP_INTERVAL_MS: 60 * 1000, // 1 minute
+  
+  // Session Cleanup
+  EXPIRED_SESSION_CLEANUP_LIMIT: 500,
+  ACTIVE_SESSION_QUERY_LIMIT: 1000,
+  RECENT_ACTIVITY_THRESHOLD_MS: 30 * 60 * 1000, // 30 minutes
 } as const;
 
 // Cookie Management
@@ -27,7 +41,9 @@ export const COOKIE_CONSTANTS = {
 // Storage & Upload
 export const STORAGE_CONSTANTS = {
   MAX_FILE_SIZE_MB: 10,
+  MAX_FILE_SIZE_BYTES: 10 * 1024 * 1024, // 10MB in bytes
   MAX_VIDEO_SIZE_MB: 50,
+  MAX_VIDEO_SIZE_BYTES: 50 * 1024 * 1024, // 50MB in bytes
   ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif", "image/webp"],
   ALLOWED_VIDEO_TYPES: ["video/mp4", "video/webm", "video/quicktime"],
   STORAGE_FOLDERS: {
@@ -44,6 +60,11 @@ export const STORAGE_CONSTANTS = {
     THUMBNAILS: 604800, // 7 days
     STATIC: 2592000, // 30 days
   },
+  CACHE_DURATION_MS: {
+    IMAGES: 86400 * 1000, // 24 hours
+    THUMBNAILS: 604800 * 1000, // 7 days
+    STATIC: 2592000 * 1000, // 30 days
+  },
 } as const;
 
 // Database Collections
@@ -58,9 +79,18 @@ export const DATABASE_CONSTANTS = {
     BROWSING_HISTORY: "browsing_history",
     SETTINGS: "settings",
     ANALYTICS: "analytics",
+    REVIEWS: "reviews",
+    ADDRESSES: "addresses",
+    SHIPMENTS: "shipments",
+    COUPONS: "coupons",
+    SALES: "sales",
+    NOTIFICATIONS: "notifications",
+    ALERTS: "alerts",
   },
   BATCH_SIZE: 500,
   QUERY_TIMEOUT_MS: 30000,
+  DEFAULT_PAGE_LIMIT: 20,
+  MAX_PAGE_LIMIT: 100,
 } as const;
 
 // API Configuration
@@ -87,19 +117,23 @@ export const UI_CONSTANTS = {
   PAGINATION: {
     DEFAULT_PAGE_SIZE: 20,
     MAX_PAGE_SIZE: 100,
+    MIN_PAGE_SIZE: 10,
   },
   TOAST_DURATION_MS: 3000,
+  TOAST_DURATION_SECONDS: 3,
   DEBOUNCE_DELAY_MS: 300,
   POLLING_INTERVAL_MS: 5000,
+  ANIMATION_DURATION_MS: 200,
+  MODAL_TRANSITION_MS: 150,
 } as const;
 
 // Role-Based Access
 export const ROLE_CONSTANTS = {
   ROLES: {
-    ADMIN: "admin",
-    SELLER: "seller",
-    USER: "user",
-    GUEST: "guest",
+    ADMIN: "admin" as const,
+    SELLER: "seller" as const,
+    USER: "user" as const,
+    GUEST: "guest" as const,
   },
   PERMISSIONS: {
     admin: [
@@ -230,6 +264,38 @@ export const PUBLIC_ROUTES = [
   "/cookies",
 ] as const;
 
+// HTTP Status Codes
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUESTS: 429,
+  INTERNAL_SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503,
+} as const;
+
+// Validation Constants
+export const VALIDATION_CONSTANTS = {
+  MIN_PASSWORD_LENGTH: 8,
+  MAX_PASSWORD_LENGTH: 128,
+  MIN_USERNAME_LENGTH: 3,
+  MAX_USERNAME_LENGTH: 30,
+  MIN_NAME_LENGTH: 2,
+  MAX_NAME_LENGTH: 100,
+  MAX_EMAIL_LENGTH: 255,
+  MAX_DESCRIPTION_LENGTH: 5000,
+  MAX_TITLE_LENGTH: 200,
+  MIN_PRICE: 0,
+  MAX_PRICE: 999999999,
+  MAX_QUANTITY: 999999,
+} as const;
+
 // Feature Flags
 export const FEATURE_FLAGS = {
   ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true",
@@ -246,6 +312,8 @@ export default {
   API_CONSTANTS,
   UI_CONSTANTS,
   ROLE_CONSTANTS,
+  HTTP_STATUS,
+  VALIDATION_CONSTANTS,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   REDIRECT_ROUTES,
@@ -253,3 +321,7 @@ export default {
   PUBLIC_ROUTES,
   FEATURE_FLAGS,
 };
+
+// Type exports for better TypeScript support
+export type UserRole = typeof ROLE_CONSTANTS.ROLES[keyof typeof ROLE_CONSTANTS.ROLES];
+export type HttpStatusCode = typeof HTTP_STATUS[keyof typeof HTTP_STATUS];
