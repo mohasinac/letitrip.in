@@ -10,7 +10,15 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "vercel:sync-env": "node scripts/sync-env-to-vercel.js",
+    "vercel:sync-env:preview": "node scripts/sync-env-to-vercel.js --preview",
+    "vercel:sync-env:dev": "node scripts/sync-env-to-vercel.js --development",
+    "vercel:sync-env:dry-run": "node scripts/sync-env-to-vercel.js --dry-run",
+    "vercel:deploy": "node scripts/deploy-vercel.js",
+    "vercel:deploy:prod": "node scripts/deploy-vercel.js --production",
+    "vercel:deploy:preview": "node scripts/deploy-vercel.js --preview",
+    "deploy": "npm run vercel:deploy:prod"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
