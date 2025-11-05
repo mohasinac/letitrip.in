@@ -109,8 +109,25 @@ class ApiClient {
               );
               const isAuthApiCall = config.url?.includes("/api/auth/");
               
-              // Don't redirect if we're already on an auth page or calling auth APIs
-              if (!isAuthPage && !isAuthApiCall) {
+              // Check if we're on a public page that doesn't require auth
+              const publicPaths = [
+                "/",
+                "/products",
+                "/categories",
+                "/game",
+                "/contact",
+                "/about",
+                "/help",
+                "/faq",
+                "/terms",
+                "/privacy",
+              ];
+              const isPublicPage = publicPaths.some((path) =>
+                currentPath.startsWith(path)
+              );
+              
+              // Don't redirect if we're on an auth page, calling auth APIs, or on a public page
+              if (!isAuthPage && !isAuthApiCall && !isPublicPage) {
                 // Save current page for redirect after login
                 sessionStorage.setItem("auth_redirect_after_login", currentPath);
                 window.location.href = "/login?error=session-expired";

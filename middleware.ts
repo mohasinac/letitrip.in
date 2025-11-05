@@ -54,8 +54,23 @@ export function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth routes
   if (isAuthRoute && isAuthenticated) {
-    const redirectUrl = request.nextUrl.searchParams.get("redirect") || "/";
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    // Get the redirect parameter
+    const redirectUrl = request.nextUrl.searchParams.get("redirect");
+    
+    // If there's a redirect URL, use it; otherwise use role-based default
+    if (redirectUrl) {
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    }
+    
+    // Default redirect based on role
+    let defaultPath = "/";
+    if (session.role === "admin") {
+      defaultPath = "/admin";
+    } else if (session.role === "seller") {
+      defaultPath = "/seller/dashboard";
+    }
+    
+    return NextResponse.redirect(new URL(defaultPath, request.url));
   }
 
   // Check admin access
