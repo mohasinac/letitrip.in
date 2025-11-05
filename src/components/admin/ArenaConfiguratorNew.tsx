@@ -1205,6 +1205,32 @@ export default function ArenaConfiguratorNew({
 
                                   <div>
                                     <label className="block text-xs mb-1">
+                                      Radius: {cp.radius || 25}px
+                                    </label>
+                                    <input
+                                      type="range"
+                                      value={cp.radius || 25}
+                                      onChange={(e) => {
+                                        const newSpeedPaths = [
+                                          ...config.speedPaths,
+                                        ];
+                                        newSpeedPaths[idx].chargePoints![
+                                          cpIdx
+                                        ].radius = parseFloat(e.target.value);
+                                        setConfig({
+                                          ...config,
+                                          speedPaths: newSpeedPaths,
+                                        });
+                                      }}
+                                      min={10}
+                                      max={50}
+                                      step={1}
+                                      className="w-full"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-xs mb-1">
                                       Button ID
                                     </label>
                                     <select
@@ -2058,7 +2084,12 @@ export default function ArenaConfiguratorNew({
               <div className="bg-gray-800 rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-4">Full Preview</h2>
                 <div className="flex justify-center">
-                  <ArenaPreviewBasic arena={config} width={700} height={700} />
+                  <ArenaPreviewBasic
+                    arena={config}
+                    width={700}
+                    height={700}
+                    showZoomControls={true}
+                  />
                 </div>
               </div>
             )}

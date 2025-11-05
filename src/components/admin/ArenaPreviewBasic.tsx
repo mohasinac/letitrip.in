@@ -152,7 +152,7 @@ export default function ArenaPreviewBasic({
           </div>
         </div>
       )}
-      
+
       {/* Arena Info Header */}
       <div className="arena-info mb-4 p-4 bg-gray-800 rounded-lg">
         <h2 className="text-2xl font-bold text-white mb-2">{arena.name}</h2>
