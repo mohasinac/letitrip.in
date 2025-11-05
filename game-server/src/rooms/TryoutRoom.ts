@@ -50,36 +50,73 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.width = arenaData.width;
       this.state.arena.height = arenaData.height;
       this.state.arena.shape = arenaData.shape;
+      this.state.arena.theme = arenaData.theme;
+      this.state.arena.rotation = arenaData.rotation || 0;
       this.state.arena.gravity = arenaData.gravity || 0;
       this.state.arena.airResistance = arenaData.airResistance || 0.01;
       this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
+
+      // Wall configuration
+      this.state.arena.wallEnabled = arenaData.wall.enabled;
+      this.state.arena.wallBaseDamage = arenaData.wall.baseDamage;
+      this.state.arena.wallRecoilDistance = arenaData.wall.recoilDistance;
+      this.state.arena.wallHasSpikes = arenaData.wall.hasSpikes;
+      this.state.arena.wallSpikeDamageMultiplier = arenaData.wall.spikeDamageMultiplier;
+      this.state.arena.wallHasSprings = arenaData.wall.hasSprings;
+      this.state.arena.wallSpringRecoilMultiplier = arenaData.wall.springRecoilMultiplier;
+
+      // Feature counts
+      this.state.arena.loopCount = arenaData.loops.length;
+      this.state.arena.exitCount = arenaData.exits.length;
+      this.state.arena.obstacleCount = arenaData.obstacles.length;
+      this.state.arena.pitCount = arenaData.pits.length;
+      this.state.arena.laserGunCount = arenaData.laserGuns.length;
+      this.state.arena.hasWaterBody = !!arenaData.waterBody?.enabled;
+
       console.log(`✅ Loaded arena: ${arenaData.name}`);
     } else {
       // Use default arena if not found
       console.log(`⚠️ Arena not found: ${options.arenaId}, using defaults`);
       this.state.arena.id = options.arenaId || "default";
       this.state.arena.name = "Standard Arena";
-      this.state.arena.width = 800;
-      this.state.arena.height = 800;
+      this.state.arena.width = 50;
+      this.state.arena.height = 50;
       this.state.arena.shape = "circle";
+      this.state.arena.theme = "metrocity";
       this.state.arena.gravity = 0;
       this.state.arena.airResistance = 0.01;
       this.state.arena.surfaceFriction = 0.01;
+      this.state.arena.wallEnabled = true;
+      this.state.arena.wallBaseDamage = 5;
+      this.state.arena.wallRecoilDistance = 2;
     }
 
     // Initialize physics engine
     this.physics = new PhysicsEngine();
 
+    // Set arena configuration for physics engine
+    if (arenaData) {
+      this.physics.setArenaConfig(arenaData);
+
+      // Create obstacles
+      if (arenaData.obstacles.length > 0) {
+        this.physics.createObstacles(arenaData.obstacles);
+      }
+    }
+
     // Create arena boundaries
     if (this.state.arena.shape === "circle") {
-      const radius = Math.min(this.state.arena.width, this.state.arena.height) / 2;
+      const radius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
       this.physics.createCircularArena(
-        this.state.arena.width / 2,
-        this.state.arena.height / 2,
+        (this.state.arena.width * 16) / 2,
+        (this.state.arena.height * 16) / 2,
         radius
       );
     } else {
-      this.physics.createRectangularArena(this.state.arena.width, this.state.arena.height);
+      this.physics.createRectangularArena(
+        this.state.arena.width * 16, 
+        this.state.arena.height * 16
+      );
     }
 
     // Set up message handlers
@@ -116,39 +153,83 @@ export class TryoutRoom extends Room<GameState> {
       beyblade.mass = beybladeData.mass;
       beyblade.radius = beybladeData.radius;
       
-      // Calculate max stamina from type distribution
+      // Convert radius from cm to pixels using resolution system
+      const PIXELS_PER_CM = 24; // 1080 / 45
+      beyblade.actualSize = beybladeData.radius * PIXELS_PER_CM;
+      
+      // Calculate stats from type distribution
+      const attackPoints = beybladeData.typeDistribution.attack;
+      const defensePoints = beybladeData.typeDistribution.defense;
       const staminaPoints = beybladeData.typeDistribution.stamina;
+
+      // Store type distribution
+      beyblade.attackPoints = attackPoints;
+      beyblade.defensePoints = defensePoints;
+      beyblade.staminaPoints = staminaPoints;
+
+      // Calculate attack stats (multiplicative: base * (1 + points * 0.01))
+      beyblade.damageMultiplier = 1 + attackPoints * 0.01;
+      beyblade.speedBonus = 1 + attackPoints * 0.01;
+
+      // Calculate defense stats
+      beyblade.damageTaken = 1 - defensePoints * 0.00333; // Lower is better
+      beyblade.knockbackDistance = 10 * (1 - defensePoints * 0.00167);
+      beyblade.invulnerabilityChance = 0.1 * (1 + defensePoints * 0.00667);
+
+      // Calculate stamina stats
       beyblade.maxStamina = Math.ceil(1000 * (1 + staminaPoints * 0.01333));
       beyblade.stamina = beyblade.maxStamina;
+      beyblade.spinStealFactor = 0.1 * (1 + staminaPoints * 0.02667);
+      beyblade.spinDecayRate = 10 * (1 - staminaPoints * 0.00167);
+
+      // Spin capacity (calculate from stamina)
+      beyblade.maxSpin = Math.ceil(2000 * (1 + staminaPoints * 0.01));
+      beyblade.spin = beyblade.maxSpin;
       
       console.log(`✅ Loaded beyblade: ${beybladeData.displayName}`);
+      console.log(`   Stats - ATK: ${attackPoints}, DEF: ${defensePoints}, STA: ${staminaPoints}`);
+      console.log(`   Multipliers - DMG: ${beyblade.damageMultiplier.toFixed(2)}x, DEF: ${(1/beyblade.damageTaken).toFixed(2)}x`);
     } else {
       console.log(`⚠️ Beyblade not found: ${options.beybladeId}, using defaults`);
       beyblade.type = "balanced";
       beyblade.spinDirection = "right";
-      beyblade.mass = 20;
-      beyblade.radius = 40;
-      beyblade.maxStamina = 1000;
-      beyblade.stamina = 1000;
+      beyblade.mass = 50;
+      beyblade.radius = 4; // 4cm standard
+      beyblade.actualSize = 96; // 4cm * 24 pixels/cm
+      beyblade.attackPoints = 120;
+      beyblade.defensePoints = 120;
+      beyblade.staminaPoints = 120;
+      beyblade.damageMultiplier = 2.2; // 1 + 120 * 0.01
+      beyblade.damageTaken = 0.6; // 1 - 120 * 0.00333
+      beyblade.knockbackDistance = 8; // 10 * (1 - 120 * 0.00167)
+      beyblade.invulnerabilityChance = 0.18; // 0.1 * (1 + 120 * 0.00667)
+      beyblade.spinStealFactor = 0.42; // 0.1 * (1 + 120 * 0.02667)
+      beyblade.spinDecayRate = 8; // 10 * (1 - 120 * 0.00167)
+      beyblade.maxStamina = 1600;
+      beyblade.stamina = 1600;
+      beyblade.maxSpin = 2000;
+      beyblade.spin = 2000;
     }
     
     beyblade.health = 100;
 
-    // Spawn position (center of arena)
-    beyblade.x = this.state.arena.width / 2;
-    beyblade.y = this.state.arena.height / 2;
+    // Spawn position (center of arena - convert em to pixels)
+    beyblade.x = (this.state.arena.width * 16) / 2;
+    beyblade.y = (this.state.arena.height * 16) / 2;
 
-    // Create physics body
+    // Create physics body with stats
     this.physics.createBeyblade(
       beyblade.id,
       beyblade.x,
       beyblade.y,
-      beyblade.radius,
-      beyblade.mass
+      beyblade.radius, // in cm
+      beyblade.mass,
+      beybladeData || undefined
     );
 
-    // Give initial spin
-    this.physics.setAngularVelocity(beyblade.id, 10);
+    // Give initial spin based on spin direction
+    const initialAngularVelocity = beyblade.spinDirection === "left" ? -10 : 10;
+    this.physics.setAngularVelocity(beyblade.id, initialAngularVelocity);
 
     // Add to state
     this.state.beyblades.set(client.sessionId, beyblade);
@@ -327,11 +408,14 @@ export class TryoutRoom extends Room<GameState> {
    * Game loop - runs at 60 FPS
    */
   private startGameLoop() {
-    this.updateInterval = setInterval(() => {
+    this.updateInterval = setInterval(async () => {
       if (this.state.status !== "in-progress") return;
 
       // Update physics
       this.physics.update();
+
+      // Load arena config for collision checks
+      const arenaData: ArenaConfig | null = await loadArena(this.state.arena.id);
 
       // Sync physics to game state
       this.state.beyblades.forEach((beyblade) => {
@@ -344,9 +428,165 @@ export class TryoutRoom extends Room<GameState> {
           beyblade.velocityY = physicsState.velocityY;
           beyblade.angularVelocity = physicsState.angularVelocity;
 
-          // Decrease stamina based on spin speed (spin decay)
+          // Arena dynamics checks
+          if (arenaData) {
+            // Check loop collision
+            const loopCheck = this.physics.checkLoopCollision(beyblade.id, arenaData.loops);
+            if (loopCheck.inLoop && loopCheck.loopConfig) {
+              if (!beyblade.inLoop) {
+                beyblade.inLoop = true;
+                beyblade.loopIndex = loopCheck.loopIndex;
+                beyblade.loopEntryTime = Date.now();
+                beyblade.loopSpeedBoost = loopCheck.loopConfig.speedBoost;
+                beyblade.loopSpinBoost = loopCheck.loopConfig.spinBoost || 0;
+                
+                // Apply speed boost
+                this.physics.applyLoopBoost(beyblade.id, loopCheck.loopConfig.speedBoost);
+              }
+              
+              // Apply continuous spin recovery
+              if (beyblade.loopSpinBoost > 0) {
+                beyblade.spin = Math.min(
+                  beyblade.maxSpin,
+                  beyblade.spin + beyblade.loopSpinBoost * (this.UPDATE_INTERVAL / 1000)
+                );
+              }
+            } else if (beyblade.inLoop) {
+              // Exit loop
+              beyblade.inLoop = false;
+              beyblade.loopIndex = -1;
+              beyblade.loopSpeedBoost = 1.0;
+              beyblade.loopSpinBoost = 0;
+            }
+
+            // Check water collision
+            const inWater = this.physics.checkWaterCollision(beyblade.id, arenaData.waterBody);
+            if (inWater) {
+              if (!beyblade.inWater) {
+                beyblade.inWater = true;
+                const waterConfig = arenaData.waterBody!;
+                beyblade.waterSpeedMultiplier = waterConfig.speedMultiplier;
+                beyblade.waterSpinDrain = waterConfig.spinDrainRate;
+              }
+              
+              // Apply water effects
+              this.physics.applyWaterResistance(beyblade.id, beyblade.waterSpeedMultiplier);
+              beyblade.spin -= beyblade.waterSpinDrain * (this.UPDATE_INTERVAL / 1000);
+            } else if (beyblade.inWater) {
+              beyblade.inWater = false;
+              beyblade.waterSpeedMultiplier = 1.0;
+              beyblade.waterSpinDrain = 0;
+            }
+
+            // Check pit collision
+            const pitCheck = this.physics.checkPitCollision(beyblade.id, arenaData.pits);
+            if (pitCheck) {
+              if (!beyblade.inPit) {
+                beyblade.inPit = true;
+                beyblade.currentPitId = `pit_${arenaData.pits.indexOf(pitCheck)}`;
+                beyblade.pitDamageRate = pitCheck.damagePerSecond;
+              }
+              
+              // Apply pit damage
+              beyblade.spin -= beyblade.pitDamageRate * beyblade.spin * (this.UPDATE_INTERVAL / 1000) / 100;
+              
+              // Check escape chance
+              if (Math.random() < pitCheck.escapeChance * (this.UPDATE_INTERVAL / 1000)) {
+                beyblade.inPit = false;
+                beyblade.currentPitId = "";
+                beyblade.pitDamageRate = 0;
+                // Apply escape force
+                this.physics.applyForce(beyblade.id, 0, -0.05 * beyblade.mass);
+              }
+            } else if (beyblade.inPit) {
+              beyblade.inPit = false;
+              beyblade.currentPitId = "";
+              beyblade.pitDamageRate = 0;
+            }
+
+            // Check obstacle collision
+            const obstacleCheck = this.physics.checkObstacleCollision(beyblade.id);
+            if (obstacleCheck.colliding) {
+              if (!beyblade.collidingWithObstacle || beyblade.lastObstacleId !== obstacleCheck.obstacleId) {
+                beyblade.collidingWithObstacle = true;
+                beyblade.lastObstacleId = obstacleCheck.obstacleId || "";
+                
+                // Apply obstacle damage
+                beyblade.health -= obstacleCheck.damage;
+                beyblade.damageReceived += obstacleCheck.damage;
+                
+                // Apply recoil based on knockback distance
+                const recoilDirection = {
+                  x: beyblade.velocityX,
+                  y: beyblade.velocityY
+                };
+                this.physics.applyKnockback(
+                  beyblade.id,
+                  recoilDirection,
+                  beyblade.knockbackDistance
+                );
+                
+                this.broadcast("obstacle-collision", {
+                  playerId: beyblade.id,
+                  damage: obstacleCheck.damage,
+                });
+              }
+            } else {
+              beyblade.collidingWithObstacle = false;
+              beyblade.lastObstacleId = "";
+            }
+
+            // Check wall collision (boundary check)
+            if (arenaData.wall.enabled) {
+              const dx = beyblade.x - (this.state.arena.width * 16) / 2;
+              const dy = beyblade.y - (this.state.arena.height * 16) / 2;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+
+              if (distance > arenaRadius * 0.95) { // Near wall
+                let wallDamage = arenaData.wall.baseDamage;
+                if (arenaData.wall.hasSpikes) {
+                  wallDamage *= arenaData.wall.spikeDamageMultiplier;
+                }
+                
+                beyblade.health -= wallDamage;
+                beyblade.damageReceived += wallDamage;
+                
+                // Apply wall recoil (bounce back)
+                const recoilDirection = { x: -dx, y: -dy };
+                let recoilForce = arenaData.wall.recoilDistance;
+                if (arenaData.wall.hasSprings) {
+                  recoilForce *= arenaData.wall.springRecoilMultiplier;
+                }
+                
+                this.physics.applyKnockback(
+                  beyblade.id,
+                  recoilDirection,
+                  recoilForce * beyblade.knockbackDistance
+                );
+                
+                this.broadcast("wall-collision", {
+                  playerId: beyblade.id,
+                  damage: wallDamage,
+                });
+              }
+            }
+          }
+
+          // Decrease spin based on decay rate
+          beyblade.spin -= beyblade.spinDecayRate * (this.UPDATE_INTERVAL / 1000);
+          beyblade.spin = Math.max(0, beyblade.spin);
+          
+          // Decrease stamina based on spin speed
           beyblade.stamina -= Math.abs(physicsState.angularVelocity) * 0.01;
           beyblade.stamina = Math.max(0, beyblade.stamina);
+
+          // Check if beyblade stopped spinning
+          if (beyblade.spin <= 0 && beyblade.isActive) {
+            beyblade.isActive = false;
+            beyblade.health = 0;
+            this.broadcast("spin-out", { playerId: beyblade.id });
+          }
 
           // Update cooldowns
           if (beyblade.attackCooldown > 0) {
@@ -364,14 +604,19 @@ export class TryoutRoom extends Room<GameState> {
             }
           }
 
+          // Update special move state
+          if (beyblade.specialMoveActive && Date.now() > beyblade.specialMoveEndTime) {
+            beyblade.specialMoveActive = false;
+          }
+
           // Check ring out
           if (this.state.arena.shape === "circle") {
-            const radius = Math.min(this.state.arena.width, this.state.arena.height) / 2;
+            const radius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
             const isOut = this.physics.isOutOfBounds(
               beyblade.id,
               radius,
-              this.state.arena.width / 2,
-              this.state.arena.height / 2
+              (this.state.arena.width * 16) / 2,
+              (this.state.arena.height * 16) / 2
             );
 
             if (isOut && !beyblade.isRingOut) {
