@@ -166,7 +166,7 @@ const postProductsHandler = async (request: NextRequest) => {
     // Create product using controller
     const product = await productController.createProduct(body, {
       uid: user.userId,
-      role: user.role as 'admin' | 'seller' | 'user',
+      role: session.role as 'admin' | 'seller' | 'user',
       sellerId: userData?.sellerId,
       email: userData?.email,
     });

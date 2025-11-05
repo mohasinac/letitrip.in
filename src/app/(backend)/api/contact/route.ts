@@ -11,32 +11,15 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "../_lib/database/admin";
+import { getAdminDb } from '../_lib/database/admin';
+import { verifyAdminSession } from '../_lib/auth/admin-auth';
 import { Timestamp } from "firebase-admin/firestore";
 import { AuthorizationError, ValidationError } from "../_lib/middleware/error-handler";
 
 const auth = getAdminAuth();
 const db = getAdminDb();
 
-/**
- * Helper function to verify admin authentication
- */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new AuthorizationError("Missing or invalid authorization header");
-  }
 
-  const token = authHeader.substring(7);
-  const decodedToken = await auth.verifyIdToken(token);
-
-  // Check if user is admin
-  if (!decodedToken.admin && decodedToken.role !== "admin") {
-    throw new AuthorizationError("Admin access required");
-  }
-
-  return decodedToken;
-}
 
 /**
  * POST /api/contact
@@ -122,7 +105,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    await verifyAdminAuth(request);
+    await verifyAdminSession(request);
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");

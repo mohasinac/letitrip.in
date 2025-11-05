@@ -138,7 +138,7 @@ const postCategoriesHandler = async (request: NextRequest) => {
     // Create category using controller
     const category = await createCategory(body, {
       userId: user.userId,
-      role: user.role as 'admin' | 'seller' | 'user',
+      role: session.role as 'admin' | 'seller' | 'user',
     });
 
     // 🔥 Invalidate category caches after creation

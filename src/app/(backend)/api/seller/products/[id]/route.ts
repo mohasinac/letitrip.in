@@ -13,33 +13,9 @@ import { AuthorizationError, ValidationError, NotFoundError } from '../../../_li
 /**
  * Verify seller authentication
  */
-async function verifySellerAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'seller' && role !== 'admin') {
-      throw new AuthorizationError('Seller access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'seller' | 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * Helper: Delete all files in a storage folder
@@ -158,7 +134,7 @@ export async function GET(
 ) {
   try {
     // Verify seller authentication
-    const seller = await verifySellerAuth(request);
+    const seller = await verifySellerSession(request);
     const sellerId = seller.uid;
 
     const adminDb = getAdminDb();
@@ -224,7 +200,7 @@ export async function PUT(
 ) {
   try {
     // Verify seller authentication
-    const seller = await verifySellerAuth(request);
+    const seller = await verifySellerSession(request);
     const sellerId = seller.uid;
 
     const adminDb = getAdminDb();
@@ -423,7 +399,7 @@ export async function DELETE(
 ) {
   try {
     // Verify seller authentication
-    const seller = await verifySellerAuth(request);
+    const seller = await verifySellerSession(request);
     const sellerId = seller.uid;
 
     const adminDb = getAdminDb();

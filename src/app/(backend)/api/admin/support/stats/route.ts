@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/app/(backend)/api/_lib/database/admin";
+import { getAdminDb } from "@/app/(backend)/api/_lib/database/admin";
+import { verifyAdminSession } from "../../../_lib/auth/admin-auth";
 
 /**
  * GET /api/admin/support/stats
@@ -7,41 +8,8 @@ import { getAdminAuth, getAdminDb } from "@/app/(backend)/api/_lib/database/admi
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      console.error("[Support Stats] No authorization header found");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    
-    let decodedToken;
-    try {
-      decodedToken = await auth.verifyIdToken(token);
-    } catch (verifyError: any) {
-      console.error("[Support Stats] Token verification failed:", verifyError.message);
-      return NextResponse.json(
-        { success: false, error: "Invalid token" },
-        { status: 401 }
-      );
-    }
-    
-    const role = decodedToken.role || "user";
-    console.log("[Support Stats] User role:", role);
-
-    // Only admins can access
-    if (role !== "admin") {
-      console.error("[Support Stats] Access denied. Role:", role, "Required: admin");
-      return NextResponse.json(
-        { success: false, error: `Unauthorized: Admin access required. Your role: ${role}` },
-        { status: 403 }
-      );
-    }
+    // Verify admin session
+    const session = await verifyAdminSession(request);
 
     const db = getAdminDb();
 

@@ -117,16 +117,29 @@ export default function ProductsPage() {
       // Use API service instead of direct fetch
       const data = await api.products.getProducts(filters);
 
-      if (page === 1) {
-        setProducts((data.products as any) || []);
+      // Handle response safely
+      if (data && data.products) {
+        if (page === 1) {
+          setProducts(data.products as any);
+        } else {
+          setProducts((prev) => [...prev, ...(data.products as any)]);
+        }
+        setHasMore((data.total || 0) > page * 20);
       } else {
-        setProducts((prev) => [...prev, ...((data.products as any) || [])]);
+        // If no data, set empty array
+        if (page === 1) {
+          setProducts([]);
+        }
+        setHasMore(false);
       }
-
-      setHasMore(data.total > page * 20);
     } catch (error: any) {
       console.error("Error fetching products:", error);
-      toast.error("Failed to load products");
+      toast.error(error.message || "Failed to load products");
+      // Set empty products on error for first page
+      if (page === 1) {
+        setProducts([]);
+      }
+      setHasMore(false);
     } finally {
       setLoading(false);
     }

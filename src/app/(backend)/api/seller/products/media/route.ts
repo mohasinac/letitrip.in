@@ -4,40 +4,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth } from '../../../_lib/database/admin';
+import { verifySellerSession } from '../../../_lib/auth/admin-auth';
 import { getStorage } from 'firebase-admin/storage';
 import { AuthorizationError, ValidationError } from '../../../_lib/middleware/error-handler';
 
 /**
  * Verify seller authentication
  */
-async function verifySellerAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'seller' && role !== 'admin') {
-      throw new AuthorizationError('Seller access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'seller' | 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * POST /api/seller/products/media
@@ -46,7 +22,7 @@ async function verifySellerAuth(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify seller authentication
-    const seller = await verifySellerAuth(request);
+    const session = await verifySellerSession(request);
     const sellerId = seller.uid;
 
     // Parse form data

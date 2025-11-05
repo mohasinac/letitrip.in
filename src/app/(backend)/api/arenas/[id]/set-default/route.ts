@@ -5,36 +5,7 @@ import {
   NotFoundError,
 } from '../../../_lib/middleware/error-handler';
 
-/**
- * Helper function to verify admin authentication
- */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: 'admin' as const,
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * POST /api/arenas/[id]/set-default
@@ -46,7 +17,7 @@ export async function POST(
 ) {
   try {
     // Verify admin authentication
-    await verifyAdminAuth(request);
+    await verifyAdminSession(request);
     const { id } = await context.params;
     const db = getAdminDb();
 

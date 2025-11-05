@@ -240,6 +240,12 @@ service cloud.firestore {
       allow delete: if isAdmin(); // Only admins can delete shipments
     }
     
+    // Sessions collection - server-side only (no client access)
+    // Only the backend API (using Admin SDK) can access this
+    match /sessions/{sessionId} {
+      allow read, write: if false; // No client access - backend only
+    }
+    
     // Helper functions
     function isAdmin() {
       return request.auth != null && 

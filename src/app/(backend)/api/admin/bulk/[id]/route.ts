@@ -10,33 +10,9 @@ import { AuthorizationError, NotFoundError } from '../../../_lib/middleware/erro
 /**
  * Verify admin authentication
  */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/admin/bulk/[id]
@@ -48,7 +24,7 @@ export async function GET(
 ) {
   try {
     // Verify admin authentication
-    await verifyAdminAuth(request);
+    await verifyAdminSession(request);
 
     // Await params (Next.js 15 requirement)
     const params = await context.params;

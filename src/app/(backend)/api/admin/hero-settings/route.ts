@@ -7,39 +7,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { settingsController } from '../../_lib/controllers/settings.controller';
-import { getAdminAuth } from '../../_lib/database/admin';
+import { verifyAdminSession } from '../../_lib/auth/admin-auth';
 import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
 
 /**
  * Verify admin authentication
  */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/admin/hero-settings
@@ -48,7 +24,7 @@ async function verifyAdminAuth(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Get hero settings
     const data = await settingsController.getHeroSettings(user);
@@ -81,14 +57,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Parse request body
     const body = await request.json();
     const { type, data } = body;
 
     // Update hero settings
-    const updatedData = await settingsController.updateHeroSettings(type, data, user);
+    const updatedData = await settingsController.updateHeroSettings(type, data, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,
@@ -118,7 +94,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Parse request body
     const body = await request.json();

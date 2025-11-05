@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth } from '../../../_lib/database/admin';
+import { verifySellerSession } from '../../../_lib/auth/admin-auth';
 import {
   AuthorizationError,
   ValidationError,
@@ -8,37 +8,7 @@ import {
 import { couponController } from '../../../_lib/controllers/coupon.controller';
 import { couponModel } from '../../../_lib/models/coupon.model';
 
-/**
- * Helper function to verify seller authentication
- */
-async function verifySellerAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'seller' && role !== 'admin') {
-      throw new AuthorizationError('Seller access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'seller' | 'admin',
-      email: decodedToken.email,
-      sellerId: decodedToken.uid,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/seller/coupons/[id] - Get a specific coupon
@@ -49,7 +19,7 @@ export async function GET(
 ) {
   try {
     // Verify authentication
-    const seller = await verifySellerAuth(request);
+    const session = await verifySellerSession(request);
     const { id } = await context.params;
 
     // Get coupon using model
@@ -60,7 +30,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if ((coupon as any).sellerId !== seller.sellerId) {
+    if ((coupon as any).sellerId !== session.userId) {
       throw new AuthorizationError('Not your coupon');
     }
 
@@ -97,14 +67,14 @@ export async function PUT(
 ) {
   try {
     // Verify authentication
-    const seller = await verifySellerAuth(request);
+    const session = await verifySellerSession(request);
     const { id } = await context.params;
 
     // Parse request body
     const body = await request.json();
 
     // Use controller to update coupon
-    const coupon = await couponController.updateCoupon(id, body, seller);
+    const coupon = await couponController.updateCoupon(id, body, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,
@@ -140,11 +110,11 @@ export async function DELETE(
 ) {
   try {
     // Verify authentication
-    const seller = await verifySellerAuth(request);
+    const session = await verifySellerSession(request);
     const { id } = await context.params;
 
     // Use controller to delete coupon
-    await couponController.deleteCoupon(id, seller);
+    await couponController.deleteCoupon(id, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,

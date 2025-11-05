@@ -4,31 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminStorage } from "../../_lib/database/admin";
+import { getAdminStorage } from "../../_lib/database/admin";
+import { verifyAdminSession } from "../../_lib/auth/admin-auth";
 import { AuthorizationError, ValidationError } from "../../_lib/middleware/error-handler";
 
-const auth = getAdminAuth();
 const storage = getAdminStorage();
-
-/**
- * Helper function to verify admin authentication
- */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new AuthorizationError("Missing or invalid authorization header");
-  }
-
-  const token = authHeader.substring(7);
-  const decodedToken = await auth.verifyIdToken(token);
-
-  // Check if user is admin
-  if (!decodedToken.admin && decodedToken.role !== "admin") {
-    throw new AuthorizationError("Admin access required");
-  }
-
-  return decodedToken;
-}
 
 /**
  * POST /api/beyblades/upload-image
@@ -37,7 +17,7 @@ async function verifyAdminAuth(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    await verifyAdminAuth(request);
+    await verifyAdminSession(request);
 
     const formData = await request.formData();
     const file = formData.get("file") as File;

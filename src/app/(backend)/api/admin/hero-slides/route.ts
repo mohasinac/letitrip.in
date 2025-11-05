@@ -8,39 +8,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { settingsController } from '../../_lib/controllers/settings.controller';
-import { getAdminAuth } from '../../_lib/database/admin';
+import { verifyAdminSession } from '../../_lib/auth/admin-auth';
 import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
 
 /**
  * Verify admin authentication
  */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/admin/hero-slides
@@ -49,7 +25,7 @@ async function verifyAdminAuth(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Get all slides (admin can see inactive)
     const data = await settingsController.getAllHeroSlides(user);
@@ -82,13 +58,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Parse request body
     const body = await request.json();
 
     // Create hero slide
-    const data = await settingsController.createHeroSlide(body, user);
+    const data = await settingsController.createHeroSlide(body, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,
@@ -118,7 +94,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Parse request body
     const body = await request.json();
@@ -129,7 +105,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update hero slide
-    const data = await settingsController.updateHeroSlide(id, slideData, user);
+    const data = await settingsController.updateHeroSlide(id, slideData, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,
@@ -159,7 +135,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Verify admin authentication
-    const user = await verifyAdminAuth(request);
+    const session = await verifyAdminSession(request);
 
     // Get ID from query params
     const { searchParams } = new URL(request.url);
@@ -170,7 +146,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete hero slide
-    await settingsController.deleteHeroSlide(id, user);
+    await settingsController.deleteHeroSlide(id, { uid: session.userId, role: session.role, email: session.email });
 
     return NextResponse.json({
       success: true,

@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth, getAdminDb } from '../../_lib/database/admin';
+import { verifyAdminSession } from '../../../_lib/auth/admin-auth';
 import { AuthorizationError, ValidationError } from '../../_lib/middleware/error-handler';
 
 interface BulkJob {
@@ -31,33 +31,9 @@ interface BulkJob {
 /**
  * Verify admin authentication
  */
-async function verifyAdminAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+
+
   
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthorizationError('Authentication required');
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const role = decodedToken.role || 'user';
-
-    if (role !== 'admin') {
-      throw new AuthorizationError('Admin access required');
-    }
-
-    return {
-      uid: decodedToken.uid,
-      role: role as 'admin',
-      email: decodedToken.email,
-    };
-  } catch (error: any) {
-    throw new AuthorizationError('Invalid or expired token');
-  }
-}
 
 /**
  * GET /api/admin/bulk
@@ -66,7 +42,7 @@ async function verifyAdminAuth(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    await verifyAdminAuth(request);
+    await verifyAdminSession(request);
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -142,7 +118,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const admin = await verifyAdminAuth(request);
+    const admin = await verifyAdminSession(request);
 
     const body = await request.json();
     const { operation, entity, data, options } = body;

@@ -124,7 +124,7 @@ const putProductHandler = async (
       body,
       {
         uid: user.userId,
-        role: user.role as 'admin' | 'seller' | 'user',
+        role: session.role as 'admin' | 'seller' | 'user',
         sellerId: userData?.sellerId,
         email: userData?.email,
       }
@@ -218,7 +218,7 @@ const deleteProductHandler = async (
       slug,
       {
         uid: user.userId,
-        role: user.role as 'admin' | 'seller' | 'user',
+        role: session.role as 'admin' | 'seller' | 'user',
         sellerId: userData?.sellerId,
         email: userData?.email,
       }
