@@ -1,5 +1,13 @@
 import { Room, Client } from "colyseus";
-import { GameState, Beyblade } from "./schema/GameState";
+import { 
+  GameState, 
+  Beyblade, 
+  LoopState, 
+  ObstacleState, 
+  PitState, 
+  LaserGunState,
+  ProjectileState 
+} from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena } from "../utils/firebase";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
