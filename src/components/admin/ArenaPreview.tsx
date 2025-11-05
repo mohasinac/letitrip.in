@@ -272,34 +272,124 @@ function WaterBodyRenderer({
   };
 
   const color = config.color || liquidColors[config.liquidType] || "#4fc3f7";
-  const radius = (config.radius || 10) * scale;
 
-  const shapePath = generateShapePath(
-    config.shape,
-    { x: centerX, y: centerY },
-    radius,
-  );
+  // Handle different water body types
+  if (config.type === "center") {
+    // CENTER TYPE: Single shape at arena center
+    const radius = (config.radius || 10) * scale;
+    const shapePath = generateShapePath(
+      config.shape,
+      { x: centerX, y: centerY },
+      radius,
+    );
 
-  return (
-    <g className="water-body">
-      <path d={shapePath} fill={color} opacity={0.5} />
-      {/* Wave lines */}
-      {[0.3, 0.5, 0.7].map((factor, idx) => (
-        <path
-          key={idx}
-          d={generateShapePath(
-            config.shape === "circle" ? "circle" : config.shape,
-            { x: centerX, y: centerY },
-            radius * factor,
-          )}
-          fill="none"
-          stroke={color}
-          strokeWidth={1}
-          opacity={0.7}
+    return (
+      <g className="water-body">
+        <path d={shapePath} fill={color} opacity={0.5} />
+        {/* Wave lines */}
+        {[0.3, 0.5, 0.7].map((factor, idx) => (
+          <path
+            key={idx}
+            d={generateShapePath(
+              config.shape === "circle" ? "circle" : config.shape,
+              { x: centerX, y: centerY },
+              radius * factor,
+            )}
+            fill="none"
+            stroke={color}
+            strokeWidth={1}
+            opacity={0.7}
+          />
+        ))}
+      </g>
+    );
+  } else if (config.type === "loop") {
+    // LOOP TYPE: Moat/ring following a circular path
+    const innerRadius = (config.innerRadius || 12) * scale;
+    const outerRadius = (config.outerRadius || 18) * scale;
+
+    return (
+      <g className="water-body-moat">
+        {/* Outer circle */}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={outerRadius}
+          fill={color}
+          opacity={0.5}
         />
-      ))}
-    </g>
-  );
+        {/* Cut out inner circle to create ring/moat effect */}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={innerRadius}
+          fill="white"
+          opacity={1}
+        />
+        {/* Wave lines on moat */}
+        {[0.3, 0.5, 0.7].map((factor, idx) => {
+          const waveRadius = innerRadius + (outerRadius - innerRadius) * factor;
+          return (
+            <circle
+              key={idx}
+              cx={centerX}
+              cy={centerY}
+              r={waveRadius}
+              fill="none"
+              stroke={color}
+              strokeWidth={1}
+              opacity={0.6}
+            />
+          );
+        })}
+      </g>
+    );
+  } else if (config.type === "ring") {
+    // RING TYPE: Ring at arena edges
+    const arenaRadius = 25 * scale; // Approximate arena size
+    const thickness = (config.ringThickness || 3) * scale;
+    const innerRadius = arenaRadius - thickness;
+    const outerRadius = arenaRadius;
+
+    return (
+      <g className="water-body-ring">
+        {/* Outer circle */}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={outerRadius}
+          fill={color}
+          opacity={0.5}
+        />
+        {/* Cut out inner area */}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={innerRadius}
+          fill="white"
+          opacity={1}
+        />
+        {/* Wave lines on ring */}
+        {[0.3, 0.5, 0.7].map((factor, idx) => {
+          const waveRadius = innerRadius + thickness * factor;
+          return (
+            <circle
+              key={idx}
+              cx={centerX}
+              cy={centerY}
+              r={waveRadius}
+              fill="none"
+              stroke={color}
+              strokeWidth={1}
+              opacity={0.6}
+            />
+          );
+        })}
+      </g>
+    );
+  }
+
+  return null;
 }
 
 // Pit Renderer

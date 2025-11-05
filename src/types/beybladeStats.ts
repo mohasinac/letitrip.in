@@ -11,8 +11,17 @@ export type SpinDirection = "left" | "right";
  */
 export interface PointOfContact {
   angle: number; // Angle in degrees (0-360) relative to Beyblade center
-  damageMultiplier: number; // Multiplier when this point hits (e.g., 1.5x for blade contact)
+  damageMultiplier: number; // Multiplier when this point hits (1.0x - 2.0x)
   width: number; // Angular width of the contact point in degrees
+}
+
+/**
+ * Spin Steal Point - Positions for spin steal multipliers
+ */
+export interface SpinStealPoint {
+  angle: number; // Angle in degrees (0-360) relative to Beyblade center
+  spinStealMultiplier: number; // Multiplier for spin steal (1.0x - 2.0x)
+  width: number; // Angular width of the spin steal point in degrees
 }
 
 /**
@@ -93,6 +102,9 @@ export interface BeybladeStats {
 
   // Point of Contact (collision damage zones)
   pointsOfContact: PointOfContact[];
+  
+  // Spin Steal Points (spin steal zones)
+  spinStealPoints?: SpinStealPoint[];
 
   // Metadata
   createdAt?: string;

@@ -151,7 +151,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           -imgWidth / 2 + offsetX,
           -imgHeight / 2 + offsetY,
           imgWidth,
-          imgHeight,
+          imgHeight
         );
 
         // Reset clipping
@@ -197,7 +197,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
         drawSpecialMoveAnimation(ctx, canvas.width, canvas.height);
       }
 
-      // Draw contact points (spikes)
+      // Draw contact points (spikes) - Red/Orange/Yellow for damage
       if (beyblade.pointsOfContact && beyblade.pointsOfContact.length > 0) {
         ctx.save();
         ctx.translate(centerX, centerY);
@@ -216,8 +216,37 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           ctx.arc(0, 0, contactRadius, startAngle, endAngle);
           ctx.lineWidth = 4;
 
-          // Color based on damage multiplier
+          // Color based on damage multiplier (red to yellow gradient)
           const hue = Math.min((point.damageMultiplier - 1.0) * 300, 120);
+          ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+          ctx.stroke();
+        });
+
+        ctx.restore();
+      }
+
+      // Draw spin steal points - Blue/Cyan for energy transfer
+      if (beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0) {
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotationRef.current);
+
+        beyblade.spinStealPoints.forEach((point) => {
+          const angleRad = (point.angle - 90) * (Math.PI / 180);
+          const widthRad = (point.width / 2) * (Math.PI / 180);
+          const spinStealRadius = size / 2 + 12; // Slightly further out than contact points
+
+          const startAngle = angleRad - widthRad;
+          const endAngle = angleRad + widthRad;
+
+          // Draw spin steal arc
+          ctx.beginPath();
+          ctx.arc(0, 0, spinStealRadius, startAngle, endAngle);
+          ctx.lineWidth = 4;
+
+          // Cyan/Blue color based on spin steal multiplier
+          // 1.0x = cyan (180), 2.0x = deep blue (220)
+          const hue = 180 + (point.spinStealMultiplier - 1.0) * 40;
           ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
           ctx.stroke();
         });
@@ -240,7 +269,7 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
   const drawSpecialMoveAnimation = (
     ctx: CanvasRenderingContext2D,
     width: number,
-    height: number,
+    height: number
   ) => {
     // Special moves have been removed from the system
     // This function is kept for potential future use
@@ -373,6 +402,50 @@ const BeybladePreview: React.FC<BeybladePreviewProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Point Legend */}
+      {((beyblade.pointsOfContact && beyblade.pointsOfContact.length > 0) ||
+        (beyblade.spinStealPoints && beyblade.spinStealPoints.length > 0)) && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+          <h4 className="text-xs font-semibold text-gray-700 mb-2">
+            Point Legend:
+          </h4>
+          <div className="space-y-1 text-xs">
+            {beyblade.pointsOfContact &&
+              beyblade.pointsOfContact.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-8 h-1 rounded"
+                    style={{
+                      background:
+                        "linear-gradient(to right, hsl(0, 90%, 50%), hsl(60, 90%, 50%))",
+                    }}
+                  ></div>
+                  <span className="text-gray-600">
+                    💥 Contact Points (Red→Yellow:{" "}
+                    {beyblade.pointsOfContact.length})
+                  </span>
+                </div>
+              )}
+            {beyblade.spinStealPoints &&
+              beyblade.spinStealPoints.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-8 h-1 rounded"
+                    style={{
+                      background:
+                        "linear-gradient(to right, hsl(180, 90%, 50%), hsl(220, 90%, 50%))",
+                    }}
+                  ></div>
+                  <span className="text-gray-600">
+                    🌀 Spin Steal Points (Cyan→Blue:{" "}
+                    {beyblade.spinStealPoints.length})
+                  </span>
+                </div>
+              )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

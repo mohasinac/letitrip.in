@@ -23,6 +23,7 @@ import {
   generateRandomObstacles,
   generateRandomPits,
   validateArenaConfig,
+  buildExcludeZones,
 } from "@/types/arenaConfig";
 
 interface ArenaConfiguratorProps {
@@ -121,12 +122,10 @@ export default function ArenaConfigurator({
 
   const handleGenerateObstacles = () => {
     const count = Math.floor(Math.random() * 10) + 5; // 5-15 obstacles
-    const excludeZones = [
-      ...config.loops.map((loop) => ({ x: 0, y: 0, radius: loop.radius })),
-      ...(config.waterBody?.type === "center"
-        ? [{ x: 0, y: 0, radius: config.waterBody.radius || 10 }]
-        : []),
-    ];
+    
+    // Build comprehensive exclude zones (loops, existing hazards, water)
+    // Note: Don't exclude water bodies - allow obstacles ON liquid surfaces
+    const excludeZones = buildExcludeZones(config, false);
 
     const obstacles = generateRandomObstacles(
       count,
@@ -138,11 +137,15 @@ export default function ArenaConfigurator({
   };
 
   const handleGeneratePits = (placement: "edges" | "center" | "random") => {
+    // Build exclude zones including obstacles (so pits don't collide with obstacles)
+    const excludeZones = buildExcludeZones(config, false);
+    
     const pits = generateRandomPits(
       pitConfig.count,
       config.width / 2,
       placement,
       pitConfig.radius,
+      excludeZones,
     );
     setConfig({ ...config, pits });
   };
@@ -866,7 +869,7 @@ export default function ArenaConfigurator({
 
                 {config.loops.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    No loops yet. Click "Add Loop" to create speed boost zones.
+                    No loops yet. Click "Add Loop" to create speed boost paths.
                   </div>
                 )}
 

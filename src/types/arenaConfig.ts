@@ -117,6 +117,7 @@ export interface WallConfig {
 /**
  * Obstacle Configuration
  * Random objects placed in arena (rocks, pillars, etc.)
+ * Note: Obstacles can spawn anywhere in the arena except ON loop lines
  */
 export interface ObstacleConfig {
   type: "rock" | "pillar" | "barrier" | "wall";
@@ -130,7 +131,7 @@ export interface ObstacleConfig {
   health?: number; // Health if destructible
   themeIcon?: string; // Theme-based visual representation (tree, rock, crystal, etc.)
   canBeOnLoopPath?: boolean; // If true, can be placed on loop paths (default: false)
-  canBeInsideLoop?: boolean; // If true, can be inside loop areas (default: true)
+  canBeInsideLoop?: boolean; // DEPRECATED: Loops are lines, not zones. Obstacles can be anywhere except on the line itself
 }
 
 /**
@@ -267,7 +268,7 @@ export interface ArenaConfig {
   theme: ArenaTheme;
   rotation?: number; // Rotation angle for the entire arena in degrees (0-360)
 
-  // Loops (speed boost zones)
+  // Loops (speed boost paths/lines)
   loops: LoopConfig[];
 
   // Exits (where beyblades can leave the arena)
@@ -448,11 +449,107 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
 /**
  * Generate random obstacles for arena
  */
+/**
+ * Helper function to build exclude zones for hazard generation
+ * Includes loops (as lines), existing hazards, walls, and exits
+ */
+export function buildExcludeZones(
+  config: Partial<ArenaConfig>,
+  includeWaterAsZone: boolean = true,
+): { x: number; y: number; radius: number; type?: "zone" | "line" }[] {
+  const zones: { x: number; y: number; radius: number; type?: "zone" | "line" }[] = [];
+
+  // Add loops as LINES (not zones) - hazards can be inside/outside, just not ON the line
+  if (config.loops) {
+    zones.push(
+      ...config.loops.map((loop) => ({
+        x: 0,
+        y: 0,
+        radius: loop.radius,
+        type: "line" as const,
+      }))
+    );
+  }
+
+  // Add water body as zone ONLY if includeWaterAsZone is true
+  // This allows loops and some hazards to exist on liquid
+  if (includeWaterAsZone && config.waterBody?.enabled && config.waterBody.type === "center") {
+    zones.push({
+      x: 0,
+      y: 0,
+      radius: config.waterBody.radius || 10,
+      type: "zone" as const,
+    });
+  }
+
+  // Add existing obstacles as zones
+  if (config.obstacles) {
+    zones.push(
+      ...config.obstacles.map((obs) => ({
+        x: obs.x,
+        y: obs.y,
+        radius: obs.radius + 1, // Add 1em buffer
+        type: "zone" as const,
+      }))
+    );
+  }
+
+  // Add existing pits as zones
+  if (config.pits) {
+    zones.push(
+      ...config.pits.map((pit) => ({
+        x: pit.x,
+        y: pit.y,
+        radius: pit.radius + 1, // Add 1em buffer
+        type: "zone" as const,
+      }))
+    );
+  }
+
+  // Add portals as zones
+  if (config.portals) {
+    config.portals.forEach((portal) => {
+      zones.push(
+        {
+          x: portal.inPoint.x,
+          y: portal.inPoint.y,
+          radius: portal.radius + 1,
+          type: "zone" as const,
+        },
+        {
+          x: portal.outPoint.x,
+          y: portal.outPoint.y,
+          radius: portal.radius + 1,
+          type: "zone" as const,
+        }
+      );
+    });
+  }
+
+  // Add goal objects as zones
+  if (config.goalObjects) {
+    zones.push(
+      ...config.goalObjects.map((goal) => ({
+        x: goal.x,
+        y: goal.y,
+        radius: goal.radius + 1,
+        type: "zone" as const,
+      }))
+    );
+  }
+
+  return zones;
+}
+
+/**
+ * Generate random obstacles with collision avoidance
+ * Now uses buildExcludeZones for comprehensive collision detection
+ */
 export function generateRandomObstacles(
   count: number,
   arenaWidth: number,
   arenaHeight: number,
-  excludeZones: { x: number; y: number; radius: number }[] = [],
+  excludeZones: { x: number; y: number; radius: number; type?: "zone" | "line" }[] = [],
 ): ObstacleConfig[] {
   const obstacles: ObstacleConfig[] = [];
   const types: ObstacleConfig["type"][] = ["rock", "pillar", "barrier"];
@@ -463,7 +560,7 @@ export function generateRandomObstacles(
     let x = 0,
       y = 0;
 
-    // Try to find valid position (not overlapping with loops, water, etc.)
+    // Try to find valid position (not overlapping with water zones or on loop lines)
     while (!validPosition && attempts < 50) {
       x = (Math.random() - 0.5) * arenaWidth * 0.8;
       y = (Math.random() - 0.5) * arenaHeight * 0.8;
@@ -471,9 +568,21 @@ export function generateRandomObstacles(
       validPosition = true;
       for (const zone of excludeZones) {
         const dist = Math.sqrt((x - zone.x) ** 2 + (y - zone.y) ** 2);
-        if (dist < zone.radius + 3) {
-          validPosition = false;
-          break;
+        
+        if (zone.type === "line") {
+          // For loop lines: check if obstacle is TOO CLOSE to the line (within 2em of the path)
+          // This allows obstacles inside and outside the loop, just not ON the line
+          const distanceFromLine = Math.abs(dist - zone.radius);
+          if (distanceFromLine < 2) {
+            validPosition = false;
+            break;
+          }
+        } else {
+          // For zones (water bodies): check if obstacle overlaps the zone
+          if (dist < zone.radius + 3) {
+            validPosition = false;
+            break;
+          }
         }
       }
       attempts++;
@@ -499,43 +608,84 @@ export function generateRandomObstacles(
 
 /**
  * Generate random pits for arena edges or center
+ * Now with collision avoidance for all existing hazards
  */
 export function generateRandomPits(
   count: number,
   arenaRadius: number,
   placement: "edges" | "center" | "random" = "random",
   pitRadius: number = 1.5, // Default pit radius
+  excludeZones: { x: number; y: number; radius: number; type?: "zone" | "line" }[] = [],
 ): PitConfig[] {
   const pits: PitConfig[] = [];
 
   for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    let validPosition = false;
     let x = 0,
       y = 0;
 
-    if (placement === "edges") {
-      const angle = (i / count) * Math.PI * 2;
-      const distance = arenaRadius * (0.7 + Math.random() * 0.2);
-      x = Math.cos(angle) * distance;
-      y = Math.sin(angle) * distance;
-    } else if (placement === "center") {
-      const angle = Math.random() * Math.PI * 2;
-      const distance = Math.random() * arenaRadius * 0.3;
-      x = Math.cos(angle) * distance;
-      y = Math.sin(angle) * distance;
-    } else {
-      x = (Math.random() - 0.5) * arenaRadius * 1.6;
-      y = (Math.random() - 0.5) * arenaRadius * 1.6;
+    // Try to find valid position
+    while (!validPosition && attempts < 50) {
+      if (placement === "edges") {
+        const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+        const distance = arenaRadius * (0.7 + Math.random() * 0.2);
+        x = Math.cos(angle) * distance;
+        y = Math.sin(angle) * distance;
+      } else if (placement === "center") {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * arenaRadius * 0.3;
+        x = Math.cos(angle) * distance;
+        y = Math.sin(angle) * distance;
+      } else {
+        x = (Math.random() - 0.5) * arenaRadius * 1.6;
+        y = (Math.random() - 0.5) * arenaRadius * 1.6;
+      }
+
+      // Check against all exclude zones
+      validPosition = true;
+      for (const zone of excludeZones) {
+        const dist = Math.sqrt((x - zone.x) ** 2 + (y - zone.y) ** 2);
+
+        if (zone.type === "line") {
+          // For loop lines: avoid being ON the line
+          const distanceFromLine = Math.abs(dist - zone.radius);
+          if (distanceFromLine < pitRadius + 1) {
+            validPosition = false;
+            break;
+          }
+        } else {
+          // For zones: avoid overlapping
+          if (dist < zone.radius + pitRadius + 1) {
+            validPosition = false;
+            break;
+          }
+        }
+      }
+
+      // Check against previously generated pits
+      for (const existingPit of pits) {
+        const dist = Math.sqrt((x - existingPit.x) ** 2 + (y - existingPit.y) ** 2);
+        if (dist < existingPit.radius + pitRadius + 2) {
+          validPosition = false;
+          break;
+        }
+      }
+
+      attempts++;
     }
 
-    pits.push({
-      x,
-      y,
-      radius: pitRadius + Math.random() * 0.5, // Use provided radius with small variation
-      damagePerSecond: 10,
-      escapeChance: 0.5,
-      visualDepth: 2 + Math.floor(Math.random() * 3),
-      swirl: Math.random() > 0.5,
-    });
+    if (validPosition) {
+      pits.push({
+        x,
+        y,
+        radius: pitRadius + Math.random() * 0.5, // Use provided radius with small variation
+        damagePerSecond: 10,
+        escapeChance: 0.5,
+        visualDepth: 2 + Math.floor(Math.random() * 3),
+        swirl: Math.random() > 0.5,
+      });
+    }
   }
 
   return pits;

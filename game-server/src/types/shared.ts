@@ -13,6 +13,12 @@ export interface PointOfContact {
   width: number;
 }
 
+export interface SpinStealPoint {
+  angle: number;
+  spinStealMultiplier: number;
+  width: number;
+}
+
 export interface TypeDistribution {
   attack: number;
   defense: number;
@@ -45,6 +51,7 @@ export interface BeybladeStats {
   damageReduction?: number;
   typeDistribution: TypeDistribution;
   pointsOfContact: PointOfContact[];
+  spinStealPoints?: SpinStealPoint[];
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

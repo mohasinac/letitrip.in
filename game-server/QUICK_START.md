@@ -145,7 +145,7 @@ room.send("input", input);
 
 2. **Implement Arena Features**
 
-   - Loops (speed boost zones)
+   - Loops (speed boost paths/lines)
    - Water bodies (slow + drain)
    - Obstacles (collision damage)
    - Pits (traps)

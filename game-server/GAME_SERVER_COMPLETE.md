@@ -123,7 +123,7 @@ interface ArenaConfig {
   shape: ArenaShape; // circle, rectangle, pentagon, hexagon, octagon, etc.
   theme: ArenaTheme; // forest, futuristic, sea, etc.
 
-  // Loops (speed boost zones)
+  // Loops (speed boost paths/lines)
   loops: LoopConfig[];
 
   // Walls & Exits
@@ -152,7 +152,7 @@ interface ArenaConfig {
 
 | Feature             | Description                          | Status          |
 | ------------------- | ------------------------------------ | --------------- |
-| **Loops**           | Speed boost zones with charge points | ✅ Schema Ready |
+| **Loops**           | Speed boost paths with charge points | ✅ Schema Ready |
 | **Walls**           | Damage + recoil, spikes, springs     | ✅ Schema Ready |
 | **Exits**           | Ring-out zones                       | ✅ Implemented  |
 | **Obstacles**       | Rocks, pillars, barriers             | ✅ Schema Ready |
