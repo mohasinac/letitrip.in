@@ -9,6 +9,8 @@ import React, { useState } from "react";
 import ArenaPreviewBasic from "./ArenaPreviewBasic";
 import BasicsTab from "./arena-tabs/BasicsTab";
 import WaterBodiesTab from "./arena-tabs/WaterBodiesTab";
+import PortalsTab from "./arena-tabs/PortalsTab";
+import PitsTab from "./arena-tabs/PitsTab";
 import {
   ArenaConfig,
   ArenaShape,
@@ -1324,6 +1326,11 @@ export default function ArenaConfiguratorNew({
 
             {/* PORTALS TAB */}
             {currentTab === "portals" && (
+              <PortalsTab config={config} setConfig={setConfig} />
+            )}
+
+            {/* PORTALS TAB - OLD (REMOVED) */}
+            {false && currentTab === "portals" && (
               <div className="space-y-6">
                 {/* Portals Header */}
                 <div className="bg-gray-800 rounded-lg p-6">
@@ -1696,6 +1703,16 @@ export default function ArenaConfiguratorNew({
 
             {/* PITS TAB */}
             {currentTab === "pits" && (
+              <PitsTab
+                config={config}
+                setConfig={setConfig}
+                calculatePolygonVertices={calculatePolygonVertices}
+                calculateStarVertices={calculateStarVertices}
+              />
+            )}
+
+            {/* PITS TAB - OLD (REMOVED) */}
+            {false && currentTab === "pits" && (
               <div className="space-y-6">
                 {/* Pits Header */}
                 <div className="bg-gray-800 rounded-lg p-6">
