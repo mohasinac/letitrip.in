@@ -49,6 +49,18 @@ export default function MainNavBar({
       ) {
         setIsUserMenuOpen(false);
       }
+      if (
+        adminMenuRef.current &&
+        !adminMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsAdminMenuOpen(false);
+      }
+      if (
+        sellerMenuRef.current &&
+        !sellerMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsSellerMenuOpen(false);
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -109,7 +121,11 @@ export default function MainNavBar({
           {isAuthenticated && isAdmin && (
             <div className="relative hidden lg:block" ref={adminMenuRef}>
               <button
-                onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                onClick={() => {
+                  setIsAdminMenuOpen(!isAdminMenuOpen);
+                  setIsSellerMenuOpen(false);
+                  setIsUserMenuOpen(false);
+                }}
                 className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
               >
                 <LayoutDashboard className="w-5 h-5" />
@@ -146,7 +162,11 @@ export default function MainNavBar({
           {isAuthenticated && isAdminOrSeller && (
             <div className="relative hidden lg:block" ref={sellerMenuRef}>
               <button
-                onClick={() => setIsSellerMenuOpen(!isSellerMenuOpen)}
+                onClick={() => {
+                  setIsSellerMenuOpen(!isSellerMenuOpen);
+                  setIsAdminMenuOpen(false);
+                  setIsUserMenuOpen(false);
+                }}
                 className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
               >
                 <ShoppingBag className="w-5 h-5" />
@@ -206,7 +226,11 @@ export default function MainNavBar({
               // Logged in - Show user profile with dropdown
               <>
                 <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onClick={() => {
+                    setIsUserMenuOpen(!isUserMenuOpen);
+                    setIsAdminMenuOpen(false);
+                    setIsSellerMenuOpen(false);
+                  }}
                   className="flex items-center gap-2 hover:bg-gray-700 px-3 py-2 rounded"
                 >
                   <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center overflow-hidden">
@@ -263,7 +287,11 @@ export default function MainNavBar({
 
                   {/* Dropdown Caret - Shows menu */}
                   <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    onClick={() => {
+                      setIsUserMenuOpen(!isUserMenuOpen);
+                      setIsAdminMenuOpen(false);
+                      setIsSellerMenuOpen(false);
+                    }}
                     className="hover:bg-gray-700 p-2 rounded"
                     aria-label="User menu"
                   >

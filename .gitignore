@@ -40,3 +40,5 @@ next-env.d.ts
 .env.production.new
 .env.production.example
 .env.example
+logs/api.log
+logs/combined.log

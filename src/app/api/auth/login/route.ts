@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '../../lib/firebase/config';
 import { withMiddleware } from '../../middleware';
-import { createSession, setSessionCookie } from '../../lib/session';
+import { createSession, setSessionCookie, clearSessionCookie } from '../../lib/session';
 import bcrypt from 'bcryptjs';
 
 interface LoginRequestBody {
@@ -30,10 +30,13 @@ async function loginHandler(req: NextRequest) {
       .get();
 
     if (userSnapshot.empty) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       );
+      // Clear any existing invalid session cookie
+      clearSessionCookie(response);
+      return response;
     }
 
     const userDoc = userSnapshot.docs[0];
@@ -43,27 +46,36 @@ async function loginHandler(req: NextRequest) {
     const isPasswordValid = await bcrypt.compare(password, userData.hashedPassword);
 
     if (!isPasswordValid) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       );
+      // Clear any existing invalid session cookie
+      clearSessionCookie(response);
+      return response;
     }
 
     // Check if user is disabled
     try {
       const userRecord = await adminAuth.getUser(userData.uid);
       if (userRecord.disabled) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'Account has been disabled' },
           { status: 403 }
         );
+        // Clear any existing invalid session cookie
+        clearSessionCookie(response);
+        return response;
       }
     } catch (error) {
       console.error('Error checking user status:', error);
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Authentication failed' },
         { status: 500 }
       );
+      // Clear any existing invalid session cookie
+      clearSessionCookie(response);
+      return response;
     }
 
     // Create session
@@ -105,7 +117,7 @@ async function loginHandler(req: NextRequest) {
   } catch (error: any) {
     console.error('Login error:', error);
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { 
         error: 'Login failed',
         message: process.env.NODE_ENV === 'production' 
@@ -114,6 +126,10 @@ async function loginHandler(req: NextRequest) {
       },
       { status: 500 }
     );
+    
+    // Clear any existing invalid session cookie
+    clearSessionCookie(response);
+    return response;
   }
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '../../lib/firebase/config';
 import { withMiddleware } from '../../middleware';
-import { createSession, setSessionCookie } from '../../lib/session';
+import { createSession, setSessionCookie, clearSessionCookie } from '../../lib/session';
 import bcrypt from 'bcryptjs';
 
 interface RegisterRequestBody {
@@ -19,10 +19,12 @@ async function registerHandler(req: NextRequest) {
 
     // Validate input
     if (!email || !password || !name) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Missing required fields', fields: ['email', 'password', 'name'] },
         { status: 400 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     // Validate role (default to 'user' if not provided or invalid)
@@ -32,18 +34,22 @@ async function registerHandler(req: NextRequest) {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     // Validate password strength
     if (password.length < 8) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Password must be at least 8 characters long' },
         { status: 400 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     // Check if user already exists in Firestore
@@ -54,10 +60,12 @@ async function registerHandler(req: NextRequest) {
       .get();
 
     if (!userSnapshot.empty) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'User already exists' },
         { status: 409 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     // Hash password
@@ -138,27 +146,33 @@ async function registerHandler(req: NextRequest) {
 
     // Handle Firebase Auth errors
     if (error.code === 'auth/email-already-exists') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Email already exists' },
         { status: 409 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     if (error.code === 'auth/invalid-email') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid email address' },
         { status: 400 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     if (error.code === 'auth/invalid-password') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid password. Password must be at least 6 characters' },
         { status: 400 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { 
         error: 'Registration failed',
         message: process.env.NODE_ENV === 'production' 
@@ -167,6 +181,8 @@ async function registerHandler(req: NextRequest) {
       },
       { status: 500 }
     );
+    clearSessionCookie(response);
+    return response;
   }
 }
 
