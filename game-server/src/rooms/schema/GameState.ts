@@ -56,45 +56,62 @@ export class PitState extends Schema {
 }
 
 /**
- * Laser Gun (Turret) State
+ * Turret State (replaces LaserGunState)
+ * Supports: random, beam, periodic, aoe, boomerang attack types
  */
-export class LaserGunState extends Schema {
+export class TurretState extends Schema {
   @type("string") turretId: string = "";
   @type("number") turretIndex: number = 0;
+  @type("string") attackType: string = "random"; // random, beam, periodic, aoe, boomerang
   @type("number") x: number = 0; // em units
   @type("number") y: number = 0; // em units
   @type("number") currentAngle: number = 0; // Current aim angle in degrees
   @type("number") targetAngle: number = 0; // Target angle (for aiming animation)
-  @type("number") fireInterval: number = 2; // Seconds between shots
+  
+  // Attack properties (vary by type)
   @type("number") damage: number = 10;
-  @type("number") bulletSpeed: number = 10; // em/second
-  @type("string") targetMode: string = "nearest"; // random, nearest, strongest
-  @type("number") warmupTime: number = 1; // Seconds
   @type("number") range: number = 20; // em units
+  @type("number") cooldown: number = 2; // Seconds between attacks
+  @type("number") warmupTime: number = 1; // Seconds
+  
+  // Type-specific properties
+  @type("number") bulletSpeed: number = 10; // em/second (for bullets/missiles/boomerang)
+  @type("number") beamWidth: number = 2; // em units (for beam)
+  @type("number") beamDuration: number = 1; // Seconds (for beam)
+  @type("number") explosionRadius: number = 5; // em units (for aoe missiles)
+  @type("number") returnSpeed: number = 8; // em/second (for boomerang)
+  
+  // State tracking
   @type("boolean") destructible: boolean = false; // Can turret be destroyed?
   @type("boolean") isDestroyed: boolean = false;
   @type("number") health: number = 100;
   @type("number") maxHealth: number = 100;
   @type("boolean") isActive: boolean = true;
   @type("boolean") isWarming: boolean = false; // Currently aiming/warming up
-  @type("boolean") isFiring: boolean = false;
+  @type("boolean") isFiring: boolean = false; // Currently attacking
+  @type("boolean") isReturning: boolean = false; // Boomerang is returning
   @type("number") warmupStartTime: number = 0;
   @type("number") lastFireTime: number = 0;
   @type("number") cooldownEndTime: number = 0;
   @type("string") currentTarget: string = ""; // Beyblade ID
+  
+  // Statistics
   @type("number") shotsFired: number = 0;
   @type("number") hitsLanded: number = 0;
   @type("number") damageDealt: number = 0;
+  @type("number") boomerangReturns: number = 0; // For boomerang type
 }
 
 /**
- * Projectile (Laser/Bullet) State
+ * Projectile State (Bullet, Missile, Boomerang, Beam)
+ * Enhanced with type-specific behavior
  */
 export class ProjectileState extends Schema {
   @type("string") id: string = "";
+  @type("string") type: string = "bullet"; // bullet, missile, boomerang, beam
   @type("string") turretId: string = "";
   @type("number") turretIndex: number = 0;
-  @type("string") targetId: string = ""; // Beyblade ID (for tracking)
+  @type("string") targetId: string = ""; // Beyblade ID (for tracking/homing)
   @type("number") x: number = 0; // Current position (em units)
   @type("number") y: number = 0;
   @type("number") velocityX: number = 0; // em/second
@@ -104,21 +121,37 @@ export class ProjectileState extends Schema {
   @type("number") speed: number = 0; // em/second
   @type("number") spawnTime: number = 0;
   @type("number") maxLifetime: number = 5000; // 5 seconds max
+  
+  // Type-specific properties
+  @type("number") explosionRadius: number = 0; // For missiles (AOE)
+  @type("boolean") isReturning: boolean = false; // For boomerang
+  @type("number") returnStartX: number = 0; // Boomerang return point
+  @type("number") returnStartY: number = 0;
+  @type("number") beamWidth: number = 0; // For beam attacks
+  @type("number") beamEndX: number = 0; // Beam endpoint
+  @type("number") beamEndY: number = 0;
+  
+  // State tracking
   @type("boolean") isActive: boolean = true;
   @type("boolean") hasHit: boolean = false; // Track if projectile hit something
+  @type("boolean") hasExploded: boolean = false; // For missiles
   @type("string") hitBeybladeId: string = ""; // Track what it hit
+  @type("number") hitCount: number = 0; // Number of hits (for piercing/multi-hit)
 }
 
 /**
  * Water Body State - tracks beyblades in water
+ * Enhanced to support multiple water bodies (moat, zone, wall-based)
  */
 export class WaterBodyState extends Schema {
-  @type("boolean") enabled: boolean = false;
-  @type("string") type: string = "center"; // center, moat, ring
-  @type("string") shape: string = "circle";
+  @type("string") waterBodyId: string = ""; // Unique ID
+  @type("number") waterBodyIndex: number = 0;
+  @type("string") type: string = "moat"; // moat, zone, wall-based
   @type("string") liquidType: string = "water"; // water, blood, lava, acid, oil, ice
   @type("number") spinDrainRate: number = 10; // Percentage per second
   @type("number") speedMultiplier: number = 0.7; // 0.7 = 30% slower
+  @type("boolean") causesSlip: boolean = false; // Ice/oil slipperiness
+  @type("number") damage: number = 0; // Lava/acid damage per second
   @type(["string"]) beybladeIds = new ArraySchema<string>(); // Beyblades currently in water
   @type("number") totalDamageDealt: number = 0; // Total spin drained
   @type("number") totalBeybladesPassed: number = 0; // Total count
@@ -144,27 +177,8 @@ export class PortalState extends Schema {
   @type("number") totalUses: number = 0;
 }
 
-/**
- * Goal Object State - tracks collectibles/destroyables
- */
-export class GoalObjectState extends Schema {
-  @type("string") goalId: string = "";
-  @type("number") goalIndex: number = 0;
-  @type("string") type: string = "star"; // star, crystal, coin, gem, relic, trophy
-  @type("number") x: number = 0; // em units
-  @type("number") y: number = 0;
-  @type("number") radius: number = 1;
-  @type("boolean") isCollectible: boolean = false; // true = collect on touch, false = must destroy
-  @type("boolean") isCollected: boolean = false;
-  @type("boolean") isDestroyed: boolean = false;
-  @type("number") health: number = 100;
-  @type("number") maxHealth: number = 100;
-  @type("number") shieldHealth: number = 0;
-  @type("number") scoreValue: number = 10;
-  @type("string") collectedBy: string = ""; // Beyblade ID
-  @type("string") destroyedBy: string = ""; // Beyblade ID
-  @type("number") collectionTime: number = 0;
-}
+// DEPRECATED: GoalObjectState removed in new system
+// export class GoalObjectState extends Schema { ... }
 
 /**
  * Beyblade entity - represents a single beyblade in the game
@@ -286,12 +300,13 @@ export class ArenaState extends Schema {
   @type("number") wallSpringRecoilMultiplier: number = 1.0;
 
   // Arena features counts (for client display)
-  @type("number") loopCount: number = 0;
-  @type("number") exitCount: number = 0;
+  @type("number") speedPathCount: number = 0; // Updated from loopCount
+  @type("number") loopCount: number = 0; // Alias for backward compatibility
   @type("number") obstacleCount: number = 0;
   @type("number") pitCount: number = 0;
-  @type("number") laserGunCount: number = 0;
-  @type("boolean") hasWaterBody: boolean = false;
+  @type("number") turretCount: number = 0; // Updated from laserGunCount
+  @type("number") waterBodyCount: number = 0; // Multiple water bodies now
+  @type("number") portalCount: number = 0;
 }
 
 /**
@@ -301,15 +316,14 @@ export class GameState extends Schema {
   @type({ map: Beyblade }) beyblades = new MapSchema<Beyblade>();
   @type(ArenaState) arena = new ArenaState();
 
-  // Arena feature states
-  @type({ map: LoopState }) loops = new MapSchema<LoopState>();
+  // Arena feature states (UPDATED)
+  @type({ map: LoopState }) loops = new MapSchema<LoopState>(); // Speed paths (backward compatible)
   @type({ map: ObstacleState }) obstacles = new MapSchema<ObstacleState>();
   @type({ map: PitState }) pits = new MapSchema<PitState>();
-  @type({ map: LaserGunState }) laserGuns = new MapSchema<LaserGunState>();
+  @type({ map: TurretState }) turrets = new MapSchema<TurretState>(); // Updated from laserGuns
   @type({ map: ProjectileState }) projectiles = new MapSchema<ProjectileState>();
-  @type(WaterBodyState) waterBody = new WaterBodyState();
+  @type({ map: WaterBodyState }) waterBodies = new MapSchema<WaterBodyState>(); // Multiple water bodies
   @type({ map: PortalState }) portals = new MapSchema<PortalState>();
-  @type({ map: GoalObjectState }) goalObjects = new MapSchema<GoalObjectState>();
 
   @type("string") status: string = "waiting"; // waiting, in-progress, finished
   @type("string") winner: string = ""; // userId of winner

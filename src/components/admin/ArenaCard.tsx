@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArenaConfig } from "@/types/arenaConfig";
+import { ArenaConfig } from "@/types/arenaConfigNew";
 import { Circle, Square, Pentagon, Hexagon, Octagon, Star } from "lucide-react";
 
 interface ArenaCardProps {

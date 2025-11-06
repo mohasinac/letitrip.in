@@ -6,7 +6,7 @@
 "use client";
 
 import React from "react";
-import { ChargePointConfig, LoopConfig } from "@/types/arenaConfig";
+import { ChargePointConfig, LoopConfig } from "@/types/arenaConfigNew";
 
 interface ChargePointRendererProps {
   chargePoint: ChargePointConfig;
