@@ -14,11 +14,13 @@
 **Core Principle**: Same endpoint, different behavior based on role
 
 **Example - `/api/shops`:**
+
 - **Guest/User**: Returns only public, verified shops
 - **Seller**: Returns own shops + public shops
 - **Admin**: Returns all shops with advanced filters
 
 **Benefits:**
+
 - ✅ Reduced code duplication (no separate `/api/admin/shops`, `/api/seller/shops`)
 - ✅ Easier maintenance (changes in one place)
 - ✅ Consistent API surface (predictable URLs)
@@ -31,44 +33,50 @@
 
 ## Quick Reference: Unified API Endpoints
 
-| Resource | Endpoint | GET | POST | PATCH | DELETE |
-|----------|----------|-----|------|-------|--------|
-| **Shops** | `/api/shops` | List (filtered by role) | Create (seller/admin) | - | - |
-| | `/api/shops/[id]` | Detail (role-based) | - | Update (owner/admin) | Delete (owner/admin) |
-| | `/api/shops/[id]/verify` | - | - | Verify (admin) | - |
-| | `/api/shops/[id]/ban` | - | - | Ban (admin) | - |
-| | `/api/shops/[id]/feature` | - | - | Feature (admin) | - |
-| | `/api/shops/[id]/payments` | Payments (owner/admin) | Process (admin) | - | - |
-| **Products** | `/api/products` | List (role-filtered) | Create (seller/admin) | - | - |
-| | `/api/products/[id]` | Detail (public/owner) | - | Update (owner/admin) | Delete (owner/admin) |
-| **Categories** | `/api/categories` | List (public) | Create (admin) | - | - |
-| | `/api/categories/[id]` | Detail (public) | - | Update (admin) | Delete (admin) |
-| | `/api/categories/tree` | Tree (public) | - | - | - |
-| | `/api/categories/leaves` | Leaves (public) | - | - | - |
-| **Orders** | `/api/orders` | List (role-filtered) | Create (user) | - | - |
-| | `/api/orders/[id]` | Detail (owner/seller/admin) | - | Update status (seller/admin) | - |
-| | `/api/orders/[id]/shipment` | - | Create (seller/admin) | - | - |
-| **Returns** | `/api/returns` | List (role-filtered) | Initiate (user) | - | - |
-| | `/api/returns/[id]` | Detail (owner/seller/admin) | - | Update (seller/admin) | - |
-| | `/api/returns/[id]/approve` | - | Approve (seller/admin) | - | - |
-| | `/api/returns/[id]/refund` | - | Process (seller/admin) | - | - |
-| | `/api/returns/[id]/resolve` | - | Resolve (admin) | - | - |
-| **Coupons** | `/api/coupons` | List (public active/owner all) | Create (seller/admin) | - | - |
-| | `/api/coupons/[id]` | Detail (public/owner) | - | Update (owner/admin) | Delete (owner/admin) |
-| **Reviews** | `/api/reviews` | List (public approved) | Create (user) | - | - |
-| | `/api/reviews/[id]` | Detail (public) | - | Moderate (owner/admin) | Delete (author/admin) |
-| **Users** | `/api/users` | List (admin) | - | - | - |
-| | `/api/users/[id]` | Detail (self/admin) | - | Update (self/admin) | - |
-| | `/api/users/[id]/ban` | - | - | Ban (admin) | - |
-| | `/api/users/[id]/role` | - | - | Change role (admin) | - |
-| **Analytics** | `/api/analytics` | Get (seller: own, admin: all) | - | - | - |
-| **Revenue** | `/api/revenue` | Get (seller: own, admin: all) | - | - | - |
-| **Payouts** | `/api/payouts` | List (seller: own, admin: all) | Request (seller) | - | - |
-| | `/api/payouts/[id]` | - | - | Approve (admin) | - |
-| **Media** | `/api/media/upload` | - | Upload (authenticated) | - | - |
-| | `/api/media/[id]` | - | - | Update metadata (owner/admin) | Delete (owner/admin) |
+| Resource       | Endpoint                    | GET                            | POST                   | PATCH                         | DELETE                |
+| -------------- | --------------------------- | ------------------------------ | ---------------------- | ----------------------------- | --------------------- |
+| **Shops**      | `/api/shops`                | List (filtered by role)        | Create (seller/admin)  | -                             | -                     |
+|                | `/api/shops/[id]`           | Detail (role-based)            | -                      | Update (owner/admin)          | Delete (owner/admin)  |
+|                | `/api/shops/[id]/verify`    | -                              | -                      | Verify (admin)                | -                     |
+|                | `/api/shops/[id]/ban`       | -                              | -                      | Ban (admin)                   | -                     |
+|                | `/api/shops/[id]/feature`   | -                              | -                      | Feature (admin)               | -                     |
+|                | `/api/shops/[id]/payments`  | Payments (owner/admin)         | Process (admin)        | -                             | -                     |
+| **Products**   | `/api/products`             | List (role-filtered)           | Create (seller/admin)  | -                             | -                     |
+|                | `/api/products/[id]`        | Detail (public/owner)          | -                      | Update (owner/admin)          | Delete (owner/admin)  |
+| **Categories** | `/api/categories`           | List (public)                  | Create (admin)         | -                             | -                     |
+|                | `/api/categories/[id]`      | Detail (public)                | -                      | Update (admin)                | Delete (admin)        |
+|                | `/api/categories/tree`      | Tree (public)                  | -                      | -                             | -                     |
+|                | `/api/categories/leaves`    | Leaves (public)                | -                      | -                             | -                     |
+| **Orders**     | `/api/orders`               | List (role-filtered)           | Create (user)          | -                             | -                     |
+|                | `/api/orders/[id]`          | Detail (owner/seller/admin)    | -                      | Update status (seller/admin)  | -                     |
+|                | `/api/orders/[id]/shipment` | -                              | Create (seller/admin)  | -                             | -                     |
+| **Returns**    | `/api/returns`              | List (role-filtered)           | Initiate (user)        | -                             | -                     |
+|                | `/api/returns/[id]`         | Detail (owner/seller/admin)    | -                      | Update (seller/admin)         | -                     |
+|                | `/api/returns/[id]/approve` | -                              | Approve (seller/admin) | -                             | -                     |
+|                | `/api/returns/[id]/refund`  | -                              | Process (seller/admin) | -                             | -                     |
+|                | `/api/returns/[id]/resolve` | -                              | Resolve (admin)        | -                             | -                     |
+| **Coupons**    | `/api/coupons`              | List (public active/owner all) | Create (seller/admin)  | -                             | -                     |
+|                | `/api/coupons/[id]`         | Detail (public/owner)          | -                      | Update (owner/admin)          | Delete (owner/admin)  |
+| **Reviews**    | `/api/reviews`              | List (public approved)         | Create (user)          | -                             | -                     |
+|                | `/api/reviews/[id]`         | Detail (public)                | -                      | Moderate (owner/admin)        | Delete (author/admin) |
+| **Users**      | `/api/users`                | List (admin)                   | -                      | -                             | -                     |
+|                | `/api/users/[id]`           | Detail (self/admin)            | -                      | Update (self/admin)           | -                     |
+|                | `/api/users/[id]/ban`       | -                              | -                      | Ban (admin)                   | -                     |
+|                | `/api/users/[id]/role`      | -                              | -                      | Change role (admin)           | -                     |
+| **Analytics**  | `/api/analytics`            | Get (seller: own, admin: all)  | -                      | -                             | -                     |
+| **Revenue**    | `/api/revenue`              | Get (seller: own, admin: all)  | -                      | -                             | -                     |
+| **Payouts**    | `/api/payouts`              | List (seller: own, admin: all) | Request (seller)       | -                             | -                     |
+|                | `/api/payouts/[id]`         | -                              | -                      | Approve (admin)               | -                     |
+| **Media**      | `/api/media/upload`         | -                              | Upload (authenticated) | -                             | -                     |
+|                | `/api/media/[id]`           | -                              | -                      | Update metadata (owner/admin) | Delete (owner/admin)  |
+| **Auctions**   | `/api/auctions`             | List (role-filtered)           | Create (seller/admin)  | -                             | -                     |
+|                | `/api/auctions/[id]`        | Detail (public)                | -                      | Update (owner/admin)          | Delete (owner/admin)  |
+|                | `/api/auctions/[id]/bid`    | List bids (public)             | Place bid (user)       | -                             | -                     |
+|                | `/api/auctions/[id]/feature`| -                              | -                      | Feature (admin)               | -                     |
+|                | `/api/auctions/live`        | Live auctions (public)         | -                      | -                             | -                     |
 
 **Legend:**
+
 - 📖 Public access
 - 🔐 Authenticated users
 - 👤 Owner only
@@ -273,6 +281,22 @@
 - [ ] Create `/src/components/seller/ReviewFilters.tsx` - Filter reviews by rating
 - [ ] Create `/src/app/api/reviews/route.ts` - **Unified Reviews API** (GET: by shop/product, POST: authenticated users only)
 
+### 3.7 Auction Management
+
+- [ ] Create `/src/app/seller/my-shops/[shopId]/auctions/page.tsx` - **Shop auctions list (max 5 active per shop)**
+- [ ] Create `/src/app/seller/my-shops/[shopId]/auctions/create/page.tsx` - **Create auction → redirect to edit page**
+- [ ] Create `/src/app/seller/my-shops/[shopId]/auctions/[id]/edit/page.tsx` - **Edit auction with media retry**
+- [ ] Create `/src/app/seller/my-shops/[shopId]/auctions/[id]/page.tsx` - **Auction details with live bids**
+- [ ] Create `/src/components/seller/AuctionForm.tsx` - **Auction form (item, starting bid, reserve price, duration)**
+- [ ] Create `/src/components/seller/AuctionTable.tsx` - **Auctions table with status (active, ended, pending)**
+- [ ] Create `/src/components/seller/AuctionBidsList.tsx` - **Live bids list with highest bidder**
+- [ ] Create `/src/components/seller/AuctionTimer.tsx` - **Countdown timer for auction end**
+- [ ] Implement auction limit validation (5 active per shop, unlimited for admin)
+- [ ] Create `/src/app/api/auctions/route.ts` - **Unified Auctions API** (GET: public/filtered by role, POST: seller/admin only)
+- [ ] Create `/src/app/api/auctions/[id]/route.ts` - **Unified Auction API** (GET: public, PATCH/DELETE: owner/admin only)
+- [ ] Create `/src/app/api/auctions/[id]/bid/route.ts` - **Place bid API** (GET: list bids, POST: authenticated users only)
+- [ ] **Handle media upload failures**: Save auction with media URLs as null, allow retry in edit page
+
 ---
 
 ## Phase 4: Seller Orders & Fulfillment
@@ -388,6 +412,18 @@
 - [ ] Create `/src/app/api/categories/[id]/route.ts` - **Unified Category API** (GET: public, PATCH/DELETE: admin only)
 - [ ] Create `/src/app/api/categories/tree/route.ts` - **Category Tree** (GET: public, full tree structure)
 - [ ] Create `/src/app/api/categories/leaves/route.ts` - **Leaf Categories** (GET: public, for product creation)
+
+### 5.7 Auction House Management
+
+- [ ] Create `/src/app/admin/auctions/page.tsx` - **All auctions (live, ended, upcoming) with AuctionFilters**
+- [ ] Create `/src/app/admin/auctions/[id]/page.tsx` - **Auction details with bid history**
+- [ ] Create `/src/components/admin/AuctionManagement.tsx` - **Auctions table + FilterSidebar integration**
+- [ ] Create `/src/components/admin/FeaturedAuctionManager.tsx` - **Set featured auctions (priority order)**
+- [ ] Create `/src/components/admin/AuctionModeration.tsx` - **Approve/reject/cancel auctions**
+- [ ] Create `/src/components/admin/AuctionAnalytics.tsx` - **Auction analytics dashboard**
+- [ ] Use `/src/app/api/auctions/route.ts` - **Uses unified Auctions API** (admin sees all, no limit)
+- [ ] Create `/src/app/api/auctions/[id]/feature/route.ts` - **Set Featured Auction** (PATCH: admin only)
+- [ ] Create `/src/app/api/auctions/live/route.ts` - **Live Auctions Feed** (GET: public, WebSocket support)
 
 ---
 
@@ -840,36 +876,79 @@
 - [ ] Set up alerts for critical errors
 - [ ] Create logs retention policy
 
+## Phase 11: Deployment & Monitoring
+
+### 11.1 Deployment
+
+- [ ] Set up production environment variables (payment keys, API keys, secrets)
+- [ ] Configure CDN for static assets (images, videos)
+- [ ] Set up database backups (automated daily backups)
+- [ ] Configure SSL certificates
+- [ ] Set up monitoring (error tracking, analytics)
+- [ ] Set up payment gateway production credentials (Razorpay/PayPal)
+- [ ] Configure email/SMS service production credentials
+- [ ] Set up cloud storage production bucket
+- [ ] Create deployment pipeline (CI/CD)
+- [ ] Set up staging environment for testing
+- [ ] Configure domain and DNS
+
+### 11.2 Monitoring
+
+- [ ] Set up error monitoring (Sentry/similar)
+- [ ] Set up performance monitoring (New Relic/similar)
+- [ ] Set up user analytics (Google Analytics/similar)
+- [ ] Monitor payment transaction success/failure rates
+- [ ] Monitor cart abandonment rate
+- [ ] Monitor checkout conversion rate
+- [ ] Monitor search performance and popular queries
+- [ ] Create admin dashboard for system health
+- [ ] Set up alerts for critical errors (payment failures, API downtime)
+- [ ] Set up alerts for high cart abandonment
+- [ ] Create logs retention policy
+- [ ] Monitor database performance (slow queries)
+- [ ] Track user engagement metrics (favorites, reviews, returns)
+
 ---
 
 ## Implementation Priority
 
 ### High Priority (MVP)
 
-1. Seller: My Shops, Product Management (basic), My Orders (basic)
-2. Admin: All Shops, All Orders, Category Management
-3. Static Pages: FAQ, Privacy Policy, Terms of Service
-4. SEO: Sitemap, robots.txt, metadata
+1. **User Shopping Flow**: Search → Product → Cart → Checkout → Payment → Orders
+2. **Core User Pages**: My Orders, Account Settings, Favorites
+3. **Payment Integration**: Razorpay and PayPal
+4. **Cart System**: Guest cart + authenticated cart with merge on login
+5. Seller: My Shops, Product Management (basic), My Orders (basic)
+6. Admin: All Shops, All Orders, Category Management
+7. Static Pages: FAQ, Privacy Policy, Terms of Service
+8. SEO: Sitemap, robots.txt, metadata
 
 ### Medium Priority
 
-1. Seller: Coupon Management, Shop Analytics, My Revenue
-2. Admin: User Management, Returns Management
-3. Advanced product features (inline editing, full SEO)
-4. Payment integrations
+1. **Advanced Search**: Filters by category, shop, price, rating
+2. **Returns & Refunds**: User initiate, seller approve, admin resolve
+3. **User Profile**: Email/mobile verification, avatar upload, password change
+4. Seller: Coupon Management, Shop Analytics, My Revenue
+5. Admin: User Management, Returns Management
+6. Advanced product features (inline editing, full SEO)
 
 ### Low Priority
 
-1. Advanced analytics and charts
-2. Shiprocket integration
-3. Video tutorials
-4. PWA features
+1. **Product Recommendations**: Based on view history
+2. **Shop Follow System**: Follow/unfollow shops
+3. **Voice Search**: Voice-activated product search
+4. Advanced analytics and charts
+5. Shiprocket integration
+6. Video tutorials
+7. PWA features
 
 ---
 
 ## Unified Component Library
 
 ### Components to Create (Reusable)
+
+**General:**
 
 - `<DataTable />` - Universal table with sorting, filtering, pagination
 - `<InlineEditor />` - Quick inline editing
@@ -880,15 +959,22 @@
 - `<StatsCard />` - Analytics cards
 - `<EmptyState />` - Empty states
 - `<FilterBar />` - Unified filters
+- `<FilterSidebar />` - Advanced filter sidebar (collapsible on mobile)
 - `<RichTextEditor />` - Rich text editor
 - `<CategorySelector />` - Category tree selector
 - `<DateTimePicker />` - Date/time picker
 - `<SlugInput />` - Auto-slug generator
+
+**Cards:**
+
 - `<ProductCard />` - Product display card for public pages
 - `<ShopCard />` - Shop display card for public pages
 - `<CategoryCard />` - Category display card for public pages
 - `<CardGrid />` - Responsive grid layout for cards
 - `<ProductQuickView />` - Quick view modal for products
+
+**Media:**
+
 - `<MediaUploader />` - Unified photo/video uploader with camera support
 - `<CameraCapture />` - Camera photo capture
 - `<VideoRecorder />` - Video recording from camera
@@ -897,6 +983,82 @@
 - `<MediaPreviewCard />` - Preview media before upload with metadata
 - `<MediaEditorModal />` - Modal for editing media with metadata
 - `<MediaGallery />` - Gallery view for multiple media items
+
+**User Shopping:**
+
+- `<AddToCartButton />` - Add to cart button
+- `<FavoriteButton />` - Add/remove favorite (heart icon)
+- `<CartItem />` - Cart item with quantity controls
+- `<CartSummary />` - Cart totals with coupon
+- `<CouponInput />` - Apply/remove coupon
+- `<AddressForm />` - Add/edit shipping address
+- `<AddressSelector />` - Select saved address
+- `<PaymentMethodCard />` - Payment method option
+- `<OrderCard />` - Order summary card
+- `<OrderTimeline />` - Order status timeline
+- `<OrderTracker />` - Real-time shipment tracking
+- `<SearchBar />` - Enhanced search bar with suggestions
+- `<SearchFilters />` - Advanced filters for search results
+
+---
+
+## Constants & Configuration
+
+All constants follow the DRY principle and are centralized in `/src/constants/`:
+
+### Database Collections (`/src/constants/database.ts`)
+
+```typescript
+export const COLLECTIONS = {
+  SHOPS: "shops",
+  PRODUCTS: "products",
+  ORDERS: "orders",
+  ORDER_ITEMS: "orderItems",
+  CART: "cart",
+  FAVORITES: "favorites",
+  ADDRESSES: "addresses",
+  CATEGORIES: "categories",
+  COUPONS: "coupons",
+  RETURNS: "returns",
+  REFUNDS: "refunds",
+  REVIEWS: "reviews",
+  USERS: "users",
+  SESSIONS: "sessions",
+  PAYOUTS: "payouts",
+  TRANSACTIONS: "transactions",
+  PAYMENT_TRANSACTIONS: "paymentTransactions",
+  SHIPMENTS: "shipments",
+  NOTIFICATIONS: "notifications",
+  SEARCH_ANALYTICS: "searchAnalytics",
+};
+```
+
+### Storage Buckets (`/src/constants/storage.ts`)
+
+```typescript
+export const STORAGE_BUCKETS = {
+  SHOP_LOGOS: "shops/logos",
+  SHOP_BANNERS: "shops/banners",
+  PRODUCT_IMAGES: "products/images",
+  PRODUCT_VIDEOS: "products/videos",
+  CATEGORY_IMAGES: "categories/images",
+  USER_AVATARS: "users/avatars",
+  RETURN_MEDIA: "returns/media",
+  REVIEW_IMAGES: "reviews/images",
+  REVIEW_VIDEOS: "reviews/videos",
+  ORDER_INVOICES: "orders/invoices",
+};
+```
+
+### API Routes Pattern
+
+All APIs follow unified pattern with role-based filtering:
+
+```
+/api/[resource]           - GET (list), POST (create)
+/api/[resource]/[id]      - GET (detail), PATCH (update), DELETE
+/api/[resource]/[id]/[action] - POST (specific actions)
+```
 
 ---
 
@@ -908,14 +1070,19 @@
 2. **Responsive First**: Mobile-first design approach
 3. **Accessibility**: WCAG 2.1 AA compliance
 4. **Performance**: Optimize for speed and efficiency
-5. **Security**: Role-based access control, input validation
+5. **Security**: Role-based access control, input validation, payment security
 6. **Scalability**: Design for growth (pagination, caching, optimization)
+7. **Constants-Based**: All database/storage names in constants
+8. **Unified API**: Single endpoints with role-based behavior
 
 ### Tech Stack
 
 - **Frontend**: Next.js 14+ (App Router), React, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Firebase/Firestore (assumed)
 - **Auth**: Existing session-based auth with role support
+- **Payments**: Razorpay (primary), PayPal (alternative)
+- **SMS/Email**: Twilio/AWS SNS (SMS), SendGrid/AWS SES (Email)
+- **Search**: Algolia/Elasticsearch or native Firestore
 - **State**: React Context + hooks
 - **Forms**: React Hook Form + Zod validation
 - **UI Components**: Headless UI / Radix UI (recommended)
@@ -925,6 +1092,7 @@
 - **Media Processing**: Canvas API, MediaStream API (camera/video recording)
 - **Image Editing**: react-easy-crop / Cropper.js / Konva.js
 - **Video Processing**: Canvas API for thumbnail generation
+- **Cart**: localStorage (guest) + Firestore (authenticated)
 
 ### Folder Structure Convention
 
@@ -938,25 +1106,34 @@
 ```
 
 **API Examples:**
+
 - `/api/shops` - List/create shops (behavior varies by role)
 - `/api/shops/[id]` - Get/update/delete shop (role-based access)
 - `/api/products` - List/create products (filtered by role)
 - `/api/orders` - List/create orders (user's own or all if admin)
-- `/api/categories` - Public categories (admin can create/edit)
+- `/api/cart` - Get/update user cart (authenticated) or guest cart (session)
+- `/api/cart/merge` - Merge guest cart into user cart on login
+- `/api/checkout/create-order` - Create order from cart
+- `/api/checkout/verify-payment` - Verify Razorpay/PayPal payment
+- `/api/search` - Universal search (products, shops, categories)
+- `/api/favorites` - User favorites/wishlist
+- `/api/addresses` - User shipping addresses
 
 ---
 
 ## Completion Tracking
 
-- **Total Tasks**: 260+
+- **Total Tasks**: 380+
 - **Completed**: 0
 - **In Progress**: 0
 - **Blocked**: 0
 
 ## Documentation Files Created
+
 - ✅ `FEATURE_IMPLEMENTATION_CHECKLIST.md` - Main implementation checklist
 - ✅ `MEDIA_COMPONENTS_GUIDE.md` - Comprehensive media handling guide
 - ✅ `UNIFIED_API_ARCHITECTURE.md` - Complete unified API documentation
 - ✅ `UNIFIED_API_QUICKSTART.md` - Developer quick start guide
+- ✅ `FILTER_AND_UPLOAD_GUIDE.md` - Filter sidebar & upload management guide
 
 Last Updated: November 7, 2025

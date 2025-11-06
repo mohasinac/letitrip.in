@@ -3,6 +3,7 @@
 ## Overview
 
 This guide covers three major UX improvements:
+
 1. **FilterSidebar** - Advanced filtering for all list views
 2. **Constants-based approach** - Centralized database and storage naming
 3. **Upload Context & Recovery** - Handle failed uploads gracefully
@@ -14,17 +15,20 @@ This guide covers three major UX improvements:
 ### Design Requirements
 
 **Desktop (≥ 1024px):**
+
 - Always visible on the left side
 - Fixed width: 280px
 - Sticky positioning
 - Scrollable content
 
 **Tablet (768px - 1023px):**
+
 - Collapsible with toggle button
 - Slide-in/out animation
 - Overlay on content when open
 
 **Mobile (< 768px):**
+
 - Hidden by default
 - Full-screen modal when open
 - Bottom sheet animation
@@ -34,9 +38,9 @@ This guide covers three major UX improvements:
 ```tsx
 // /src/components/common/FilterSidebar.tsx
 
-import { ReactNode, useState, useEffect } from 'react';
-import { X, Filter } from 'lucide-react';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { ReactNode, useState, useEffect } from "react";
+import { X, Filter } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -54,11 +58,11 @@ export function FilterSidebar({
   onApply,
   onReset,
   children,
-  title = 'Filters',
+  title = "Filters",
   appliedCount = 0,
 }: FilterSidebarProps) {
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const isMobile = useMediaQuery('(max-width: 767px)');
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   // Desktop: Always show
   // Tablet/Mobile: Show based on isOpen state
@@ -83,8 +87,8 @@ export function FilterSidebar({
           bg-white border-r border-gray-200
           z-50 lg:z-10
           transition-transform duration-300
-          ${isMobile && !isOpen ? '-translate-x-full' : 'translate-x-0'}
-          ${!isDesktop && !isOpen ? '-translate-x-full' : 'translate-x-0'}
+          ${isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"}
+          ${!isDesktop && !isOpen ? "-translate-x-full" : "translate-x-0"}
           lg:translate-x-0
           overflow-y-auto
         `}
@@ -109,9 +113,7 @@ export function FilterSidebar({
         </div>
 
         {/* Filter Content */}
-        <div className="p-4 space-y-6">
-          {children}
-        </div>
+        <div className="p-4 space-y-6">{children}</div>
 
         {/* Footer Actions */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 flex gap-2">
@@ -217,20 +219,21 @@ export function FilterDateRange({ label, value, onChange }) {
 ```tsx
 // /src/components/filters/ProductFilters.tsx
 
-import { FilterSidebar } from '@/components/common/FilterSidebar';
-import { FilterGroup, FilterCheckbox, FilterRange } from '@/components/common';
-import { useFilters } from '@/hooks/useFilters';
+import { FilterSidebar } from "@/components/common/FilterSidebar";
+import { FilterGroup, FilterCheckbox, FilterRange } from "@/components/common";
+import { useFilters } from "@/hooks/useFilters";
 
 export function ProductFilters({ isOpen, onClose }) {
-  const { filters, setFilter, applyFilters, resetFilters, appliedCount } = useFilters({
-    initialFilters: {
-      categories: [],
-      priceRange: [0, 10000],
-      inStock: null,
-      condition: [],
-      rating: null,
-    },
-  });
+  const { filters, setFilter, applyFilters, resetFilters, appliedCount } =
+    useFilters({
+      initialFilters: {
+        categories: [],
+        priceRange: [0, 10000],
+        inStock: null,
+        condition: [],
+        rating: null,
+      },
+    });
 
   return (
     <FilterSidebar
@@ -245,7 +248,7 @@ export function ProductFilters({ isOpen, onClose }) {
         <FilterCheckbox
           label="In Stock Only"
           checked={filters.inStock}
-          onChange={(e) => setFilter('inStock', e.target.checked)}
+          onChange={(e) => setFilter("inStock", e.target.checked)}
         />
       </FilterGroup>
 
@@ -255,12 +258,12 @@ export function ProductFilters({ isOpen, onClose }) {
           min={0}
           max={100000}
           value={filters.priceRange}
-          onChange={(value) => setFilter('priceRange', value)}
+          onChange={(value) => setFilter("priceRange", value)}
         />
       </FilterGroup>
 
       <FilterGroup title="Condition">
-        {['New', 'Used', 'Refurbished'].map((condition) => (
+        {["New", "Used", "Refurbished"].map((condition) => (
           <FilterCheckbox
             key={condition}
             label={condition}
@@ -269,7 +272,7 @@ export function ProductFilters({ isOpen, onClose }) {
               const updated = e.target.checked
                 ? [...filters.condition, condition]
                 : filters.condition.filter((c) => c !== condition);
-              setFilter('condition', updated);
+              setFilter("condition", updated);
             }}
           />
         ))}
@@ -281,7 +284,7 @@ export function ProductFilters({ isOpen, onClose }) {
             key={rating}
             label={`${rating}★ & Up`}
             checked={filters.rating === rating}
-            onChange={() => setFilter('rating', rating)}
+            onChange={() => setFilter("rating", rating)}
           />
         ))}
       </FilterGroup>
@@ -295,8 +298,8 @@ export function ProductFilters({ isOpen, onClose }) {
 ```tsx
 // /src/hooks/useFilters.ts
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function useFilters({ initialFilters, onFilterChange }) {
   const router = useRouter();
@@ -324,12 +327,12 @@ export function useFilters({ initialFilters, onFilterChange }) {
     // Update URL params
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== '') {
+      if (value !== null && value !== undefined && value !== "") {
         params.set(key, JSON.stringify(value));
       }
     });
     router.push(`?${params.toString()}`);
-    
+
     // Callback for parent component
     onFilterChange?.(filters);
   };
@@ -343,7 +346,7 @@ export function useFilters({ initialFilters, onFilterChange }) {
   const appliedCount = useMemo(() => {
     return Object.values(filters).filter((value) => {
       if (Array.isArray(value)) return value.length > 0;
-      return value !== null && value !== undefined && value !== '';
+      return value !== null && value !== undefined && value !== "";
     }).length;
   }, [filters]);
 
@@ -372,55 +375,55 @@ export function useFilters({ initialFilters, onFilterChange }) {
  */
 export const COLLECTIONS = {
   // Core resources
-  SHOPS: 'shops',
-  PRODUCTS: 'products',
-  CATEGORIES: 'categories',
-  
+  SHOPS: "shops",
+  PRODUCTS: "products",
+  CATEGORIES: "categories",
+
   // Orders & transactions
-  ORDERS: 'orders',
-  ORDER_ITEMS: 'orderItems',
-  RETURNS: 'returns',
-  REFUNDS: 'refunds',
-  
+  ORDERS: "orders",
+  ORDER_ITEMS: "orderItems",
+  RETURNS: "returns",
+  REFUNDS: "refunds",
+
   // Marketing
-  COUPONS: 'coupons',
-  REVIEWS: 'reviews',
-  
+  COUPONS: "coupons",
+  REVIEWS: "reviews",
+
   // Users & auth
-  USERS: 'users',
-  SESSIONS: 'sessions',
-  
+  USERS: "users",
+  SESSIONS: "sessions",
+
   // Financial
-  PAYOUTS: 'payouts',
-  TRANSACTIONS: 'transactions',
-  
+  PAYOUTS: "payouts",
+  TRANSACTIONS: "transactions",
+
   // Shipping
-  SHIPMENTS: 'shipments',
-  CARRIERS: 'carriers',
-  
+  SHIPMENTS: "shipments",
+  CARRIERS: "carriers",
+
   // Media
-  MEDIA: 'media',
-  MEDIA_METADATA: 'mediaMetadata',
-  
+  MEDIA: "media",
+  MEDIA_METADATA: "mediaMetadata",
+
   // System
-  NOTIFICATIONS: 'notifications',
-  AUDIT_LOGS: 'auditLogs',
-  SYSTEM_SETTINGS: 'systemSettings',
+  NOTIFICATIONS: "notifications",
+  AUDIT_LOGS: "auditLogs",
+  SYSTEM_SETTINGS: "systemSettings",
 } as const;
 
-export type CollectionName = typeof COLLECTIONS[keyof typeof COLLECTIONS];
+export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
 
 /**
  * Subcollections for nested data
  */
 export const SUBCOLLECTIONS = {
-  SHOP_ANALYTICS: 'analytics',
-  SHOP_SETTINGS: 'settings',
-  USER_ADDRESSES: 'addresses',
-  USER_WISHLIST: 'wishlist',
-  USER_CART: 'cart',
-  PRODUCT_VARIANTS: 'variants',
-  PRODUCT_REVIEWS: 'reviews',
+  SHOP_ANALYTICS: "analytics",
+  SHOP_SETTINGS: "settings",
+  USER_ADDRESSES: "addresses",
+  USER_WISHLIST: "wishlist",
+  USER_CART: "cart",
+  PRODUCT_VARIANTS: "variants",
+  PRODUCT_REVIEWS: "reviews",
 } as const;
 ```
 
@@ -435,43 +438,44 @@ export const SUBCOLLECTIONS = {
  */
 export const STORAGE_BUCKETS = {
   // Shop related
-  SHOP_LOGOS: 'shops/logos',
-  SHOP_BANNERS: 'shops/banners',
-  SHOP_DOCUMENTS: 'shops/documents',
-  
+  SHOP_LOGOS: "shops/logos",
+  SHOP_BANNERS: "shops/banners",
+  SHOP_DOCUMENTS: "shops/documents",
+
   // Product related
-  PRODUCT_IMAGES: 'products/images',
-  PRODUCT_VIDEOS: 'products/videos',
-  PRODUCT_THUMBNAILS: 'products/thumbnails',
-  PRODUCT_DOCUMENTS: 'products/documents',
-  
+  PRODUCT_IMAGES: "products/images",
+  PRODUCT_VIDEOS: "products/videos",
+  PRODUCT_THUMBNAILS: "products/thumbnails",
+  PRODUCT_DOCUMENTS: "products/documents",
+
   // Category related
-  CATEGORY_IMAGES: 'categories/images',
-  CATEGORY_ICONS: 'categories/icons',
-  
+  CATEGORY_IMAGES: "categories/images",
+  CATEGORY_ICONS: "categories/icons",
+
   // User related
-  USER_AVATARS: 'users/avatars',
-  USER_DOCUMENTS: 'users/documents',
-  
+  USER_AVATARS: "users/avatars",
+  USER_DOCUMENTS: "users/documents",
+
   // Returns & refunds
-  RETURN_MEDIA: 'returns/media',
-  RETURN_VIDEOS: 'returns/videos',
-  
+  RETURN_MEDIA: "returns/media",
+  RETURN_VIDEOS: "returns/videos",
+
   // Reviews
-  REVIEW_IMAGES: 'reviews/images',
-  REVIEW_VIDEOS: 'reviews/videos',
-  
+  REVIEW_IMAGES: "reviews/images",
+  REVIEW_VIDEOS: "reviews/videos",
+
   // Orders
-  ORDER_INVOICES: 'orders/invoices',
-  ORDER_RECEIPTS: 'orders/receipts',
-  SHIPPING_LABELS: 'orders/shipping-labels',
-  
+  ORDER_INVOICES: "orders/invoices",
+  ORDER_RECEIPTS: "orders/receipts",
+  SHIPPING_LABELS: "orders/shipping-labels",
+
   // System
-  TEMP_UPLOADS: 'temp',
-  ARCHIVED: 'archived',
+  TEMP_UPLOADS: "temp",
+  ARCHIVED: "archived",
 } as const;
 
-export type StorageBucket = typeof STORAGE_BUCKETS[keyof typeof STORAGE_BUCKETS];
+export type StorageBucket =
+  (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];
 
 /**
  * File naming conventions
@@ -482,7 +486,7 @@ export function getStoragePath(
   filename: string
 ): string {
   const timestamp = Date.now();
-  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
   return `${bucket}/${resourceId}/${timestamp}-${sanitizedFilename}`;
 }
 
@@ -491,7 +495,9 @@ export function getStoragePath(
  */
 export function getStorageUrl(path: string): string {
   const bucketName = process.env.NEXT_PUBLIC_STORAGE_BUCKET;
-  return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(path)}?alt=media`;
+  return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(
+    path
+  )}?alt=media`;
 }
 ```
 
@@ -507,37 +513,37 @@ export const MEDIA_LIMITS = {
   IMAGE_MIN_HEIGHT: 200,
   IMAGE_MAX_WIDTH: 4000,
   IMAGE_MAX_HEIGHT: 4000,
-  
+
   // Video limits
   VIDEO_MAX_SIZE: 100 * 1024 * 1024, // 100MB
   VIDEO_MAX_DURATION: 60, // seconds
   VIDEO_MIN_DURATION: 1,
-  
+
   // Product specific
   PRODUCT_MAX_IMAGES: 10,
   PRODUCT_MAX_VIDEOS: 3,
-  
+
   // Review specific
   REVIEW_MAX_IMAGES: 5,
   REVIEW_MAX_VIDEOS: 2,
-  
+
   // Return specific
   RETURN_MAX_IMAGES: 10,
   RETURN_MAX_VIDEOS: 3,
 } as const;
 
 export const ALLOWED_IMAGE_FORMATS = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-  'image/gif',
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
 ] as const;
 
 export const ALLOWED_VIDEO_FORMATS = [
-  'video/mp4',
-  'video/webm',
-  'video/quicktime', // .mov
+  "video/mp4",
+  "video/webm",
+  "video/quicktime", // .mov
 ] as const;
 
 export const IMAGE_QUALITY = {
@@ -552,9 +558,9 @@ export const IMAGE_QUALITY = {
 ```typescript
 // /src/lib/db/products.ts
 
-import { COLLECTIONS } from '@/constants/database';
-import { STORAGE_BUCKETS, getStoragePath } from '@/constants/storage';
-import { db, storage } from '@/lib/firebase';
+import { COLLECTIONS } from "@/constants/database";
+import { STORAGE_BUCKETS, getStoragePath } from "@/constants/storage";
+import { db, storage } from "@/lib/firebase";
 
 export async function createProduct(data: ProductData) {
   // 1. Create product document (images as null initially)
@@ -573,13 +579,13 @@ export async function createProduct(data: ProductData) {
       productRef.id,
       imageFile.name
     );
-    
+
     try {
       await storage.ref(path).put(imageFile);
       const url = await storage.ref(path).getDownloadURL();
       uploadedImages.push(url);
     } catch (error) {
-      console.error('Image upload failed:', error);
+      console.error("Image upload failed:", error);
       // Continue with other images
     }
   }
@@ -605,15 +611,15 @@ export async function createProduct(data: ProductData) {
 ```tsx
 // /src/contexts/UploadContext.tsx
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface UploadTask {
   id: string;
-  resourceType: 'product' | 'shop' | 'category' | 'return' | 'review';
+  resourceType: "product" | "shop" | "category" | "return" | "review";
   resourceId: string;
   file: File;
   fieldName: string; // e.g., 'mainImage', 'images[0]'
-  status: 'pending' | 'uploading' | 'success' | 'failed';
+  status: "pending" | "uploading" | "success" | "failed";
   progress: number;
   error?: string;
   url?: string;
@@ -621,7 +627,7 @@ interface UploadTask {
 
 interface UploadContextValue {
   tasks: UploadTask[];
-  addTask: (task: Omit<UploadTask, 'id' | 'status' | 'progress'>) => void;
+  addTask: (task: Omit<UploadTask, "id" | "status" | "progress">) => void;
   updateTask: (id: string, updates: Partial<UploadTask>) => void;
   removeTask: (id: string) => void;
   retryTask: (id: string) => Promise<void>;
@@ -634,15 +640,15 @@ const UploadContext = createContext<UploadContextValue | null>(null);
 export function UploadProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<UploadTask[]>([]);
 
-  const addTask = (task: Omit<UploadTask, 'id' | 'status' | 'progress'>) => {
+  const addTask = (task: Omit<UploadTask, "id" | "status" | "progress">) => {
     const newTask: UploadTask = {
       ...task,
       id: `upload-${Date.now()}-${Math.random()}`,
-      status: 'pending',
+      status: "pending",
       progress: 0,
     };
     setTasks((prev) => [...prev, newTask]);
-    
+
     // Auto-start upload
     uploadFile(newTask);
   };
@@ -661,13 +667,13 @@ export function UploadProvider({ children }: { children: ReactNode }) {
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
 
-    updateTask(id, { status: 'pending', progress: 0, error: undefined });
+    updateTask(id, { status: "pending", progress: 0, error: undefined });
     await uploadFile(task);
   };
 
   const uploadFile = async (task: UploadTask) => {
     try {
-      updateTask(task.id, { status: 'uploading' });
+      updateTask(task.id, { status: "uploading" });
 
       // Get storage path
       const bucketMap = {
@@ -685,8 +691,9 @@ export function UploadProvider({ children }: { children: ReactNode }) {
       const uploadTask = storage.ref(path).put(task.file);
 
       // Track progress
-      uploadTask.on('state_changed', (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      uploadTask.on("state_changed", (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         updateTask(task.id, { progress });
       });
 
@@ -696,26 +703,33 @@ export function UploadProvider({ children }: { children: ReactNode }) {
       const url = await storage.ref(path).getDownloadURL();
 
       // Update database
-      await updateResourceMedia(task.resourceType, task.resourceId, task.fieldName, url);
+      await updateResourceMedia(
+        task.resourceType,
+        task.resourceId,
+        task.fieldName,
+        url
+      );
 
-      updateTask(task.id, { status: 'success', progress: 100, url });
+      updateTask(task.id, { status: "success", progress: 100, url });
     } catch (error) {
       updateTask(task.id, {
-        status: 'failed',
+        status: "failed",
         error: error.message,
       });
     }
   };
 
   const hasPendingUploads = tasks.some(
-    (task) => task.status === 'pending' || task.status === 'uploading'
+    (task) => task.status === "pending" || task.status === "uploading"
   );
 
   const getPendingTasksForResource = (resourceId: string) => {
     return tasks.filter(
       (task) =>
         task.resourceId === resourceId &&
-        (task.status === 'pending' || task.status === 'uploading' || task.status === 'failed')
+        (task.status === "pending" ||
+          task.status === "uploading" ||
+          task.status === "failed")
     );
   };
 
@@ -739,7 +753,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
 export function useUpload() {
   const context = useContext(UploadContext);
   if (!context) {
-    throw new Error('useUpload must be used within UploadProvider');
+    throw new Error("useUpload must be used within UploadProvider");
   }
   return context;
 }
@@ -750,8 +764,8 @@ export function useUpload() {
 ```tsx
 // /src/components/common/UploadProgress.tsx
 
-import { useUpload } from '@/contexts/UploadContext';
-import { X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { useUpload } from "@/contexts/UploadContext";
+import { X, CheckCircle, AlertCircle, Loader } from "lucide-react";
 
 export function UploadProgress() {
   const { tasks, removeTask, retryTask } = useUpload();
@@ -767,19 +781,19 @@ export function UploadProgress() {
         {tasks.map((task) => (
           <div key={task.id} className="p-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              {task.status === 'uploading' && (
+              {task.status === "uploading" && (
                 <Loader className="w-5 h-5 text-blue-500 animate-spin" />
               )}
-              {task.status === 'success' && (
+              {task.status === "success" && (
                 <CheckCircle className="w-5 h-5 text-green-500" />
               )}
-              {task.status === 'failed' && (
+              {task.status === "failed" && (
                 <AlertCircle className="w-5 h-5 text-red-500" />
               )}
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{task.file.name}</p>
-                {task.status === 'uploading' && (
+                {task.status === "uploading" && (
                   <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5">
                     <div
                       className="bg-blue-600 h-1.5 rounded-full transition-all"
@@ -787,12 +801,12 @@ export function UploadProgress() {
                     />
                   </div>
                 )}
-                {task.status === 'failed' && (
+                {task.status === "failed" && (
                   <p className="text-xs text-red-600 mt-1">{task.error}</p>
                 )}
               </div>
 
-              {task.status === 'failed' && (
+              {task.status === "failed" && (
                 <button
                   onClick={() => retryTask(task.id)}
                   className="text-xs text-blue-600 hover:underline"
@@ -800,7 +814,7 @@ export function UploadProgress() {
                   Retry
                 </button>
               )}
-              {task.status === 'success' && (
+              {task.status === "success" && (
                 <button
                   onClick={() => removeTask(task.id)}
                   className="text-gray-400 hover:text-gray-600"
@@ -822,9 +836,9 @@ export function UploadProgress() {
 ```tsx
 // /src/components/common/PendingUploadsWarning.tsx
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUpload } from '@/contexts/UploadContext';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUpload } from "@/contexts/UploadContext";
 
 export function PendingUploadsWarning() {
   const router = useRouter();
@@ -834,13 +848,14 @@ export function PendingUploadsWarning() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasPendingUploads) {
         e.preventDefault();
-        e.returnValue = 'You have pending uploads. Are you sure you want to leave?';
+        e.returnValue =
+          "You have pending uploads. Are you sure you want to leave?";
         return e.returnValue;
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasPendingUploads]);
 
   return null;
@@ -862,8 +877,8 @@ export default function CreateProductPage() {
 
     try {
       // 1. Create product in database (without image URLs)
-      const response = await fetch('/api/products', {
-        method: 'POST',
+      const response = await fetch("/api/products", {
+        method: "POST",
         body: JSON.stringify({
           ...data,
           mainImage: null,
@@ -877,19 +892,21 @@ export default function CreateProductPage() {
       if (data.imageFiles?.length > 0) {
         data.imageFiles.forEach((file, index) => {
           addTask({
-            resourceType: 'product',
+            resourceType: "product",
             resourceId: product.id,
             file,
-            fieldName: index === 0 ? 'mainImage' : `images[${index}]`,
+            fieldName: index === 0 ? "mainImage" : `images[${index}]`,
           });
         });
       }
 
       // 3. Redirect to edit page (not back to list)
-      router.push(`/seller/my-shops/${product.shopId}/products/${product.id}/edit?created=true`);
+      router.push(
+        `/seller/my-shops/${product.shopId}/products/${product.id}/edit?created=true`
+      );
     } catch (error) {
-      console.error('Product creation failed:', error);
-      alert('Failed to create product');
+      console.error("Product creation failed:", error);
+      alert("Failed to create product");
     } finally {
       setIsSaving(false);
     }
@@ -911,7 +928,7 @@ export default function CreateProductPage() {
 export default function EditProductPage({ params, searchParams }) {
   const { getPendingTasksForResource, retryTask } = useUpload();
   const pendingTasks = getPendingTasksForResource(params.id);
-  const isNewlyCreated = searchParams.created === 'true';
+  const isNewlyCreated = searchParams.created === "true";
 
   return (
     <div>
@@ -920,21 +937,27 @@ export default function EditProductPage({ params, searchParams }) {
         <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="font-medium">Product created successfully!</p>
           <p className="text-sm text-gray-600 mt-1">
-            {pendingTasks.length} image(s) are still uploading. You can continue editing.
+            {pendingTasks.length} image(s) are still uploading. You can continue
+            editing.
           </p>
         </div>
       )}
 
       {/* Show failed uploads */}
-      {pendingTasks.filter((t) => t.status === 'failed').length > 0 && (
+      {pendingTasks.filter((t) => t.status === "failed").length > 0 && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="font-medium text-red-800">Some uploads failed</p>
           <div className="mt-2 space-y-2">
             {pendingTasks
-              .filter((t) => t.status === 'failed')
+              .filter((t) => t.status === "failed")
               .map((task) => (
-                <div key={task.id} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">{task.file.name}</span>
+                <div
+                  key={task.id}
+                  className="flex items-center justify-between"
+                >
+                  <span className="text-sm text-gray-600">
+                    {task.file.name}
+                  </span>
                   <button
                     onClick={() => retryTask(task.id)}
                     className="text-sm text-blue-600 hover:underline"
@@ -958,6 +981,7 @@ export default function EditProductPage({ params, searchParams }) {
 ## Implementation Checklist
 
 ### FilterSidebar
+
 - [ ] Create FilterSidebar base component
 - [ ] Create filter building blocks (FilterGroup, FilterCheckbox, FilterRange, FilterDateRange)
 - [ ] Create resource-specific filter components (ProductFilters, ShopFilters, etc.)
@@ -966,6 +990,7 @@ export default function EditProductPage({ params, searchParams }) {
 - [ ] Test on all screen sizes
 
 ### Constants
+
 - [ ] Create database constants file
 - [ ] Create storage constants file
 - [ ] Create media constants file
@@ -974,6 +999,7 @@ export default function EditProductPage({ params, searchParams }) {
 - [ ] Document naming conventions
 
 ### Upload Context
+
 - [ ] Create UploadContext with provider
 - [ ] Implement upload queue management
 - [ ] Create UploadProgress component
