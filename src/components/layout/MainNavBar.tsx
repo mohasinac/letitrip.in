@@ -2,13 +2,22 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Gift, ShoppingCart, User, ChevronDown, Menu } from "lucide-react";
+import {
+  Gift,
+  ShoppingCart,
+  User,
+  ChevronDown,
+  Menu,
+  Search,
+} from "lucide-react";
 import { COMPANY_NAME, USER_MENU_ITEMS } from "@/constants/navigation";
 
 export default function MainNavBar({
   onMobileMenuToggle,
+  onSearchClick,
 }: {
   onMobileMenuToggle: () => void;
+  onSearchClick: () => void;
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(3);
@@ -29,10 +38,7 @@ export default function MainNavBar({
   }, []);
 
   return (
-    <nav
-      id="main-navigation"
-      className="bg-gray-800 text-white py-3 px-4 sticky top-0 z-50"
-    >
+    <nav id="main-navigation" className="bg-gray-800 text-white py-3 px-4">
       <div className="container mx-auto flex items-center justify-between gap-4">
         {/* Mobile Menu Button */}
         <button
@@ -65,6 +71,15 @@ export default function MainNavBar({
             <Gift className="w-5 h-5" />
             <span className="text-yellow-400 font-bold">Coupons</span>
           </Link>
+
+          {/* Search Icon */}
+          <button
+            onClick={onSearchClick}
+            className="hover:bg-gray-700 p-2 rounded"
+            aria-label="Search"
+          >
+            <Search className="w-6 h-6" />
+          </button>
 
           {/* Cart */}
           <Link href="/cart" className="relative hover:bg-gray-700 p-2 rounded">

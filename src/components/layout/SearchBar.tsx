@@ -1,13 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { PRODUCT_CATEGORIES } from "@/constants/navigation";
 
-export default function SearchBar() {
+export interface SearchBarRef {
+  focusSearch: () => void;
+}
+
+const SearchBar = forwardRef<SearchBarRef>((props, ref) => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focusSearch: () => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    },
+  }));
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +114,7 @@ export default function SearchBar() {
           {/* Search Input */}
           <div className="flex-1 relative">
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -120,4 +136,8 @@ export default function SearchBar() {
       </div>
     </div>
   );
-}
+});
+
+SearchBar.displayName = "SearchBar";
+
+export default SearchBar;
