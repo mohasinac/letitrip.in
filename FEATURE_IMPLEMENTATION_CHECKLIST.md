@@ -341,6 +341,16 @@
 - [ ] Create `/src/app/api/returns/[id]/approve/route.ts` - **Approve Return** (POST: seller/admin only)
 - [ ] Create `/src/app/api/returns/[id]/refund/route.ts` - **Process Refund** (POST: seller/admin only)
 
+### 4.4 Customer Support Tickets (Seller)
+
+- [ ] Create `/src/app/seller/support-tickets/page.tsx` - **Support tickets for seller's shops with TicketFilters**
+- [ ] Create `/src/app/seller/support-tickets/[id]/page.tsx` - **Ticket details with message thread (seller view)**
+- [ ] Create `/src/components/seller/TicketTable.tsx` - **Tickets table + FilterSidebar integration**
+- [ ] Create `/src/components/seller/TicketReply.tsx` - **Reply to customer ticket**
+- [ ] Create `/src/components/seller/TicketEscalate.tsx` - **Escalate to admin if needed**
+- [ ] Use `/src/app/api/support/tickets/route.ts` - **Uses unified Support Tickets API** (seller sees own shop tickets)
+- [ ] Use `/src/app/api/support/tickets/[id]/messages/route.ts` - **Seller can view and reply to tickets**
+
 ---
 
 ## Phase 5: Admin Dashboard
@@ -425,6 +435,18 @@
 - [ ] Create `/src/app/api/auctions/[id]/feature/route.ts` - **Set Featured Auction** (PATCH: admin only)
 - [ ] Create `/src/app/api/auctions/live/route.ts` - **Live Auctions Feed** (GET: public, WebSocket support)
 
+### 5.8 Customer Support Management (Admin)
+
+- [ ] Create `/src/app/admin/support-tickets/page.tsx` - **All support tickets with TicketFilters (escalated, unresolved, all)**
+- [ ] Create `/src/app/admin/support-tickets/[id]/page.tsx` - **Ticket details with full message history (admin view)**
+- [ ] Create `/src/components/admin/TicketManagement.tsx` - **Tickets table + FilterSidebar integration**
+- [ ] Create `/src/components/admin/TicketAssignment.tsx` - **Assign tickets to support staff**
+- [ ] Create `/src/components/admin/TicketModeration.tsx` - **Admin override resolution, close tickets**
+- [ ] Create `/src/components/admin/TicketAnalytics.tsx` - **Support metrics (response time, resolution rate)**
+- [ ] Use `/src/app/api/support/tickets/route.ts` - **Uses unified Support Tickets API** (admin sees all)
+- [ ] Create `/src/app/api/support/tickets/[id]/assign/route.ts` - **Assign Ticket** (POST: admin only)
+- [ ] Create `/src/app/api/support/tickets/[id]/escalate/route.ts` - **Escalate Ticket** (POST: seller/admin)
+
 ---
 
 ## Phase 6: User Pages & Shopping Experience
@@ -471,6 +493,23 @@
 - [ ] Create `/src/app/api/favorites/[id]/route.ts` - **Remove favorite (DELETE)**
 - [ ] Implement favorites sync across devices
 - [ ] Add favorites count badge in header
+
+### 6.3.1 Viewing History (Recently Viewed)
+
+- [ ] Create `/src/app/user/history/page.tsx` - **Viewing history page (products + auctions)**
+- [ ] Create `/src/components/user/ViewingHistoryList.tsx` - **Recently viewed items grid with tabs (All/Products/Auctions)**
+- [ ] Create `/src/components/user/ViewingHistoryItem.tsx` - **Individual history item card**
+- [ ] Create `/src/components/user/ViewingHistoryEmpty.tsx` - **Empty state for history**
+- [ ] Create `/src/components/user/ClearHistoryButton.tsx` - **Clear history confirmation**
+- [ ] Create `/src/components/common/RecentlyViewed.tsx` - **Recently viewed widget (sidebar/bottom of pages)**
+- [ ] Create `/src/lib/viewing-history.ts` - **✅ Viewing history manager (localStorage, 50 max, 30 days expiry)**
+- [ ] Create `/src/hooks/useViewingHistory.ts` - **✅ Hook for viewing history management**
+- [ ] Update `/src/constants/navigation.ts` - **✅ Add VIEWING_HISTORY_CONFIG constants**
+- [ ] Add viewing history tracking to product detail pages
+- [ ] Add viewing history tracking to auction detail pages
+- [ ] Show recently viewed section on homepage
+- [ ] Show recently viewed section on search results
+- [ ] Implement auto-cleanup of expired items (30 days)
 
 ### 6.4 Cart & Guest Cart
 
@@ -647,10 +686,33 @@
 - [ ] Create `/src/components/user/ReturnMediaUploader.tsx` - **Upload images/videos (uses UploadContext)**
 - [ ] Create `/src/components/user/ReturnStatus.tsx` - **Return status tracker**
 - [ ] Create `/src/components/user/RefundStatus.tsx` - **Refund status and amount**
-- [ ] Use `/src/app/api/returns/route.ts` - **Unified Returns API (user: initiate, list own)**
+- [ ] Use `/src/app/api/returns/route.ts` - **Unified Returns API (user: initiate, list own) - API only, no Firebase in UI**
 - [ ] Use `/src/app/api/returns/[id]/route.ts` - **Unified Return API (user: view own return)**
 - [ ] Validate return eligibility (within return window, not used, etc.)
 - [ ] **Handle media upload failures in return creation (redirect to return detail page for retry)**
+
+### 6.12 Customer Support Center
+
+- [ ] Create `/src/app/support/page.tsx` - **Support center home (FAQ, contact, tickets)**
+- [ ] Create `/src/app/support/tickets/page.tsx` - **User's support tickets list**
+- [ ] Create `/src/app/support/tickets/create/page.tsx` - **Create support ticket (returns, orders, general)**
+- [ ] Create `/src/app/support/tickets/[id]/page.tsx` - **Ticket details with messages thread**
+- [ ] Create `/src/components/support/TicketForm.tsx` - **Create ticket form (category, subject, description, attachments)**
+- [ ] Create `/src/components/support/TicketCard.tsx` - **Ticket summary card**
+- [ ] Create `/src/components/support/TicketMessages.tsx` - **Message thread with user/support replies**
+- [ ] Create `/src/components/support/TicketReplyForm.tsx` - **Reply to ticket form**
+- [ ] Create `/src/components/support/TicketStatus.tsx` - **Ticket status indicator (open, in-progress, resolved, closed)**
+- [ ] Create `/src/components/support/TicketFilters.tsx` - **Filter by status, category, date**
+- [ ] Create `/src/components/support/SupportFAQ.tsx` - **Common questions with search**
+- [ ] Create `/src/components/support/ContactOptions.tsx` - **Chat, email, phone contact methods**
+- [ ] Create `/src/app/api/support/tickets/route.ts` - **Support tickets API (GET: user's own, POST: create) - API only**
+- [ ] Create `/src/app/api/support/tickets/[id]/route.ts` - **Ticket detail (GET/PATCH: user/admin)**
+- [ ] Create `/src/app/api/support/tickets/[id]/messages/route.ts` - **Ticket messages (GET: list, POST: reply)**
+- [ ] Create `/src/app/api/support/tickets/[id]/close/route.ts` - **Close ticket (POST: user/admin)**
+- [ ] Implement ticket categories (Order Issue, Return/Refund, Product Question, Account, Payment, Other)
+- [ ] Implement ticket priority (Low, Medium, High, Urgent)
+- [ ] Add email notifications for ticket updates
+- [ ] **All support ticket data flows through API only, no direct Firebase access from UI**
 
 ---
 
@@ -667,7 +729,7 @@
 - [ ] Create returns table/collection schema
 - [ ] Create refunds table/collection schema
 - [ ] Create payouts table/collection schema
-- [ ] Create reviews table/collection schema
+- [ ] Create **reviews table/collection schema** (product_id, category_id, shop_id, order_item_id, auction_id, user_id, rating, title, comment, media[], verified_purchase, helpful_count, created_at)
 - [ ] Create shipments table/collection schema
 - [ ] Create cart table/collection schema (for authenticated users)
 - [ ] Create addresses table/collection schema (user shipping addresses)
@@ -678,8 +740,12 @@
 - [ ] Create **bids table/collection schema** (auction_id, user_id, bid_amount, bid_time, is_winning)
 - [ ] Create **watchlist table/collection schema** (user_id, auction_id, created_at)
 - [ ] Create **won_auctions table/collection schema** (auction_id, winner_id, final_bid, payment_status)
+- [ ] Create **support_tickets table/collection schema** (user_id, shop_id, category, priority, subject, status, created_at, updated_at)
+- [ ] Create **ticket_messages table/collection schema** (ticket_id, sender_id, sender_role, message, attachments[], created_at)
 - [ ] Add indexes for performance (shop_id, user_id, status, created_at, category_id)
 - [ ] Add indexes for auctions (end_time, status, featured, shop_id)
+- [ ] Add indexes for reviews (product_id, category_id, shop_id, auction_id, verified_purchase, rating)
+- [ ] Add indexes for support tickets (user_id, shop_id, status, category, priority)
 - [ ] Add compound index for similar products query (category_id, shop_id)
 - [ ] Create migration scripts
 
@@ -742,13 +808,14 @@
 - [ ] Implement SMS OTP service (Twilio/AWS SNS) for mobile verification
 - [ ] Implement Email OTP service (SendGrid/AWS SES) for email verification
 - [ ] Implement cloud storage for product images (Firebase Storage/AWS S3)
-- [ ] Implement email notifications (order, shipment, refund, auction won)
+- [ ] Implement email notifications (order, shipment, refund, auction won, **support ticket updates**)
 - [ ] Implement SMS notifications (order updates, OTP, auction ending soon)
 - [ ] Implement search indexing (Algolia/Elasticsearch or native Firestore)
 - [ ] Implement product recommendation engine (based on view history)
 - [ ] **Implement WebSocket server for live auction bidding**
 - [ ] **Implement real-time auction timer updates**
 - [ ] **Implement auction end job scheduler (close auctions, notify winners)**
+- [ ] **Implement support ticket assignment logic (route to seller or admin based on category)**
 
 ---
 
@@ -783,10 +850,14 @@
 - [ ] Create unit tests for cart operations (add, remove, update, merge)
 - [ ] Create unit tests for checkout calculator (totals, taxes, shipping, discounts)
 - [ ] Create unit tests for auction bidding logic (bid validation, winner calculation)
+- [ ] Create unit tests for review filtering (by product, category, shop, auction)
+- [ ] Create unit tests for review verification (only purchasers can review)
 - [ ] Create API integration tests
 - [ ] Create E2E tests for critical flows (create shop, create product, place order)
 - [ ] Create E2E tests for user flows (search → product → cart → checkout → payment)
 - [ ] Create E2E tests for auction flows (create auction → place bid → win auction → payment)
+- [ ] Create E2E tests for review flows (purchase → write review → filter reviews → mark helpful)
+- [ ] Create E2E tests for support ticket flows (create ticket → seller reply → admin escalation → resolve)
 - [ ] Create E2E tests for guest cart merge on login
 - [ ] Test role-based access control
 - [ ] Test shop creation limits (1 per user)
@@ -798,9 +869,14 @@
 - [ ] Test coupon validation and application
 - [ ] Test WebSocket live bidding (concurrent bids, race conditions)
 - [ ] Test auction auto-close scheduler
+- [ ] Test review multi-dimensional filtering (product, category, shop, auction)
+- [ ] Test verified purchase badge (requires order_item_id)
+- [ ] Test support ticket assignment and escalation
+- [ ] Test support ticket email notifications
 - [ ] Performance testing for data tables with large datasets
 - [ ] Performance testing for search with large product catalog
 - [ ] Performance testing for similar products algorithm (diverse shops)
+- [ ] Performance testing for review filtering with large datasets
 
 ### 8.2 Documentation
 
@@ -808,6 +884,8 @@
 - [ ] Create `/docs/ADMIN_GUIDE.md` - Admin dashboard guide
 - [ ] Create `/docs/USER_GUIDE.md` - **User shopping guide (cart, checkout, orders, returns)**
 - [ ] Create `/docs/AUCTION_GUIDE.md` - **Auction system guide (create, bid, win)**
+- [ ] Create `/docs/REVIEW_SYSTEM_GUIDE.md` - **Multi-dimensional review filtering and verification**
+- [ ] Create `/docs/CUSTOMER_SUPPORT_GUIDE.md` - **Support ticket system and workflows**
 - [ ] Create `/docs/API_REFERENCE.md` - API documentation
 - [ ] Create `/docs/COUPON_TYPES.md` - Coupon types documentation
 - [ ] Create `/docs/CATEGORY_MANAGEMENT.md` - Category tree management
@@ -816,6 +894,7 @@
 - [ ] Create `/docs/CART_CHECKOUT_FLOW.md` - **Cart and checkout workflow**
 - [ ] Create `/docs/WEBSOCKET_IMPLEMENTATION.md` - **WebSocket for live auctions**
 - [ ] Create `/docs/SIMILAR_PRODUCTS_ALGORITHM.md` - **Similar products logic (variants, similar, seller items)**
+- [ ] Create `/docs/UI_API_SEPARATION.md` - **Guidelines for keeping Firebase out of UI layer**
 - [ ] Update main README.md with new features
 - [ ] Create video tutorials (optional)
 
@@ -944,6 +1023,203 @@
 - [ ] Optimize Core Web Vitals (LCP, FID, CLS)
 - [ ] Add canonical URLs to prevent duplicate content
 - [ ] Implement hreflang tags (if multi-language)
+
+---
+
+## Phase 10.5: Homepage Implementation & Customization
+
+### 10.5.1 Hero Carousel Section
+
+- [ ] Create `/src/components/homepage/HeroCarousel.tsx` - **Main hero carousel component**
+- [ ] Create `/src/components/homepage/HeroSlide.tsx` - **Individual slide with image, overlay, and CTA buttons**
+- [ ] Create `/src/components/homepage/HeroControls.tsx` - **Bottom carousel controls (dots/indicators)**
+- [ ] Create `/src/components/homepage/HeroOverlay.tsx` - **Middle overlay div (header, description, max 2 action buttons)**
+- [ ] Implement responsive image handling (desktop full, mobile with focus coordinates)
+- [ ] Create `/src/components/media/ImageFocusSelector.tsx` - **Tool for selecting focus coordinates on mobile**
+- [ ] Create `/src/components/media/ImagePreviewTool.tsx` - **Preview with zoom in/out for focus verification**
+- [ ] Implement parallax effect toggle (checkbox per image)
+- [ ] Calculate hero height: **Mobile screen height - (header + featured categories height)**
+- [ ] Add auto-play with pause on hover
+- [ ] Add swipe gestures for mobile
+- [ ] Create `/src/app/api/hero-slides/route.ts` - **API for managing hero slides (admin only)**
+
+### 10.5.2 Welcome Banner (SEO)
+
+- [ ] Create `/src/components/homepage/WelcomeBanner.tsx` - **H1 tag with company name and description**
+- [ ] Add structured data (Organization schema) to welcome banner
+- [ ] Ensure proper heading hierarchy (H1 → H2 → H3)
+- [ ] Create `/src/lib/seo/homepage-metadata.ts` - **Homepage-specific SEO metadata**
+- [ ] Add Open Graph image for homepage
+- [ ] Add breadcrumb schema (Home)
+- [ ] Optimize meta description for SEO
+
+### 10.5.3 Featured Categories Section
+
+- [ ] Create `/src/components/homepage/FeaturedCategoriesSection.tsx` - **Section for each featured category**
+- [ ] Create `/src/components/homepage/FeaturedCategoryHeader.tsx` - **Category name and description**
+- [ ] Create `/src/components/homepage/ProductSlider.tsx` - **Side-scrollable product cards (up to 10 recent products)**
+- [ ] Create `/src/components/homepage/SliderArrows.tsx` - **Left/Right arrow controls**
+- [ ] Create `/src/components/homepage/ViewAllButton.tsx` - **"View All" button → category page with filter**
+- [ ] Implement background image or color per category (admin customizable)
+- [ ] Make slider responsive (adjust visible cards based on device width)
+- [ ] Implement touch/swipe gestures for mobile
+- [ ] Implement keyboard navigation (arrow keys)
+- [ ] Create `/src/app/api/featured-categories/route.ts` - **API for featured categories list**
+- [ ] Create `/src/app/api/categories/[id]/recent-products/route.ts` - **Get 10 recent products from category**
+
+### 10.5.4 Featured Shops Section
+
+- [ ] Create `/src/components/homepage/FeaturedShopsSection.tsx` - **Section for each featured shop**
+- [ ] Create `/src/components/homepage/FeaturedShopHeader.tsx` - **Shop name, logo, and description**
+- [ ] Reuse `/src/components/homepage/ProductSlider.tsx` - **Side-scrollable products from shop**
+- [ ] Create `/src/components/homepage/ViewAllShopButton.tsx` - **"View All" → shop page with filter**
+- [ ] Implement background image or color per shop (admin customizable)
+- [ ] Create `/src/app/api/featured-shops/route.ts` - **API for featured shops list**
+- [ ] Create `/src/app/api/shops/[id]/recent-products/route.ts` - **Get 10 recent products from shop**
+
+### 10.5.5 Auction House Section
+
+- [ ] Create `/src/components/homepage/AuctionHouseSection.tsx` - **"Auction House - Visit Our Auction House" header**
+- [ ] Create `/src/components/homepage/AuctionSlider.tsx` - **Side-scrollable auction cards (featured auctions)**
+- [ ] Create `/src/components/cards/AuctionCard.tsx` - **Auction card (image, title, current bid, time left, "LIVE" badge)**
+- [ ] Create `/src/components/homepage/ViewMoreAuctionsButton.tsx` - **"View More" → /auctions page**
+- [ ] Implement live timer updates (WebSocket or polling)
+- [ ] Show "LIVE" badge for active auctions
+- [ ] Show "Ended" badge for completed auctions
+- [ ] Create `/src/app/api/auctions/featured/route.ts` - **Get featured auctions (admin curated)**
+
+### 10.5.6 Top Reviews Section
+
+- [ ] Create `/src/components/homepage/TopReviewsSection.tsx` - **"Top Reviews" section**
+- [ ] Create `/src/components/homepage/ReviewSlider.tsx` - **Side-scrollable review cards**
+- [ ] Create `/src/components/cards/ReviewCard.tsx` - **Review card (user, rating, comment, product link)**
+- [ ] Create `/src/components/homepage/ViewAllReviewsButton.tsx` - **"View All Reviews" → reviews page with filters**
+- [ ] Filter reviews: **Rating 4 stars or higher**
+- [ ] Show most recent 10 reviews
+- [ ] Display verified purchase badge
+- [ ] Link to product page from review
+- [ ] Create `/src/app/api/reviews/top/route.ts` - **Get top reviews (rating ≥ 4, recent 10)**
+- [ ] Create `/src/app/reviews/page.tsx` - **All reviews page with filters**
+
+### 10.5.7 Blog Section
+
+- [ ] Create `/src/components/homepage/BlogSection.tsx` - **Featured blog posts section**
+- [ ] Create `/src/components/homepage/BlogSlider.tsx` - **Side-scrollable blog post cards (up to 10)**
+- [ ] Create `/src/components/cards/BlogPostCard.tsx` - **Blog card (image, title, excerpt, author, date)**
+- [ ] Create `/src/components/homepage/ViewAllBlogsButton.tsx` - **"View All Posts" → /blog page**
+- [ ] Create `/src/app/blog/page.tsx` - **Blog listing page**
+- [ ] Create `/src/app/blog/[slug]/page.tsx` - **Individual blog post page**
+- [ ] Create `/src/app/api/blog/route.ts` - **Blog posts API (GET: list, POST: create - admin only)**
+- [ ] Create `/src/app/api/blog/[slug]/route.ts` - **Blog post detail (GET/PATCH/DELETE: admin)**
+- [ ] Create `/src/app/api/blog/featured/route.ts` - **Get featured blog posts (up to 10)**
+- [ ] Add blog navigation to admin sidebar
+- [ ] Implement blog SEO (meta tags, schema markup)
+- [ ] Add blog categories/tags
+- [ ] Add related posts section
+
+### 10.5.8 Admin: Hero Slides Management
+
+- [ ] Create `/src/app/admin/hero-slides/page.tsx` - **Manage hero carousel slides**
+- [ ] Create `/src/app/admin/hero-slides/create/page.tsx` - **Create new slide**
+- [ ] Create `/src/app/admin/hero-slides/[id]/edit/page.tsx` - **Edit slide**
+- [ ] Create `/src/components/admin/HeroSlideForm.tsx` - **Form for slide (image, header, description, buttons)**
+- [ ] Create `/src/components/admin/HeroSlideImageUploader.tsx` - **Upload desktop & mobile images**
+- [ ] Create `/src/components/admin/ImageFocusEditor.tsx` - **Tool to set mobile image focus coordinates**
+- [ ] Create `/src/components/admin/HeroSlidePreview.tsx` - **Preview slide on desktop & mobile**
+- [ ] Create `/src/components/admin/ParallaxToggle.tsx` - **Enable/disable parallax effect**
+- [ ] Create `/src/components/admin/CTAButtonEditor.tsx` - **Edit CTA buttons (max 2, text, link, style)**
+- [ ] Implement drag-and-drop slide reordering
+- [ ] Add slide active/inactive toggle
+- [ ] Add slide scheduling (start/end date)
+
+### 10.5.9 Admin: Featured Sections Management
+
+- [ ] Create `/src/app/admin/featured-sections/page.tsx` - **Manage featured categories & shops**
+- [ ] Create `/src/components/admin/FeaturedCategoriesManager.tsx` - **Select & reorder featured categories**
+- [ ] Create `/src/components/admin/FeaturedShopsManager.tsx` - **Select & reorder featured shops**
+- [ ] Create `/src/components/admin/SectionBackgroundEditor.tsx` - **Set background image or color**
+- [ ] Implement drag-and-drop reordering (categories and shops)
+- [ ] Add section visibility toggle (show/hide on homepage)
+- [ ] Add section description editor
+- [ ] Preview homepage with changes before publishing
+- [ ] Create `/src/app/api/admin/featured-sections/route.ts` - **API for managing featured sections**
+- [ ] Create `/src/app/api/admin/featured-sections/reorder/route.ts` - **Reorder sections (POST)**
+
+### 10.5.10 Admin: Blog Management
+
+- [ ] Create `/src/app/admin/blog/page.tsx` - **All blog posts list**
+- [ ] Create `/src/app/admin/blog/create/page.tsx` - **Create blog post**
+- [ ] Create `/src/app/admin/blog/[id]/edit/page.tsx` - **Edit blog post**
+- [ ] Create `/src/components/admin/BlogPostForm.tsx` - **Blog post form (title, content, excerpt, image)**
+- [ ] Create `/src/components/admin/BlogEditor.tsx` - **Rich text editor for blog content**
+- [ ] Create `/src/components/admin/BlogCategoryManager.tsx` - **Manage blog categories**
+- [ ] Create `/src/components/admin/BlogTagManager.tsx` - **Manage blog tags**
+- [ ] Implement blog post featured toggle
+- [ ] Implement blog post publish/draft status
+- [ ] Add blog post scheduling (publish date)
+- [ ] Add blog post SEO fields (meta title, description, keywords)
+- [ ] Add blog post author selection
+- [ ] Add blog post featured image uploader
+- [ ] Create `/src/app/api/blog/categories/route.ts` - **Blog categories API**
+- [ ] Create `/src/app/api/blog/tags/route.ts` - **Blog tags API**
+
+### 10.5.11 Homepage Meta Tags & SEO
+
+- [ ] Update `/src/app/page.tsx` - **Add proper meta tags (title, description, keywords)**
+- [ ] Create `/src/lib/seo/homepage-schema.ts` - **Homepage schema markup (Organization, WebSite, BreadcrumbList)**
+- [ ] Add Open Graph tags (og:title, og:description, og:image)
+- [ ] Add Twitter Card tags
+- [ ] Add JSON-LD structured data for homepage
+- [ ] Implement dynamic meta tags based on featured content
+- [ ] Add language tags (if multi-language)
+- [ ] Add canonical URL
+- [ ] Optimize meta description (155 characters max)
+- [ ] Add social sharing preview cards
+
+### 10.5.12 Homepage Performance Optimization
+
+- [ ] Implement lazy loading for all sliders (load on scroll)
+- [ ] Optimize hero images (WebP format, multiple sizes)
+- [ ] Implement image placeholder blur effect
+- [ ] Preload above-the-fold content
+- [ ] Defer non-critical JavaScript
+- [ ] Implement service worker for offline support
+- [ ] Cache featured sections data (Redis with TTL)
+- [ ] Optimize product card images (thumbnail size)
+- [ ] Implement infinite scroll for "View All" pages (optional)
+- [ ] Measure and optimize Largest Contentful Paint (LCP)
+- [ ] Measure and optimize Cumulative Layout Shift (CLS)
+- [ ] Measure and optimize First Input Delay (FID)
+
+### 10.5.13 Admin Navigation Update
+
+- [ ] Update `/src/constants/navigation.ts` - **Add Blog Management to admin menu**
+- [ ] Update admin sidebar with Blog section:
+  ```typescript
+  {
+    id: "blog",
+    name: "Blog",
+    icon: "newspaper",
+    children: [
+      { id: "blog-all", name: "All Posts", link: "/admin/blog" },
+      { id: "blog-create", name: "Create Post", link: "/admin/blog/create" },
+      { id: "blog-categories", name: "Categories", link: "/admin/blog/categories" },
+      { id: "blog-tags", name: "Tags", link: "/admin/blog/tags" }
+    ]
+  }
+  ```
+- [ ] Update admin sidebar with Homepage section:
+  ```typescript
+  {
+    id: "homepage",
+    name: "Homepage",
+    icon: "home",
+    children: [
+      { id: "hero-slides", name: "Hero Slides", link: "/admin/hero-slides" },
+      { id: "featured-sections", name: "Featured Sections", link: "/admin/featured-sections" }
+    ]
+  }
+  ```
 
 ---
 

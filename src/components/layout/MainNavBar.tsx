@@ -210,8 +210,11 @@ export default function MainNavBar({
             <Search className="w-6 h-6" />
           </button>
 
-          {/* Cart */}
-          <Link href="/cart" className="relative hover:bg-gray-700 p-2 rounded">
+          {/* Cart - Hidden on mobile/tablet when bottom nav is visible */}
+          <Link
+            href="/cart"
+            className="hidden lg:flex relative hover:bg-gray-700 p-2 rounded"
+          >
             <ShoppingCart className="w-6 h-6" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-yellow-500 text-gray-900 text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
