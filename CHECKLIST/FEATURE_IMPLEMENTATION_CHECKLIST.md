@@ -87,26 +87,27 @@
 
 ## Phase 1: Static Pages & SEO Foundation
 
-### 1.1 FAQ Section & Page
+### 1.1 FAQ Section & Page ✅ COMPLETED
 
-- [ ] Create `/src/app/faq/page.tsx` - FAQ page component
-- [ ] Create `/src/components/faq/FAQSection.tsx` - Reusable FAQ component
-- [ ] Create `/src/components/faq/FAQItem.tsx` - Individual FAQ accordion item
-- [ ] Add FAQ section to homepage (`/src/app/page.tsx`)
-- [ ] Add FAQ data structure in `/src/constants/faq.ts`
-- [ ] Add FAQ link to footer navigation (`/src/constants/footer.ts`)
-- [ ] Create FAQ schema markup for SEO
+- [x] Create `/src/app/faq/page.tsx` - FAQ page component
+- [x] Create `/src/components/faq/FAQSection.tsx` - Reusable FAQ component
+- [x] Create `/src/components/faq/FAQItem.tsx` - Individual FAQ accordion item
+- [x] Add FAQ section to homepage (`/src/app/page.tsx`)
+- [x] Add FAQ data structure in `/src/constants/faq.ts`
+- [x] Add FAQ link to footer navigation (`/src/constants/footer.ts`)
+- [x] **UPDATE (Nov 7, 2025): Enhanced all 40+ FAQs with India-specific content** (UPI, customs, unboxing video, COD policy, GST, KYC, etc.)
+- [ ] Create FAQ schema markup for SEO (moved to Phase 1.3)
 
-### 1.2 Policy & Legal Pages
+### 1.2 Policy & Legal Pages ✅ COMPLETED
 
-- [ ] Create `/src/app/privacy-policy/page.tsx` - Privacy Policy
-- [ ] Create `/src/app/terms-of-service/page.tsx` - Terms of Service
-- [ ] Create `/src/app/refund-policy/page.tsx` - Refund Policy
-- [ ] Create `/src/app/shipping-policy/page.tsx` - Shipping Policy
-- [ ] Create `/src/app/cookie-policy/page.tsx` - Cookie Policy
-- [ ] Create `/src/components/legal/LegalPageLayout.tsx` - Unified legal page wrapper
-- [ ] Add legal page links to footer
-- [ ] Add last updated dates and version tracking
+- [x] Create `/src/app/privacy-policy/page.tsx` - Privacy Policy
+- [x] Create `/src/app/terms-of-service/page.tsx` - Terms of Service
+- [x] Create `/src/app/refund-policy/page.tsx` - Refund Policy (with India-specific requirements)
+- [x] Create `/src/app/shipping-policy/page.tsx` - Shipping Policy (India-focused)
+- [x] Create `/src/app/cookie-policy/page.tsx` - Cookie Policy
+- [x] Create `/src/components/legal/LegalPageLayout.tsx` - Unified legal page wrapper
+- [x] Add legal page links to footer (`/src/constants/footer.ts`)
+- [x] Add last updated dates and version tracking
 
 ### 1.3 SEO & Crawler Support
 

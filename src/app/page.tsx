@@ -1,4 +1,5 @@
 import FeaturedCategories from "@/components/layout/FeaturedCategories";
+import FAQSection from "@/components/faq/FAQSection";
 
 export default function Home() {
   return (
@@ -58,6 +59,16 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq-section" className="py-8">
+          <FAQSection
+            title="Frequently Asked Questions"
+            description="Quick answers to common questions about shopping from Japan"
+            maxItemsToShow={6}
+            defaultCategory="getting-started"
+          />
         </section>
       </div>
     </main>

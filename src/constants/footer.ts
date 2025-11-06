@@ -3,17 +3,19 @@
 // About Links (Column 1)
 export const ABOUT_LINKS = [
   { id: "about", name: "About Let It Rip", link: "/about" },
-  { id: "terms", name: "Terms of Service", link: "/terms" },
-  { id: "privacy", name: "Privacy Policy", link: "/privacy" },
-  { id: "disclaimer", name: "Disclaimer", link: "/disclaimer" }
+  { id: "terms", name: "Terms of Service", link: "/terms-of-service" },
+  { id: "privacy", name: "Privacy Policy", link: "/privacy-policy" },
+  { id: "refund", name: "Refund Policy", link: "/refund-policy" },
+  { id: "shipping", name: "Shipping Policy", link: "/shipping-policy" },
+  { id: "cookie", name: "Cookie Policy", link: "/cookie-policy" }
 ];
 
 // Shopping Notes (Column 2)
 export const SHOPPING_NOTES = [
+  { id: "faq", name: "FAQ", link: "/faq" },
   { id: "new-user", name: "New Users' Guide", link: "/guide/new-user" },
   { id: "returns", name: "Returns & Refunds", link: "/guide/returns" },
-  { id: "prohibited", name: "Prohibited Items", link: "/guide/prohibited" },
-  { id: "faq", name: "FAQ", link: "/faq" }
+  { id: "prohibited", name: "Prohibited Items", link: "/guide/prohibited" }
 ];
 
 // Fee Description (Column 3)
