@@ -1790,6 +1790,7 @@ const TurretRenderer = ({
   >([]);
   const [beamActive, setBeamActive] = React.useState(false);
   const [beamAngle, setBeamAngle] = React.useState(0);
+  const [boomerangProgress, setBoomerangProgress] = React.useState(0);
 
   const x = centerX + turret.x * scale;
   const y = centerY + turret.y * scale;
@@ -1869,7 +1870,13 @@ const TurretRenderer = ({
         }
 
         // Attack finishes when last bullet completes (1 second)
-        setTimeout(() => setIsAttacking(false), 1000);
+        setTimeout(() => {
+          setIsAttacking(false);
+          // For random attack type, select next attack after current finishes
+          if (turret.attackType === "random") {
+            selectNextRandomAttack();
+          }
+        }, 1000);
       } else if (attackType === "aoe") {
         // Fire missile to random location
         const angle = Math.random() * Math.PI * 2;
@@ -1889,7 +1896,7 @@ const TurretRenderer = ({
 
         setProjectiles((prev) => [...prev, missile]);
 
-        // Create explosion when missile arrives
+        // Create explosion when missile arrives (800ms travel + 800ms explosion)
         setTimeout(() => {
           const explosion = {
             id: Date.now() + Math.random(),
@@ -1907,8 +1914,14 @@ const TurretRenderer = ({
           }, 800);
         }, 800); // Missile travel time
 
-        // Attack finishes after explosion
-        setTimeout(() => setIsAttacking(false), 1600);
+        // Attack finishes after explosion completes (800ms travel + 800ms explosion)
+        setTimeout(() => {
+          setIsAttacking(false);
+          // For random attack type, select next attack after current finishes
+          if (turret.attackType === "random") {
+            selectNextRandomAttack();
+          }
+        }, 1600);
       } else if (attackType === "beam") {
         // Activate beam for duration
         const beamDuration = (turret.beamDuration || 2) * 1000;
@@ -1923,39 +1936,57 @@ const TurretRenderer = ({
           setTimeout(() => {
             setBeamActive(false);
             setIsAttacking(false);
+            // For random attack type, select next attack after current finishes
+            if (turret.attackType === "random") {
+              selectNextRandomAttack();
+            }
           }, beamDuration);
         }, chargePeriod);
       } else if (attackType === "boomerang") {
-        // Boomerang attack completes a full orbit
+        // Boomerang attack completes a full orbit and must return before next attack
         const returnTime = (turret.boomerangReturnTime || 3) * 1000;
-        setTimeout(() => setIsAttacking(false), returnTime);
+        setBoomerangProgress(0); // Reset boomerang progress
+
+        // Animate boomerang progress
+        const startTime = Date.now();
+        const animationInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / returnTime, 1);
+          setBoomerangProgress(progress);
+
+          if (progress >= 1) {
+            clearInterval(animationInterval);
+          }
+        }, 16); // 60fps
+
+        setTimeout(() => {
+          setIsAttacking(false);
+          setBoomerangProgress(0);
+          // For random attack type, select next attack after current finishes
+          if (turret.attackType === "random") {
+            selectNextRandomAttack();
+          }
+        }, returnTime);
       } else {
         // Fallback for any other type
         setIsAttacking(false);
+        if (turret.attackType === "random") {
+          selectNextRandomAttack();
+        }
       }
+    };
 
-      // For random attack type, select next attack after current finishes
-      if (turret.attackType === "random") {
-        const attackTypes: Array<"beam" | "periodic" | "aoe" | "boomerang"> = [
-          "beam",
-          "periodic",
-          "aoe",
-          "boomerang",
-        ];
-        const maxDelay = Math.max(
-          (turret.beamDuration || 2) * 1000 +
-            (turret.beamChargePeriod || 1) * 1000,
-          1600, // AOE total time
-          (turret.boomerangReturnTime || 3) * 1000,
-          1000 // Periodic bullets
-        );
-
-        setTimeout(() => {
-          setCurrentRandomAttack(
-            attackTypes[Math.floor(Math.random() * attackTypes.length)]
-          );
-        }, maxDelay);
-      }
+    // Helper function to select next random attack
+    const selectNextRandomAttack = () => {
+      const attackTypes: Array<"beam" | "periodic" | "aoe" | "boomerang"> = [
+        "beam",
+        "periodic",
+        "aoe",
+        "boomerang",
+      ];
+      setCurrentRandomAttack(
+        attackTypes[Math.floor(Math.random() * attackTypes.length)]
+      );
     };
 
     const timerId = setInterval(performAttack, cooldownMs);
@@ -2236,61 +2267,138 @@ const TurretRenderer = ({
       })}
 
       {/* AOE Charge Indicator */}
-      {effectiveAttackType === "aoe" &&
-        isAttacking &&
-        projectiles.some((p) => p.type === "missile" && p.progress < 0.3) && (
-          <circle cx={x} cy={y} r={radius * 1.5} fill={color} opacity={0.3}>
-            <animate
-              attributeName="r"
-              values={`${radius};${radius * 2.5};${radius}`}
-              dur="0.5s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.5;0.2;0.5"
-              dur="0.5s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        )}
+      {effectiveAttackType === "aoe" && isAttacking && (
+        <g>
+          {/* Charging ring when missile hasn't launched yet */}
+          {projectiles.some(
+            (p) => p.type === "missile" && p.progress < 0.05
+          ) && (
+            <g>
+              <circle cx={x} cy={y} r={radius * 2} fill={color} opacity={0.1}>
+                <animate
+                  attributeName="r"
+                  values={`${radius};${radius * 2.5};${radius}`}
+                  dur="0.4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              <circle cx={x} cy={y} r={radius * 1.5} fill={color} opacity={0.3}>
+                <animate
+                  attributeName="opacity"
+                  values="0.5;0.2;0.5"
+                  dur="0.4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              {/* Missile lock indicator */}
+              <circle
+                cx={x}
+                cy={y}
+                r={radius * 1.2}
+                fill="none"
+                stroke="#ff0000"
+                strokeWidth={2}
+                opacity={0.8}
+              >
+                <animate
+                  attributeName="r"
+                  values={`${radius * 1.5};${radius * 1.2}`}
+                  dur="0.3s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+            </g>
+          )}
+        </g>
+      )}
 
       {/* Boomerang Orbit */}
       {effectiveAttackType === "boomerang" && isAttacking && (
         <g>
+          {/* Orbit path indicator */}
           <circle
-            cx={x + rangeRadius * 0.6}
+            cx={x}
             cy={y}
-            r={radius * 0.4}
-            fill={color}
-            opacity={0.8}
-          >
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from={`0 ${x} ${y}`}
-              to={`360 ${x} ${y}`}
-              dur={`${turret.boomerangReturnTime || 3}s`}
-              repeatCount="1"
-            />
-          </circle>
-          {/* Boomerang trail */}
-          <circle
-            cx={x + rangeRadius * 0.6}
-            cy={y}
-            r={radius * 0.8}
-            fill={color}
-            opacity={0.2}
-          >
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from={`0 ${x} ${y}`}
-              to={`360 ${x} ${y}`}
-              dur={`${turret.boomerangReturnTime || 3}s`}
-              repeatCount="1"
-            />
-          </circle>
+            r={rangeRadius * 0.6}
+            fill="none"
+            stroke={color}
+            strokeWidth={1}
+            strokeDasharray="4,4"
+            opacity={0.3}
+          />
+          {/* Calculate boomerang position based on progress */}
+          {(() => {
+            const angle = boomerangProgress * Math.PI * 2; // Full circle
+            const boomerangX = x + Math.cos(angle) * rangeRadius * 0.6;
+            const boomerangY = y + Math.sin(angle) * rangeRadius * 0.6;
+            const spinRotation = boomerangProgress * 720; // Spins twice during orbit
+
+            return (
+              <g>
+                {/* Boomerang outer trail (largest) */}
+                <circle
+                  cx={boomerangX}
+                  cy={boomerangY}
+                  r={radius * 1.2}
+                  fill={color}
+                  opacity={0.15}
+                />
+                {/* Boomerang middle trail */}
+                <circle
+                  cx={boomerangX}
+                  cy={boomerangY}
+                  r={radius * 0.8}
+                  fill={color}
+                  opacity={0.3}
+                />
+                {/* Boomerang main body */}
+                <ellipse
+                  cx={boomerangX}
+                  cy={boomerangY}
+                  rx={radius * 0.6}
+                  ry={radius * 0.3}
+                  fill={color}
+                  stroke="#ffffff"
+                  strokeWidth={1}
+                  opacity={0.9}
+                  transform={`rotate(${spinRotation} ${boomerangX} ${boomerangY})`}
+                />
+                {/* Boomerang glowing edge */}
+                <ellipse
+                  cx={boomerangX}
+                  cy={boomerangY}
+                  rx={radius * 0.6}
+                  ry={radius * 0.3}
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth={2}
+                  opacity={
+                    0.5 + Math.sin(boomerangProgress * Math.PI * 8) * 0.3
+                  }
+                  transform={`rotate(${spinRotation} ${boomerangX} ${boomerangY})`}
+                />
+                {/* Return indicator - shows when boomerang is coming back (second half) */}
+                {boomerangProgress > 0.5 && (
+                  <circle
+                    cx={boomerangX}
+                    cy={boomerangY}
+                    r={radius * 1.5}
+                    fill="none"
+                    stroke="#00ff00"
+                    strokeWidth={2}
+                    opacity={(boomerangProgress - 0.5) * 0.8}
+                  >
+                    <animate
+                      attributeName="r"
+                      values={`${radius * 1.5};${radius * 2};${radius * 1.5}`}
+                      dur="0.5s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                )}
+              </g>
+            );
+          })()}
         </g>
       )}
 
