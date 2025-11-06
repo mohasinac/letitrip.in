@@ -1,6 +1,10 @@
+import FeaturedCategories from "@/components/layout/FeaturedCategories";
+
 export default function Home() {
   return (
     <main id="home-page" className="container mx-auto px-4 py-8">
+      {/* 5. Featured Categories */}
+      <FeaturedCategories />
       <div className="space-y-8">
         {/* Hero Section */}
         <section

@@ -36,6 +36,9 @@ export default function FeaturedCategories() {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
+  // Show first 8 categories by default
+  const visibleCategories = FEATURED_CATEGORIES.slice(0, 9);
+
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const scrollAmount = 300;
@@ -83,7 +86,7 @@ export default function FeaturedCategories() {
               );
             }}
           >
-            {FEATURED_CATEGORIES.map((category) => {
+            {visibleCategories.map((category) => {
               const Icon = iconMap[category.icon] || Package;
               return (
                 <Link
@@ -100,6 +103,21 @@ export default function FeaturedCategories() {
                 </Link>
               );
             })}
+
+            {/* Show More Button - Navigate to Categories Page */}
+            {FEATURED_CATEGORIES.length > 9 && (
+              <Link
+                href="/categories"
+                className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
+              >
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors border-2 border-dashed border-gray-300">
+                  <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8 text-gray-600" />
+                </div>
+                <span className="text-[10px] lg:text-xs text-gray-600 text-center group-hover:text-gray-800 font-medium leading-tight">
+                  Show More
+                </span>
+              </Link>
+            )}
           </div>
 
           {/* Right Arrow - Mobile Only */}

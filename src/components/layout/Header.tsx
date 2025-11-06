@@ -5,11 +5,12 @@ import SpecialEventBanner from "./SpecialEventBanner";
 import MainNavBar from "./MainNavBar";
 import ShopsNav from "./ShopsNav";
 import SearchBar, { SearchBarRef } from "./SearchBar";
-import FeaturedCategories from "./FeaturedCategories";
+
 import MobileSidebar from "./MobileSidebar";
 
 export default function Header() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const toggleMobileSidebar = () => {
@@ -17,7 +18,15 @@ export default function Header() {
   };
 
   const handleSearchClick = () => {
-    searchBarRef.current?.focusSearch();
+    setIsSearchVisible(true);
+    setTimeout(() => {
+      searchBarRef.current?.focusSearch();
+    }, 100);
+  };
+
+  const handleCloseSearch = () => {
+    setIsSearchVisible(false);
+    searchBarRef.current?.hide();
   };
 
   return (
@@ -38,11 +47,12 @@ export default function Header() {
         {/* 3. Shops Navigation */}
         <ShopsNav />
 
-        {/* 4. Search Bar with Categories */}
-        <SearchBar ref={searchBarRef} />
-
-        {/* 5. Featured Categories */}
-        <FeaturedCategories />
+        {/* 4. Search Bar with Categories - Hidden by default */}
+        <SearchBar
+          ref={searchBarRef}
+          isVisible={isSearchVisible}
+          onClose={handleCloseSearch}
+        />
       </header>
 
       {/* Mobile Sidebar */}

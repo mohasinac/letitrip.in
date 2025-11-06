@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Store, Grid3x3, ShoppingCart, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   const navItems = [
     { id: "home", name: "Home", icon: Home, href: "/" },
@@ -17,7 +19,13 @@ export default function BottomNav() {
       href: "/categories",
     },
     { id: "cart", name: "Cart", icon: ShoppingCart, href: "/cart" },
-    { id: "account", name: "Account", icon: User, href: "/user/settings" },
+    {
+      id: "account",
+      name: "Account",
+      icon: User,
+      // If logged in, go to profile; otherwise, go to login
+      href: isAuthenticated ? "/user/settings" : "/login",
+    },
   ];
 
   return (

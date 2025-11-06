@@ -26,6 +26,7 @@ import {
   Users,
   BarChart,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ const sellerIcons: Record<string, any> = {
 export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [adminOpen, setAdminOpen] = useState(false);
   const [sellerOpen, setSellerOpen] = useState(false);
-  const isSignedIn = true; // Replace with actual auth check
+  const { isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
 
   if (!isOpen) return null;
 
@@ -103,123 +104,139 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
         {/* Menu Sections */}
         <div className="p-4 space-y-6">
-          {/* User Menu */}
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase">
-              User Menu
-            </h3>
-            <div className="space-y-1">
-              {userMenuWithoutLogout.map((item) => {
-                const Icon = userMenuIcons[item.id] || Package;
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.link}
-                    className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                    onClick={onClose}
-                  >
-                    <Icon className="w-5 h-5 text-gray-600" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
+          {/* User Menu - Only show when logged in */}
+          {isAuthenticated ? (
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase">
+                User Menu
+              </h3>
+              <div className="space-y-1">
+                {userMenuWithoutLogout.map((item) => {
+                  const Icon = userMenuIcons[item.id] || Package;
+                  return (
+                    <Link
+                      key={item.id}
+                      href={item.link}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                      onClick={onClose}
+                    >
+                      <Icon className="w-5 h-5 text-gray-600" />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
 
-            {/* Logout or Sign In at bottom of user menu */}
-            <div className="mt-4 pt-4 border-t">
-              {isSignedIn ? (
-                logoutItem && (
+              {/* Logout button */}
+              <div className="mt-4 pt-4 border-t">
+                {logoutItem && (
                   <Link
-                    href={logoutItem.link}
-                    className="flex items-center gap-3 px-3 py-2 hover:bg-red-50 rounded text-red-600"
+                    href="/logout"
+                    className="flex items-center gap-3 px-3 py-2 hover:bg-red-50 rounded text-red-600 w-full"
                     onClick={onClose}
                   >
                     <LogOut className="w-5 h-5" />
                     <span>{logoutItem.name}</span>
                   </Link>
-                )
-              ) : (
-                <div className="space-y-2">
-                  <Link
-                    href="/signin"
-                    className="flex items-center justify-center gap-2 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 rounded text-gray-900 font-semibold"
-                    onClick={onClose}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 hover:bg-gray-50 rounded text-gray-700 font-semibold"
-                    onClick={onClose}
-                  >
-                    Register
-                  </Link>
+                )}
+              </div>
+            </div>
+          ) : (
+            // Not logged in - Show only Sign In/Register buttons
+            <div className="space-y-2">
+              <Link
+                href="/login"
+                className="flex items-center justify-center gap-2 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 rounded text-gray-900 font-semibold"
+                onClick={onClose}
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                className="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 hover:bg-gray-50 rounded text-gray-700 font-semibold"
+                onClick={onClose}
+              >
+                Register
+              </Link>
+            </div>
+          )}
+
+          {/* Admin Menu (Collapsible) - Only show if user is admin */}
+          {isAdmin && (
+            <div className="border-t pt-4">
+              <button
+                onClick={() => setAdminOpen(!adminOpen)}
+                className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
+              >
+                <span>Admin</span>
+                {adminOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              {adminOpen && (
+                <div className="space-y-1">
+                  {ADMIN_MENU_ITEMS.map((item) => {
+                    const Icon = adminIcons[item.id] || LayoutDashboard;
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.link}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                        onClick={onClose}
+                      >
+                        <Icon className="w-5 h-5 text-gray-600" />
+                        <span>{item.name}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          </div>
+          )}
 
-          {/* Admin Menu (Collapsible) */}
-          <div className="border-t pt-4">
-            <button
-              onClick={() => setAdminOpen(!adminOpen)}
-              className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
-            >
-              <span>Admin (Coming Soon)</span>
-              {adminOpen ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
+          {/* Seller Menu (Collapsible) - Show if user is admin or seller */}
+          {isAdminOrSeller && (
+            <div className="border-t pt-4">
+              <button
+                onClick={() => setSellerOpen(!sellerOpen)}
+                className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
+              >
+                <span>Seller</span>
+                {sellerOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              {sellerOpen && (
+                <div className="space-y-1">
+                  {SELLER_MENU_ITEMS.map((item) => {
+                    const Icon = sellerIcons[item.id] || LayoutDashboard;
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.link}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                        onClick={onClose}
+                      >
+                        <Icon className="w-5 h-5 text-gray-600" />
+                        <span>{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-            </button>
-            {adminOpen && (
-              <div className="space-y-1 opacity-50">
-                {ADMIN_MENU_ITEMS.slice(0, 3).map((item) => {
-                  const Icon = adminIcons[item.id] || LayoutDashboard;
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 px-3 py-2 text-gray-500 cursor-not-allowed"
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          {/* Seller Menu (Collapsible) */}
-          <div className="border-t pt-4">
-            <button
-              onClick={() => setSellerOpen(!sellerOpen)}
-              className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
-            >
-              <span>Seller (Coming Soon)</span>
-              {sellerOpen ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
-            {sellerOpen && (
-              <div className="space-y-1 opacity-50">
-                {SELLER_MENU_ITEMS.slice(0, 3).map((item) => {
-                  const Icon = sellerIcons[item.id] || LayoutDashboard;
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 px-3 py-2 text-gray-500 cursor-not-allowed"
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+        {/* Copyright Footer */}
+        <div className="mt-auto p-4 border-t border-gray-200 bg-gray-50">
+          <p className="text-xs text-gray-500 text-center">
+            © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
+          </p>
         </div>
       </div>
     </>
