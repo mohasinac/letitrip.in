@@ -530,50 +530,105 @@
 - [ ] Create `/src/components/search/PopularSearches.tsx` - **Popular/trending searches**
 - [ ] Create `/src/components/search/SearchByShop.tsx` - **Filter products by shop**
 - [ ] Create `/src/components/search/SearchByCategory.tsx` - **Filter products by category**
+- [ ] Create `/src/components/search/SearchToggle.tsx` - **Toggle between Products/Auctions search**
 - [ ] Create `/src/hooks/useSearch.ts` - **Search state management hook**
 - [ ] Create `/src/lib/search-engine.ts` - **Full-text search implementation**
-- [ ] Create `/src/app/api/search/route.ts` - **Search API (GET: products, shops, categories)**
+- [ ] Create `/src/app/api/search/route.ts` - **Search API (GET: products OR auctions based on type param)**
 - [ ] Create `/src/app/api/search/suggestions/route.ts` - **Autocomplete suggestions (GET)**
 - [ ] Implement search indexing (Algolia/Elasticsearch or native)
 - [ ] Add search analytics tracking
 - [ ] Support voice search (optional)
+- [ ] **Add "In Stock" checkbox filter (realtime)**
+- [ ] **Add sort dropdown (Relevance, Latest, Price Low-High, Price High-Low) (realtime)**
+- [ ] **Filters apply only on "Apply Filters" button click**
 
 ### 6.7 Shop & Category Pages
 
-- [ ] Create `/src/app/shops/[id]/page.tsx` - **Shop details page with products**
+- [ ] Create `/src/app/shops/[id]/page.tsx` - **Shop details page with products AND auctions tabs**
 - [ ] Create `/src/components/shop/ShopHeader.tsx` - **Shop banner, logo, name, rating**
 - [ ] Create `/src/components/shop/ShopProducts.tsx` - **Shop products grid with filters**
+- [ ] Create `/src/components/shop/ShopAuctions.tsx` - **Shop auctions grid (active/ended)**
 - [ ] Create `/src/components/shop/ShopAbout.tsx` - **Shop description and policies**
 - [ ] Create `/src/components/shop/ShopReviews.tsx` - **Shop reviews section**
 - [ ] Create `/src/components/shop/ShopCategories.tsx` - **Shop's product categories**
 - [ ] Create `/src/components/shop/FollowShopButton.tsx` - **Follow/unfollow shop**
-- [ ] Create `/src/app/categories/[slug]/page.tsx` - **Category page with products**
+- [ ] Create `/src/app/categories/[slug]/page.tsx` - **Category page with products (realtime search)**
 - [ ] Create `/src/components/category/CategoryHeader.tsx` - **Category banner and description**
 - [ ] Create `/src/components/category/CategoryProducts.tsx` - **Products in category with filters**
+- [ ] Create `/src/components/category/CategorySearch.tsx` - **Realtime category search**
 - [ ] Create `/src/components/category/SubcategoryNav.tsx` - **Subcategory navigation**
 - [ ] Use `/src/app/api/shops/[id]/route.ts` - **Unified Shop API (public shop details)**
 - [ ] Use `/src/app/api/categories/[id]/route.ts` - **Unified Category API (public category)**
+- [ ] Create `/src/app/api/categories/search/route.ts` - **Realtime category search (GET)**
 
-### 6.8 Product Pages
+### 6.8 Product Pages (eBay-style)
 
-- [ ] Create `/src/app/products/[id]/page.tsx` - **Product detail page**
+- [ ] Create `/src/app/products/[id]/page.tsx` - **Product detail page (eBay-style layout)**
 - [ ] Create `/src/components/product/ProductGallery.tsx` - **Image/video gallery with zoom**
 - [ ] Create `/src/components/product/ProductInfo.tsx` - **Title, price, rating, stock status**
 - [ ] Create `/src/components/product/ProductDescription.tsx` - **Full description with tabs**
 - [ ] Create `/src/components/product/ProductSpecifications.tsx` - **Product specs table**
+- [ ] Create `/src/components/product/ProductVariants.tsx` - **Variants from same leaf category (no child categories)**
 - [ ] Create `/src/components/product/ProductReviews.tsx` - **Customer reviews with filters**
 - [ ] Create `/src/components/product/WriteReviewForm.tsx` - **Write review with media upload**
 - [ ] Create `/src/components/product/ProductActions.tsx` - **Add to cart, buy now, favorite**
 - [ ] Create `/src/components/product/ProductShipping.tsx` - **Shipping info and delivery estimate**
 - [ ] Create `/src/components/product/ProductShopCard.tsx` - **Seller info mini card**
-- [ ] Create `/src/components/product/RelatedProducts.tsx` - **Related products carousel**
+- [ ] Create `/src/components/product/SimilarProducts.tsx` - **Similar products (10 max, diverse shops, category parents hierarchy)**
+- [ ] Create `/src/components/product/SellerOtherProducts.tsx` - **Other products from same seller (shop_id)**
 - [ ] Create `/src/components/product/RecentlyViewed.tsx` - **Recently viewed products**
 - [ ] Use `/src/app/api/products/[id]/route.ts` - **Unified Product API (public product details)**
 - [ ] Create `/src/app/api/products/[id]/reviews/route.ts` - **Product reviews (GET/POST)**
+- [ ] Create `/src/app/api/products/[id]/variants/route.ts` - **Product variants (GET: same leaf category)**
+- [ ] Create `/src/app/api/products/[id]/similar/route.ts` - **Similar products (GET: max 10, diverse shops)**
+- [ ] Create `/src/app/api/products/[id]/seller-items/route.ts` - **Seller's other products (GET: by shop_id)**
 - [ ] Implement product view tracking
 - [ ] Add product schema markup (SEO)
+- [ ] **Products save shop_id, not user_id**
 
-### 6.9 Returns & Refunds (User Initiate)
+### 6.9 Auction Pages (eBay-style)
+
+- [ ] Create `/src/app/auctions/page.tsx` - **All auctions page (live, upcoming, ended)**
+- [ ] Create `/src/app/auctions/live/page.tsx` - **Live auctions page (WebSocket)**
+- [ ] Create `/src/app/auctions/featured/page.tsx` - **Featured auctions (admin curated)**
+- [ ] Create `/src/app/auctions/[id]/page.tsx` - **Auction detail page (eBay-style layout)**
+- [ ] Create `/src/components/auction/AuctionGallery.tsx` - **Image/video gallery**
+- [ ] Create `/src/components/auction/AuctionInfo.tsx` - **Title, current bid, time left, bid count**
+- [ ] Create `/src/components/auction/AuctionTimer.tsx` - **Live countdown timer**
+- [ ] Create `/src/components/auction/AuctionBidding.tsx` - **Place bid form with validation**
+- [ ] Create `/src/components/auction/AuctionBidHistory.tsx` - **Bid history list (live updates)**
+- [ ] Create `/src/components/auction/AuctionDescription.tsx` - **Full description with tabs**
+- [ ] Create `/src/components/auction/AuctionShopCard.tsx` - **Seller shop info**
+- [ ] Create `/src/components/auction/SimilarAuctions.tsx` - **Similar auctions (10 max, diverse shops)**
+- [ ] Create `/src/components/auction/SellerOtherAuctions.tsx` - **Other auctions from same seller (shop_id)**
+- [ ] Create `/src/components/auction/AuctionWatchButton.tsx` - **Watch/unwatch auction**
+- [ ] Create `/src/components/auction/AuctionFilters.tsx` - **Auction filters (category, time left, bid range)**
+- [ ] Create `/src/components/auction/AuctionSortOptions.tsx` - **Sort (Time Left: Less-More, More-Less, Price, Ending Soon)**
+- [ ] Use `/src/app/api/auctions/[id]/route.ts` - **Unified Auction API (public auction details)**
+- [ ] Create `/src/app/api/auctions/[id]/similar/route.ts` - **Similar auctions (GET: max 10, diverse shops)**
+- [ ] Create `/src/app/api/auctions/[id]/seller-items/route.ts` - **Seller's other auctions (GET: by shop_id)**
+- [ ] Create `/src/app/api/auctions/featured/route.ts` - **Featured auctions (GET: admin curated)**
+- [ ] Implement WebSocket for live bidding updates
+- [ ] Add auction schema markup (SEO)
+- [ ] **Auctions save shop_id, not user_id**
+- [ ] **No variants for auctions**
+- [ ] **Add "Ending Soon" sort (realtime)**
+- [ ] **Filters apply only on "Apply Filters" button**
+
+### 6.10 User Bidding & Watchlist
+
+- [ ] Create `/src/app/user/bids/page.tsx` - **User's active bids with live updates**
+- [ ] Create `/src/app/user/watchlist/page.tsx` - **Watched auctions with notifications**
+- [ ] Create `/src/app/user/won-auctions/page.tsx` - **Won auctions awaiting payment**
+- [ ] Create `/src/components/user/BidsList.tsx` - **Active bids list with status**
+- [ ] Create `/src/components/user/WatchlistGrid.tsx` - **Watched auctions grid**
+- [ ] Create `/src/components/user/WonAuctionCard.tsx` - **Won auction with payment button**
+- [ ] Create `/src/hooks/useLiveBids.ts` - **WebSocket hook for live bid updates**
+- [ ] Create `/src/app/api/users/me/bids/route.ts` - **User's bids (GET)**
+- [ ] Create `/src/app/api/users/me/watchlist/route.ts` - **User's watchlist (GET/POST/DELETE)**
+- [ ] Create `/src/app/api/users/me/won-auctions/route.ts` - **Won auctions (GET)**
+
+### 6.11 Returns & Refunds (User Initiate)
 
 - [ ] Create `/src/app/user/returns/page.tsx` - **User's returns list with ReturnFilters**
 - [ ] Create `/src/app/user/returns/create/page.tsx` - **Initiate return request**
@@ -593,10 +648,10 @@
 
 ## Phase 7: API & Backend
 
-### 6.1 Database Schema Updates
+### 7.1 Database Schema Updates
 
 - [ ] Create shops table/collection schema
-- [ ] Create products table/collection schema
+- [ ] Create products table/collection schema **(includes shop_id, not user_id)**
 - [ ] Create orders table/collection schema
 - [ ] Create order_items table/collection schema
 - [ ] Create coupons table/collection schema
@@ -606,7 +661,18 @@
 - [ ] Create payouts table/collection schema
 - [ ] Create reviews table/collection schema
 - [ ] Create shipments table/collection schema
-- [ ] Add indexes for performance (shop_id, user_id, status, created_at)
+- [ ] Create cart table/collection schema (for authenticated users)
+- [ ] Create addresses table/collection schema (user shipping addresses)
+- [ ] Create favorites/wishlist table/collection schema
+- [ ] Create payment_transactions table/collection schema (Razorpay/PayPal records)
+- [ ] Create search_analytics table/collection schema (search tracking)
+- [ ] Create **auctions table/collection schema** (shop_id, starting_bid, reserve_price, end_time, status, featured)
+- [ ] Create **bids table/collection schema** (auction_id, user_id, bid_amount, bid_time, is_winning)
+- [ ] Create **watchlist table/collection schema** (user_id, auction_id, created_at)
+- [ ] Create **won_auctions table/collection schema** (auction_id, winner_id, final_bid, payment_status)
+- [ ] Add indexes for performance (shop_id, user_id, status, created_at, category_id)
+- [ ] Add indexes for auctions (end_time, status, featured, shop_id)
+- [ ] Add compound index for similar products query (category_id, shop_id)
 - [ ] Create migration scripts
 
 ### 6.2 Middleware & Auth
@@ -668,10 +734,13 @@
 - [ ] Implement SMS OTP service (Twilio/AWS SNS) for mobile verification
 - [ ] Implement Email OTP service (SendGrid/AWS SES) for email verification
 - [ ] Implement cloud storage for product images (Firebase Storage/AWS S3)
-- [ ] Implement email notifications (order, shipment, refund)
-- [ ] Implement SMS notifications (order updates, OTP)
+- [ ] Implement email notifications (order, shipment, refund, auction won)
+- [ ] Implement SMS notifications (order updates, OTP, auction ending soon)
 - [ ] Implement search indexing (Algolia/Elasticsearch or native Firestore)
 - [ ] Implement product recommendation engine (based on view history)
+- [ ] **Implement WebSocket server for live auction bidding**
+- [ ] **Implement real-time auction timer updates**
+- [ ] **Implement auction end job scheduler (close auctions, notify winners)**
 
 ---
 
@@ -705,31 +774,40 @@
 - [ ] Create unit tests for utilities (coupon calculator, formatters, validators)
 - [ ] Create unit tests for cart operations (add, remove, update, merge)
 - [ ] Create unit tests for checkout calculator (totals, taxes, shipping, discounts)
+- [ ] Create unit tests for auction bidding logic (bid validation, winner calculation)
 - [ ] Create API integration tests
 - [ ] Create E2E tests for critical flows (create shop, create product, place order)
 - [ ] Create E2E tests for user flows (search → product → cart → checkout → payment)
+- [ ] Create E2E tests for auction flows (create auction → place bid → win auction → payment)
 - [ ] Create E2E tests for guest cart merge on login
 - [ ] Test role-based access control
-- [ ] Test shop creation limits
+- [ ] Test shop creation limits (1 per user)
+- [ ] Test auction creation limits (5 active per shop, unlimited for admin)
 - [ ] Test category leaf-node validation
 - [ ] Test inline editing functionality
 - [ ] Test payment integrations (Razorpay/PayPal sandbox)
 - [ ] Test cart persistence across sessions
 - [ ] Test coupon validation and application
+- [ ] Test WebSocket live bidding (concurrent bids, race conditions)
+- [ ] Test auction auto-close scheduler
 - [ ] Performance testing for data tables with large datasets
 - [ ] Performance testing for search with large product catalog
+- [ ] Performance testing for similar products algorithm (diverse shops)
 
 ### 8.2 Documentation
 
 - [ ] Create `/docs/SELLER_GUIDE.md` - Seller dashboard guide
 - [ ] Create `/docs/ADMIN_GUIDE.md` - Admin dashboard guide
 - [ ] Create `/docs/USER_GUIDE.md` - **User shopping guide (cart, checkout, orders, returns)**
+- [ ] Create `/docs/AUCTION_GUIDE.md` - **Auction system guide (create, bid, win)**
 - [ ] Create `/docs/API_REFERENCE.md` - API documentation
 - [ ] Create `/docs/COUPON_TYPES.md` - Coupon types documentation
 - [ ] Create `/docs/CATEGORY_MANAGEMENT.md` - Category tree management
 - [ ] Create `/docs/PAYMENT_INTEGRATION.md` - **Payment gateway setup and testing**
 - [ ] Create `/docs/SEARCH_GUIDE.md` - **Search functionality and filters**
 - [ ] Create `/docs/CART_CHECKOUT_FLOW.md` - **Cart and checkout workflow**
+- [ ] Create `/docs/WEBSOCKET_IMPLEMENTATION.md` - **WebSocket for live auctions**
+- [ ] Create `/docs/SIMILAR_PRODUCTS_ALGORITHM.md` - **Similar products logic (variants, similar, seller items)**
 - [ ] Update main README.md with new features
 - [ ] Create video tutorials (optional)
 
@@ -827,29 +905,34 @@
 
 - [ ] Implement pagination for large datasets
 - [ ] Add virtual scrolling for long lists
-- [ ] Optimize images (next/image) - product images, shop logos, avatars
+- [ ] Optimize images (next/image) - product images, shop logos, avatars, auction images
 - [ ] Implement code splitting for seller/admin routes
-- [ ] Implement code splitting for user routes (lazy load checkout, orders)
+- [ ] Implement code splitting for user routes (lazy load checkout, orders, auctions)
 - [ ] Add service worker for offline support (optional)
-- [ ] Implement Redis caching for frequently accessed data (products, categories, shops)
+- [ ] Implement Redis caching for frequently accessed data (products, categories, shops, live auctions)
 - [ ] Cache search results (with TTL)
+- [ ] Cache auction bid counts and current bids (short TTL)
 - [ ] Optimize cart operations (debounce quantity updates)
+- [ ] Optimize WebSocket connections (connection pooling, heartbeat)
 - [ ] Preload critical resources (fonts, hero images)
 - [ ] Implement image lazy loading
-- [ ] Implement infinite scroll for product listings (alternative to pagination)
+- [ ] Implement infinite scroll for product/auction listings (alternative to pagination)
 - [ ] Optimize database queries (compound indexes for common filters)
+- [ ] Optimize similar products query (max 10, diverse shops algorithm)
+- [ ] Optimize auction end scheduler (batch processing)
 
 ### 10.2 SEO Final Touches
 
 - [ ] Submit sitemap to Google Search Console
 - [ ] Implement structured data testing
-- [ ] Add meta descriptions to all pages (product, shop, category, user pages)
+- [ ] Add meta descriptions to all pages (product, shop, category, auction, user pages)
 - [ ] Add product schema markup (price, availability, rating, reviews)
+- [ ] Add auction schema markup (bid, end time, status)
 - [ ] Add organization schema markup
 - [ ] Add breadcrumb schema markup (all pages)
 - [ ] Optimize page load speed (Lighthouse score > 90)
 - [ ] Implement lazy loading for images
-- [ ] Add preconnect/prefetch for external resources (Razorpay, PayPal CDN)
+- [ ] Add preconnect/prefetch for external resources (Razorpay, PayPal CDN, WebSocket)
 - [ ] Optimize Core Web Vitals (LCP, FID, CLS)
 - [ ] Add canonical URLs to prevent duplicate content
 - [ ] Implement hreflang tags (if multi-language)
@@ -901,12 +984,17 @@
 - [ ] Monitor cart abandonment rate
 - [ ] Monitor checkout conversion rate
 - [ ] Monitor search performance and popular queries
+- [ ] **Monitor auction activity (active auctions, bid rates, conversion rates)**
+- [ ] **Monitor WebSocket connection health (concurrent connections, latency)**
+- [ ] **Monitor auction end scheduler performance**
 - [ ] Create admin dashboard for system health
-- [ ] Set up alerts for critical errors (payment failures, API downtime)
+- [ ] Set up alerts for critical errors (payment failures, API downtime, WebSocket failures)
 - [ ] Set up alerts for high cart abandonment
+- [ ] **Set up alerts for auction end failures**
+- [ ] **Set up alerts for WebSocket disconnections**
 - [ ] Create logs retention policy
 - [ ] Monitor database performance (slow queries)
-- [ ] Track user engagement metrics (favorites, reviews, returns)
+- [ ] Track user engagement metrics (favorites, reviews, returns, auction bids)
 
 ---
 
@@ -915,32 +1003,35 @@
 ### High Priority (MVP)
 
 1. **User Shopping Flow**: Search → Product → Cart → Checkout → Payment → Orders
-2. **Core User Pages**: My Orders, Account Settings, Favorites
-3. **Payment Integration**: Razorpay and PayPal
-4. **Cart System**: Guest cart + authenticated cart with merge on login
-5. Seller: My Shops, Product Management (basic), My Orders (basic)
-6. Admin: All Shops, All Orders, Category Management
-7. Static Pages: FAQ, Privacy Policy, Terms of Service
-8. SEO: Sitemap, robots.txt, metadata
+2. **Auction System**: Create Auction → Browse → Bid → Win → Payment
+3. **Core User Pages**: My Orders, Account Settings, Favorites, My Bids, Watchlist
+4. **Payment Integration**: Razorpay and PayPal
+5. **Cart System**: Guest cart + authenticated cart with merge on login
+6. Seller: My Shops, Product Management (basic), Auction Management (5 max), My Orders (basic)
+7. Admin: All Shops, All Orders, All Auctions, Featured Auctions, Category Management
+8. Static Pages: FAQ, Privacy Policy, Terms of Service
+9. SEO: Sitemap, robots.txt, metadata
 
 ### Medium Priority
 
-1. **Advanced Search**: Filters by category, shop, price, rating
-2. **Returns & Refunds**: User initiate, seller approve, admin resolve
-3. **User Profile**: Email/mobile verification, avatar upload, password change
-4. Seller: Coupon Management, Shop Analytics, My Revenue
-5. Admin: User Management, Returns Management
-6. Advanced product features (inline editing, full SEO)
+1. **Advanced Search**: Filters by category, shop, price, rating (Products + Auctions toggle)
+2. **Similar Products Algorithm**: Variants, similar (diverse shops), seller items
+3. **WebSocket Live Bidding**: Real-time updates, concurrent bid handling
+4. **Returns & Refunds**: User initiate, seller approve, admin resolve
+5. **User Profile**: Email/mobile verification, avatar upload, password change
+6. Seller: Coupon Management, Shop Analytics, My Revenue
+7. Admin: User Management, Returns Management, Auction Analytics
 
 ### Low Priority
 
 1. **Product Recommendations**: Based on view history
 2. **Shop Follow System**: Follow/unfollow shops
-3. **Voice Search**: Voice-activated product search
-4. Advanced analytics and charts
-5. Shiprocket integration
-6. Video tutorials
-7. PWA features
+3. **Voice Search**: Voice-activated product/auction search
+4. **Auction Notifications**: Email/SMS for ending soon, outbid, won
+5. Advanced analytics and charts
+6. Shiprocket integration
+7. Video tutorials
+8. PWA features
 
 ---
 
@@ -999,6 +1090,18 @@
 - `<OrderTracker />` - Real-time shipment tracking
 - `<SearchBar />` - Enhanced search bar with suggestions
 - `<SearchFilters />` - Advanced filters for search results
+- `<SearchToggle />` - **Toggle between Products/Auctions search**
+
+**Auctions:**
+
+- `<AuctionCard />` - **Auction display card (current bid, time left)**
+- `<AuctionTimer />` - **Live countdown timer**
+- `<AuctionBidding />` - **Place bid form with validation**
+- `<AuctionBidHistory />` - **Bid history list (live updates via WebSocket)**
+- `<AuctionWatchButton />` - **Watch/unwatch auction**
+- `<LiveAuctionFeed />` - **Real-time auction updates**
+- `<AuctionFilters />` - **Auction-specific filters (time left, bid range)**
+- `<AuctionSortOptions />` - **Sort (Time Left, Price, Ending Soon)**
 
 ---
 
@@ -1011,7 +1114,7 @@ All constants follow the DRY principle and are centralized in `/src/constants/`:
 ```typescript
 export const COLLECTIONS = {
   SHOPS: "shops",
-  PRODUCTS: "products",
+  PRODUCTS: "products", // includes shop_id
   ORDERS: "orders",
   ORDER_ITEMS: "orderItems",
   CART: "cart",
@@ -1030,6 +1133,10 @@ export const COLLECTIONS = {
   SHIPMENTS: "shipments",
   NOTIFICATIONS: "notifications",
   SEARCH_ANALYTICS: "searchAnalytics",
+  AUCTIONS: "auctions", // includes shop_id
+  BIDS: "bids",
+  WATCHLIST: "watchlist",
+  WON_AUCTIONS: "wonAuctions",
 };
 ```
 
@@ -1041,6 +1148,8 @@ export const STORAGE_BUCKETS = {
   SHOP_BANNERS: "shops/banners",
   PRODUCT_IMAGES: "products/images",
   PRODUCT_VIDEOS: "products/videos",
+  AUCTION_IMAGES: "auctions/images", // New
+  AUCTION_VIDEOS: "auctions/videos", // New
   CATEGORY_IMAGES: "categories/images",
   USER_AVATARS: "users/avatars",
   RETURN_MEDIA: "returns/media",
@@ -1083,6 +1192,8 @@ All APIs follow unified pattern with role-based filtering:
 - **Payments**: Razorpay (primary), PayPal (alternative)
 - **SMS/Email**: Twilio/AWS SNS (SMS), SendGrid/AWS SES (Email)
 - **Search**: Algolia/Elasticsearch or native Firestore
+- **Real-time**: WebSocket (Socket.io) for live auction bidding
+- **Job Scheduler**: Node-cron / BullMQ for auction end automation
 - **State**: React Context + hooks
 - **Forms**: React Hook Form + Zod validation
 - **UI Components**: Headless UI / Radix UI (recommended)
@@ -1109,31 +1220,94 @@ All APIs follow unified pattern with role-based filtering:
 
 - `/api/shops` - List/create shops (behavior varies by role)
 - `/api/shops/[id]` - Get/update/delete shop (role-based access)
-- `/api/products` - List/create products (filtered by role)
+- `/api/products` - List/create products (filtered by role, saved with shop_id)
+- `/api/products/[id]` - Product details with variants/similar products
+- `/api/products/[id]/variants` - Product variants (same leaf category)
+- `/api/products/[id]/similar` - Similar products (max 10, diverse shops)
+- `/api/products/[id]/seller-items` - Seller's other products (by shop_id)
 - `/api/orders` - List/create orders (user's own or all if admin)
+- `/api/auctions` - List/create auctions (5 max per shop, unlimited for admin)
+- `/api/auctions/[id]` - Auction details (saved with shop_id)
+- `/api/auctions/[id]/bid` - Place bid (WebSocket real-time updates)
+- `/api/auctions/[id]/similar` - Similar auctions (max 10, diverse shops)
+- `/api/auctions/live` - Live auctions feed (WebSocket)
+- `/api/auctions/featured` - Featured auctions (admin curated)
 - `/api/cart` - Get/update user cart (authenticated) or guest cart (session)
 - `/api/cart/merge` - Merge guest cart into user cart on login
 - `/api/checkout/create-order` - Create order from cart
 - `/api/checkout/verify-payment` - Verify Razorpay/PayPal payment
-- `/api/search` - Universal search (products, shops, categories)
+- `/api/search` - Universal search (products OR auctions based on type param)
+- `/api/categories/search` - Realtime category search
 - `/api/favorites` - User favorites/wishlist
 - `/api/addresses` - User shipping addresses
 
 ---
 
+## Key Features & Implementation Notes
+
+### Products Architecture
+
+- **Products save `shop_id`, not `user_id`** - Enables shop ownership transfer
+- **Variants**: Products from same leaf category (no child categories)
+- **Similar Products Algorithm**:
+  1. First, products from same leaf category (different shops)
+  2. If <10, go to parent category
+  3. If still <10, go to grandparent category
+  4. Max 10 products, prioritize diverse shops (different shop_id)
+- **Seller Items**: Other products from same `shop_id`
+- **Common Products Page**: Single page with different filters for all products, search results, shop products, category products
+
+### Auctions Architecture
+
+- **Auctions save `shop_id`, not `user_id`**
+- **Auction Limits**: 5 active auctions per shop, unlimited for admin
+- **No Variants**: Auctions are standalone items
+- **Similar Auctions**: Same algorithm as products (max 10, diverse shops)
+- **Live Bidding**: WebSocket for real-time updates
+- **Auction End Automation**: Job scheduler to close auctions, notify winners
+- **Featured Auctions**: Admin can set priority order for homepage
+
+### Search Architecture
+
+- **Toggle Search Type**: Products OR Auctions (not both simultaneously)
+- **Category Search**: Realtime search on categories page
+- **Filters**:
+  - Apply only on "Apply Filters" button click
+  - **In Stock checkbox**: Realtime (no apply button needed)
+  - **Sort dropdown**: Realtime (no apply button needed)
+- **Sort Options**:
+  - Products: Relevance, Latest, Price Low-High, Price High-Low
+  - Auctions: Time Left (Less-More, More-Less), Price, Ending Soon
+- **Shop & Category Filters**: Added to search filters
+
+### Filter Behavior
+
+- **FilterSidebar**: Collapsible on mobile, visible on desktop
+- **Apply Button**: Required for category, price range, rating filters
+- **Realtime Updates**: In Stock checkbox, Sort dropdown
+- **URL Sync**: Filters persist in URL for shareable states
+
+---
+
 ## Completion Tracking
 
-- **Total Tasks**: 380+
+- **Total Tasks**: 480+
 - **Completed**: 0
 - **In Progress**: 0
 - **Blocked**: 0
 
 ## Documentation Files Created
 
-- ✅ `FEATURE_IMPLEMENTATION_CHECKLIST.md` - Main implementation checklist
+- ✅ `FEATURE_IMPLEMENTATION_CHECKLIST.md` - Main implementation checklist (480+ tasks)
 - ✅ `MEDIA_COMPONENTS_GUIDE.md` - Comprehensive media handling guide
 - ✅ `UNIFIED_API_ARCHITECTURE.md` - Complete unified API documentation
 - ✅ `UNIFIED_API_QUICKSTART.md` - Developer quick start guide
 - ✅ `FILTER_AND_UPLOAD_GUIDE.md` - Filter sidebar & upload management guide
+
+## Recommended Documentation to Create
+
+- [ ] `AUCTION_SYSTEM_GUIDE.md` - Live auction system implementation (WebSocket, bidding, scheduler)
+- [ ] `SIMILAR_PRODUCTS_ALGORITHM.md` - Detailed algorithm for variants/similar/seller items
+- [ ] `PRODUCT_ARCHITECTURE.md` - Product data structure, shop_id vs user_id, eBay-style pages
 
 Last Updated: November 7, 2025
