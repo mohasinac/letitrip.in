@@ -2,7 +2,7 @@
 
 // About Links (Column 1)
 export const ABOUT_LINKS = [
-  { id: "about", name: "About Doorzo", link: "/about" },
+  { id: "about", name: "About Let It Rip", link: "/about" },
   { id: "terms", name: "Terms of Service", link: "/terms" },
   { id: "privacy", name: "Privacy Policy", link: "/privacy" },
   { id: "disclaimer", name: "Disclaimer", link: "/disclaimer" }
@@ -74,7 +74,7 @@ export const SOCIAL_LINKS = [
   { id: "instagram", name: "Instagram", link: "https://instagram.com", icon: "instagram" }
 ];
 
-export const COPYRIGHT_TEXT = "Copyright © 2015-2025 doorzo.com. All Rights Reserved";
+export const COPYRIGHT_TEXT = "Copyright © 2015-2025 letitrip.com. All Rights Reserved";
 
 export const SUPPORT_INFO = {
   title: "Need help? Please use the Customer Ticket",

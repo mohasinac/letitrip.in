@@ -4,7 +4,6 @@ import Link from "next/link";
 import { SPECIAL_EVENT } from "@/constants/navigation";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { COLOR_CLASSES } from "@/constants/colors";
 
 export default function SpecialEventBanner() {
   const [isVisible, setIsVisible] = useState(true);
@@ -12,11 +11,14 @@ export default function SpecialEventBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className={`${COLOR_CLASSES.background.gradient} text-gray-900 py-2 px-4 relative`}>
+    <div
+      id="special-event-banner"
+      className="bg-blue-600 text-white py-2 px-4 relative"
+    >
       <div className="container mx-auto flex items-center justify-center gap-2 text-sm md:text-base">
         <Link
           href={SPECIAL_EVENT.link}
-          className="hover:underline font-bold"
+          className="hover:underline font-semibold"
         >
           ⭐ {SPECIAL_EVENT.title}: {SPECIAL_EVENT.subtitle}
         </Link>

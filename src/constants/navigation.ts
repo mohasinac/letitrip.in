@@ -1,7 +1,7 @@
 // Navigation Constants
 
-export const COMPANY_NAME = "DOORZO";
-export const COMPANY_ALT_TEXT = "Doorzo - Buy From Japan";
+export const COMPANY_NAME = "LET IT RIP";
+export const COMPANY_ALT_TEXT = "Let It Rip - Buy From Japan";
 
 // Special Event Banner
 export const SPECIAL_EVENT = {

@@ -1,11 +1,14 @@
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main id="home-page" className="container mx-auto px-4 py-8">
       <div className="space-y-8">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-lg p-8 text-center">
+        <section
+          id="hero-section"
+          className="bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-lg p-8 text-center"
+        >
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to DOORZO
+            Welcome to LET IT RIP
           </h1>
           <p className="text-xl text-gray-800 mb-6 font-medium">
             Your Gateway to Japanese Shopping
@@ -16,7 +19,7 @@ export default function Home() {
         </section>
 
         {/* Featured Products Section */}
-        <section>
+        <section id="featured-products">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Featured Products
           </h2>
@@ -27,17 +30,17 @@ export default function Home() {
                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
               >
                 <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                <h3 className="font-bold text-gray-900 mb-2">
-                  Product {item}
-                </h3>
-                <p className="text-yellow-700 font-bold text-lg">¥{1000 * item}</p>
+                <h3 className="font-bold text-gray-900 mb-2">Product {item}</h3>
+                <p className="text-yellow-700 font-bold text-lg">
+                  ¥{1000 * item}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Popular Categories */}
-        <section>
+        <section id="popular-categories">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Popular Categories
           </h2>

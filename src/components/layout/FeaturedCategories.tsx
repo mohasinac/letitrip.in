@@ -57,7 +57,7 @@ export default function FeaturedCategories() {
   };
 
   return (
-    <div className="bg-white border-b py-4 lg:py-4">
+    <div id="featured-categories" className="bg-white border-b py-4 lg:py-4">
       <div className="container mx-auto px-4">
         <div className="relative">
           {/* Left Arrow - Mobile Only */}

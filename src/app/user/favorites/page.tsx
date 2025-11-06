@@ -1,6 +1,6 @@
-export default function UserFavoritesPage() {
+export default function FavoritesPage() {
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main id="user-favorites-page" className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">My Favorites</h1>
       <div className="bg-white rounded-lg border p-8 text-center">
         <p className="text-gray-600">No favorites yet</p>
