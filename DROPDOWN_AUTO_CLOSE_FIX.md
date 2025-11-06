@@ -7,6 +7,7 @@ Updated MainNavBar to automatically close other dropdowns when a new one is open
 ## 🐛 **Issue**
 
 Previously, multiple dropdowns could be open at the same time:
+
 - Admin dropdown open + Seller dropdown open + User dropdown open ❌
 - Confusing UI with overlapping menus
 - No visual indication of which menu is active
@@ -16,6 +17,7 @@ Previously, multiple dropdowns could be open at the same time:
 Now when you click on any dropdown, all other dropdowns automatically close:
 
 ### Behavior:
+
 ```
 Click Admin → Opens Admin, Closes Seller & User ✅
 Click Seller → Opens Seller, Closes Admin & User ✅
@@ -27,19 +29,29 @@ Click User → Opens User, Closes Admin & Seller ✅
 ### File: `src/components/layout/MainNavBar.tsx`
 
 ### 1. Enhanced Click-Outside Handler
+
 ```typescript
 useEffect(() => {
   function handleClickOutside(event: MouseEvent) {
     // Close user menu if clicked outside
-    if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+    if (
+      userMenuRef.current &&
+      !userMenuRef.current.contains(event.target as Node)
+    ) {
       setIsUserMenuOpen(false);
     }
     // Close admin menu if clicked outside
-    if (adminMenuRef.current && !adminMenuRef.current.contains(event.target as Node)) {
+    if (
+      adminMenuRef.current &&
+      !adminMenuRef.current.contains(event.target as Node)
+    ) {
       setIsAdminMenuOpen(false);
     }
     // Close seller menu if clicked outside
-    if (sellerMenuRef.current && !sellerMenuRef.current.contains(event.target as Node)) {
+    if (
+      sellerMenuRef.current &&
+      !sellerMenuRef.current.contains(event.target as Node)
+    ) {
       setIsSellerMenuOpen(false);
     }
   }
@@ -50,12 +62,13 @@ useEffect(() => {
 ```
 
 ### 2. Admin Button Click Handler
+
 ```typescript
 <button
   onClick={() => {
     setIsAdminMenuOpen(!isAdminMenuOpen);
-    setIsSellerMenuOpen(false);  // ← Close seller menu
-    setIsUserMenuOpen(false);    // ← Close user menu
+    setIsSellerMenuOpen(false); // ← Close seller menu
+    setIsUserMenuOpen(false); // ← Close user menu
   }}
   className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
 >
@@ -66,12 +79,13 @@ useEffect(() => {
 ```
 
 ### 3. Seller Button Click Handler
+
 ```typescript
 <button
   onClick={() => {
     setIsSellerMenuOpen(!isSellerMenuOpen);
-    setIsAdminMenuOpen(false);   // ← Close admin menu
-    setIsUserMenuOpen(false);    // ← Close user menu
+    setIsAdminMenuOpen(false); // ← Close admin menu
+    setIsUserMenuOpen(false); // ← Close user menu
   }}
   className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
 >
@@ -82,12 +96,13 @@ useEffect(() => {
 ```
 
 ### 4. User Button Click Handler (Authenticated)
+
 ```typescript
 <button
   onClick={() => {
     setIsUserMenuOpen(!isUserMenuOpen);
-    setIsAdminMenuOpen(false);   // ← Close admin menu
-    setIsSellerMenuOpen(false);  // ← Close seller menu
+    setIsAdminMenuOpen(false); // ← Close admin menu
+    setIsSellerMenuOpen(false); // ← Close seller menu
   }}
   className="flex items-center gap-2 hover:bg-gray-700 px-3 py-2 rounded"
 >
@@ -96,12 +111,13 @@ useEffect(() => {
 ```
 
 ### 5. User Button Click Handler (Not Authenticated)
+
 ```typescript
 <button
   onClick={() => {
     setIsUserMenuOpen(!isUserMenuOpen);
-    setIsAdminMenuOpen(false);   // ← Close admin menu
-    setIsSellerMenuOpen(false);  // ← Close seller menu
+    setIsAdminMenuOpen(false); // ← Close admin menu
+    setIsSellerMenuOpen(false); // ← Close seller menu
   }}
   className="hover:bg-gray-700 p-2 rounded"
   aria-label="User menu"
@@ -113,19 +129,25 @@ useEffect(() => {
 ## 🎯 **Features**
 
 ### 1. Mutual Exclusivity
+
 Only one dropdown can be open at a time:
+
 - ✅ Clean, focused UI
 - ✅ No overlapping menus
 - ✅ Clear visual hierarchy
 
 ### 2. Click Outside to Close
+
 Click anywhere outside the dropdowns to close them:
+
 - ✅ Clicks on page content → All dropdowns close
 - ✅ Clicks on navbar (but not dropdown) → All dropdowns close
 - ✅ Intuitive behavior users expect
 
 ### 3. Toggle Behavior
+
 Clicking the same dropdown button toggles it:
+
 - First click → Opens dropdown, closes others ✅
 - Second click → Closes dropdown ✅
 - Third click → Opens dropdown again ✅
@@ -133,6 +155,7 @@ Clicking the same dropdown button toggles it:
 ## 🧪 **Testing Scenarios**
 
 ### Scenario 1: Admin User
+
 ```
 1. Click Admin → Admin menu opens ✅
 2. Click Seller → Seller opens, Admin closes ✅
@@ -141,6 +164,7 @@ Clicking the same dropdown button toggles it:
 ```
 
 ### Scenario 2: Seller User (No Admin Menu)
+
 ```
 1. Click Seller → Seller menu opens ✅
 2. Click User → User opens, Seller closes ✅
@@ -149,6 +173,7 @@ Clicking the same dropdown button toggles it:
 ```
 
 ### Scenario 3: Regular User (No Admin/Seller Menus)
+
 ```
 1. Click User → User menu opens ✅
 2. Click outside → User closes ✅
@@ -156,6 +181,7 @@ Clicking the same dropdown button toggles it:
 ```
 
 ### Scenario 4: Not Logged In
+
 ```
 1. Click dropdown caret → Sign In/Register menu opens ✅
 2. Click outside → Menu closes ✅
@@ -165,6 +191,7 @@ Clicking the same dropdown button toggles it:
 ## 📊 **Before vs After**
 
 ### Before:
+
 ```
 ❌ Multiple dropdowns open simultaneously
 ❌ Overlapping menus
@@ -174,6 +201,7 @@ Clicking the same dropdown button toggles it:
 ```
 
 ### After:
+
 ```
 ✅ Only one dropdown open at a time
 ✅ Clean, focused UI
@@ -194,6 +222,7 @@ Clicking the same dropdown button toggles it:
 ## 🔍 **Implementation Details**
 
 ### State Management:
+
 ```typescript
 const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
@@ -201,6 +230,7 @@ const [isSellerMenuOpen, setIsSellerMenuOpen] = useState(false);
 ```
 
 ### Refs for Click Detection:
+
 ```typescript
 const userMenuRef = useRef<HTMLDivElement>(null);
 const adminMenuRef = useRef<HTMLDivElement>(null);
@@ -208,6 +238,7 @@ const sellerMenuRef = useRef<HTMLDivElement>(null);
 ```
 
 ### Click Handler Pattern:
+
 ```typescript
 onClick={() => {
   setIsThisMenuOpen(!isThisMenuOpen);  // Toggle current

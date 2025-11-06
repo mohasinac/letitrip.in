@@ -7,27 +7,27 @@ Updated login and register endpoints to automatically clear invalid session cook
 ## 📋 **Changes Made**
 
 ### Files Modified:
+
 1. `src/app/api/auth/login/route.ts`
 2. `src/app/api/auth/register/route.ts`
 
 ### What Changed:
 
 #### Before (Problem):
+
 ```typescript
 if (!isPasswordValid) {
-  return NextResponse.json(
-    { error: 'Invalid credentials' },
-    { status: 401 }
-  );
+  return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 }
 // Old invalid cookie still exists in browser!
 ```
 
 #### After (Fixed):
+
 ```typescript
 if (!isPasswordValid) {
   const response = NextResponse.json(
-    { error: 'Invalid credentials' },
+    { error: "Invalid credentials" },
     { status: 401 }
   );
   // Clear any existing invalid session cookie
@@ -39,6 +39,7 @@ if (!isPasswordValid) {
 ## 🎯 **What This Fixes**
 
 ### Problem:
+
 1. User has old/invalid session cookie in browser
 2. User tries to login with wrong password → 401 error
 3. Old invalid cookie remains in browser
@@ -46,7 +47,9 @@ if (!isPasswordValid) {
 5. Server keeps trying to verify invalid cookie → "invalid signature" errors
 
 ### Solution:
+
 Now when login/register fails for ANY reason, the server automatically clears the session cookie:
+
 - ❌ Invalid credentials → Clear cookie
 - ❌ Account disabled → Clear cookie
 - ❌ Email already exists → Clear cookie
@@ -56,6 +59,7 @@ Now when login/register fails for ANY reason, the server automatically clears th
 ## 🚀 **Scenarios Now Handled**
 
 ### Login Route (`/api/auth/login`):
+
 ```typescript
 ✅ User not found → Clear cookie
 ✅ Wrong password → Clear cookie
@@ -64,6 +68,7 @@ Now when login/register fails for ANY reason, the server automatically clears th
 ```
 
 ### Register Route (`/api/auth/register`):
+
 ```typescript
 ✅ Missing fields → Clear cookie
 ✅ Invalid email format → Clear cookie
@@ -76,21 +81,23 @@ Now when login/register fails for ANY reason, the server automatically clears th
 ## 🔄 **How It Works**
 
 ### Using `clearSessionCookie()` function:
+
 ```typescript
 export function clearSessionCookie(response: NextResponse): void {
-  const cookie = serialize(SESSION_COOKIE_NAME, '', {
+  const cookie = serialize(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 0,  // ← This expires the cookie immediately
-    path: '/',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0, // ← This expires the cookie immediately
+    path: "/",
   });
 
-  response.headers.set('Set-Cookie', cookie);
+  response.headers.set("Set-Cookie", cookie);
 }
 ```
 
 ### Key Properties:
+
 - `maxAge: 0` → Expires cookie immediately
 - `path: '/'` → Clears cookie for entire site
 - `httpOnly: true` → Secure (JS can't access)
@@ -99,6 +106,7 @@ export function clearSessionCookie(response: NextResponse): void {
 ## 📊 **Before vs After**
 
 ### Before Fix:
+
 ```
 1. User has invalid cookie from previous session
 2. User tries to login with wrong password
@@ -110,6 +118,7 @@ export function clearSessionCookie(response: NextResponse): void {
 ```
 
 ### After Fix:
+
 ```
 1. User has invalid cookie from previous session
 2. User tries to login with wrong password
@@ -124,6 +133,7 @@ export function clearSessionCookie(response: NextResponse): void {
 ## 🧪 **Testing**
 
 ### Test Scenario 1: Wrong Password
+
 ```bash
 # 1. Try login with wrong password
 POST /api/auth/login
@@ -142,6 +152,7 @@ Response: 200 + Set-Cookie: session=eyJhbG... (valid token)
 ```
 
 ### Test Scenario 2: Invalid Email Format
+
 ```bash
 # 1. Try register with invalid email
 POST /api/auth/register
@@ -166,12 +177,15 @@ Response: 200 + Set-Cookie: session=eyJhbG... (valid token)
 ## 🎯 **What You Should Do Now**
 
 ### Option 1: Let it auto-fix (Recommended)
+
 Just try to login again - the invalid cookie will be cleared automatically on the next failed attempt.
 
 ### Option 2: Manual clear (Faster)
+
 Clear your browser cookies once now (F12 → Storage → Cookies → Delete), then all future failed attempts will auto-clear.
 
 ### Option 3: Fresh start
+
 Use incognito/private window (`Ctrl + Shift + P`)
 
 ## 📝 **Summary**

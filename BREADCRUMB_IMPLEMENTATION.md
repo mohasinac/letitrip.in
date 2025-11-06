@@ -7,6 +7,7 @@ Created a dynamic breadcrumb component that automatically generates navigation t
 ## 📋 **Files Created/Modified**
 
 ### 1. Created: `src/components/layout/Breadcrumb.tsx`
+
 - Dynamic breadcrumb generation from URL pathname
 - Custom labels for specific routes
 - Responsive design
@@ -14,12 +15,14 @@ Created a dynamic breadcrumb component that automatically generates navigation t
 - Current page is non-clickable and highlighted
 
 ### 2. Modified: `src/app/layout.tsx`
+
 - Added Breadcrumb component between Header and main content
 - Available on all pages automatically
 
 ## 🎯 **Features**
 
 ### 1. **Automatic Path Detection**
+
 ```typescript
 // URL: /user/orders
 // Breadcrumb: Home > User > My Orders
@@ -29,7 +32,9 @@ Created a dynamic breadcrumb component that automatically generates navigation t
 ```
 
 ### 2. **Custom Route Labels**
+
 Predefined labels for common routes:
+
 - `/user/favorites` → "Favorites"
 - `/user/orders` → "My Orders"
 - `/user/history` → "Order History"
@@ -49,7 +54,9 @@ Predefined labels for common routes:
 - And many more...
 
 ### 3. **Smart Formatting**
+
 If no custom label exists, automatically formats URL segments:
+
 ```typescript
 // URL segment: "shopping-cart"
 // Label: "Shopping Cart"
@@ -59,6 +66,7 @@ If no custom label exists, automatically formats URL segments:
 ```
 
 ### 4. **Visual Design**
+
 - ✅ Home icon for first breadcrumb
 - ✅ ChevronRight separators between items
 - ✅ Current page in bold (non-clickable)
@@ -67,12 +75,14 @@ If no custom label exists, automatically formats URL segments:
 - ✅ Gray background with bottom border
 
 ### 5. **Conditional Rendering**
+
 - ✅ Hidden on home page (/)
 - ✅ Only shows when there's a navigation trail
 
 ## 🎨 **Design Details**
 
 ### Colors:
+
 ```css
 Background: bg-gray-50
 Border: border-gray-200
@@ -82,6 +92,7 @@ Separator: text-gray-400
 ```
 
 ### Spacing:
+
 ```css
 Padding: py-3 px-4
 Container: mx-auto (centered)
@@ -90,17 +101,20 @@ Icon margins: mx-2
 ```
 
 ### Icons:
+
 - Home icon (first item)
 - ChevronRight separators
 
 ## 📱 **Responsive Behavior**
 
 ### Desktop:
+
 - Full breadcrumb trail visible
 - All labels shown
 - Proper spacing
 
 ### Mobile:
+
 - Still visible but compact
 - Text wraps if needed
 - Icons help with recognition
@@ -108,6 +122,7 @@ Icon margins: mx-2
 ## 🧪 **Examples**
 
 ### Example 1: User Orders Page
+
 ```
 URL: /user/orders
 Breadcrumb: [Home] > [User] > [My Orders]
@@ -116,24 +131,28 @@ Breadcrumb: [Home] > [User] > [My Orders]
 ```
 
 ### Example 2: Admin Products
+
 ```
 URL: /admin/products
 Breadcrumb: [Home] > [Admin Dashboard] > [Manage Products]
 ```
 
 ### Example 3: Support Ticket
+
 ```
 URL: /support/ticket
 Breadcrumb: [Home] > [Support] > [Support Ticket]
 ```
 
 ### Example 4: Shopping Cart
+
 ```
 URL: /cart
 Breadcrumb: [Home] > [Shopping Cart]
 ```
 
 ### Example 5: Home Page
+
 ```
 URL: /
 Breadcrumb: (hidden - no breadcrumb on home page)
@@ -142,40 +161,46 @@ Breadcrumb: (hidden - no breadcrumb on home page)
 ## 🔧 **How It Works**
 
 ### 1. Path Detection
+
 ```typescript
 const pathname = usePathname(); // "/user/orders"
 const segments = pathname.split("/").filter(Boolean); // ["user", "orders"]
 ```
 
 ### 2. Building Breadcrumb Items
+
 ```typescript
 let currentPath = "";
 segments.forEach((segment) => {
   currentPath += `/${segment}`; // "/user", "/user/orders"
-  
+
   // Get label from custom labels or format segment
   let label = ROUTE_LABELS[currentPath] || formatSegment(segment);
-  
+
   items.push({ label, href: currentPath, isCurrentPage: isLast });
 });
 ```
 
 ### 3. Rendering
+
 ```typescript
-{breadcrumbs.map((item) => (
-  <li>
-    {item.isCurrentPage ? (
-      <span>{item.label}</span> // Current page - not clickable
-    ) : (
-      <Link href={item.href}>{item.label}</Link> // Clickable
-    )}
-  </li>
-))}
+{
+  breadcrumbs.map((item) => (
+    <li>
+      {item.isCurrentPage ? (
+        <span>{item.label}</span> // Current page - not clickable
+      ) : (
+        <Link href={item.href}>{item.label}</Link> // Clickable
+      )}
+    </li>
+  ));
+}
 ```
 
 ## 🎯 **Usage**
 
 ### Already Integrated!
+
 No additional setup needed - it's automatically included in the main layout:
 
 ```tsx
@@ -188,6 +213,7 @@ No additional setup needed - it's automatically included in the main layout:
 ```
 
 ### Adding Custom Labels
+
 To add a custom label for a new route:
 
 ```typescript
@@ -233,6 +259,7 @@ const ROUTE_LABELS: Record<string, string> = {
 ## 📊 **Performance**
 
 ### Optimization:
+
 ```typescript
 const breadcrumbs = useMemo(() => {
   // Generate breadcrumbs
@@ -247,20 +274,23 @@ const breadcrumbs = useMemo(() => {
 ## 🎨 **Customization Options**
 
 ### Change Colors:
+
 ```tsx
 // In Breadcrumb.tsx
-className="text-gray-600 hover:text-blue-600" // Change yellow to blue
+className = "text-gray-600 hover:text-blue-600"; // Change yellow to blue
 ```
 
 ### Change Separator Icon:
+
 ```tsx
 import { ChevronRight, ArrowRight, Slash } from "lucide-react";
 
 // Use different separator
-<ArrowRight className="w-4 h-4 text-gray-400 mx-2" />
+<ArrowRight className="w-4 h-4 text-gray-400 mx-2" />;
 ```
 
 ### Hide on Specific Pages:
+
 ```typescript
 // Don't show breadcrumb on these pages
 const HIDE_ON_PAGES = ["/", "/login", "/register"];
@@ -271,6 +301,7 @@ if (HIDE_ON_PAGES.includes(pathname)) {
 ```
 
 ### Add Icons for Routes:
+
 ```typescript
 const ROUTE_ICONS: Record<string, ReactNode> = {
   "/cart": <ShoppingCart className="w-4 h-4" />,
@@ -278,8 +309,10 @@ const ROUTE_ICONS: Record<string, ReactNode> = {
 };
 
 // In render:
-{ROUTE_ICONS[item.href]}
-<span>{item.label}</span>
+{
+  ROUTE_ICONS[item.href];
+}
+<span>{item.label}</span>;
 ```
 
 ## 🚀 **Future Enhancements**
@@ -287,6 +320,7 @@ const ROUTE_ICONS: Record<string, ReactNode> = {
 Potential improvements:
 
 1. **Dynamic Product Names**
+
    ```
    /products/beyblade-burst-valkyrie
    Could show: Home > Products > Beyblade Burst Valkyrie
@@ -294,12 +328,14 @@ Potential improvements:
    ```
 
 2. **Category Hierarchy**
+
    ```
    /categories/toys/beyblades
    Could show: Home > Categories > Toys > Beyblades
    ```
 
 3. **User-Specific Breadcrumbs**
+
    ```
    Show different labels based on user role
    Admin sees: "Admin Dashboard"
@@ -331,6 +367,7 @@ Potential improvements:
 ## 📚 **Route Coverage**
 
 ### User Routes:
+
 - `/user/favorites` ✅
 - `/user/orders` ✅
 - `/user/history` ✅
@@ -338,28 +375,33 @@ Potential improvements:
 - `/user/settings` ✅
 
 ### Admin Routes:
+
 - `/admin` ✅
 - `/admin/users` ✅
 - `/admin/products` ✅
 - `/admin/orders` ✅
 
 ### Seller Routes:
+
 - `/seller` ✅
 - `/seller/products` ✅
 - `/seller/orders` ✅
 
 ### Shopping Routes:
+
 - `/shops` ✅
 - `/categories` ✅
 - `/cart` ✅
 - `/coupons` ✅
 
 ### Auth Routes:
+
 - `/login` ✅
 - `/register` ✅
 - `/logout` ✅
 
 ### Other Routes:
+
 - `/about` ✅
 - `/support/ticket` ✅
 - `/unauthorized` ✅

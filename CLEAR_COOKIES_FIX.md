@@ -1,23 +1,27 @@
 # 🔧 SESSION_SECRET Fix - Clear Old Cookies
 
 ## ❌ **Error:**
+
 ```
 Session verification error: Error [JsonWebTokenError]: invalid signature
 GET /api/auth/me 401 in 35ms
 ```
 
 ## 🎯 **Root Cause:**
+
 You have **old session cookies** in your browser that were created with a **different secret** (or no secret). When the server tries to verify them with the new `SESSION_SECRET`, the signature doesn't match.
 
 ## ✅ **Solution: Clear Browser Cookies**
 
 ### Firefox (Your Browser):
+
 1. Press `Ctrl + Shift + Delete`
 2. Select "Cookies"
 3. Time range: "Last Hour" (or "Everything")
 4. Click "Clear Now"
 
 **OR use Developer Tools:**
+
 1. Press `F12` to open DevTools
 2. Go to "Storage" tab
 3. Click "Cookies" → `http://localhost:3000`
@@ -25,9 +29,11 @@ You have **old session cookies** in your browser that were created with a **diff
 5. Refresh page
 
 ### Alternative: Use Incognito/Private Window
+
 ```
 Ctrl + Shift + P (Firefox Private Window)
 ```
+
 Then visit `http://localhost:3000`
 
 ## 🔄 **After Clearing Cookies:**
@@ -39,6 +45,7 @@ Then visit `http://localhost:3000`
 ## 🐛 **Why This Happens:**
 
 ### Timeline:
+
 ```
 1. Old cookie created with JWT_SECRET (or no secret)
    → Token signature: abc123xyz
@@ -53,6 +60,7 @@ Then visit `http://localhost:3000`
 ```
 
 ### After clearing cookies:
+
 ```
 1. Browser has no cookies
 2. Try to login → Creates new token with SESSION_SECRET
@@ -65,12 +73,14 @@ Then visit `http://localhost:3000`
 After clearing cookies and logging in:
 
 1. **Check browser DevTools:**
+
    ```
    Application → Cookies → localhost:3000
    Should see: session = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
 
 2. **Check browser console:**
+
    ```
    ✅ GET /api/auth/me 200 (not 401)
    ```
@@ -86,17 +96,20 @@ After clearing cookies and logging in:
 Your `.env` file structure is fine for development, but for security best practices:
 
 ### Current Setup:
+
 ```
 .env (contains secrets) ✅ Works but not ideal
 ```
 
 ### Recommended Setup:
+
 ```
 .env (defaults, no secrets, committed to git)
 .env.local (secrets, NOT committed to git)
 ```
 
 But since you're already using `.env` and it works, just make sure:
+
 - ✅ `.env` is in `.gitignore`
 - ✅ Don't commit secrets to git
 - ✅ Use different secrets for production

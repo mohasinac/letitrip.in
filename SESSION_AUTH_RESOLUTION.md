@@ -3,6 +3,7 @@
 ## 🐛 **Issues Identified**
 
 ### Issue 1: Invalid Signature Errors
+
 ```
 Session verification error: Error [JsonWebTokenError]: invalid signature
 GET /api/auth/me 401 in 35ms
@@ -11,6 +12,7 @@ GET /api/auth/me 401 in 35ms
 **Root Cause**: Old session cookies signed with wrong/no SESSION_SECRET
 
 ### Issue 2: Failed Login Creates Invalid Cookies
+
 ```
 POST /api/auth/login 401 in 2286ms
 - Invalid cookies remain in browser after failed login
@@ -22,11 +24,13 @@ POST /api/auth/login 401 in 2286ms
 ## ✅ **Fixes Applied**
 
 ### Fix 1: SESSION_SECRET Added
+
 - ✅ Added `SESSION_SECRET` to `.env` file
 - ✅ Value: `jfv_session_2025_117598288_secure_key_for_jwt_tokens`
 - ✅ Used for JWT token signing and verification
 
 ### Fix 2: Auto-Clear Invalid Cookies
+
 - ✅ Updated `/api/auth/login` to clear cookies on any failure
 - ✅ Updated `/api/auth/register` to clear cookies on any failure
 - ✅ Uses `clearSessionCookie()` helper function
@@ -34,6 +38,7 @@ POST /api/auth/login 401 in 2286ms
 ## 🔄 **What Changed**
 
 ### Login Route (`src/app/api/auth/login/route.ts`):
+
 ```typescript
 // Now clears cookies on:
 ✅ User not found (401)
@@ -43,6 +48,7 @@ POST /api/auth/login 401 in 2286ms
 ```
 
 ### Register Route (`src/app/api/auth/register/route.ts`):
+
 ```typescript
 // Now clears cookies on:
 ✅ Missing required fields (400)
@@ -56,11 +62,13 @@ POST /api/auth/login 401 in 2286ms
 ## 🚀 **How to Test**
 
 ### Quick Test:
+
 1. **Clear cookies once** (F12 → Storage → Cookies → Delete `session`)
 2. **Try to login** with correct credentials
 3. **Should work!** No more 401 errors
 
 ### Verify Auto-Clear Working:
+
 1. Try login with **wrong password**
 2. Open **DevTools** → **Network** tab
 3. Check **POST /api/auth/login** response headers
@@ -76,7 +84,7 @@ POST /api/auth/login 401 in 2286ms
 ✅ src/app/api/auth/login/route.ts
    - Import clearSessionCookie
    - Clear cookies on all error responses
-   
+
 ✅ src/app/api/auth/register/route.ts
    - Import clearSessionCookie
    - Clear cookies on all error responses
@@ -91,12 +99,14 @@ POST /api/auth/login 401 in 2286ms
 ## 🎯 **Current Status**
 
 ### Before:
+
 ❌ Old invalid cookies lingered in browser
 ❌ "invalid signature" errors on every request
 ❌ Failed logins left invalid cookies
 ❌ Couldn't login properly even with correct credentials
 
 ### After:
+
 ✅ SESSION_SECRET properly configured
 ✅ Failed auth attempts auto-clear cookies
 ✅ No lingering invalid sessions
@@ -106,6 +116,7 @@ POST /api/auth/login 401 in 2286ms
 ## 🔍 **Root Cause Analysis**
 
 ### Timeline:
+
 ```
 1. Development started without SESSION_SECRET
 2. Some tokens created with default fallback secret
@@ -118,6 +129,7 @@ POST /api/auth/login 401 in 2286ms
 ```
 
 ### Solution:
+
 ```
 1. ✅ Added proper SESSION_SECRET to .env
 2. ✅ Auto-clear cookies on any auth failure
@@ -138,6 +150,7 @@ POST /api/auth/login 401 in 2286ms
 ## 🎉 **What to Expect Now**
 
 ### First Login After Fix:
+
 1. Try to login
 2. If you have old invalid cookie:
    - First attempt may fail → cookie auto-cleared ✅
@@ -146,6 +159,7 @@ POST /api/auth/login 401 in 2286ms
    - First attempt with correct password → SUCCESS ✅
 
 ### Ongoing Behavior:
+
 - ✅ Failed login → Auto-clear cookie
 - ✅ Successful login → New valid cookie
 - ✅ Stay logged in across page refreshes
@@ -155,22 +169,26 @@ POST /api/auth/login 401 in 2286ms
 ## 📞 **If Still Having Issues**
 
 1. **Manually clear cookies once**:
+
    ```
    F12 → Storage → Cookies → Delete 'session'
    ```
 
 2. **Check SESSION_SECRET is loaded**:
+
    ```powershell
    Get-Content .env | Select-String "SESSION_SECRET"
    ```
 
 3. **Restart dev server** (if .env was just edited):
+
    ```powershell
    # Stop server: Ctrl+C
    npm run dev
    ```
 
 4. **Use incognito/private window**:
+
    ```
    Ctrl + Shift + P (Firefox)
    ```
@@ -180,13 +198,16 @@ POST /api/auth/login 401 in 2286ms
 ## 🔐 **Security Notes**
 
 ### Current Setup:
+
 ```bash
 # .env contains:
 SESSION_SECRET=jfv_session_2025_117598288_secure_key_for_jwt_tokens
 ```
 
 ### For Production:
+
 Generate a stronger secret:
+
 ```bash
 # PowerShell:
 -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | ForEach-Object {[char]$_})
@@ -196,6 +217,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ### Best Practices:
+
 - ✅ SESSION_SECRET in .gitignore (via .env)
 - ✅ Different secrets for dev/staging/production
 - ✅ Minimum 32 characters

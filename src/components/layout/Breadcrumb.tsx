@@ -19,37 +19,37 @@ const ROUTE_LABELS: Record<string, string> = {
   "/user/history": "Order History",
   "/user/messages": "Messages",
   "/user/settings": "Settings",
-  
+
   // Shop routes
   "/shops": "Shops",
-  
+
   // Product routes
   "/categories": "Categories",
   "/cart": "Shopping Cart",
   "/coupons": "Coupons",
-  
+
   // Auth routes
   "/login": "Sign In",
   "/register": "Register",
   "/logout": "Logout",
-  
+
   // Support routes
   "/support/ticket": "Support Ticket",
-  
+
   // About
   "/about": "About Us",
-  
+
   // Admin routes
   "/admin": "Admin Dashboard",
   "/admin/users": "Manage Users",
   "/admin/products": "Manage Products",
   "/admin/orders": "Manage Orders",
-  
+
   // Seller routes
   "/seller": "Seller Dashboard",
   "/seller/products": "My Products",
   "/seller/orders": "My Orders",
-  
+
   // Other routes
   "/unauthorized": "Unauthorized Access",
 };
@@ -81,7 +81,7 @@ export default function Breadcrumb() {
 
       // Get label from custom labels or capitalize segment
       let label = ROUTE_LABELS[currentPath];
-      
+
       if (!label) {
         // Try to format the segment nicely
         label = segment
@@ -117,7 +117,7 @@ export default function Breadcrumb() {
               {index > 0 && (
                 <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
               )}
-              
+
               {item.isCurrentPage ? (
                 // Current page - not clickable
                 <span className="flex items-center gap-1.5 text-gray-900 font-medium">
