@@ -105,7 +105,7 @@ export default function MainNavBar({
                 <User className="w-5 h-5 text-gray-900" />
               </div>
               <span className="hidden sm:inline text-sm">mohasin</span>
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-4 h-4 hidden sm:inline" />
             </button>
 
             {/* User Dropdown Menu */}

@@ -15,23 +15,35 @@ export default function SearchBar() {
     console.log("Search:", searchQuery, "Category:", selectedCategory);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch(e as any);
+    }
+  };
+
   const selectedCategoryName =
     PRODUCT_CATEGORIES.find((cat) => cat.id === selectedCategory)?.name ||
     "All Categories";
+
+  const displayCategoryName =
+    selectedCategory === "all" ? "All" : selectedCategoryName;
 
   return (
     <div className="bg-yellow-50 py-4 px-4">
       <div className="container mx-auto">
         <form onSubmit={handleSearch} className="flex gap-2 max-w-4xl mx-auto">
           {/* Category Dropdown */}
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <button
               type="button"
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="h-full bg-white border border-gray-300 rounded-l-lg px-4 py-3 flex items-center gap-2 whitespace-nowrap hover:bg-gray-50 min-w-[180px] justify-between"
+              className="h-full bg-white border border-gray-300 rounded-l-lg px-3 lg:px-4 py-3 flex items-center gap-1 lg:gap-2 whitespace-nowrap hover:bg-gray-50 min-w-[70px] lg:min-w-[180px] justify-between"
             >
-              <span className="text-sm font-semibold text-gray-900">{selectedCategoryName}</span>
-              <ChevronDown className="w-4 h-4 text-gray-700" />
+              <span className="text-sm font-semibold text-gray-900 truncate">
+                <span className="lg:hidden">{displayCategoryName}</span>
+                <span className="hidden lg:inline">{selectedCategoryName}</span>
+              </span>
+              <ChevronDown className="w-4 h-4 text-gray-700 flex-shrink-0" />
             </button>
 
             {/* Category Dropdown Menu */}
@@ -82,8 +94,9 @@ export default function SearchBar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Enter a brand name, item name or item URL for search..."
-              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-gray-900 font-medium placeholder:text-gray-500"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm"
             />
           </div>
 
