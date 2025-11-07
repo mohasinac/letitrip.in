@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Collections } from '@/app/api/lib/firebase/collections';
-import { withRouteRateLimit } from '@/app/api/middleware/withRouteRateLimit';
+import { withRouteRateLimit } from '../middleware/withRouteRateLimit';
 
 // Utility: safely get number from query
 function toNumber(value: string | null, fallback: number): number {
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 
       // Build base query
       const ref = type === 'auctions' ? Collections.auctions() : Collections.products();
-      let query: FirebaseFirestore.Query = ref as any;
+      let query: any = ref as any;
 
       // Common filters
       if (type === 'products') {
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
       query = query.limit(fetchLimit);
 
       const snap = await query.get();
-      let items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      let items = snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
 
       const qWords = q.split(/\s+/).filter(Boolean);
 
@@ -117,16 +117,16 @@ export async function GET(req: NextRequest) {
         };
 
         items = items
-          .map((it) => ({ ...it, __score: scoreFor(it) }))
-          .filter((it) => it.__score > 0)
-          .sort((a, b) => {
+          .map((it: any) => ({ ...it, __score: scoreFor(it) }))
+          .filter((it: any) => it.__score > 0)
+          .sort((a: any, b: any) => {
             if (b.__score !== a.__score) return b.__score - a.__score;
             // tiebreaker
             const aTime = (itDate(a.created_at) || itDate(a.createdAt) || 0);
             const bTime = (itDate(b.created_at) || itDate(b.createdAt) || 0);
             return bTime - aTime;
           })
-          .map(({ __score, ...rest }) => rest);
+          .map(({ __score, ...rest }: any) => rest);
       }
 
       // Secondary in-memory sort for non-relevance if needed and field missing

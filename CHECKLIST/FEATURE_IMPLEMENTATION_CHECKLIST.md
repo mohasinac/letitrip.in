@@ -73,63 +73,63 @@
 
 ## Quick Reference: Unified API Endpoints
 
-| Resource       | Endpoint                                | GET                                      | POST                           | PATCH                               | DELETE                |
-| -------------- | ---------------------------------------- | ---------------------------------------- | ------------------------------ | ----------------------------------- | --------------------- |
-| **Shops**      | `/api/shops`                             | List (filtered by role)                  | Create (seller/admin)          | -                                   | -                     |
-|                | `/api/shops/[slug]`                      | Detail (role-based)                      | -                              | Update (owner/admin)                | Delete (owner/admin)  |
-|                | `/api/shops/[slug]/verify`               | -                                        | -                              | Verify (admin)                      | -                     |
-|                | `/api/shops/[slug]/ban`                  | -                                        | -                              | Ban (admin)                         | -                     |
-|                | `/api/shops/[slug]/feature`              | -                                        | -                              | Feature (admin)                     | -                     |
-|                | `/api/shops/[slug]/payments`             | Payments (owner/admin)                   | Process (admin)                | -                                   | -                     |
-| **Products**   | `/api/products`                          | List (role-filtered)                     | Create (seller/admin)          | -                                   | -                     |
-|                | `/api/products/[slug]`                   | Detail (public/owner)                    | -                              | Update (owner/admin)                | Delete (owner/admin)  |
-|                | `/api/products/[slug]/variants`          | Variants (same leaf category)            | -                              | -                                   | -                     |
-|                | `/api/products/[slug]/similar`           | Similar (max 10, diverse shops)          | -                              | -                                   | -                     |
-|                | `/api/products/[slug]/seller-items`      | Seller other products (shop_id)          | -                              | -                                   | -                     |
-| **Categories** | `/api/categories`                        | List (public)                            | Create (admin)                 | -                                   | -                     |
-|                | `/api/categories/[slug]`                 | Detail (public)                          | -                              | Update (admin)                      | Delete (admin)        |
-|                | `/api/categories/tree`                   | Tree (public)                            | -                              | -                                   | -                     |
-|                | `/api/categories/leaves`                 | Leaves (public)                          | -                              | -                                   | -                     |
-|                | `/api/categories/[slug]/recent-products` | Recent products (10)                     | -                              | -                                   | -                     |
-| **Orders**     | `/api/orders`                            | List (role-filtered)                     | Create (user)                  | -                                   | -                     |
-|                | `/api/orders/[id]`                       | Detail (owner/seller/admin)              | -                              | Update status (seller/admin)        | -                     |
-|                | `/api/orders/[id]/shipment`              | -                                        | Create (seller/admin)          | -                                   | -                     |
-|                | `/api/orders/[id]/cancel`                | -                                        | Cancel (user/admin pre-ship)   | -                                   | -                     |
-|                | `/api/orders/[id]/track`                 | Tracking info                            | -                              | -                                   | -                     |
-|                | `/api/orders/[id]/invoice`               | Invoice PDF (rate limited)               | -                              | -                                   | -                     |
-| **Returns**    | `/api/returns`                           | List (role-filtered)                     | Initiate (user)                | -                                   | -                     |
-|                | `/api/returns/[id]`                      | Detail (owner/seller/admin)              | -                              | Update (seller/admin)               | -                     |
-|                | `/api/returns/[id]/approve`              | -                                        | Approve (seller/admin)         | -                                   | -                     |
-|                | `/api/returns/[id]/refund`               | -                                        | Process (seller/admin)         | -                                   | -                     |
-|                | `/api/returns/[id]/resolve`              | -                                        | Resolve (admin)                | -                                   | -                     |
-|                | `/api/returns/[id]/media`                | Signed upload URLs (GET)                 | Confirm uploaded media (POST)  | -                                   | -                     |
-| **Coupons**    | `/api/coupons`                           | List (public active/owner all)           | Create (seller/admin)          | -                                   | -                     |
-|                | `/api/coupons/[code]`                    | Detail (public/owner)                    | -                              | Update (owner/admin)                | Delete (owner/admin)  |
-| **Reviews**    | `/api/reviews`                           | List (public approved)                   | Create (user)                  | -                                   | -                     |
-|                | `/api/reviews/[id]`                      | Detail (public)                          | -                              | Moderate (owner/admin)              | Delete (author/admin) |
-| **Users**      | `/api/users`                             | List (admin)                             | -                              | -                                   | -                     |
-|                | `/api/users/[id]`                        | Detail (self/admin)                      | -                              | Update (self/admin)                 | -                     |
-|                | `/api/users/[id]/ban`                    | -                                        | -                              | Ban (admin)                         | -                     |
-|                | `/api/users/[id]/role`                   | -                                        | -                              | Change role (admin)                 | -                     |
-| **Analytics**  | `/api/analytics`                         | Get (seller: own, admin: all)            | -                              | -                                   | -                     |
-| **Revenue**    | `/api/revenue`                           | Get (seller: own, admin: all)            | -                              | -                                   | -                     |
-| **Payouts**    | `/api/payouts`                           | List (seller: own, admin: all)           | Request (seller)               | -                                   | -                     |
-|                | `/api/payouts/[id]`                      | -                                        | -                              | Approve (admin)                     | -                     |
-| **Media**      | `/api/media/upload`                      | -                                        | Upload (authenticated)         | -                                   | -                     |
-|                | `/api/media/[id]`                        | -                                        | -                              | Update metadata (owner/admin)       | Delete (owner/admin)  |
-| **Auctions**   | `/api/auctions`                          | List (role-filtered)                     | Create (seller/admin)          | -                                   | -                     |
-|                | `/api/auctions/[id]`                     | Detail (public)                          | -                              | Update (owner/admin)                | Delete (owner/admin)  |
-|                | `/api/auctions/[id]/bid`                 | List bids (public)                       | Place bid (user)               | -                                   | -                     |
-|                | `/api/auctions/[id]/feature`             | -                                        | -                              | Feature (admin)                     | -                     |
-|                | `/api/auctions/live`                     | Live auctions (public)                   | -                              | -                                   | -                     |
-|                | `/api/auctions/featured`                 | Featured auctions (public)               | -                              | -                                   | -                     |
-|                | `/api/auctions/watchlist`                | User watchlist (auth)                    | Add/remove watch (user)        | -                                   | -                     |
-|                | `/api/auctions/my-bids`                  | User bids (auth)                         | -                              | -                                   | -                     |
-|                | `/api/auctions/won`                      | Won auctions (auth)                      | -                              | -                                   | -                     |
-|                | `/api/auctions/[id]/similar`             | Similar auctions (max 10)                | -                              | -                                   | -                     |
-| **Search**     | `/api/search`                            | Universal search (products or auctions)  | -                              | -                                   | -                     |
-| **Docs**       | `/api/swagger`                           | OpenAPI JSON                             | -                              | -                                   | -                     |
-|                | `/api-docs`                              | Swagger UI (Next.js page)                | -                              | -                                   | -                     |
+| Resource       | Endpoint                                 | GET                                     | POST                          | PATCH                         | DELETE                |
+| -------------- | ---------------------------------------- | --------------------------------------- | ----------------------------- | ----------------------------- | --------------------- |
+| **Shops**      | `/api/shops`                             | List (filtered by role)                 | Create (seller/admin)         | -                             | -                     |
+|                | `/api/shops/[slug]`                      | Detail (role-based)                     | -                             | Update (owner/admin)          | Delete (owner/admin)  |
+|                | `/api/shops/[slug]/verify`               | -                                       | -                             | Verify (admin)                | -                     |
+|                | `/api/shops/[slug]/ban`                  | -                                       | -                             | Ban (admin)                   | -                     |
+|                | `/api/shops/[slug]/feature`              | -                                       | -                             | Feature (admin)               | -                     |
+|                | `/api/shops/[slug]/payments`             | Payments (owner/admin)                  | Process (admin)               | -                             | -                     |
+| **Products**   | `/api/products`                          | List (role-filtered)                    | Create (seller/admin)         | -                             | -                     |
+|                | `/api/products/[slug]`                   | Detail (public/owner)                   | -                             | Update (owner/admin)          | Delete (owner/admin)  |
+|                | `/api/products/[slug]/variants`          | Variants (same leaf category)           | -                             | -                             | -                     |
+|                | `/api/products/[slug]/similar`           | Similar (max 10, diverse shops)         | -                             | -                             | -                     |
+|                | `/api/products/[slug]/seller-items`      | Seller other products (shop_id)         | -                             | -                             | -                     |
+| **Categories** | `/api/categories`                        | List (public)                           | Create (admin)                | -                             | -                     |
+|                | `/api/categories/[slug]`                 | Detail (public)                         | -                             | Update (admin)                | Delete (admin)        |
+|                | `/api/categories/tree`                   | Tree (public)                           | -                             | -                             | -                     |
+|                | `/api/categories/leaves`                 | Leaves (public)                         | -                             | -                             | -                     |
+|                | `/api/categories/[slug]/recent-products` | Recent products (10)                    | -                             | -                             | -                     |
+| **Orders**     | `/api/orders`                            | List (role-filtered)                    | Create (user)                 | -                             | -                     |
+|                | `/api/orders/[id]`                       | Detail (owner/seller/admin)             | -                             | Update status (seller/admin)  | -                     |
+|                | `/api/orders/[id]/shipment`              | -                                       | Create (seller/admin)         | -                             | -                     |
+|                | `/api/orders/[id]/cancel`                | -                                       | Cancel (user/admin pre-ship)  | -                             | -                     |
+|                | `/api/orders/[id]/track`                 | Tracking info                           | -                             | -                             | -                     |
+|                | `/api/orders/[id]/invoice`               | Invoice PDF (rate limited)              | -                             | -                             | -                     |
+| **Returns**    | `/api/returns`                           | List (role-filtered)                    | Initiate (user)               | -                             | -                     |
+|                | `/api/returns/[id]`                      | Detail (owner/seller/admin)             | -                             | Update (seller/admin)         | -                     |
+|                | `/api/returns/[id]/approve`              | -                                       | Approve (seller/admin)        | -                             | -                     |
+|                | `/api/returns/[id]/refund`               | -                                       | Process (seller/admin)        | -                             | -                     |
+|                | `/api/returns/[id]/resolve`              | -                                       | Resolve (admin)               | -                             | -                     |
+|                | `/api/returns/[id]/media`                | Signed upload URLs (GET)                | Confirm uploaded media (POST) | -                             | -                     |
+| **Coupons**    | `/api/coupons`                           | List (public active/owner all)          | Create (seller/admin)         | -                             | -                     |
+|                | `/api/coupons/[code]`                    | Detail (public/owner)                   | -                             | Update (owner/admin)          | Delete (owner/admin)  |
+| **Reviews**    | `/api/reviews`                           | List (public approved)                  | Create (user)                 | -                             | -                     |
+|                | `/api/reviews/[id]`                      | Detail (public)                         | -                             | Moderate (owner/admin)        | Delete (author/admin) |
+| **Users**      | `/api/users`                             | List (admin)                            | -                             | -                             | -                     |
+|                | `/api/users/[id]`                        | Detail (self/admin)                     | -                             | Update (self/admin)           | -                     |
+|                | `/api/users/[id]/ban`                    | -                                       | -                             | Ban (admin)                   | -                     |
+|                | `/api/users/[id]/role`                   | -                                       | -                             | Change role (admin)           | -                     |
+| **Analytics**  | `/api/analytics`                         | Get (seller: own, admin: all)           | -                             | -                             | -                     |
+| **Revenue**    | `/api/revenue`                           | Get (seller: own, admin: all)           | -                             | -                             | -                     |
+| **Payouts**    | `/api/payouts`                           | List (seller: own, admin: all)          | Request (seller)              | -                             | -                     |
+|                | `/api/payouts/[id]`                      | -                                       | -                             | Approve (admin)               | -                     |
+| **Media**      | `/api/media/upload`                      | -                                       | Upload (authenticated)        | -                             | -                     |
+|                | `/api/media/[id]`                        | -                                       | -                             | Update metadata (owner/admin) | Delete (owner/admin)  |
+| **Auctions**   | `/api/auctions`                          | List (role-filtered)                    | Create (seller/admin)         | -                             | -                     |
+|                | `/api/auctions/[id]`                     | Detail (public)                         | -                             | Update (owner/admin)          | Delete (owner/admin)  |
+|                | `/api/auctions/[id]/bid`                 | List bids (public)                      | Place bid (user)              | -                             | -                     |
+|                | `/api/auctions/[id]/feature`             | -                                       | -                             | Feature (admin)               | -                     |
+|                | `/api/auctions/live`                     | Live auctions (public)                  | -                             | -                             | -                     |
+|                | `/api/auctions/featured`                 | Featured auctions (public)              | -                             | -                             | -                     |
+|                | `/api/auctions/watchlist`                | User watchlist (auth)                   | Add/remove watch (user)       | -                             | -                     |
+|                | `/api/auctions/my-bids`                  | User bids (auth)                        | -                             | -                             | -                     |
+|                | `/api/auctions/won`                      | Won auctions (auth)                     | -                             | -                             | -                     |
+|                | `/api/auctions/[id]/similar`             | Similar auctions (max 10)               | -                             | -                             | -                     |
+| **Search**     | `/api/search`                            | Universal search (products or auctions) | -                             | -                             | -                     |
+| **Docs**       | `/api/swagger`                           | OpenAPI JSON                            | -                             | -                             | -                     |
+|                | `/api-docs`                              | Swagger UI (Next.js page)               | -                             | -                             | -                     |
 
 **Legend:**
 
@@ -421,86 +421,6 @@
 
 **Slug Cleanup:** Legacy `[id]` shop/product routes removed; only `[slug]` now active.
 
----
-
-## Phase 3: Seller Dashboard & Shop Management
-
-**🎯 KEY ARCHITECTURAL DECISION: Unified Seller/Admin Interface**
-
-**Why?** Admins are essentially "super sellers" who can manage all shops. Instead of building separate admin routes for shops/products/coupons/auctions/orders/returns, we use the **same seller routes** with role-based permissions.
-
-**Benefits:**
-
-- ✅ **50% less code** - No duplicate admin pages for shop management
-- ✅ **Consistent UX** - Admins and sellers use identical interfaces
-- ✅ **Easier maintenance** - One codebase for both roles
-- ✅ **Faster development** - Build once, use for both roles
-- ✅ **Better testing** - Test one interface instead of two
-
-**How It Works:**
-
-1. **Shop Selector Dropdown**:
-   - Sellers see "My Shop" or their shops
-   - Admins see "All Shops" + dropdown with all shops
-2. **API Role Detection**:
-   - Sellers: `GET /api/products?shop_id=user_shop`
-   - Admins: `GET /api/products` (returns all shops' products)
-3. **Permission Checks**:
-   - Sellers can only edit their own shop's items
-   - Admins can edit any shop's items
-4. **Additional Admin Actions**:
-   - Shop verification, ban, feature flags
-   - Unlimited auction creation (vs 5 per shop for sellers)
-   - Dispute resolution, ticket assignment
-
-**Admin-Only Routes:**
-
-- `/admin/users` - User management (ban, role change)
-- `/admin/categories` - Category tree management
-- `/admin/hero-slides` - Homepage hero carousel
-- `/admin/featured-sections` - Homepage featured categories/shops
-- `/admin/blog` - Blog management
-
-**Shared Routes (Role-Based Permissions):**
-
-- `/seller/my-shops` - Shop list/create/edit (admins see all)
-- `/seller/products` - Product management (admins see all shops)
-- `/seller/coupons` - Coupon management (admins see all shops)
-- `/seller/auctions` - Auction management (admins unlimited, sellers 5 max)
-- `/seller/orders` - Order management (admins see all)
-- `/seller/returns` - Returns management (admins see all + resolve)
-- `/seller/analytics` - Analytics (admins see all shops)
-- `/seller/reviews` - Reviews (admins see all + moderate)
-- `/seller/support-tickets` - Support tickets (admins see all + assign)
-
-### 3.1 Seller Layout & Navigation ✅ COMPLETED
-
-- [x] Create `/src/app/seller/layout.tsx` - Seller dashboard layout
-- [x] Create `/src/components/seller/SellerSidebar.tsx` - Seller navigation sidebar
-- [x] Create `/src/components/seller/SellerHeader.tsx` - Seller dashboard header
-- [x] Create `/src/app/seller/page.tsx` - Seller dashboard page with stats and quick actions
-- [x] Create `/src/lib/utils.ts` - Utility functions (cn for class merging)
-- [x] Add seller route protection with AuthGuard (role: seller + admin)
-- [x] Install dependencies (clsx, tailwind-merge)
-
-**Reset (Nov 7, 2025): Phase 3 restarted. Only dashboard is ready.**
-
-### 3.2 Database Integration Setup
-
-- [x] Create `/src/app/api/lib/firebase/admin.ts` - **Firebase Admin SDK initialization (server-side only, in API folder)**
-- [x] Create `/src/app/api/lib/firebase/collections.ts` - **Firestore collection references and helpers (in API folder)**
-- [x] Create `/src/app/api/lib/firebase/queries.ts` - **Common Firestore query builders (role-based filters, in API folder)**
-- [x] Create `/src/app/api/lib/firebase/transactions.ts` - **Transaction helpers for complex operations (in API folder)**
-- [ ] Update `/src/constants/database.ts` - Add Firestore collection names (verify completeness)
-- [ ] Setup Firebase Admin SDK credentials (service account JSON)
-- [ ] Configure Firebase Admin environment variables
-- [x] Test Firebase Admin connection in API route (`/api/test/firebase`)
-- [x] Create database indexes for common queries (updated `firestore.indexes.json`)
-- [x] Document initial composite indexes (shops, products, coupons, categories, auctions, bids, favorites) added Nov 7, 2025
-- [ ] Document Firebase security rules for production
-
-**Slug Cleanup:** Legacy `[id]` shop/product routes removed; only `[slug]` now active.
-
 ### 3.3 My Shops Management (Slug-based)
 
 - [ ] Create `/src/app/seller/my-shops/page.tsx` - List all shops (admins see all, users see their 1) **with FilterSidebar**
@@ -508,11 +428,11 @@
 - [ ] Create `/src/components/seller/ShopForm.tsx` - Unified shop form component
 - [ ] Implement shop creation limit (1 for users, unlimited for admins)
 - [x] Create `/src/app/api/shops/route.ts` - **Unified Shops API with Firebase integration** (GET: role-based query, POST: create with ownership, **supports slug parameter**)
-- [x] Create `/src/app/seller/my-shops/[slug]/edit/page.tsx` - **Edit shop form using slug (SEO-friendly)** with media uploads (logo/banner)
-- [x] Create `/src/app/seller/my-shops/[slug]/page.tsx` - **Shop details/dashboard using slug**
-- [x] Create `/src/app/api/shops/[slug]/route.ts` - **GET/PATCH/DELETE by slug (use ID internally)**
-- [x] Create `/src/app/api/shops/validate-slug/route.ts` - **Live slug uniqueness check API** (GET: check if slug exists in shops collection)
-- [ ] Add real-time slug validation in ShopForm (check uniqueness while typing, debounced)
+- [ ] Create `/src/app/seller/my-shops/[slug]/edit/page.tsx` - **Edit shop form using slug (SEO-friendly)** with media uploads (logo/banner)
+- [ ] Create `/src/app/seller/my-shops/[slug]/page.tsx` - **Shop details/dashboard using slug**
+- [ ] Create `/src/app/api/shops/[slug]/route.ts` - **GET/PATCH/DELETE by slug (use ID internally)**
+- [ ] Create `/src/app/api/shops/validate-slug/route.ts` - **Live slug uniqueness check API** (GET: check if slug exists in shops collection)
+- [x] Add real-time slug validation in ShopForm (check uniqueness while typing, debounced)
 - [ ] Add Firestore index for shops queries (owner_id, verified, featured, created_at, **slug**) ✅ Implemented (see firestore.indexes.json)
 
 **Pattern:** UI → fetch('/api/shops') → API Route → Firebase Admin SDK → Firestore (shops collection)
@@ -525,10 +445,10 @@
 - [ ] Create `/src/app/seller/products/page.tsx` - **Centralized product list with shop selector dropdown + ProductFilters sidebar (admins see all shops, sellers see own)**
 - [ ] Create `/src/app/seller/products/create/page.tsx` - **Product creation with shop dropdown selector → redirect to edit page using slug (admins select any shop, sellers select from own)**
 - [ ] Create `/src/app/seller/products/[slug]/edit/page.tsx` - **Product edit using slug (SEO-friendly) with shop dropdown (admins can edit any, sellers edit own)**
-- [x] Create `/src/components/seller/ShopSelector.tsx` - **Dropdown to select shop (admins: all shops, sellers: own shops, filters products/coupons/auctions/analytics by selected shop)**
-- [x] Create `/src/components/seller/ProductTable.tsx` - Product table with inline actions **+ filter support**
-- [x] Create `/src/components/seller/ProductInlineForm.tsx` - Quick product creation (name, price, category, slug, image)
-- [x] Create `/src/components/seller/ProductFullForm.tsx` - Complete product form (SEO, condition, returnable, publish date)
+- [ ] Create `/src/components/seller/ShopSelector.tsx` - **Dropdown to select shop (admins: all shops, sellers: own shops, filters products/coupons/auctions/analytics by selected shop)**
+- [ ] Create `/src/components/seller/ProductTable.tsx` - Product table with inline actions **+ filter support**
+- [ ] Create `/src/components/seller/ProductInlineForm.tsx` - Quick product creation (name, price, category, slug, image)
+- [] Create `/src/components/seller/ProductFullForm.tsx` - Complete product form (SEO, condition, returnable, publish date)
 - [x] Create `/src/app/api/products/route.ts` - **Unified Products API with Firebase** (GET: role-based query, POST: create with shop_id, **supports slug parameter**)
 - [x] Create `/src/app/api/products/[slug]/route.ts` - **Unified Product API with Firebase** (GET/PATCH/DELETE by slug)
 - [x] Create `/src/app/api/products/validate-slug/route.ts` - **Live slug uniqueness check API** (GET: check if slug exists in products collection, scoped to shop_id)
@@ -548,10 +468,10 @@
 - [ ] Create `/src/app/seller/coupons/page.tsx` - **Centralized coupon list with shop selector + CouponFilters sidebar (admins see all, sellers see own)**
 - [ ] Create `/src/app/seller/coupons/create/page.tsx` - **Create coupon with shop dropdown selector (admins select any shop, sellers select own)**
 - [ ] Create `/src/app/seller/coupons/[code]/edit/page.tsx` - **Edit coupon with shop dropdown (admins can edit any, sellers edit own)** (Coupons use CODE)
-- [x] Create `/src/components/seller/CouponForm.tsx` - Coupon form with discount types
-- [x] Implement coupon types: Percentage, Flat, BOGO (Buy X Get Y), Tiered discounts
-- [x] Create `/src/components/seller/CouponPreview.tsx` - Coupon preview component
-- [x] Create `/src/lib/coupon-calculator.ts` - Coupon calculation logic
+- [ ] Create `/src/components/seller/CouponForm.tsx` - Coupon form with discount types
+- [ ] Implement coupon types: Percentage, Flat, BOGO (Buy X Get Y), Tiered discounts
+- [ ] Create `/src/components/seller/CouponPreview.tsx` - Coupon preview component
+- [ ] Create `/src/lib/coupon-calculator.ts` - Coupon calculation logic
 - [x] Create `/src/app/api/coupons/route.ts` - **Unified Coupons API with Firebase** (GET: by shop, POST: seller/admin only)
 - [x] Create `/src/app/api/coupons/[code]/route.ts` - **Unified Coupon API with Firebase** (GET: public if active, PATCH/DELETE: owner/admin only)
 - [x] Create `/src/app/api/coupons/validate-code/route.ts` - **Live coupon code uniqueness check API** (GET: check if code exists, scoped to shop_id)
@@ -650,7 +570,7 @@
 - [ ] Create `/src/components/product/SellerOtherProducts.tsx` - **Other products from same seller (shop_id)**
 - [ ] Create `/src/components/product/RecentlyViewed.tsx` - **Recently viewed products**
 - [ ] Use `/src/app/api/products/[slug]/route.ts` - **Unified Product API (public product details)**
-- [ ] Create `/src/app/api/products/[slug]/reviews/route.ts` - **Product reviews (GET/POST)**
+- [x] Create `/src/app/api/products/[slug]/reviews/route.ts` - **Product reviews (GET/POST)**
 - [ ] Create `/src/app/api/products/[slug]/variants/route.ts` - **Product variants (GET: same leaf category)**
 - [ ] Create `/src/app/api/products/[slug]/similar/route.ts` - **Similar products (GET: max 10, diverse shops)**
 - [ ] Create `/src/app/api/products/[slug]/seller-items/route.ts` - **Seller's other products (GET: by shop_id)**
@@ -872,6 +792,7 @@ Last Updated: November 7, 2025
 ## Indexes Addendum (Nov 7, 2025)
 
 New composite indexes added for recent endpoints & performance:
+
 - Orders: (shop_id, created_at desc), (user_id, created_at desc)
 - Returns: (shop_id, status, created_at desc), (user_id, created_at desc), (status, created_at desc)
 - Won Auctions: (status, highest_bidder_id, updated_at desc)
@@ -881,6 +802,7 @@ New composite indexes added for recent endpoints & performance:
 - Categories (existing): (parent_id, slug), (is_featured, slug), (show_on_homepage, sort_order)
 
 Rate limiting considerations:
+
 - Invoice PDF endpoint `/api/orders/[id]/invoice` protected (e.g. 20/min/user)
 - Returns media signed URL endpoints `/api/returns/[id]/media` protected (GET/POST different limits)
 
@@ -892,17 +814,21 @@ Rate limiting considerations:
 - Invoice generation implemented with pdfkit and streamed as PDF (rate limited).
 - Swagger/OpenAPI bootstrapped: `/api/swagger` (spec) + `/api-docs` (UI).
 - Returns media flow (signed URL + confirm) pending full UI adaptation (will finalize later).
+- Route-based rate limiter wrapper added (`withRouteRateLimit`) with configs for `/api/search`, invoice, and returns media.
+- Firebase Admin initialization hardened with env guards and emulator awareness.
+- Universal search endpoint `/api/search` implemented (products/auctions, filters, pagination, relevance sort).
+- Product reviews POST scaffold added (moderation pending).
 
 ---
 
 ## Upcoming Tasks (Added Nov 7, 2025)
 
 - Adapt `returns.service.ts` & UI to signed URL + confirm workflow.
-- Real-time slug/code validation wiring in ShopForm/ProductFullForm/CouponForm (debounced).
+- Real-time slug/code validation wiring in ProductFullForm/CouponForm (debounced). (ShopForm done)
 - Firebase security rules documentation for production.
 - Redis-backed rate limiter implementation.
 - OpenAPI JSDoc annotations expansion (auto-generate richer spec).
-- Implement universal search endpoint `/api/search` (if not yet active).
+- DONE (Nov 7, 2025): Universal search endpoint `/api/search` implemented.
 - Confirm implementation status for user admin endpoints (ban/role) & add Swagger docs.
-- Product reviews extended endpoints (product-specific: `/api/products/[slug]/reviews`).
+- DONE (Nov 7, 2025): Product reviews endpoint scaffolded (`/api/products/[slug]/reviews` GET/POST).
 - Similar products & seller items algorithm documentation file.

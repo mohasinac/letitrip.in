@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
+import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { Shop } from "@/types";
 
 interface ShopFormProps {
@@ -27,6 +28,7 @@ export default function ShopForm({
   const [email, setEmail] = useState(shop?.email || "");
   const [website, setWebsite] = useState(shop?.website || "");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const slugValidation = useShopSlugValidation(slug, shop?.id);
 
   useEffect(() => {
     if (mode === "create" && name && !slug) {
@@ -47,6 +49,8 @@ export default function ShopForm({
     else if (!/^[a-z0-9-]+$/.test(slug))
       newErrors.slug =
         "Slug can only contain lowercase letters, numbers, and hyphens";
+    else if (slugValidation.available === false)
+      newErrors.slug = "This slug is already taken";
     if (!description.trim())
       newErrors.description = "Shop description is required";
     else if (description.length < 50)
@@ -120,6 +124,20 @@ export default function ShopForm({
               error={errors.slug}
               disabled={isSubmitting}
             />
+            {/* Validation hint */}
+            <div className="mt-1 text-xs">
+              {slugValidation.checking && (
+                <span className="text-gray-500">Checking availability…</span>
+              )}
+              {!slugValidation.checking && slug && slugValidation.available && (
+                <span className="text-green-600">Slug is available</span>
+              )}
+              {!slugValidation.checking &&
+                slug &&
+                slugValidation.available === false && (
+                  <span className="text-red-600">Slug is already taken</span>
+                )}
+            </div>
             <p className="text-xs text-gray-500 mt-1">
               URL: justforview.in/shops/{slug || "your-slug"}
             </p>
