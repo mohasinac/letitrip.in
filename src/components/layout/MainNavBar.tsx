@@ -136,23 +136,44 @@ export default function MainNavBar({
               {/* Admin Dropdown */}
               {isAdminMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
-                  {ADMIN_MENU_ITEMS.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={item.link}
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
-                      onClick={() => setIsAdminMenuOpen(false)}
-                    >
-                      {item.id === "dashboard" && (
-                        <LayoutDashboard className="w-4 h-4" />
-                      )}
-                      {item.id === "users" && <Users className="w-4 h-4" />}
-                      {item.id === "products" && (
-                        <Package className="w-4 h-4" />
-                      )}
-                      <span>{item.name}</span>
-                    </Link>
-                  ))}
+                  {ADMIN_MENU_ITEMS.map((item) =>
+                    item.link ? (
+                      <Link
+                        key={item.id}
+                        href={item.link}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setIsAdminMenuOpen(false)}
+                      >
+                        {item.id === "dashboard" && (
+                          <LayoutDashboard className="w-4 h-4" />
+                        )}
+                        {item.id === "users" && <Users className="w-4 h-4" />}
+                        {item.id === "shops" && (
+                          <ShoppingBag className="w-4 h-4" />
+                        )}
+                        {item.id === "products" && (
+                          <Package className="w-4 h-4" />
+                        )}
+                        <span>{item.name}</span>
+                      </Link>
+                    ) : (
+                      <div key={item.id} className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 uppercase">
+                          {item.name}
+                        </div>
+                        {item.children?.map((child) => (
+                          <Link
+                            key={child.id}
+                            href={child.link}
+                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                            onClick={() => setIsAdminMenuOpen(false)}
+                          >
+                            <span>{child.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>
@@ -177,25 +198,43 @@ export default function MainNavBar({
               {/* Seller Dropdown */}
               {isSellerMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
-                  {SELLER_MENU_ITEMS.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={item.link}
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
-                      onClick={() => setIsSellerMenuOpen(false)}
-                    >
-                      {item.id === "dashboard" && (
-                        <LayoutDashboard className="w-4 h-4" />
-                      )}
-                      {item.id === "products" && (
-                        <Package className="w-4 h-4" />
-                      )}
-                      {item.id === "orders" && (
-                        <ShoppingBag className="w-4 h-4" />
-                      )}
-                      <span>{item.name}</span>
-                    </Link>
-                  ))}
+                  {SELLER_MENU_ITEMS.map((item) =>
+                    item.link ? (
+                      <Link
+                        key={item.id}
+                        href={item.link}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setIsSellerMenuOpen(false)}
+                      >
+                        {item.id === "dashboard" && (
+                          <LayoutDashboard className="w-4 h-4" />
+                        )}
+                        {item.id === "products" && (
+                          <Package className="w-4 h-4" />
+                        )}
+                        {item.id === "orders" && (
+                          <ShoppingBag className="w-4 h-4" />
+                        )}
+                        <span>{item.name}</span>
+                      </Link>
+                    ) : (
+                      <div key={item.id} className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 uppercase">
+                          {item.name}
+                        </div>
+                        {item.children?.map((child) => (
+                          <Link
+                            key={child.id}
+                            href={child.link}
+                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                            onClick={() => setIsSellerMenuOpen(false)}
+                          >
+                            <span>{child.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>

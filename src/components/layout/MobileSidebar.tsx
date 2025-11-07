@@ -179,6 +179,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <div className="space-y-1">
                   {ADMIN_MENU_ITEMS.map((item) => {
                     const Icon = adminIcons[item.id] || LayoutDashboard;
+                    // Skip items without direct links (they have children instead)
+                    if (!item.link) return null;
                     return (
                       <Link
                         key={item.id}
@@ -214,6 +216,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <div className="space-y-1">
                   {SELLER_MENU_ITEMS.map((item) => {
                     const Icon = sellerIcons[item.id] || LayoutDashboard;
+                    // Skip items without direct links (they have children instead)
+                    if (!item.link) return null;
                     return (
                       <Link
                         key={item.id}

@@ -99,10 +99,10 @@ export function InlineEditor({
         className={`inline-flex items-center gap-2 ${
           disabled
             ? "cursor-not-allowed opacity-50"
-            : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+            : "cursor-pointer hover:bg-gray-100:bg-gray-700"
         } px-2 py-1 rounded transition-colors ${className}`}
       >
-        <span className="text-gray-900 dark:text-gray-100">
+        <span className="text-gray-900">
           {displayRenderer ? displayRenderer(value) : value || placeholder}
         </span>
         {!disabled && (
@@ -138,7 +138,7 @@ export function InlineEditor({
             required={required}
             maxLength={maxLength}
             rows={rows}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900"
           />
         ) : type === "select" ? (
           <select
@@ -148,7 +148,7 @@ export function InlineEditor({
             onKeyDown={handleKeyDown}
             disabled={isLoading}
             required={required}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900"
           >
             <option value="">Select...</option>
             {options.map((option) => (
@@ -168,7 +168,7 @@ export function InlineEditor({
             disabled={isLoading}
             required={required}
             maxLength={maxLength}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900"
           />
         )}
 
@@ -177,7 +177,7 @@ export function InlineEditor({
           <button
             onClick={handleSave}
             disabled={isLoading}
-            className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 text-green-600 hover:bg-green-50:bg-green-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Save (Enter)"
           >
             <svg
@@ -197,7 +197,7 @@ export function InlineEditor({
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 text-red-600 hover:bg-red-50:bg-red-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Cancel (Esc)"
           >
             <svg
@@ -219,19 +219,19 @@ export function InlineEditor({
 
       {/* Helper Text */}
       {type === "textarea" && !error && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-gray-500">
           Press Ctrl+Enter to save, Esc to cancel
         </p>
       )}
 
       {/* Error Message */}
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600">{error}</p>
       )}
 
       {/* Character Count */}
       {maxLength && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-gray-500">
           {editValue.length} / {maxLength}
         </p>
       )}

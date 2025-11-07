@@ -26,20 +26,20 @@ export function StatsCard({
 }: StatsCardProps) {
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 ${
+      className={`bg-white rounded-lg shadow p-6 ${
         onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""
       } ${className}`}
       onClick={onClick}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <h3 className="text-sm font-medium text-gray-500">
           {title}
         </h3>
-        {icon && <div className="text-gray-400 dark:text-gray-600">{icon}</div>}
+        {icon && <div className="text-gray-400">{icon}</div>}
       </div>
 
       <div className="flex items-baseline gap-2 mb-2">
-        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <p className="text-2xl font-bold text-gray-900">
           {value}
         </p>
 
@@ -55,7 +55,7 @@ export function StatsCard({
       </div>
 
       {description && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500">
           {description}
         </p>
       )}

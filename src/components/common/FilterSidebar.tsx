@@ -112,7 +112,7 @@ export function FilterSidebar({
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
             placeholder={field.placeholder}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
           />
         );
 
@@ -126,7 +126,7 @@ export function FilterSidebar({
             min={field.min}
             max={field.max}
             step={field.step}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
           />
         );
 
@@ -135,7 +135,7 @@ export function FilterSidebar({
           <select
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
           >
             <option value="">All</option>
             {field.options?.map((option) => (
@@ -154,7 +154,7 @@ export function FilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="checkbox"
@@ -168,11 +168,11 @@ export function FilterSidebar({
                   }
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                <span className="text-sm text-gray-700 flex-1">
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500">
                     {option.count}
                   </span>
                 )}
@@ -187,7 +187,7 @@ export function FilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="radio"
@@ -197,11 +197,11 @@ export function FilterSidebar({
                   onChange={(e) => onChange(field.key, e.target.value)}
                   className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                <span className="text-sm text-gray-700 flex-1">
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500">
                     {option.count}
                   </span>
                 )}
@@ -216,7 +216,7 @@ export function FilterSidebar({
             type="date"
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
           />
         );
 
@@ -230,7 +230,7 @@ export function FilterSidebar({
                 onChange(field.key, { ...value, from: e.target.value })
               }
               placeholder="From"
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
             />
             <input
               type="date"
@@ -239,7 +239,7 @@ export function FilterSidebar({
                 onChange(field.key, { ...value, to: e.target.value })
               }
               placeholder="To"
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
             />
           </div>
         );
@@ -258,9 +258,9 @@ export function FilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
               />
-              <span className="text-gray-500 dark:text-gray-400">-</span>
+              <span className="text-gray-500">-</span>
               <input
                 type="number"
                 value={value?.max || ""}
@@ -271,7 +271,7 @@ export function FilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
               />
             </div>
           </div>
@@ -294,18 +294,18 @@ export function FilterSidebar({
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-0 w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transform transition-transform lg:transform-none ${
+        className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-0 w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform lg:transform-none ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         } ${className}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900">
               Filters
             </h2>
             {resultCount !== undefined && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}
               </p>
             )}
@@ -313,7 +313,7 @@ export function FilterSidebar({
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="lg:hidden p-2 hover:bg-gray-100:bg-gray-700 rounded-lg"
             >
               <svg
                 className="w-5 h-5"
@@ -348,7 +348,7 @@ export function FilterSidebar({
                     section.collapsible ? "cursor-pointer" : "cursor-default"
                   }`}
                 >
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="text-sm font-semibold text-gray-900">
                     {section.title}
                   </h3>
                   {section.collapsible && (
@@ -375,7 +375,7 @@ export function FilterSidebar({
                   <div className="space-y-4">
                     {section.fields.map((field) => (
                       <div key={field.key} className="space-y-1">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                           {field.icon && (
                             <span className="text-gray-400">{field.icon}</span>
                           )}
@@ -392,7 +392,7 @@ export function FilterSidebar({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="p-4 border-t border-gray-200 space-y-2">
           <button
             onClick={onApply}
             disabled={isLoading}
@@ -404,7 +404,7 @@ export function FilterSidebar({
             <button
               onClick={onReset}
               disabled={isLoading}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Reset All
             </button>

@@ -5,6 +5,7 @@
 - **Component Pattern**: Reusable components for CRUD operations (DataTable, InlineEditor, FormModal)
 - **Layout Pattern**: Consistent layout structure for all pages (Header → Breadcrumb → Content → Footer)
 - **API Pattern**: **Unified RESTful endpoints that behave differently based on authenticated user's role**
+- **Service Pattern**: **Database-agnostic service layer (like AuthContext) - all DB operations abstracted**
 - **Auth Pattern**: Role-based access control (RBAC) using existing AuthGuard
 - **Form Pattern**: Unified form validation and submission handling
 - **State Pattern**: Consistent state management for loading, error, success states
@@ -13,21 +14,27 @@
 
 **Core Principle**: Same endpoint, different behavior based on role
 
+**Service Layer**: All database operations abstracted through service classes (like AuthContext pattern)
+
+**Data Flow**: UI → API Route → Service Layer → Database
+
 **Example - `/api/shops`:**
 
-- **Guest/User**: Returns only public, verified shops
-- **Seller**: Returns own shops + public shops
-- **Admin**: Returns all shops with advanced filters
+- **Guest/User**: Returns only public, verified shops (via ShopsService.list())
+- **Seller**: Returns own shops + public shops (via ShopsService.list())
+- **Admin**: Returns all shops with advanced filters (via ShopsService.list())
 
 **Benefits:**
 
 - ✅ Reduced code duplication (no separate `/api/admin/shops`, `/api/seller/shops`)
-- ✅ Easier maintenance (changes in one place)
+- ✅ Database agnostic (switch Firebase/Prisma/MongoDB without changing UI)
+- ✅ Easier maintenance (changes in service layer only)
 - ✅ Consistent API surface (predictable URLs)
-- ✅ Better security (centralized authorization)
-- ✅ Easier testing (fewer endpoints to test)
+- ✅ Better security (centralized authorization in services)
+- ✅ Easier testing (mock services, not database)
+- ✅ Reusable business logic (services used by API routes, server actions, cron jobs)
 
-**See `UNIFIED_API_ARCHITECTURE.md` for complete documentation**
+**See `SERVICE_LAYER_ARCHITECTURE.md` and `UNIFIED_API_ARCHITECTURE.md` for complete documentation**
 
 ---
 
@@ -139,51 +146,69 @@
 - [x] Create `/src/components/common/StatsCard.tsx` - Analytics card component
 - [x] Create `/src/components/common/EmptyState.tsx` - Empty state placeholder
 
-### 2.2 Form Components
+### 2.2 Form Components ✅ COMPLETED
 
-- [ ] Create `/src/components/forms/RichTextEditor.tsx` - Rich text editor for descriptions
-- [ ] Create `/src/components/forms/CategorySelector.tsx` - Tree category selector
-- [ ] Create `/src/components/forms/TagInput.tsx` - Tag input component
-- [ ] Create `/src/components/forms/DateTimePicker.tsx` - Date/time picker
-- [ ] Create `/src/components/forms/SlugInput.tsx` - Auto-generate slug input
+- [x] Create `/src/components/common/RichTextEditor.tsx` - Rich text editor for descriptions, blog posts
+- [x] Create `/src/components/common/CategorySelector.tsx` - Tree category selector (leaf-only for sellers)
+- [x] Create `/src/components/common/TagInput.tsx` - Tag input with autocomplete suggestions
+- [x] Create `/src/components/common/DateTimePicker.tsx` - Date/time picker (date, time, datetime modes)
+- [x] Create `/src/components/common/SlugInput.tsx` - Auto-generate slug from title with validation
 
-### 2.2.1 Advanced Media Components
+### 2.2.1 Advanced Media Components ✅ COMPLETED
 
-- [ ] Create `/src/components/media/MediaUploader.tsx` - Unified media uploader (photos/videos from file or camera)
-- [ ] Create `/src/components/media/CameraCapture.tsx` - Camera photo capture component
-- [ ] Create `/src/components/media/VideoRecorder.tsx` - Video recording component (camera or screen)
-- [ ] Create `/src/components/media/ImageEditor.tsx` - Image adjustment tool (crop, rotate, zoom, flip, filters)
-- [ ] Create `/src/components/media/VideoThumbnailGenerator.tsx` - Generate video thumbnails using canvas
-- [ ] Create `/src/components/media/MediaPreviewCard.tsx` - Preview card for images/videos before upload
-- [ ] Create `/src/components/media/MediaEditorModal.tsx` - Modal wrapper for media editing
-- [ ] Create `/src/components/media/MediaGallery.tsx` - Gallery view for multiple media items
-- [ ] Create `/src/components/media/MediaMetadataForm.tsx` - Form for slug and description of media
-- [ ] Create `/src/lib/media/image-processor.ts` - Image processing utilities (crop, rotate, resize)
-- [ ] Create `/src/lib/media/video-processor.ts` - Video thumbnail extraction utilities
-- [ ] Create `/src/lib/media/media-validator.ts` - Media validation (size, format, dimensions)
-- [ ] Create `/src/types/media.ts` - Media types (MediaFile, MediaMetadata, EditorState)
+- [x] Create `/src/components/media/MediaUploader.tsx` - Unified media uploader (photos/videos from file or camera)
+- [x] Create `/src/components/media/CameraCapture.tsx` - Camera photo capture component
+- [x] Create `/src/components/media/VideoRecorder.tsx` - Video recording component (camera or screen)
+- [x] Create `/src/components/media/ImageEditor.tsx` - Image adjustment tool (crop, rotate, zoom, flip, filters)
+- [x] Create `/src/components/media/VideoThumbnailGenerator.tsx` - Generate video thumbnails using canvas
+- [x] Create `/src/components/media/MediaPreviewCard.tsx` - Preview card for images/videos before upload
+- [x] Create `/src/components/media/MediaEditorModal.tsx` - Modal wrapper for media editing
+- [x] Create `/src/components/media/MediaGallery.tsx` - Gallery view for multiple media items
+- [x] Create `/src/components/media/MediaMetadataForm.tsx` - Form for slug and description of media
+- [x] Create `/src/lib/media/image-processor.ts` - Image processing utilities (crop, rotate, resize, filters)
+- [x] Create `/src/lib/media/video-processor.ts` - Video thumbnail extraction utilities
+- [x] Create `/src/lib/media/media-validator.ts` - Media validation (size, format, dimensions)
+- [x] Create `/src/types/media.ts` - Media types (MediaFile, MediaMetadata, EditorState)
 
-### 2.3 Public Display Cards
+**Complete:** All media components and utilities are production-ready.
+**Features:** File upload (drag-drop, file picker), camera capture, video recording (camera/screen), image editing (rotate, flip, brightness, contrast, saturation, filters), video thumbnail generation, gallery with lightbox, drag-drop reorder, bulk actions, metadata forms with auto-slug.
+**See:** `/CHECKLIST/MEDIA_COMPONENTS_GUIDE.md` for integration guide
 
-- [ ] Create `/src/components/cards/ProductCard.tsx` - Product card for listings (image, name, price, rating, quick actions)
-- [ ] Create `/src/components/cards/ShopCard.tsx` - Shop card for shop listings (logo, name, rating, products count, featured badge)
-- [ ] Create `/src/components/cards/CategoryCard.tsx` - Category card with image and product count
-- [ ] Create `/src/components/cards/ProductCardSkeleton.tsx` - Loading skeleton for product card
-- [ ] Create `/src/components/cards/ShopCardSkeleton.tsx` - Loading skeleton for shop card
-- [ ] Create `/src/components/cards/CategoryCardSkeleton.tsx` - Loading skeleton for category card
-- [ ] Create `/src/components/cards/CardGrid.tsx` - Responsive grid wrapper for cards
-- [ ] Create `/src/components/cards/ProductQuickView.tsx` - Quick view modal for products
+### 2.3 Public Display Cards ✅ COMPLETED
 
-### 2.4 Shared Utilities
+- [x] Create `/src/components/cards/ProductCard.tsx` - Product card for listings (image, name, price, rating, quick actions)
+- [x] Create `/src/components/cards/ShopCard.tsx` - Shop card for shop listings (logo, name, rating, products count, featured badge)
+- [x] Create `/src/components/cards/CategoryCard.tsx` - Category card with image and product count
+- [x] Create `/src/components/cards/AuctionCard.tsx` - Auction card for listings (image, current bid, time remaining, watch button)
+- [x] Create `/src/components/cards/ProductCardSkeleton.tsx` - Loading skeleton for product card
+- [x] Create `/src/components/cards/ShopCardSkeleton.tsx` - Loading skeleton for shop card
+- [x] Create `/src/components/cards/CategoryCardSkeleton.tsx` - Loading skeleton for category card
+- [x] Create `/src/components/cards/AuctionCardSkeleton.tsx` - Loading skeleton for auction card
+- [x] Create `/src/components/cards/CardGrid.tsx` - Responsive grid wrapper for cards
+- [x] Create `/src/components/cards/ProductQuickView.tsx` - Quick view modal for products
+- [x] Create `/src/components/cards/AuctionQuickView.tsx` - Quick view modal for auctions with bid placement
 
-- [ ] Create `/src/lib/rbac.ts` - Role-based access control utilities
-- [ ] Create `/src/lib/validation/shop.ts` - Shop validation schemas
-- [ ] Create `/src/lib/validation/product.ts` - Product validation schemas
-- [ ] Create `/src/lib/validation/coupon.ts` - Coupon validation schemas
-- [ ] Create `/src/lib/validation/category.ts` - Category validation schemas
-- [ ] Create `/src/lib/formatters.ts` - Currency, date, number formatters
-- [ ] Create `/src/lib/export.ts` - CSV/PDF export utilities
-- [ ] Update `/src/types/index.ts` - Add types for Shop, Product, Order, etc.
+**Complete:** All card components and skeletons are production-ready.
+**Features:** Product cards (add to cart, favorites, quick view), shop cards (follow, verified badge), category cards (3 variants), auction cards (current bid, countdown timer, watch button, ending soon badge), loading skeletons, responsive grid, quick view modals with image gallery.
+**Product Features:** Quantity selector, specifications, add to cart, favorites.
+**Auction Features:** Bid placement form, auto-bid option, watchlist, countdown timer, bid history display, ending soon alerts.
+**Design:** eBay-style cards with hover effects, badges, price/bid formatting (Indian Rupees), condition tags, stock status, time remaining indicators, verified shop badges.
+
+### 2.4 Shared Utilities ✅ COMPLETED
+
+- [x] Create `/src/lib/rbac.ts` - Role-based access control utilities
+- [x] Create `/src/lib/validation/shop.ts` - Shop validation schemas
+- [x] Create `/src/lib/validation/product.ts` - Product validation schemas
+- [x] Create `/src/lib/validation/coupon.ts` - Coupon validation schemas
+- [x] Create `/src/lib/validation/category.ts` - Category validation schemas
+- [x] Create `/src/lib/validation/auction.ts` - Auction validation schemas
+- [x] Create `/src/lib/formatters.ts` - Currency, date, number formatters
+- [x] Create `/src/lib/export.ts` - CSV/PDF export utilities
+- [x] Update `/src/types/index.ts` - Add types for Shop, Product, Order, etc.
+
+**Complete:** All shared utilities are production-ready.
+**Features:** RBAC with role hierarchy and permissions, comprehensive Zod validation schemas (shop/product/coupon/category/auction), formatters for currency (Indian Rupees), dates, numbers, percentages, phone, file size, duration, export utilities (CSV for products/orders/revenue/customers, invoice HTML generation, print/download), complete TypeScript type definitions for all entities.
+**Integration:** ProductCard and ShopCard already using formatters for currency and numbers.
 
 ### 2.5 Constants & Configuration ✅ COMPLETED
 
@@ -193,52 +218,121 @@
 - [x] Create `/src/constants/media.ts` - **Media upload limits, formats, validation rules**
 - [x] Update `/src/constants/navigation.ts` - Add seller/admin navigation items (already present)
 
-### 2.6 Upload Context & State Management
+### 2.6 Upload Context & State Management ✅ COMPLETED
 
-- [ ] Create `/src/contexts/UploadContext.tsx` - **Global upload state management (track pending uploads)**
-- [ ] Create `/src/hooks/useUploadQueue.ts` - **Hook for managing upload queue**
-- [ ] Create `/src/hooks/useMediaUpload.ts` - **Hook for media uploads with retry logic**
-- [ ] Create `/src/lib/upload-manager.ts` - **Upload manager utility (handle failed uploads, retry)**
-- [ ] Create `/src/components/common/UploadProgress.tsx` - **Global upload progress indicator**
-- [ ] Create `/src/components/common/PendingUploadsWarning.tsx` - **Warning before navigation with pending uploads**
+- [x] Create `/src/contexts/UploadContext.tsx` - **Global upload state management (track pending uploads)**
+- [x] Create `/src/hooks/useUploadQueue.ts` - **Hook for managing upload queue**
+- [x] Create `/src/hooks/useMediaUpload.ts` - **Hook for media uploads with retry logic**
+- [x] Create `/src/lib/upload-manager.ts` - **Upload manager utility (handle failed uploads, retry)**
+- [x] Create `/src/components/common/UploadProgress.tsx` - **Global upload progress indicator**
+- [x] Create `/src/components/common/PendingUploadsWarning.tsx` - **Warning before navigation with pending uploads**
 
-### 2.7 Filter Components (Resource-Specific)
+**Complete:** All upload management components are production-ready.
+**Features:** Global upload context with progress tracking, automatic queue processing (max 3 concurrent), retry logic with exponential backoff, failed upload persistence (localStorage), progress indicator (fixed bottom-right), pending uploads warning (prevents navigation), upload statistics.
+**UploadContext:** Track uploads (pending/uploading/success/error), add/update/remove uploads, retry failed, clear completed/failed/all, counts (pending/uploading/failed/success).
+**useUploadQueue:** Auto-process queue (configurable concurrency), XMLHttpRequest with progress tracking, start/pause/retry controls, cancel individual uploads.
+**useMediaUpload:** Single file upload with validation (size/type), progress callback, success/error handling, retry with max attempts, reset/cancel.
+**upload-manager:** Failed upload persistence, cleanup old uploads (7 days), exponential backoff retry, upload statistics, resource context tracking.
+**UploadProgress:** Expandable/collapsible UI, real-time progress bars, status icons (pending/uploading/success/error), retry failed button, clear actions, minimized view.
+**PendingUploadsWarning:** Browser refresh/back/forward interception, Next.js navigation interception, upload count display, stay/leave actions.
 
-- [ ] Create `/src/components/filters/ProductFilters.tsx` - **Product filter sidebar (price, category, stock, condition)**
-- [ ] Create `/src/components/filters/ShopFilters.tsx` - **Shop filter sidebar (verified, rating, categories)**
-- [ ] Create `/src/components/filters/OrderFilters.tsx` - **Order filter sidebar (status, date range, amount, shop)**
-- [ ] Create `/src/components/filters/ReturnFilters.tsx` - **Return filter sidebar (status, date, reason, intervention)**
-- [ ] Create `/src/components/filters/CouponFilters.tsx` - **Coupon filter sidebar (type, status, shop, expiry)**
-- [ ] Create `/src/components/filters/UserFilters.tsx` - **User filter sidebar (role, status, registration date)**
-- [ ] Create `/src/components/filters/CategoryFilters.tsx` - **Category filter sidebar (featured, homepage, parent)**
-- [ ] Create `/src/components/filters/ReviewFilters.tsx` - **Review filter sidebar (rating, status, verified purchase)**
-- [ ] Create `/src/hooks/useFilters.ts` - **Hook for managing filter state and URL sync**
-- [ ] Create `/src/lib/filter-helpers.ts` - **Filter utilities (build query from filters, persist filters)**
+### 2.7 Filter Components (Resource-Specific) ✅ COMPLETED
+
+- [x] Create `/src/components/filters/ProductFilters.tsx` - **Product filter sidebar (price, category, stock, condition)**
+- [x] Create `/src/components/filters/ShopFilters.tsx` - **Shop filter sidebar (verified, rating, categories)**
+- [x] Create `/src/components/filters/OrderFilters.tsx` - **Order filter sidebar (status, date range, amount, shop)**
+- [x] Create `/src/components/filters/ReturnFilters.tsx` - **Return filter sidebar (status, date, reason, intervention)**
+- [x] Create `/src/components/filters/CouponFilters.tsx` - **Coupon filter sidebar (type, status, shop, expiry)**
+- [x] Create `/src/components/filters/UserFilters.tsx` - **User filter sidebar (role, status, registration date)**
+- [x] Create `/src/components/filters/CategoryFilters.tsx` - **Category filter sidebar (featured, homepage, parent)**
+- [x] Create `/src/components/filters/ReviewFilters.tsx` - **Review filter sidebar (rating, status, verified purchase)**
+- [x] Create `/src/components/filters/AuctionFilters.tsx` - **Auction filter sidebar (status, time left, bid range, featured)**
+- [x] Create `/src/hooks/useFilters.ts` - **Hook for managing filter state and URL sync**
+- [x] Create `/src/lib/filter-helpers.ts` - **Filter utilities (build query from filters, persist filters)**
+
+**Complete:** All filter components are production-ready with consistent API and styling.
+**Features:** URL synchronization, localStorage persistence, active filter count, clear all, apply filters button, mobile-responsive design.
+**Components:** ProductFilters, ShopFilters, OrderFilters, ReturnFilters, CouponFilters, UserFilters, CategoryFilters, ReviewFilters, AuctionFilters.
+**Hook:** useFilters (filter state management, URL sync, localStorage persistence, onChange callback).
+**Utilities:** buildQueryFromFilters, filtersToSearchParams, searchParamsToFilters, persistFilters, loadPersistedFilters, getActiveFilterCount, hasActiveFilters, filtersToSummary, validateFilters.
+**See:** `/CHECKLIST/PHASE_2.7_FILTER_COMPONENTS.md` for integration guide and usage examples
+
+### 2.8 Service Layer Foundation ✅ COMPLETED
+
+**Pattern: Client-side API wrappers following auth.service.ts**
+
+- [x] Create `/src/services/index.ts` - **Export all services**
+- [x] Create `/src/services/shops.service.ts` - **Client-side shops API wrapper (calls /api/shops using apiService)**
+- [x] Create `/src/services/products.service.ts` - **Client-side products API wrapper (calls /api/products using apiService)**
+- [x] Create `/src/services/orders.service.ts` - **Client-side orders API wrapper (calls /api/orders using apiService)**
+- [x] Create `/src/services/coupons.service.ts` - **Client-side coupons API wrapper (calls /api/coupons using apiService)**
+- [x] Create `/src/services/categories.service.ts` - **Client-side categories API wrapper (calls /api/categories using apiService)**
+- [x] Create `/src/services/auctions.service.ts` - **Client-side auctions API wrapper (calls /api/auctions using apiService)**
+- [x] Create `/src/services/returns.service.ts` - **Client-side returns API wrapper (calls /api/returns using apiService)**
+- [x] Create `/src/services/reviews.service.ts` - **Client-side reviews API wrapper (calls /api/reviews using apiService)**
+- [x] Create `/src/services/users.service.ts` - **Client-side users API wrapper (calls /api/users using apiService)**
+- [x] Create `/src/services/analytics.service.ts` - **Client-side analytics API wrapper (calls /api/analytics using apiService)**
+- [x] Create `/src/services/media.service.ts` - **Client-side media API wrapper (calls /api/media using apiService)**
+- [x] Create `/src/services/cart.service.ts` - **Client-side cart API wrapper (calls /api/cart using apiService)**
+- [x] Create `/src/services/favorites.service.ts` - **Client-side favorites API wrapper (calls /api/favorites using apiService)**
+- [x] Create `/src/services/support.service.ts` - **Client-side support API wrapper (calls /api/support using apiService)**
+- [ ] Update UI components to use services instead of direct fetch()
+
+**Complete:** All 13 service wrappers implemented following auth.service.ts pattern.
+**Features:** Type-safe API clients, consistent error handling, guest storage helpers (cart/favorites), pagination support, filter builders, file upload handling, local caching.
+**Services:** shops, products, orders, coupons, categories, auctions, returns, reviews, users, analytics, media, cart, favorites, support.
+**Guest Support:** Cart and favorites services include localStorage helpers for guest users with auto-sync on login.
+**Media Handling:** Media service includes file validation, constraints by context, signed URL uploads, multi-file support.
+**Pattern:** UI Component → Service.method() → apiService.get/post/patch/delete() → /api/endpoint → Database
+**Next:** Migrate existing UI components to use services (Phase 3.2 shops pages can be updated first)
+
+**Purpose:** Client-side API wrappers following auth.service.ts pattern - UI calls services, services call API routes.
+**Pattern:** UI Component → shopsService.list() → apiService.get('/shops') → API Route → Database
+**Benefits:** Consistent API client, type safety, caching support, cleaner UI code.
+**Reference:** `/src/services/auth.service.ts` is THE template to follow.
+**Architecture:** Services are client-side (no database imports), use apiService for HTTP calls, API routes handle database operations.
+**See:** `/CHECKLIST/SERVICE_LAYER_ARCHITECTURE.md` and `/CHECKLIST/SERVICE_LAYER_QUICK_REF.md` for implementation guide
 
 ---
 
 ## Phase 3: Seller Dashboard & Shop Management
 
-### 3.1 Seller Layout & Navigation
+### 3.1 Seller Layout & Navigation ✅ COMPLETED
 
-- [ ] Create `/src/app/seller/layout.tsx` - Seller dashboard layout
-- [ ] Create `/src/components/seller/SellerSidebar.tsx` - Seller navigation sidebar
-- [ ] Create `/src/components/seller/SellerHeader.tsx` - Seller dashboard header
-- [ ] Update `/src/constants/navigation.ts` - Add seller navigation items
-- [ ] Add seller route protection with AuthGuard (role: seller)
+- [x] Create `/src/app/seller/layout.tsx` - Seller dashboard layout
+- [x] Create `/src/components/seller/SellerSidebar.tsx` - Seller navigation sidebar
+- [x] Create `/src/components/seller/SellerHeader.tsx` - Seller dashboard header
+- [x] Create `/src/app/seller/page.tsx` - Seller dashboard page with stats and quick actions
+- [x] Create `/src/lib/utils.ts` - Utility functions (cn for class merging)
+- [x] Add seller route protection with AuthGuard (role: seller + admin)
+- [x] Install dependencies (clsx, tailwind-merge)
 
-### 3.2 My Shops Management
+**Complete:** Seller dashboard layout with sidebar navigation, header, and dashboard page.
+**Features:** Role-based access control (seller/admin), responsive design, stats cards, quick actions, recent orders, alerts panel, notifications dropdown, user menu, search bar.
+**Navigation:** Dashboard, My Shops, Orders, Returns & Refunds, Revenue, Support Tickets.
+**See:** `/CHECKLIST/PHASE_3.1_COMPLETION.md` for details
 
-- [ ] Create `/src/app/seller/my-shops/page.tsx` - List all shops (admins see all, users see their 1) **with FilterSidebar**
-- [ ] Create `/src/app/seller/my-shops/create/page.tsx` - Create shop form **→ redirect to edit page after creation**
-- [ ] Create `/src/app/seller/my-shops/[id]/edit/page.tsx` - Edit shop form **with failed upload retry & UploadContext**
-- [ ] Create `/src/app/seller/my-shops/[id]/page.tsx` - Shop details/dashboard
-- [ ] Create `/src/components/seller/ShopForm.tsx` - Unified shop form component
-- [ ] Create `/src/components/seller/ShopCard.tsx` - Shop card display
-- [ ] Implement shop creation limit (1 for users, unlimited for admins)
-- [ ] Create `/src/app/api/shops/route.ts` - **Unified Shops API** (GET: list based on role, POST: create with ownership)
-- [ ] Create `/src/app/api/shops/[id]/route.ts` - **Unified Shop API** (GET/PATCH/DELETE: access control by role/ownership)
-- [ ] **Handle media upload failures**: Save shop with media URLs as null, allow retry in edit page
+### 3.2 My Shops Management ✅ COMPLETED
+
+- [x] Create `/src/app/seller/my-shops/page.tsx` - List all shops (admins see all, users see their 1) **with FilterSidebar**
+- [x] Create `/src/app/seller/my-shops/create/page.tsx` - Create shop form **→ redirect to edit page after creation**
+- [x] Create `/src/components/seller/ShopForm.tsx` - Unified shop form component
+- [x] Implement shop creation limit (1 for users, unlimited for admins)
+- [x] Create `/src/app/api/shops/route.ts` - **Unified Shops API** (GET: list based on role, POST: create with ownership)
+- [x] Create `/src/app/seller/my-shops/[id]/edit/page.tsx` - Edit shop form **with media uploads (logo/banner)**
+- [x] Create `/src/app/api/shops/[id]/route.ts` - **Unified Shop API** (GET/PATCH/DELETE: access control by role/ownership)
+- [x] Create `/src/app/seller/my-shops/[id]/page.tsx` - Shop details/dashboard
+- [x] Create `/src/components/seller/ShopCard.tsx` - Shop card display (standalone component)
+- [ ] **Migrate to Service Layer**: Replace mock data in shops API with ShopsService (TODO: Phase 2.8 first)
+- [ ] **Handle media upload failures**: Integrate with UploadContext for retry logic (TODO: future enhancement)
+
+**Complete:** All core shop management features implemented with role-based access control.
+**Features:** Shop listing, creation, editing, dashboard, media uploads (logo/banner), stats cards, recent activity, quick actions.
+**Filters:** ShopFilters integration complete with URL sync and localStorage.
+**API:** Unified RESTful endpoints with role-based filtering and ownership validation.
+**Pattern:** UI → fetch('/api/shops') → API Route → [TODO: ShopsService] → Database
+**Next:** Phase 2.8 (Service Layer), then migrate shops API to use services.
+**See:** `/CHECKLIST/PHASE_3.2_COMPLETION.md` for details
 
 ### 3.3 Product Management
 
@@ -249,9 +343,9 @@
 - [ ] Create `/src/components/seller/ProductInlineForm.tsx` - Quick product creation (name, price, category, slug, image)
 - [ ] Create `/src/components/seller/ProductFullForm.tsx` - Complete product form (SEO, condition, returnable, publish date)
 - [ ] Create `/src/components/seller/ProductImageManager.tsx` - Multi-image management **with retry for failed uploads**
-- [ ] Create `/src/app/api/products/route.ts` - **Unified Products API** (GET: public/filtered by role, POST: seller/admin only)
-- [ ] Create `/src/app/api/products/[id]/route.ts` - **Unified Product API** (GET: public, PATCH/DELETE: owner/admin only)
-- [ ] **Implement create flow**: 1) Save product to DB, 2) Upload media to storage, 3) Update URLs in DB, 4) Redirect to edit page
+- [ ] Create `/src/app/api/products/route.ts` - **Unified Products API** (uses ProductsService)
+- [ ] Create `/src/app/api/products/[id]/route.ts` - **Unified Product API** (uses ProductsService)
+- [ ] **Implement create flow**: 1) ProductsService.create(), 2) Upload media, 3) ProductsService.update() with URLs
 - [ ] **Handle partial failures**: Product saved but media failed → show warning, allow retry in edit page
 
 ### 3.4 Coupon Management

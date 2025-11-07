@@ -16,6 +16,13 @@ export interface SessionData {
   exp?: number;
 }
 
+export interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 export interface SessionDocument {
   sessionId: string;
   userId: string;
@@ -242,4 +249,27 @@ export async function cleanupExpiredSessions(): Promise<number> {
 
   await batch.commit();
   return expiredSessionsSnapshot.size;
+}
+
+/**
+ * Get current user from session token
+ * Returns user data if authenticated, null otherwise
+ */
+export async function getCurrentUser(request: NextRequest): Promise<UserData | null> {
+  const token = getSessionToken(request);
+  if (!token) return null;
+
+  const session = await verifySession(token);
+  if (!session) return null;
+
+  const userDoc = await adminDb.collection('users').doc(session.userId).get();
+  if (!userDoc.exists) return null;
+
+  const userData = userDoc.data();
+  return {
+    id: session.userId,
+    email: userData?.email || session.email,
+    name: userData?.name || '',
+    role: userData?.role || session.role || 'user',
+  };
 }
