@@ -55,15 +55,9 @@ export async function GET(
   try {
     const { id: shopId } = await params;
 
-    // TODO: Uncomment when auth is ready
-    // const session = await getServerSession(authOptions);
-    // const user = session?.user as User | undefined;
-    // const role = user?.role || "guest";
-    // const userId = user?.id;
-
-    // MOCK: Simulate authenticated user (replace with real auth)
-    const role: UserRole = "guest" as UserRole; // Change to test different roles ("guest", "user", "seller", "admin")
-    const userId: string | undefined = undefined;
+    const user = await getCurrentUser(request);
+    const role = user?.role || "guest";
+    const userId = user?.id;
 
     // TODO: Replace with actual database query
     // const shop = await db.shops.findById(shopId);
