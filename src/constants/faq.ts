@@ -26,7 +26,7 @@ export const FAQ_CATEGORIES: FAQCategory[] = [
     id: "shopping",
     name: "Shopping & Orders",
     icon: "shopping-cart",
-    description: "How to buy from Japanese marketplaces"
+    description: "Buying collectibles and placing orders"
   },
   {
     id: "auctions",
@@ -44,7 +44,7 @@ export const FAQ_CATEGORIES: FAQCategory[] = [
     id: "shipping",
     name: "Shipping & Delivery",
     icon: "truck",
-    description: "International shipping information"
+    description: "Delivery times and tracking"
   },
   {
     id: "returns",
@@ -72,13 +72,13 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: "what-is-letitrip",
     question: "What is Let It Rip?",
-    answer: "Let It Rip is an India-based e-commerce platform that brings authentic products from around the world directly to Indian customers. We import from Japan, China, Hong Kong, USA, UK, and other countries. As a seller/reseller, we handle ALL import risks, customs duties, and international shipping - so you don't have to worry about imports. Shop worry-free with delivery across India!",
+    answer: "Let It Rip is India's trusted seller of authentic imported collectibles! We specialize in Beyblades (Takara Tomy originals), Pokemon TCG, Yu-Gi-Oh TCG, Transformers, Hot Wheels, collectible stickers, crafts, and more. We import from Japan, USA, UK, China & Hong Kong, handling ALL customs duties and import risks - so you pay ₹0 in customs. Shop authentic collectibles with fast India delivery!",
     category: "getting-started"
   },
   {
     id: "how-to-start",
     question: "How do I get started?",
-    answer: "Simply create a free account, browse our curated collection of imported products, add items to your cart, and checkout using UPI, cards, or other Indian payment methods. We've already imported these items or will handle the import process for you. Most items ship within India in 3-7 days, pre-order items may take 15-25 days for import and delivery.",
+    answer: "Simply create a free account, browse our collection of authentic Beyblades, Pokemon cards, Transformers, Hot Wheels, and more! Add items to cart and checkout using UPI, cards, or COD. In-stock items (most Beyblades, Pokemon booster packs, Hot Wheels) ship in 3-7 days. Pre-order items (new releases, limited editions) take 15-25 days for import and delivery.",
     category: "getting-started"
   },
   {
@@ -96,7 +96,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: "import-source",
     question: "Which countries do you import from?",
-    answer: "We import authentic products from Japan, China, Hong Kong, USA, UK, and other countries. We source collectibles, electronics, fashion, beauty products, and more from trusted international marketplaces and suppliers. As the importer, we handle all customs, duties, and shipping risks - you just shop and enjoy!",
+    answer: "We import authentic collectibles from: Japan (Takara Tomy Beyblades, Japanese Pokemon cards, Transformers), USA (Pokemon TCG, Yu-Gi-Oh TCG, Hasbro Transformers, Hot Wheels), UK (Pokemon TCG sets), China (licensed Beyblades, Hot Wheels), and Hong Kong (trading cards, collectibles). We handle all customs and import duties - you pay ₹0 extra!",
     category: "getting-started"
   },
 
@@ -104,7 +104,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: "how-to-order",
     question: "How do I place an order?",
-    answer: "Browse products, add items to your cart, proceed to checkout, enter your shipping address, select a payment method, and confirm your order. You'll receive an order confirmation email immediately.",
+    answer: "Browse our categories (Beyblades, Pokemon TCG, Yu-Gi-Oh, Transformers, Hot Wheels, Stickers, Crafts), add items to cart, proceed to checkout, enter your shipping address, select payment method (UPI/Cards/COD), and confirm. You'll receive an order confirmation email immediately with tracking details once shipped.",
     category: "shopping"
   },
   {
@@ -122,7 +122,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: "order-status",
     question: "What do the different order statuses mean?",
-    answer: "Pending: Order received. Processing: Preparing for shipment (in-stock) or arranging import (pre-order). Shipped: On the way to you within India. Out for Delivery: Final delivery stage. Delivered: Order received. Cancelled: Order cancelled. Refunded: Payment returned. For pre-order items, you may see 'Importing' status while we bring the item to India.",
+    answer: "Pending: Order received. Processing: Packing your Beyblades/cards/toys for shipment (in-stock) or importing from Japan/USA (pre-order). Shipped: On the way to you within India. Out for Delivery: Final delivery stage. Delivered: Order received. Cancelled: Order cancelled. Refunded: Payment returned. For pre-order items (new Beyblade releases, limited edition Transformers), you may see 'Importing' status while we bring the item to India.",
     category: "shopping"
   },
   {
@@ -224,7 +224,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: "shipping-cost",
     question: "How much is shipping within India?",
-    answer: "Domestic shipping rates: Standard (₹40-150, 5-7 days), Express (₹100-300, 2-4 days), Free Shipping on orders above ₹999. Exact costs calculated at checkout based on weight, dimensions, and pin code. Since we ship from within India, shipping is much faster and cheaper than international rates!",
+    answer: "Domestic shipping rates: Standard (₹40-150, 5-7 days), Express (₹100-300, 2-4 days). Exact costs calculated at checkout based on weight, dimensions, and pin code. Some sellers may offer free shipping on select products - check product page for details.",
     category: "shipping"
   },
   {
@@ -358,6 +358,68 @@ export const FAQ_ITEMS: FAQItem[] = [
     question: "Can I offer COD as a seller?",
     answer: "Yes, verified sellers can enable COD on their products if they accept the risk of non-payment. You must be a seller for 3+ months with good ratings (4.5+). COD orders are shown separately in your dashboard. We recommend only offering COD for lower-value items (under ₹5,000).",
     category: "seller"
+  },
+
+  // Product-Specific Questions
+  {
+    id: "authentic-beyblades",
+    question: "Are your Beyblades authentic Takara Tomy?",
+    answer: "YES! All our Beyblades are 100% authentic Takara Tomy originals imported from Japan or licensed products. We never sell fake or knockoff Beyblades. Each Beyblade comes in original packaging with authenticity verification. We import Beyblade Burst, Beyblade X, Metal Fusion, stadiums, launchers, and parts. Look for the Takara Tomy logo on packaging!",
+    category: "shopping"
+  },
+  {
+    id: "pokemon-cards-authentic",
+    question: "Are Pokemon cards official/authentic?",
+    answer: "Absolutely! All Pokemon TCG cards are official products from The Pokemon Company International. We import booster packs, elite trainer boxes, collection boxes, and single cards from USA, Japan, and UK distributors. Each product has the official Pokemon Company seal. We source from authorized distributors only - no proxy cards or fakes!",
+    category: "shopping"
+  },
+  {
+    id: "yugioh-cards-real",
+    question: "How do I know Yu-Gi-Oh cards are real?",
+    answer: "All our Yu-Gi-Oh TCG cards are authentic Konami products. We import from official distributors in USA and Japan. Each booster pack, structure deck, and tin comes in original sealed packaging with holographic authentication stickers. We provide import documents and can verify authenticity for high-value cards. 100% genuine guaranteed!",
+    category: "shopping"
+  },
+  {
+    id: "transformers-hasbro-takara",
+    question: "Are Transformers Hasbro or Takara Tomy?",
+    answer: "We sell BOTH! Hasbro Transformers (from USA) and Takara Tomy Transformers (from Japan). Product descriptions clearly mention the manufacturer. Takara Tomy versions often have better paint and accessories. Hasbro versions are officially sold in Western markets. Both are 100% authentic! Choose based on your preference - we import both variants.",
+    category: "shopping"
+  },
+  {
+    id: "hot-wheels-collector-edition",
+    question: "Do you have rare/collector Hot Wheels?",
+    answer: "Yes! We stock both basic Hot Wheels cars and premium collector editions including: Car Culture series, Team Transport, Premium series, and occasional Treasure Hunts. Rare releases are marked as 'Limited Edition' or 'Pre-Order'. Follow us on social media for alerts on new rare Hot Wheels arrivals. Collector items sell out fast!",
+    category: "shopping"
+  },
+  {
+    id: "japanese-pokemon-cards",
+    question: "Do you sell Japanese Pokemon cards?",
+    answer: "Yes! We import authentic Japanese Pokemon TCG sets directly from Japan. Japanese cards have different artwork, better quality printing, and exclusive sets not available in English. Product title will clearly state 'Japanese' or 'English'. Japanese booster boxes are very popular among collectors. Note: Japanese cards cannot be used in official English tournaments.",
+    category: "shopping"
+  },
+  {
+    id: "beyblade-stadium-compatibility",
+    question: "Which Beyblade stadiums are compatible?",
+    answer: "Beyblade Burst stadiums work with all Burst series Beyblades (including Beyblade X with adapter). Metal Fusion stadiums work with Metal series. We recommend Takara Tomy stadiums for official tournament standards. Each stadium product page mentions compatibility. Most popular: Beyblade Burst Standard Stadium and Beyblade X Xtreme Stadium.",
+    category: "shopping"
+  },
+  {
+    id: "product-warranty",
+    question: "Do collectibles come with warranty?",
+    answer: "Collectibles (cards, Beyblades, Hot Wheels) don't have manufacturer warranty but we guarantee authenticity and provide 7-day replacement for defective/damaged items. Transformers and electronic toys may have manufacturer warranty (mentioned in product description). Keep unboxing video for all orders - mandatory for damage claims! Original packaging must be intact.",
+    category: "returns"
+  },
+  {
+    id: "pre-order-how-long",
+    question: "How long do pre-orders take?",
+    answer: "Pre-order items (new Beyblade releases, limited edition Transformers, special Pokemon sets) take 15-25 days total: 7-10 days for international shipping to our India warehouse + 5-7 days customs clearance + 3-7 days delivery to you. You'll get updates at each stage. Pre-orders ensure you get the latest releases without paying high marketplace markups!",
+    category: "shipping"
+  },
+  {
+    id: "bulk-order-discount",
+    question: "Do you offer discounts on bulk orders?",
+    answer: "Yes! For bulk orders (10+ Beyblades, 5+ booster boxes, 20+ Hot Wheels), contact our support team for special pricing. Great for: birthday party returns, tournament prizes, retail shops, collector groups. Minimum order value ₹10,000 for bulk discount eligibility. Custom product bundles also available!",
+    category: "shopping"
   },
 ];
 

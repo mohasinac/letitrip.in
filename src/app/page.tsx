@@ -10,16 +10,34 @@ export default function Home() {
         {/* Hero Section */}
         <section
           id="hero-section"
-          className="bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-lg p-8 text-center"
+          className="bg-gradient-to-r from-blue-100 via-yellow-50 to-red-50 rounded-lg p-8 md:p-12 text-center"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to LET IT RIP
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Let It Rip! 🎯
           </h1>
-          <p className="text-xl text-gray-800 mb-6 font-medium">
-            Your Gateway to Japanese Shopping
+          <p className="text-xl md:text-2xl text-gray-800 mb-4 font-semibold">
+            India's #1 Store for Authentic Collectibles
           </p>
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-8 py-3 rounded-lg font-bold text-lg">
-            Start Shopping
+          <p className="text-lg text-gray-700 mb-6 max-w-3xl mx-auto">
+            Beyblades • Pokemon TCG • Yu-Gi-Oh • Transformers • Hot Wheels •
+            Stickers & More!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+            <div className="flex items-center gap-2 text-green-700 font-medium">
+              <span className="text-2xl">✅</span>
+              <span>100% Authentic</span>
+            </div>
+            <div className="flex items-center gap-2 text-green-700 font-medium">
+              <span className="text-2xl">✅</span>
+              <span>Zero Customs Charges</span>
+            </div>
+            <div className="flex items-center gap-2 text-green-700 font-medium">
+              <span className="text-2xl">✅</span>
+              <span>Fast India Delivery</span>
+            </div>
+          </div>
+          <button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all">
+            Shop Now
           </button>
         </section>
 
@@ -47,15 +65,25 @@ export default function Home() {
         {/* Popular Categories */}
         <section id="popular-categories">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Popular Categories
+            Shop by Category
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {["Anime", "Gaming", "Fashion", "Electronics"].map((category) => (
+            {[
+              { name: "Beyblades", icon: "🎯" },
+              { name: "Pokemon TCG", icon: "🎴" },
+              { name: "Yu-Gi-Oh", icon: "🃏" },
+              { name: "Transformers", icon: "🤖" },
+              { name: "Hot Wheels", icon: "🏎️" },
+              { name: "Stickers", icon: "⭐" },
+              { name: "Crafts", icon: "🎨" },
+              { name: "Collectibles", icon: "🎁" },
+            ].map((category) => (
               <div
-                key={category}
-                className="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
+                key={category.name}
+                className="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg hover:border-yellow-400 transition-all cursor-pointer"
               >
-                <h3 className="font-bold text-gray-900">{category}</h3>
+                <div className="text-4xl mb-2">{category.icon}</div>
+                <h3 className="font-bold text-gray-900">{category.name}</h3>
               </div>
             ))}
           </div>
@@ -65,7 +93,7 @@ export default function Home() {
         <section id="faq-section" className="py-8">
           <FAQSection
             title="Frequently Asked Questions"
-            description="Quick answers to common questions about shopping from Japan"
+            description="Quick answers about authentic collectibles, shipping, and more"
             maxItemsToShow={6}
             defaultCategory="getting-started"
           />

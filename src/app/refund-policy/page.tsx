@@ -24,10 +24,10 @@ export default function RefundPolicyPage() {
         this policy carefully before making a purchase.
       </p>
       <p>
-        <strong>Important:</strong> Due to the nature of imported products
-        from various countries (Japan, China, Hong Kong, USA, UK, etc.), all returns and refunds require proper documentation
-        including unboxing video and same-day timestamp images as specified
-        below.
+        <strong>Important:</strong> Due to the nature of imported products from
+        various countries (Japan, China, Hong Kong, USA, UK, etc.), all returns
+        and refunds require proper documentation including unboxing video and
+        same-day timestamp images as specified below.
       </p>
 
       <h2>2. Mandatory Documentation for Returns</h2>
@@ -102,7 +102,9 @@ export default function RefundPolicyPage() {
       <h3>2.3 Why These Requirements?</h3>
       <p>These strict requirements protect both buyers and sellers because:</p>
       <ul>
-        <li>Products are imported internationally and may have multiple handlers</li>
+        <li>
+          Products are imported internationally and may have multiple handlers
+        </li>
         <li>Products are often high-value collectibles and electronics</li>
         <li>It helps identify when and where damage occurred</li>
         <li>Prevents fraudulent claims and ensures fair resolution</li>
@@ -224,21 +226,25 @@ export default function RefundPolicyPage() {
       </p>
       <ul>
         <li>
-          <strong>Damaged/Defective/Wrong Item:</strong> We pay (prepaid
-          label provided or reimbursement)
+          <strong>Damaged/Defective/Wrong Item:</strong> We pay (prepaid label
+          provided or reimbursement)
         </li>
         <li>
           <strong>Buyer's Remorse:</strong> Buyer pays (self-arrange return
           shipping within India)
         </li>
         <li>
-          Domestic return shipping within India: ₹100-300 depending on weight and location
+          Domestic return shipping within India: ₹100-300 depending on weight
+          and location
         </li>
       </ul>
 
       <h3>Step 4: Inspection & Refund Processing</h3>
       <ul>
-        <li>We inspect returned item (1-3 business days after receipt at our warehouse)</li>
+        <li>
+          We inspect returned item (1-3 business days after receipt at our
+          warehouse)
+        </li>
         <li>If approved, refund is processed within 3-5 business days</li>
         <li>You'll receive email confirmation when refund is issued</li>
       </ul>
@@ -350,7 +356,8 @@ export default function RefundPolicyPage() {
           faster resolution
         </li>
         <li>
-          <strong>Product Defect:</strong> Our responsibility, handled at our India warehouse
+          <strong>Product Defect:</strong> Our responsibility, handled at our
+          India warehouse
         </li>
         <li>Unboxing video helps determine which category applies</li>
       </ul>
@@ -419,7 +426,8 @@ export default function RefundPolicyPage() {
           <strong>Return request submission:</strong> 24-48 hours for review
         </li>
         <li>
-          <strong>Return shipping:</strong> 3-7 days (within India to our warehouse)
+          <strong>Return shipping:</strong> 3-7 days (within India to our
+          warehouse)
         </li>
         <li>
           <strong>Inspection:</strong> 1-3 business days

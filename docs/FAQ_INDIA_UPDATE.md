@@ -17,6 +17,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Getting Started (4 FAQs)
 
 #### Updated Content:
+
 - **What is Let It Rip?** → Emphasized "bringing authentic Japanese products to India"
 - **How do I get started?** → Mentioned UPI, cards, and Indian payment methods; 12-21 day delivery to India
 - **Do I need an account?** → Added 18+ age requirement (Indian legal compliance)
@@ -27,10 +28,12 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Shopping & Orders (4 FAQs)
 
 #### Updated Content:
+
 - **Order status meanings** → Added "Customs Clearance" status (India-specific)
 - **NEW: Invoice with GST** → Explained GST-registered seller invoices, customs duty receipts, downloadable from My Orders
 
 **India-Specific Details Added:**
+
 - GST invoice availability
 - Customs clearance status tracking
 - Tax documentation for buyers
@@ -40,12 +43,14 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Auctions (4 FAQs)
 
 #### Updated Content:
+
 - **Won auction payment** → Added "within 48 hours using UPI, cards, or other Indian payment methods"
 - **Outbid notification** → Added "instant email and SMS", "₹50 minimum increment", "price alerts"
 - **Reserve price** → Clarified "hidden reserve" and notification when met
 - **NEW: Auction refunds** → Added auction-specific return policy (all sales final unless not as described), mandatory unboxing video for auctions
 
 **India-Specific Details Added:**
+
 - UPI as primary payment method for won auctions
 - Rupee (₹) minimum bid increments
 - Unboxing video requirement for auction items
@@ -55,7 +60,9 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Payments & Fees (7 FAQs - Major Overhaul)
 
 #### Completely Rewritten:
+
 1. **Payment methods in India** → Listed all Razorpay options:
+
    - UPI (GPay, PhonePe, Paytm, BHIM)
    - Credit/Debit Cards (Visa, Mastercard, RuPay, Amex)
    - Net Banking (all major banks)
@@ -73,6 +80,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 6. **NEW: EMI available** → Details on EMI for ₹10,000+ orders, 3/6/9/12 month plans, bank interest rates
 
 **India-Specific Details Added:**
+
 - Razorpay as payment gateway
 - UPI as primary payment method
 - All major Indian wallets
@@ -85,7 +93,9 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Shipping & Delivery (7 FAQs - Comprehensive India Update)
 
 #### Completely Rewritten:
+
 1. **Shipping time to India** → Detailed 7-step breakdown:
+
    - Purchase in Japan (1-3 days)
    - Domestic Japan shipping (2-5 days)
    - Quality check (1-2 days)
@@ -95,6 +105,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Total: 12-21 days (Standard), 7-10 days (Express)
 
 2. **Shipping cost to India** → Rupee pricing:
+
    - Standard: ₹800-6,000 (12-21 days)
    - Express: ₹1,500-8,000 (7-10 days)
    - Economy: ₹500-4,000 (21-30 days)
@@ -102,6 +113,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 3. **Ship only to India?** → Confirmed India focus, optimized routes/payments/support
 
 4. **Customs duties in India** → **MAJOR UPDATE:**
+
    - Basic Customs Duty (BCD): 0-35%
    - GST: 18%
    - Social Welfare Surcharge: 10% on BCD
@@ -111,6 +123,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Refusing = returned to Japan
 
 5. **NEW: Duty-free exemptions** → Explained:
+
    - Under ₹50,000 may qualify
    - "Gift" under $100 better chances
    - Officer's discretion (not guaranteed)
@@ -120,6 +133,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 7. **NEW: Delivery issues** → 2-3 delivery attempts, reschedule option, courier calls before delivery, alternate address, pickup from office
 
 **India-Specific Details Added:**
+
 - Complete customs duty breakdown (BCD, GST, Surcharge)
 - Rupee pricing for all shipping methods
 - 7-step shipping process from Japan to India
@@ -133,7 +147,9 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Returns & Refunds (6 FAQs - Critical India Requirements)
 
 #### Completely Rewritten:
+
 1. **Return policy** → **EMPHASIZED MANDATORY REQUIREMENTS:**
+
    - MUST record unboxing video
    - Continuous take, sealed package visible
    - Same-day timestamp
@@ -142,6 +158,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Without = automatic rejection
 
 2. **NEW: Why unboxing video mandatory?** → Explained:
+
    - International shipping multiple handlers
    - High-value products
    - Identifies when/where damage occurred
@@ -150,6 +167,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Enable camera timestamp before delivery
 
 3. **Return from India** → Process details:
+
    - Upload video (max 500MB, MP4/MOV)
    - Upload photos (5-10, JPG/PNG)
    - Seller review 24-48 hours
@@ -158,6 +176,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Buyer pays for remorse
 
 4. **Refund time to Indian payments** → **DETAILED TIMELINES:**
+
    - UPI: 1-3 days (usually instant)
    - Credit/Debit Cards: 5-7 days
    - Net Banking: 3-5 days
@@ -175,6 +194,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Handled by customs, not us
 
 **India-Specific Details Added:**
+
 - Mandatory unboxing video requirement (emphasized)
 - Same-day timestamp photo requirement
 - India-specific refund timelines by payment method
@@ -187,6 +207,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Account & Security (4 FAQs)
 
 #### Updated Content:
+
 - **Data security** → Added IT Act 2000 compliance, Razorpay PCI-DSS, UPI PIN/CVV never stored
 - **Delete account** → Added "Indian data protection laws", 7-30 day deletion process
 - **NEW: KYC verification** → Explained when needed:
@@ -198,6 +219,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
   - Prevents fraud
 
 **India-Specific Details Added:**
+
 - IT Act 2000 compliance
 - Razorpay payment security
 - Aadhaar OTP verification
@@ -210,18 +232,22 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Selling (5 FAQs)
 
 #### Updated Content:
+
 1. **Become seller** → Added:
+
    - GST information (if applicable)
    - Bank/UPI details for payouts
    - Aadhaar or PAN verification
 
 2. **Seller fees** → Updated:
+
    - 5-10% most categories
    - Up to 15% electronics
    - GST 18% on commission
    - No monthly subscription
 
 3. **Seller payouts in India** → **COMPLETE REWRITE:**
+
    - 7-14 day holding period
    - Payout via NEFT/RTGS or UPI
    - Minimum payout: ₹500
@@ -239,6 +265,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
    - Shown separately in dashboard
 
 **India-Specific Details Added:**
+
 - GST on seller commission
 - UPI/NEFT/RTGS payouts
 - TDS deduction
@@ -251,12 +278,14 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ## 📊 Statistics
 
 ### Content Updates
+
 - **Categories Updated:** 8/8 (100%)
 - **FAQs Updated:** 40+ questions
 - **New FAQs Added:** 11 India-specific questions
 - **Existing FAQs Enhanced:** 29+ with India content
 
 ### India-Specific Keywords Added
+
 - UPI (mentioned 15+ times)
 - Razorpay (mentioned 8+ times)
 - GST (mentioned 12+ times)
@@ -273,6 +302,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ## 🎯 Key India-Specific Features Highlighted
 
 ### 1. Payment Methods (Critical)
+
 ✅ UPI as primary method (GPay, PhonePe, Paytm, BHIM)  
 ✅ All major Indian cards (RuPay included)  
 ✅ Net Banking (all major banks)  
@@ -282,6 +312,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ❌ COD NOT default (only verified sellers)
 
 ### 2. Customs & Import (Essential)
+
 ✅ Detailed customs duty breakdown (BCD, GST, Surcharge)  
 ✅ Example calculations in Rupees  
 ✅ Pay courier directly (COD for duties)  
@@ -290,6 +321,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ⚠️ Refusing payment = returned to Japan
 
 ### 3. Return Documentation (Mandatory)
+
 ✅ Unboxing video REQUIRED (continuous, sealed, same-day)  
 ✅ Timestamp photos REQUIRED (5-10 minimum, same-day)  
 ✅ 48-hour reporting window  
@@ -297,6 +329,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ⚠️ For insurance and fraud prevention
 
 ### 4. Shipping to India (Detailed)
+
 ✅ 7-step process (Japan to India)  
 ✅ Timeline: 12-21 days (Standard), 7-10 days (Express)  
 ✅ Costs: ₹800-6,000 (Standard), ₹1,500-8,000 (Express)  
@@ -306,6 +339,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ✅ Carriers: DHL, FedEx, Bluedart, Delhivery, India Post
 
 ### 5. Refund Timelines (India Payment Methods)
+
 ✅ UPI: 1-3 days (usually instant)  
 ✅ Cards: 5-7 days  
 ✅ Net Banking: 3-5 days  
@@ -314,6 +348,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ⏱️ Total: 2-4 weeks (with return shipping)
 
 ### 6. Legal & Compliance
+
 ✅ IT Act 2000 (data protection)  
 ✅ Consumer Protection Act 2019 (refunds)  
 ✅ RBI regulations (KYC)  
@@ -322,6 +357,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ✅ Aadhaar/PAN verification (when required)
 
 ### 7. Seller Features (India)
+
 ✅ GST on commission (18%)  
 ✅ UPI/NEFT/RTGS payouts  
 ✅ Minimum payout: ₹500  
@@ -336,33 +372,41 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ### Example 1: Payment Methods
 
 **Before:**
+
 > "We accept Visa, Mastercard, JCB, American Express, PayPal, Paidy, Alipay+, UnionPay, and Atome."
 
 **After:**
+
 > "We accept all popular Indian payment methods via Razorpay: UPI (GPay, PhonePe, Paytm, BHIM), Credit/Debit Cards (Visa, Mastercard, RuPay, Amex), Net Banking (all major banks), Wallets (Paytm, PhonePe, Amazon Pay, Mobikwik), and EMI options on orders above ₹10,000."
 
 ### Example 2: Shipping Time
 
 **Before:**
+
 > "International shipping typically takes 7-14 business days depending on your location."
 
 **After:**
+
 > "Total delivery time is 12-21 days (Standard) or 7-10 days (Express). This includes: purchasing in Japan (1-3 days), domestic shipping to our warehouse (2-5 days), quality check (1-2 days), international shipping (5-14 days), customs clearance (1-5 days), and final delivery in India (1-3 days)."
 
 ### Example 3: Return Policy
 
 **Before:**
+
 > "Most items can be returned within 30 days of delivery if unused and in original packaging."
 
 **After:**
+
 > "Most items can be returned within 30 days of delivery. IMPORTANT: You MUST record an unboxing video (continuous take, sealed package visible, same-day timestamp) and take 5-10 timestamp photos on delivery day. Without this documentation, returns will be automatically rejected."
 
 ### Example 4: Customs
 
 **Before:**
+
 > "Customs fees and import duties are the buyer's responsibility and vary by country."
 
 **After:**
+
 > "You are responsible for paying all customs duties and taxes. Typical charges: Basic Customs Duty (BCD) 0-35%, GST 18%, Social Welfare Surcharge 10% on BCD, and handling fee ₹100-500. For a ₹30,000 product, total customs can be ₹10,000-15,000. You pay the courier directly (COD for duties)."
 
 ---
@@ -370,6 +414,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ## ✅ Benefits of India-Specific FAQs
 
 ### For Customers
+
 1. **Clarity on Payment** - Know exactly which methods work (UPI, cards, wallets)
 2. **No Surprises on Customs** - Understand duty calculations before ordering
 3. **Clear Return Process** - Know unboxing video is mandatory upfront
@@ -377,6 +422,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 5. **Refund Expectations** - Know UPI refunds are fastest (1-3 days)
 
 ### For Business
+
 1. **Reduced Support Tickets** - Common questions answered comprehensively
 2. **Legal Protection** - Clear disclosure of India requirements
 3. **Customer Trust** - Transparency on costs, timelines, requirements
@@ -384,6 +430,7 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 5. **Compliance** - Meets Indian consumer protection laws
 
 ### For SEO
+
 1. **India-Specific Keywords** - UPI, GST, customs duty, Razorpay, Aadhaar
 2. **Long-Tail Queries** - "COD available in India", "UPI payment accepted"
 3. **Local Search** - "Japanese products to India", "import from Japan to India"
@@ -394,16 +441,19 @@ Updated all FAQ content to reflect our India-focused e-commerce platform importi
 ## 🚀 Next Steps
 
 ### Immediate (No Code Changes Needed)
+
 - ✅ FAQ content is live and India-focused
 - ✅ All 40+ FAQs updated
 - ✅ Searchable and filterable
 
 ### Phase 1.3 (SEO Enhancement)
+
 - [ ] Add FAQ schema markup (JSON-LD) for rich snippets
 - [ ] Test FAQs on Google's Rich Results Test
 - [ ] Add structured data for India-specific content
 
 ### Future Enhancements
+
 - [ ] Add regional language FAQs (Hindi, Tamil, Bengali)
 - [ ] State-specific customs duty calculators
 - [ ] Video tutorials for UPI payment

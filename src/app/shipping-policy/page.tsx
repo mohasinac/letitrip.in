@@ -18,9 +18,12 @@ export default function ShippingPolicyPage() {
     >
       <h2>1. Overview</h2>
       <p>
-        Let It Rip is an India-based seller/reseller that imports authentic products from Japan, China, Hong Kong, USA, UK, and other countries. 
-        We handle ALL import risks, customs duties, and international shipping ourselves. This Shipping Policy explains our domestic India shipping
-        process, delivery timelines, and costs. You only pay for shipping within India - no customs hassles!
+        Let It Rip is an India-based seller/reseller that imports authentic
+        products from Japan, China, Hong Kong, USA, UK, and other countries. We
+        handle ALL import risks, customs duties, and international shipping
+        ourselves. This Shipping Policy explains our domestic India shipping
+        process, delivery timelines, and costs. You only pay for shipping within
+        India - no customs hassles!
       </p>
 
       <h2>2. Shipping Process</h2>
@@ -31,13 +34,16 @@ export default function ShippingPolicyPage() {
           <strong>Order Placement:</strong> You place an order on Let It Rip
         </li>
         <li>
-          <strong>Order Processing:</strong> We prepare your order at our India warehouse (1-2 days)
+          <strong>Order Processing:</strong> We prepare your order at our India
+          warehouse (1-2 days)
         </li>
         <li>
-          <strong>Shipment:</strong> Package ships from our warehouse to your address within India
+          <strong>Shipment:</strong> Package ships from our warehouse to your
+          address within India
         </li>
         <li>
-          <strong>Delivery:</strong> You receive the product at your doorstep (2-6 days depending on location)
+          <strong>Delivery:</strong> You receive the product at your doorstep
+          (2-6 days depending on location)
         </li>
       </ol>
 
@@ -47,37 +53,47 @@ export default function ShippingPolicyPage() {
           <strong>Order Placement:</strong> You place a pre-order on Let It Rip
         </li>
         <li>
-          <strong>International Purchase:</strong> We purchase from international marketplace (2-5 days)
+          <strong>International Purchase:</strong> We purchase from
+          international marketplace (2-5 days)
         </li>
         <li>
-          <strong>International Shipping:</strong> Item ships to our India warehouse (7-15 days)
+          <strong>International Shipping:</strong> Item ships to our India
+          warehouse (7-15 days)
         </li>
         <li>
-          <strong>Customs Clearance:</strong> We handle customs clearance and pay all duties (2-5 days)
+          <strong>Customs Clearance:</strong> We handle customs clearance and
+          pay all duties (2-5 days)
         </li>
         <li>
-          <strong>Quality Check:</strong> We inspect the item at our warehouse (1-2 days)
+          <strong>Quality Check:</strong> We inspect the item at our warehouse
+          (1-2 days)
         </li>
         <li>
-          <strong>Domestic Shipment:</strong> Package ships from our warehouse to you (2-6 days)
+          <strong>Domestic Shipment:</strong> Package ships from our warehouse
+          to you (2-6 days)
         </li>
       </ol>
 
       <h3>2.3 Total Delivery Time</h3>
       <ul>
         <li>
-          <strong>In-Stock Items:</strong> 3-7 business days (ready to ship from India)
+          <strong>In-Stock Items:</strong> 3-7 business days (ready to ship from
+          India)
         </li>
         <li>
-          <strong>Pre-Order Items:</strong> 15-25 business days (includes international import + domestic delivery)
+          <strong>Pre-Order Items:</strong> 15-25 business days (includes
+          international import + domestic delivery)
         </li>
         <li>
-          <strong>Express Shipping:</strong> 2-4 business days (available for in-stock items only)
+          <strong>Express Shipping:</strong> 2-4 business days (available for
+          in-stock items only)
         </li>
       </ul>
       <p>
         <em>
-          Note: Times are estimates and may vary due to location, holidays, weather, or carrier delays. Pre-order timelines depend on international supplier availability.
+          Note: Times are estimates and may vary due to location, holidays,
+          weather, or carrier delays. Pre-order timelines depend on
+          international supplier availability.
         </em>
       </p>
 
@@ -87,10 +103,12 @@ export default function ShippingPolicyPage() {
       <p>We use the following trusted carriers for delivery within India:</p>
       <ul>
         <li>
-          <strong>Bluedart:</strong> 2-4 days, fully tracked, signature required, reliable nationwide
+          <strong>Bluedart:</strong> 2-4 days, fully tracked, signature
+          required, reliable nationwide
         </li>
         <li>
-          <strong>Delhivery:</strong> 3-5 days, fully tracked, good coverage in metro and tier 2 cities
+          <strong>Delhivery:</strong> 3-5 days, fully tracked, good coverage in
+          metro and tier 2 cities
         </li>
         <li>
           <strong>India Post:</strong> 4-7 days, tracked, reaches rural areas
@@ -99,7 +117,8 @@ export default function ShippingPolicyPage() {
           <strong>DTDC:</strong> 3-6 days, tracked, economical
         </li>
         <li>
-          <strong>Ecom Express:</strong> 3-5 days, tracked, good for large parcels
+          <strong>Ecom Express:</strong> 3-5 days, tracked, good for large
+          parcels
         </li>
       </ul>
 
@@ -112,7 +131,10 @@ export default function ShippingPolicyPage() {
         <li>Shipping method chosen (standard/express)</li>
         <li>Carrier availability for your area</li>
       </ul>
-      <p>You'll see the assigned carrier in order confirmation email. For remote areas, India Post may be used for better coverage.</p>
+      <p>
+        You'll see the assigned carrier in order confirmation email. For remote
+        areas, India Post may be used for better coverage.
+      </p>
 
       <h2>4. Shipping Costs</h2>
 
@@ -145,33 +167,40 @@ export default function ShippingPolicyPage() {
       </p>
       <ul>
         <li>
-          <strong>Small package (0-500g):</strong> ₹40-80 (Standard),
-          ₹100-150 (Express)
+          <strong>Small package (0-500g):</strong> ₹40-80 (Standard), ₹100-150
+          (Express)
         </li>
         <li>
           <strong>Medium package (500g-2kg):</strong> ₹80-150 (Standard),
           ₹150-300 (Express)
         </li>
         <li>
-          <strong>Large package (2-5kg):</strong> ₹150-300 (Standard),
-          ₹300-500 (Express)
+          <strong>Large package (2-5kg):</strong> ₹150-300 (Standard), ₹300-500
+          (Express)
         </li>
         <li>
           <strong>Heavy package (5kg+):</strong> ₹300+ (Calculated at checkout)
         </li>
-        <li>
-          <strong>FREE SHIPPING:</strong> On orders above ₹999 (standard shipping only)
-        </li>
       </ul>
+      <p>
+        <em>
+          Note: Some sellers may offer free shipping on select products. Check
+          product page for seller-specific shipping offers.
+        </em>
+      </p>
 
-      <h3>4.3 Free Shipping Promotions</h3>
+      <h3>4.3 Free Shipping by Sellers</h3>
       <p>Free or discounted shipping may be available when:</p>
       <ul>
-        <li>Order value exceeds ₹10,000 (standard shipping)</li>
-        <li>Special promotional periods (announced on site)</li>
-        <li>Seller offers free shipping on certain items</li>
-        <li>Bulk orders or multiple items from same seller</li>
+        <li>Seller has enabled free shipping in their shop configuration</li>
+        <li>Seller offers free shipping on specific products</li>
+        <li>Special promotional periods (announced by seller)</li>
+        <li>Minimum order value thresholds (set by individual sellers)</li>
       </ul>
+      <p>
+        <strong>Note:</strong> Free shipping eligibility is determined by each
+        seller and will be clearly shown on product pages and at checkout.
+      </p>
 
       <h2>5. Delivery Locations</h2>
 
@@ -273,91 +302,75 @@ export default function ShippingPolicyPage() {
         </li>
       </ul>
 
-      <h2>7. Customs & Import Duties</h2>
+      <h2>7. Import Duties & Taxes (Handled By Us)</h2>
 
-      <h3>7.1 Customs Clearance Process</h3>
-      <p>All international shipments go through Indian customs:</p>
-      <ul>
-        <li>Packages are inspected by customs officials</li>
-        <li>Import duties and taxes are calculated</li>
-        <li>Duties must be paid before delivery (if applicable)</li>
-        <li>Clearance typically takes 1-5 business days</li>
-      </ul>
-
-      <h3>7.2 Import Duties & Taxes (India)</h3>
+      <h3>7.1 No Customs Charges for You!</h3>
       <p>
-        <strong>Who pays?</strong> Buyer is responsible for all customs duties
-        and taxes.
+        <strong>Good News:</strong> Since we're an India-based seller shipping
+        from within India, you don't have to pay ANY customs duties or import
+        taxes!
       </p>
-      <p>Typical charges:</p>
       <ul>
-        <li>
-          <strong>Basic Customs Duty (BCD):</strong> 0-35% depending on product
-          category
-        </li>
-        <li>
-          <strong>GST:</strong> 18% on (product value + shipping + BCD)
-        </li>
-        <li>
-          <strong>Social Welfare Surcharge:</strong> 10% on BCD (if applicable)
-        </li>
-        <li>
-          <strong>Handling fee:</strong> ₹100-500 (charged by courier)
-        </li>
+        <li>We handle all international imports ourselves</li>
+        <li>We pay all customs duties, BCD, GST, and surcharges</li>
+        <li>Products are already customs-cleared before they reach you</li>
+        <li>The price you see is the final price (+ domestic shipping only)</li>
       </ul>
 
-      <h3>7.3 Duty-Free Exemptions</h3>
-      <p>Personal imports may be duty-free if:</p>
+      <h3>7.2 How We Handle Imports</h3>
+      <p>For pre-order items that need to be imported:</p>
       <ul>
-        <li>Total value is below ₹50,000 (INR)</li>
-        <li>Item is for personal use (not commercial)</li>
         <li>
-          Marked as "gift" with value under $100 (varies by customs officer)
+          We purchase from international suppliers (Japan, USA, UK, China, Hong
+          Kong, etc.)
         </li>
+        <li>We arrange international shipping to our India warehouse</li>
+        <li>We handle customs clearance and pay all import duties</li>
+        <li>We do quality inspection at our warehouse</li>
+        <li>We ship to you from India - simple domestic delivery!</li>
       </ul>
-      <p>
-        <em>
-          Note: Exemptions are at customs discretion. We cannot guarantee
-          duty-free clearance.
-        </em>
-      </p>
 
-      <h3>7.4 Paying Customs Duties</h3>
-      <p>Payment methods:</p>
+      <h3>7.3 What This Means for You</h3>
+      <p>
+        <strong>Benefits of buying from us:</strong>
+      </p>
       <ul>
         <li>
-          <strong>Pay to courier:</strong> Delivery partner collects before
-          delivery (COD for duties)
+          <strong>No surprise charges:</strong> No customs bills delivered with
+          your package
         </li>
         <li>
-          <strong>Online payment:</strong> Some couriers allow pre-payment
+          <strong>Faster delivery:</strong> No waiting for customs clearance at
+          your end
         </li>
         <li>
-          <strong>Direct to customs:</strong> For India Post shipments (at post
-          office)
+          <strong>Hassle-free:</strong> No dealing with customs officers or
+          paperwork
+        </li>
+        <li>
+          <strong>Transparent pricing:</strong> Product price + India shipping =
+          total cost
+        </li>
+        <li>
+          <strong>GST invoice:</strong> We provide proper tax invoice with GST
+          (if applicable)
         </li>
       </ul>
-      <p>
-        <strong>Important:</strong> Refusal to pay customs duties will result in
-        package being returned to Japan. Return shipping and restocking fees
-        will apply.
-      </p>
 
       <h2>8. Delivery Process</h2>
 
       <h3>8.1 Delivery Attempts</h3>
       <ul>
-        <li>Courier will attempt delivery 3 times</li>
+        <li>Courier will attempt delivery 2-3 times</li>
         <li>You'll receive advance notice (call/SMS) before delivery</li>
         <li>
           If you're unavailable, reschedule delivery or provide alternate
           address
         </li>
         <li>
-          After 3 failed attempts, package is held at courier facility for 7
-          days
+          After failed attempts, package is held at courier facility for 7 days
         </li>
-        <li>Unclaimed packages are returned to sender (fees apply)</li>
+        <li>Unclaimed packages are returned to our warehouse</li>
       </ul>
 
       <h3>8.2 Signature Requirement</h3>
@@ -371,7 +384,7 @@ export default function ShippingPolicyPage() {
           high-value items
         </li>
         <li>
-          <strong>OTP verification:</strong> For certain deliveries
+          <strong>OTP verification:</strong> For COD and certain deliveries
         </li>
       </ul>
 
@@ -534,24 +547,29 @@ export default function ShippingPolicyPage() {
 
       <h3>12.1 COD Availability</h3>
       <p>
-        <strong>Cash on Delivery is NOT available by default</strong> for
-        international shipments from Japan.
+        <strong>Great News: Cash on Delivery is AVAILABLE</strong> on select
+        in-stock items!
       </p>
       <p>
-        <strong>Why?</strong> We must pay for the product in Japan before
-        shipping, so advance payment is required.
+        Since we're based in India and ship from our own warehouse, we can offer
+        COD on items already in our inventory.
       </p>
 
-      <h3>12.2 Shop-Specific COD</h3>
-      <p>Some sellers may offer COD if they:</p>
+      <h3>12.2 COD Guidelines</h3>
+      <p>COD is available when:</p>
       <ul>
-        <li>Are verified premium sellers</li>
-        <li>Offer this option explicitly on product page</li>
-        <li>Accept the risk of non-payment</li>
+        <li>Item is marked "In-Stock" (already in India)</li>
+        <li>Your delivery pin code supports COD (most areas do)</li>
+        <li>Order value is under ₹50,000 (for security)</li>
+        <li>Product category allows COD (some exclusions apply)</li>
       </ul>
       <p>
-        COD availability will be clearly shown at checkout if offered by the
-        seller.
+        <strong>COD Charges:</strong> ₹50-100 depending on order value (shown at
+        checkout)
+      </p>
+      <p>
+        <strong>Pre-order items:</strong> Require advance payment as we need to
+        import them
       </p>
 
       <h3>12.3 Accepted Payment Methods</h3>
@@ -560,7 +578,8 @@ export default function ShippingPolicyPage() {
       </p>
       <ul>
         <li>
-          <strong>UPI:</strong> Google Pay, PhonePe, Paytm, BHIM (instant)
+          <strong>UPI:</strong> Google Pay, PhonePe, Paytm, BHIM (instant, most
+          popular)
         </li>
         <li>
           <strong>Credit/Debit Cards:</strong> Visa, Mastercard, RuPay, Amex
@@ -575,13 +594,12 @@ export default function ShippingPolicyPage() {
           <strong>EMI:</strong> 3/6/9/12 months (on orders above ₹10,000)
         </li>
         <li>
-          <strong>International Cards:</strong> Accepted with currency
-          conversion
+          <strong>COD:</strong> Cash/Card/UPI on delivery (for in-stock items)
         </li>
       </ul>
       <p>
-        All payments are processed through <strong>Razorpay</strong> (secure,
-        PCI-DSS compliant).
+        All online payments are processed through <strong>Razorpay</strong>{" "}
+        (secure, PCI-DSS compliant).
       </p>
 
       <h2>13. Order Cancellation & Shipping</h2>

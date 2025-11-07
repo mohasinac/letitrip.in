@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
+import { generateBreadcrumbSchema, generateJSONLD } from "@/lib/seo/schema";
 
 interface BreadcrumbItem {
   label: string;
@@ -100,44 +101,66 @@ export default function Breadcrumb() {
     return items;
   }, [pathname]);
 
+  // Generate breadcrumb schema for SEO
+  const breadcrumbSchema = useMemo(() => {
+    if (breadcrumbs.length === 0) return null;
+
+    return generateBreadcrumbSchema(
+      breadcrumbs.map((item) => ({
+        name: item.label,
+        url: item.href,
+      }))
+    );
+  }, [breadcrumbs]);
+
   // Don't render if no breadcrumbs (home page)
   if (breadcrumbs.length === 0) {
     return null;
   }
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="bg-gray-50 border-b border-gray-200 py-3 px-4"
-    >
-      <div className="container mx-auto">
-        <ol className="flex items-center space-x-2 text-sm">
-          {breadcrumbs.map((item, index) => (
-            <li key={item.href} className="flex items-center">
-              {index > 0 && (
-                <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
-              )}
+    <>
+      {/* JSON-LD Schema */}
+      {breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={generateJSONLD(breadcrumbSchema)}
+        />
+      )}
 
-              {item.isCurrentPage ? (
-                // Current page - not clickable
-                <span className="flex items-center gap-1.5 text-gray-900 font-medium">
-                  {index === 0 && <Home className="w-4 h-4" />}
-                  {item.label}
-                </span>
-              ) : (
-                // Clickable link
-                <Link
-                  href={item.href}
-                  className="flex items-center gap-1.5 text-gray-600 hover:text-yellow-600 transition-colors"
-                >
-                  {index === 0 && <Home className="w-4 h-4" />}
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
-    </nav>
+      <nav
+        aria-label="Breadcrumb"
+        className="bg-gray-50 border-b border-gray-200 py-3 px-4"
+      >
+        <div className="container mx-auto">
+          <ol className="flex items-center space-x-2 text-sm">
+            {breadcrumbs.map((item, index) => (
+              <li key={item.href} className="flex items-center">
+                {index > 0 && (
+                  <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
+                )}
+
+                {item.isCurrentPage ? (
+                  // Current page - not clickable
+                  <span className="flex items-center gap-1.5 text-gray-900 font-medium">
+                    {index === 0 && <Home className="w-4 h-4" />}
+                    {item.label}
+                  </span>
+                ) : (
+                  // Clickable link
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-1.5 text-gray-600 hover:text-yellow-600 transition-colors"
+                  >
+                    {index === 0 && <Home className="w-4 h-4" />}
+                    {item.label}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </nav>
+    </>
   );
 }

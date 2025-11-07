@@ -126,6 +126,104 @@
 
 ---
 
+## ✅ Recent Updates
+
+### Business Model Change (November 7, 2025)
+
+**Major Update:** Changed from marketplace model to India-based seller/reseller model
+
+- ✅ Updated all FAQs (40+) to reflect India-based operations
+- ✅ Updated Refund Policy - returns to India warehouse, not Japan
+- ✅ Updated Shipping Policy - domestic India shipping, we handle customs
+- ✅ Changed import sources from "Japan only" to "Japan, China, Hong Kong, USA, UK, etc."
+- ✅ COD now available on in-stock items
+- ✅ **CORRECTED:** Free shipping is seller-specific configuration (NOT platform-wide ₹999+)
+- ✅ Delivery time: In-stock (3-7 days), Pre-order (15-25 days)
+- ✅ Shipping cost: ₹40-300 (domestic India rates)
+- ✅ NO customs charges for customers (we handle everything)
+- ✅ Return shipping: ₹100-300 within India (vs ₹2,000-5,000 to Japan)
+- ✅ Refund time: 7-14 days (vs 2-4 weeks)
+
+**Documentation Created:**
+
+- `/docs/BUSINESS_MODEL_UPDATE.md` - Comprehensive change documentation
+
+### SEO & Crawler Support (November 7, 2025)
+
+**Phase 1.3:** ✅ 90% COMPLETE
+
+- ✅ Created `/src/app/sitemap.ts` - Dynamic sitemap with 15 static pages
+- ✅ Created `/src/app/robots.ts` - Robots.txt with crawler control
+- ✅ Created `/src/lib/seo/metadata.ts` - SEO metadata utilities with canonical URLs
+- ✅ Created `/src/lib/seo/schema.ts` - 9 Schema.org structured data types
+- ✅ Created `/public/manifest.json` - PWA manifest with shortcuts
+- ✅ Enhanced FAQ page with JSON-LD schema for rich snippets
+- ✅ Enhanced Breadcrumb component with JSON-LD schema
+- ✅ Updated root layout with Organization and WebSite schemas
+- ✅ Added canonical URLs to all pages
+- ✅ Added PWA manifest link and theme color
+- ✅ **UPDATED:** Product-focused SEO keywords (Beyblades, Pokemon TCG, Yu-Gi-Oh, Transformers, Hot Wheels, Stickers)
+- ⏳ TODO: Add dynamic pages to sitemap (products, categories, shops)
+- ⏳ TODO: Create image assets (icons, OG images, screenshots)
+
+**Documentation Created:**
+
+- `/docs/SEO_IMPLEMENTATION.md` - Comprehensive SEO guide
+- `/docs/SEO_QUICK_REFERENCE.md` - Developer quick reference
+
+### Product Categories Definition (November 7, 2025)
+
+**New:** ✅ COMPLETED
+
+- ✅ Created `/src/constants/categories.ts` - Product categories configuration
+- ✅ Created `/docs/PRODUCT_CATEGORIES.md` - Product focus documentation
+- ✅ Updated SEO metadata with collectibles-focused keywords
+- ✅ Updated PWA manifest description
+- ✅ **UPDATED:** FAQs with product-specific questions (10 new FAQs)
+- ✅ **UPDATED:** Homepage hero section with collectibles branding
+- ✅ **UPDATED:** About Us page - complete rewrite with product focus
+- ✅ **UPDATED:** Category descriptions in FAQ
+
+**Product Lines Defined:**
+
+- **Featured:** Beyblades, Pokemon TCG, Yu-Gi-Oh TCG, Transformers, Hot Wheels, Stickers
+- **Additional:** Crafts & Supplies, Other Collectibles
+- **Import Sources:** Japan, USA, UK, China, Hong Kong
+- **Target Audience:** Kids to adult collectors (8-35 years)
+
+**SEO Keywords Updated:**
+
+- beyblades India, Pokemon TCG India, Yu-Gi-Oh TCG India
+- Transformers India, Hot Wheels India, collectible stickers
+- authentic beyblades, Pokemon cards, imported collectibles
+- No customs charges, fast delivery, COD available
+
+**New Product-Specific FAQs Added:**
+
+1. Are Beyblades authentic Takara Tomy?
+2. Are Pokemon cards official/authentic?
+3. How do I know Yu-Gi-Oh cards are real?
+4. Are Transformers Hasbro or Takara Tomy?
+5. Do you have rare/collector Hot Wheels?
+6. Do you sell Japanese Pokemon cards?
+7. Which Beyblade stadiums are compatible?
+8. Do collectibles come with warranty?
+9. How long do pre-orders take?
+10. Do you offer bulk order discounts?
+
+**Pages Updated:**
+
+- `/src/app/page.tsx` - Hero section now features collectibles branding
+- `/src/app/about/page.tsx` - Complete rewrite (300+ lines) with:
+  - Our Story section (Beyblade name origin)
+  - What We Sell (8 categories with icons)
+  - Why Choose Us (6 value propositions)
+  - Import sources (Japan, USA, China, UK, Hong Kong)
+  - LocalBusiness schema added
+  - Contact CTA section
+
+---
+
 ## 🚧 In Progress
 
 None currently - ready for next task!
@@ -134,27 +232,39 @@ None currently - ready for next task!
 
 ## 📋 Up Next
 
-### Phase 1.3: SEO & Crawler Support
+### Phase 1.3: Remaining SEO Tasks
 
 Priority order:
 
-1. Create `/src/app/sitemap.ts` - Dynamic sitemap generation
-2. Create `/src/app/robots.txt` - Robots.txt configuration
-3. Create `/src/lib/seo/metadata.ts` - SEO metadata utilities
-4. Create `/src/lib/seo/schema.ts` - Schema.org markup utilities
-5. Enhance FAQ page with JSON-LD schema
-6. Add breadcrumb JSON-LD schema
-7. Add canonical URLs to all pages
-8. Create `/public/manifest.json` - PWA manifest
+1. ⏳ Create image assets (icons, OG images, screenshots)
+2. ⏳ Add dynamic pages to sitemap (products, categories, shops, auctions)
+3. ⏳ Test all schemas with validation tools
+4. ⏳ Submit sitemap to Google Search Console
+
+### Phase 1.4: About Us & Contact Pages
+
+1. Create `/src/app/about/page.tsx` - About Us page with business model explanation
+2. Create `/src/app/contact/page.tsx` - Contact Us page with support options
+3. Update homepage hero section with India-based seller messaging
+4. Add LocalBusiness schema to About page
+
+### Phase 2: Product Management
+
+1. Product listing page with filters
+2. Product detail page with Schema.org Product markup
+3. In-stock vs Pre-order badges
+4. Product image optimization
+5. Review system with Schema.org Review markup
 
 ---
 
 ## 📊 Statistics
 
 - **Total Tasks in Checklist:** ~450+ items
-- **Completed:** 14 items (Phase 1.1 FAQ + Phase 1.2 Legal Pages)
-- **Progress:** ~3.1%
-- **Files Created:** 10 new files
+- **Completed:** 21 items (Phase 1.1 FAQ + Phase 1.2 Legal Pages + Phase 1.3 SEO)
+- **Progress:** ~4.7%
+- **Files Created:** 17 new files
+- **Files Updated:** 5 existing files
 - **Files Modified:** 3 files
 - **Lines of Code Added:** ~3,500+ lines
 

@@ -2,34 +2,49 @@ import { Metadata } from "next";
 import FAQSection from "@/components/faq/FAQSection";
 import { HelpCircle, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import { FAQ_ITEMS } from "@/constants/faq";
+import { generateFAQSchema, generateJSONLD } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions - Let It Rip",
   description:
-    "Find answers to common questions about shopping from Japan, auctions, shipping, payments, returns, and more. Get help with your Let It Rip account.",
+    "Find answers to common questions about shopping imported products from Japan, China, USA, UK. No customs charges, fast India shipping, COD available.",
   keywords: [
     "FAQ",
     "help",
     "support",
-    "questions",
-    "answers",
-    "shipping",
-    "returns",
-    "payments",
-    "auctions",
-    "Japan shopping",
+    "imported products India",
+    "no customs charges",
+    "free customs clearance",
+    "COD India",
+    "fast shipping India",
+    "returns India",
   ],
   openGraph: {
     title: "FAQ - Let It Rip Help Center",
     description:
-      "Get answers to your questions about shopping from Japanese marketplaces",
+      "Get answers about imported products, shipping, customs, payments & returns in India",
     type: "website",
   },
 };
 
 export default function FAQPage() {
+  // Generate FAQ schema for rich snippets
+  const faqSchema = generateFAQSchema(
+    FAQ_ITEMS.map((item) => ({
+      question: item.question,
+      answer: item.answer,
+    }))
+  );
+
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={generateJSONLD(faqSchema)}
+      />
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-blue-700 text-white py-16">
         <div className="container mx-auto px-4">
