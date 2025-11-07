@@ -141,21 +141,16 @@ export async function PATCH(
   try {
     const { id: shopId } = await params;
 
-    // TODO: Uncomment when auth is ready
-    // const session = await getServerSession(authOptions);
-    // if (!session?.user) {
-    //   return NextResponse.json(
-    //     { success: false, error: "Authentication required" },
-    //     { status: 401 }
-    //   );
-    // }
-    // const user = session.user as User;
-    // const role = user.role;
-    // const userId = user.id;
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
-    // MOCK: Simulate authenticated user (replace with real auth)
-    const role: UserRole = "seller" as UserRole; // Change to test different roles ("seller", "admin")
-    const userId = "user_123";
+    const role = user.role;
+    const userId = user.id;
 
     // Parse request body
     const body = await request.json();
@@ -278,21 +273,16 @@ export async function DELETE(
   try {
     const { id: shopId } = await params;
 
-    // TODO: Uncomment when auth is ready
-    // const session = await getServerSession(authOptions);
-    // if (!session?.user) {
-    //   return NextResponse.json(
-    //     { success: false, error: "Authentication required" },
-    //     { status: 401 }
-    //   );
-    // }
-    // const user = session.user as User;
-    // const role = user.role;
-    // const userId = user.id;
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
-    // MOCK: Simulate authenticated user (replace with real auth)
-    const role: UserRole = "seller" as UserRole; // Change to test different roles ("seller", "admin")
-    const userId = "user_123";
+    const role = user.role;
+    const userId = user.id;
 
     // TODO: Replace with actual database query
     // const shop = await db.shops.findById(shopId);

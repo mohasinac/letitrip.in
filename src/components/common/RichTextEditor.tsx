@@ -273,8 +273,8 @@ export default function RichTextEditor({
         style={{
           minHeight: `${minHeight}px`,
           maxHeight: `${maxHeight}px`,
-          textAlign: 'left',
-          unicodeBidi: 'plaintext',
+          textAlign: "left",
+          unicodeBidi: "plaintext",
         }}
         data-placeholder={!value ? placeholder : ""}
       />
