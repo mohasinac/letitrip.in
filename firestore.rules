@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() { return request.auth != null; }
+    function userId() { return request.auth.uid; }
+
+    // Public readable shops & products (basic listing) if verified/published
+    match /shops/{shopId} {
+      allow read: if resource.data.is_verified == true && resource.data.is_banned == false;
+      allow write: if false; // All writes via Admin SDK API
+    }
+
+    match /products/{productId} {
+      allow read: if resource.data.status == 'published' && resource.data.is_deleted != true;
+      allow write: if false;
+    }
+
+    // Reviews (read public, write only API)
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Coupons (public active only)
+    match /coupons/{couponId} {
+      allow read: if resource.data.is_active == true;
+      allow write: if false;
+    }
+
+    // Fallback: deny direct client writes everywhere
+    match /{document=**} {
+      allow read: if false; // Explicitly enumerate above for public reads
+      allow write: if false;
+    }
+  }
+}

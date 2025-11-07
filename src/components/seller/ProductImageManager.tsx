@@ -19,6 +19,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { mediaService } from "@/services/media.service";
 
 interface ProductImage {
   id: string;
@@ -209,37 +210,39 @@ export default function ProductImageManager({
     setUploading(false);
   };
 
-  // Upload single image to Firebase Storage (placeholder)
+  // Upload single image to Firebase Storage (via API)
   const uploadImage = async (image: ProductImage) => {
     try {
       if (!image.file) throw new Error("No file to upload");
 
-      // TODO: Implement actual Firebase Storage upload
-      // This is a placeholder that simulates upload
-
-      // Simulate upload progress
-      for (let progress = 0; progress <= 100; progress += 20) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        setProductImages((prev) =>
-          prev.map((img) => (img.id === image.id ? { ...img, progress } : img))
-        );
-      }
-
-      // Simulate successful upload - in production, this would be the Firebase Storage URL
-      const uploadedUrl = image.url; // Replace with actual Firebase URL
-
+      // Start uploading state
       setProductImages((prev) =>
         prev.map((img) =>
           img.id === image.id
-            ? { ...img, url: uploadedUrl, uploading: false, progress: 100 }
+            ? { ...img, uploading: true, progress: 0, error: undefined }
             : img
         )
       );
 
-      // Update parent component
-      const allUrls = productImages
-        .map((img) => (img.id === image.id ? uploadedUrl : img.url))
-        .filter((url) => url !== "");
+      // Perform upload through media service
+      const res = await mediaService.upload({
+        file: image.file,
+        context: "product",
+        contextId: productId,
+        description: `product-image-${productId}`,
+      });
+
+      const uploadedUrl = res.url;
+
+      // Compute updated list and propagate
+      const updatedList = productImages.map((img) =>
+        img.id === image.id
+          ? { ...img, url: uploadedUrl, uploading: false, progress: 100 }
+          : img
+      );
+      setProductImages(updatedList);
+
+      const allUrls = updatedList.map((img) => img.url).filter((url) => url);
       onImagesChange(allUrls);
     } catch (error) {
       console.error("Upload error:", error);

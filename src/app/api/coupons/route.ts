@@ -49,9 +49,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { shop_id, code } = body;
+    const shopIdCamel = body.shopId; // support camelCase from frontend service
+    const { shop_id: shopIdSnake, code } = body;
+    const shop_id = shopIdSnake || shopIdCamel; // unify
     if (!shop_id || !code) {
-      return NextResponse.json({ success: false, error: 'shop_id and code required' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'shop_id/shopId and code required' }, { status: 400 });
     }
 
     if (role === 'seller') {
@@ -78,11 +80,11 @@ export async function POST(request: NextRequest) {
       name: body.name || code,
       description: body.description || '',
       type: body.type || 'percentage',
-      discount_value: body.discount_value || 0,
-      is_active: body.is_active !== false,
-      usage_limit: body.usage_limit || null,
-      start_date: body.start_date || now,
-      end_date: body.end_date || null,
+      discount_value: body.discount_value || body.discountValue || 0,
+      is_active: body.is_active !== false && body.isActive !== false,
+      usage_limit: body.usage_limit || body.usageLimit || null,
+      start_date: body.start_date || body.startDate || now,
+      end_date: body.end_date || body.endDate || null,
       created_at: now,
       updated_at: now,
     });

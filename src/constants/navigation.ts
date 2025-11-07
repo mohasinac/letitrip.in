@@ -59,6 +59,7 @@ export const PRODUCT_CATEGORIES = [
 
 // User Menu Items
 export const USER_MENU_ITEMS = [
+  { id: "dashboard", name: "Dashboard", link: "/user", icon: "layout-dashboard" },
   { id: "orders", name: "My Orders", link: "/user/orders", icon: "package" },
   { id: "bids", name: "My Bids", link: "/user/bids", icon: "gavel" },
   { id: "watchlist", name: "Watchlist", link: "/user/watchlist", icon: "eye" },
@@ -67,6 +68,9 @@ export const USER_MENU_ITEMS = [
   { id: "messages", name: "My Messages", link: "/user/messages", icon: "message-square" },
   { id: "favorites", name: "My Favorites", link: "/user/favorites", icon: "heart" },
   { id: "returns", name: "Returns & Refunds", link: "/user/returns", icon: "rotate-ccw" },
+  { id: "addresses", name: "My Addresses", link: "/user/addresses", icon: "map-pin" },
+  { id: "reviews", name: "My Reviews", link: "/user/reviews", icon: "star" },
+  { id: "notifications", name: "Notifications", link: "/user/notifications", icon: "bell" },
   { id: "settings", name: "Account Settings", link: "/user/settings", icon: "settings" },
   { id: "logout", name: "Logout", link: "/logout", icon: "log-out" }
 ];

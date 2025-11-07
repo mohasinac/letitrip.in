@@ -347,6 +347,34 @@
 
 **🎯 KEY ARCHITECTURAL DECISION: Unified Seller/Admin Interface**
 
+**⚠️ IMPORTANT: Reuse Phase 2 Components**
+
+**ALL pages and components in Phase 3+ MUST use the reusable components from Phase 2. DO NOT create custom implementations.**
+
+**Required Component Usage:**
+
+- **List Pages**: Must use `DataTable + FilterSidebar + ActionMenu + StatusBadge + EmptyState`
+- **Create/Edit Forms**: Must use `FormModal` or dedicated form components with:
+  - `SlugInput` - For slug generation and validation
+  - `RichTextEditor` - For descriptions
+  - `MediaUploader` - For images/videos/files
+  - `CategorySelector` - For category selection
+  - `TagInput` - For tags/keywords
+  - `DateTimePicker` - For dates/times
+- **Inline Actions**: Must use `InlineEditor + ActionMenu + ConfirmDialog`
+- **Analytics**: Must use `StatsCard` for metrics
+- **Shop Selection**: Must use `ShopSelector` dropdown
+- **Status Display**: Must use `StatusBadge`
+- **Empty States**: Must use `EmptyState`
+
+**Benefits:**
+
+- ✅ Consistent UX across all pages
+- ✅ Reduced development time (no reinventing the wheel)
+- ✅ Easier maintenance (fix once, applies everywhere)
+- ✅ Better testing (test components once)
+- ✅ Accessibility built-in (components are WCAG compliant)
+
 **Why?** Admins are essentially "super sellers" who can manage all shops. Instead of building separate admin routes for shops/products/coupons/auctions/orders/returns, we use the **same seller routes** with role-based permissions.
 
 **Benefits:**
@@ -423,13 +451,13 @@
 
 ### 3.3 My Shops Management (Slug-based)
 
-- [ ] Create `/src/app/seller/my-shops/page.tsx` - List all shops (admins see all, users see their 1) **with FilterSidebar**
-- [ ] Create `/src/app/seller/my-shops/create/page.tsx` - Create shop form **→ redirect to edit page after creation using slug**
-- [ ] Create `/src/components/seller/ShopForm.tsx` - Unified shop form component
+- [x] Create `/src/app/seller/my-shops/page.tsx` - List all shops using **DataTable + FilterSidebar + ActionMenu + StatusBadge + EmptyState + ViewToggle** (admins see all, users see their 1)
+- [ ] Create `/src/app/seller/my-shops/create/page.tsx` - Create shop form using **ShopForm component → redirect to edit page after creation using slug**
+- [ ] Create `/src/components/seller/ShopForm.tsx` - Unified shop form using **SlugInput + RichTextEditor + MediaUploader** (logo/banner)
 - [ ] Implement shop creation limit (1 for users, unlimited for admins)
 - [x] Create `/src/app/api/shops/route.ts` - **Unified Shops API with Firebase integration** (GET: role-based query, POST: create with ownership, **supports slug parameter**)
-- [ ] Create `/src/app/seller/my-shops/[slug]/edit/page.tsx` - **Edit shop form using slug (SEO-friendly)** with media uploads (logo/banner)
-- [ ] Create `/src/app/seller/my-shops/[slug]/page.tsx` - **Shop details/dashboard using slug**
+- [ ] Create `/src/app/seller/my-shops/[slug]/edit/page.tsx` - **Edit shop form using slug (SEO-friendly) with ShopForm component (includes MediaUploader for logo/banner, RichTextEditor for description)**
+- [ ] Create `/src/app/seller/my-shops/[slug]/page.tsx` - **Shop details/dashboard using slug with StatsCard + DataTable for recent products/orders**
 - [ ] Create `/src/app/api/shops/[slug]/route.ts` - **GET/PATCH/DELETE by slug (use ID internally)**
 - [ ] Create `/src/app/api/shops/validate-slug/route.ts` - **Live slug uniqueness check API** (GET: check if slug exists in shops collection)
 - [x] Add real-time slug validation in ShopForm (check uniqueness while typing, debounced)
@@ -442,13 +470,14 @@
 
 **Architecture Change:** Products managed from `/seller/products` with shop selector dropdown instead of nested under shop routes.
 
-- [ ] Create `/src/app/seller/products/page.tsx` - **Centralized product list with shop selector dropdown + ProductFilters sidebar (admins see all shops, sellers see own)**
-- [ ] Create `/src/app/seller/products/create/page.tsx` - **Product creation with shop dropdown selector → redirect to edit page using slug (admins select any shop, sellers select from own)**
-- [ ] Create `/src/app/seller/products/[slug]/edit/page.tsx` - **Product edit using slug (SEO-friendly) with shop dropdown (admins can edit any, sellers edit own)**
+- [x] Create `/src/app/seller/products/page.tsx` - **Centralized product list with inline edit modal + wizard page link**
+- [x] Create `/src/app/seller/products/create/page.tsx` - **Product creation wizard (4 steps: Basic Info, Details, Inventory, Review)**
+- [x] Create `/src/app/seller/products/[slug]/edit/page.tsx` - **Product edit wizard (4 steps with clickable progress)**
+- [x] Create `/src/components/seller/ProductInlineForm.tsx` - Quick product edit using inline modal
+- [x] Create `/src/components/common/InlineFormModal.tsx` - Reusable modal wrapper for inline forms
 - [ ] Create `/src/components/seller/ShopSelector.tsx` - **Dropdown to select shop (admins: all shops, sellers: own shops, filters products/coupons/auctions/analytics by selected shop)**
-- [ ] Create `/src/components/seller/ProductTable.tsx` - Product table with inline actions **+ filter support**
-- [ ] Create `/src/components/seller/ProductInlineForm.tsx` - Quick product creation (name, price, category, slug, image)
-- [] Create `/src/components/seller/ProductFullForm.tsx` - Complete product form (SEO, condition, returnable, publish date)
+- [ ] Create `/src/components/seller/ProductTable.tsx` - Product table built on **DataTable** with inline actions + ActionMenu + StatusBadge **+ filter support**
+- [ ] Create `/src/components/seller/ProductFullForm.tsx` - Complete product form using **SlugInput + RichTextEditor + CategorySelector + TagInput + MediaUploader + DateTimePicker** (SEO, condition, returnable, publish date)
 - [x] Create `/src/app/api/products/route.ts` - **Unified Products API with Firebase** (GET: role-based query, POST: create with shop_id, **supports slug parameter**)
 - [x] Create `/src/app/api/products/[slug]/route.ts` - **Unified Product API with Firebase** (GET/PATCH/DELETE by slug)
 - [x] Create `/src/app/api/products/validate-slug/route.ts` - **Live slug uniqueness check API** (GET: check if slug exists in products collection, scoped to shop_id)
@@ -465,12 +494,12 @@
 
 **Architecture Change:** Coupons managed from `/seller/coupons` with shop selector dropdown.
 
-- [ ] Create `/src/app/seller/coupons/page.tsx` - **Centralized coupon list with shop selector + CouponFilters sidebar (admins see all, sellers see own)**
-- [ ] Create `/src/app/seller/coupons/create/page.tsx` - **Create coupon with shop dropdown selector (admins select any shop, sellers select own)**
-- [ ] Create `/src/app/seller/coupons/[code]/edit/page.tsx` - **Edit coupon with shop dropdown (admins can edit any, sellers edit own)** (Coupons use CODE)
-- [ ] Create `/src/components/seller/CouponForm.tsx` - Coupon form with discount types
+- [x] Create `/src/app/seller/coupons/page.tsx` - **Centralized coupon list with ShopSelector + CouponFilters + DataTable + ActionMenu + StatusBadge + EmptyState + ViewToggle (admins see all, sellers see own)**
+- [ ] Create `/src/app/seller/coupons/create/page.tsx` - **Create coupon using CouponForm with ShopSelector (admins select any shop, sellers select own)**
+- [ ] Create `/src/app/seller/coupons/[code]/edit/page.tsx` - **Edit coupon using CouponForm with ShopSelector (admins can edit any, sellers edit own)** (Coupons use CODE)
+- [ ] Create `/src/components/seller/CouponForm.tsx` - Coupon form using **FormModal + DateTimePicker + TagInput** with discount types
 - [ ] Implement coupon types: Percentage, Flat, BOGO (Buy X Get Y), Tiered discounts
-- [ ] Create `/src/components/seller/CouponPreview.tsx` - Coupon preview component
+- [ ] Create `/src/components/seller/CouponPreview.tsx` - Coupon preview component using **StatusBadge** for active/expired state
 - [ ] Create `/src/lib/coupon-calculator.ts` - Coupon calculation logic
 - [x] Create `/src/app/api/coupons/route.ts` - **Unified Coupons API with Firebase** (GET: by shop, POST: seller/admin only)
 - [x] Create `/src/app/api/coupons/[code]/route.ts` - **Unified Coupon API with Firebase** (GET: public if active, PATCH/DELETE: owner/admin only)
@@ -485,9 +514,9 @@
 
 ### 3.6 Shop Analytics (Per-Shop View)
 
-- [ ] Create `/src/app/seller/analytics/page.tsx` - **Analytics dashboard with shop selector dropdown (admins see all shops, sellers see own)**
-- [ ] Create `/src/components/seller/AnalyticsOverview.tsx` - Overview cards (products, orders, revenue)
-- [ ] Create `/src/components/seller/SalesChart.tsx` - Sales chart component
+- [ ] Create `/src/app/seller/analytics/page.tsx` - **Analytics dashboard with ShopSelector + DateTimePicker for date range (admins see all shops, sellers see own)**
+- [ ] Create `/src/components/seller/AnalyticsOverview.tsx` - Overview cards built using **StatsCard** (products, orders, revenue)
+- [ ] Create `/src/components/seller/SalesChart.tsx` - Sales chart component with **DateTimePicker** for range selection
 - [ ] Create `/src/components/seller/TopProducts.tsx` - Top selling products
 - [ ] Create `/src/components/seller/PayoutRequest.tsx` - Request payout form
 - [ ] Create `/src/app/api/analytics/route.ts` - **Unified Analytics API with Firebase** (GET: aggregated queries filtered by role & ownership)
@@ -509,13 +538,13 @@
 
 ### 5.6 Category Management (Admin Only) — Slug-based & Global
 
-- [ ] Create `/src/app/admin/categories/page.tsx` - Category tree view with inline editing **+ CategoryFilters**
-- [ ] Create `/src/app/admin/categories/create/page.tsx` - Create category (full form)
-- [ ] Create `/src/app/admin/categories/[slug]/edit/page.tsx` - Edit category (full form) **with media retry**
-- [ ] Create `/src/components/admin/CategoryTree.tsx` - Tree view with drag-drop reordering
-- [ ] Create `/src/components/admin/CategoryInlineForm.tsx` - Quick create (name, featured, homepage, slug)
-- [ ] Create `/src/components/admin/CategoryFullForm.tsx` - Full form (SEO, image, description)
-- [ ] Create `/src/components/admin/CategorySelector.tsx` - Leaf-only selector for sellers
+- [ ] Create `/src/app/admin/categories/page.tsx` - Category tree view using **CategoryTree + InlineEditor + CategoryFilters + ConfirmDialog + EmptyState + ViewToggle**
+- [ ] Create `/src/app/admin/categories/create/page.tsx` - Create category using **CategoryInlineForm or CategoryFullForm**
+- [ ] Create `/src/app/admin/categories/[slug]/edit/page.tsx` - Edit category using **CategoryFullForm** (includes MediaUploader with retry logic)
+- [ ] Create `/src/components/admin/CategoryTree.tsx` - Tree view with drag-drop reordering, using **InlineEditor + ActionMenu + ConfirmDialog**
+- [ ] Create `/src/components/admin/CategoryInlineForm.tsx` - Quick create using **FormModal + SlugInput** (name, featured, homepage, slug)
+- [ ] Create `/src/components/admin/CategoryFullForm.tsx` - Full form using **SlugInput + RichTextEditor + MediaUploader + CategorySelector** (SEO, image, description, parent)
+- [ ] Create `/src/components/admin/CategorySelector.tsx` - Leaf-only selector for sellers (tree view for browsing, validation for leaf-only)
 - [ ] Implement leaf-node validation for seller product creation
 - [x] Create `/src/app/api/categories/route.ts` - **Unified Categories API with Firebase** (GET: public tree, POST: admin only)
 - [x] Create `/src/app/api/categories/[slug]/route.ts` - **Unified Category API with Firebase** (GET: public, PATCH/DELETE: admin only)
@@ -530,21 +559,72 @@
 
 ## Phase 6: User Pages & Shopping Experience
 
+### 6.1 User Dashboard & Profile
+
+- [ ] Create `/src/app/user/page.tsx` - User dashboard with order stats, favorites, watchlist overview using **StatsCard + CardGrid**
+- [ ] Create `/src/app/user/settings/page.tsx` - Account settings (profile, password, preferences)
+- [ ] Create `/src/app/user/addresses/page.tsx` - Manage shipping addresses using **DataTable + ViewToggle**
+- [ ] Create `/src/app/user/notifications/page.tsx` - Notification center with preferences
+- [ ] Create `/src/components/user/UserSidebar.tsx` - User navigation sidebar
+- [ ] Create `/src/components/user/UserHeader.tsx` - User dashboard header
+- [ ] Create `/src/components/user/ProfileForm.tsx` - User profile edit form
+
+### 6.2 User Orders & Purchases
+
+- [ ] Create `/src/app/user/orders/page.tsx` - Order history using **DataTable + StatusBadge + ViewToggle + FilterSidebar**
+- [ ] Create `/src/app/user/orders/[id]/page.tsx` - Order details with tracking
+- [ ] Create `/src/components/user/OrderCard.tsx` - Order card for grid view
+- [ ] Create `/src/components/user/OrderTimeline.tsx` - Order status timeline
+- [ ] Create `/src/components/user/OrderActions.tsx` - Cancel, return, review actions
+- [ ] Create `/src/app/api/orders/user/route.ts` - User's orders API
+
+### 6.3 User Favorites & Wishlist
+
+- [ ] Create `/src/app/user/favorites/page.tsx` - Favorites list using **CardGrid + ProductCard + ViewToggle**
+- [ ] Create `/src/components/user/FavoriteButton.tsx` - Add/remove from favorites
+- [ ] Create `/src/app/api/favorites/route.ts` - User favorites API
+
+### 6.4 User Auction Activity
+
+- [ ] Create `/src/app/user/bids/page.tsx` - Active bids using **DataTable + AuctionCard + ViewToggle**
+- [ ] Create `/src/app/user/won-auctions/page.tsx` - Won auctions using **CardGrid + AuctionCard**
+- [ ] Create `/src/app/user/watchlist/page.tsx` - Watched auctions using **CardGrid + AuctionCard + ViewToggle**
+- [ ] Create `/src/components/user/BidCard.tsx` - Bid card for grid view
+- [ ] Create `/src/app/api/bids/user/route.ts` - User's bids API
+- [ ] Create `/src/app/api/auctions/won/route.ts` - User's won auctions API
+
+### 6.5 User Returns & Reviews
+
+- [ ] Create `/src/app/user/returns/page.tsx` - Return requests using **DataTable + StatusBadge + ViewToggle**
+- [ ] Create `/src/app/user/returns/create/page.tsx` - Create return request
+- [ ] Create `/src/app/user/reviews/page.tsx` - User's reviews using **DataTable + ReviewCard + ViewToggle**
+- [ ] Create `/src/components/user/ReturnForm.tsx` - Return request form
+- [ ] Create `/src/app/api/returns/user/route.ts` - User's returns API
+- [ ] Create `/src/app/api/reviews/user/route.tsx` - User's reviews API
+
+### 6.6 User History & Messages
+
+- [ ] Create `/src/app/user/history/page.tsx` - Browsing history using **CardGrid + ProductCard + AuctionCard**
+- [ ] Create `/src/app/user/messages/page.tsx` - Messages inbox using **DataTable + ViewToggle**
+- [ ] Create `/src/app/user/messages/[id]/page.tsx` - Message thread view
+- [ ] Create `/src/components/user/MessageThread.tsx` - Message conversation component
+- [ ] Create `/src/app/api/messages/route.ts` - User messages API
+
 ### 6.7 Shop & Category Pages (Slug-based)
 
-- [ ] Create `/src/app/shops/[slug]/page.tsx` - **Shop details page with products AND auctions tabs**
-- [ ] Create `/src/components/shop/ShopHeader.tsx` - **Shop banner, logo, name, rating**
-- [ ] Create `/src/components/shop/ShopProducts.tsx` - **Shop products grid with filters**
-- [ ] Create `/src/components/shop/ShopAuctions.tsx` - **Shop auctions grid (active/ended)**
-- [ ] Create `/src/components/shop/ShopAbout.tsx` - **Shop description and policies**
-- [ ] Create `/src/components/shop/ShopReviews.tsx` - **Shop reviews section**
+- [ ] Create `/src/app/shops/[slug]/page.tsx` - **Shop details page with tabs (products/auctions), using CardGrid + ProductCard + AuctionCard + FilterSidebar**
+- [ ] Create `/src/components/shop/ShopHeader.tsx` - **Shop banner using MediaGallery, logo, name, rating, FollowShopButton**
+- [ ] Create `/src/components/shop/ShopProducts.tsx` - **Shop products using CardGrid + ProductCard + ProductFilters + EmptyState**
+- [ ] Create `/src/components/shop/ShopAuctions.tsx` - **Shop auctions using CardGrid + AuctionCard + AuctionFilters + EmptyState (active/ended)**
+- [ ] Create `/src/components/shop/ShopAbout.tsx` - **Shop description (rich text from RichTextEditor)**
+- [ ] Create `/src/components/shop/ShopReviews.tsx` - **Shop reviews using ReviewCard + ReviewFilters**
 - [ ] Create `/src/components/shop/ShopCategories.tsx` - **Derived from global categories (filters only)**
-- [ ] Create `/src/components/shop/FollowShopButton.tsx` - **Follow/unfollow shop**
-- [ ] Create `/src/app/categories/[slug]/page.tsx` - **Category page with products (realtime search)**
-- [ ] Create `/src/components/category/CategoryHeader.tsx` - **Category banner and description**
-- [ ] Create `/src/components/category/CategoryProducts.tsx` - **Products in category with filters**
-- [ ] Create `/src/components/category/CategorySearch.tsx` - **Realtime category search**
-- [ ] Create `/src/components/category/SubcategoryNav.tsx` - **Subcategory navigation**
+- [ ] Create `/src/components/shop/FollowShopButton.tsx` - **Follow/unfollow shop with loading state**
+- [ ] Create `/src/app/categories/[slug]/page.tsx` - **Category page using CardGrid + ProductCard + ProductFilters + realtime search**
+- [ ] Create `/src/components/category/CategoryHeader.tsx` - **Category banner using MediaGallery and description (from RichTextEditor)**
+- [ ] Create `/src/components/category/CategoryProducts.tsx` - **Products using CardGrid + ProductCard + ProductFilters + EmptyState**
+- [ ] Create `/src/components/category/CategorySearch.tsx` - **Realtime category search (debounced)**
+- [ ] Create `/src/components/category/SubcategoryNav.tsx` - **Subcategory navigation (tree structure)**
 - [ ] Use `/src/app/api/shops/[slug]/route.ts` - **Unified Shop API (public shop details)**
 - [ ] Use `/src/app/api/categories/[slug]/route.ts` - **Unified Category API (public category)**
 - [ ] Create `/src/app/api/categories/[slug]/recent-products/route.ts` - **Get 10 recent products from category**
@@ -552,23 +632,23 @@
 
 ### 6.8 Product Pages (Slug-based)
 
-- [ ] Create `/src/app/products/[slug]/page.tsx` - **Product detail page (eBay-style layout)**
-- [ ] Create `/src/components/product/ProductGallery.tsx` - **Image/video gallery with zoom**
-- [ ] Create `/src/components/product/ProductInfo.tsx` - **Title, price, rating, stock status**
-- [ ] Create `/src/components/product/ProductDescription.tsx` - **Full description with tabs**
-- [ ] Create `/src/components/product/ProductSpecifications.tsx` - **Product specs table**
-- [ ] Create `/src/components/product/ProductVariants.tsx` - **Variants from same leaf category (no child categories)**
-- [ ] Create `/src/components/product/ProductReviews.tsx` - **Customer reviews with advanced filters**
-- [ ] Create `/src/components/product/WriteReviewForm.tsx` - **Write review with media upload (after purchase)**
-- [ ] Create `/src/components/product/ReviewFilters.tsx` - **Filter by: Rating, Verified Purchase, Category, Shop**
-- [ ] Create `/src/components/product/ReviewSummary.tsx` - **Rating breakdown, verified badge, helpful votes**
-- [ ] Create `/src/components/product/ReviewCard.tsx` - **Individual review with user, rating, media, helpful button**
-- [ ] Create `/src/components/product/ProductActions.tsx` - **Add to cart, buy now, favorite**
-- [ ] Create `/src/components/product/ProductShipping.tsx` - **Shipping info and delivery estimate**
-- [ ] Create `/src/components/product/ProductShopCard.tsx` - **Seller info mini card**
-- [ ] Create `/src/components/product/SimilarProducts.tsx` - **Similar products (10 max, diverse shops, category parents hierarchy)**
-- [ ] Create `/src/components/product/SellerOtherProducts.tsx` - **Other products from same seller (shop_id)**
-- [ ] Create `/src/components/product/RecentlyViewed.tsx` - **Recently viewed products**
+- [ ] Create `/src/app/products/[slug]/page.tsx` - **Product detail page (eBay-style layout) using all product components below**
+- [ ] Create `/src/components/product/ProductGallery.tsx` - **Image/video gallery using MediaGallery with zoom and lightbox**
+- [ ] Create `/src/components/product/ProductInfo.tsx` - **Title, price (formatCurrency), rating, stock using StatusBadge**
+- [ ] Create `/src/components/product/ProductDescription.tsx` - **Full description (rich text from RichTextEditor) with tabs**
+- [ ] Create `/src/components/product/ProductSpecifications.tsx` - **Product specs table (DataTable or custom)**
+- [ ] Create `/src/components/product/ProductVariants.tsx` - **Variants using CardGrid + ProductCard (same leaf category, no child categories)**
+- [ ] Create `/src/components/product/ProductReviews.tsx` - **Customer reviews using ReviewCard + ReviewFilters + DataTable with pagination**
+- [ ] Create `/src/components/product/WriteReviewForm.tsx` - **Write review using FormModal + MediaUploader + RichTextEditor (after purchase only)**
+- [ ] Create `/src/components/product/ReviewFilters.tsx` - **Filter sidebar for: Rating, Verified Purchase, Category, Shop**
+- [ ] Create `/src/components/product/ReviewSummary.tsx` - **Rating breakdown using StatsCard, verified badge using StatusBadge, helpful votes**
+- [ ] Create `/src/components/product/ReviewCard.tsx` - **Individual review with user, rating, MediaGallery, helpful button, StatusBadge for verified**
+- [ ] Create `/src/components/product/ProductActions.tsx` - **Add to cart, buy now, favorite buttons with loading states + ConfirmDialog**
+- [ ] Create `/src/components/product/ProductShipping.tsx` - **Shipping info using StatusBadge for delivery status**
+- [ ] Create `/src/components/product/ProductShopCard.tsx` - **Seller info using ShopCard component**
+- [ ] Create `/src/components/product/SimilarProducts.tsx` - **Similar products using CardGrid + ProductCard (10 max, diverse shops, category hierarchy)**
+- [ ] Create `/src/components/product/SellerOtherProducts.tsx` - **Other products using CardGrid + ProductCard (by shop_id)**
+- [ ] Create `/src/components/product/RecentlyViewed.tsx` - **Recently viewed using CardGrid + ProductCard**
 - [ ] Use `/src/app/api/products/[slug]/route.ts` - **Unified Product API (public product details)**
 - [x] Create `/src/app/api/products/[slug]/reviews/route.ts` - **Product reviews (GET/POST)**
 - [ ] Create `/src/app/api/products/[slug]/variants/route.ts` - **Product variants (GET: same leaf category)**
@@ -654,6 +734,7 @@ export const STORAGE_BUCKETS = {
 7. **Constants-Based**: All database/storage names in constants
 8. **Unified API**: Single endpoints with role-based behavior
 9. **Slug-first**: No IDs in routes for shops/products/categories; coupons use codes
+10. **Public Preview**: Eye icon (view button) always opens public-facing resource page, not admin/seller view
 
 ### Tech Stack
 
@@ -706,8 +787,8 @@ export const STORAGE_BUCKETS = {
 - `/api/cart` - Get/update user cart (authenticated) or guest cart (session)
 - `/api/checkout/create-order` - Create order from cart
 - `/api/checkout/verify-payment` - Verify Razorpay/PayPal payment
-- `/api/search` - Universal search (products OR auctions based on type param)
-- `/api/categories/search` - Realtime category search
+- `/api/search` - Universal search (products/auctions based on type param)
+- `/api/categories/search` - Realtime search on categories page
 - `/api/favorites` - User favorites/wishlist
 - `/api/addresses` - User shipping addresses
 
@@ -718,6 +799,13 @@ export const STORAGE_BUCKETS = {
 ### Products Architecture
 
 - **Products save `shop_id`, not `user_id`** - Enables shop ownership transfer
+- **Pricing Structure**: Three-tier system
+  - `actualPrice` (optional) - Internal cost tracking, not shown to customers
+  - `originalPrice` (optional) - MSRP/list price, shown crossed out if discounted
+  - `salePrice` (required) - Current selling price customers pay
+- **Display Columns**: Seller tables show `PRODUCT | CATEGORY | SLUG | PRICE | STOCK | STATUS | ACTIONS`
+  - Price column shows `salePrice` by default
+  - Expandable row or separate view shows all three prices + margin
 - **Variants**: Products from same leaf category (no child categories)
 - **Similar Products Algorithm**:
   1. First, products from same leaf category (different shops)
@@ -832,3 +920,306 @@ Rate limiting considerations:
 - Confirm implementation status for user admin endpoints (ban/role) & add Swagger docs.
 - DONE (Nov 7, 2025): Product reviews endpoint scaffolded (`/api/products/[slug]/reviews` GET/POST).
 - Similar products & seller items algorithm documentation file.
+
+---
+
+## UI/UX Requirements for Seller Pages
+
+### Data Fetching
+
+- [ ] **NO MOCKS**: All pages must use service layer to fetch real data from backend APIs
+- [ ] Use `productsService`, `shopsService`, `couponsService`, `categoriesService` etc.
+- [ ] Implement proper loading states with spinners/skeletons
+- [ ] Implement error handling with user-friendly messages
+- [ ] Show empty states when no data available
+
+### Inline Actions (Table View)
+
+- [ ] **Inline Edit Button**: Each table row must have an inline edit button (pencil icon)
+  - Clicking opens the edit page for that specific item
+  - Button should be clearly visible on hover
+  - Use `Edit2` icon from lucide-react
+- [ ] **Inline Create Button**: Table footer must have "Add New [Resource]" button
+  - Opens create page or modal
+  - Should be visually distinct from row actions
+  - Use `Plus` icon from lucide-react
+- [ ] **Inline Delete Button**: Each row should have delete action
+  - Must show confirmation dialog before deletion
+  - Use `Trash2` icon from lucide-react
+- [ ] **Inline View Button**: Link to public view of the item (optional)
+  - Use `Eye` icon from lucide-react
+
+### Filter Sidebar Requirements
+
+- [ ] **Collapsible Sections**: Each filter category must be collapsible
+  - Use accordion pattern with chevron icons
+  - Remember collapsed/expanded state per user
+  - Default: First 3 sections expanded, rest collapsed
+- [ ] **Searchable Options**: Filters with >200 options must include search
+  - Debounced search (300ms delay)
+  - Search within filter options only
+  - Clear search button
+  - Show "No results" state
+- [ ] **Fixed Height with Scroll**: Each filter section has max height
+  - Max height: 300px per section
+  - Vertical scroll if content exceeds
+  - Sticky section headers
+- [ ] **Filter Count Badge**: Show active filter count
+  - Display number of active filters per section
+  - Total count in header
+- [ ] **Clear Actions**:
+  - Clear individual filter option
+  - Clear entire filter section
+  - Clear all filters button
+
+### Grid/Table View Toggle
+
+- [x] Both views must display same data
+- [x] View preference saved to localStorage
+- [x] Smooth transition between views
+- [ ] Maintain scroll position on toggle
+
+### Public View Behavior
+
+- [x] **View Button (Eye Icon)**: Opens public-facing page in new window/tab
+  - Shops table → `/shops/[slug]` (public storefront)
+  - Products table → `/products/[slug]` (public product page)
+  - Auctions table → `/auctions/[id]` (public auction listing)
+  - Categories table → `/categories/[slug]` (public category page)
+- [ ] **Preview Mode**: Sellers can see exactly what customers see
+- [ ] **Link Icon**: Consider adding external link indicator on hover
+- [ ] **Target Blank**: Opens in new tab to keep seller dashboard open
+
+### Search Functionality
+
+- [ ] Real-time search with debounce (300ms)
+- [ ] Search across multiple fields (name, description, SKU, etc.)
+- [ ] Show search results count
+- [ ] Clear search button
+
+### Pagination
+
+- [ ] Load more/infinite scroll for large datasets
+- [ ] Page size selector (20, 50, 100)
+- [ ] Jump to page input
+- [ ] Show total count
+
+---
+
+## Phase 3: Seller Dashboard & Shop Management
+
+## View Button Behavior Pattern
+
+**Important Routing Convention:**
+
+The **Eye icon (View button)** in seller/admin tables and cards always opens the **public-facing resource page**, not the seller/admin edit view. This allows sellers to preview how their content appears to customers.
+
+### URL Routing Pattern:
+
+| Resource   | Seller/Admin Management         | Public View (Eye Icon)            |
+| ---------- | ------------------------------- | --------------------------------- |
+| Shops      | `/seller/my-shops/[slug]/edit`  | `/shops/[slug]`                   |
+| Products   | `/seller/products/[slug]/edit`  | `/products/[slug]`                |
+| Auctions   | `/seller/auctions/[id]/edit`    | `/auctions/[id]`                  |
+| Categories | `/admin/categories/[slug]/edit` | `/categories/[slug]`              |
+| Coupons    | `/seller/coupons/[code]/edit`   | N/A (coupons have no public page) |
+
+### Implementation Details:
+
+```tsx
+// Example: Products table row actions
+<Link
+  href={`/products/${product.slug}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+  title="View Public Page"
+>
+  <Eye className="h-4 w-4" />
+</Link>
+```
+
+### Benefits:
+
+- ✅ **Preview Mode**: Sellers see exactly what customers see
+- ✅ **Quality Control**: Check product listings before sharing
+- ✅ **SEO Testing**: Verify meta tags, descriptions, images
+- ✅ **Share Links**: Easy way to get shareable public URLs
+- ✅ **Customer Perspective**: Understand the shopping experience
+
+### Button Order (Left to Right):
+
+1. **Eye (View)** - Public preview
+2. **Pencil (Edit)** - Quick inline edit modal
+3. **Arrow (Edit Page)** - Full wizard edit page
+4. **Trash (Delete)** - Delete with confirmation
+
+---
+
+### Inline Row Editing Example
+
+**Visual Design Pattern:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ PRODUCT        │ CATEGORY      │ SLUG           │ PRICE    │ STOCK │ STATUS │ ACTIONS │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ [Input: Name]  │ [Select: Cat] │ [Input: slug]  │ [₹ Input]│ [Num] │ [Sel]  │ ✓ ✗    │ <- Edit Mode
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ Laptop XPS 15  │ Electronics   │ laptop-xps-15  │ ₹89,999  │ 50    │ Active │ 👁 ✏ → 🗑│
+│ iPhone 14 Pro  │ Mobile        │ iphone-14-pro  │ ₹1,29,999│ 25    │ Active │ 👁 ✏ → 🗑│
+│ Magic Mouse    │ Accessories   │ magic-mouse    │ ₹8,999   │ 100   │ Draft  │ 👁 ✏ → 🗑│
+└─────────────────────────────────────────────────────────────────────────────────────┘
+│ + Quick Add Product                                                                  │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Clicking "Quick Add Product" adds new row at top:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ PRODUCT        │ CATEGORY      │ SLUG           │ PRICE    │ STOCK │ STATUS │ ACTIONS │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ [New Product]  │ [Select...]   │ [new-product]  │ [₹ 0]    │ [0]   │ [draft]│ ✓ ✗    │ <- NEW ROW (Edit Mode)
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ Laptop XPS 15  │ Electronics   │ laptop-xps-15  │ ₹89,999  │ 50    │ Active │ 👁 ✏ → 🗑│
+│ iPhone 14 Pro  │ Mobile        │ iphone-14-pro  │ ₹1,29,999│ 25    │ Active │ 👁 ✏ → 🗑│
+└─────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**When clicking pencil (✏) on existing row:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ PRODUCT           │ CATEGORY      │ SLUG           │ PRICE      │ STOCK │ STATUS │ ACTIONS │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ [Laptop XPS 15]   │ [Electronics] │ [laptop-xps-15]│ [₹ 89,999] │ [50]  │ [Active]│ ✓ ✗    │ <- Edit Mode
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ iPhone 14 Pro     │ Mobile        │ iphone-14-pro  │ ₹1,29,999  │ 25    │ Active  │ 👁 ✏ → 🗑│
+└─────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation Notes:**
+
+- ✅ Each row has `isEditing` state (boolean)
+- ✅ Edit mode shows input fields instead of text
+- ✅ Save button (✓ Check icon) calls API and exits edit mode
+- ✅ Cancel button (✗ X icon) reverts changes and exits edit mode
+- ✅ New rows have `isNew: true` flag - Cancel removes them completely
+- ✅ Auto-focus first input field when entering edit mode
+- ✅ Slug auto-generates from name as user types (debounced)
+- ✅ Highlight row with light blue background when in edit mode
+- ✅ Disable other action buttons (View, Edit Page, Delete) during edit mode
+- ✅ Show loading spinner on Save button while API call is in progress
+
+---
+
+### Product Pricing Structure
+
+**Three-Tier Pricing System:**
+
+```typescript
+interface ProductPricing {
+  actualPrice?: number; // Manufacturing/acquisition cost (internal only, not shown to customers)
+  originalPrice?: number; // MSRP/list price (shown crossed out if on sale)
+  salePrice: number; // Current selling price (required, what customer pays)
+}
+```
+
+**Display Logic:**
+
+1. **Card Display (Public View):**
+
+   ```
+   ┌─────────────────────────┐
+   │  Product Image          │
+   │                         │
+   │  Product Name           │
+   │  ₹1,29,999  ₹1,49,999  │ <- salePrice  originalPrice (crossed)
+   │  13% OFF                │ <- Discount badge (calculated)
+   └─────────────────────────┘
+   ```
+
+2. **Table View (Seller Dashboard):**
+   ```
+   ┌──────────────┬─────────────┬─────────────┬─────────────┬──────────┐
+   │ Product      │ Actual Cost │ Original    │ Sale Price  │ Margin   │
+   ├──────────────┼─────────────┼─────────────┼─────────────┼──────────┤
+   │ iPhone 14    │ ₹95,000     │ ₹1,49,999   │ ₹1,29,999   │ 36.8%    │
+   │ Magic Mouse  │ ₹6,000      │ ₹10,999     │ ₹8,999      │ 49.9%    │
+   └──────────────┴─────────────┴─────────────┴─────────────┴──────────┘
+   ```
+
+**Price Field Behavior:**
+
+- `actualPrice` - **Optional**, internal cost tracking, not shown to customers
+- `originalPrice` - **Optional**, if provided shows as crossed-out on cards (MSRP)
+- `salePrice` - **Required**, the actual selling price customers pay
+- If `originalPrice` not provided: Only show `salePrice` (no discount badge)
+- If `originalPrice` > `salePrice`: Show both prices + discount percentage
+- If `originalPrice` ≤ `salePrice`: Only show `salePrice` (no point showing "discount")
+
+**Column Headers for Tables:**
+
+```typescript
+// Seller/Admin view columns
+const PRICE_COLUMNS = [
+  {
+    key: "actualPrice",
+    label: "Cost",
+    tooltip: "Your acquisition cost (internal only)",
+  },
+  {
+    key: "originalPrice",
+    label: "MSRP",
+    tooltip: "Original list price (crossed out on sale)",
+  },
+  {
+    key: "salePrice",
+    label: "Sale Price",
+    tooltip: "Current selling price to customers",
+  },
+  {
+    key: "margin",
+    label: "Margin %",
+    calculated: true,
+    tooltip: "(salePrice - actualPrice) / salePrice * 100",
+  },
+];
+```
+
+**Form Fields (Wizard/Inline Edit):**
+
+```tsx
+<div className="grid grid-cols-3 gap-4">
+  <div>
+    <label>Actual Cost (Optional)</label>
+    <input type="number" name="actualPrice" placeholder="₹0" />
+    <p className="text-xs text-gray-500">Your cost (internal only)</p>
+  </div>
+  <div>
+    <label>Original Price (Optional)</label>
+    <input type="number" name="originalPrice" placeholder="₹0" />
+    <p className="text-xs text-gray-500">MSRP (shown crossed if discounted)</p>
+  </div>
+  <div>
+    <label>Sale Price *</label>
+    <input type="number" name="salePrice" placeholder="₹0" required />
+    <p className="text-xs text-gray-500">Customer pays this price</p>
+  </div>
+</div>
+```
+
+**Defaults:**
+
+- If only `salePrice` provided → Use as final price, no discount shown
+- If `originalPrice` not set → Defaults to `salePrice` (no discount)
+- If `actualPrice` not set → Margin calculation not shown in seller dashboard
+
+**Validation Rules:**
+
+- `salePrice` must be > 0 (required)
+- If `originalPrice` provided, must be ≥ `salePrice` (warn if lower)
+- If `actualPrice` provided, should be < `salePrice` (warn if margin negative)
+
+---

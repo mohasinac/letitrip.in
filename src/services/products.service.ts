@@ -94,17 +94,20 @@ class ProductsService {
 
   // Get product by slug
   async getBySlug(slug: string): Promise<Product> {
-    return apiService.get<Product>(`/products/${slug}`); // slug-based detail
+    const res = await apiService.get<any>(`/products/${slug}`);
+    return res.data ?? res; // tolerate both shapes
   }
 
   // Create product (seller/admin)
   async create(data: CreateProductData): Promise<Product> {
-    return apiService.post<Product>('/products', data);
+    const res = await apiService.post<any>('/products', data);
+    return res.data ?? res;
   }
 
   // Update product (owner/admin)
   async update(slug: string, data: UpdateProductData): Promise<Product> {
-    return apiService.patch<Product>(`/products/${slug}`, data);
+    const res = await apiService.patch<any>(`/products/${slug}`, data);
+    return res.data ?? res;
   }
 
   // Delete product (owner/admin)
@@ -124,7 +127,8 @@ class ProductsService {
 
   // Get product variants (same leaf category)
   async getVariants(slug: string): Promise<Product[]> {
-    return apiService.get<Product[]>(`/products/${slug}/variants`);
+    const res = await apiService.get<any>(`/products/${slug}/variants`);
+    return res.data || [];
   }
 
   // Get similar products
@@ -133,7 +137,8 @@ class ProductsService {
     if (limit) params.append('limit', limit.toString());
     const qs = params.toString();
     const endpoint = qs ? `/products/${slug}/similar?${qs}` : `/products/${slug}/similar`;
-    return apiService.get<Product[]>(endpoint);
+    const res = await apiService.get<any>(endpoint);
+    return res.data || [];
   }
 
   // Get seller's other products
@@ -142,7 +147,8 @@ class ProductsService {
     if (limit) params.append('limit', limit.toString());
     const qs = params.toString();
     const endpoint = qs ? `/products/${slug}/seller-items?${qs}` : `/products/${slug}/seller-items`;
-    return apiService.get<Product[]>(endpoint);
+    const res = await apiService.get<any>(endpoint);
+    return res.data || [];
   }
 
   // Update product stock

@@ -42,7 +42,7 @@ export default function ShopCard({
   if (variant === "compact") {
     return (
       <Link
-        href={`/seller/my-shops/${shop.id}`}
+        href={`/seller/my-shops/${shop.slug}`}
         className="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
       >
         <div className="flex items-center gap-3">
@@ -139,21 +139,21 @@ export default function ShopCard({
                   />
                   <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
                     <Link
-                      href={`/seller/my-shops/${shop.id}`}
+                      href={`/seller/my-shops/${shop.slug}`}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       <Eye className="w-4 h-4" />
                       View Dashboard
                     </Link>
                     <Link
-                      href={`/seller/my-shops/${shop.id}/edit`}
+                      href={`/seller/my-shops/${shop.slug}/edit`}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       <Edit className="w-4 h-4" />
                       Edit Shop
                     </Link>
                     <Link
-                      href={`/seller/my-shops/${shop.id}/analytics`}
+                      href={`/seller/my-shops/${shop.slug}/analytics`}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       <BarChart3 className="w-4 h-4" />
@@ -194,14 +194,14 @@ export default function ShopCard({
         {showActions && (
           <div className="flex gap-2">
             <Link
-              href={`/seller/my-shops/${shop.id}`}
+              href={`/seller/my-shops/${shop.slug}`}
               className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <Eye className="w-4 h-4" />
               View
             </Link>
             <Link
-              href={`/seller/my-shops/${shop.id}/edit`}
+              href={`/seller/my-shops/${shop.slug}/edit`}
               className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700"
             >
               <Edit className="w-4 h-4" />

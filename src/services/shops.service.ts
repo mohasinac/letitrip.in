@@ -92,22 +92,37 @@ class ShopsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/shops?${queryString}` : '/shops';
     
-    return apiService.get<PaginatedResponse<Shop>>(endpoint);
+    const res = await apiService.get<any>(endpoint);
+    // Handle { success, shops } or { data } format
+    return {
+      data: res.shops || res.data || res,
+      pagination: res.pagination || {
+        page: 1,
+        limit: 20,
+        total: (res.shops || res.data || res).length,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      }
+    };
   }
 
   // Get shop by slug
   async getBySlug(slug: string): Promise<Shop> {
-    return apiService.get<Shop>(`/shops/${slug}`); // slug-based detail
+    const res = await apiService.get<any>(`/shops/${slug}`);
+    return res.data ?? res.shop ?? res;
   }
 
   // Create shop (seller/admin)
   async create(data: CreateShopData): Promise<Shop> {
-    return apiService.post<Shop>('/shops', data);
+    const res = await apiService.post<any>('/shops', data);
+    return res.data ?? res.shop ?? res;
   }
 
   // Update shop (owner/admin)
   async update(slug: string, data: UpdateShopData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${slug}`, data);
+    const res = await apiService.patch<any>(`/shops/${slug}`, data);
+    return res.data ?? res.shop ?? res;
   }
 
   // Delete shop (owner/admin)

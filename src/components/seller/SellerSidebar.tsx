@@ -109,6 +109,11 @@ const navigation: NavItem[] = [
     href: "/seller/support-tickets",
     icon: Ticket,
   },
+  {
+    title: "Coupons",
+    href: "/seller/coupons",
+    icon: Ticket,
+  },
 ];
 
 export function SellerSidebar() {

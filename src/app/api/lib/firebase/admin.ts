@@ -23,7 +23,7 @@ export function initializeFirebaseAdmin() {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
-    const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+    const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`;
 
     if (!projectId || !clientEmail || !privateKeyRaw) {
       console.warn('⚠ Firebase Admin missing required env vars. Skipping init.');
@@ -31,6 +31,8 @@ export function initializeFirebaseAdmin() {
     }
 
     const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
+
+    console.log('🔧 Initializing Firebase Admin with bucket:', storageBucket);
 
     app = initializeApp({
       credential: cert({ projectId, clientEmail, privateKey }),

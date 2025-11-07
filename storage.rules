@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isImage() { return request.resource.contentType.matches('image/.*'); }
+    function isPublicPath() { return path.matches('shop-logos/.*') || path.matches('shop-banners/.*') || path.matches('product-images/.*'); }
+
+    // Publicly readable optimized assets
+    match /shop-logos/{allPaths=**} { allow read; allow write: if false; }
+    match /shop-banners/{allPaths=**} { allow read; allow write: if false; }
+    match /product-images/{allPaths=**} { allow read; allow write: if false; }
+
+    // Deny everything else from direct client access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
