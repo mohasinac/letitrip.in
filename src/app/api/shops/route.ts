@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildQueryFromFilters } from '@/lib/filter-helpers';
 import { getCurrentUser } from '../lib/session';
+import { Collections } from '@/app/api/lib/firebase/collections';
+import { getShopsQuery, UserRole, buildQuery } from '@/app/api/lib/firebase/queries';
 
 /**
- * Unified Shops API
+ * Unified Shops API with Firebase Integration
  * GET: List shops (filtered by role)
  * POST: Create shop (seller/admin only)
  */
@@ -21,37 +23,72 @@ export async function GET(request: NextRequest) {
       if (value) filters[key] = value;
     });
 
-    // TODO: Implement actual database query
-    // For now, return mock data based on user role
-
-    const role = user?.role || 'guest';
+    const role = (user?.role || 'user') as UserRole;
+    const userId = user?.id;
     
-    // Role-based filtering logic:
-    // - Guest/User: Only verified, non-banned shops
-    // - Seller: Own shops + verified shops
-    // - Admin: All shops with advanced filters
-
-    let shops: any[] = [];
-    let canCreateMore = false;
-
-    if (role === 'admin') {
-      // Admins see all shops with filters applied
-      // TODO: Query database with filters
-      shops = []; // Mock data
-      canCreateMore = true; // Admins can create unlimited shops
-    } else if (role === 'seller') {
-      // Sellers see their own shops
-      const userId = user?.id;
-      // TODO: Query database for shops where ownerId === userId
-      shops = []; // Mock data
+    // Build role-based query
+    let query = getShopsQuery(role, userId);
+    
+    // Apply additional filters from search params
+    const queryFilters: any[] = [];
+    
+    if (filters.verified === 'true') {
+      queryFilters.push({ field: 'is_verified', operator: '==', value: true });
+    }
+    if (filters.featured === 'true') {
+      queryFilters.push({ field: 'is_featured', operator: '==', value: true });
+    }
+    if (filters.search) {
+      // Note: Firestore doesn't support full-text search natively
+      // This is a simple startAt/endAt approach for name field
+      // Consider using Algolia or Firebase Extensions for better search
+      queryFilters.push({ field: 'name', operator: '>=', value: filters.search });
+      queryFilters.push({ field: 'name', operator: '<=', value: filters.search + '\uf8ff' });
+    }
+    
+    // Apply filters and pagination
+    query = buildQuery(query, {
+      filters: queryFilters,
+      orderBy: { field: 'created_at', direction: 'desc' },
+      limit: filters.limit ? parseInt(filters.limit) : 20,
+    });
+    
+    // Execute query
+    const snapshot = await query.get();
+    
+    let shops = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    
+    // For sellers, also fetch public verified shops if needed
+    if (role === UserRole.SELLER && filters.includePublic === 'true') {
+      const publicQuery = Collections.shops()
+        .where('is_verified', '==', true)
+        .where('is_banned', '==', false)
+        .limit(20);
       
-      // Check if user can create more shops (max 1 for sellers)
-      canCreateMore = shops.length === 0;
-    } else {
-      // Guests/users see only verified, non-banned shops
-      // TODO: Query database with isVerified=true and isBanned=false
-      shops = []; // Mock data
-      canCreateMore = false;
+      const publicSnapshot = await publicQuery.get();
+      const publicShops = publicSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      
+      // Merge and deduplicate
+      const shopMap = new Map();
+      [...shops, ...publicShops].forEach(shop => shopMap.set(shop.id, shop));
+      shops = Array.from(shopMap.values());
+    }
+    
+    // Check if user can create more shops
+    let canCreateMore = false;
+    if (role === UserRole.ADMIN) {
+      canCreateMore = true; // Admins can create unlimited shops
+    } else if (role === UserRole.SELLER && userId) {
+      // Count user's existing shops
+      const userShopsQuery = Collections.shops().where('owner_id', '==', userId);
+      const userShopsSnapshot = await userShopsQuery.get();
+      canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
     }
 
     return NextResponse.json({
@@ -77,7 +114,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
 
-    // Middleware should handle auth, but double-check
+    // Check authentication
     if (!user) {
       return NextResponse.json(
         {
@@ -104,10 +141,10 @@ export async function POST(request: NextRequest) {
 
     // Check shop creation limit (1 for sellers, unlimited for admins)
     if (userRole === 'seller') {
-      // TODO: Query database to count existing shops for this user
-      const existingShopsCount = 0; // Mock
-
-      if (existingShopsCount >= 1) {
+      const userShopsQuery = Collections.shops().where('owner_id', '==', userId);
+      const userShopsSnapshot = await userShopsQuery.get();
+      
+      if (userShopsSnapshot.size >= 1) {
         return NextResponse.json(
           {
             success: false,
@@ -131,19 +168,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Check if slug is unique
-    // const existingShop = await db.collection('shops').where('slug', '==', data.slug).get();
-    // if (!existingShop.empty) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'Shop slug already exists' },
-    //     { status: 400 }
-    //   );
-    // }
+    // Check if slug is unique
+    const existingShopQuery = Collections.shops().where('slug', '==', data.slug);
+    const existingShopSnapshot = await existingShopQuery.get();
+    
+    if (!existingShopSnapshot.empty) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Shop slug already exists. Please choose a different slug.',
+        },
+        { status: 400 }
+      );
+    }
 
     // Create shop object
-    const shop = {
-      id: `shop_${Date.now()}`, // TODO: Generate proper ID
-      ownerId: userId,
+    const shopData = {
+      owner_id: userId,
       name: data.name,
       slug: data.slug,
       description: data.description,
@@ -154,18 +195,24 @@ export async function POST(request: NextRequest) {
       logo: null, // Will be uploaded in edit page
       banner: null, // Will be uploaded in edit page
       rating: 0,
-      reviewCount: 0,
-      productCount: 0,
-      isVerified: false,
-      isFeatured: false,
-      showOnHomepage: false,
-      isBanned: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      review_count: 0,
+      product_count: 0,
+      is_verified: false,
+      is_featured: false,
+      show_on_homepage: false,
+      is_banned: false,
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
-    // TODO: Save to database
-    // await db.collection('shops').doc(shop.id).set(shop);
+    // Save to Firestore
+    const shopsRef = Collections.shops();
+    const docRef = await shopsRef.add(shopData);
+    
+    const shop = {
+      id: docRef.id,
+      ...shopData,
+    };
 
     return NextResponse.json({
       success: true,

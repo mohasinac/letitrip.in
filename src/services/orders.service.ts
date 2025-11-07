@@ -98,12 +98,19 @@ class OrdersService {
 
   // Update order status (seller/admin)
   async updateStatus(id: string, data: UpdateOrderStatusData): Promise<Order> {
-    return apiService.patch<Order>(`/orders/${id}`, data);
+    const payload: any = { status: data.status };
+    if (data.internalNotes) payload.notes = data.internalNotes;
+    return apiService.patch<Order>(`/orders/${id}`, payload);
   }
 
   // Create shipment (seller/admin)
   async createShipment(id: string, data: CreateShipmentData): Promise<Order> {
-    return apiService.post<Order>(`/orders/${id}/shipment`, data);
+    const payload: any = {
+      carrier: data.shippingProvider,
+      tracking_number: data.trackingNumber,
+      eta: data.estimatedDelivery ? data.estimatedDelivery.toISOString() : undefined,
+    };
+    return apiService.post<Order>(`/orders/${id}/shipment`, payload);
   }
 
   // Cancel order (user before shipping)

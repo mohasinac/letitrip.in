@@ -95,9 +95,9 @@ class ShopsService {
     return apiService.get<PaginatedResponse<Shop>>(endpoint);
   }
 
-  // Get shop by ID
-  async getById(id: string): Promise<Shop> {
-    return apiService.get<Shop>(`/shops/${id}`);
+  // Get shop by slug
+  async getBySlug(slug: string): Promise<Shop> {
+    return apiService.get<Shop>(`/shops/${slug}`); // slug-based detail
   }
 
   // Create shop (seller/admin)
@@ -106,48 +106,43 @@ class ShopsService {
   }
 
   // Update shop (owner/admin)
-  async update(id: string, data: UpdateShopData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${id}`, data);
+  async update(slug: string, data: UpdateShopData): Promise<Shop> {
+    return apiService.patch<Shop>(`/shops/${slug}`, data);
   }
 
   // Delete shop (owner/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/shops/${id}`);
+  async delete(slug: string): Promise<{ message: string }> {
+    return apiService.delete<{ message: string }>(`/shops/${slug}`);
   }
 
   // Verify shop (admin only)
-  async verify(id: string, data: ShopVerificationData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${id}/verify`, data);
+  async verify(slug: string, data: ShopVerificationData): Promise<Shop> {
+    return apiService.patch<Shop>(`/shops/${slug}/verify`, data);
   }
 
   // Ban/unban shop (admin only)
-  async ban(id: string, data: ShopBanData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${id}/ban`, data);
+  async ban(slug: string, data: ShopBanData): Promise<Shop> {
+    return apiService.patch<Shop>(`/shops/${slug}/ban`, data);
   }
 
   // Set feature flags (admin only)
-  async setFeatureFlags(id: string, data: ShopFeatureData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${id}/feature`, data);
+  async setFeatureFlags(slug: string, data: ShopFeatureData): Promise<Shop> {
+    return apiService.patch<Shop>(`/shops/${slug}/feature`, data);
   }
 
   // Get shop payments (owner/admin)
-  async getPayments(id: string): Promise<any[]> {
-    return apiService.get<any[]>(`/shops/${id}/payments`);
+  async getPayments(slug: string): Promise<any[]> {
+    return apiService.get<any[]>(`/shops/${slug}/payments`);
   }
 
   // Process payment (admin only)
-  async processPayment(id: string, data: ShopPaymentData): Promise<any> {
-    return apiService.post<any>(`/shops/${id}/payments`, data);
+  async processPayment(slug: string, data: ShopPaymentData): Promise<any> {
+    return apiService.post<any>(`/shops/${slug}/payments`, data);
   }
 
   // Get shop statistics
-  async getStats(id: string): Promise<any> {
-    return apiService.get<any>(`/shops/${id}/stats`);
-  }
-
-  // Get shop by slug
-  async getBySlug(slug: string): Promise<Shop> {
-    return apiService.get<Shop>(`/shops/slug/${slug}`);
+  async getStats(slug: string): Promise<any> {
+    return apiService.get<any>(`/shops/${slug}/stats`);
   }
 }
 

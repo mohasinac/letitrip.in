@@ -98,7 +98,7 @@ class CouponsService {
 
   // Get coupon by code
   async getByCode(code: string): Promise<Coupon> {
-    return apiService.get<Coupon>(`/coupons/code/${code}`);
+    return apiService.get<Coupon>(`/coupons/${code}`);
   }
 
   // Create coupon (seller/admin)
@@ -107,13 +107,13 @@ class CouponsService {
   }
 
   // Update coupon (owner/admin)
-  async update(id: string, data: UpdateCouponData): Promise<Coupon> {
-    return apiService.patch<Coupon>(`/coupons/${id}`, data);
+  async update(code: string, data: UpdateCouponData): Promise<Coupon> {
+    return apiService.patch<Coupon>(`/coupons/${code}`, data);
   }
 
   // Delete coupon (owner/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/coupons/${id}`);
+  async delete(code: string): Promise<{ message: string }> {
+    return apiService.delete<{ message: string }>(`/coupons/${code}`);
   }
 
   // Validate coupon

@@ -58,7 +58,7 @@ class CategoriesService {
 
   // Get category by slug
   async getBySlug(slug: string): Promise<Category> {
-    return apiService.get<Category>(`/categories/slug/${slug}`);
+    return apiService.get<Category>(`/categories/${slug}`);
   }
 
   // Get category tree
@@ -83,13 +83,13 @@ class CategoriesService {
   }
 
   // Update category (admin only)
-  async update(id: string, data: UpdateCategoryData): Promise<Category> {
-    return apiService.patch<Category>(`/categories/${id}`, data);
+  async update(slug: string, data: UpdateCategoryData): Promise<Category> {
+    return apiService.patch<Category>(`/categories/${slug}`, data);
   }
 
   // Delete category (admin only)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/categories/${id}`);
+  async delete(slug: string): Promise<{ message: string }> {
+    return apiService.delete<{ message: string }>(`/categories/${slug}`);
   }
 
   // Get category breadcrumb
