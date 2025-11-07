@@ -42,3 +42,6 @@ next-env.d.ts
 .env.example
 logs/api.log
 logs/combined.log
+logs/combined.log
+logs/api.log
+.github/copilot-instructions.md

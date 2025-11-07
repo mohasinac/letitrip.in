@@ -172,9 +172,7 @@ export function FilterSidebar({
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">
-                    {option.count}
-                  </span>
+                  <span className="text-xs text-gray-500">{option.count}</span>
                 )}
               </label>
             ))}
@@ -201,9 +199,7 @@ export function FilterSidebar({
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">
-                    {option.count}
-                  </span>
+                  <span className="text-xs text-gray-500">{option.count}</span>
                 )}
               </label>
             ))}
@@ -294,16 +290,14 @@ export function FilterSidebar({
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-0 w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform lg:transform-none ${
+        className={`fixed lg:sticky inset-y-0 lg:top-20 lg:h-[calc(100vh-5rem)] left-0 z-40 lg:z-0 w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform lg:transform-none ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         } ${className}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Filters
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
             {resultCount !== undefined && (
               <p className="text-sm text-gray-500">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}

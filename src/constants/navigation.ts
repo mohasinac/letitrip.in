@@ -76,7 +76,7 @@ export const SELLER_MENU_ITEMS = [
   {
     id: "overview",
     name: "Overview",
-    link: "/seller/dashboard",
+    link: "/seller",
     icon: "layout-dashboard",
     description: "Sales overview and quick stats"
   },

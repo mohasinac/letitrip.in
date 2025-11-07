@@ -17,6 +17,7 @@ import {
   Gavel,
   ChevronDown,
   ChevronRight,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,40 @@ const navigation: NavItem[] = [
     icon: Store,
   },
   {
+    title: "Products",
+    href: "/seller/products",
+    icon: Package,
+    children: [
+      {
+        title: "All Products",
+        href: "/seller/products",
+        icon: Package,
+      },
+      {
+        title: "Add Product",
+        href: "/seller/products/add",
+        icon: Package,
+      },
+    ],
+  },
+  {
+    title: "Auctions",
+    href: "/seller/auctions",
+    icon: Gavel,
+    children: [
+      {
+        title: "All Auctions",
+        href: "/seller/auctions",
+        icon: Gavel,
+      },
+      {
+        title: "Create Auction",
+        href: "/seller/auctions/create",
+        icon: Gavel,
+      },
+    ],
+  },
+  {
     title: "Orders",
     href: "/seller/orders",
     icon: ShoppingCart,
@@ -53,6 +88,21 @@ const navigation: NavItem[] = [
     title: "Revenue",
     href: "/seller/revenue",
     icon: DollarSign,
+  },
+  {
+    title: "Marketing",
+    href: "/seller/marketing",
+    icon: Megaphone,
+  },
+  {
+    title: "Analytics",
+    href: "/seller/analytics",
+    icon: BarChart3,
+  },
+  {
+    title: "Reviews",
+    href: "/seller/reviews",
+    icon: Star,
   },
   {
     title: "Support Tickets",
@@ -78,7 +128,7 @@ export function SellerSidebar() {
   };
 
   return (
-    <aside className="hidden w-64 border-r border-gray-200 bg-white lg:block">
+    <aside className="hidden w-64 border-r border-gray-200 bg-white lg:block lg:fixed lg:top-[7rem] lg:bottom-0 lg:left-0 lg:z-30">
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center border-b border-gray-200 px-6">
@@ -88,6 +138,18 @@ export function SellerSidebar() {
               Seller Hub
             </span>
           </Link>
+        </div>
+
+        {/* Search */}
+        <div className="border-b border-gray-200 p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              placeholder="Search..."
+              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         {/* Navigation */}

@@ -6,6 +6,10 @@ import {
   DollarSign,
   TrendingUp,
   AlertCircle,
+  Clock,
+  Eye,
+  Star,
+  ArrowRight,
 } from "lucide-react";
 import { StatsCard } from "@/components/common/StatsCard";
 import Link from "next/link";
@@ -48,6 +52,30 @@ export default function SellerDashboardPage() {
       amount: 3200,
       status: "shipped",
       date: "2024-11-06",
+    },
+  ];
+
+  const topProducts = [
+    {
+      id: "1",
+      name: "Premium Headphones",
+      sales: 45,
+      revenue: 67500,
+      views: 1250,
+    },
+    {
+      id: "2",
+      name: "Wireless Mouse",
+      sales: 38,
+      revenue: 19000,
+      views: 890,
+    },
+    {
+      id: "3",
+      name: "Mechanical Keyboard",
+      sales: 32,
+      revenue: 96000,
+      views: 756,
     },
   ];
 
@@ -158,28 +186,37 @@ export default function SellerDashboardPage() {
               </h2>
               <Link
                 href="/seller/orders"
-                className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
               >
                 View All
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
           <div className="divide-y divide-gray-200">
             {recentOrders.map((order) => (
-              <div key={order.id} className="px-6 py-4">
+              <Link
+                key={order.id}
+                href={`/seller/orders/${order.id}`}
+                className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">
                       {order.orderNumber}
                     </p>
                     <p className="text-sm text-gray-600">{order.customer}</p>
+                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {order.date}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-gray-900">
                       ₹{order.amount.toLocaleString()}
                     </p>
                     <span
-                      className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                      className={`inline-block mt-1 rounded-full px-2 py-1 text-xs font-medium ${
                         order.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : order.status === "confirmed"
@@ -191,11 +228,59 @@ export default function SellerDashboardPage() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
 
+        {/* Top Products */}
+        <div className="rounded-lg border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Top Products
+              </h2>
+              <Link
+                href="/seller/products"
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                View All
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {topProducts.map((product) => (
+              <div key={product.id} className="px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">{product.name}</p>
+                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <ShoppingCart className="h-3 w-3" />
+                        {product.sales} sales
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {product.views} views
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium text-gray-900">
+                      ₹{(product.revenue / 1000).toFixed(1)}K
+                    </p>
+                    <p className="text-xs text-gray-500">revenue</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Alerts & Performance */}
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Alerts & Notifications */}
         <div className="rounded-lg border border-gray-200 bg-white">
           <div className="border-b border-gray-200 px-6 py-4">
@@ -204,38 +289,103 @@ export default function SellerDashboardPage() {
             </h2>
           </div>
           <div className="divide-y divide-gray-200">
-            <div className="px-6 py-4">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
-                <div>
-                  <p className="font-medium text-gray-900">Low Stock Alert</p>
-                  <p className="text-sm text-gray-600">
-                    3 products are running low on stock
-                  </p>
-                </div>
+            <Link
+              href="/seller/products?filter=lowStock"
+              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+            >
+              <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Low Stock Alert</p>
+                <p className="text-sm text-gray-600">
+                  3 products are running low on stock
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-400" />
+            </Link>
+            <Link
+              href="/seller/orders?status=pending"
+              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+            >
+              <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Pending Actions</p>
+                <p className="text-sm text-gray-600">
+                  5 orders waiting for shipment
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-400" />
+            </Link>
+            <Link
+              href="/seller/reviews"
+              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+            >
+              <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">New Reviews</p>
+                <p className="text-sm text-gray-600">
+                  You have 2 new product reviews
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-400" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Shop Performance */}
+        <div className="rounded-lg border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 px-6 py-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Shop Performance
+            </h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-gray-600">Average Rating</span>
+                <span className="font-medium text-gray-900 flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                  4.8 / 5.0
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-yellow-500 h-2 rounded-full"
+                  style={{ width: "96%" }}
+                ></div>
               </div>
             </div>
-            <div className="px-6 py-4">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
-                <div>
-                  <p className="font-medium text-gray-900">Pending Actions</p>
-                  <p className="text-sm text-gray-600">
-                    5 orders waiting for shipment
-                  </p>
-                </div>
+            <div>
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-gray-600">Order Fulfillment</span>
+                <span className="font-medium text-gray-900">94%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-green-500 h-2 rounded-full"
+                  style={{ width: "94%" }}
+                ></div>
               </div>
             </div>
-            <div className="px-6 py-4">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 flex-shrink-0 text-green-500" />
-                <div>
-                  <p className="font-medium text-gray-900">New Reviews</p>
-                  <p className="text-sm text-gray-600">
-                    You have 2 new product reviews
-                  </p>
-                </div>
+            <div>
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-gray-600">Response Time</span>
+                <span className="font-medium text-gray-900">2.5 hours</span>
               </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-500 h-2 rounded-full"
+                  style={{ width: "85%" }}
+                ></div>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-gray-200">
+              <Link
+                href="/seller/analytics"
+                className="flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                View Detailed Analytics
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ export function SellerHeader() {
   const [showNotifications, setShowNotifications] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
       <div className="flex h-16 items-center justify-between px-4 lg:px-8">
         {/* Left: Mobile Menu + Search */}
         <div className="flex flex-1 items-center gap-4">
