@@ -135,6 +135,31 @@ class CartService {
     this.setGuestCart(cart);
   }
 
+  // Add to guest cart with full product details
+  addToGuestCartWithDetails(product: {
+    productId: string;
+    name: string;
+    price: number;
+    image: string;
+    shopId: string;
+    shopName: string;
+    quantity: number;
+    variant?: string;
+  }): void {
+    const cartItem: Omit<CartItem, 'id' | 'addedAt'> = {
+      productId: product.productId,
+      productName: product.name,
+      productImage: product.image,
+      price: product.price,
+      quantity: product.quantity,
+      variant: product.variant,
+      shopId: product.shopId,
+      shopName: product.shopName,
+    };
+
+    this.addToGuestCart(cartItem);
+  }
+
   updateGuestCartItem(itemId: string, quantity: number): void {
     const cart = this.getGuestCart();
     const index = cart.findIndex(i => i.id === itemId);

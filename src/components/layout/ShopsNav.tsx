@@ -146,7 +146,7 @@ export default function ShopsNav() {
                 })}
 
             {/* Show More Button - Navigate to Shops Page */}
-            {!loading && (
+            {!loading && shops.length >= 9 && (
               <Link
                 href="/shops"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"

@@ -16,10 +16,13 @@ interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   condition?: ProductCondition;
+  brand?: string;
+  manufacturer?: string;
   status?: ProductStatus;
   inStock?: boolean;
   isFeatured?: boolean;
   showOnHomepage?: boolean;
+  minRating?: number;
   tags?: string[];
   page?: number;
   limit?: number;

@@ -49,8 +49,19 @@ export function useCart() {
     }
   }, [user]);
 
-  // Add item to cart
-  const addItem = useCallback(async (productId: string, quantity: number = 1, variant?: string) => {
+  // Add item to cart (with optional product details for guest users)
+  const addItem = useCallback(async (
+    productId: string, 
+    quantity: number = 1, 
+    variant?: string,
+    productDetails?: {
+      name: string;
+      price: number;
+      image: string;
+      shopId: string;
+      shopName: string;
+    }
+  ) => {
     try {
       if (user) {
         // Authenticated user
@@ -58,9 +69,18 @@ export function useCart() {
         await loadCart();
       } else {
         // Guest user - add to localStorage
-        // Note: We need product details to add to guest cart
-        // This would typically be done from the product page
-        throw new Error('Please login to add items to cart');
+        if (!productDetails) {
+          throw new Error('Product details required for guest cart');
+        }
+        
+        cartService.addToGuestCartWithDetails({
+          productId,
+          quantity,
+          variant,
+          ...productDetails,
+        });
+        
+        await loadCart();
       }
     } catch (err: any) {
       console.error('Failed to add item:', err);

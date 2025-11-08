@@ -21,10 +21,20 @@ export interface ProductCardProps {
   reviewCount?: number;
   shopName: string;
   shopSlug: string;
+  shopId?: string;
   inStock: boolean;
   isFeatured?: boolean;
   condition?: "new" | "used" | "refurbished";
-  onAddToCart?: (id: string) => void;
+  onAddToCart?: (
+    id: string,
+    productDetails?: {
+      name: string;
+      price: number;
+      image: string;
+      shopId: string;
+      shopName: string;
+    }
+  ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;
   isFavorite?: boolean;
@@ -43,6 +53,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   reviewCount = 0,
   shopName,
   shopSlug,
+  shopId,
   inStock,
   isFeatured = false,
   condition = "new",
@@ -61,7 +72,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
     if (inStock && onAddToCart) {
-      onAddToCart(id);
+      onAddToCart(id, {
+        name,
+        price,
+        image,
+        shopId: shopId || shopSlug,
+        shopName,
+      });
     }
   };
 

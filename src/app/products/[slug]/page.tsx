@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -12,30 +12,64 @@ import { productsService } from "@/services/products.service";
 import type { Product } from "@/types";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter();
+  const { slug } = use(params);
+
   const [product, setProduct] = useState<Product | null>(null);
+  const [variants, setVariants] = useState<Product[]>([]);
+  const [shopProducts, setShopProducts] = useState<Product[]>([]);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [variantsLoading, setVariantsLoading] = useState(false);
+  const [shopProductsLoading, setShopProductsLoading] = useState(false);
 
   useEffect(() => {
     loadProduct();
-  }, [params.slug]);
-
+  }, [slug]);
   const loadProduct = async () => {
     try {
       setLoading(true);
-      const data = await productsService.getBySlug(params.slug);
+      const data = await productsService.getBySlug(slug);
       setProduct(data);
+
+      // Load related data
+      loadVariants(slug);
+      loadShopProducts(slug);
     } catch (error) {
       console.error("Failed to load product:", error);
       router.push("/404");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadVariants = async (slug: string) => {
+    try {
+      setVariantsLoading(true);
+      const data = await productsService.getVariants(slug);
+      setVariants(data.slice(0, 12)); // Limit to 12 variants
+    } catch (error) {
+      console.error("Failed to load variants:", error);
+    } finally {
+      setVariantsLoading(false);
+    }
+  };
+
+  const loadShopProducts = async (slug: string) => {
+    try {
+      setShopProductsLoading(true);
+      const data = await productsService.getSellerProducts(slug, 12);
+      setShopProducts(data);
+    } catch (error) {
+      console.error("Failed to load shop products:", error);
+    } finally {
+      setShopProductsLoading(false);
     }
   };
 
@@ -97,6 +131,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 returnable: product.isReturnable,
                 condition: product.condition,
                 status: product.status,
+                image: product.images?.[0] || "",
               }}
             />
           </div>
@@ -112,6 +147,101 @@ export default function ProductPage({ params }: ProductPageProps) {
             }, {} as Record<string, string>)}
           />
         </div>
+
+        {/* Variants Section */}
+        {variants.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Other Options (Variants)
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Similar products in this category that might interest you
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {variants.map((variant) => (
+                <div
+                  key={variant.id}
+                  onClick={() => router.push(`/products/${variant.slug}`)}
+                  className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-square relative">
+                    <img
+                      src={variant.images?.[0] || ""}
+                      alt={variant.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
+                      {variant.name}
+                    </h3>
+                    <div className="text-lg font-bold text-gray-900">
+                      ₹{variant.price.toLocaleString()}
+                    </div>
+                    {variant.originalPrice &&
+                      variant.originalPrice > variant.price && (
+                        <div className="text-xs text-gray-500 line-through">
+                          ₹{variant.originalPrice.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* From This Shop Section */}
+        {shopProducts.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  More from this shop
+                </h2>
+                <p className="text-gray-600 mt-1">
+                  Explore other products from this seller
+                </p>
+              </div>
+              <button
+                onClick={() => router.push(`/shops/${product.shopId}`)}
+                className="text-blue-600 hover:underline font-medium"
+              >
+                View Shop →
+              </button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {shopProducts.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => router.push(`/products/${item.slug}`)}
+                  className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-square relative">
+                    <img
+                      src={item.images?.[0] || ""}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
+                      {item.name}
+                    </h3>
+                    <div className="text-lg font-bold text-gray-900">
+                      ₹{item.price.toLocaleString()}
+                    </div>
+                    {item.originalPrice && item.originalPrice > item.price && (
+                      <div className="text-xs text-gray-500 line-through">
+                        ₹{item.originalPrice.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Reviews */}
         <div className="mb-6">

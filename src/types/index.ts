@@ -229,7 +229,8 @@ export interface Category {
   
   // Display
   icon?: string;
-  image?: string;
+  image?: string; // Profile/card image
+  banner?: string; // Banner image for category page
   color?: string;
   sortOrder: number;
   

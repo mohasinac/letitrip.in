@@ -142,7 +142,7 @@ export default function FeaturedCategories() {
                 })}
 
             {/* Show More Button - Navigate to Categories Page */}
-            {!loading && (
+            {!loading && categories.length >= 9 && (
               <Link
                 href="/categories"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"

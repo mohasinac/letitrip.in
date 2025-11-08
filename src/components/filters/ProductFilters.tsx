@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
-import { Filter, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Filter, X, ChevronDown, ChevronRight } from "lucide-react";
+import { categoriesService } from "@/services/categories.service";
+import type { Category } from "@/types";
 
 export interface ProductFilterValues {
   priceMin?: number;
@@ -9,6 +11,7 @@ export interface ProductFilterValues {
   categories?: string[];
   stock?: "in_stock" | "out_of_stock" | "low_stock";
   condition?: ("new" | "like_new" | "good" | "fair")[];
+  brands?: string[];
   featured?: boolean;
   returnable?: boolean;
   rating?: number;
@@ -19,6 +22,7 @@ interface ProductFiltersProps {
   onChange: (filters: ProductFilterValues) => void;
   onApply: () => void;
   onReset: () => void;
+  availableBrands?: string[];
 }
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
@@ -26,8 +30,31 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onChange,
   onApply,
   onReset,
+  availableBrands = [],
 }) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
+  const [categorySearch, setCategorySearch] = useState("");
+
   const hasActiveFilters = Object.keys(filters).length > 0;
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const data = await categoriesService.list({ isActive: true });
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
 
   const updateFilter = <K extends keyof ProductFilterValues>(
     key: K,
@@ -47,6 +74,73 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     onChange({ ...filters, [key]: updated.length > 0 ? updated : undefined });
   };
 
+  const toggleCategoryExpand = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const filteredCategories = categories.filter((cat) => {
+    if (!categorySearch) return true;
+    return cat.name.toLowerCase().includes(categorySearch.toLowerCase());
+  });
+
+  const rootCategories = filteredCategories.filter((cat) => cat.level === 0);
+
+  const getChildCategories = (parentId: string) => {
+    return filteredCategories.filter((cat) => cat.parentId === parentId);
+  };
+
+  const renderCategoryTree = (category: Category, depth = 0) => {
+    const hasChildren = category.hasChildren;
+    const isExpanded = expandedCategories.has(category.id);
+    const isSelected = (filters.categories || []).includes(category.id);
+    const children = hasChildren ? getChildCategories(category.id) : [];
+
+    return (
+      <div key={category.id} style={{ marginLeft: `${depth * 12}px` }}>
+        <label className="flex items-center gap-2 cursor-pointer py-1 hover:bg-gray-50 rounded px-1">
+          {hasChildren && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleCategoryExpand(category.id);
+              }}
+              className="p-0.5 hover:bg-gray-200 rounded"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
+            </button>
+          )}
+          {!hasChildren && <span className="w-4" />}
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => toggleArrayFilter("categories", category.id)}
+            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700 flex-1">{category.name}</span>
+          <span className="text-xs text-gray-500">
+            ({category.productCount})
+          </span>
+        </label>
+        {hasChildren && isExpanded && (
+          <div className="mt-1">
+            {children.map((child) => renderCategoryTree(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -64,6 +158,27 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             Clear All
           </button>
         )}
+      </div>
+
+      {/* Categories */}
+      <div className="space-y-3">
+        <h4 className="font-medium text-gray-900">Categories</h4>
+        <input
+          type="text"
+          placeholder="Search categories..."
+          value={categorySearch}
+          onChange={(e) => setCategorySearch(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        <div className="max-h-64 overflow-y-auto space-y-1">
+          {loadingCategories ? (
+            <p className="text-sm text-gray-500 py-2">Loading categories...</p>
+          ) : rootCategories.length === 0 ? (
+            <p className="text-sm text-gray-500 py-2">No categories found</p>
+          ) : (
+            rootCategories.map((category) => renderCategoryTree(category))
+          )}
+        </div>
       </div>
 
       {/* Price Range */}
@@ -101,7 +216,48 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             />
           </div>
         </div>
+        {/* Price Range Slider */}
+        <div className="pt-2">
+          <input
+            type="range"
+            min="0"
+            max="100000"
+            step="500"
+            value={filters.priceMax || 100000}
+            onChange={(e) =>
+              updateFilter("priceMax", Number(e.target.value))
+            }
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>₹0</span>
+            <span>₹1,00,000</span>
+          </div>
+        </div>
       </div>
+
+      {/* Brands */}
+      {availableBrands.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="font-medium text-gray-900">Brand</h4>
+          <div className="max-h-48 overflow-y-auto space-y-2">
+            {availableBrands.map((brand) => (
+              <label
+                key={brand}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={(filters.brands || []).includes(brand)}
+                  onChange={() => toggleArrayFilter("brands", brand)}
+                  className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{brand}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stock Status */}
       <div className="space-y-3">

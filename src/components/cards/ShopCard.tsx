@@ -16,6 +16,9 @@ export interface ShopCardProps {
   rating?: number;
   reviewCount?: number;
   productCount: number;
+  liveProductCount?: number;
+  auctionCount?: number;
+  liveAuctionCount?: number;
   location?: string;
   isVerified?: boolean;
   isFeatured?: boolean;
@@ -36,6 +39,9 @@ export const ShopCard: React.FC<ShopCardProps> = ({
   rating = 0,
   reviewCount = 0,
   productCount,
+  liveProductCount = 0,
+  auctionCount = 0,
+  liveAuctionCount = 0,
   location,
   isVerified = false,
   isFeatured = false,
@@ -191,17 +197,58 @@ export const ShopCard: React.FC<ShopCardProps> = ({
         )}
 
         {/* Stats */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-          <div className="flex items-center gap-1 text-gray-600">
-            <ShoppingBag className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              {formatCompactNumber(productCount)}{" "}
-              {productCount === 1 ? "Product" : "Products"}
+        <div className="pt-4 border-t border-gray-200 space-y-3">
+          {/* Rating & Reviews */}
+          {rating > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <span className="font-semibold text-gray-900">
+                  {rating.toFixed(1)}
+                </span>
+                <span className="text-gray-500">
+                  ({formatCompactNumber(reviewCount)} reviews)
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Products & Auctions */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="text-center py-2 bg-blue-50 rounded-lg">
+              <div className="text-lg font-bold text-blue-600">
+                {formatCompactNumber(productCount)}
+              </div>
+              <div className="text-xs text-gray-600">
+                Products
+                {liveProductCount > 0 && (
+                  <span className="ml-1 text-green-600">
+                    ({liveProductCount} live)
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="text-center py-2 bg-purple-50 rounded-lg">
+              <div className="text-lg font-bold text-purple-600">
+                {formatCompactNumber(auctionCount)}
+              </div>
+              <div className="text-xs text-gray-600">
+                Auctions
+                {liveAuctionCount > 0 && (
+                  <span className="ml-1 text-red-600">
+                    ({liveAuctionCount} live)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Visit Shop Button */}
+          <div className="text-center">
+            <span className="text-sm text-blue-600 font-medium group-hover:underline">
+              Visit Shop →
             </span>
           </div>
-          <span className="text-sm text-blue-600 font-medium group-hover:underline">
-            Visit Shop →
-          </span>
         </div>
       </div>
     </Link>

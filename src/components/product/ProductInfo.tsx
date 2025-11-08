@@ -32,6 +32,7 @@ interface ProductInfoProps {
     returnable?: boolean;
     condition?: "new" | "refurbished" | "used";
     status: string;
+    image?: string;
   };
 }
 
@@ -56,7 +57,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
     if (!inStock) return;
 
     try {
-      await addItem(product.id, quantity);
+      await addItem(product.id, quantity, undefined, {
+        name: product.name,
+        price: product.salePrice,
+        image: product.image || "",
+        shopId: product.shop_id,
+        shopName: product.shop_name,
+      });
       alert("Added to cart!");
     } catch (error) {
       console.error("Failed to add to cart:", error);
