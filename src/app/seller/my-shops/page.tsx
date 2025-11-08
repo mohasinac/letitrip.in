@@ -1,41 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
   Search,
   Filter,
-  MoreVertical,
   Edit,
   Trash2,
   Eye,
   Star,
+  Loader2,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
-
-// TODO: Replace with real data from API
-const mockShops = [
-  {
-    id: "1",
-    name: "TechStore India",
-    slug: "techstore-india",
-    description: "Premium electronics and gadgets",
-    logo: "/placeholder-shop.jpg",
-    banner: "/placeholder-banner.jpg",
-    verified: true,
-    status: "active",
-    products: 24,
-    orders: 150,
-    rating: 4.8,
-    reviews: 89,
-  },
-];
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { EmptyState } from "@/components/common/EmptyState";
+import { shopsService } from "@/services/shops.service";
+import type { Shop } from "@/types";
 
 export default function MyShopsPage() {
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteShopId, setDeleteShopId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadShops();
+  }, []);
+
+  const loadShops = async () => {
+    try {
+      setLoading(true);
+      const data: any = await shopsService.list();
+      setShops(data.data || data.shops || data || []);
+    } catch (error) {
+      console.error("Failed to load shops:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (shopId: string) => {
+    try {
+      await shopsService.delete(shopId);
+      setShops(shops.filter((shop) => shop.id !== shopId));
+      setDeleteShopId(null);
+    } catch (error) {
+      console.error("Failed to delete shop:", error);
+      alert("Failed to delete shop. Please try again.");
+    }
+  };
+
+  const filteredShops = shops.filter(
+    (shop) =>
+      shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shop.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
+          <p className="mt-2 text-sm text-gray-600">Loading shops...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -66,6 +100,8 @@ export default function MyShopsPage() {
           <input
             type="search"
             placeholder="Search shops..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -78,10 +114,31 @@ export default function MyShopsPage() {
         </button>
       </div>
 
+      {/* Empty State */}
+      {filteredShops.length === 0 && !loading && (
+        <EmptyState
+          title={searchQuery ? "No shops found" : "No shops yet"}
+          description={
+            searchQuery
+              ? "Try adjusting your search query"
+              : "Create your first shop to start selling"
+          }
+          action={
+            !searchQuery
+              ? {
+                  label: "Create Shop",
+                  onClick: () =>
+                    (window.location.href = "/seller/my-shops/create"),
+                }
+              : undefined
+          }
+        />
+      )}
+
       {/* Grid View */}
-      {view === "grid" && (
+      {view === "grid" && filteredShops.length > 0 && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {mockShops.map((shop) => (
+          {filteredShops.map((shop) => (
             <div
               key={shop.id}
               className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
@@ -96,18 +153,24 @@ export default function MyShopsPage() {
               <div className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="h-16 w-16 flex-shrink-0 rounded-lg border-2 border-white bg-white shadow-md -mt-10">
-                    <img
-                      src={shop.logo}
-                      alt={shop.name}
-                      className="h-full w-full rounded-lg object-cover"
-                    />
+                    {shop.logo ? (
+                      <img
+                        src={shop.logo}
+                        alt={shop.name}
+                        className="h-full w-full rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl font-bold">
+                        {shop.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1 pt-2">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-gray-900">
                         {shop.name}
                       </h3>
-                      {shop.verified && (
+                      {shop.isVerified && (
                         <svg
                           className="h-4 w-4 text-blue-600"
                           fill="currentColor"
@@ -124,28 +187,28 @@ export default function MyShopsPage() {
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-medium text-gray-900">
-                        {shop.rating}
+                        {shop.rating?.toFixed(1) || "0.0"}
                       </span>
                       <span className="text-sm text-gray-500">
-                        ({shop.reviews})
+                        ({shop.reviewCount || 0})
                       </span>
                     </div>
                   </div>
                 </div>
                 <p className="mt-3 text-sm text-gray-600 line-clamp-2">
-                  {shop.description}
+                  {shop.description || "No description"}
                 </p>
                 <div className="mt-4 grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-3">
                   <div>
                     <p className="text-sm text-gray-500">Products</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {shop.products}
+                      {shop.productCount || 0}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Orders</p>
+                    <p className="text-sm text-gray-500">Rating</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {shop.orders}
+                      {shop.rating?.toFixed(1) || "—"}
                     </p>
                   </div>
                 </div>
@@ -170,7 +233,7 @@ export default function MyShopsPage() {
       )}
 
       {/* Table View */}
-      {view === "table" && (
+      {view === "table" && filteredShops.length > 0 && (
         <div className="rounded-lg border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -197,23 +260,29 @@ export default function MyShopsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {mockShops.map((shop) => (
+                {filteredShops.map((shop) => (
                   <tr key={shop.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100">
-                          <img
-                            src={shop.logo}
-                            alt={shop.name}
-                            className="h-full w-full rounded object-cover"
-                          />
+                          {shop.logo ? (
+                            <img
+                              src={shop.logo}
+                              alt={shop.name}
+                              className="h-full w-full rounded object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full rounded bg-gray-200 flex items-center justify-center text-gray-400 font-bold">
+                              {shop.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <div className="font-medium text-gray-900">
                               {shop.name}
                             </div>
-                            {shop.verified && (
+                            {shop.isVerified && (
                               <svg
                                 className="h-4 w-4 text-blue-600"
                                 fill="currentColor"
@@ -227,29 +296,31 @@ export default function MyShopsPage() {
                               </svg>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {shop.description}
+                          <div className="text-sm text-gray-500 truncate max-w-xs">
+                            {shop.description || "No description"}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={shop.status} />
+                      <StatusBadge
+                        status={shop.isBanned ? "banned" : "active"}
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {shop.products}
+                      {shop.productCount || 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {shop.orders}
+                      —
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm font-medium text-gray-900">
-                          {shop.rating}
+                          {shop.rating?.toFixed(1) || "0.0"}
                         </span>
                         <span className="text-sm text-gray-500">
-                          ({shop.reviews})
+                          ({shop.reviewCount || 0})
                         </span>
                       </div>
                     </td>
@@ -270,6 +341,7 @@ export default function MyShopsPage() {
                           <Edit className="h-4 w-4" />
                         </Link>
                         <button
+                          onClick={() => setDeleteShopId(shop.id)}
                           className="rounded p-1.5 text-red-600 hover:bg-red-50"
                           title="Delete"
                         >
@@ -295,6 +367,21 @@ export default function MyShopsPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteShopId !== null}
+        onClose={() => setDeleteShopId(null)}
+        onConfirm={async () => {
+          if (deleteShopId) {
+            await handleDelete(deleteShopId);
+          }
+        }}
+        title="Delete Shop"
+        description="Are you sure you want to delete this shop? This action cannot be undone and will delete all associated products."
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   );
 }
