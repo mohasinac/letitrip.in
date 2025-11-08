@@ -78,12 +78,14 @@ class CategoriesService {
 
   // Get leaf categories (for product creation)
   async getLeaves(): Promise<Category[]> {
-    return apiService.get<Category[]>('/categories/leaves');
+    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/leaves');
+    return response.data || [];
   }
 
   // Create category (admin only)
   async create(data: CreateCategoryData): Promise<Category> {
-    return apiService.post<Category>('/categories', data);
+    const response = await apiService.post<{ success: boolean; data: Category }>('/categories', data);
+    return response.data;
   }
 
   // Update category (admin only)
