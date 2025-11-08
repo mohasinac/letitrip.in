@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, ThumbsUp } from "lucide-react";
+import { Star, ThumbsUp, Edit } from "lucide-react";
 import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
+import ReviewForm from "./ReviewForm";
+import ReviewList from "./ReviewList";
 import type { Review } from "@/types";
 
 interface ProductReviewsProps {
@@ -17,6 +19,7 @@ export function ProductReviews({
 }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const [stats, setStats] = useState({
     averageRating: 0,
     totalReviews: 0,
@@ -85,132 +88,41 @@ export function ProductReviews({
     );
   }
 
-  if (!reviews || reviews.length === 0) {
-    return (
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Customer Reviews
-        </h2>
-        <EmptyState
-          title="No reviews yet"
-          description="Be the first to review this product!"
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        Customer Reviews
-      </h2>
-
-      {/* Rating Summary */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8 pb-8 border-b">
-        {/* Average Rating */}
-        <div className="text-center">
-          <div className="text-5xl font-bold text-gray-900 mb-2">
-            {stats.averageRating.toFixed(1)}
-          </div>
-          <div className="flex items-center justify-center gap-1 mb-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star
-                key={star}
-                className={`w-6 h-6 ${
-                  star <= Math.round(stats.averageRating)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
-                }`}
-              />
-            ))}
-          </div>
-          <div className="text-gray-600">
-            Based on {stats.totalReviews} reviews
-          </div>
-        </div>
-
-        {/* Rating Breakdown */}
-        <div className="space-y-2">
-          {[5, 4, 3, 2, 1].map((rating) => {
-            const count =
-              stats.ratingBreakdown[
-                rating as keyof typeof stats.ratingBreakdown
-              ];
-            const percentage =
-              stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
-
-            return (
-              <div key={rating} className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 w-8">{rating} ★</span>
-                <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-yellow-400 transition-all"
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                <span className="text-sm text-gray-600 w-12 text-right">
-                  {count}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+      {/* Header with Write Review Button */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+        {!showReviewForm && (
+          <button
+            onClick={() => setShowReviewForm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Edit className="w-4 h-4" />
+            Write a Review
+          </button>
+        )}
       </div>
+
+      {/* Review Form */}
+      {showReviewForm && (
+        <div className="mb-8 p-6 border border-gray-200 rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Write Your Review
+          </h3>
+          <ReviewForm
+            productId={productId}
+            onSuccess={() => {
+              setShowReviewForm(false);
+              loadReviews();
+            }}
+            onCancel={() => setShowReviewForm(false)}
+          />
+        </div>
+      )}
 
       {/* Reviews List */}
-      <div className="space-y-6">
-        {reviews.map((review) => (
-          <div
-            key={review.id}
-            className="border-b last:border-b-0 pb-6 last:pb-0"
-          >
-            {/* Review Header */}
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-gray-900">Customer</span>
-                  {review.verifiedPurchase && (
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">
-                      Verified Purchase
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= review.rating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {formatDate(review.createdAt.toString())}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Review Content */}
-            {review.title && (
-              <h4 className="font-semibold text-gray-900 mb-2">
-                {review.title}
-              </h4>
-            )}
-            <p className="text-gray-700 mb-3">{review.comment}</p>
-
-            {/* Helpful Button */}
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors">
-              <ThumbsUp className="w-4 h-4" />
-              Helpful {review.helpfulCount > 0 && `(${review.helpfulCount})`}
-            </button>
-          </div>
-        ))}
-      </div>
+      <ReviewList productId={productId} />
     </div>
   );
 }

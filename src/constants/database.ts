@@ -67,6 +67,10 @@ export const COLLECTIONS = {
   NOTIFICATIONS: 'notifications',
   EMAIL_QUEUE: 'email_queue',
   SMS_QUEUE: 'sms_queue',
+  
+  // Homepage Management Collections
+  HERO_SLIDES: 'hero_slides',
+  FEATURED_SECTIONS: 'featured_sections',
 } as const;
 
 /**
