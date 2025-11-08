@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Collections } from '@/app/api/lib/firebase/collections';
 import { getCurrentUser } from '../lib/session';
 import { userOwnsShop } from '@/app/api/lib/firebase/queries';
+import { getUserShops } from '../lib/auth-helpers';
 
 // GET /api/coupons - List coupons (public active or owner/admin)
 // POST /api/coupons - Create coupon (seller/admin)
@@ -11,24 +12,31 @@ export async function GET(request: NextRequest) {
     const role = user?.role || 'guest';
     const { searchParams } = new URL(request.url);
     const shopSlug = searchParams.get('shop_slug');
-    const shopId = searchParams.get('shop_id');
+    let shopId = searchParams.get('shop_id');
 
     let query: FirebaseFirestore.Query = Collections.coupons();
 
     if (role === 'guest' || role === 'user') {
       query = query.where('is_active', '==', true);
-    } else if ((role === 'seller' || role === 'admin') && shopId) {
+    } else if (role === 'seller') {
+      // If no shopId provided, get user's shops
+      if (!shopId && user?.id) {
+        const userShops = await getUserShops(user.id);
+        if (userShops.length > 0) {
+          // Filter by user's shops
+          shopId = userShops[0]; // Use primary shop
+        }
+      }
+      
+      if (shopId) {
+        query = query.where('shop_id', '==', shopId);
+      }
+    } else if (role === 'admin' && shopId) {
       query = query.where('shop_id', '==', shopId);
     }
 
     const snapshot = await query.limit(200).get();
     let coupons = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    if (role === 'seller') {
-      if (shopId) {
-        coupons = coupons.filter((c: any) => c.shop_id === shopId);
-      }
-    }
 
     return NextResponse.json({ success: true, data: coupons });
   } catch (error) {

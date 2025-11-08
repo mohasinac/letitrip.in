@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Collections } from '../../lib/firebase/collections';
 import { getCurrentUser } from '../../lib/session';
+import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
 import { z } from 'zod';
 import crypto from 'crypto';
 
@@ -19,7 +20,7 @@ const CreateOrderSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function POST(request: NextRequest) {
+async function createOrderHandler(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
@@ -313,4 +314,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return withRedisRateLimit(request, createOrderHandler, RATE_LIMITS.PAYMENT);
 }

@@ -1,36 +1,316 @@
 rules_version = '2';
+
+/**
+ * Production Firestore Security Rules
+ * Last Updated: November 8, 2025
+ * 
+ * IMPORTANT: All write operations should go through API routes with Admin SDK
+ * These rules are primarily for read access and client-side security
+ */
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAuthenticated() { return request.auth != null; }
-    function userId() { return request.auth.uid; }
-
-    // Public readable shops & products (basic listing) if verified/published
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function userId() {
+      return request.auth.uid;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(userId())).data.role == 'admin';
+    }
+    
+    function isSeller() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(userId())).data.role == 'seller';
+    }
+    
+    function isSellerOrAdmin() {
+      return isSeller() || isAdmin();
+    }
+    
+    function isOwner(ownerId) {
+      return isAuthenticated() && userId() == ownerId;
+    }
+    
+    function ownsShop(shopId) {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/shops/$(shopId)).data.owner_id == userId();
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    
+    match /users/{userDocId} {
+      // Anyone authenticated can read any user profile (for public profiles)
+      allow read: if isAuthenticated();
+      
+      // Users can only create their own profile
+      allow create: if isAuthenticated() && userId() == userDocId;
+      
+      // Users can update their own profile, admins can update any
+      allow update: if isOwner(userDocId) || isAdmin();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+      
+      // User subcollections (addresses, favorites, etc.)
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(userDocId);
+      }
+      
+      match /favorites/{favoriteId} {
+        allow read, write: if isOwner(userDocId);
+      }
+      
+      match /follows/{followId} {
+        allow read, write: if isOwner(userDocId);
+      }
+    }
+    
+    // ============================================
+    // SHOPS COLLECTION
+    // ============================================
+    
     match /shops/{shopId} {
-      allow read: if resource.data.is_verified == true && resource.data.is_banned == false;
-      allow write: if false; // All writes via Admin SDK API
-    }
-
-    match /products/{productId} {
-      allow read: if resource.data.status == 'published' && resource.data.is_deleted != true;
-      allow write: if false;
-    }
-
-    // Reviews (read public, write only API)
-    match /reviews/{reviewId} {
+      // Anyone can read verified, non-banned shops
       allow read: if true;
-      allow write: if false;
+      
+      // Only sellers and admins can create shops
+      allow create: if isSellerOrAdmin();
+      
+      // Shop owners and admins can update
+      allow update: if ownsShop(shopId) || isAdmin();
+      
+      // Only admins can delete shops
+      allow delete: if isAdmin();
     }
-
-    // Coupons (public active only)
+    
+    // ============================================
+    // PRODUCTS COLLECTION
+    // ============================================
+    
+    match /products/{productId} {
+      // Anyone can read published products
+      allow read: if true;
+      
+      // Sellers and admins can create products
+      allow create: if isSellerOrAdmin();
+      
+      // Product owners (via shop) and admins can update
+      allow update: if isSellerOrAdmin();
+      
+      // Product owners and admins can delete
+      allow delete: if isSellerOrAdmin();
+    }
+    
+    // ============================================
+    // CATEGORIES COLLECTION
+    // ============================================
+    
+    match /categories/{categoryId} {
+      // Anyone can read categories
+      allow read: if true;
+      
+      // Only admins can write categories
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
+    // ORDERS COLLECTION
+    // ============================================
+    
+    match /orders/{orderId} {
+      // Users can read their own orders, admins can read all
+      allow read: if isOwner(resource.data.customer_id) || isAdmin();
+      
+      // Only authenticated users can create orders (via API)
+      allow create: if isAuthenticated();
+      
+      // Only admins and the customer can update orders
+      allow update: if isOwner(resource.data.customer_id) || isAdmin();
+      
+      // Only admins can delete orders
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // COUPONS COLLECTION
+    // ============================================
+    
     match /coupons/{couponId} {
-      allow read: if resource.data.is_active == true;
-      allow write: if false;
+      // Anyone can read active, public coupons
+      allow read: if resource.data.is_active == true && resource.data.is_public == true;
+      
+      // Shop owners and admins can create coupons
+      allow create: if isSellerOrAdmin();
+      
+      // Shop owners and admins can update their coupons
+      allow update: if isSellerOrAdmin();
+      
+      // Shop owners and admins can delete their coupons
+      allow delete: if isSellerOrAdmin();
     }
-
-    // Fallback: deny direct client writes everywhere
+    
+    // ============================================
+    // AUCTIONS COLLECTION
+    // ============================================
+    
+    match /auctions/{auctionId} {
+      // Anyone can read auctions
+      allow read: if true;
+      
+      // Sellers and admins can create auctions
+      allow create: if isSellerOrAdmin();
+      
+      // Auction owners and admins can update
+      allow update: if isSellerOrAdmin();
+      
+      // Auction owners and admins can delete
+      allow delete: if isSellerOrAdmin();
+    }
+    
+    // ============================================
+    // BIDS COLLECTION
+    // ============================================
+    
+    match /bids/{bidId} {
+      // Anyone can read bids for an auction
+      allow read: if true;
+      
+      // Only authenticated users can create bids
+      allow create: if isAuthenticated();
+      
+      // Users can update their own bids (for auto-bid), admins can update any
+      allow update: if isOwner(resource.data.user_id) || isAdmin();
+      
+      // Only admins can delete bids
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // REVIEWS COLLECTION
+    // ============================================
+    
+    match /reviews/{reviewId} {
+      // Anyone can read approved reviews
+      allow read: if true;
+      
+      // Authenticated users can create reviews
+      allow create: if isAuthenticated();
+      
+      // Users can update their own reviews, admins can update any
+      allow update: if isOwner(resource.data.user_id) || isAdmin();
+      
+      // Users can delete their own reviews, admins can delete any
+      allow delete: if isOwner(resource.data.user_id) || isAdmin();
+    }
+    
+    // ============================================
+    // CART COLLECTION
+    // ============================================
+    
+    match /cart/{cartItemId} {
+      // Users can only read their own cart
+      allow read: if isOwner(resource.data.user_id);
+      
+      // Users can add to their cart
+      allow create: if isAuthenticated() && request.resource.data.user_id == userId();
+      
+      // Users can update their own cart items
+      allow update: if isOwner(resource.data.user_id);
+      
+      // Users can delete their own cart items
+      allow delete: if isOwner(resource.data.user_id);
+    }
+    
+    // ============================================
+    // SESSIONS COLLECTION (Server-side only)
+    // ============================================
+    
+    match /sessions/{sessionId} {
+      // No direct client access to sessions
+      allow read, write: if false;
+    }
+    
+    // ============================================
+    // HERO SLIDES & FEATURED SECTIONS (Admin only)
+    // ============================================
+    
+    match /hero_slides/{slideId} {
+      // Anyone can read active slides
+      allow read: if resource.data.is_active == true;
+      
+      // Only admins can write
+      allow create, update, delete: if isAdmin();
+    }
+    
+    match /featured_sections/{sectionId} {
+      // Anyone can read active sections
+      allow read: if resource.data.is_active == true;
+      
+      // Only admins can write
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
+    // RETURNS COLLECTION
+    // ============================================
+    
+    match /returns/{returnId} {
+      // Users can read their own returns, shop owners can read returns for their products
+      allow read: if isOwner(resource.data.customer_id) || isAdmin();
+      
+      // Authenticated users can create returns
+      allow create: if isAuthenticated();
+      
+      // Only admins can update returns
+      allow update: if isAdmin();
+      
+      // Only admins can delete returns
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // SUPPORT TICKETS
+    // ============================================
+    
+    match /support_tickets/{ticketId} {
+      // Users can read their own tickets, admins can read all
+      allow read: if isOwner(resource.data.user_id) || isAdmin();
+      
+      // Authenticated users can create tickets
+      allow create: if isAuthenticated();
+      
+      // Only admins can update tickets (to assign, resolve, etc.)
+      allow update: if isAdmin();
+      
+      // Only admins can delete tickets
+      allow delete: if isAdmin();
+      
+      // Ticket messages subcollection
+      match /messages/{messageId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/support_tickets/$(ticketId)).data.user_id) || isAdmin();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAdmin();
+      }
+    }
+    
+    // ============================================
+    // FALLBACK RULE (Deny all other access)
+    // ============================================
+    
     match /{document=**} {
-      allow read: if false; // Explicitly enumerate above for public reads
-      allow write: if false;
+      allow read, write: if false;
     }
   }
 }

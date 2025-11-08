@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '../../lib/firebase/config';
-import { withMiddleware } from '../../middleware';
 import { createSession, setSessionCookie, clearSessionCookie } from '../../lib/session';
+import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
 import bcrypt from 'bcryptjs';
 
 interface LoginRequestBody {
@@ -134,10 +134,5 @@ async function loginHandler(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return withMiddleware(req, loginHandler, {
-    rateLimit: {
-      maxRequests: 15, // Stricter limit for login
-      windowMs: 60 * 1000,
-    },
-  });
+  return withRedisRateLimit(req, loginHandler, RATE_LIMITS.AUTH);
 }

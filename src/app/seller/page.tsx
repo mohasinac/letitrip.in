@@ -1,4 +1,6 @@
-import { Metadata } from "next";
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   Store,
   Package,
@@ -10,74 +12,177 @@ import {
   Eye,
   Star,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { StatsCard } from "@/components/common/StatsCard";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Seller dashboard overview",
-};
+interface DashboardData {
+  stats: {
+    shops: { total: number; active: number };
+    products: { total: number; active: number };
+    orders: { pending: number; total: number };
+    revenue: { thisMonth: number; lastMonth: number };
+  };
+  recentOrders: Array<{
+    id: string;
+    orderNumber: string;
+    customer: string;
+    amount: number;
+    status: string;
+    date: string;
+  }>;
+  topProducts: Array<{
+    id: string;
+    name: string;
+    sales: number;
+    revenue: number;
+    views: number;
+  }>;
+  shopPerformance: {
+    averageRating: number;
+    totalRatings: number;
+    orderFulfillment: number;
+    responseTime: string;
+  };
+  alerts: {
+    lowStock: number;
+    pendingShipment: number;
+    newReviews: number;
+  };
+}
 
 export default function SellerDashboardPage() {
-  // TODO: Fetch real data from API
-  const stats = {
-    shops: { total: 1, active: 1 },
-    products: { total: 24, active: 20 },
-    orders: { pending: 5, total: 150 },
-    revenue: { thisMonth: 45000, lastMonth: 38000 },
+  const { user } = useAuth();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [user]);
+
+  const loadDashboardData = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // API will automatically use the user's primary shop from session
+      const response = await fetch(`/api/seller/dashboard`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load dashboard data");
+      }
+
+      const dashboardData = await response.json();
+      setData(dashboardData);
+    } catch (err) {
+      console.error("Error loading dashboard:", err);
+      setError(err instanceof Error ? err.message : "Failed to load dashboard");
+
+      // Fallback to mock data for development
+      setData({
+        stats: {
+          shops: { total: 1, active: 1 },
+          products: { total: 24, active: 20 },
+          orders: { pending: 5, total: 150 },
+          revenue: { thisMonth: 45000, lastMonth: 38000 },
+        },
+        recentOrders: [
+          {
+            id: "1",
+            orderNumber: "ORD-2024-001",
+            customer: "John Doe",
+            amount: 2500,
+            status: "pending",
+            date: "2024-11-07",
+          },
+          {
+            id: "2",
+            orderNumber: "ORD-2024-002",
+            customer: "Jane Smith",
+            amount: 1800,
+            status: "confirmed",
+            date: "2024-11-07",
+          },
+          {
+            id: "3",
+            orderNumber: "ORD-2024-003",
+            customer: "Bob Johnson",
+            amount: 3200,
+            status: "shipped",
+            date: "2024-11-06",
+          },
+        ],
+        topProducts: [
+          {
+            id: "1",
+            name: "Premium Headphones",
+            sales: 45,
+            revenue: 67500,
+            views: 1250,
+          },
+          {
+            id: "2",
+            name: "Wireless Mouse",
+            sales: 38,
+            revenue: 19000,
+            views: 890,
+          },
+          {
+            id: "3",
+            name: "Mechanical Keyboard",
+            sales: 32,
+            revenue: 96000,
+            views: 756,
+          },
+        ],
+        shopPerformance: {
+          averageRating: 4.8,
+          totalRatings: 156,
+          orderFulfillment: 94,
+          responseTime: "2.5 hours",
+        },
+        alerts: {
+          lowStock: 3,
+          pendingShipment: 5,
+          newReviews: 2,
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const recentOrders = [
-    {
-      id: "1",
-      orderNumber: "ORD-2024-001",
-      customer: "John Doe",
-      amount: 2500,
-      status: "pending",
-      date: "2024-11-07",
-    },
-    {
-      id: "2",
-      orderNumber: "ORD-2024-002",
-      customer: "Jane Smith",
-      amount: 1800,
-      status: "confirmed",
-      date: "2024-11-07",
-    },
-    {
-      id: "3",
-      orderNumber: "ORD-2024-003",
-      customer: "Bob Johnson",
-      amount: 3200,
-      status: "shipped",
-      date: "2024-11-06",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
-  const topProducts = [
-    {
-      id: "1",
-      name: "Premium Headphones",
-      sales: 45,
-      revenue: 67500,
-      views: 1250,
-    },
-    {
-      id: "2",
-      name: "Wireless Mouse",
-      sales: 38,
-      revenue: 19000,
-      views: 890,
-    },
-    {
-      id: "3",
-      name: "Mechanical Keyboard",
-      sales: 32,
-      revenue: 96000,
-      views: 756,
-    },
-  ];
+  if (!data) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <AlertCircle className="h-12 w-12 text-red-500" />
+        <p className="text-lg text-gray-600">
+          {error || "Failed to load dashboard"}
+        </p>
+        <button
+          onClick={loadDashboardData}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  const { stats, recentOrders, topProducts, shopPerformance, alerts } = data;
 
   return (
     <div className="space-y-6">
@@ -289,45 +394,58 @@ export default function SellerDashboardPage() {
             </h2>
           </div>
           <div className="divide-y divide-gray-200">
-            <Link
-              href="/seller/products?filter=lowStock"
-              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
-            >
-              <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">Low Stock Alert</p>
-                <p className="text-sm text-gray-600">
-                  3 products are running low on stock
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-gray-400" />
-            </Link>
-            <Link
-              href="/seller/orders?status=pending"
-              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
-            >
-              <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">Pending Actions</p>
-                <p className="text-sm text-gray-600">
-                  5 orders waiting for shipment
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-gray-400" />
-            </Link>
-            <Link
-              href="/seller/reviews"
-              className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
-            >
-              <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">New Reviews</p>
-                <p className="text-sm text-gray-600">
-                  You have 2 new product reviews
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-gray-400" />
-            </Link>
+            {alerts.lowStock > 0 && (
+              <Link
+                href="/seller/products?filter=lowStock"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">Low Stock Alert</p>
+                  <p className="text-sm text-gray-600">
+                    {alerts.lowStock} products are running low on stock
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400" />
+              </Link>
+            )}
+            {alerts.pendingShipment > 0 && (
+              <Link
+                href="/seller/orders?status=confirmed"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">Pending Actions</p>
+                  <p className="text-sm text-gray-600">
+                    {alerts.pendingShipment} orders waiting for shipment
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400" />
+              </Link>
+            )}
+            {alerts.newReviews > 0 && (
+              <Link
+                href="/seller/reviews"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">New Reviews</p>
+                  <p className="text-sm text-gray-600">
+                    You have {alerts.newReviews} new product reviews
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400" />
+              </Link>
+            )}
+            {alerts.lowStock === 0 &&
+              alerts.pendingShipment === 0 &&
+              alerts.newReviews === 0 && (
+                <div className="px-6 py-8 text-center">
+                  <p className="text-gray-500">No alerts at this time</p>
+                </div>
+              )}
           </div>
         </div>
 
@@ -344,32 +462,41 @@ export default function SellerDashboardPage() {
                 <span className="text-gray-600">Average Rating</span>
                 <span className="font-medium text-gray-900 flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  4.8 / 5.0
+                  {shopPerformance.averageRating.toFixed(1)} / 5.0
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-yellow-500 h-2 rounded-full"
-                  style={{ width: "96%" }}
+                  style={{
+                    width: `${(shopPerformance.averageRating / 5) * 100}%`,
+                  }}
                 ></div>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Based on {shopPerformance.totalRatings} ratings
+              </p>
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
                 <span className="text-gray-600">Order Fulfillment</span>
-                <span className="font-medium text-gray-900">94%</span>
+                <span className="font-medium text-gray-900">
+                  {shopPerformance.orderFulfillment}%
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full"
-                  style={{ width: "94%" }}
+                  style={{ width: `${shopPerformance.orderFulfillment}%` }}
                 ></div>
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
                 <span className="text-gray-600">Response Time</span>
-                <span className="font-medium text-gray-900">2.5 hours</span>
+                <span className="font-medium text-gray-900">
+                  {shopPerformance.responseTime}
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div

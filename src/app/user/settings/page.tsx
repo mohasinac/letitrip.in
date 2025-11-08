@@ -39,12 +39,31 @@ export default function SettingsPage() {
     setSuccess(false);
 
     try {
-      // TODO: Implement user update API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update profile");
+      }
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      setError("Failed to update profile. Please try again.");
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to update profile. Please try again.";
+      setError(message);
     } finally {
       setLoading(false);
     }

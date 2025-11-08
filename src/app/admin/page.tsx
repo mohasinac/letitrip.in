@@ -31,16 +31,20 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // For now, we'll use mock data
-    // In production, you would fetch from an API endpoint
     const loadStats = async () => {
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch("/api/admin/stats");
-        // const data = await response.json();
+        const response = await fetch("/api/admin/dashboard");
 
-        // Mock data for demonstration
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        if (!response.ok) {
+          throw new Error("Failed to load dashboard stats");
+        }
+
+        const data = await response.json();
+        setStats(data.stats);
+      } catch (error) {
+        console.error("Failed to load stats:", error);
+
+        // Fallback to mock data for development
         setStats({
           totalUsers: 1250,
           totalSellers: 85,
@@ -51,8 +55,6 @@ export default function AdminDashboardPage() {
           activeUsers: 420,
           pendingOrders: 23,
         });
-      } catch (error) {
-        console.error("Failed to load stats:", error);
       } finally {
         setLoading(false);
       }

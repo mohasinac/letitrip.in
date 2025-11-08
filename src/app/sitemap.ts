@@ -1,6 +1,63 @@
 import { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Note: This is a server component, we can fetch data directly
+async function fetchProducts() {
+  try {
+    const res = await fetch('https://justforview.in/api/products?status=active&limit=1000', {
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.products || [];
+  } catch (error) {
+    console.error('Failed to fetch products for sitemap:', error);
+    return [];
+  }
+}
+
+async function fetchCategories() {
+  try {
+    const res = await fetch('https://justforview.in/api/categories?limit=1000', {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.categories || [];
+  } catch (error) {
+    console.error('Failed to fetch categories for sitemap:', error);
+    return [];
+  }
+}
+
+async function fetchShops() {
+  try {
+    const res = await fetch('https://justforview.in/api/shops?status=active&limit=1000', {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.shops || [];
+  } catch (error) {
+    console.error('Failed to fetch shops for sitemap:', error);
+    return [];
+  }
+}
+
+async function fetchAuctions() {
+  try {
+    const res = await fetch('https://justforview.in/api/auctions?status=active&limit=1000', {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.auctions || [];
+  } catch (error) {
+    console.error('Failed to fetch auctions for sitemap:', error);
+    return [];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://justforview.in'
   const currentDate = new Date()
 
@@ -94,11 +151,51 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // TODO: Add dynamic pages when API is ready
-  // - Products from /api/products
-  // - Categories from /api/categories
-  // - Shops from /api/shops
-  // - Auction items
+  // Fetch dynamic data
+  const [products, categories, shops, auctions] = await Promise.all([
+    fetchProducts(),
+    fetchCategories(),
+    fetchShops(),
+    fetchAuctions(),
+  ]);
+
+  // Dynamic product pages
+  const productPages: MetadataRoute.Sitemap = products.map((product: any) => ({
+    url: `${baseUrl}/products/${product.slug}`,
+    lastModified: product.updated_at ? new Date(product.updated_at) : currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
+  // Dynamic category pages
+  const categoryPages: MetadataRoute.Sitemap = categories.map((category: any) => ({
+    url: `${baseUrl}/categories/${category.slug}`,
+    lastModified: category.updated_at ? new Date(category.updated_at) : currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+
+  // Dynamic shop pages
+  const shopPages: MetadataRoute.Sitemap = shops.map((shop: any) => ({
+    url: `${baseUrl}/shops/${shop.slug}`,
+    lastModified: shop.updated_at ? new Date(shop.updated_at) : currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  // Dynamic auction pages
+  const auctionPages: MetadataRoute.Sitemap = auctions.map((auction: any) => ({
+    url: `${baseUrl}/auctions/${auction.slug || auction.id}`,
+    lastModified: auction.updated_at ? new Date(auction.updated_at) : currentDate,
+    changeFrequency: 'hourly' as const,
+    priority: 0.8,
+  }));
   
-  return staticPages
+  return [
+    ...staticPages,
+    ...productPages,
+    ...categoryPages,
+    ...shopPages,
+    ...auctionPages,
+  ];
 }

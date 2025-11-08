@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Collections } from '@/app/api/lib/firebase/collections';
-import { withRouteRateLimit } from '../middleware/withRouteRateLimit';
+import { withRedisRateLimit, RATE_LIMITS } from '@/app/api/lib/rate-limiter-redis';
 
 // Utility: safely get number from query
 function toNumber(value: string | null, fallback: number): number {
@@ -18,7 +18,7 @@ async function resolveCategorySlug(categorySlug?: string | null): Promise<string
 }
 
 export async function GET(req: NextRequest) {
-  return withRouteRateLimit(req, async (request: NextRequest) => {
+  return withRedisRateLimit(req, async (request: NextRequest) => {
     try {
       const { searchParams } = new URL(request.url);
 
@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
       console.error('Search error:', error);
       return NextResponse.json({ success: false, error: 'Search failed' }, { status: 500 });
     }
-  });
+  }, RATE_LIMITS.SEARCH);
 }
 
 function itDate(v: any): number | null {
