@@ -1,11 +1,15 @@
 import FeaturedCategories from "@/components/layout/FeaturedCategories";
 import FAQSection from "@/components/faq/FAQSection";
+import ShopsNav from "@/components/layout/ShopsNav";
 
 export default function Home() {
   return (
     <main id="home-page" className="container mx-auto px-4 py-8">
       {/* 5. Featured Categories */}
       <FeaturedCategories />
+
+      {/* 3. Shops Navigation */}
+      <ShopsNav />
       <div className="space-y-8">
         {/* Hero Section */}
         <section

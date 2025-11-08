@@ -44,9 +44,6 @@ export default function Header() {
 
       {/* 3-5. Rest of header content */}
       <header>
-        {/* 3. Shops Navigation */}
-        <ShopsNav />
-
         {/* 4. Search Bar with Categories - Hidden by default */}
         <SearchBar
           ref={searchBarRef}

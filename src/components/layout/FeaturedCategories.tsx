@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { FEATURED_CATEGORIES } from "@/constants/navigation";
+import { useRef, useState, useEffect } from "react";
+import { categoriesService } from "@/services/categories.service";
+import type { Category } from "@/types";
 import {
   Layers,
   Heart,
@@ -35,9 +36,26 @@ export default function FeaturedCategories() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Show first 8 categories by default
-  const visibleCategories = FEATURED_CATEGORIES.slice(0, 9);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoriesService.getFeatured();
+        setCategories(data.slice(0, 9));
+      } catch (error) {
+        console.error("Failed to fetch featured categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Show first 9 categories by default
+  const visibleCategories = categories;
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -86,26 +104,37 @@ export default function FeaturedCategories() {
               );
             }}
           >
-            {visibleCategories.map((category) => {
-              const Icon = iconMap[category.icon] || Package;
-              return (
-                <Link
-                  key={category.id}
-                  href={category.link}
-                  className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
-                >
-                  <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
-                    <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700" />
+            {loading
+              ? // Loading skeleton
+                Array.from({ length: 9 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px]"
+                  >
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-200 rounded-full animate-pulse" />
+                    <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
                   </div>
-                  <span className="text-[10px] lg:text-xs text-gray-800 text-center group-hover:text-yellow-700 font-medium leading-tight">
-                    {category.name}
-                  </span>
-                </Link>
-              );
-            })}
+                ))
+              : visibleCategories.map((category) => {
+                  const Icon = iconMap[category.icon || "package"] || Package;
+                  return (
+                    <Link
+                      key={category.id}
+                      href={`/categories/${category.slug}`}
+                      className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
+                    >
+                      <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
+                        <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700" />
+                      </div>
+                      <span className="text-[10px] lg:text-xs text-gray-800 text-center group-hover:text-yellow-700 font-medium leading-tight">
+                        {category.name}
+                      </span>
+                    </Link>
+                  );
+                })}
 
             {/* Show More Button - Navigate to Categories Page */}
-            {FEATURED_CATEGORIES.length > 9 && (
+            {!loading && categories.length >= 9 && (
               <Link
                 href="/categories"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
