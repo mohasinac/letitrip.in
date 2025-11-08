@@ -102,6 +102,27 @@
 - Validate shop slug availability
 - Check slug uniqueness
 
+### `/api/shops/[slug]/follow` - POST, DELETE, GET
+
+- **POST**: Follow a shop (user feature)
+  - Adds to user's following subcollection
+  - Increments shop's follower_count
+  - Returns success message
+- **DELETE**: Unfollow a shop
+  - Removes from user's following subcollection
+  - Decrements shop's follower_count
+  - Returns success message
+- **GET**: Check if following
+  - Returns `{ isFollowing: boolean }`
+  - No auth required (returns false if not logged in)
+
+### `/api/shops/following` - GET
+
+- Get list of shops the user follows
+- Returns shops array with follow timestamps
+- Sorted by followed_at (most recent first)
+- Requires authentication
+
 ---
 
 ## 📦 Products Routes

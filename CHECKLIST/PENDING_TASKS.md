@@ -185,6 +185,24 @@
 
 ---
 
+## 🎯 Phase 6 Enhancements (Continued)
+
+- [x] **Shop Follow Functionality** ✅ COMPLETE
+  - ✅ `/api/shops/[slug]/follow` - POST (follow), DELETE (unfollow), GET (check status)
+  - ✅ `/api/shops/following` - GET (list followed shops)
+  - ✅ `ShopHeader` component - Integrated follow/unfollow button with API
+  - ✅ `/user/following` page - List of followed shops with grid view
+  - ✅ `shopsService` - Added follow(), unfollow(), checkFollowing(), getFollowing() methods
+  - ✅ Features:
+    - Real-time follow status check on page load
+    - Follow/unfollow with authentication guard
+    - Follower count tracking in shop stats
+    - User's following list page with empty state
+    - Follows stored in user subcollection for efficient queries
+  - Note: Shop feed/notifications can be added as future enhancement
+
+---
+
 ## 🛠️ LOW PRIORITY - Administrative Tools
 
 ### Phase 5: Admin Dashboard

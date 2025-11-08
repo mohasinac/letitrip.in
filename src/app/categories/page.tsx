@@ -18,10 +18,13 @@ export default function CategoriesPage() {
   const loadCategories = async () => {
     setLoading(true);
     try {
-      const data = await categoriesService.list({ parentId: null });
-      setCategories(data || []);
+      const response: any = await categoriesService.list({ parentId: null });
+      // Handle both formats: direct array or { data: array }
+      const categoriesData = response?.data || response || [];
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error) {
       console.error("Failed to load categories:", error);
+      setCategories([]);
     } finally {
       setLoading(false);
     }

@@ -159,6 +159,26 @@ class ShopsService {
   async getStats(slug: string): Promise<any> {
     return apiService.get<any>(`/shops/${slug}/stats`);
   }
+
+  // Follow shop (user feature)
+  async follow(slug: string): Promise<{ message: string }> {
+    return apiService.post<{ message: string }>(`/shops/${slug}/follow`, {});
+  }
+
+  // Unfollow shop (user feature)
+  async unfollow(slug: string): Promise<{ message: string }> {
+    return apiService.delete<{ message: string }>(`/shops/${slug}/follow`);
+  }
+
+  // Check if following shop
+  async checkFollowing(slug: string): Promise<{ isFollowing: boolean }> {
+    return apiService.get<{ isFollowing: boolean }>(`/shops/${slug}/follow`);
+  }
+
+  // Get following shops list
+  async getFollowing(): Promise<{ shops: Shop[]; count: number }> {
+    return apiService.get<{ shops: Shop[]; count: number }>('/shops/following');
+  }
 }
 
 export const shopsService = new ShopsService();

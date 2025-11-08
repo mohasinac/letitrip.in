@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
 import type { Shop } from "@/types";
+import { shopsService } from "@/services/shops.service";
 
 interface ShopHeaderProps {
   shop: Shop;
@@ -11,15 +12,38 @@ interface ShopHeaderProps {
 export function ShopHeader({ shop }: ShopHeaderProps) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [checkingFollow, setCheckingFollow] = useState(true);
+
+  // Check if already following on mount
+  useEffect(() => {
+    checkFollowStatus();
+  }, [shop.slug]);
+
+  const checkFollowStatus = async () => {
+    try {
+      const result = await shopsService.checkFollowing(shop.slug);
+      setIsFollowing(result.isFollowing);
+    } catch (error) {
+      // User not authenticated or error - default to not following
+      setIsFollowing(false);
+    } finally {
+      setCheckingFollow(false);
+    }
+  };
 
   const handleFollow = async () => {
     setFollowLoading(true);
     try {
-      // TODO: Implement follow API
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setIsFollowing(!isFollowing);
-    } catch (error) {
-      console.error("Failed to follow shop:", error);
+      if (isFollowing) {
+        await shopsService.unfollow(shop.slug);
+        setIsFollowing(false);
+      } else {
+        await shopsService.follow(shop.slug);
+        setIsFollowing(true);
+      }
+    } catch (error: any) {
+      console.error("Failed to follow/unfollow shop:", error);
+      alert(error.message || "Please login to follow shops");
     } finally {
       setFollowLoading(false);
     }
@@ -109,11 +133,11 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
               <div className="flex gap-2 flex-shrink-0">
                 <button
                   onClick={handleFollow}
-                  disabled={followLoading}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  disabled={followLoading || checkingFollow}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 ${
                     isFollowing
                       ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      : "bg-primary text-white hover:bg-primary/90"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
                 >
                   <Heart
@@ -121,7 +145,11 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                       isFollowing ? "fill-current" : ""
                     }`}
                   />
-                  {isFollowing ? "Following" : "Follow"}
+                  {checkingFollow
+                    ? "..."
+                    : isFollowing
+                    ? "Following"
+                    : "Follow"}
                 </button>
                 <button
                   onClick={handleShare}

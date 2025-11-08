@@ -84,6 +84,7 @@ export interface Shop {
   rating: number;
   reviewCount: number;
   productCount: number;
+  follower_count?: number;
   
   // Flags
   isVerified: boolean;
