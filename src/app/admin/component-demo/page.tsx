@@ -12,7 +12,7 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 /**
  * Component Showcase - Demo page for admin components
  * This page demonstrates all reusable admin components
- * 
+ *
  * URL: /admin/component-demo
  */
 export default function ComponentDemoPage() {
@@ -25,7 +25,10 @@ export default function ComponentDemoPage() {
   const triggerToasts = () => {
     toast.success("Success! Operation completed successfully.");
     setTimeout(() => toast.error("Error! Something went wrong."), 500);
-    setTimeout(() => toast.warning("Warning! Please review your changes."), 1000);
+    setTimeout(
+      () => toast.warning("Warning! Please review your changes."),
+      1000
+    );
     setTimeout(() => toast.info("Info: Processing your request..."), 1500);
   };
 
@@ -75,7 +78,7 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             ToggleSwitch Component
           </h2>
-          
+
           <div className="space-y-6">
             {/* Basic Toggle */}
             <div>
@@ -154,7 +157,7 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             LoadingSpinner Component
           </h2>
-          
+
           <div className="space-y-6">
             {/* Sizes */}
             <div>
@@ -187,7 +190,9 @@ export default function ComponentDemoPage() {
 
             {/* Full Screen Demo */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Full Screen Mode</h3>
+              <h3 className="font-medium text-gray-900 mb-3">
+                Full Screen Mode
+              </h3>
               <button
                 onClick={() => {
                   setShowLoading(true);
@@ -215,41 +220,44 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             Toast Notifications
           </h2>
-          
+
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              Click the buttons below to test different toast notification types:
+              Click the buttons below to test different toast notification
+              types:
             </p>
-            
+
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => toast.success("Operation completed successfully!")}
+                onClick={() =>
+                  toast.success("Operation completed successfully!")
+                }
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
                 Success Toast
               </button>
-              
+
               <button
                 onClick={() => toast.error("An error occurred!")}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
                 Error Toast
               </button>
-              
+
               <button
                 onClick={() => toast.warning("Please review your changes.")}
                 className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
               >
                 Warning Toast
               </button>
-              
+
               <button
                 onClick={() => toast.info("Processing your request...")}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Info Toast
               </button>
-              
+
               <button
                 onClick={triggerToasts}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
@@ -277,12 +285,13 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             ConfirmDialog Component
           </h2>
-          
+
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              Professional confirmation dialogs to replace browser confirm() alerts:
+              Professional confirmation dialogs to replace browser confirm()
+              alerts:
             </p>
-            
+
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setShowDialog(true)}
@@ -311,7 +320,7 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             AdminPageHeader Component
           </h2>
-          
+
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
               See the header at the top of this page for a live example!
@@ -331,7 +340,7 @@ export default function ComponentDemoPage() {
             <div className="mt-4">
               <h4 className="font-medium text-gray-900 mb-2">Usage Example:</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs">
-{`<AdminPageHeader
+                {`<AdminPageHeader
   title="Page Title"
   description="Page description text"
   breadcrumbs={[
@@ -355,7 +364,7 @@ export default function ComponentDemoPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             📊 Impact & Benefits
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-4">
               <div className="text-3xl font-bold text-blue-600 mb-1">21%</div>
@@ -364,7 +373,7 @@ export default function ComponentDemoPage() {
                 Homepage admin: 560 → 440 lines
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg p-4">
               <div className="text-3xl font-bold text-green-600 mb-1">280+</div>
               <div className="text-sm text-gray-600">Reusable Lines</div>
@@ -372,7 +381,7 @@ export default function ComponentDemoPage() {
                 Extracted into components
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg p-4">
               <div className="text-3xl font-bold text-purple-600 mb-1">5</div>
               <div className="text-sm text-gray-600">New Components</div>

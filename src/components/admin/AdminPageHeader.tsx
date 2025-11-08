@@ -22,9 +22,7 @@ export function AdminPageHeader({
           <ol className="flex items-center space-x-2 text-sm">
             {breadcrumbs.map((crumb, index) => (
               <li key={index} className="flex items-center">
-                {index > 0 && (
-                  <span className="mx-2 text-gray-400">/</span>
-                )}
+                {index > 0 && <span className="mx-2 text-gray-400">/</span>}
                 {crumb.href ? (
                   <a
                     href={crumb.href}
@@ -42,7 +40,7 @@ export function AdminPageHeader({
           </ol>
         </nav>
       )}
-      
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>

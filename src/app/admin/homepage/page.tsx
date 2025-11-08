@@ -218,223 +218,235 @@ export default function HomepageSettingsPage() {
             />
           </div>
 
-        {settings.heroCarousel.enabled && (
-          <div className="space-y-4 pt-4 border-t border-gray-200">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Auto-play Interval:{" "}
-                {(settings.heroCarousel.autoPlayInterval / 1000).toFixed(1)}s
-              </label>
-              <input
-                type="range"
-                min="3000"
-                max="10000"
-                step="500"
-                value={settings.heroCarousel.autoPlayInterval}
-                onChange={(e) => updateAutoPlayInterval(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>3s</span>
-                <span>10s</span>
+          {settings.heroCarousel.enabled && (
+            <div className="space-y-4 pt-4 border-t border-gray-200">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Auto-play Interval:{" "}
+                  {(settings.heroCarousel.autoPlayInterval / 1000).toFixed(1)}s
+                </label>
+                <input
+                  type="range"
+                  min="3000"
+                  max="10000"
+                  step="500"
+                  value={settings.heroCarousel.autoPlayInterval}
+                  onChange={(e) =>
+                    updateAutoPlayInterval(Number(e.target.value))
+                  }
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>3s</span>
+                  <span>10s</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Homepage Sections */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Homepage Sections
-        </h2>
+        {/* Homepage Sections */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Homepage Sections
+          </h2>
 
-        {/* Value Proposition */}
-        <SectionCard
-          title="Value Proposition Banner"
-          description="Key benefits displayed below hero"
-          enabled={settings.sections.valueProposition.enabled}
-          onToggle={() => toggleSection("valueProposition")}
-          expanded={expandedSection === "valueProposition"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "valueProposition" ? null : "valueProposition"
-            )
-          }
-        />
+          {/* Value Proposition */}
+          <SectionCard
+            title="Value Proposition Banner"
+            description="Key benefits displayed below hero"
+            enabled={settings.sections.valueProposition.enabled}
+            onToggle={() => toggleSection("valueProposition")}
+            expanded={expandedSection === "valueProposition"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "valueProposition"
+                  ? null
+                  : "valueProposition"
+              )
+            }
+          />
 
-        {/* Featured Categories */}
-        <SectionCard
-          title="Featured Categories"
-          description="Categories with products"
-          enabled={settings.sections.featuredCategories.enabled}
-          onToggle={() => toggleSection("featuredCategories")}
-          expanded={expandedSection === "featuredCategories"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredCategories"
-                ? null
-                : "featuredCategories"
-            )
-          }
-        >
-          <div className="space-y-4">
+          {/* Featured Categories */}
+          <SectionCard
+            title="Featured Categories"
+            description="Categories with products"
+            enabled={settings.sections.featuredCategories.enabled}
+            onToggle={() => toggleSection("featuredCategories")}
+            expanded={expandedSection === "featuredCategories"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredCategories"
+                  ? null
+                  : "featuredCategories"
+              )
+            }
+          >
+            <div className="space-y-4">
+              <SliderControl
+                label="Max Categories"
+                value={settings.sections.featuredCategories.maxCategories}
+                min={1}
+                max={10}
+                onChange={(value) =>
+                  updateSectionValue(
+                    "featuredCategories",
+                    "maxCategories",
+                    value
+                  )
+                }
+              />
+              <SliderControl
+                label="Products per Category"
+                value={settings.sections.featuredCategories.productsPerCategory}
+                min={5}
+                max={20}
+                onChange={(value) =>
+                  updateSectionValue(
+                    "featuredCategories",
+                    "productsPerCategory",
+                    value
+                  )
+                }
+              />
+            </div>
+          </SectionCard>
+
+          {/* Featured Products */}
+          <SectionCard
+            title="Featured Products"
+            description="Highlighted products showcase"
+            enabled={settings.sections.featuredProducts.enabled}
+            onToggle={() => toggleSection("featuredProducts")}
+            expanded={expandedSection === "featuredProducts"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredProducts"
+                  ? null
+                  : "featuredProducts"
+              )
+            }
+          >
             <SliderControl
-              label="Max Categories"
-              value={settings.sections.featuredCategories.maxCategories}
-              min={1}
-              max={10}
-              onChange={(value) =>
-                updateSectionValue("featuredCategories", "maxCategories", value)
-              }
-            />
-            <SliderControl
-              label="Products per Category"
-              value={settings.sections.featuredCategories.productsPerCategory}
+              label="Max Products"
+              value={settings.sections.featuredProducts.maxProducts}
               min={5}
               max={20}
               onChange={(value) =>
-                updateSectionValue(
-                  "featuredCategories",
-                  "productsPerCategory",
-                  value
-                )
+                updateSectionValue("featuredProducts", "maxProducts", value)
               }
             />
-          </div>
-        </SectionCard>
+          </SectionCard>
 
-        {/* Featured Products */}
-        <SectionCard
-          title="Featured Products"
-          description="Highlighted products showcase"
-          enabled={settings.sections.featuredProducts.enabled}
-          onToggle={() => toggleSection("featuredProducts")}
-          expanded={expandedSection === "featuredProducts"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredProducts" ? null : "featuredProducts"
-            )
-          }
-        >
-          <SliderControl
-            label="Max Products"
-            value={settings.sections.featuredProducts.maxProducts}
-            min={5}
-            max={20}
-            onChange={(value) =>
-              updateSectionValue("featuredProducts", "maxProducts", value)
+          {/* Featured Auctions */}
+          <SectionCard
+            title="Featured Auctions"
+            description="Live and upcoming auctions"
+            enabled={settings.sections.featuredAuctions.enabled}
+            onToggle={() => toggleSection("featuredAuctions")}
+            expanded={expandedSection === "featuredAuctions"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredAuctions"
+                  ? null
+                  : "featuredAuctions"
+              )
             }
-          />
-        </SectionCard>
-
-        {/* Featured Auctions */}
-        <SectionCard
-          title="Featured Auctions"
-          description="Live and upcoming auctions"
-          enabled={settings.sections.featuredAuctions.enabled}
-          onToggle={() => toggleSection("featuredAuctions")}
-          expanded={expandedSection === "featuredAuctions"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredAuctions" ? null : "featuredAuctions"
-            )
-          }
-        >
-          <SliderControl
-            label="Max Auctions"
-            value={settings.sections.featuredAuctions.maxAuctions}
-            min={5}
-            max={20}
-            onChange={(value) =>
-              updateSectionValue("featuredAuctions", "maxAuctions", value)
-            }
-          />
-        </SectionCard>
-
-        {/* Featured Shops */}
-        <SectionCard
-          title="Featured Shops"
-          description="Top shops with their products"
-          enabled={settings.sections.featuredShops.enabled}
-          onToggle={() => toggleSection("featuredShops")}
-          expanded={expandedSection === "featuredShops"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredShops" ? null : "featuredShops"
-            )
-          }
-        >
-          <div className="space-y-4">
+          >
             <SliderControl
-              label="Max Shops"
-              value={settings.sections.featuredShops.maxShops}
-              min={1}
-              max={10}
-              onChange={(value) =>
-                updateSectionValue("featuredShops", "maxShops", value)
-              }
-            />
-            <SliderControl
-              label="Products per Shop"
-              value={settings.sections.featuredShops.productsPerShop}
+              label="Max Auctions"
+              value={settings.sections.featuredAuctions.maxAuctions}
               min={5}
               max={20}
               onChange={(value) =>
-                updateSectionValue("featuredShops", "productsPerShop", value)
+                updateSectionValue("featuredAuctions", "maxAuctions", value)
               }
             />
-          </div>
-        </SectionCard>
+          </SectionCard>
 
-        {/* Featured Blogs */}
-        <SectionCard
-          title="Featured Blogs"
-          description="Latest blog posts"
-          enabled={settings.sections.featuredBlogs.enabled}
-          onToggle={() => toggleSection("featuredBlogs")}
-          expanded={expandedSection === "featuredBlogs"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredBlogs" ? null : "featuredBlogs"
-            )
-          }
-        >
-          <SliderControl
-            label="Max Blogs"
-            value={settings.sections.featuredBlogs.maxBlogs}
-            min={5}
-            max={20}
-            onChange={(value) =>
-              updateSectionValue("featuredBlogs", "maxBlogs", value)
+          {/* Featured Shops */}
+          <SectionCard
+            title="Featured Shops"
+            description="Top shops with their products"
+            enabled={settings.sections.featuredShops.enabled}
+            onToggle={() => toggleSection("featuredShops")}
+            expanded={expandedSection === "featuredShops"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredShops" ? null : "featuredShops"
+              )
             }
-          />
-        </SectionCard>
+          >
+            <div className="space-y-4">
+              <SliderControl
+                label="Max Shops"
+                value={settings.sections.featuredShops.maxShops}
+                min={1}
+                max={10}
+                onChange={(value) =>
+                  updateSectionValue("featuredShops", "maxShops", value)
+                }
+              />
+              <SliderControl
+                label="Products per Shop"
+                value={settings.sections.featuredShops.productsPerShop}
+                min={5}
+                max={20}
+                onChange={(value) =>
+                  updateSectionValue("featuredShops", "productsPerShop", value)
+                }
+              />
+            </div>
+          </SectionCard>
 
-        {/* Featured Reviews */}
-        <SectionCard
-          title="Featured Reviews"
-          description="Customer reviews showcase"
-          enabled={settings.sections.featuredReviews.enabled}
-          onToggle={() => toggleSection("featuredReviews")}
-          expanded={expandedSection === "featuredReviews"}
-          onToggleExpand={() =>
-            setExpandedSection(
-              expandedSection === "featuredReviews" ? null : "featuredReviews"
-            )
-          }
-        >
-          <SliderControl
-            label="Max Reviews"
-            value={settings.sections.featuredReviews.maxReviews}
-            min={5}
-            max={20}
-            onChange={(value) =>
-              updateSectionValue("featuredReviews", "maxReviews", value)
+          {/* Featured Blogs */}
+          <SectionCard
+            title="Featured Blogs"
+            description="Latest blog posts"
+            enabled={settings.sections.featuredBlogs.enabled}
+            onToggle={() => toggleSection("featuredBlogs")}
+            expanded={expandedSection === "featuredBlogs"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredBlogs" ? null : "featuredBlogs"
+              )
             }
-          />
-        </SectionCard>
-      </div>
+          >
+            <SliderControl
+              label="Max Blogs"
+              value={settings.sections.featuredBlogs.maxBlogs}
+              min={5}
+              max={20}
+              onChange={(value) =>
+                updateSectionValue("featuredBlogs", "maxBlogs", value)
+              }
+            />
+          </SectionCard>
+
+          {/* Featured Reviews */}
+          <SectionCard
+            title="Featured Reviews"
+            description="Customer reviews showcase"
+            enabled={settings.sections.featuredReviews.enabled}
+            onToggle={() => toggleSection("featuredReviews")}
+            expanded={expandedSection === "featuredReviews"}
+            onToggleExpand={() =>
+              setExpandedSection(
+                expandedSection === "featuredReviews" ? null : "featuredReviews"
+              )
+            }
+          >
+            <SliderControl
+              label="Max Reviews"
+              value={settings.sections.featuredReviews.maxReviews}
+              min={5}
+              max={20}
+              onChange={(value) =>
+                updateSectionValue("featuredReviews", "maxReviews", value)
+              }
+            />
+          </SectionCard>
+        </div>
 
         {/* Last Updated Info */}
         {settings.updatedAt && (

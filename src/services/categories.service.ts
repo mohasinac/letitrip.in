@@ -90,7 +90,8 @@ class CategoriesService {
 
   // Update category (admin only)
   async update(slug: string, data: UpdateCategoryData): Promise<Category> {
-    return apiService.patch<Category>(`/categories/${slug}`, data);
+    const response = await apiService.patch<{ success: boolean; data: Category }>(`/categories/${slug}`, data);
+    return response.data;
   }
 
   // Delete category (admin only)
@@ -100,7 +101,8 @@ class CategoriesService {
 
   // Get category breadcrumb
   async getBreadcrumb(id: string): Promise<Category[]> {
-    return apiService.get<Category[]>(`/categories/${id}/breadcrumb`);
+    const response = await apiService.get<{ success: boolean; data: Category[] }>(`/categories/${id}/breadcrumb`);
+    return response.data || [];
   }
 
   // Get featured categories
@@ -117,7 +119,8 @@ class CategoriesService {
 
   // Search categories
   async search(query: string): Promise<Category[]> {
-    return apiService.get<Category[]>(`/categories/search?q=${encodeURIComponent(query)}`);
+    const response = await apiService.get<{ success: boolean; data: Category[] }>(`/categories/search?q=${encodeURIComponent(query)}`);
+    return response.data || [];
   }
 
   // Reorder categories (admin only)

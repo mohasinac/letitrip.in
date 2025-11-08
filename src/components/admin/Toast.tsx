@@ -19,7 +19,7 @@ let toasts: Toast[] = [];
 function notify(type: ToastType, message: string, duration = 5000) {
   const id = `toast-${++toastId}`;
   const toast: Toast = { id, type, message, duration };
-  
+
   toasts = [...toasts, toast];
   listeners.forEach((listener) => listener(toasts));
 
@@ -36,10 +36,14 @@ function removeToast(id: string) {
 }
 
 export const toast = {
-  success: (message: string, duration?: number) => notify("success", message, duration),
-  error: (message: string, duration?: number) => notify("error", message, duration),
-  info: (message: string, duration?: number) => notify("info", message, duration),
-  warning: (message: string, duration?: number) => notify("warning", message, duration),
+  success: (message: string, duration?: number) =>
+    notify("success", message, duration),
+  error: (message: string, duration?: number) =>
+    notify("error", message, duration),
+  info: (message: string, duration?: number) =>
+    notify("info", message, duration),
+  warning: (message: string, duration?: number) =>
+    notify("warning", message, duration),
 };
 
 export function ToastContainer() {
@@ -57,7 +61,11 @@ export function ToastContainer() {
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2 max-w-md">
       {currentToasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
+        <ToastItem
+          key={toast.id}
+          toast={toast}
+          onClose={() => removeToast(toast.id)}
+        />
       ))}
     </div>
   );

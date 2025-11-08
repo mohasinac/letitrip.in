@@ -54,7 +54,9 @@ export function ToggleSwitch({
           type="button"
           onClick={onToggle}
           disabled={disabled}
-          className={`relative inline-flex ${sizeConfig.container} items-center rounded-full transition-colors ${
+          className={`relative inline-flex ${
+            sizeConfig.container
+          } items-center rounded-full transition-colors ${
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
           } ${enabled ? "bg-blue-600" : "bg-gray-200"}`}
           aria-pressed={enabled}
@@ -72,7 +74,9 @@ export function ToggleSwitch({
       type="button"
       onClick={onToggle}
       disabled={disabled}
-      className={`relative inline-flex ${sizeConfig.container} items-center rounded-full transition-colors ${
+      className={`relative inline-flex ${
+        sizeConfig.container
+      } items-center rounded-full transition-colors ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       } ${enabled ? "bg-blue-600" : "bg-gray-200"}`}
       aria-pressed={enabled}
