@@ -12,6 +12,7 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ProductFilters, ProductFilterValues } from "@/components/filters/ProductFilters";
+import { AuctionFilters, AuctionFilterValues } from "@/components/filters/AuctionFilters";
 import { useCart } from "@/hooks/useCart";
 import type { Shop, Product, Auction } from "@/types";
 
