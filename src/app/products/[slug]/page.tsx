@@ -2,14 +2,16 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, Loader2, Star, Store } from "lucide-react";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { ProductDescription } from "@/components/product/ProductDescription";
 import { ProductReviews } from "@/components/product/ProductReviews";
 import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import { shopsService } from "@/services/shops.service";
+import type { Product, Shop } from "@/types";
 
 interface ProductPageProps {
   params: Promise<{
@@ -22,6 +24,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [shop, setShop] = useState<Shop | null>(null);
   const [variants, setVariants] = useState<Product[]>([]);
   const [shopProducts, setShopProducts] = useState<Product[]>([]);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
@@ -37,6 +40,16 @@ export default function ProductPage({ params }: ProductPageProps) {
       setLoading(true);
       const data = await productsService.getBySlug(slug);
       setProduct(data);
+
+      // Load shop info
+      if (data.shopId) {
+        try {
+          const shopData = await shopsService.getBySlug(data.shopId);
+          setShop(shopData);
+        } catch (error) {
+          console.error("Failed to load shop:", error);
+        }
+      }
 
       // Load related data
       loadVariants(slug);
@@ -108,49 +121,50 @@ export default function ProductPage({ params }: ProductPageProps) {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Product Overview */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Gallery */}
-            <ProductGallery media={media} productName={product.name} />
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Left Column - Product Overview */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Product Overview */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Gallery */}
+                <ProductGallery media={media} productName={product.name} />
 
-            {/* Info & Actions */}
-            <ProductInfo
-              product={{
-                id: product.id,
-                name: product.name,
-                slug: product.slug,
-                actualPrice: product.costPrice,
-                originalPrice: product.originalPrice,
-                salePrice: product.price,
-                stock: product.stockCount,
-                rating: product.rating,
-                reviewCount: product.reviewCount,
-                shop_id: product.shopId,
-                shop_name: product.shopId, // Would need to fetch shop name
-                returnable: product.isReturnable,
-                condition: product.condition,
-                status: product.status,
-                image: product.images?.[0] || "",
-              }}
+                {/* Info & Actions */}
+                <ProductInfo
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    actualPrice: product.costPrice,
+                    originalPrice: product.originalPrice,
+                    salePrice: product.price,
+                    stock: product.stockCount,
+                    rating: product.rating,
+                    reviewCount: product.reviewCount,
+                    shop_id: product.shopId,
+                    shop_name: shop?.name || product.shopId,
+                    returnable: product.isReturnable,
+                    condition: product.condition,
+                    status: product.status,
+                    image: product.images?.[0] || "",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Description & Specs */}
+            <ProductDescription
+              description={product.description}
+              specifications={product.specifications?.reduce((acc, spec) => {
+                acc[spec.name] = spec.value;
+                return acc;
+              }, {} as Record<string, string>)}
             />
-          </div>
-        </div>
 
-        {/* Description & Specs */}
-        <div className="mb-6">
-          <ProductDescription
-            description={product.description}
-            specifications={product.specifications?.reduce((acc, spec) => {
-              acc[spec.name] = spec.value;
-              return acc;
-            }, {} as Record<string, string>)}
-          />
-        </div>
-
-        {/* Variants Section */}
-        {variants.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            {/* Variants Section */}
+            {variants.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Other Options (Variants)
             </h2>
@@ -191,9 +205,9 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
 
-        {/* From This Shop Section */}
-        {shopProducts.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            {/* From This Shop Section */}
+            {shopProducts.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
