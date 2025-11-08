@@ -61,7 +61,7 @@ export default function FeaturedAuctionsSection() {
   return (
     <section className="py-8">
       <HorizontalScrollContainer
-        title="Live Auctions"
+        title="🔥 Live Auctions"
         viewAllLink="/auctions?status=live"
         viewAllText="View All Auctions"
         itemWidth="280px"

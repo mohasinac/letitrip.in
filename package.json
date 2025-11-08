@@ -4,9 +4,9 @@
   "private": true,
   "description": "Modern e-commerce platform built with Next.js",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node --max-old-space-size=4096 server.js",
     "dev:next": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "NODE_ENV=production node server.js",
     "start:next": "next start",
     "lint": "next lint",

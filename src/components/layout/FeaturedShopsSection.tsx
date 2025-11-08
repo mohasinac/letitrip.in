@@ -28,7 +28,7 @@ export default function FeaturedShopsSection() {
       setLoading(true);
       const shopsData = await shopsService.list({
         showOnHomepage: true,
-        limit: 5,
+        limit: 3, // Reduced from 5 to 3
       });
       const shops = shopsData.data;
 
@@ -37,7 +37,7 @@ export default function FeaturedShopsSection() {
           try {
             const productsData = await productsService.list({
               shopId: shop.id,
-              limit: 10,
+              limit: 5, // Reduced from 10 to 5
               status: "published" as const,
             });
             return {
@@ -94,6 +94,14 @@ export default function FeaturedShopsSection() {
 
   return (
     <div className="space-y-12 py-8">
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          Featured Shops
+        </h2>
+        <p className="text-gray-600">
+          Discover products from our verified seller partners
+        </p>
+      </div>
       {shopsWithProducts.map(({ shop, products }) => (
         <section key={shop.id} className="space-y-4">
           <div className="mb-6">
@@ -118,6 +126,7 @@ export default function FeaturedShopsSection() {
             viewAllText="View Shop"
             itemWidth="280px"
             gap="1rem"
+            headingLevel="h3"
           >
             {products.map((product) => (
               <ProductCard

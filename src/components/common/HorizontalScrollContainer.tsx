@@ -13,6 +13,7 @@ interface HorizontalScrollContainerProps {
   itemWidth?: string;
   gap?: string;
   showArrows?: boolean;
+  headingLevel?: "h2" | "h3" | "h4";
 }
 
 export const HorizontalScrollContainer: React.FC<
@@ -26,6 +27,7 @@ export const HorizontalScrollContainer: React.FC<
   itemWidth = "280px",
   gap = "1rem",
   showArrows = true,
+  headingLevel = "h2",
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -70,9 +72,17 @@ export const HorizontalScrollContainer: React.FC<
       {/* Header */}
       {(title || viewAllLink) && (
         <div className="flex items-center justify-between mb-4">
-          {title && (
-            <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          )}
+          {title &&
+            React.createElement(
+              headingLevel,
+              {
+                className:
+                  headingLevel === "h2"
+                    ? "text-2xl font-bold text-gray-900"
+                    : "text-xl font-bold text-gray-900",
+              },
+              title
+            )}
           {viewAllLink && (
             <Link
               href={viewAllLink}

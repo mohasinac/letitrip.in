@@ -52,7 +52,7 @@ export default function FeaturedBlogsSection() {
   return (
     <section className="py-8">
       <HorizontalScrollContainer
-        title="Latest from Our Blog"
+        title="📰 Latest from Our Blog"
         viewAllLink="/blog"
         viewAllText="View All Posts"
         itemWidth="320px"

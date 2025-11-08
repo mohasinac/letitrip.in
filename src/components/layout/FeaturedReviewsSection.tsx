@@ -52,7 +52,7 @@ export default function FeaturedReviewsSection() {
   return (
     <section className="py-8">
       <HorizontalScrollContainer
-        title="Customer Reviews"
+        title="⭐ Customer Reviews"
         viewAllLink="/reviews"
         viewAllText="View All Reviews"
         itemWidth="350px"

@@ -78,7 +78,7 @@ export default function FeaturedProductsSection() {
   return (
     <section className="py-8">
       <HorizontalScrollContainer
-        title="Featured Products"
+        title="✨ Featured Products"
         viewAllLink="/products?featured=true"
         viewAllText="View All Products"
         itemWidth="280px"

@@ -26,14 +26,14 @@ export default function FeaturedCategoriesSection() {
     try {
       setLoading(true);
       const categories = await categoriesService.getHomepage();
-      const topCategories = categories.slice(0, 5);
+      const topCategories = categories.slice(0, 3); // Reduced from 5 to 3
 
       const categoriesData = await Promise.all(
         topCategories.map(async (category: Category) => {
           try {
             const productsData = await productsService.list({
               categoryId: category.id,
-              limit: 10,
+              limit: 5, // Reduced from 10 to 5
               status: "published" as const,
             });
             return {
@@ -92,6 +92,12 @@ export default function FeaturedCategoriesSection() {
 
   return (
     <div className="space-y-12 py-8">
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          Shop by Category
+        </h2>
+        <p className="text-gray-600">Browse products from our top categories</p>
+      </div>
       {categoriesWithProducts.map(({ category, products }) => (
         <section key={category.id} className="space-y-4">
           <HorizontalScrollContainer
@@ -100,6 +106,7 @@ export default function FeaturedCategoriesSection() {
             viewAllText="View All"
             itemWidth="280px"
             gap="1rem"
+            headingLevel="h3"
           >
             {products.map((product) => (
               <ProductCard

@@ -1,129 +1,416 @@
-import FeaturedCategories from "@/components/layout/FeaturedCategories";
-import FAQSection from "@/components/faq/FAQSection";
-import ShopsNav from "@/components/layout/ShopsNav";
-import FeaturedProductsSection from "@/components/layout/FeaturedProductsSection";
-import FeaturedAuctionsSection from "@/components/layout/FeaturedAuctionsSection";
-import HeroCarousel from "@/components/layout/HeroCarousel";
-import FeaturedBlogsSection from "@/components/layout/FeaturedBlogsSection";
-import FeaturedReviewsSection from "@/components/layout/FeaturedReviewsSection";
-import FeaturedCategoriesSection from "@/components/layout/FeaturedCategoriesSection";
-import FeaturedShopsSection from "@/components/layout/FeaturedShopsSection";
+"use client";
+
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { COMPANY_NAME, COMPANY_ALT_TEXT } from "@/constants/navigation";
+import {
+  homepageSettingsService,
+  HomepageSettings,
+} from "@/services/homepage-settings.service";
+
+// Dynamically import heavy components with SEO-friendly loading states
+const FeaturedCategories = dynamic(
+  () => import("@/components/layout/FeaturedCategories"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-32 bg-gray-100 rounded-lg animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const FAQSection = dynamic(() => import("@/components/faq/FAQSection"), {
+  ssr: true,
+  loading: () => (
+    <div className="py-8">
+      <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+      <p className="text-gray-600 mb-6">
+        Quick answers about authentic collectibles, shipping, and more
+      </p>
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse" />
+        ))}
+      </div>
+    </div>
+  ),
+});
+
+const ShopsNav = dynamic(() => import("@/components/layout/ShopsNav"), {
+  ssr: true,
+  loading: () => (
+    <div className="py-8">
+      <h2 className="text-2xl font-bold mb-6">Featured Shops</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-48 bg-gray-100 rounded-lg animate-pulse" />
+        ))}
+      </div>
+    </div>
+  ),
+});
+
+const FeaturedProductsSection = dynamic(
+  () => import("@/components/layout/FeaturedProductsSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
+        <p className="text-gray-600 mb-6">
+          Discover our handpicked selection of authentic collectibles from Japan
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-64 bg-gray-100 rounded-lg animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const FeaturedAuctionsSection = dynamic(
+  () => import("@/components/layout/FeaturedAuctionsSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Live Auctions</h2>
+        <p className="text-gray-600 mb-6">
+          Bid on exclusive collectibles and rare finds
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-80 bg-gray-100 rounded-lg animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const HeroCarousel = dynamic(() => import("@/components/layout/HeroCarousel"), {
+  ssr: true,
+  loading: () => (
+    <div className="relative h-96 bg-gray-100 rounded-lg animate-pulse">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-300">
+            Welcome to {COMPANY_NAME}
+          </h2>
+          <p className="text-gray-400 mt-2">Loading featured collections...</p>
+        </div>
+      </div>
+    </div>
+  ),
+});
+
+const FeaturedBlogsSection = dynamic(
+  () => import("@/components/layout/FeaturedBlogsSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Latest Blog Posts</h2>
+        <p className="text-gray-600 mb-6">
+          Stay updated with collecting tips, news, and insights
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-72 bg-gray-100 rounded-lg animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const FeaturedReviewsSection = dynamic(
+  () => import("@/components/layout/FeaturedReviewsSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+        <p className="text-gray-600 mb-6">
+          See what our customers say about their purchases
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-48 bg-gray-100 rounded-lg animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const FeaturedCategoriesSection = dynamic(
+  () => import("@/components/layout/FeaturedCategoriesSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Products by Category</h2>
+        <p className="text-gray-600 mb-6">
+          Browse our curated collections across popular categories
+        </p>
+        <div className="space-y-8">
+          {[...Array(3)].map((_, i) => (
+            <div key={i}>
+              <h3 className="text-xl font-semibold mb-4 h-7 bg-gray-100 rounded w-48 animate-pulse" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {[...Array(5)].map((_, j) => (
+                  <div
+                    key={j}
+                    className="h-64 bg-gray-100 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
+const FeaturedShopsSection = dynamic(
+  () => import("@/components/layout/FeaturedShopsSection"),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="py-8">
+        <h2 className="text-2xl font-bold mb-6">Shop by Seller</h2>
+        <p className="text-gray-600 mb-6">
+          Discover products from our trusted verified sellers
+        </p>
+        <div className="space-y-8">
+          {[...Array(3)].map((_, i) => (
+            <div key={i}>
+              <h3 className="text-xl font-semibold mb-4 h-7 bg-gray-100 rounded w-48 animate-pulse" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {[...Array(5)].map((_, j) => (
+                  <div
+                    key={j}
+                    className="h-64 bg-gray-100 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
 
 export default function Home() {
+  const [settings, setSettings] = useState<HomepageSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await homepageSettingsService.getSettings();
+        setSettings(response.settings);
+      } catch (error) {
+        console.error("Failed to load homepage settings:", error);
+        // Use default settings if API fails
+        setSettings(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <main id="home-page" className="container mx-auto px-4 py-8">
+        <div className="space-y-8 animate-pulse">
+          <div className="h-96 bg-gray-200 rounded-lg"></div>
+          <div className="h-64 bg-gray-200 rounded-lg"></div>
+          <div className="h-64 bg-gray-200 rounded-lg"></div>
+        </div>
+      </main>
+    );
+  }
   return (
     <main id="home-page" className="container mx-auto px-4 py-8">
       <div className="space-y-8">
-        {/* Hero Section */}
-        <section id="hero-section" className="relative">
-          <HeroCarousel />
+        {/* Welcome Heading - Always shown */}
+        <section className="text-center py-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
+            Welcome to {COMPANY_NAME}
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+            {COMPANY_ALT_TEXT} - Your Gateway to Authentic Collectibles
+          </p>
         </section>
 
-        {/* Value Proposition Banner */}
-        <section
-          id="value-proposition"
-          className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 md:p-6"
-        >
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
-            <div className="flex items-center gap-2 text-green-700 font-medium">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-sm md:text-base">
-                100% Authentic Products
-              </span>
+        {/* Hero Section - Conditional */}
+        {(!settings || settings.heroCarousel.enabled) && (
+          <section id="hero-section" className="relative">
+            <HeroCarousel />
+          </section>
+        )}
+
+        {/* Value Proposition Banner - Conditional */}
+        {(!settings || settings.sections.valueProposition.enabled) && (
+          <section
+            id="value-proposition"
+            className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 md:p-6"
+          >
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+              <div className="flex items-center gap-2 text-green-700 font-medium">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-sm md:text-base">
+                  100% Authentic Products
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-blue-700 font-medium">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                  />
+                </svg>
+                <span className="text-sm md:text-base">
+                  Zero Customs Charges
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-purple-700 font-medium">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span className="text-sm md:text-base">
+                  Fast India Delivery
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-orange-700 font-medium">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+                <span className="text-sm md:text-base">Secure Payments</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-blue-700 font-medium">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                />
-              </svg>
-              <span className="text-sm md:text-base">Zero Customs Charges</span>
-            </div>
-            <div className="flex items-center gap-2 text-purple-700 font-medium">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              <span className="text-sm md:text-base">Fast India Delivery</span>
-            </div>
-            <div className="flex items-center gap-2 text-orange-700 font-medium">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
-              <span className="text-sm md:text-base">Secure Payments</span>
-            </div>
-          </div>
-        </section>
-        {/* 5. Featured Categories */}
+          </section>
+        )}
+
+        {/* Featured Categories Icon Grid - Always shown */}
         <FeaturedCategories />
-        {/* Featured Categories Section */}
-        <section id="featured-categories">
-          <FeaturedCategoriesSection />
-        </section>
 
-        {/* Featured Products Section */}
-        <section id="featured-products">
-          <FeaturedProductsSection />
-        </section>
+        {/* Featured Categories Section - Conditional */}
+        {(!settings || settings.sections.featuredCategories.enabled) && (
+          <section id="featured-categories">
+            <FeaturedCategoriesSection />
+          </section>
+        )}
 
-        {/* Featured auctions Section */}
-        <section id="featured-auctions">
-          <FeaturedAuctionsSection />
-        </section>
-        {/* Shops Navigation */}
+        {/* Featured Products Section - Conditional */}
+        {(!settings || settings.sections.featuredProducts.enabled) && (
+          <section id="featured-products">
+            <FeaturedProductsSection />
+          </section>
+        )}
+
+        {/* Featured Auctions Section - Conditional */}
+        {(!settings || settings.sections.featuredAuctions.enabled) && (
+          <section id="featured-auctions">
+            <FeaturedAuctionsSection />
+          </section>
+        )}
+
+        {/* Shops Navigation - Always shown */}
         <ShopsNav />
 
-        {/* Featured Shops Section */}
-        <section id="featured-shops">
-          <FeaturedShopsSection />
-        </section>
-        {/* Featured blog posts Section */}
-        <section id="featured-blogs">
-          <FeaturedBlogsSection />
-        </section>
-        {/* Featured reviews posts Section */}
-        <section id="featured-reviews">
-          <FeaturedReviewsSection />
-        </section>
-        {/* FAQ Section */}
+        {/* Featured Shops Section - Conditional */}
+        {(!settings || settings.sections.featuredShops.enabled) && (
+          <section id="featured-shops">
+            <FeaturedShopsSection />
+          </section>
+        )}
+
+        {/* Featured Blog Posts Section - Conditional */}
+        {(!settings || settings.sections.featuredBlogs.enabled) && (
+          <section id="featured-blogs">
+            <FeaturedBlogsSection />
+          </section>
+        )}
+
+        {/* Featured Reviews Section - Conditional */}
+        {(!settings || settings.sections.featuredReviews.enabled) && (
+          <section id="featured-reviews">
+            <FeaturedReviewsSection />
+          </section>
+        )}
+
+        {/* FAQ Section - Always shown */}
         <section id="faq-section" className="py-8">
           <FAQSection
             title="Frequently Asked Questions"
