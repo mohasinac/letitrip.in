@@ -9,6 +9,9 @@ export interface AuctionFilterValues {
   bidMin?: number;
   bidMax?: number;
   featured?: boolean;
+  endingSoon?: boolean;
+  sortBy?: "endTime" | "currentBid" | "bidCount" | "createdAt";
+  sortOrder?: "asc" | "desc";
 }
 
 interface AuctionFiltersProps {
