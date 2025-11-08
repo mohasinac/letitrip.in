@@ -165,93 +165,94 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* Variants Section */}
             {variants.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Other Options (Variants)
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Similar products in this category that might interest you
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {variants.map((variant) => (
-                <div
-                  key={variant.id}
-                  onClick={() => router.push(`/products/${variant.slug}`)}
-                  className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-square relative">
-                    <img
-                      src={variant.images?.[0] || ""}
-                      alt={variant.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
-                      {variant.name}
-                    </h3>
-                    <div className="text-lg font-bold text-gray-900">
-                      ₹{variant.price.toLocaleString()}
-                    </div>
-                    {variant.originalPrice &&
-                      variant.originalPrice > variant.price && (
-                        <div className="text-xs text-gray-500 line-through">
-                          ₹{variant.originalPrice.toLocaleString()}
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  Other Options (Variants)
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Similar products in this category that might interest you
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                  {variants.map((variant) => (
+                    <div
+                      key={variant.id}
+                      onClick={() => router.push(`/products/${variant.slug}`)}
+                      className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                    >
+                      <div className="aspect-square relative">
+                        <img
+                          src={variant.images?.[0] || ""}
+                          alt={variant.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
+                          {variant.name}
+                        </h3>
+                        <div className="text-lg font-bold text-gray-900">
+                          ₹{variant.price.toLocaleString()}
                         </div>
-                      )}
-                  </div>
+                        {variant.originalPrice &&
+                          variant.originalPrice > variant.price && (
+                            <div className="text-xs text-gray-500 line-through">
+                              ₹{variant.originalPrice.toLocaleString()}
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
             {/* From This Shop Section */}
             {shopProducts.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  More from this shop
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  Explore other products from this seller
-                </p>
-              </div>
-              <button
-                onClick={() => router.push(`/shops/${product.shopId}`)}
-                className="text-blue-600 hover:underline font-medium"
-              >
-                View Shop →
-              </button>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {shopProducts.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => router.push(`/products/${item.slug}`)}
-                  className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-square relative">
-                    <img
-                      src={item.images?.[0] || ""}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      More from this shop
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      Explore other products from this seller
+                    </p>
                   </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
-                      {item.name}
-                    </h3>
-                    <div className="text-lg font-bold text-gray-900">
-                      ₹{item.price.toLocaleString()}
-                    </div>
-                    {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="text-xs text-gray-500 line-through">
-                        ₹{item.originalPrice.toLocaleString()}
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    onClick={() => router.push(`/shops/${product.shopId}`)}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    View Shop →
+                  </button>
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                  {shopProducts.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => router.push(`/products/${item.slug}`)}
+                      className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                    >
+                      <div className="aspect-square relative">
+                        <img
+                          src={item.images?.[0] || ""}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
+                          {item.name}
+                        </h3>
+                        <div className="text-lg font-bold text-gray-900">
+                          ₹{item.price.toLocaleString()}
+                        </div>
+                        {item.originalPrice &&
+                          item.originalPrice > item.price && (
+                            <div className="text-xs text-gray-500 line-through">
+                              ₹{item.originalPrice.toLocaleString()}
+                            </div>
+                          )}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -278,7 +279,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <Store className="w-5 h-5" />
                     Seller Information
                   </h3>
-                  
+
                   <div className="space-y-4">
                     {/* Shop Logo */}
                     {shop.logo && (
@@ -290,10 +291,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                         />
                       </div>
                     )}
-                    
+
                     {/* Shop Name */}
                     <div className="text-center">
-                      <h4 className="font-semibold text-gray-900">{shop.name}</h4>
+                      <h4 className="font-semibold text-gray-900">
+                        {shop.name}
+                      </h4>
                       {shop.isVerified && (
                         <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
                           ✓ Verified Seller
@@ -361,7 +364,9 @@ export default function ProductPage({ params }: ProductPageProps) {
 
               {/* Delivery & Returns Info */}
               <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
-                <h4 className="font-semibold text-gray-900">Delivery & Returns</h4>
+                <h4 className="font-semibold text-gray-900">
+                  Delivery & Returns
+                </h4>
                 <div className="space-y-2 text-gray-600">
                   <p>• Free delivery on orders above ₹5,000</p>
                   <p>• Standard delivery: 5-7 business days</p>
