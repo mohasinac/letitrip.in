@@ -26,6 +26,7 @@ Last Updated: November 8, 2025
 ## 🚀 Pre-Deployment Checklist
 
 ### Code Quality
+
 - [ ] All tests pass (`npm test`)
 - [ ] TypeScript compilation succeeds (`npm run build`)
 - [ ] No console errors or warnings in production build
@@ -33,12 +34,14 @@ Last Updated: November 8, 2025
 - [ ] Security audit passes (`npm audit --production`)
 
 ### Documentation
+
 - [ ] API documentation is up to date
 - [ ] README.md reflects current state
 - [ ] Environment variables documented
 - [ ] Architecture diagrams updated
 
 ### Features
+
 - [ ] All HIGH PRIORITY features complete (88%+ completion)
 - [ ] Critical user flows tested (registration, login, checkout, bidding)
 - [ ] Payment gateway tested with test credentials
@@ -46,12 +49,14 @@ Last Updated: November 8, 2025
 - [ ] Session authentication working
 
 ### Performance
+
 - [ ] Lighthouse score > 90 for key pages
 - [ ] Images optimized (WebP format, lazy loading)
 - [ ] Bundle size analyzed (`npm run analyze`)
 - [ ] API response times < 500ms (p95)
 
 ### Security
+
 - [ ] All secrets moved to environment variables
 - [ ] Firebase security rules configured
 - [ ] Rate limiting implemented
@@ -167,6 +172,7 @@ SOCKET_PORT=3001
 #### 1. Create Production Collections
 
 Ensure these collections exist:
+
 ```
 users/
 shops/
@@ -248,26 +254,26 @@ firebase deploy --only firestore:rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
-    
+
     function isSeller() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'seller';
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
+
     // Users collection
     match /users/{userId} {
       allow read: if isAuthenticated();
@@ -275,7 +281,7 @@ service cloud.firestore {
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // Shops collection
     match /shops/{shopId} {
       allow read: if true; // Public read
@@ -283,7 +289,7 @@ service cloud.firestore {
       allow update: if isOwner(resource.data.owner_id) || isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // Products collection
     match /products/{productId} {
       allow read: if true; // Public read
@@ -291,7 +297,7 @@ service cloud.firestore {
       allow update: if isOwner(resource.data.shop_id) || isAdmin();
       allow delete: if isOwner(resource.data.shop_id) || isAdmin();
     }
-    
+
     // Orders collection
     match /orders/{orderId} {
       allow read: if isOwner(resource.data.customer_id) || isAdmin();
@@ -299,13 +305,13 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // Sessions collection (server-side only)
     match /sessions/{sessionId} {
       allow read: if false; // No direct client access
       allow write: if false; // Server-side only
     }
-    
+
     // Cart collection
     match /cart/{itemId} {
       allow read: if isAuthenticated() && isOwner(resource.data.user_id);
@@ -331,42 +337,42 @@ firebase deploy --only storage
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    
+
     // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isValidImage() {
       return request.resource.contentType.matches('image/.*') &&
              request.resource.size < 5 * 1024 * 1024; // 5MB max
     }
-    
+
     function isValidVideo() {
       return request.resource.contentType.matches('video/.*') &&
              request.resource.size < 50 * 1024 * 1024; // 50MB max
     }
-    
+
     // Product images
     match /products/{productId}/{allPaths=**} {
       allow read: if true; // Public read
       allow write: if isAuthenticated() && (isValidImage() || isValidVideo());
     }
-    
+
     // Shop images
     match /shops/{shopId}/{allPaths=**} {
       allow read: if true; // Public read
       allow write: if isAuthenticated() && isValidImage();
     }
-    
+
     // User avatars
     match /users/{userId}/avatar {
       allow read: if true; // Public read
-      allow write: if isAuthenticated() && 
-                      request.auth.uid == userId && 
+      allow write: if isAuthenticated() &&
+                      request.auth.uid == userId &&
                       isValidImage();
     }
-    
+
     // Review media
     match /reviews/{reviewId}/{allPaths=**} {
       allow read: if true; // Public read
@@ -395,6 +401,7 @@ service firebase.storage {
 ### 2. Enable Firebase Services
 
 Enable these Firebase services:
+
 - ✅ **Firestore Database** (Native mode)
 - ✅ **Firebase Authentication** (Email/Password)
 - ✅ **Firebase Storage** (for images/videos)
@@ -412,6 +419,7 @@ Enable these Firebase services:
 ### 4. Storage Buckets
 
 Create storage buckets:
+
 ```
 products/       - Product images and videos
 shops/          - Shop logos and banners
@@ -432,54 +440,51 @@ Update `next.config.js`:
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  
+
   // Image optimization
   images: {
-    domains: [
-      'firebasestorage.googleapis.com',
-      'storage.googleapis.com',
-    ],
-    formats: ['image/webp', 'image/avif'],
+    domains: ["firebasestorage.googleapis.com", "storage.googleapis.com"],
+    formats: ["image/webp", "image/avif"],
   },
-  
+
   // Headers for security
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
+            key: "X-Frame-Options",
+            value: "DENY",
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
           {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
           },
           {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
           },
         ],
       },
     ];
   },
-  
+
   // Redirects
   async redirects() {
     return [
       {
-        source: '/admin',
-        destination: '/admin/dashboard',
+        source: "/admin",
+        destination: "/admin/dashboard",
         permanent: true,
       },
       {
-        source: '/seller',
-        destination: '/seller/dashboard',
+        source: "/seller",
+        destination: "/seller/dashboard",
         permanent: true,
       },
     ];
@@ -533,10 +538,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ### 2. HTTPS Configuration
 
 #### Option A: Using Vercel/Netlify
+
 - Automatic HTTPS with Let's Encrypt
 - No configuration needed
 
 #### Option B: Using Custom Server (AWS/GCP/Azure)
+
 ```bash
 # Install certbot
 sudo apt-get install certbot python3-certbot-nginx
@@ -553,9 +560,9 @@ sudo certbot renew --dry-run
 Create `src/app/api/lib/rate-limiter-redis.ts`:
 
 ```typescript
-import { Redis } from 'ioredis';
+import { Redis } from "ioredis";
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
 interface RateLimitConfig {
   maxRequests: number;
@@ -569,29 +576,29 @@ export async function checkRateLimit(
   const key = `rate_limit:${identifier}`;
   const now = Date.now();
   const windowStart = now - config.windowMs;
-  
+
   // Remove old entries
   await redis.zremrangebyscore(key, 0, windowStart);
-  
+
   // Count requests in window
   const count = await redis.zcard(key);
-  
+
   if (count >= config.maxRequests) {
     const resetAt = new Date(
-      (await redis.zrange(key, 0, 0, 'WITHSCORES'))[1] + config.windowMs
+      (await redis.zrange(key, 0, 0, "WITHSCORES"))[1] + config.windowMs
     );
-    
+
     return {
       allowed: false,
       remaining: 0,
       resetAt,
     };
   }
-  
+
   // Add current request
   await redis.zadd(key, now, `${now}-${Math.random()}`);
   await redis.expire(key, Math.ceil(config.windowMs / 1000));
-  
+
   return {
     allowed: true,
     remaining: config.maxRequests - count - 1,
@@ -625,31 +632,29 @@ Create `src/lib/validate-env.ts`:
 
 ```typescript
 const requiredEnvVars = [
-  'FIREBASE_PROJECT_ID',
-  'FIREBASE_CLIENT_EMAIL',
-  'FIREBASE_PRIVATE_KEY',
-  'SESSION_SECRET',
-  'NEXT_PUBLIC_RAZORPAY_KEY_ID',
-  'RAZORPAY_KEY_SECRET',
+  "FIREBASE_PROJECT_ID",
+  "FIREBASE_CLIENT_EMAIL",
+  "FIREBASE_PRIVATE_KEY",
+  "SESSION_SECRET",
+  "NEXT_PUBLIC_RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_SECRET",
 ];
 
 export function validateEnvironment() {
-  const missing = requiredEnvVars.filter(
-    (varName) => !process.env[varName]
-  );
-  
+  const missing = requiredEnvVars.filter((varName) => !process.env[varName]);
+
   if (missing.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}`
+      `Missing required environment variables: ${missing.join(", ")}`
     );
   }
-  
+
   // Validate SESSION_SECRET length
   if (process.env.SESSION_SECRET!.length < 32) {
-    throw new Error('SESSION_SECRET must be at least 32 characters long');
+    throw new Error("SESSION_SECRET must be at least 32 characters long");
   }
-  
-  console.log('✅ Environment validation passed');
+
+  console.log("✅ Environment validation passed");
 }
 ```
 
@@ -657,8 +662,8 @@ Add to `instrumentation.ts`:
 
 ```typescript
 export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('./lib/validate-env').then((mod) => mod.validateEnvironment());
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    await import("./lib/validate-env").then((mod) => mod.validateEnvironment());
   }
 }
 ```
@@ -671,7 +676,7 @@ export async function register() {
 
 ```typescript
 // Use Next.js Image component everywhere
-import Image from 'next/image';
+import Image from "next/image";
 
 <Image
   src="/path/to/image.jpg"
@@ -680,16 +685,16 @@ import Image from 'next/image';
   height={600}
   loading="lazy"
   quality={85}
-/>
+/>;
 ```
 
 ### 2. Code Splitting
 
 ```typescript
 // Dynamic imports for heavy components
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const HeavyChart = dynamic(() => import('@/components/HeavyChart'), {
+const HeavyChart = dynamic(() => import("@/components/HeavyChart"), {
   loading: () => <Loader />,
   ssr: false,
 });
@@ -698,7 +703,7 @@ const HeavyChart = dynamic(() => import('@/components/HeavyChart'), {
 ### 3. Redis Caching
 
 ```typescript
-import { Redis } from 'ioredis';
+import { Redis } from "ioredis";
 
 const redis = new Redis(process.env.REDIS_URL);
 
@@ -708,14 +713,14 @@ export async function getCachedData<T>(
   ttl = 3600 // 1 hour
 ): Promise<T> {
   const cached = await redis.get(key);
-  
+
   if (cached) {
     return JSON.parse(cached);
   }
-  
+
   const data = await fetcher();
   await redis.setex(key, ttl, JSON.stringify(data));
-  
+
   return data;
 }
 ```
@@ -725,9 +730,9 @@ export async function getCachedData<T>(
 ```typescript
 // Use select() to fetch only needed fields
 const shops = await db
-  .collection('shops')
-  .select('name', 'logo', 'rating')
-  .where('is_verified', '==', true)
+  .collection("shops")
+  .select("name", "logo", "rating")
+  .where("is_verified", "==", true)
   .limit(20)
   .get();
 
@@ -737,8 +742,8 @@ const limit = 20;
 const lastDoc = null; // Store from previous query
 
 const query = db
-  .collection('products')
-  .orderBy('created_at', 'desc')
+  .collection("products")
+  .orderBy("created_at", "desc")
   .limit(limit);
 
 if (lastDoc) {
@@ -753,16 +758,19 @@ if (lastDoc) {
 ### Option 1: Deploy to Vercel (Recommended)
 
 #### Step 1: Install Vercel CLI
+
 ```bash
 npm install -g vercel
 ```
 
 #### Step 2: Login
+
 ```bash
 vercel login
 ```
 
 #### Step 3: Configure Project
+
 ```bash
 # Link to Vercel project
 vercel link
@@ -776,6 +784,7 @@ vercel env add SESSION_SECRET production
 ```
 
 #### Step 4: Deploy
+
 ```bash
 # Deploy to production
 vercel --prod
@@ -785,6 +794,7 @@ vercel --prod
 ```
 
 #### Step 5: Custom Domain
+
 ```bash
 # Add custom domain
 vercel domains add justforview.in
@@ -800,6 +810,7 @@ vercel domains add www.justforview.in
 ### Option 2: Deploy to Google Cloud Run
 
 #### Step 1: Build Docker Image
+
 ```dockerfile
 # Dockerfile
 FROM node:18-alpine AS base
@@ -846,6 +857,7 @@ CMD ["node", "server.js"]
 ```
 
 #### Step 2: Build and Push
+
 ```bash
 # Build image
 docker build -t gcr.io/your-project-id/justforview:latest .
@@ -855,6 +867,7 @@ docker push gcr.io/your-project-id/justforview:latest
 ```
 
 #### Step 3: Deploy to Cloud Run
+
 ```bash
 gcloud run deploy justforview \
   --image gcr.io/your-project-id/justforview:latest \
@@ -874,11 +887,13 @@ gcloud run deploy justforview \
 ### Option 3: Deploy to AWS (EC2 + Load Balancer)
 
 #### Step 1: Launch EC2 Instance
+
 - **Instance Type**: t3.medium (2 vCPU, 4GB RAM)
 - **OS**: Ubuntu 22.04 LTS
 - **Security Group**: Allow ports 80, 443, 22
 
 #### Step 2: Install Node.js and PM2
+
 ```bash
 # SSH into instance
 ssh ubuntu@your-ec2-ip
@@ -895,6 +910,7 @@ sudo apt-get install nginx
 ```
 
 #### Step 3: Deploy Application
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/justforview.git
@@ -913,12 +929,13 @@ pm2 startup
 ```
 
 #### Step 4: Configure Nginx
+
 ```nginx
 # /etc/nginx/sites-available/justforview
 server {
     listen 80;
     server_name justforview.in www.justforview.in;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -984,7 +1001,7 @@ k6 run load-test.js
 
 ```typescript
 // src/lib/sentry.ts
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -992,7 +1009,7 @@ Sentry.init({
   tracesSampleRate: 0.1,
   beforeSend(event) {
     // Don't send certain errors
-    if (event.exception?.values?.[0]?.value?.includes('ResizeObserver')) {
+    if (event.exception?.values?.[0]?.value?.includes("ResizeObserver")) {
       return null;
     }
     return event;
@@ -1007,18 +1024,23 @@ Sentry.init({
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const pageview = (url: string) => {
-  window.gtag('config', GA_MEASUREMENT_ID, {
+  window.gtag("config", GA_MEASUREMENT_ID, {
     page_path: url,
   });
 };
 
-export const event = ({ action, category, label, value }: {
+export const event = ({
+  action,
+  category,
+  label,
+  value,
+}: {
   action: string;
   category: string;
   label?: string;
   value?: number;
 }) => {
-  window.gtag('event', action, {
+  window.gtag("event", action, {
     event_category: category,
     event_label: label,
     value: value,
@@ -1057,6 +1079,7 @@ echo | openssl s_client -connect justforview.in:443 2>/dev/null | openssl x509 -
 ### 1. Application Monitoring
 
 #### Key Metrics to Track
+
 - **Availability**: > 99.9% uptime
 - **Response Time**: p95 < 500ms
 - **Error Rate**: < 0.1%
@@ -1065,6 +1088,7 @@ echo | openssl s_client -connect justforview.in:443 2>/dev/null | openssl x509 -
 - **Database Connections**: Monitor connection pool
 
 #### Tools
+
 - **Uptime Monitoring**: Uptime Robot, Pingdom
 - **APM**: New Relic, Datadog, AppSignal
 - **Logs**: CloudWatch, Google Cloud Logging, Logtail
@@ -1073,18 +1097,18 @@ echo | openssl s_client -connect justforview.in:443 2>/dev/null | openssl x509 -
 
 ```typescript
 // Monitor Firestore usage
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from "firebase-admin/firestore";
 
 async function monitorFirestoreUsage() {
   const db = getFirestore();
-  
+
   // Document counts
-  const collections = ['users', 'shops', 'products', 'orders'];
+  const collections = ["users", "shops", "products", "orders"];
   for (const collection of collections) {
     const snapshot = await db.collection(collection).count().get();
     console.log(`${collection}: ${snapshot.data().count} documents`);
   }
-  
+
   // Check for slow queries
   // Use Firebase Console > Firestore > Usage tab
 }
@@ -1094,22 +1118,22 @@ async function monitorFirestoreUsage() {
 
 ```typescript
 // Scheduled job to clean expired sessions
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 export async function cleanupExpiredSessions() {
   const db = getFirestoreAdmin();
   const now = new Date().toISOString();
-  
+
   const expiredSessions = await db
-    .collection('sessions')
-    .where('expires_at', '<', now)
+    .collection("sessions")
+    .where("expires_at", "<", now)
     .get();
-  
+
   const batch = db.batch();
   expiredSessions.docs.forEach((doc) => {
     batch.delete(doc.ref);
   });
-  
+
   await batch.commit();
   console.log(`Cleaned ${expiredSessions.size} expired sessions`);
 }
@@ -1193,6 +1217,7 @@ gcloud firestore import gs://your-backup-bucket/firestore-backups/[TIMESTAMP]
 **Symptoms**: Users can't log in, "Unauthorized" errors
 
 **Solutions**:
+
 ```bash
 # Check SESSION_SECRET is set
 echo $SESSION_SECRET
@@ -1212,6 +1237,7 @@ node scripts/cleanup-sessions.js
 **Symptoms**: "Firebase Admin not configured" errors
 
 **Solutions**:
+
 ```bash
 # Verify environment variables
 node -e "console.log(process.env.FIREBASE_PROJECT_ID)"
@@ -1228,6 +1254,7 @@ node scripts/test-firebase.js
 **Symptoms**: Timeouts, high response times
 
 **Solutions**:
+
 ```bash
 # Check database indexes
 firebase firestore:indexes
@@ -1249,6 +1276,7 @@ df -h
 **Symptoms**: Razorpay checkout failing
 
 **Solutions**:
+
 ```bash
 # Verify Razorpay keys
 echo $NEXT_PUBLIC_RAZORPAY_KEY_ID
@@ -1267,6 +1295,7 @@ echo $RAZORPAY_KEY_SECRET
 **Symptoms**: Live auction bidding not working
 
 **Solutions**:
+
 ```bash
 # Check WebSocket server is running
 pm2 list | grep socket
@@ -1289,16 +1318,19 @@ wscat -c wss://justforview.in
 ## 📞 Support Contacts
 
 ### Emergency Contacts
+
 - **DevOps Lead**: devops@justforview.in
 - **Backend Lead**: backend@justforview.in
 - **On-Call**: +91-XXXXXXXXXX
 
 ### Service Providers
+
 - **Hosting**: Vercel Support (support@vercel.com)
 - **Database**: Firebase Support (firebase-support@google.com)
 - **Payment**: Razorpay Support (support@razorpay.com)
 
 ### Escalation Path
+
 1. Check logs and error messages
 2. Search documentation and troubleshooting guide
 3. Contact DevOps team
@@ -1328,10 +1360,10 @@ Before going live:
 
 ---
 
-**Deployment Date**: _____________  
-**Deployed By**: _____________  
-**Version**: _____________  
-**Status**: ⬜ Success  ⬜ Partial  ⬜ Failed
+**Deployment Date**: ******\_******  
+**Deployed By**: ******\_******  
+**Version**: ******\_******  
+**Status**: ⬜ Success ⬜ Partial ⬜ Failed
 
 ---
 

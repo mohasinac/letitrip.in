@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Collections } from '@/app/api/lib/firebase/collections';
 import { getCurrentUser } from '@/app/api/lib/session';
-import { withRouteRateLimit } from '@/app/api/middleware/withRouteRateLimit';
+import { withRedisRateLimit, RATE_LIMITS } from '@/app/api/lib/rate-limiter-redis';
 
 // GET /api/products/[slug]/reviews
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 // POST /api/products/[slug]/reviews
 export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
-  return withRouteRateLimit(req, async (request) => {
+  return withRedisRateLimit(req, async (request: NextRequest) => {
     try {
       const user = await getCurrentUser(request);
       if (!user?.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -81,5 +81,5 @@ export async function POST(req: NextRequest, context: { params: Promise<{ slug: 
       console.error('Create review error:', error);
       return NextResponse.json({ success: false, error: 'Failed to create review' }, { status: 500 });
     }
-  });
+  }, RATE_LIMITS.API);
 }

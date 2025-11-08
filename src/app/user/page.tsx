@@ -90,27 +90,27 @@ export default function UserDashboardPage() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Stats Cards - Single row on mobile, 2 columns on tablet, 4 on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
           <StatsCard
             title="Total Orders"
             value={stats.totalOrders}
-            icon={<Package className="w-6 h-6 text-primary" />}
+            icon={<Package className="w-5 h-5 md:w-6 md:h-6 text-primary" />}
           />
           <StatsCard
-            title="Pending Orders"
+            title="Pending"
             value={stats.pendingOrders}
-            icon={<Clock className="w-6 h-6 text-yellow-600" />}
+            icon={<Clock className="w-5 h-5 md:w-6 md:h-6 text-yellow-600" />}
           />
           <StatsCard
             title="Completed"
             value={stats.completedOrders}
-            icon={<Package className="w-6 h-6 text-green-600" />}
+            icon={<Package className="w-5 h-5 md:w-6 md:h-6 text-green-600" />}
           />
           <StatsCard
             title="Cancelled"
             value={stats.cancelledOrders}
-            icon={<Package className="w-6 h-6 text-red-600" />}
+            icon={<Package className="w-5 h-5 md:w-6 md:h-6 text-red-600" />}
           />
         </div>
 

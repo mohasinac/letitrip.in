@@ -18,12 +18,24 @@ import {
   Shield,
   ChevronDown,
   ChevronRight,
+  Home,
+  CreditCard,
+  Gavel,
+  Ticket,
+  RotateCcw,
+  LifeBuoy,
+  Newspaper,
+  TrendingUp,
+  DollarSign,
+  Star,
+  Banknote,
+  Layout as LayoutIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
   title: string;
-  href: string;
+  href?: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
   children?: NavItem[];
@@ -32,50 +44,17 @@ interface NavItem {
 const navigation: NavItem[] = [
   {
     title: "Dashboard",
-    href: "/admin",
+    href: "/admin/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "User Management",
-    href: "/admin/users",
-    icon: Users,
+    title: "Overview",
+    href: "/admin",
+    icon: Home,
   },
   {
-    title: "Category Management",
-    href: "/admin/categories",
-    icon: FolderTree,
-  },
-  {
-    title: "Shop Management",
-    href: "/admin/shops",
-    icon: Store,
-    children: [
-      {
-        title: "All Shops",
-        href: "/admin/shops",
-        icon: Store,
-      },
-      {
-        title: "Pending Approval",
-        href: "/admin/shops/pending",
-        icon: Store,
-      },
-    ],
-  },
-  {
-    title: "Product Management",
-    href: "/admin/products",
-    icon: Package,
-  },
-  {
-    title: "Order Management",
-    href: "/admin/orders",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Homepage Management",
-    href: "/admin/homepage",
-    icon: Image,
+    title: "Content Management",
+    icon: LayoutIcon,
     children: [
       {
         title: "Hero Slides",
@@ -87,17 +66,134 @@ const navigation: NavItem[] = [
         href: "/admin/featured-sections",
         icon: Flag,
       },
+      {
+        title: "Categories",
+        href: "/admin/categories",
+        icon: FolderTree,
+      },
     ],
   },
   {
-    title: "Analytics & Reports",
-    href: "/admin/analytics",
-    icon: BarChart3,
+    title: "Marketplace",
+    icon: Store,
+    children: [
+      {
+        title: "All Shops",
+        href: "/admin/shops",
+        icon: Store,
+      },
+      {
+        title: "Products",
+        href: "/admin/products",
+        icon: Package,
+      },
+      {
+        title: "All Auctions",
+        href: "/admin/auctions",
+        icon: Gavel,
+      },
+      {
+        title: "Live Auctions",
+        href: "/admin/auctions/live",
+        icon: Gavel,
+      },
+    ],
   },
   {
-    title: "Platform Settings",
-    href: "/admin/settings",
+    title: "User Management",
+    icon: Users,
+    children: [
+      {
+        title: "All Users",
+        href: "/admin/users",
+        icon: Users,
+      },
+      {
+        title: "Reviews",
+        href: "/admin/reviews",
+        icon: Star,
+      },
+    ],
+  },
+  {
+    title: "Transactions",
+    icon: CreditCard,
+    children: [
+      {
+        title: "Orders",
+        href: "/admin/orders",
+        icon: ShoppingCart,
+      },
+      {
+        title: "Payments",
+        href: "/admin/payments",
+        icon: CreditCard,
+      },
+      {
+        title: "Seller Payouts",
+        href: "/admin/payouts",
+        icon: Banknote,
+      },
+      {
+        title: "Coupons",
+        href: "/admin/coupons",
+        icon: Ticket,
+      },
+      {
+        title: "Returns & Refunds",
+        href: "/admin/returns",
+        icon: RotateCcw,
+      },
+    ],
+  },
+  {
+    title: "Support",
+    icon: LifeBuoy,
+    children: [
+      {
+        title: "All Tickets",
+        href: "/admin/support-tickets",
+        icon: LifeBuoy,
+      },
+    ],
+  },
+  {
+    title: "Analytics",
+    icon: BarChart3,
+    children: [
+      {
+        title: "Overview",
+        href: "/admin/analytics",
+        icon: TrendingUp,
+      },
+      {
+        title: "Sales",
+        href: "/admin/analytics/sales",
+        icon: DollarSign,
+      },
+    ],
+  },
+  {
+    title: "Blog",
+    icon: Newspaper,
+    children: [
+      {
+        title: "All Posts",
+        href: "/admin/blog",
+        icon: Newspaper,
+      },
+    ],
+  },
+  {
+    title: "Settings",
     icon: Settings,
+    children: [
+      {
+        title: "General",
+        href: "/admin/settings/general",
+        icon: Settings,
+      },
+    ],
   },
 ];
 
@@ -146,76 +242,78 @@ export function AdminSidebar() {
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {navigation.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.href);
+            const active = item.href ? isActive(item.href) : false;
             const expanded = expandedItems.includes(item.title);
 
             return (
               <div key={item.title}>
-                <Link
-                  href={item.href}
-                  onClick={(e) => {
-                    if (item.children) {
-                      e.preventDefault();
-                      toggleItem(item.title);
-                    }
-                  }}
-                  className={cn(
-                    "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-purple-50 text-purple-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  )}
-                >
-                  <Icon
+                {item.href ? (
+                  <Link
+                    href={item.href}
                     className={cn(
-                      "h-5 w-5",
-                      active ? "text-purple-600" : "text-gray-400"
+                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      active
+                        ? "bg-yellow-50 text-yellow-700"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     )}
-                  />
-                  <span className="flex-1">{item.title}</span>
-                  {item.badge && (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
-                      {item.badge}
-                    </span>
-                  )}
-                  {item.children && (
-                    <div>
-                      {expanded ? (
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                  >
+                    <Icon
+                      className={cn(
+                        "h-5 w-5",
+                        active ? "text-yellow-600" : "text-gray-400"
                       )}
-                    </div>
-                  )}
-                </Link>
+                    />
+                    <span className="flex-1">{item.title}</span>
+                    {item.badge && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => toggleItem(item.title)}
+                    className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                  >
+                    <Icon className="h-5 w-5 text-gray-400" />
+                    <span className="flex-1 text-left">{item.title}</span>
+                    {expanded ? (
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                    )}
+                  </button>
+                )}
 
                 {/* Submenu */}
                 {item.children && expanded && (
                   <div className="ml-8 mt-1 space-y-1">
                     {item.children.map((child) => {
                       const ChildIcon = child.icon;
-                      const childActive = isActive(child.href);
+                      const childActive = child.href
+                        ? isActive(child.href)
+                        : false;
 
-                      return (
+                      return child.href ? (
                         <Link
                           key={child.href}
                           href={child.href}
                           className={cn(
                             "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                             childActive
-                              ? "bg-purple-50 text-purple-700"
+                              ? "bg-yellow-50 text-yellow-700"
                               : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                           )}
                         >
                           <ChildIcon
                             className={cn(
                               "h-4 w-4",
-                              childActive ? "text-purple-600" : "text-gray-400"
+                              childActive ? "text-yellow-600" : "text-gray-400"
                             )}
                           />
                           <span>{child.title}</span>
                         </Link>
-                      );
+                      ) : null;
                     })}
                   </div>
                 )}

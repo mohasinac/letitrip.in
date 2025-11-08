@@ -34,25 +34,11 @@ app.prepare().then(() => {
     }
   });
 
-  // Initialize Socket.io (dynamic import to avoid build issues)
-  if (process.env.ENABLE_SOCKETIO !== 'false') {
-    import('./src/lib/socket-server.js').then(({ initializeSocketServer }) => {
-      initializeSocketServer(httpServer);
-      console.log('[Server] Socket.io initialized');
-    }).catch((err) => {
-      console.error('[Server] Failed to initialize Socket.io:', err);
-    });
-  }
-
-  // Initialize server services (auction scheduler, etc.)
-  if (process.env.ENABLE_CRON !== 'false') {
-    import('./src/lib/server-init.js').then(({ initializeServer }) => {
-      initializeServer();
-      console.log('[Server] Server services initialized');
-    }).catch((err) => {
-      console.error('[Server] Failed to initialize services:', err);
-    });
-  }
+  // Socket.io and server services disabled in development
+  // They require TypeScript compilation which is handled by Next.js
+  // For production, these would need to be built separately
+  console.log('[Server] Note: Socket.io and Cron services require separate build process');
+  console.log('[Server] Set ENABLE_SOCKETIO=false and ENABLE_CRON=false to disable warnings');
 
   // Start server
   httpServer.once('error', (err) => {

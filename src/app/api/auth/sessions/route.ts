@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withMiddleware } from '../../middleware';
+import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
 import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
 import { 
   getUserSessions, 
@@ -112,19 +112,13 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  return withMiddleware(req, (r) => requireAuth(r, getSessionsHandler), {
-    rateLimit: {
-      maxRequests: 20,
-      windowMs: 60 * 1000,
-    },
-  });
+  return withRedisRateLimit(req, async (r) => {
+    return requireAuth(r, getSessionsHandler);
+  }, RATE_LIMITS.API);
 }
 
 export async function DELETE(req: NextRequest) {
-  return withMiddleware(req, (r) => requireAuth(r, deleteSessionHandler), {
-    rateLimit: {
-      maxRequests: 10,
-      windowMs: 60 * 1000,
-    },
-  });
+  return withRedisRateLimit(req, async (r) => {
+    return requireAuth(r, deleteSessionHandler);
+  }, RATE_LIMITS.API);
 }

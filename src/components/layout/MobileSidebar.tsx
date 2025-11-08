@@ -40,6 +40,7 @@ const userMenuIcons: Record<string, any> = {
   favorites: Heart,
   settings: Settings,
   logout: LogOut,
+  dashboard: LayoutDashboard,
 };
 
 const shopIcons: Record<string, any> = {
@@ -58,7 +59,7 @@ const adminIcons: Record<string, any> = {
 };
 
 const sellerIcons: Record<string, any> = {
-  dashboard: LayoutDashboard,
+  overview: LayoutDashboard,
   products: Package,
   orders: ShoppingBag,
 };
@@ -66,6 +67,15 @@ const sellerIcons: Record<string, any> = {
 export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [adminOpen, setAdminOpen] = useState(false);
   const [sellerOpen, setSellerOpen] = useState(false);
+  const [userSectionOpen, setUserSectionOpen] = useState<
+    Record<string, boolean>
+  >({});
+  const [adminSectionOpen, setAdminSectionOpen] = useState<
+    Record<string, boolean>
+  >({});
+  const [sellerSectionOpen, setSellerSectionOpen] = useState<
+    Record<string, boolean>
+  >({});
   const { isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
 
   if (!isOpen) return null;
@@ -75,6 +85,18 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     (item) => item.id !== "logout"
   );
   const logoutItem = USER_MENU_ITEMS.find((item) => item.id === "logout");
+
+  const toggleUserSection = (id: string) => {
+    setUserSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleAdminSection = (id: string) => {
+    setAdminSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleSellerSection = (id: string) => {
+    setSellerSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
     <>
@@ -113,17 +135,60 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               <div className="space-y-1">
                 {userMenuWithoutLogout.map((item) => {
                   const Icon = userMenuIcons[item.id] || Package;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.link}
-                      className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                      onClick={onClose}
-                    >
-                      <Icon className="w-5 h-5 text-gray-600" />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
+
+                  // If item has children (grouped), show collapsible section
+                  if ("children" in item && item.children) {
+                    const isOpen = userSectionOpen[item.id] || false;
+                    return (
+                      <div key={item.id}>
+                        <button
+                          onClick={() => toggleUserSection(item.id)}
+                          className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="w-5 h-5 text-gray-600" />
+                            <span>{item.name}</span>
+                          </div>
+                          {isOpen ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </button>
+                        {isOpen && (
+                          <div className="ml-8 mt-1 space-y-1">
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.id}
+                                href={child.link}
+                                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                                onClick={onClose}
+                              >
+                                <span>{child.name}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  // Regular item with direct link
+                  if ("link" in item && item.link) {
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.link}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                        onClick={onClose}
+                      >
+                        <Icon className="w-5 h-5 text-gray-600" />
+                        <span>{item.name}</span>
+                      </Link>
+                    );
+                  }
+
+                  return null;
                 })}
               </div>
 
@@ -179,19 +244,57 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <div className="space-y-1">
                   {ADMIN_MENU_ITEMS.map((item) => {
                     const Icon = adminIcons[item.id] || LayoutDashboard;
-                    // Skip items without direct links (they have children instead)
-                    if (!item.link) return null;
-                    return (
-                      <Link
-                        key={item.id}
-                        href={item.link}
-                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                        onClick={onClose}
-                      >
-                        <Icon className="w-5 h-5 text-gray-600" />
-                        <span>{item.name}</span>
-                      </Link>
-                    );
+
+                    // If item has children (grouped), show collapsible section
+                    if ("children" in item && item.children) {
+                      const isOpen = adminSectionOpen[item.id] || false;
+                      return (
+                        <div key={item.id}>
+                          <button
+                            onClick={() => toggleAdminSection(item.id)}
+                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                          >
+                            <span>{item.name}</span>
+                            {isOpen ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </button>
+                          {isOpen && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.id}
+                                  href={child.link}
+                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                                  onClick={onClose}
+                                >
+                                  <span>{child.name}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    // Regular item with direct link
+                    if ("link" in item && item.link) {
+                      return (
+                        <Link
+                          key={item.id}
+                          href={item.link}
+                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                          onClick={onClose}
+                        >
+                          <Icon className="w-5 h-5 text-gray-600" />
+                          <span>{item.name}</span>
+                        </Link>
+                      );
+                    }
+
+                    return null;
                   })}
                 </div>
               )}
@@ -216,19 +319,57 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <div className="space-y-1">
                   {SELLER_MENU_ITEMS.map((item) => {
                     const Icon = sellerIcons[item.id] || LayoutDashboard;
-                    // Skip items without direct links (they have children instead)
-                    if (!item.link) return null;
-                    return (
-                      <Link
-                        key={item.id}
-                        href={item.link}
-                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                        onClick={onClose}
-                      >
-                        <Icon className="w-5 h-5 text-gray-600" />
-                        <span>{item.name}</span>
-                      </Link>
-                    );
+
+                    // If item has children (grouped), show collapsible section
+                    if ("children" in item && item.children) {
+                      const isOpen = sellerSectionOpen[item.id] || false;
+                      return (
+                        <div key={item.id}>
+                          <button
+                            onClick={() => toggleSellerSection(item.id)}
+                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                          >
+                            <span>{item.name}</span>
+                            {isOpen ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </button>
+                          {isOpen && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.id}
+                                  href={child.link}
+                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                                  onClick={onClose}
+                                >
+                                  <span>{child.name}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    // Regular item with direct link
+                    if ("link" in item && item.link) {
+                      return (
+                        <Link
+                          key={item.id}
+                          href={item.link}
+                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                          onClick={onClose}
+                        >
+                          <Icon className="w-5 h-5 text-gray-600" />
+                          <span>{item.name}</span>
+                        </Link>
+                      );
+                    }
+
+                    return null;
                   })}
                 </div>
               )}

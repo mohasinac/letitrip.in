@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withMiddleware } from '../../middleware';
+import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
 import { getSessionToken, verifySession } from '../../lib/session';
 import { adminDb } from '../../lib/firebase/config';
 
@@ -73,10 +73,5 @@ async function meHandler(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  return withMiddleware(req, meHandler, {
-    rateLimit: {
-      maxRequests: 30,
-      windowMs: 60 * 1000,
-    },
-  });
+  return withRedisRateLimit(req, meHandler, RATE_LIMITS.API);
 }

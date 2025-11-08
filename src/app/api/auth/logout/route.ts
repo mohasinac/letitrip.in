@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withMiddleware } from '../../middleware';
+import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
 import { 
   getSessionToken, 
   verifySession, 
@@ -54,10 +54,5 @@ async function logoutHandler(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return withMiddleware(req, logoutHandler, {
-    rateLimit: {
-      maxRequests: 20,
-      windowMs: 60 * 1000,
-    },
-  });
+  return withRedisRateLimit(req, logoutHandler, RATE_LIMITS.API);
 }

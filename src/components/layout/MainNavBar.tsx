@@ -23,6 +23,7 @@ import {
   SELLER_MENU_ITEMS,
 } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
 
 export default function MainNavBar({
   onMobileMenuToggle,
@@ -33,13 +34,15 @@ export default function MainNavBar({
 }) {
   const { user, isAuthenticated, loading, isAdmin, isAdminOrSeller } =
     useAuth();
+  const { cart } = useCart();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isSellerMenuOpen, setIsSellerMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(3);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const sellerMenuRef = useRef<HTMLDivElement>(null);
+
+  const cartCount = cart?.itemCount || 0;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -135,7 +138,7 @@ export default function MainNavBar({
 
               {/* Admin Dropdown */}
               {isAdminMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
                   {ADMIN_MENU_ITEMS.map((item) =>
                     item.link ? (
                       <Link
@@ -147,18 +150,14 @@ export default function MainNavBar({
                         {item.id === "dashboard" && (
                           <LayoutDashboard className="w-4 h-4" />
                         )}
-                        {item.id === "users" && <Users className="w-4 h-4" />}
-                        {item.id === "shops" && (
-                          <ShoppingBag className="w-4 h-4" />
-                        )}
-                        {item.id === "products" && (
-                          <Package className="w-4 h-4" />
-                        )}
                         <span>{item.name}</span>
                       </Link>
                     ) : (
-                      <div key={item.id} className="px-4 py-2">
-                        <div className="text-xs font-semibold text-gray-500 uppercase">
+                      <div
+                        key={item.id}
+                        className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                      >
+                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
                           {item.name}
                         </div>
                         {item.children?.map((child) => (
@@ -168,7 +167,7 @@ export default function MainNavBar({
                             className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
                             onClick={() => setIsAdminMenuOpen(false)}
                           >
-                            <span>{child.name}</span>
+                            <span className="ml-2">{child.name}</span>
                           </Link>
                         ))}
                       </div>
@@ -197,7 +196,7 @@ export default function MainNavBar({
 
               {/* Seller Dropdown */}
               {isSellerMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
                   {SELLER_MENU_ITEMS.map((item) =>
                     item.link ? (
                       <Link
@@ -206,20 +205,17 @@ export default function MainNavBar({
                         className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
                         onClick={() => setIsSellerMenuOpen(false)}
                       >
-                        {item.id === "dashboard" && (
+                        {item.id === "overview" && (
                           <LayoutDashboard className="w-4 h-4" />
-                        )}
-                        {item.id === "products" && (
-                          <Package className="w-4 h-4" />
-                        )}
-                        {item.id === "orders" && (
-                          <ShoppingBag className="w-4 h-4" />
                         )}
                         <span>{item.name}</span>
                       </Link>
                     ) : (
-                      <div key={item.id} className="px-4 py-2">
-                        <div className="text-xs font-semibold text-gray-500 uppercase">
+                      <div
+                        key={item.id}
+                        className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                      >
+                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
                           {item.name}
                         </div>
                         {item.children?.map((child) => (
@@ -229,7 +225,7 @@ export default function MainNavBar({
                             className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
                             onClick={() => setIsSellerMenuOpen(false)}
                           >
-                            <span>{child.name}</span>
+                            <span className="ml-2">{child.name}</span>
                           </Link>
                         ))}
                       </div>
@@ -294,21 +290,43 @@ export default function MainNavBar({
 
                 {/* User Dropdown Menu */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
+                  <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
                     <div className="px-4 py-2 border-b border-gray-200">
                       <p className="font-semibold text-sm">{user.name}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
                     </div>
-                    {USER_MENU_ITEMS.map((item) => (
-                      <Link
-                        key={item.id}
-                        href={item.link}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    ))}
+                    {USER_MENU_ITEMS.map((item) =>
+                      "link" in item && item.link ? (
+                        <Link
+                          key={item.id}
+                          href={item.link}
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <span>{item.name}</span>
+                        </Link>
+                      ) : (
+                        <div
+                          key={item.id}
+                          className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                        >
+                          <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
+                            {item.name}
+                          </div>
+                          {"children" in item &&
+                            item.children?.map((child) => (
+                              <Link
+                                key={child.id}
+                                href={child.link}
+                                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                                onClick={() => setIsUserMenuOpen(false)}
+                              >
+                                <span className="ml-2">{child.name}</span>
+                              </Link>
+                            ))}
+                        </div>
+                      )
+                    )}
                   </div>
                 )}
               </>
