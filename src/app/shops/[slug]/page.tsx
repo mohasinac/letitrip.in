@@ -139,6 +139,16 @@ export default function ShopPage({ params }: ShopPageProps) {
     }
   };
 
+  const handleApplyFilters = () => {
+    loadProducts();
+    setShowFilters(false);
+  };
+
+  const handleResetFilters = () => {
+    setProductFilters({});
+    setSearchQuery("");
+  };
+
   const handleAddToCart = async (
     productId: string,
     productDetails?: {
@@ -238,84 +248,111 @@ export default function ShopPage({ params }: ShopPageProps) {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Products Tab */}
         {activeTab === "products" && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            {/* Search & Controls */}
-            <div className="mb-6">
-              <div className="flex flex-col lg:flex-row gap-4 mb-4">
-                {/* Search */}
-                <div className="flex-1 flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="search"
-                      placeholder="Search products in this shop..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <button
-                    onClick={handleSearch}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Search
-                  </button>
-                </div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Filters Sidebar */}
+            <aside
+              className={`lg:w-64 flex-shrink-0 ${
+                showFilters ? "block" : "hidden lg:block"
+              }`}
+            >
+              <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+                <ProductFilters
+                  filters={productFilters}
+                  onChange={setProductFilters}
+                  onApply={handleApplyFilters}
+                  onReset={handleResetFilters}
+                  availableBrands={availableBrands}
+                />
+              </div>
+            </aside>
 
-                {/* Sort & View */}
-                <div className="flex gap-2">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="createdAt">Newest</option>
-                    <option value="price">Price</option>
-                    <option value="rating">Rating</option>
-                    <option value="sales">Popular</option>
-                  </select>
-
-                  <select
-                    value={sortOrder}
-                    onChange={(e) =>
-                      setSortOrder(e.target.value as "asc" | "desc")
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="desc">High to Low</option>
-                    <option value="asc">Low to High</option>
-                  </select>
-
-                  {/* View Toggle */}
-                  <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
+            {/* Products Section */}
+            <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
+              {/* Search & Controls */}
+              <div className="mb-6">
+                <div className="flex flex-col lg:flex-row gap-4 mb-4">
+                  {/* Search */}
+                  <div className="flex-1 flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="search"
+                        placeholder="Search products in this shop..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
                     <button
-                      onClick={() => setView("grid")}
-                      className={`px-3 py-2 ${
-                        view === "grid"
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-gray-600"
-                      }`}
+                      onClick={handleSearch}
+                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      <Grid className="w-5 h-5" />
+                      Search
                     </button>
-                    <button
-                      onClick={() => setView("list")}
-                      className={`px-3 py-2 ${
-                        view === "list"
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-gray-600"
-                      }`}
+                  </div>
+
+                  {/* Sort & View */}
+                  <div className="flex gap-2">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
-                      <List className="w-5 h-5" />
+                      <option value="createdAt">Newest</option>
+                      <option value="price">Price</option>
+                      <option value="rating">Rating</option>
+                      <option value="sales">Popular</option>
+                    </select>
+
+                    <select
+                      value={sortOrder}
+                      onChange={(e) =>
+                        setSortOrder(e.target.value as "asc" | "desc")
+                      }
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="desc">High to Low</option>
+                      <option value="asc">Low to High</option>
+                    </select>
+
+                    {/* View Toggle */}
+                    <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => setView("grid")}
+                        className={`px-3 py-2 ${
+                          view === "grid"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white text-gray-600"
+                        }`}
+                      >
+                        <Grid className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setView("list")}
+                        className={`px-3 py-2 ${
+                          view === "list"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white text-gray-600"
+                        }`}
+                      >
+                        <List className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Filter Toggle (Mobile) */}
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="lg:hidden px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    >
+                      <FilterIcon className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Products Grid */}
-            {productsLoading ? (
+              {/* Products Grid */}
+              {productsLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               </div>
@@ -426,6 +463,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                 )}
               </>
             )}
+            </div>
           </div>
         )}
 
