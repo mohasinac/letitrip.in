@@ -224,9 +224,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             max="100000"
             step="500"
             value={filters.priceMax || 100000}
-            onChange={(e) =>
-              updateFilter("priceMax", Number(e.target.value))
-            }
+            onChange={(e) => updateFilter("priceMax", Number(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">

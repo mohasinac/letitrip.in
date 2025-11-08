@@ -62,12 +62,12 @@ export default function ProductsPage() {
         page: currentPage,
         limit: itemsPerPage,
       });
-      
+
       const productsData = response.data || [];
       setProducts(productsData);
       setTotalCount(response.pagination?.total || 0);
       setTotalPages(response.pagination?.totalPages || 1);
-      
+
       // Extract unique brands from products for filter
       const brands = new Set<string>();
       productsData.forEach((product) => {
