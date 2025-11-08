@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
@@ -9,54 +9,146 @@ import {
   Edit,
   Trash2,
   Eye,
+  Loader2,
+  AlertCircle,
   FolderTree,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { useAuth } from "@/contexts/AuthContext";
 
-// TODO: Replace with real data from API (admin only)
-const mockCategories = [
-  {
-    id: "1",
-    name: "Electronics",
-    slug: "electronics",
-    parent_id: null,
-    level: 0,
-    product_count: 245,
-    status: "active",
-    featured: true,
-    homepage_display: true,
-    image: "/placeholder-category.jpg",
-  },
-  {
-    id: "2",
-    name: "Smartphones",
-    slug: "smartphones",
-    parent_id: "1",
-    level: 1,
-    product_count: 89,
-    status: "active",
-    featured: false,
-    homepage_display: false,
-    image: "/placeholder-category.jpg",
-  },
-  {
-    id: "3",
-    name: "Gaming",
-    slug: "gaming",
-    parent_id: null,
-    level: 0,
-    product_count: 156,
-    status: "active",
-    featured: true,
-    homepage_display: true,
-    image: "/placeholder-category.jpg",
-  },
-];
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  parent_id: string | null;
+  description?: string;
+  image?: string;
+  is_featured: boolean;
+  show_on_homepage: boolean;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function CategoriesPage() {
+  const { user, isAdmin } = useAuth();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      loadCategories();
+    }
+  }, [user, isAdmin]);
+
+  const loadCategories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch("/api/categories");
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load categories");
+      }
+
+      setCategories(result.data || []);
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to load categories"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const category = categories.find((c) => c.id === id);
+      if (!category) return;
+
+      const response = await fetch(`/api/categories/${category.slug}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete category");
+      }
+
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+      alert(
+        "Failed to delete category. It may have subcategories or products."
+      );
+    }
+  };
+
+  // Filter categories by search query
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      category.slug.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate hierarchy level (for display)
+  const getCategoryLevel = (category: Category): number => {
+    if (!category.parent_id) return 0;
+    const parent = categories.find((c) => c.id === category.parent_id);
+    return parent ? getCategoryLevel(parent) + 1 : 0;
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            Access Denied
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            You must be an admin to access this page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">Error</h3>
+          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <button
+            onClick={loadCategories}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -87,6 +179,8 @@ export default function CategoriesPage() {
           <input
             type="search"
             placeholder="Search categories..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -102,17 +196,23 @@ export default function CategoriesPage() {
       {/* Grid View */}
       {view === "grid" && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {mockCategories.map((category) => (
+          {filteredCategories.map((category) => (
             <div
               key={category.id}
               className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="aspect-video bg-gray-100">
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-cover"
-                />
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">
+                    <FolderTree size={48} />
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
@@ -121,27 +221,30 @@ export default function CategoriesPage() {
                       {category.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      Level {category.level}
+                      Level {getCategoryLevel(category)}
                     </p>
                   </div>
-                  <StatusBadge status={category.status} />
+                  <StatusBadge
+                    status={category.is_active ? "active" : "inactive"}
+                  />
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-sm">
-                  {category.featured && (
+                  {category.is_featured && (
                     <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
                       Featured
                     </span>
                   )}
-                  {category.homepage_display && (
+                  {category.show_on_homepage && (
                     <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
                       Homepage
                     </span>
                   )}
                 </div>
-                <div className="mt-3 text-sm text-gray-600">
-                  <span className="font-medium">{category.product_count}</span>{" "}
-                  products
-                </div>
+                {category.description && (
+                  <p className="mt-3 text-sm text-gray-600 line-clamp-2">
+                    {category.description}
+                  </p>
+                )}
                 <div className="mt-4 flex gap-2">
                   <Link
                     href={`/admin/categories/${category.slug}/edit`}
@@ -190,16 +293,20 @@ export default function CategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {mockCategories.map((category) => (
+                {filteredCategories.map((category) => (
                   <tr key={category.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100">
-                          <img
-                            src={category.image}
-                            alt={category.name}
-                            className="h-full w-full rounded object-cover"
-                          />
+                        <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                          {category.image ? (
+                            <img
+                              src={category.image}
+                              alt={category.name}
+                              className="h-full w-full rounded object-cover"
+                            />
+                          ) : (
+                            <FolderTree className="h-5 w-5 text-gray-400" />
+                          )}
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -212,22 +319,24 @@ export default function CategoriesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {category.level}
+                      {getCategoryLevel(category)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {category.product_count}
+                      {/* Product count to be calculated later */}-
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={category.status} />
+                      <StatusBadge
+                        status={category.is_active ? "active" : "inactive"}
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        {category.featured && (
+                        {category.is_featured && (
                           <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
                             Featured
                           </span>
                         )}
-                        {category.homepage_display && (
+                        {category.show_on_homepage && (
                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
                             Homepage
                           </span>
@@ -238,6 +347,8 @@ export default function CategoriesPage() {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/categories/${category.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
                           title="View"
                         >
@@ -251,6 +362,7 @@ export default function CategoriesPage() {
                           <Edit className="h-4 w-4" />
                         </Link>
                         <button
+                          onClick={() => setDeleteId(category.id)}
                           className="rounded p-1.5 text-red-600 hover:bg-red-50"
                           title="Delete"
                         >
@@ -276,6 +388,45 @@ export default function CategoriesPage() {
           </div>
         </div>
       )}
+
+      {/* Empty State */}
+      {filteredCategories.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <FolderTree className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            {searchQuery ? "No categories found" : "No categories yet"}
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            {searchQuery
+              ? "Try adjusting your search query"
+              : "Get started by creating a new category"}
+          </p>
+          {!searchQuery && (
+            <div className="mt-6">
+              <Link
+                href="/admin/categories/create"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4" />
+                Create Category
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={deleteId !== null}
+        title="Delete Category"
+        description="Are you sure you want to delete this category? This action cannot be undone."
+        onConfirm={() => {
+          if (deleteId) handleDelete(deleteId);
+        }}
+        onClose={() => setDeleteId(null)}
+        variant="danger"
+        confirmLabel="Delete"
+      />
     </div>
   );
 }

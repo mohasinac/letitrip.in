@@ -45,6 +45,8 @@ export const Collections = {
   // Auction collections
   auctions: () => getCollection(COLLECTIONS.AUCTIONS),
   bids: () => getCollection(COLLECTIONS.BIDS),
+  auctionWatchlist: () => getCollection(COLLECTIONS.AUCTION_WATCHLIST),
+  wonAuctions: () => getCollection(COLLECTIONS.WON_AUCTIONS),
   
   // Marketing collections
   coupons: () => getCollection(COLLECTIONS.COUPONS),
