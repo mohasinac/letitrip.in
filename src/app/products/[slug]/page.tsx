@@ -252,22 +252,128 @@ export default function ProductPage({ params }: ProductPageProps) {
                     )}
                   </div>
                 </div>
-              ))}
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Reviews */}
+            <ProductReviews productId={product.id} productSlug={product.slug} />
+
+            {/* Similar Products */}
+            <SimilarProducts
+              productId={product.id}
+              categoryId={product.categoryId}
+              currentShopId={product.shopId}
+            />
+          </div>
+
+          {/* Right Column - Shop Info Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-4 space-y-6">
+              {/* Shop Info Card */}
+              {shop && (
+                <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Store className="w-5 h-5" />
+                    Seller Information
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {/* Shop Logo */}
+                    {shop.logo && (
+                      <div className="flex justify-center">
+                        <img
+                          src={shop.logo}
+                          alt={shop.name}
+                          className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Shop Name */}
+                    <div className="text-center">
+                      <h4 className="font-semibold text-gray-900">{shop.name}</h4>
+                      {shop.isVerified && (
+                        <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
+                          ✓ Verified Seller
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Rating */}
+                    {shop.rating > 0 && (
+                      <div className="flex items-center justify-center gap-2 text-sm">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-4 h-4 ${
+                                star <= Math.round(shop.rating)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-gray-600">
+                          {shop.rating.toFixed(1)} ({shop.reviewCount || 0})
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-gray-900">
+                          {shop.productCount || 0}
+                        </p>
+                        <p className="text-xs text-gray-600">Products</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">
+                          {shopProducts.length}
+                        </p>
+                        <p className="text-xs text-gray-600">In Stock</p>
+                      </div>
+                    </div>
+
+                    {/* Visit Shop Button */}
+                    <Link
+                      href={`/shops/${shop.slug}`}
+                      className="block w-full text-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                    >
+                      Visit Shop
+                    </Link>
+
+                    {/* Contact Seller Button */}
+                    {shop.email && (
+                      <a
+                        href={`mailto:${shop.email}`}
+                        className="block w-full text-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        Contact Seller
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Delivery & Returns Info */}
+              <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
+                <h4 className="font-semibold text-gray-900">Delivery & Returns</h4>
+                <div className="space-y-2 text-gray-600">
+                  <p>• Free delivery on orders above ₹5,000</p>
+                  <p>• Standard delivery: 5-7 business days</p>
+                  {product.isReturnable && (
+                    <p>• 7-day return policy available</p>
+                  )}
+                  <p>• Cash on delivery available</p>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* Reviews */}
-        <div className="mb-6">
-          <ProductReviews productId={product.id} productSlug={product.slug} />
         </div>
-
-        {/* Similar Products */}
-        <SimilarProducts
-          productId={product.id}
-          categoryId={product.categoryId}
-          currentShopId={product.shopId}
-        />
       </div>
     </div>
   );
