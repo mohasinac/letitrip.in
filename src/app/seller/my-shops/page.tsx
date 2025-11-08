@@ -45,7 +45,10 @@ export default function MyShopsPage() {
 
   const handleDelete = async (shopId: string) => {
     try {
-      await shopsService.delete(shopId);
+      const shopToDelete = shops.find((shop) => shop.id === shopId);
+      if (!shopToDelete) return;
+
+      await shopsService.delete(shopToDelete.slug);
       setShops(shops.filter((shop) => shop.id !== shopId));
       setDeleteShopId(null);
     } catch (error) {

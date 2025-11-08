@@ -326,14 +326,86 @@ Replaced simple button with proper confirmation flow:
 
 ---
 
-## 🎯 Next Steps
+## 🐛 Bug Fix: Delete Not Working (Nov 8, 2025)
 
-The My Shops section is now fully integrated with real APIs. Other related areas:
+### Issue
 
-1. **Products Page** - Check if using real API (likely yes)
-2. **Coupons Page** - Check if using real API (likely yes)
-3. **Orders Page** - Implement when ready (Phase 3 remaining work)
-4. **Analytics Page** - Already complete with real API
+```
+DELETE /api/shops/qtMj0yqwvYrUmxjPU4qw 404 in 3682ms
+```
+
+**Root Cause:** Passing Firebase document ID (`shop.id`) instead of slug to delete endpoint.
+
+### The Problem
+
+**API Route:** `/api/shops/[slug]` expects a **slug** parameter
+
+- Example slug: `"techstore-india"`
+- Example ID: `"qtMj0yqwvYrUmxjPU4qw"` ❌
+
+**Old Code:**
+
+```typescript
+const handleDelete = async (shopId: string) => {
+  await shopsService.delete(shopId); // ❌ Passing ID instead of slug
+  // ...
+};
+```
+
+This resulted in:
+
+- Request: `DELETE /api/shops/qtMj0yqwvYrUmxjPU4qw`
+- API looking for shop with slug `"qtMj0yqwvYrUmxjPU4qw"`
+- Shop not found → 404 error
+
+### The Fix
+
+**New Code:**
+
+```typescript
+const handleDelete = async (shopId: string) => {
+  try {
+    const shopToDelete = shops.find((shop) => shop.id === shopId);
+    if (!shopToDelete) return;
+
+    await shopsService.delete(shopToDelete.slug); // ✅ Use slug
+    setShops(shops.filter((shop) => shop.id !== shopId));
+    setDeleteShopId(null);
+  } catch (error) {
+    console.error("Failed to delete shop:", error);
+    alert("Failed to delete shop. Please try again.");
+  }
+};
+```
+
+**Now:**
+
+- Request: `DELETE /api/shops/techstore-india` ✅
+- API finds shop by slug successfully
+- Shop deleted without errors
+
+### Key Takeaway
+
+⚠️ **IMPORTANT:** Shop API routes use **slug** as identifier, not **id**
+
+**Correct Usage:**
+
+```typescript
+// ✅ DO THIS
+shopsService.delete(shop.slug);
+shopsService.update(shop.slug, data);
+shopsService.getBySlug(shop.slug);
+
+// ❌ DON'T DO THIS
+shopsService.delete(shop.id);
+shopsService.update(shop.id, data);
+```
+
+**Why?**
+
+- Public-facing URLs use slugs: `/shops/techstore-india`
+- SEO-friendly and human-readable
+- Firebase document IDs are internal implementation detail
 
 ---
 
