@@ -8,6 +8,7 @@ interface AuctionFilters {
   minBid?: number;
   maxBid?: number;
   isFeatured?: boolean;
+  showOnHomepage?: boolean;
   endingSoon?: boolean; // Within 24 hours
   page?: number;
   limit?: number;
@@ -123,6 +124,16 @@ class AuctionsService {
   // Get featured auctions
   async getFeatured(): Promise<Auction[]> {
     return apiService.get<Auction[]>('/auctions/featured');
+  }
+
+  // Get homepage auctions
+  async getHomepage(): Promise<Auction[]> {
+    const response = await this.list({
+      showOnHomepage: true,
+      status: 'active',
+      limit: 20,
+    });
+    return Array.isArray(response) ? response : (response as any).data || [];
   }
 
   // Get similar auctions

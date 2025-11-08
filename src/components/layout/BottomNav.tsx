@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Store, Grid3x3, ShoppingCart, User } from "lucide-react";
+import { Home, ShoppingCart, User, Gavel, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 
@@ -15,12 +15,12 @@ export default function BottomNav() {
 
   const navItems = [
     { id: "home", name: "Home", icon: Home, href: "/" },
-    { id: "shops", name: "Shops", icon: Store, href: "/shops" },
+    { id: "products", name: "Products", icon: ShoppingBag, href: "/products" },
     {
-      id: "categories",
-      name: "Categories",
-      icon: Grid3x3,
-      href: "/categories",
+      id: "auctions",
+      name: "Auctions",
+      icon: Gavel,
+      href: "/auctions",
     },
     {
       id: "cart",

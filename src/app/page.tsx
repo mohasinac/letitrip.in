@@ -1,6 +1,13 @@
 import FeaturedCategories from "@/components/layout/FeaturedCategories";
 import FAQSection from "@/components/faq/FAQSection";
 import ShopsNav from "@/components/layout/ShopsNav";
+import FeaturedProductsSection from "@/components/layout/FeaturedProductsSection";
+import FeaturedAuctionsSection from "@/components/layout/FeaturedAuctionsSection";
+import HeroCarousel from "@/components/layout/HeroCarousel";
+import FeaturedBlogsSection from "@/components/layout/FeaturedBlogsSection";
+import FeaturedReviewsSection from "@/components/layout/FeaturedReviewsSection";
+import FeaturedCategoriesSection from "@/components/layout/FeaturedCategoriesSection";
+import FeaturedShopsSection from "@/components/layout/FeaturedShopsSection";
 
 export default function Home() {
   return (
@@ -8,111 +15,113 @@ export default function Home() {
       <div className="space-y-8">
         {/* Hero Section */}
         <section id="hero-section" className="relative">
-          {/* TODO: make the hero carousel 
-          it takes carousel hero slide from the admin and then displays it here
-          each slide has an image, title, subtitle, call to action button with link
-          implement using a carousel library or custom implementation
-          i want to improve the design as much as possible so that it stands out and attracts users
-          */}
+          <HeroCarousel />
         </section>
-        {/* Heading Section */}
-        {/* TODO: make the heading section consise so that user understands and out hero carousel doesnt become a duplicate */}
+
+        {/* Value Proposition Banner */}
         <section
-          id="heading-section"
-          className="bg-gradient-to-r from-blue-100 via-yellow-50 to-red-50 rounded-lg p-8 md:p-12 text-center"
+          id="value-proposition"
+          className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 md:p-6"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Let It Rip! 🎯
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-800 mb-4 font-semibold">
-            India's #1 Store for Authentic Collectibles
-          </p>
-          <p className="text-lg text-gray-700 mb-6 max-w-3xl mx-auto">
-            Beyblades • Pokemon TCG • Yu-Gi-Oh • Transformers • Hot Wheels •
-            Stickers & More!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
             <div className="flex items-center gap-2 text-green-700 font-medium">
-              <span className="text-2xl">✅</span>
-              <span>100% Authentic</span>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span className="text-sm md:text-base">
+                100% Authentic Products
+              </span>
             </div>
-            <div className="flex items-center gap-2 text-green-700 font-medium">
-              <span className="text-2xl">✅</span>
-              <span>Zero Customs Charges</span>
+            <div className="flex items-center gap-2 text-blue-700 font-medium">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                />
+              </svg>
+              <span className="text-sm md:text-base">Zero Customs Charges</span>
             </div>
-            <div className="flex items-center gap-2 text-green-700 font-medium">
-              <span className="text-2xl">✅</span>
-              <span>Fast India Delivery</span>
+            <div className="flex items-center gap-2 text-purple-700 font-medium">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              <span className="text-sm md:text-base">Fast India Delivery</span>
+            </div>
+            <div className="flex items-center gap-2 text-orange-700 font-medium">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+              <span className="text-sm md:text-base">Secure Payments</span>
             </div>
           </div>
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all">
-            Shop Now
-          </button>
         </section>
         {/* 5. Featured Categories */}
         <FeaturedCategories />
         {/* Featured Categories Section */}
-        {/* TODO: make the categories section */}
         <section id="featured-categories">
-          {/* Placeholder for Featured Categories - Implement as needed
-          uses the homepage categories flag only
-           upto 5 categorie subsections 
-           with each showing at most 10 products horizontally scrollable using a ProductCard component and arrow buttons to navigate with title of the cateogry
-           bottom link to view all in that category
-          */}
+          <FeaturedCategoriesSection />
         </section>
 
         {/* Featured Products Section */}
-        {/* TODO: make the products section */}
         <section id="featured-products">
-          {/* Placeholder for Featured Products - Implement as needed
-          uses the homepage product flag
-           1 rows of products with horizontal scrolling using a ProductCard component and arrow buttons to navigate upto 10 across whole application
-           if not met 10 then take from featured products from existing shops
-           bottom link to view all products
-          */}
+          <FeaturedProductsSection />
         </section>
 
         {/* Featured auctions Section */}
-        {/* TODO: make the auctions section */}
         <section id="featured-auctions">
-          {/* Placeholder for Featured Auctions - Implement as needed
-          uses the homepage auctions flag
-           1 rows of auctions with horizontal scrolling using a AuctionCard component and arrow buttons to navigate upto 10 across whole application
-           if not met 10 then take from featured products from existing shops
-           bottom link to view all auctions
-          */}
+          <FeaturedAuctionsSection />
         </section>
-        {/* 3. Shops Navigation */}
-        {/* TODO: make the shops section */}
+        {/* Shops Navigation */}
         <ShopsNav />
+
+        {/* Featured Shops Section */}
         <section id="featured-shops">
-          {/* Placeholder for Featured Shops - Implement as needed
-          uses the homepage shops flag only
-           upto 5 shops subsections
-           with each showing at most 10 products horizontally scrollable using a ProductCard component and arrow buttons to navigate with title of the cateogry
-           bottom link to view all  that shop
-          */}
+          <FeaturedShopsSection />
         </section>
         {/* Featured blog posts Section */}
-        {/* TODO: make the blogs posts section */}
         <section id="featured-blogs">
-          {/* Placeholder for Featured Blogs - Implement as needed
-          uses the homepage blogs flag
-           1 rows of blogs with horizontal scrolling using a BlogCard component and arrow buttons to navigate upto 10 across whole application
-           if not met 10 then take from featured blogs from existing shops
-           bottom link to view all blogs
-          */}
+          <FeaturedBlogsSection />
         </section>
         {/* Featured reviews posts Section */}
-        {/* TODO: make the blogs posts section */}
         <section id="featured-reviews">
-          {/* Placeholder for Featured Reviews - Implement as needed
-          uses the homepage reviews flag
-           1 rows of reviews with horizontal scrolling using a ReviewCard component and arrow buttons to navigate upto 10 across whole application
-           if not met 10 then take from featured reviews from existing shops
-           bottom link to view all reviews
-          */}
+          <FeaturedReviewsSection />
         </section>
         {/* FAQ Section */}
         <section id="faq-section" className="py-8">

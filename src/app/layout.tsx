@@ -12,6 +12,7 @@ import {
   generateWebSiteSchema,
   generateJSONLD,
 } from "@/lib/seo/schema";
+import { ToastContainer } from "@/components/admin/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,6 +51,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
+          <ToastContainer />
           <div className="flex flex-col min-h-screen">
             <Header />
             <Breadcrumb />

@@ -40,17 +40,14 @@ export default function Header() {
           onMobileMenuToggle={toggleMobileSidebar}
           onSearchClick={handleSearchClick}
         />
-
-        {/* Sub Navigation Bar - Below main nav */}
-        <SubNavbar />
-
-        <SearchBar
-          ref={searchBarRef}
-          isVisible={isSearchVisible}
-          onClose={handleCloseSearch}
-        />
       </header>
-
+      {/* Sub Navigation Bar - Below main nav */}
+      <SubNavbar />
+      <SearchBar
+        ref={searchBarRef}
+        isVisible={isSearchVisible}
+        onClose={handleCloseSearch}
+      />
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={isMobileSidebarOpen}

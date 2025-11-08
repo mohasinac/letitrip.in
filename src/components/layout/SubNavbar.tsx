@@ -12,13 +12,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Store,
-  Hammer,
+  Gavel,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "home", name: "Home", href: "/", icon: Home },
   { id: "products", name: "Products", href: "/products", icon: ShoppingBag },
-  { id: "auctions", name: "Auctions", href: "/auctions", icon: Hammer },
+  { id: "auctions", name: "Auctions", href: "/auctions", icon: Gavel },
   { id: "shops", name: "Shops", href: "/shops", icon: Store },
   { id: "categories", name: "Categories", href: "/categories", icon: Layers },
   { id: "reviews", name: "Reviews", href: "/reviews", icon: Star },

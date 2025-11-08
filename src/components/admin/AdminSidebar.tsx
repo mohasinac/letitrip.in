@@ -57,6 +57,11 @@ const navigation: NavItem[] = [
     icon: LayoutIcon,
     children: [
       {
+        title: "Homepage Settings",
+        href: "/admin/homepage",
+        icon: Home,
+      },
+      {
         title: "Hero Slides",
         href: "/admin/hero-slides",
         icon: Image,

@@ -48,17 +48,20 @@ class CategoriesService {
     const queryString = params.toString();
     const endpoint = queryString ? `/categories?${queryString}` : '/categories';
     
-    return apiService.get<Category[]>(endpoint);
+    const response = await apiService.get<{ success: boolean; data: Category[] }>(endpoint);
+    return response.data || [];
   }
 
   // Get category by ID
   async getById(id: string): Promise<Category> {
-    return apiService.get<Category>(`/categories/${id}`);
+    const response = await apiService.get<{ success: boolean; data: Category }>(`/categories/${id}`);
+    return response.data;
   }
 
   // Get category by slug
   async getBySlug(slug: string): Promise<Category> {
-    return apiService.get<Category>(`/categories/${slug}`);
+    const response = await apiService.get<{ success: boolean; data: Category }>(`/categories/${slug}`);
+    return response.data;
   }
 
   // Get category tree
@@ -69,7 +72,8 @@ class CategoriesService {
     const queryString = params.toString();
     const endpoint = queryString ? `/categories/tree?${queryString}` : '/categories/tree';
     
-    return apiService.get<CategoryTree[]>(endpoint);
+    const response = await apiService.get<{ success: boolean; data: CategoryTree[] }>(endpoint);
+    return response.data || [];
   }
 
   // Get leaf categories (for product creation)
@@ -99,12 +103,14 @@ class CategoriesService {
 
   // Get featured categories
   async getFeatured(): Promise<Category[]> {
-    return apiService.get<Category[]>('/categories/featured');
+    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/featured');
+    return response.data || [];
   }
 
   // Get homepage categories
   async getHomepage(): Promise<Category[]> {
-    return apiService.get<Category[]>('/categories/homepage');
+    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/homepage');
+    return response.data || [];
   }
 
   // Search categories

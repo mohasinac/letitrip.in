@@ -160,3 +160,19 @@ export type {
   AssignTicketData,
   EscalateTicketData,
 } from './support.service';
+
+// Blog service
+export { blogService } from './blog.service';
+export type {
+  BlogFilters,
+} from './blog.service';
+
+// Address service
+export { addressService } from './address.service';
+
+// Homepage Settings service
+export { homepageSettingsService } from './homepage-settings.service';
+export type {
+  HomepageSettings,
+  HomepageSettingsResponse,
+} from './homepage-settings.service';

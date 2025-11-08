@@ -477,6 +477,10 @@ export interface Review {
   // Engagement
   helpfulCount: number;
   
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+  
   // Moderation
   isApproved: boolean;
   moderatedAt?: Date;
@@ -526,6 +530,7 @@ export interface Auction {
   
   // Flags
   isFeatured: boolean;
+  showOnHomepage: boolean;
   featuredPriority?: number;
   
   createdAt: Date;
@@ -544,6 +549,51 @@ export interface Bid {
   isWinning: boolean;
   isAutoBid: boolean;
   maxAutoBid?: number;
+}
+
+/**
+ * Blog Post Status
+ */
+export type BlogPostStatus = 'draft' | 'published' | 'archived';
+
+/**
+ * Blog Post Interface
+ */
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage?: string;
+  
+  // Author
+  author: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  
+  // Categorization
+  category: string;
+  tags: string[];
+  
+  // Status
+  status: BlogPostStatus;
+  
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+  
+  // Publishing
+  publishedAt?: Date;
+  
+  // Stats
+  views: number;
+  likes: number;
+  
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
