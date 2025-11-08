@@ -42,7 +42,8 @@ export default function FeaturedCategories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await categoriesService.getFeatured();
+        const response = await categoriesService.getFeatured();
+        const data = Array.isArray(response) ? response : (response as any).data || [];
         setCategories(data.slice(0, 9));
       } catch (error) {
         console.error("Failed to fetch featured categories:", error);
