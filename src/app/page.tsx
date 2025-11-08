@@ -94,7 +94,26 @@ export default function Home() {
            bottom link to view all  that shop
           */}
         </section>
-
+        {/* Featured blog posts Section */}
+        {/* TODO: make the blogs posts section */}
+        <section id="featured-blogs">
+          {/* Placeholder for Featured Blogs - Implement as needed
+          uses the homepage blogs flag
+           1 rows of blogs with horizontal scrolling using a BlogCard component and arrow buttons to navigate upto 10 across whole application
+           if not met 10 then take from featured blogs from existing shops
+           bottom link to view all blogs
+          */}
+        </section>
+        {/* Featured reviews posts Section */}
+        {/* TODO: make the blogs posts section */}
+        <section id="featured-reviews">
+          {/* Placeholder for Featured Reviews - Implement as needed
+          uses the homepage reviews flag
+           1 rows of reviews with horizontal scrolling using a ReviewCard component and arrow buttons to navigate upto 10 across whole application
+           if not met 10 then take from featured reviews from existing shops
+           bottom link to view all reviews
+          */}
+        </section>
         {/* FAQ Section */}
         <section id="faq-section" className="py-8">
           <FAQSection
