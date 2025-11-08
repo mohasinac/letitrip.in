@@ -83,6 +83,11 @@ export default function FeaturedCategories() {
   return (
     <div id="featured-categories" className="bg-white border-b py-4 lg:py-4">
       <div className="container mx-auto px-4">
+        {/* Heading */}
+        <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 lg:mb-4">
+          Featured Categories
+        </h2>
+
         <div className="relative">
           {/* Left Arrow - Mobile Only */}
           {showLeftArrow && (
@@ -137,7 +142,7 @@ export default function FeaturedCategories() {
                 })}
 
             {/* Show More Button - Navigate to Categories Page */}
-            {!loading && categories.length >= 9 && (
+            {!loading && (
               <Link
                 href="/categories"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"

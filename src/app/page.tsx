@@ -5,15 +5,20 @@ import ShopsNav from "@/components/layout/ShopsNav";
 export default function Home() {
   return (
     <main id="home-page" className="container mx-auto px-4 py-8">
-      {/* 5. Featured Categories */}
-      <FeaturedCategories />
-
-      {/* 3. Shops Navigation */}
-      <ShopsNav />
       <div className="space-y-8">
         {/* Hero Section */}
+        <section id="hero-section" className="relative">
+          {/* TODO: make the hero carousel 
+          it takes carousel hero slide from the admin and then displays it here
+          each slide has an image, title, subtitle, call to action button with link
+          implement using a carousel library or custom implementation
+          i want to improve the design as much as possible so that it stands out and attracts users
+          */}
+        </section>
+        {/* Heading Section */}
+        {/* TODO: make the heading section consise so that user understands and out hero carousel doesnt become a duplicate */}
         <section
-          id="hero-section"
+          id="heading-section"
           className="bg-gradient-to-r from-blue-100 via-yellow-50 to-red-50 rounded-lg p-8 md:p-12 text-center"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -44,53 +49,50 @@ export default function Home() {
             Shop Now
           </button>
         </section>
-
-        {/* Featured Products Section */}
-        <section id="featured-products">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Featured Products
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
-              >
-                <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                <h3 className="font-bold text-gray-900 mb-2">Product {item}</h3>
-                <p className="text-yellow-700 font-bold text-lg">
-                  ¥{1000 * item}
-                </p>
-              </div>
-            ))}
-          </div>
+        {/* 5. Featured Categories */}
+        <FeaturedCategories />
+        {/* Featured Categories Section */}
+        {/* TODO: make the categories section */}
+        <section id="featured-categories">
+          {/* Placeholder for Featured Categories - Implement as needed
+          uses the homepage categories flag only
+           upto 5 categorie subsections 
+           with each showing at most 10 products horizontally scrollable using a ProductCard component and arrow buttons to navigate with title of the cateogry
+           bottom link to view all in that category
+          */}
         </section>
 
-        {/* Popular Categories */}
-        <section id="popular-categories">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Shop by Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: "Beyblades", icon: "🎯" },
-              { name: "Pokemon TCG", icon: "🎴" },
-              { name: "Yu-Gi-Oh", icon: "🃏" },
-              { name: "Transformers", icon: "🤖" },
-              { name: "Hot Wheels", icon: "🏎️" },
-              { name: "Stickers", icon: "⭐" },
-              { name: "Crafts", icon: "🎨" },
-              { name: "Collectibles", icon: "🎁" },
-            ].map((category) => (
-              <div
-                key={category.name}
-                className="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg hover:border-yellow-400 transition-all cursor-pointer"
-              >
-                <div className="text-4xl mb-2">{category.icon}</div>
-                <h3 className="font-bold text-gray-900">{category.name}</h3>
-              </div>
-            ))}
-          </div>
+        {/* Featured Products Section */}
+        {/* TODO: make the products section */}
+        <section id="featured-products">
+          {/* Placeholder for Featured Products - Implement as needed
+          uses the homepage product flag
+           1 rows of products with horizontal scrolling using a ProductCard component and arrow buttons to navigate upto 10 across whole application
+           if not met 10 then take from featured products from existing shops
+           bottom link to view all products
+          */}
+        </section>
+
+        {/* Featured auctions Section */}
+        {/* TODO: make the auctions section */}
+        <section id="featured-auctions">
+          {/* Placeholder for Featured Auctions - Implement as needed
+          uses the homepage auctions flag
+           1 rows of auctions with horizontal scrolling using a AuctionCard component and arrow buttons to navigate upto 10 across whole application
+           if not met 10 then take from featured products from existing shops
+           bottom link to view all auctions
+          */}
+        </section>
+        {/* 3. Shops Navigation */}
+        {/* TODO: make the shops section */}
+        <ShopsNav />
+        <section id="featured-shops">
+          {/* Placeholder for Featured Shops - Implement as needed
+          uses the homepage shops flag only
+           upto 5 shops subsections
+           with each showing at most 10 products horizontally scrollable using a ProductCard component and arrow buttons to navigate with title of the cateogry
+           bottom link to view all  that shop
+          */}
         </section>
 
         {/* FAQ Section */}

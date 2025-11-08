@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { Search, ChevronDown } from "lucide-react";
-import { PRODUCT_CATEGORIES } from "@/constants/navigation";
+import {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react";
+import { Search } from "lucide-react";
+import CategorySelector from "@/components/common/CategorySelector";
+import type { Category } from "@/components/common/CategorySelector";
+import { categoriesService } from "@/services/categories.service";
 
 export interface SearchBarRef {
   focusSearch: () => void;
@@ -17,11 +25,44 @@ interface SearchBarProps {
 
 const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
   ({ isVisible = true, onClose }, ref) => {
-    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+      null
+    );
+    const [selectedCategoryName, setSelectedCategoryName] =
+      useState<string>("All Categories");
     const [searchQuery, setSearchQuery] = useState("");
-    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchBarRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const fetchCategories = async () => {
+        try {
+          const response = await categoriesService.list();
+          // Transform to match CategorySelector's expected format
+          const transformed = (
+            Array.isArray(response) ? response : (response as any).data || []
+          ).map((cat: any) => ({
+            id: cat.id,
+            name: cat.name,
+            slug: cat.slug,
+            parent_id: cat.parentId || null,
+            level: cat.level || 0,
+            has_children: cat.hasChildren || cat.childCount > 0,
+            is_active: cat.isActive !== false,
+            product_count: cat.productCount,
+          }));
+          setCategories(transformed);
+        } catch (error) {
+          console.error("Failed to fetch categories:", error);
+        } finally {
+          setLoadingCategories(false);
+        }
+      };
+
+      fetchCategories();
+    }, []);
 
     useImperativeHandle(ref, () => ({
       focusSearch: () => {
@@ -36,14 +77,18 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       },
       hide: () => {
         setSearchQuery("");
-        setIsCategoryOpen(false);
       },
     }));
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
       // Handle search logic here
-      console.log("Search:", searchQuery, "Category:", selectedCategory);
+      console.log(
+        "Search:",
+        searchQuery,
+        "Category:",
+        selectedCategoryId || "all"
+      );
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -52,12 +97,13 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       }
     };
 
-    const selectedCategoryName =
-      PRODUCT_CATEGORIES.find((cat) => cat.id === selectedCategory)?.name ||
-      "All Categories";
-
-    const displayCategoryName =
-      selectedCategory === "all" ? "All" : selectedCategoryName;
+    const handleCategoryChange = (
+      categoryId: string | null,
+      category: Category | null
+    ) => {
+      setSelectedCategoryId(categoryId);
+      setSelectedCategoryName(category?.name || "All Categories");
+    };
 
     // Don't render if not visible
     if (!isVisible) {
@@ -73,90 +119,48 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         <div className="container mx-auto">
           <form
             onSubmit={handleSearch}
-            className="flex gap-2 max-w-full lg:max-w-6xl mx-auto"
+            className="flex gap-0 max-w-full lg:max-w-6xl mx-auto"
           >
-            {/* Category Dropdown */}
-            <div className="relative flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                className="h-full bg-white border border-gray-300 rounded-l-lg px-3 lg:px-5 py-3 flex items-center gap-1 lg:gap-2 whitespace-nowrap hover:bg-gray-50 min-w-[70px] lg:min-w-[200px] justify-between"
-              >
-                <span className="text-sm font-semibold text-gray-900 truncate">
-                  <span className="lg:hidden">{displayCategoryName}</span>
-                  <span className="hidden lg:inline">
-                    {selectedCategoryName}
-                  </span>
-                </span>
-                <ChevronDown className="w-4 h-4 text-gray-700 flex-shrink-0" />
-              </button>
+            {/* Merged Category Selector and Search Input */}
+            <div className="flex-1 flex h-[50px] bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-500">
+              {/* Category Selector */}
+              <div className="flex-shrink-0 min-w-[70px] lg:min-w-[200px] border-r border-gray-300">
+                {loadingCategories ? (
+                  <div className="h-full px-3 lg:px-5 flex items-center justify-center">
+                    <span className="text-sm text-gray-500">Loading...</span>
+                  </div>
+                ) : (
+                  <CategorySelector
+                    categories={categories}
+                    value={selectedCategoryId}
+                    onChange={handleCategoryChange}
+                    placeholder="All Categories"
+                    allowParentSelection={true}
+                    className="h-full"
+                  />
+                )}
+              </div>
 
-              {/* Category Dropdown Menu */}
-              {isCategoryOpen && (
-                <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
-                  {PRODUCT_CATEGORIES.map((category) => (
-                    <div key={category.id} className="relative group">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedCategory(category.id);
-                          setIsCategoryOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 hover:bg-yellow-50 flex items-center justify-between ${
-                          selectedCategory === category.id
-                            ? "bg-yellow-100 font-bold text-gray-900"
-                            : "font-medium text-gray-800"
-                        }`}
-                      >
-                        <span>{category.name}</span>
-                        {category.subcategories.length > 0 && (
-                          <ChevronDown className="w-4 h-4 text-gray-500 rotate-[-90deg]" />
-                        )}
-                      </button>
-
-                      {/* Subcategories - Show on hover to the right */}
-                      {category.subcategories.length > 0 && (
-                        <div className="hidden group-hover:block absolute left-full top-0 ml-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto z-[60]">
-                          {category.subcategories.map((sub, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => {
-                                setSelectedCategory(category.id);
-                                setIsCategoryOpen(false);
-                              }}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 font-medium hover:text-gray-900"
-                            >
-                              {sub}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Search Input with Button */}
-            <div className="flex-1 relative">
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter a brand name, item name or item URL for search..."
-                className="w-full px-4 py-3 pr-32 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm"
-              />
-              {/* Search Button Inside Input */}
-              <button
-                type="submit"
-                className="absolute right-0 top-0 h-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-6 rounded-r-lg flex items-center gap-2 font-bold"
-              >
-                <Search className="w-5 h-5" />
-                <span className="hidden sm:inline">Search</span>
-              </button>
+              {/* Search Input with Button */}
+              <div className="flex-1 relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Enter a brand name, item name or item URL for search..."
+                  className="w-full h-full px-4 pr-32 border-0 focus:outline-none text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm bg-transparent"
+                />
+                {/* Search Button Inside Input */}
+                <button
+                  type="submit"
+                  className="absolute right-0 top-0 h-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-6 flex items-center gap-2 font-bold"
+                >
+                  <Search className="w-5 h-5" />
+                  <span className="hidden sm:inline">Search</span>
+                </button>
+              </div>
             </div>
 
             {/* Close Button */}
@@ -164,7 +168,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-600 hover:text-gray-900 px-2 flex items-center justify-center transition-colors"
+                className="h-[50px] ml-2 text-gray-600 hover:text-gray-900 px-2 flex items-center justify-center transition-colors"
                 aria-label="Close search"
               >
                 <svg

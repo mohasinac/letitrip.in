@@ -11,11 +11,15 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Store,
+  Hammer,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "home", name: "Home", href: "/", icon: Home },
   { id: "products", name: "Products", href: "/products", icon: ShoppingBag },
+  { id: "auctions", name: "Auctions", href: "/auctions", icon: Hammer },
+  { id: "shops", name: "Shops", href: "/shops", icon: Store },
   { id: "categories", name: "Categories", href: "/categories", icon: Layers },
   { id: "reviews", name: "Reviews", href: "/reviews", icon: Star },
   { id: "blog", name: "Blog", href: "/blog", icon: BookOpen },

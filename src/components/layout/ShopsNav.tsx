@@ -78,6 +78,11 @@ export default function ShopsNav() {
   return (
     <div id="shops-navigation" className="bg-white border-b py-4 lg:py-4">
       <div className="container mx-auto px-4">
+        {/* Heading */}
+        <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 lg:mb-4">
+          Featured Shops
+        </h2>
+
         <div className="relative">
           {/* Left Arrow - Mobile Only */}
           {showLeftArrow && (
@@ -141,7 +146,7 @@ export default function ShopsNav() {
                 })}
 
             {/* Show More Button - Navigate to Shops Page */}
-            {!loading && shops.length >= 9 && (
+            {!loading && (
               <Link
                 href="/shops"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
