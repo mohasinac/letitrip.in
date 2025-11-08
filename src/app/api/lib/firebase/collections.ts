@@ -40,6 +40,7 @@ export const Collections = {
   // Order collections
   orders: () => getCollection(COLLECTIONS.ORDERS),
   orderItems: () => getCollection(COLLECTIONS.ORDER_ITEMS),
+  cart: () => getCollection(COLLECTIONS.CARTS),
   
   // Auction collections
   auctions: () => getCollection(COLLECTIONS.AUCTIONS),

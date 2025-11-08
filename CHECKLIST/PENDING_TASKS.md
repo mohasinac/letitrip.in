@@ -1,0 +1,405 @@
+# Pending Tasks - JustForView.in
+
+**Last Updated:** November 8, 2025
+
+> **👉 AI Agents:** Use this as your work queue. Pick tasks from top to bottom (highest priority first).
+
+---
+
+## 🔥 HIGH PRIORITY - Core Features
+
+### Phase 3.3: My Shops Management ✅ COMPLETE
+
+**Status:** API ✅ | Pages ✅ | Components ✅
+
+**What's Done:**
+
+- ✅ `/api/shops` - List/create shops (role-based)
+- ✅ `/api/shops/[slug]` - Get/update/delete shop
+- ✅ `/api/shops/validate-slug` - Slug validation
+- ✅ `/seller/my-shops/page.tsx` - Shops list with filters
+- ✅ `/seller/my-shops/create/page.tsx` - Create shop page
+- ✅ `/components/seller/ShopForm.tsx` - Shop form (create/edit modes)
+- ✅ `/seller/my-shops/[slug]/edit/page.tsx` - Edit shop page with delete
+- ✅ `/seller/my-shops/[slug]/page.tsx` - Shop dashboard with stats
+
+---
+
+### Phase 3.4: Product Management (Polish)
+
+**Status:** API ✅ | Pages ✅ | Components ✅
+
+**What's Done:**
+
+- ✅ `/api/products` - List/create products
+- ✅ `/api/products/[slug]` - Get/update/delete product
+- ✅ `/api/products/validate-slug` - Slug validation
+- ✅ `/seller/products/page.tsx` - Products list with ProductTable
+- ✅ `/seller/products/create/page.tsx` - Create wizard
+- ✅ `/seller/products/[slug]/edit/page.tsx` - Edit wizard
+- ✅ `ProductInlineForm` - Quick edit modal
+- ✅ `ProductTable` - DataTable with inline actions (View, Quick Edit, Edit Page, Delete)
+
+---
+
+### Phase 3.5: Coupon Management ✅ COMPLETE
+
+**Status:** API ✅ | Pages ✅ | Components ✅
+
+**What's Done:**
+
+- ✅ `/api/coupons` - List/create coupons
+- ✅ `/api/coupons/[code]` - Get/update/delete coupon
+- ✅ `/api/coupons/validate-code` - Code validation
+- ✅ `/seller/coupons/page.tsx` - Coupons list with filters
+- ✅ `/seller/coupons/create/page.tsx` - Create coupon page
+- ✅ `/seller/coupons/[code]/edit/page.tsx` - Edit coupon page with delete
+- ✅ `/components/seller/CouponForm.tsx` - Complete coupon form with all fields
+
+---
+
+## 📊 MEDIUM PRIORITY - Analytics & Business Intelligence
+
+### Phase 3.6: Shop Analytics
+
+**Status:** API ❌ | Pages ❌ | Components ❌
+
+**What's Needed:**
+
+- [ ] **Analytics Dashboard Page** ⭐ MEDIUM IMPACT
+
+  - File: `/src/app/seller/analytics/page.tsx`
+  - Components:
+    - `ShopSelector` (admin: all shops, seller: own) ✅ exists
+    - `DateTimePicker` for date range ✅ exists
+    - `StatsCard` for metrics ✅ exists
+  - Metrics:
+    - Revenue (total, average per order)
+    - Orders (total, pending, completed, cancelled)
+    - Products (total, active, out of stock)
+    - Customers (total, new, returning)
+    - Conversion rate, average order value
+  - Charts:
+    - Sales over time (line chart) - need chart library
+    - Top products (bar chart) - need chart library
+    - Revenue by category (pie chart) - need chart library
+
+- [ ] **Analytics API**
+
+  - File: `/src/app/api/analytics/route.ts`
+  - Queries:
+    - Aggregate revenue by date range
+    - Order counts by status
+    - Product counts by status
+    - Top products by revenue/quantity
+    - Customer metrics (new, returning)
+  - Filters: shop_id (sellers), all shops (admins), date range
+
+- [ ] **Analytics Components**
+  - Files:
+    - `/src/components/seller/AnalyticsOverview.tsx` - Overview cards
+    - `/src/components/seller/SalesChart.tsx` - Sales chart
+    - `/src/components/seller/TopProducts.tsx` - Top products table
+    - `/src/components/seller/PayoutRequest.tsx` - Request payout form
+
+---
+
+## 🎯 MEDIUM PRIORITY - Core Platform Features
+
+### Phase 4: Auction System
+
+**Status:** API ✅ | Pages 🔄 60% | Components 🔄 60% | Real-time ❌
+
+**What's Done:**
+
+- ✅ `/api/auctions` - List/create auctions
+- ✅ `/api/auctions/[id]` - Get/update/delete auction
+- ✅ `/api/auctions/[id]/bid` - Place bid with transaction
+- ✅ `/api/auctions/watchlist` - Watchlist
+- ✅ `/api/auctions/my-bids` - User bids
+- ✅ `/api/auctions/won` - Won auctions
+
+- [x] **Auction Management Pages** ✅ COMPLETE
+
+  - ✅ `/seller/auctions/page.tsx` - List auctions (grid view with filters)
+  - ✅ `/seller/auctions/create/page.tsx` - Create auction
+  - ✅ `/seller/auctions/[id]/edit/page.tsx` - Edit auction
+  - ✅ Components:
+    - ✅ `AuctionForm` - Auction create/edit form (~330 lines)
+    - ✅ Fields: name, slug, description, starting_bid, reserve_price, start_time, end_time, images, videos, status
+    - ✅ Validation: slug uniqueness, bid amounts, time ranges
+  - ✅ Limits: 5 active auctions per shop (enforced by API)
+
+- [x] **Public Auction Pages** ✅ COMPLETE
+  - ✅ `/auctions/page.tsx` - Browse all auctions (~280 lines)
+  - ✅ `/auctions/[slug]/page.tsx` - Auction detail page (~400 lines)
+  - ✅ Features:
+    - ✅ Grid view with filters (status, featured)
+    - ✅ Stats cards (live, ending soon, total bids)
+    - ✅ Auction cards with live indicators
+    - ✅ Image gallery
+    - ✅ Bidding panel with form
+    - ✅ Bid history display
+    - ✅ Watch/unwatch functionality
+    - ✅ Share functionality
+    - ✅ Countdown timer
+    - ✅ Reserve price indicator
+    - ✅ Auth guard for bidding
+
+**What's Needed:**
+
+- [ ] **Live Bidding System** ⭐ HIGH COMPLEXITY
+
+  - Setup Socket.io server (WebSocket)
+  - Real-time bid updates (broadcast to all watchers)
+  - Countdown timer (synchronized across clients)
+  - Auto-bid feature (user sets max bid, system auto-bids)
+  - Bid history display (live updates)
+  - Ending soon alerts (push notifications)
+
+- [ ] **Auction End Automation** ⭐ MEDIUM COMPLEXITY
+
+  - Node-cron job scheduler
+  - Close auctions at end time
+  - Determine winner (highest bidder)
+  - Notify winner + seller (email/SMS)
+  - Create order if Buy Now used
+  - Update inventory
+  - Archive auction
+
+- [ ] **Additional Auction Features**
+  - `/user/watchlist` - Watchlist page
+  - `/user/bids` - My bids page
+  - `/user/won-auctions` - Won auctions page
+  - Auto-bid system UI
+  - Buy now functionality
+  - Advanced filters (category, price range)
+
+---
+
+## 🛠️ LOW PRIORITY - Administrative Tools
+
+### Phase 5: Admin Dashboard
+
+**Status:** API 🔄 | Pages ❌ | Components ❌
+
+**What's Needed:**
+
+- [ ] **Admin Layout**
+
+  - Option 1: Extend `SellerSidebar` with admin-only items ✅ exists
+  - Option 2: Create separate `AdminSidebar`
+  - Add admin routes to navigation constants
+
+- [ ] **User Management**
+
+  - File: `/src/app/admin/users/page.tsx`
+  - Components: `DataTable` + `UserFilters` ✅ exist
+  - Actions: Ban/unban, change role, view activity
+  - API: Need to create `/api/admin/users` endpoints
+
+- [ ] **Category Management** ⭐ MEDIUM IMPACT
+
+  - Files:
+    - `/src/app/admin/categories/page.tsx` - Category tree view
+    - `/src/app/admin/categories/create/page.tsx` - Create category
+    - `/src/app/admin/categories/[slug]/edit/page.tsx` - Edit category
+  - Components:
+    - `CategoryTree` - Tree view with drag-drop reordering
+    - `CategoryForm` - Category create/edit form
+      - Fields: name, slug, parent, image, description, featured, homepage, SEO metadata
+      - Uses: `SlugInput`, `RichTextEditor`, `MediaUploader`, `CategorySelector` (for parent)
+  - APIs: ✅ Already implemented
+
+- [ ] **Homepage Management**
+  - Files:
+    - `/src/app/admin/hero-slides/page.tsx` - Hero carousel slides
+    - `/src/app/admin/featured-sections/page.tsx` - Featured categories/shops
+  - Components:
+    - Drag-drop reordering
+    - Image upload
+    - Link/CTA configuration
+  - APIs: Need to create hero/featured endpoints
+
+---
+
+## 🛍️ LOW PRIORITY - Customer Features
+
+### Phase 6: User Pages & Shopping Experience
+
+**Status:** API 🔄 | Pages ❌ | Components ❌
+
+**What's Needed:**
+
+- [x] **User Dashboard** ✅ COMPLETE
+
+  - ✅ `/user/page.tsx` - Dashboard with StatsCard + recent orders (~260 lines)
+  - ✅ `/user/settings/page.tsx` - Account settings page (~200 lines)
+  - ✅ Features:
+    - ✅ Order statistics (total, pending, completed, cancelled)
+    - ✅ Quick action cards (Orders, Addresses, Settings)
+    - ✅ Recent orders list with status badges
+    - ✅ Profile information management
+    - ✅ Account actions (manage addresses, logout)
+  - Note: `/user/addresses/page.tsx` already exists with full functionality
+
+- [x] **Shopping Cart** ⭐ HIGH IMPACT ✅ COMPLETE
+
+  - ✅ `/cart/page.tsx` - Cart page (238 lines)
+  - ✅ Features:
+    - ✅ Add/remove items
+    - ✅ Update quantities with stock validation
+    - ✅ Apply/remove coupons with validation
+    - ✅ Calculate totals (subtotal, discount, shipping, tax, total)
+    - ✅ Guest cart (localStorage) + authenticated cart (Firestore)
+    - ✅ Auto-merge guest→auth on login
+    - ✅ Free shipping progress indicator
+  - ✅ API: `/api/cart/route.ts` (GET/POST/DELETE), `/api/cart/[itemId]/route.ts` (PATCH/DELETE), `/api/cart/coupon/route.ts` (POST/DELETE)
+  - ✅ Hook: `useCart.ts` (233 lines - complete state management)
+  - ✅ Components: `CartItem.tsx` (~200 lines), `CartSummary.tsx` (~250 lines)
+
+- [x] **Checkout Flow** ⭐ HIGH COMPLEXITY ✅ COMPLETE
+
+  - ✅ `/checkout/page.tsx` - Multi-step checkout (400+ lines)
+  - ✅ Steps:
+    1. ✅ Address selection (shipping + billing)
+    2. ✅ Payment method (Razorpay integration)
+    3. ✅ Order review with delivery notes
+    4. ✅ Place order with payment processing
+  - ✅ APIs:
+    - ✅ `/api/checkout/create-order/route.ts` - Create order from cart (~300 lines)
+    - ✅ `/api/checkout/verify-payment/route.ts` - Verify Razorpay payment (~170 lines)
+  - ✅ Components:
+    - ✅ `AddressSelector.tsx` (~180 lines) - Address management with add/edit/delete
+    - ✅ `AddressForm.tsx` (~280 lines) - Full address form with validation
+    - ✅ `PaymentMethod.tsx` (~90 lines) - Razorpay & COD options
+  - ✅ Services:
+    - ✅ `address.service.ts` - Address CRUD operations
+    - ✅ `checkout.service.ts` - Order creation & payment verification
+  - ✅ Features:
+    - ✅ Multi-step flow with progress indicator
+    - ✅ Same billing address option
+    - ✅ Razorpay integration with signature verification
+    - ✅ Cash on Delivery support
+    - ✅ Coupon application from cart
+    - ✅ Stock validation before order
+    - ✅ Auto cart clear on payment success
+    - ✅ Order confirmation redirect
+
+- [x] **Order Tracking** ✅ COMPLETE
+
+  - ✅ `/user/orders/page.tsx` - Order history with DataTable
+  - ✅ `/user/orders/[id]/page.tsx` - Order details + timeline
+  - ✅ OrderTimeline component (inline in detail page)
+  - ✅ Cancel order functionality
+  - ✅ Download invoice
+  - ✅ APIs: Orders API integrated
+
+- [x] **Product Detail Pages** ⭐ HIGH IMPACT ✅ COMPLETE
+
+  - ✅ `/products/[slug]/page.tsx` - Product detail page (complete eBay-style layout)
+  - ✅ Components:
+    - ✅ `ProductGallery` - Image/video gallery with zoom/lightbox
+    - ✅ `ProductInfo` - Title, price, rating, stock, add to cart, buy now
+    - ✅ `ProductDescription` - Full description with tabs (description, specs, shipping)
+    - ✅ `ProductReviews` - Customer reviews with rating breakdown
+    - ✅ `SimilarProducts` - Similar products (max 10, diverse shops)
+  - APIs:
+    - ✅ `/api/products/[slug]` - Product details
+    - ✅ Reviews API integration
+  - Features:
+    - ✅ Image/video gallery with lightbox
+    - ✅ Add to cart with quantity selector
+    - ✅ Buy now (add to cart + redirect to checkout)
+    - ✅ Share functionality
+    - ✅ Favorite/wishlist toggle
+    - ✅ Rating display and review breakdown
+    - ✅ Tabbed product description (description, specs, shipping)
+    - ✅ Similar products recommendation
+    - ✅ Stock availability indicator
+    - ✅ Shop link integration
+
+- [x] **Shop Storefront Pages** ✅ COMPLETE
+
+  - ✅ `/shops/[slug]/page.tsx` - Shop storefront (135 lines)
+  - Components:
+    - ✅ `ShopHeader` - Banner, logo, name, rating, follow button (complete)
+    - ✅ Shop products grid with CardGrid + ProductCard
+    - ✅ About section with HTML description
+    - ⏳ `ShopAuctions` - Auctions grid (can be added later)
+    - ⏳ `ShopReviews` - Shop reviews (can be added later)
+  - APIs:
+    - ✅ `/api/shops/[slug]` - Shop details
+    - ✅ `/api/products` - Products list (filtered by shop_id)
+    - Note: Follow shop API to be implemented later
+  - Features:
+    - ✅ Shop banner and logo display
+    - ✅ Shop info (name, rating, location, verification badge)
+    - ✅ Follow button (UI ready, API pending)
+    - ✅ Share functionality
+    - ✅ Products display with CardGrid
+    - ✅ Empty state for no products
+    - ✅ About section with HTML rendering
+    - ✅ Loading states
+
+- [x] **Category Browse Pages** ✅ COMPLETE
+  - ✅ `/categories/[slug]/page.tsx` - Category page (~180 lines)
+  - Features:
+    - ✅ Category header with name and description
+    - ✅ Breadcrumb navigation
+    - ✅ Subcategories navigation (links to subcategory pages)
+    - ✅ Products grid with CardGrid + ProductCard
+    - ✅ Empty state for no products
+    - ✅ Loading states
+  - APIs:
+    - ✅ `/api/categories/[slug]` - Category details
+    - ✅ `/api/products` - Products list (filtered by categoryId)
+    - ✅ `/api/categories` - Subcategories list (filtered by parentId)
+
+---
+
+## 🔧 Technical Debt & Improvements
+
+- [ ] **Rate Limiting** - Migrate to Redis-backed rate limiter (currently in-memory)
+- [ ] **Firebase Security Rules** - Document and implement production security rules
+- [ ] **OpenAPI Docs** - Expand JSDoc annotations for auto-generated API docs
+- [ ] **Real-time Slug Validation** - Wire up debounced validation in ProductFullForm/CouponForm (ShopForm done)
+- [ ] **Chart Library** - Add Recharts or Chart.js for analytics dashboards
+- [ ] **Error Monitoring** - Add Sentry or similar for error tracking
+- [ ] **Performance Optimization** - Implement caching strategy (Redis/Firestore caching)
+- [ ] **Search Enhancement** - Consider Algolia/Elasticsearch for better search (currently using Firestore)
+
+---
+
+## 📝 Documentation to Create
+
+- [ ] `AUCTION_SYSTEM_GUIDE.md` - WebSocket setup, bidding flow, job scheduler
+- [ ] `SIMILAR_PRODUCTS_ALGORITHM.md` - Product recommendation logic
+- [ ] `PRODUCT_ARCHITECTURE.md` - Product data structure, pricing, variants
+- [ ] `CHECKOUT_FLOW_GUIDE.md` - Complete checkout process with Razorpay
+- [ ] `DEPLOYMENT_GUIDE.md` - Production deployment checklist
+
+---
+
+## 🎯 Quick Priority Guide
+
+**Start Here (Highest ROI):**
+
+1. ✅ Complete Phase 3.3: My Shops Management (ShopForm is critical)
+2. ✅ Polish Phase 3.4: ProductTable and ProductFullForm
+3. ✅ Complete Phase 3.5: Coupon Management (CouponForm)
+
+**Then Move To:** 4. Phase 6: Shopping Cart + Checkout (customer revenue flow) 5. Phase 6: Product Detail Pages (customer experience) 6. Phase 3.6: Shop Analytics (seller value)
+
+**Later:** 7. Phase 4: Auction System (complex feature) 8. Phase 5: Admin Dashboard (internal tools) 9. Phase 6: Shop/Category Pages (polish)
+
+---
+
+**Status Legend:**
+
+- ✅ Complete
+- 🔄 In Progress
+- ❌ Not Started
+- ⭐ High Impact Component
+
+**Last Updated:** November 8, 2025

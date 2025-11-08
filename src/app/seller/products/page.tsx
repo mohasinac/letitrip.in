@@ -2,19 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Plus,
-  Search,
-  Filter,
-  Edit2,
-  Trash2,
-  Eye,
-  ChevronRight,
-} from "lucide-react";
+import { Plus, Search, Filter } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { InlineFormModal } from "@/components/common/InlineFormModal";
-import { ProductInlineForm } from "@/components/seller/ProductInlineForm";
+import ProductTable from "@/components/seller/ProductTable";
 import { productsService } from "@/services/products.service";
 import type { Product } from "@/types";
 
@@ -24,8 +15,6 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -43,55 +32,12 @@ export default function ProductsPage() {
     }
   };
 
-  const handleDelete = async (slug: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-    try {
-      await productsService.delete(slug);
-      loadProducts();
-    } catch (error) {
-      console.error("Failed to delete product:", error);
-      alert("Failed to delete product");
-    }
-  };
-
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleFormSuccess = () => {
-    setEditingProduct(null);
-    setShowCreateModal(false);
-    loadProducts();
-  };
-
   return (
     <>
-      <InlineFormModal
-        isOpen={!!editingProduct}
-        onClose={() => setEditingProduct(null)}
-        title="Edit Product"
-        size="lg"
-      >
-        <ProductInlineForm
-          product={editingProduct || undefined}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setEditingProduct(null)}
-        />
-      </InlineFormModal>
-
-      <InlineFormModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Create Product"
-        size="lg"
-      >
-        <ProductInlineForm
-          shopId="default-shop-id"
-          onSuccess={handleFormSuccess}
-          onCancel={() => setShowCreateModal(false)}
-        />
-      </InlineFormModal>
-
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -196,123 +142,11 @@ export default function ProductsPage() {
 
         {/* Table View */}
         {!loading && view === "table" && (
-          <div className="rounded-lg border border-gray-200 bg-white">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Product
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Price
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stock
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sales
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {filteredProducts.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100">
-                            <img
-                              src={
-                                product.images?.[0] ||
-                                "/placeholder-product.jpg"
-                              }
-                              alt={product.name}
-                              className="h-full w-full rounded object-cover"
-                            />
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {product.name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {product.shopId}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {product.categoryId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        ₹{product.price.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {product.stockCount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={product.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {product.salesCount || 0}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/products/${product.slug}`}
-                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                            title="View"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => setEditingProduct(product)}
-                            className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
-                            title="Quick Edit"
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </button>
-                          <Link
-                            href={`/seller/products/${product.slug}/edit`}
-                            className="rounded p-1.5 text-green-600 hover:bg-green-50"
-                            title="Edit Page (Wizard)"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(product.slug)}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                            title="Delete Product"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Inline Create Row */}
-            <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-              >
-                <Plus className="h-4 w-4" />
-                Quick Add Product
-              </button>
-            </div>
-          </div>
+          <ProductTable
+            products={filteredProducts}
+            isLoading={loading}
+            onRefresh={loadProducts}
+          />
         )}
       </div>
     </>

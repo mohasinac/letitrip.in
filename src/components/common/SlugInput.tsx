@@ -68,10 +68,12 @@ export default function SlugInput({
   useEffect(() => {
     if (!isManualEdit && sourceText) {
       const newSlug = generateSlug(sourceText, prefix, suffix);
-      setLocalValue(newSlug);
-      onChange(newSlug);
+      if (newSlug !== localValue) {
+        setLocalValue(newSlug);
+        onChange(newSlug);
+      }
     }
-  }, [sourceText, prefix, suffix, isManualEdit, onChange]);
+  }, [sourceText, prefix, suffix, isManualEdit]);
 
   // Validate uniqueness with debounce
   useEffect(() => {
@@ -94,29 +96,26 @@ export default function SlugInput({
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [localValue, validateUnique]);
+  }, [localValue]);
 
   // Handle input change
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      const slugValue = generateSlug(newValue, prefix, suffix);
-      setLocalValue(slugValue);
-      onChange(slugValue);
-      setIsManualEdit(true);
-    },
-    [prefix, suffix, onChange]
-  );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    const slugValue = generateSlug(newValue, prefix, suffix);
+    setLocalValue(slugValue);
+    onChange(slugValue);
+    setIsManualEdit(true);
+  };
 
   // Handle regenerate
-  const handleRegenerate = useCallback(() => {
+  const handleRegenerate = () => {
     if (sourceText) {
       const newSlug = generateSlug(sourceText, prefix, suffix);
       setLocalValue(newSlug);
       onChange(newSlug);
       setIsManualEdit(false);
     }
-  }, [sourceText, prefix, suffix, onChange]);
+  };
 
   // Full preview URL
   const previewUrl = useMemo(() => {
@@ -141,16 +140,8 @@ export default function SlugInput({
         <div
           className={`
           flex items-center gap-2 border rounded-lg overflow-hidden
-          ${
-            disabled
-              ? "bg-gray-100800"
-              : "bg-white900"
-          }
-          ${
-            displayError
-              ? "border-red-500400"
-              : "border-gray-300700"
-          }
+          ${disabled ? "bg-gray-100800" : "bg-white900"}
+          ${displayError ? "border-red-500400" : "border-gray-300700"}
           ${
             !disabled &&
             "focus-within:ring-2 focus-within:ring-blue-500:ring-blue-400"
