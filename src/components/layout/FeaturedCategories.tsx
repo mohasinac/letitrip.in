@@ -43,7 +43,9 @@ export default function FeaturedCategories() {
     const fetchCategories = async () => {
       try {
         const response = await categoriesService.getFeatured();
-        const data = Array.isArray(response) ? response : (response as any).data || [];
+        const data = Array.isArray(response)
+          ? response
+          : (response as any).data || [];
         setCategories(data.slice(0, 9));
       } catch (error) {
         console.error("Failed to fetch featured categories:", error);

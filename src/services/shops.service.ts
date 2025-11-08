@@ -4,6 +4,7 @@ import type { Shop, PaginatedResponse } from '@/types';
 interface ShopFilters {
   verified?: boolean;
   featured?: boolean;
+  showOnHomepage?: boolean;
   banned?: boolean;
   search?: string;
   categories?: string[];
@@ -178,6 +179,18 @@ class ShopsService {
   // Get following shops list
   async getFollowing(): Promise<{ shops: Shop[]; count: number }> {
     return apiService.get<{ shops: Shop[]; count: number }>('/shops/following');
+  }
+
+  // Get featured shops
+  async getFeatured(): Promise<Shop[]> {
+    const res = await apiService.get<any>('/shops?featured=true&verified=true&limit=100');
+    return res.shops || res.data || res;
+  }
+
+  // Get homepage shops
+  async getHomepage(): Promise<Shop[]> {
+    const res = await apiService.get<any>('/shops?featured=true&verified=true&limit=20');
+    return res.shops || res.data || res;
   }
 }
 

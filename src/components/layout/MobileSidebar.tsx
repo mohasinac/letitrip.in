@@ -126,89 +126,58 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
         {/* Menu Sections */}
         <div className="p-4 space-y-6">
-          {/* User Menu - Only show when logged in */}
-          {isAuthenticated ? (
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase">
-                User Menu
-              </h3>
-              <div className="space-y-1">
-                {userMenuWithoutLogout.map((item) => {
-                  const Icon = userMenuIcons[item.id] || Package;
-
-                  // If item has children (grouped), show collapsible section
-                  if ("children" in item && item.children) {
-                    const isOpen = userSectionOpen[item.id] || false;
-                    return (
-                      <div key={item.id}>
-                        <button
-                          onClick={() => toggleUserSection(item.id)}
-                          className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon className="w-5 h-5 text-gray-600" />
-                            <span>{item.name}</span>
-                          </div>
-                          {isOpen ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )}
-                        </button>
-                        {isOpen && (
-                          <div className="ml-8 mt-1 space-y-1">
-                            {item.children.map((child) => (
-                              <Link
-                                key={child.id}
-                                href={child.link}
-                                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
-                                onClick={onClose}
-                              >
-                                <span>{child.name}</span>
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  // Regular item with direct link
-                  if ("link" in item && item.link) {
-                    return (
-                      <Link
-                        key={item.id}
-                        href={item.link}
-                        className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
-                        onClick={onClose}
-                      >
-                        <Icon className="w-5 h-5 text-gray-600" />
-                        <span>{item.name}</span>
-                      </Link>
-                    );
-                  }
-
-                  return null;
-                })}
-              </div>
-
-              {/* Logout button */}
-              <div className="mt-4 pt-4 border-t">
-                {logoutItem && (
-                  <Link
-                    href="/logout"
-                    className="flex items-center gap-3 px-3 py-2 hover:bg-red-50 rounded text-red-600 w-full"
-                    onClick={onClose}
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span>{logoutItem.name}</span>
-                  </Link>
-                )}
-              </div>
+          {/* Main Navigation */}
+          <div>
+            <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase">
+              Navigation
+            </h3>
+            <div className="space-y-1">
+              <Link
+                href="/"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                onClick={onClose}
+              >
+                <Package className="w-5 h-5 text-gray-600" />
+                <span>Home</span>
+              </Link>
+              <Link
+                href="/products"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                onClick={onClose}
+              >
+                <ShoppingBag className="w-5 h-5 text-gray-600" />
+                <span>Products</span>
+              </Link>
+              <Link
+                href="/categories"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                onClick={onClose}
+              >
+                <Grid3x3 className="w-5 h-5 text-gray-600" />
+                <span>Categories</span>
+              </Link>
+              <Link
+                href="/reviews"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                onClick={onClose}
+              >
+                <MessageSquare className="w-5 h-5 text-gray-600" />
+                <span>Reviews</span>
+              </Link>
+              <Link
+                href="/blog"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                onClick={onClose}
+              >
+                <Book className="w-5 h-5 text-gray-600" />
+                <span>Blog</span>
+              </Link>
             </div>
-          ) : (
-            // Not logged in - Show only Sign In/Register buttons
-            <div className="space-y-2">
+          </div>
+
+          {/* Authentication Section */}
+          {!isAuthenticated && (
+            <div className="space-y-2 pt-4 border-t">
               <Link
                 href="/login"
                 className="flex items-center justify-center gap-2 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 rounded text-gray-900 font-semibold"

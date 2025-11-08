@@ -11,6 +11,8 @@ interface ReviewFilters {
   minRating?: number;
   verifiedPurchase?: boolean;
   isApproved?: boolean;
+  isFeatured?: boolean;
+  showOnHomepage?: boolean;
   page?: number;
   limit?: number;
   sortBy?: 'createdAt' | 'rating' | 'helpfulCount';
@@ -142,6 +144,18 @@ class ReviewsService {
     const endpoint = `/reviews/can-review?${queryString}`;
     
     return apiService.get<{ canReview: boolean; reason?: string }>(endpoint);
+  }
+
+  // Get featured reviews
+  async getFeatured(): Promise<Review[]> {
+    const res = await apiService.get<any>('/reviews?isFeatured=true&isApproved=true&limit=100');
+    return res.data || res.reviews || res;
+  }
+
+  // Get homepage reviews
+  async getHomepage(): Promise<Review[]> {
+    const res = await apiService.get<any>('/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20');
+    return res.data || res.reviews || res;
   }
 }
 

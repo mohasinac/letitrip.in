@@ -19,6 +19,7 @@ interface ProductFilters {
   status?: ProductStatus;
   inStock?: boolean;
   isFeatured?: boolean;
+  showOnHomepage?: boolean;
   tags?: string[];
   page?: number;
   limit?: number;
@@ -164,6 +165,18 @@ class ProductsService {
   // Increment view count
   async incrementView(slug: string): Promise<void> {
     await apiService.post(`/products/${slug}/view`, {});
+  }
+
+  // Get featured products
+  async getFeatured(): Promise<Product[]> {
+    const res = await apiService.get<any>('/products?isFeatured=true&status=published&limit=100');
+    return res.data || res.products || res;
+  }
+
+  // Get homepage products
+  async getHomepage(): Promise<Product[]> {
+    const res = await apiService.get<any>('/products?isFeatured=true&status=published&limit=20');
+    return res.data || res.products || res;
   }
 }
 
