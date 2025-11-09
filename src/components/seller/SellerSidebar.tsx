@@ -119,6 +119,8 @@ const navigation: NavItem[] = [
 export function SellerSidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const toggleItem = (title: string) => {
     setExpandedItems((prev) =>
@@ -130,6 +132,72 @@ export function SellerSidebar() {
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  // Filter navigation items based on search query
+  const filterNavigation = React.useMemo(() => {
+    if (!searchQuery.trim()) return navigation;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return navigation
+      .map((item) => {
+        // Check if parent matches
+        const parentMatches =
+          item.title.toLowerCase().includes(query) ||
+          item.href.toLowerCase().includes(query);
+
+        // Check if any children match
+        const matchingChildren = item.children
+          ? item.children.filter(
+              (child) =>
+                child.title.toLowerCase().includes(query) ||
+                child.href.toLowerCase().includes(query)
+            )
+          : [];
+
+        // Include item if parent matches or has matching children
+        if (parentMatches || matchingChildren.length > 0) {
+          return {
+            ...item,
+            children:
+              matchingChildren.length > 0 ? matchingChildren : item.children,
+          };
+        }
+
+        return null;
+      })
+      .filter((item) => item !== null) as NavItem[];
+  }, [searchQuery]);
+
+  // Auto-expand sections with search results
+  React.useEffect(() => {
+    if (searchQuery.trim() && filterNavigation.length > 0) {
+      const itemsToExpand = filterNavigation
+        .filter((item) => item.children && item.children.length > 0)
+        .map((item) => item.title);
+      setExpandedItems(itemsToExpand);
+    }
+  }, [searchQuery, filterNavigation]);
+
+  // Highlight matching text
+  const highlightText = (text: string) => {
+    if (!searchQuery.trim()) return text;
+
+    const query = searchQuery.toLowerCase();
+    const index = text.toLowerCase().indexOf(query);
+
+    if (index === -1) return text;
+
+    return (
+      <>
+        {text.slice(0, index)}
+        <span className="bg-blue-200 text-blue-900 font-semibold">
+          {text.slice(index, index + searchQuery.length)}
+        </span>
+        {text.slice(index + searchQuery.length)}
+      </>
+    );
   };
 
   return (
@@ -150,93 +218,124 @@ export function SellerSidebar() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
-              type="search"
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
               className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Clear search"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            const expanded = expandedItems.includes(item.title);
+          {filterNavigation.length === 0 ? (
+            <div className="px-3 py-8 text-center text-sm text-gray-500">
+              <p>No results found</p>
+              <p className="mt-1 text-xs">Try a different search term</p>
+            </div>
+          ) : (
+            filterNavigation.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              const expanded = expandedItems.includes(item.title);
 
-            return (
-              <div key={item.title}>
-                <Link
-                  href={item.href}
-                  onClick={(e) => {
-                    if (item.children) {
-                      e.preventDefault();
-                      toggleItem(item.title);
-                    }
-                  }}
-                  className={cn(
-                    "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  )}
-                >
-                  <Icon
+              return (
+                <div key={item.title}>
+                  <Link
+                    href={item.href}
+                    onClick={(e) => {
+                      if (item.children) {
+                        e.preventDefault();
+                        toggleItem(item.title);
+                      }
+                    }}
                     className={cn(
-                      "h-5 w-5",
-                      active ? "text-blue-600" : "text-gray-400"
+                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      active
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     )}
-                  />
-                  <span className="flex-1">{item.title}</span>
-                  {item.badge && (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
-                      {item.badge}
-                    </span>
-                  )}
-                  {item.children && (
-                    <div>
-                      {expanded ? (
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                  >
+                    <Icon
+                      className={cn(
+                        "h-5 w-5",
+                        active ? "text-blue-600" : "text-gray-400"
                       )}
+                    />
+                    <span className="flex-1">{highlightText(item.title)}</span>
+                    {item.badge && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.children && (
+                      <div>
+                        {expanded ? (
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                        )}
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Submenu */}
+                  {item.children && expanded && (
+                    <div className="ml-8 mt-1 space-y-1">
+                      {item.children.map((child) => {
+                        const ChildIcon = child.icon;
+                        const childActive = isActive(child.href);
+
+                        return (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={cn(
+                              "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                              childActive
+                                ? "bg-blue-50 text-blue-700"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            )}
+                          >
+                            <ChildIcon
+                              className={cn(
+                                "h-4 w-4",
+                                childActive ? "text-blue-600" : "text-gray-400"
+                              )}
+                            />
+                            <span>{highlightText(child.title)}</span>
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
-                </Link>
-
-                {/* Submenu */}
-                {item.children && expanded && (
-                  <div className="ml-8 mt-1 space-y-1">
-                    {item.children.map((child) => {
-                      const ChildIcon = child.icon;
-                      const childActive = isActive(child.href);
-
-                      return (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={cn(
-                            "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                            childActive
-                              ? "bg-blue-50 text-blue-700"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                          )}
-                        >
-                          <ChildIcon
-                            className={cn(
-                              "h-4 w-4",
-                              childActive ? "text-blue-600" : "text-gray-400"
-                            )}
-                          />
-                          <span>{child.title}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })
+          )}
         </nav>
 
         {/* Footer */}

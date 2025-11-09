@@ -50,11 +50,22 @@ class MediaService {
     });
     
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to upload media');
+      const error = await response.json().catch(() => ({ error: 'Failed to upload media' }));
+      throw new Error(error.error || error.message || 'Failed to upload media');
     }
     
-    return response.json();
+    const result = await response.json();
+    
+    // Handle API response format { success: true, url, id }
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to upload media');
+    }
+    
+    return {
+      url: result.url,
+      id: result.id,
+      thumbnailUrl: result.thumbnailUrl,
+    };
   }
 
   // Upload multiple media files
@@ -70,11 +81,18 @@ class MediaService {
     });
     
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to upload media');
+      const error = await response.json().catch(() => ({ error: 'Failed to upload media' }));
+      throw new Error(error.error || error.message || 'Failed to upload media');
     }
     
-    return response.json();
+    const result = await response.json();
+    
+    // Handle API response format
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to upload media');
+    }
+    
+    return result.uploads || [];
   }
 
   // Get media by ID
