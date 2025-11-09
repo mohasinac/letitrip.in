@@ -544,8 +544,70 @@ export const TICKET_FILTERS: FilterSection[] = [
 ];
 
 /**
- * Export all filters
+ * Payment Filters Configuration
  */
+export const PAYMENT_FILTERS: FilterSection[] = [
+  {
+    title: "Payment Filters",
+    fields: [
+      {
+        key: "status",
+        label: "Status",
+        type: "checkbox",
+        options: [
+          { label: "Pending", value: "pending" },
+          { label: "Processing", value: "processing" },
+          { label: "Success", value: "success" },
+          { label: "Failed", value: "failed" },
+          { label: "Refunded", value: "refunded" },
+        ],
+      },
+      {
+        key: "gateway",
+        label: "Payment Gateway",
+        type: "checkbox",
+        options: [
+          { label: "Razorpay", value: "razorpay" },
+          { label: "PayPal", value: "paypal" },
+          { label: "Cash on Delivery", value: "cod" },
+        ],
+      },
+      {
+        key: "dateRange",
+        label: "Date Range",
+        type: "daterange",
+      },
+    ],
+  },
+];
+
+/**
+ * Payout Filters Configuration
+ */
+export const PAYOUT_FILTERS: FilterSection[] = [
+  {
+    title: "Payout Filters",
+    fields: [
+      {
+        key: "status",
+        label: "Status",
+        type: "checkbox",
+        options: [
+          { label: "Pending", value: "pending" },
+          { label: "Processing", value: "processing" },
+          { label: "Processed", value: "processed" },
+          { label: "Rejected", value: "rejected" },
+        ],
+      },
+      {
+        key: "dateRange",
+        label: "Date Range",
+        type: "daterange",
+      },
+    ],
+  },
+];
+
 export const FILTERS = {
   PRODUCT: PRODUCT_FILTERS,
   SHOP: SHOP_FILTERS,
@@ -557,6 +619,8 @@ export const FILTERS = {
   REVIEW: REVIEW_FILTERS,
   AUCTION: AUCTION_FILTERS,
   TICKET: TICKET_FILTERS,
+  PAYMENT: PAYMENT_FILTERS,
+  PAYOUT: PAYOUT_FILTERS,
 } as const;
 
 export type FilterType = keyof typeof FILTERS;

@@ -91,6 +91,32 @@ class OrdersService {
     return apiService.get<PaginatedResponse<Order>>(endpoint);
   }
 
+  // Get seller's orders specifically
+  async getSellerOrders(
+    filters?: OrderFilters
+  ): Promise<PaginatedResponse<Order>> {
+    const params = new URLSearchParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (Array.isArray(value)) {
+            value.forEach((v) => params.append(key, v.toString()));
+          } else {
+            params.append(key, value.toString());
+          }
+        }
+      });
+    }
+
+    const queryString = params.toString();
+    const endpoint = queryString
+      ? `/seller/orders?${queryString}`
+      : "/seller/orders";
+
+    return apiService.get<PaginatedResponse<Order>>(endpoint);
+  }
+
   // Get order by ID
   async getById(id: string): Promise<Order> {
     return apiService.get<Order>(`/orders/${id}`);
