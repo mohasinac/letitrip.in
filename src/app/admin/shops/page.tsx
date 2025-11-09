@@ -339,335 +339,346 @@ export default function AdminShopsPage() {
         <div className="flex-1 space-y-6">
           {/* Grid View */}
           {view === "grid" && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {shops.map((shop) => (
-            <div
-              key={shop.id}
-              className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              <div className="aspect-video bg-gradient-to-br from-purple-50 to-blue-50 relative">
-                {shop.logo ? (
-                  <img
-                    src={shop.logo}
-                    alt={shop.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
-                    <Store size={48} />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {shops.map((shop) => (
+                <div
+                  key={shop.id}
+                  className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-video bg-gradient-to-br from-purple-50 to-blue-50 relative">
+                    {shop.logo ? (
+                      <img
+                        src={shop.logo}
+                        alt={shop.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        <Store size={48} />
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {shop.isVerified && (
+                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" />
+                          Verified
+                        </span>
+                      )}
+                      {shop.isBanned && (
+                        <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 flex items-center gap-1">
+                          <Ban className="h-3 w-3" />
+                          Banned
+                        </span>
+                      )}
+                    </div>
                   </div>
-                )}
-                <div className="absolute top-2 right-2 flex gap-1">
-                  {shop.isVerified && (
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3" />
-                      Verified
-                    </span>
-                  )}
-                  {shop.isBanned && (
-                    <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 flex items-center gap-1">
-                      <Ban className="h-3 w-3" />
-                      Banned
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">
-                      {shop.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 truncate">
-                      {shop.location || "No location"}
-                    </p>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 truncate">
+                          {shop.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          {shop.location || "No location"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2 text-sm">
+                      {shop.isFeatured && (
+                        <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                          Featured
+                        </span>
+                      )}
+                      {shop.showOnHomepage && (
+                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                          Homepage
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+                      <span>⭐ {shop.rating.toFixed(1)}</span>
+                      <span>{shop.productCount} products</span>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        href={`/admin/shops/${shop.slug}/edit`}
+                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/shops/${shop.slug}`}
+                        target="_blank"
+                        className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-3 flex items-center gap-2 text-sm">
-                  {shop.isFeatured && (
-                    <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                      Featured
-                    </span>
-                  )}
-                  {shop.showOnHomepage && (
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                      Homepage
-                    </span>
-                  )}
-                </div>
-                <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
-                  <span>⭐ {shop.rating.toFixed(1)}</span>
-                  <span>{shop.productCount} products</span>
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Link
-                    href={`/admin/shops/${shop.slug}/edit`}
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Edit
-                  </Link>
-                  <Link
-                    href={`/shops/${shop.slug}`}
-                    target="_blank"
-                    className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700"
-                  >
-                    View
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
             </div>
           )}
 
           {/* Table View */}
           {view === "table" && (
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="w-12 px-6 py-3">
-                    <TableCheckbox
-                      checked={
-                        selectedIds.length === shops.length && shops.length > 0
-                      }
-                      indeterminate={
-                        selectedIds.length > 0 &&
-                        selectedIds.length < shops.length
-                      }
-                      onChange={(checked) => {
-                        setSelectedIds(checked ? shops.map((s) => s.id) : []);
-                      }}
-                      aria-label="Select all shops"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Shop
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Owner
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stats
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Flags
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {shops.map((shop) => {
-                  const isEditing = editingId === shop.id;
-
-                  if (isEditing) {
-                    return (
-                      <InlineEditRow
-                        key={shop.id}
-                        fields={fields}
-                        initialValues={{
-                          name: shop.name,
-                          isVerified: shop.isVerified,
-                          isFeatured: shop.isFeatured,
-                          showOnHomepage: shop.showOnHomepage,
-                        }}
-                        onSave={async (values) => {
-                          try {
-                            if (values.isVerified !== shop.isVerified) {
-                              await shopsService.verify(shop.slug, {
-                                isVerified: values.isVerified,
-                              });
-                            }
-                            if (
-                              values.isFeatured !== shop.isFeatured ||
-                              values.showOnHomepage !== shop.showOnHomepage
-                            ) {
-                              await shopsService.setFeatureFlags(shop.slug, {
-                                isFeatured: values.isFeatured,
-                                showOnHomepage: values.showOnHomepage,
-                              });
-                            }
-                            if (values.name !== shop.name) {
-                              await shopsService.update(shop.slug, {
-                                name: values.name,
-                              });
-                            }
-                            await loadShops();
-                            setEditingId(null);
-                          } catch (error) {
-                            console.error("Failed to update shop:", error);
-                            throw error;
-                          }
-                        }}
-                        onCancel={() => setEditingId(null)}
-                        resourceName="shop"
-                      />
-                    );
-                  }
-
-                  return (
-                    <tr
-                      key={shop.id}
-                      className="hover:bg-gray-50"
-                      onDoubleClick={() => setEditingId(shop.id)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
+            <div className="rounded-lg border border-gray-200 bg-white">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="w-12 px-6 py-3">
                         <TableCheckbox
-                          checked={selectedIds.includes(shop.id)}
+                          checked={
+                            selectedIds.length === shops.length &&
+                            shops.length > 0
+                          }
+                          indeterminate={
+                            selectedIds.length > 0 &&
+                            selectedIds.length < shops.length
+                          }
                           onChange={(checked) => {
-                            setSelectedIds((prev) =>
-                              checked
-                                ? [...prev, shop.id]
-                                : prev.filter((id) => id !== shop.id)
+                            setSelectedIds(
+                              checked ? shops.map((s) => s.id) : []
                             );
                           }}
-                          aria-label={`Select ${shop.name}`}
+                          aria-label="Select all shops"
                         />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-12 w-12 flex-shrink-0 rounded bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center overflow-hidden">
-                            {shop.logo ? (
-                              <img
-                                src={shop.logo}
-                                alt={shop.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <Store className="h-6 w-6 text-purple-600" />
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium text-gray-900 truncate max-w-xs">
-                              {shop.name}
-                            </div>
-                            <div className="text-sm text-gray-500 truncate">
-                              {shop.location || "No location"}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {shop.email || shop.ownerId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          {shop.isVerified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                              <CheckCircle className="h-3 w-3" />
-                              Verified
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-                              <XCircle className="h-3 w-3" />
-                              Unverified
-                            </span>
-                          )}
-                          {shop.isBanned && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                              <Ban className="h-3 w-3" />
-                              Banned
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        <div>⭐ {shop.rating.toFixed(1)}</div>
-                        <div className="text-xs text-gray-500">
-                          {shop.productCount} products
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          {shop.isFeatured && (
-                            <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                              Featured
-                            </span>
-                          )}
-                          {shop.showOnHomepage && (
-                            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                              Homepage
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/shops/${shop.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                            title="View"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                          <Link
-                            href={`/admin/shops/${shop.slug}/edit`}
-                            className="rounded p-1.5 text-purple-600 hover:bg-purple-50"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => setDeleteSlug(shop.slug)}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Shop
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Owner
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stats
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Flags
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {shops.map((shop) => {
+                      const isEditing = editingId === shop.id;
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="border-t border-gray-200 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing{" "}
-                  <span className="font-medium">
-                    {(currentPage - 1) * limit + 1}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-medium">
-                    {Math.min(currentPage * limit, totalShops)}
-                  </span>{" "}
-                  of <span className="font-medium">{totalShops}</span> results
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="inline-flex items-center px-4 py-1.5 text-sm font-medium text-gray-700">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
+                      if (isEditing) {
+                        return (
+                          <InlineEditRow
+                            key={shop.id}
+                            fields={fields}
+                            initialValues={{
+                              name: shop.name,
+                              isVerified: shop.isVerified,
+                              isFeatured: shop.isFeatured,
+                              showOnHomepage: shop.showOnHomepage,
+                            }}
+                            onSave={async (values) => {
+                              try {
+                                if (values.isVerified !== shop.isVerified) {
+                                  await shopsService.verify(shop.slug, {
+                                    isVerified: values.isVerified,
+                                  });
+                                }
+                                if (
+                                  values.isFeatured !== shop.isFeatured ||
+                                  values.showOnHomepage !== shop.showOnHomepage
+                                ) {
+                                  await shopsService.setFeatureFlags(
+                                    shop.slug,
+                                    {
+                                      isFeatured: values.isFeatured,
+                                      showOnHomepage: values.showOnHomepage,
+                                    }
+                                  );
+                                }
+                                if (values.name !== shop.name) {
+                                  await shopsService.update(shop.slug, {
+                                    name: values.name,
+                                  });
+                                }
+                                await loadShops();
+                                setEditingId(null);
+                              } catch (error) {
+                                console.error("Failed to update shop:", error);
+                                throw error;
+                              }
+                            }}
+                            onCancel={() => setEditingId(null)}
+                            resourceName="shop"
+                          />
+                        );
+                      }
+
+                      return (
+                        <tr
+                          key={shop.id}
+                          className="hover:bg-gray-50"
+                          onDoubleClick={() => setEditingId(shop.id)}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <TableCheckbox
+                              checked={selectedIds.includes(shop.id)}
+                              onChange={(checked) => {
+                                setSelectedIds((prev) =>
+                                  checked
+                                    ? [...prev, shop.id]
+                                    : prev.filter((id) => id !== shop.id)
+                                );
+                              }}
+                              aria-label={`Select ${shop.name}`}
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center overflow-hidden">
+                                {shop.logo ? (
+                                  <img
+                                    src={shop.logo}
+                                    alt={shop.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <Store className="h-6 w-6 text-purple-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-medium text-gray-900 truncate max-w-xs">
+                                  {shop.name}
+                                </div>
+                                <div className="text-sm text-gray-500 truncate">
+                                  {shop.location || "No location"}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {shop.email || shop.ownerId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col gap-1">
+                              {shop.isVerified ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                                  <CheckCircle className="h-3 w-3" />
+                                  Verified
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                                  <XCircle className="h-3 w-3" />
+                                  Unverified
+                                </span>
+                              )}
+                              {shop.isBanned && (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                                  <Ban className="h-3 w-3" />
+                                  Banned
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <div>⭐ {shop.rating.toFixed(1)}</div>
+                            <div className="text-xs text-gray-500">
+                              {shop.productCount} products
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col gap-1">
+                              {shop.isFeatured && (
+                                <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                                  Featured
+                                </span>
+                              )}
+                              {shop.showOnHomepage && (
+                                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                                  Homepage
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <div className="flex items-center justify-end gap-2">
+                              <Link
+                                href={`/shops/${shop.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                                title="View"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                              <Link
+                                href={`/admin/shops/${shop.slug}/edit`}
+                                className="rounded p-1.5 text-purple-600 hover:bg-purple-50"
+                                title="Edit"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Link>
+                              <button
+                                onClick={() => setDeleteSlug(shop.slug)}
+                                className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="border-t border-gray-200 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                      Showing{" "}
+                      <span className="font-medium">
+                        {(currentPage - 1) * limit + 1}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-medium">
+                        {Math.min(currentPage * limit, totalShops)}
+                      </span>{" "}
+                      of <span className="font-medium">{totalShops}</span>{" "}
+                      results
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(1, p - 1))
+                        }
+                        disabled={currentPage === 1}
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <span className="inline-flex items-center px-4 py-1.5 text-sm font-medium text-gray-700">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
