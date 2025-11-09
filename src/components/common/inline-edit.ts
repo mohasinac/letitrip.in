@@ -12,6 +12,8 @@ export { TableCheckbox } from "./TableCheckbox";
 export { ResponsiveTable } from "./ResponsiveTable";
 export { UnifiedFilterSidebar } from "./UnifiedFilterSidebar";
 export { FilterSidebar } from "./FilterSidebar";
+export { default as ResourceListWrapper } from "./ResourceListWrapper";
+export { default as ResourceDetailWrapper } from "./ResourceDetailWrapper";
 
 // Re-export types
 export type {

@@ -184,7 +184,7 @@ class AnalyticsService {
     const queryString = params.toString();
     const endpoint = `/analytics/export?${queryString}`;
 
-    const response = await fetch(`/api${endpoint}`, {
+    const response = await fetch(`${endpoint}`, {
       method: "GET",
     });
 

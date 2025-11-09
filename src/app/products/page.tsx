@@ -4,11 +4,9 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
-import {
-  ProductFilters,
-  ProductFilterValues,
-} from "@/components/filters/ProductFilters";
-import { MobileFilterSidebar } from "@/components/common/MobileFilterSidebar";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { PRODUCT_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/types";
@@ -17,46 +15,34 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
+  const isMobile = useIsMobile();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const itemsPerPage = 20;
 
-  const [filters, setFilters] = useState<ProductFilterValues>({});
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     loadProducts();
-  }, [sortBy, sortOrder, currentPage]);
+  }, [filterValues, sortBy, sortOrder, currentPage, searchQuery]);
 
   const loadProducts = async () => {
     try {
       setLoading(true);
       const response = await productsService.list({
         search: searchQuery || undefined,
-        categoryId: filters.categories?.[0], // Use first selected category
-        minPrice: filters.priceMin,
-        maxPrice: filters.priceMax,
-        condition: filters.condition?.[0] as any,
-        brand: filters.brands?.[0], // Use first selected brand
-        inStock:
-          filters.stock === "in_stock"
-            ? true
-            : filters.stock === "out_of_stock"
-              ? false
-              : undefined,
-        isFeatured: filters.featured,
-        minRating: filters.rating,
+        ...filterValues,
         sortBy: sortBy as any,
         sortOrder,
         status: "published" as any,
@@ -68,14 +54,6 @@ export default function ProductsPage() {
       setProducts(productsData);
       setTotalCount(response.pagination?.total || 0);
       setTotalPages(response.pagination?.totalPages || 1);
-
-      // Extract unique brands from products for filter
-      const brands = new Set<string>();
-      productsData.forEach((product) => {
-        if (product.brand) brands.add(product.brand);
-        if (product.manufacturer) brands.add(product.manufacturer);
-      });
-      setAvailableBrands(Array.from(brands).sort());
     } catch (error) {
       console.error("Failed to load products:", error);
     } finally {
@@ -83,14 +61,8 @@ export default function ProductsPage() {
     }
   };
 
-  const handleApplyFilters = () => {
-    setCurrentPage(1); // Reset to first page when applying filters
-    loadProducts();
-    setShowFilters(false);
-  };
-
   const handleResetFilters = () => {
-    setFilters({});
+    setFilterValues({});
     setSearchQuery("");
     setSortBy("createdAt");
     setSortOrder("desc");
@@ -105,7 +77,7 @@ export default function ProductsPage() {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -214,37 +186,28 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Mobile Filter Sidebar */}
-        <MobileFilterSidebar
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-          onApply={handleApplyFilters}
-          onReset={handleResetFilters}
-          title="Product Filters"
-        >
-          <ProductFilters
-            filters={filters}
-            onChange={setFilters}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-            availableBrands={availableBrands}
-          />
-        </MobileFilterSidebar>
-
         {/* Main Content */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar - Desktop Only */}
-          <aside className="hidden lg:block lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
-              <ProductFilters
-                filters={filters}
-                onChange={setFilters}
-                onApply={handleApplyFilters}
-                onReset={handleResetFilters}
-                availableBrands={availableBrands}
-              />
-            </div>
-          </aside>
+        <div className="flex gap-6">
+          {/* Desktop Sidebar */}
+          {!isMobile && (
+            <UnifiedFilterSidebar
+              sections={PRODUCT_FILTERS}
+              values={filterValues}
+              onChange={(key, value) => {
+                setFilterValues((prev) => ({ ...prev, [key]: value }));
+              }}
+              onApply={() => {
+                setCurrentPage(1);
+              }}
+              onReset={handleResetFilters}
+              isOpen={true}
+              onClose={() => {}}
+              searchable={true}
+              mobile={false}
+              resultCount={totalCount}
+              isLoading={loading}
+            />
+          )}
 
           {/* Products Grid/Table */}
           <div className="flex-1">
@@ -462,6 +425,28 @@ export default function ProductsPage() {
             )}
           </div>
         </div>
+
+        {/* Mobile Filter Drawer */}
+        {isMobile && (
+          <UnifiedFilterSidebar
+            sections={PRODUCT_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {
+              setCurrentPage(1);
+              setShowFilters(false);
+            }}
+            onReset={handleResetFilters}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={true}
+            resultCount={totalCount}
+            isLoading={loading}
+          />
+        )}
       </div>
     </div>
   );

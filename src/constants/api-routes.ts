@@ -1,6 +1,10 @@
 /**
  * API Route Constants
  * Centralized API endpoints for consistent route management across the application
+ * 
+ * IMPORTANT: These routes do NOT include the /api prefix!
+ * The apiService automatically prepends /api to all routes.
+ * For direct fetch() calls, prepend /api manually: fetch(`/api${API_ROUTES.AUTH.LOGIN}`)
  */
 
 // Base API URL
@@ -62,6 +66,20 @@ export const CATEGORY_ROUTES = {
   BY_SLUG: (slug: string) => `/categories/${slug}`,
   TREE: "/categories/tree",
   PRODUCTS: (categoryId: string) => `/categories/${categoryId}/products`,
+  
+  // Category management & utility routes
+  LEAVES: "/categories/leaves",
+  FEATURED: "/categories/featured",
+  HOMEPAGE: "/categories/homepage",
+  SEARCH: "/categories/search",
+  REORDER: "/categories/reorder",
+  VALIDATE_SLUG: "/categories/validate-slug",
+  
+  // Category relationships
+  SUBCATEGORIES: (slug: string) => `/categories/${slug}/subcategories`,
+  SIMILAR: (slug: string) => `/categories/${slug}/similar`,
+  HIERARCHY: (slug: string) => `/categories/${slug}/hierarchy`,
+  BREADCRUMB: (id: string) => `/categories/${id}/breadcrumb`,
 } as const;
 
 // Shop Routes
@@ -173,6 +191,50 @@ export const ADMIN_ROUTES = {
   ANALYTICS_SALES: "/admin/analytics/sales",
   ANALYTICS_USERS: "/admin/analytics/users",
 
+  // Reviews
+  REVIEWS: "/admin/reviews",
+  REVIEW_BY_ID: (id: string) => `/admin/reviews/${id}`,
+  REVIEWS_BULK: "/admin/reviews/bulk",
+
+  // Payments
+  PAYMENTS: "/admin/payments",
+  PAYMENT_BY_ID: (id: string) => `/admin/payments/${id}`,
+  PAYMENTS_BULK: "/admin/payments/bulk",
+  PAYMENT_REFUND: (id: string) => `/admin/payments/${id}/refund`,
+
+  // Payouts
+  PAYOUTS: "/admin/payouts",
+  PAYOUT_BY_ID: (id: string) => `/admin/payouts/${id}`,
+  PAYOUTS_PROCESS: "/admin/payouts/process",
+  PAYOUTS_PENDING: "/admin/payouts/pending",
+  PAYOUTS_BULK: "/admin/payouts/bulk",
+
+  // Coupons
+  COUPONS: "/admin/coupons",
+  COUPON_BY_ID: (id: string) => `/admin/coupons/${id}`,
+  COUPONS_BULK: "/admin/coupons/bulk",
+
+  // Support Tickets
+  TICKETS: "/admin/tickets",
+  TICKET_BY_ID: (id: string) => `/admin/tickets/${id}`,
+  TICKETS_BULK: "/admin/tickets/bulk",
+  TICKET_ASSIGN: (id: string) => `/admin/tickets/${id}/assign`,
+  TICKET_REPLY: (id: string) => `/admin/tickets/${id}/reply`,
+  TICKET_ESCALATE: (id: string) => `/admin/tickets/${id}/escalate`,
+  TICKET_CLOSE: (id: string) => `/admin/tickets/${id}/close`,
+
+  // Blog
+  BLOG_POSTS: "/admin/blog",
+  BLOG_POST_BY_ID: (id: string) => `/admin/blog/${id}`,
+  BLOG_BULK: "/admin/blog/bulk",
+
+  // Returns
+  RETURNS: "/admin/returns",
+  RETURN_BY_ID: (id: string) => `/admin/returns/${id}`,
+  RETURNS_BULK: "/admin/returns/bulk",
+  RETURN_APPROVE: (id: string) => `/admin/returns/${id}/approve`,
+  RETURN_REJECT: (id: string) => `/admin/returns/${id}/reject`,
+
   // Homepage Settings
   HOMEPAGE: "/admin/homepage",
   HOMEPAGE_RESET: "/admin/homepage/reset",
@@ -205,6 +267,27 @@ export const SELLER_ROUTES = {
   SHOP: "/seller/shop",
   SHOP_UPDATE: "/seller/shop",
 
+  // Returns
+  RETURNS: "/seller/returns",
+  RETURN_BY_ID: (id: string) => `/seller/returns/${id}`,
+  RETURNS_BULK: "/seller/returns/bulk",
+
+  // Revenue & Payouts
+  REVENUE: "/seller/revenue",
+  PAYOUTS: "/seller/payouts",
+  PAYOUT_REQUEST: "/seller/payouts/request",
+
+  // Coupons
+  COUPONS: "/seller/coupons",
+  COUPON_BY_ID: (id: string) => `/seller/coupons/${id}`,
+  COUPONS_BULK: "/seller/coupons/bulk",
+
+  // Support Tickets
+  TICKETS: "/seller/tickets",
+  TICKET_BY_ID: (id: string) => `/seller/tickets/${id}`,
+  TICKET_REPLY: (id: string) => `/seller/tickets/${id}/reply`,
+  TICKET_CLOSE: (id: string) => `/seller/tickets/${id}/close`,
+
   // Analytics
   ANALYTICS: "/analytics",
   ANALYTICS_DASHBOARD: "/seller/analytics/dashboard",
@@ -226,6 +309,9 @@ export const CHECKOUT_ROUTES = {
 // Support Routes
 export const SUPPORT_ROUTES = {
   CREATE_TICKET: "/support",
+  TICKETS: "/support/tickets",
+  TICKET_BY_ID: (id: string) => `/support/tickets/${id}`,
+  REPLY: (id: string) => `/support/tickets/${id}/reply`,
   ATTACHMENTS: "/support/attachments",
 } as const;
 
@@ -234,6 +320,25 @@ export const RETURNS_ROUTES = {
   CREATE: "/returns",
   BY_ID: (id: string) => `/returns/${id}`,
   MEDIA: (id: string) => `/returns/${id}/media`,
+} as const;
+
+// Payment Routes
+export const PAYMENT_ROUTES = {
+  LIST: "/payments",
+  BY_ID: (id: string) => `/payments/${id}`,
+  CREATE: "/payments",
+  VERIFY: "/payments/verify",
+  REFUND: (id: string) => `/payments/${id}/refund`,
+  METHODS: "/payments/methods",
+} as const;
+
+// Payout Routes
+export const PAYOUT_ROUTES = {
+  LIST: "/payouts",
+  BY_ID: (id: string) => `/payouts/${id}`,
+  REQUEST: "/payouts/request",
+  PENDING: "/payouts/pending",
+  HISTORY: "/payouts/history",
 } as const;
 
 // Analytics Routes
@@ -285,6 +390,8 @@ export const API_ROUTES = {
   MEDIA: MEDIA_ROUTES,
   SEARCH: SEARCH_ROUTES,
   REVIEW: REVIEW_ROUTES,
+  PAYMENT: PAYMENT_ROUTES,
+  PAYOUT: PAYOUT_ROUTES,
   HOMEPAGE: HOMEPAGE_ROUTES,
   CHECKOUT: CHECKOUT_ROUTES,
   SUPPORT: SUPPORT_ROUTES,

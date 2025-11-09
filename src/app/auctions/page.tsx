@@ -16,11 +16,9 @@ import {
 import Link from "next/link";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  AuctionFilters,
-  type AuctionFilterValues,
-} from "@/components/filters/AuctionFilters";
-import { MobileFilterSidebar } from "@/components/common/MobileFilterSidebar";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { AUCTION_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
 import type { Auction, AuctionStatus } from "@/types";
 import { formatDistanceToNow } from "date-fns";
@@ -28,6 +26,7 @@ import { formatDistanceToNow } from "date-fns";
 export default function AuctionsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -35,10 +34,7 @@ export default function AuctionsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [filters, setFilters] = useState<AuctionFilterValues>({
-    sortBy: "endTime",
-    sortOrder: "asc",
-  });
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   const status = searchParams.get("status") as AuctionStatus | null;
   const featured = searchParams.get("featured");
@@ -47,7 +43,7 @@ export default function AuctionsPage() {
 
   useEffect(() => {
     loadAuctions();
-  }, [status, featured, page, filters, searchQuery]);
+  }, [status, featured, page, filterValues, searchQuery]);
 
   const loadAuctions = async () => {
     try {
@@ -55,12 +51,12 @@ export default function AuctionsPage() {
       const apiFilters: any = {
         page,
         limit: itemsPerPage,
-        ...filters,
+        ...filterValues,
       };
 
       if (status) {
         apiFilters.status = status;
-      } else if (!filters.status) {
+      } else if (!filterValues.status) {
         apiFilters.status = "live"; // Default to live auctions
       }
 
@@ -82,16 +78,8 @@ export default function AuctionsPage() {
     }
   };
 
-  const handleApplyFilters = () => {
-    setShowFilters(false);
-    loadAuctions();
-  };
-
   const handleResetFilters = () => {
-    setFilters({
-      sortBy: "endTime",
-      sortOrder: "asc",
-    });
+    setFilterValues({});
     setSearchQuery("");
     setShowFilters(false);
   };
@@ -149,7 +137,7 @@ export default function AuctionsPage() {
             <span key={i} className="px-2 text-gray-400">
               {p}
             </span>
-          ),
+          )
         )}
         <button
           onClick={() => router.push(`/auctions?page=${page + 1}`)}
@@ -200,35 +188,26 @@ export default function AuctionsPage() {
         </p>
       </div>
 
-      {/* Mobile Filter Sidebar */}
-      <MobileFilterSidebar
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        onApply={handleApplyFilters}
-        onReset={handleResetFilters}
-        title="Auction Filters"
-      >
-        <AuctionFilters
-          filters={filters}
-          onChange={setFilters}
-          onApply={handleApplyFilters}
-          onReset={handleResetFilters}
-        />
-      </MobileFilterSidebar>
-
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar - Desktop Only */}
-        <aside className="hidden lg:block lg:w-64">
-          <div className="lg:sticky lg:top-4">
-            <AuctionFilters
-              filters={filters}
-              onChange={setFilters}
-              onApply={handleApplyFilters}
-              onReset={handleResetFilters}
-            />
-          </div>
-        </aside>
+      <div className="flex gap-6">
+        {/* Desktop Sidebar */}
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={AUCTION_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {}}
+            onReset={handleResetFilters}
+            isOpen={true}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={totalCount}
+            isLoading={loading}
+          />
+        )}
 
         {/* Auctions Section */}
         <div className="flex-1">
@@ -501,7 +480,7 @@ export default function AuctionsPage() {
                                 new Date(auction.startTime),
                                 {
                                   addSuffix: true,
-                                },
+                                }
                               )}
                             </p>
                           </div>
@@ -522,6 +501,27 @@ export default function AuctionsPage() {
           {renderPagination()}
         </div>
       </div>
+
+      {/* Mobile Filter Drawer */}
+      {isMobile && (
+        <UnifiedFilterSidebar
+          sections={AUCTION_FILTERS}
+          values={filterValues}
+          onChange={(key, value) => {
+            setFilterValues((prev) => ({ ...prev, [key]: value }));
+          }}
+          onApply={() => {
+            setShowFilters(false);
+          }}
+          onReset={handleResetFilters}
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          searchable={true}
+          mobile={true}
+          resultCount={totalCount}
+          isLoading={loading}
+        />
+      )}
     </div>
   );
 }

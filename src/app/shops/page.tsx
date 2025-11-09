@@ -4,38 +4,39 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Search, Filter, Grid, List } from "lucide-react";
 import { ShopCard } from "@/components/cards/ShopCard";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { SHOP_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
 import { shopsService } from "@/services/shops.service";
 import type { Shop } from "@/types";
 
 export default function ShopsPage() {
   const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
 
   const [shops, setShops] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>("rating");
   const [showFilters, setShowFilters] = useState(false);
+  const [totalShops, setTotalShops] = useState(0);
 
-  // Filters
-  const [minRating, setMinRating] = useState<number | undefined>();
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [featuredOnly, setFeaturedOnly] = useState(false);
+  // Unified filters
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   useEffect(() => {
     loadShops();
-  }, [sortBy, minRating, verifiedOnly, featuredOnly]);
+  }, [filterValues, sortBy, searchQuery]);
 
   const loadShops = async () => {
     try {
       setLoading(true);
       const response = await shopsService.list({
         search: searchQuery || undefined,
-        minRating: minRating,
-        verified: verifiedOnly || undefined,
-        featured: featuredOnly || undefined,
+        ...filterValues,
         limit: 100,
       });
 
@@ -49,11 +50,12 @@ export default function ShopsPage() {
       } else if (sortBy === "newest") {
         shopsData.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       }
 
       setShops(shopsData);
+      setTotalShops(shopsData.length);
     } catch (error) {
       console.error("Failed to load shops:", error);
     } finally {
@@ -61,15 +63,9 @@ export default function ShopsPage() {
     }
   };
 
-  const handleSearch = () => {
-    loadShops();
-  };
-
   const handleReset = () => {
     setSearchQuery("");
-    setMinRating(undefined);
-    setVerifiedOnly(false);
-    setFeaturedOnly(false);
+    setFilterValues({});
     setSortBy("rating");
   };
 
@@ -98,12 +94,12 @@ export default function ShopsPage() {
                   placeholder="Search shops..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && loadShops()}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <button
-                onClick={handleSearch}
+                onClick={loadShops}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Search
@@ -157,88 +153,25 @@ export default function ShopsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
-          <aside
-            className={`lg:w-64 flex-shrink-0 ${
-              showFilters ? "block" : "hidden lg:block"
-            }`}
-          >
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-                <button
-                  onClick={handleReset}
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  Reset
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Rating Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Minimum Rating
-                  </label>
-                  <select
-                    value={minRating || ""}
-                    onChange={(e) =>
-                      setMinRating(
-                        e.target.value ? Number(e.target.value) : undefined,
-                      )
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Any Rating</option>
-                    <option value="4">4★ & above</option>
-                    <option value="3">3★ & above</option>
-                    <option value="2">2★ & above</option>
-                  </select>
-                </div>
-
-                {/* Verified Filter */}
-                <div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={verifiedOnly}
-                      onChange={(e) => setVerifiedOnly(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Verified Sellers Only
-                    </span>
-                  </label>
-                </div>
-
-                {/* Featured Filter */}
-                <div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={featuredOnly}
-                      onChange={(e) => setFeaturedOnly(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Featured Shops Only
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  loadShops();
-                  setShowFilters(false);
-                }}
-                className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </aside>
+        <div className="flex gap-6">
+          {/* Desktop Sidebar */}
+          {!isMobile && (
+            <UnifiedFilterSidebar
+              sections={SHOP_FILTERS}
+              values={filterValues}
+              onChange={(key, value) => {
+                setFilterValues((prev) => ({ ...prev, [key]: value }));
+              }}
+              onApply={() => {}}
+              onReset={handleReset}
+              isOpen={true}
+              onClose={() => {}}
+              searchable={true}
+              mobile={false}
+              resultCount={totalShops}
+              isLoading={loading}
+            />
+          )}
 
           {/* Shops Grid */}
           <div className="flex-1">
@@ -309,6 +242,27 @@ export default function ShopsPage() {
             )}
           </div>
         </div>
+
+        {/* Mobile Filter Drawer */}
+        {isMobile && (
+          <UnifiedFilterSidebar
+            sections={SHOP_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {
+              setShowFilters(false);
+            }}
+            onReset={handleReset}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={true}
+            resultCount={totalShops}
+            isLoading={loading}
+          />
+        )}
       </div>
     </div>
   );

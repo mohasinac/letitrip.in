@@ -30,6 +30,7 @@ import {
   BulkAction,
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
+import { getProductBulkActions } from "@/constants/bulk-actions";
 import {
   productsService,
   type ProductFilters,
@@ -130,42 +131,7 @@ export default function AdminProductsPage() {
   ];
 
   // Bulk actions configuration
-  const bulkActions: BulkAction[] = [
-    {
-      id: "approve",
-      label: "Approve & Publish",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "reject",
-      label: "Reject & Archive",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "feature",
-      label: "Set Featured",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "unfeature",
-      label: "Remove Featured",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "delete",
-      label: "Delete",
-      variant: "danger",
-      confirm: true,
-      confirmTitle: "Delete Products",
-      confirmMessage: `Are you sure you want to delete ${
-        selectedIds.length
-      } product${selectedIds.length === 1 ? "" : "s"}? This cannot be undone.`,
-    },
-  ];
+  const bulkActions = getProductBulkActions(selectedIds.length);
 
   // Bulk action handler
   const handleBulkAction = async (actionId: string) => {

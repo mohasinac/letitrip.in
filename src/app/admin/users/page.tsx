@@ -24,6 +24,7 @@ import {
   InlineField,
   BulkAction,
 } from "@/components/common/inline-edit";
+import { getUserBulkActions } from "@/constants/bulk-actions";
 import { apiService } from "@/services/api.service";
 
 interface User {
@@ -118,42 +119,7 @@ export default function AdminUsersPage() {
   ];
 
   // Bulk actions configuration
-  const bulkActions: BulkAction[] = [
-    {
-      id: "make-seller",
-      label: "Make Seller",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "make-user",
-      label: "Make User",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "ban",
-      label: "Ban Users",
-      variant: "danger",
-      confirm: true,
-      confirmTitle: "Ban Users",
-      confirmMessage: `Are you sure you want to ban ${selectedIds.length} user${
-        selectedIds.length === 1 ? "" : "s"
-      }?`,
-    },
-    {
-      id: "unban",
-      label: "Unban Users",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "export",
-      label: "Export Selected",
-      variant: "default",
-      confirm: false,
-    },
-  ];
+  const bulkActions = getUserBulkActions(selectedIds.length);
 
   // Bulk action handler
   const handleBulkAction = async (actionId: string) => {
@@ -173,7 +139,7 @@ export default function AdminUsersPage() {
               u.phone || "",
               u.is_banned ? "Banned" : "Active",
               new Date(u.createdAt).toLocaleDateString(),
-            ].join(","),
+            ].join(",")
           ),
         ].join("\n");
 
@@ -196,7 +162,7 @@ export default function AdminUsersPage() {
         {
           action: actionId,
           ids: selectedIds,
-        },
+        }
       );
 
       if (response.success) {
@@ -230,7 +196,7 @@ export default function AdminUsersPage() {
 
       // Update local state
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, ...result.data } : u)),
+        prev.map((u) => (u.id === userId ? { ...u, ...result.data } : u))
       );
 
       return true;
@@ -426,7 +392,7 @@ export default function AdminUsersPage() {
                             ? filteredUsers
                                 .filter((u) => u.id !== currentUser?.uid)
                                 .map((u) => u.id)
-                            : [],
+                            : []
                         );
                       }}
                       aria-label="Select all users"
@@ -509,7 +475,7 @@ export default function AdminUsersPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, user.id]
-                                    : prev.filter((id) => id !== user.id),
+                                    : prev.filter((id) => id !== user.id)
                                 );
                               }}
                               aria-label={`Select ${user.name || user.email}`}
@@ -624,7 +590,7 @@ export default function AdminUsersPage() {
                                 day: "numeric",
                                 month: "short",
                                 year: "numeric",
-                              },
+                              }
                             )}
                           </div>
                         </td>

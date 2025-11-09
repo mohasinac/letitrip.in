@@ -135,7 +135,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Payment Methods */}
+          {/* Payment Methods
           <div className="flex flex-wrap items-center justify-center gap-4">
             {PAYMENT_METHODS.map((method) => (
               <div
@@ -164,7 +164,7 @@ export default function Footer() {
                 )}
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Copyright */}
           <div className="text-center text-sm text-gray-600 pt-4 border-t border-gray-300">

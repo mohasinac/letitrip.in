@@ -33,6 +33,7 @@ import {
 import { shopsService, type ShopFilters } from "@/services/shops.service";
 import type { Shop } from "@/types";
 import { SHOP_FILTERS } from "@/constants/filters";
+import { getShopBulkActions } from "@/constants/bulk-actions";
 import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminShopsPage() {
@@ -112,60 +113,7 @@ export default function AdminShopsPage() {
   ];
 
   // Bulk actions configuration
-  const bulkActions: BulkAction[] = [
-    {
-      id: "verify",
-      label: "Verify Shops",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "unverify",
-      label: "Remove Verification",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "feature",
-      label: "Set Featured",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "unfeature",
-      label: "Remove Featured",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "ban",
-      label: "Suspend/Ban",
-      variant: "danger",
-      confirm: true,
-      confirmTitle: "Ban Shops",
-      confirmMessage: `Are you sure you want to ban ${selectedIds.length} shop${
-        selectedIds.length === 1 ? "" : "s"
-      }? They will not be able to sell products.`,
-    },
-    {
-      id: "unban",
-      label: "Activate/Unban",
-      variant: "success",
-      confirm: false,
-    },
-    {
-      id: "delete",
-      label: "Delete",
-      variant: "danger",
-      confirm: true,
-      confirmTitle: "Delete Shops",
-      confirmMessage: `Are you sure you want to delete ${
-        selectedIds.length
-      } shop${
-        selectedIds.length === 1 ? "" : "s"
-      }? This cannot be undone and will affect all their products.`,
-    },
-  ];
+  const bulkActions = getShopBulkActions(selectedIds.length);
 
   // Bulk action handler
   const handleBulkAction = async (actionId: string) => {

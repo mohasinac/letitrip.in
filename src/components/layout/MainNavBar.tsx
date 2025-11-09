@@ -111,15 +111,6 @@ export default function MainNavBar({
 
         {/* Right Actions */}
         <div className="flex items-center gap-4">
-          {/* Available Coupons */}
-          <Link
-            href="/coupons"
-            className="hidden sm:flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
-          >
-            <Gift className="w-5 h-5" />
-            <span className="text-yellow-400 font-bold">Coupons</span>
-          </Link>
-
           {/* Admin Menu - Only show if user is admin */}
           {isAuthenticated && isAdmin && (
             <div className="relative hidden lg:block" ref={adminMenuRef}>
@@ -171,7 +162,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -229,7 +220,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -325,7 +316,7 @@ export default function MainNavBar({
                               </Link>
                             ))}
                         </div>
-                      ),
+                      )
                     )}
                   </div>
                 )}

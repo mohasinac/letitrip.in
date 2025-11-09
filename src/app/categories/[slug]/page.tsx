@@ -12,15 +12,15 @@ import {
   Tag,
   Home,
   Search,
+  Filter,
 } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
-import {
-  ProductFilters,
-  ProductFilterValues,
-} from "@/components/filters/ProductFilters";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { PRODUCT_FILTERS } from "@/constants/filters";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
+import { useIsMobile } from "@/hooks/useMobile";
 import type { Category, Product } from "@/types";
 
 interface PageProps {
@@ -33,6 +33,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
   const searchParams = useSearchParams();
   const { addItem } = useCart();
   const subcategoriesScrollRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const [category, setCategory] = useState<Category | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<Category[]>([]);
@@ -41,12 +42,13 @@ export default function CategoryDetailPage({ params }: PageProps) {
     Category[]
   >([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(false);
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<ProductFilterValues>({});
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -66,7 +68,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
     if (category) {
       loadProducts();
     }
-  }, [category, sortBy, sortOrder]);
+  }, [category, sortBy, sortOrder, filterValues]);
 
   useEffect(() => {
     // Filter and sort subcategories
@@ -75,7 +77,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
     if (subcategorySearch.trim()) {
       const query = subcategorySearch.toLowerCase();
       filtered = filtered.filter((cat) =>
-        cat.name.toLowerCase().includes(query),
+        cat.name.toLowerCase().includes(query)
       );
     }
 
@@ -117,7 +119,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
       } else {
         // Load default breadcrumb (nearest parent path)
         const breadcrumbData = await categoriesService.getBreadcrumb(
-          categoryData.id,
+          categoryData.id
         );
         setBreadcrumb(breadcrumbData);
       }
@@ -144,37 +146,27 @@ export default function CategoryDetailPage({ params }: PageProps) {
       const response = await productsService.list({
         categoryId: category.id,
         search: searchQuery || undefined,
-        minPrice: filters.priceMin,
-        maxPrice: filters.priceMax,
-        condition: filters.condition?.[0] as any,
-        inStock:
-          filters.stock === "in_stock"
-            ? true
-            : filters.stock === "out_of_stock"
-              ? false
-              : undefined,
-        isFeatured: filters.featured,
+        ...filterValues,
         sortBy: sortBy as any,
         sortOrder,
         status: "published" as any,
         limit: 100,
       });
       setProducts(response.data || []);
+      setTotalProducts(
+        response.pagination?.total || response.data?.length || 0
+      );
     } catch (error) {
       console.error("Failed to load products:", error);
       setProducts([]);
+      setTotalProducts(0);
     } finally {
       setProductsLoading(false);
     }
   };
 
-  const handleApplyFilters = () => {
-    loadProducts();
-    setShowFilters(false);
-  };
-
   const handleResetFilters = () => {
-    setFilters({});
+    setFilterValues({});
     setSearchQuery("");
     setSortBy("createdAt");
     setSortOrder("desc");
@@ -188,7 +180,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -229,7 +221,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
           setShowRightArrow(
             subcategoriesScrollRef.current.scrollLeft <
               subcategoriesScrollRef.current.scrollWidth -
-                subcategoriesScrollRef.current.clientWidth,
+                subcategoriesScrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -427,32 +419,68 @@ export default function CategoryDetailPage({ params }: PageProps) {
               </div>
 
               {/* Filter Toggle (Mobile) */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden px-4 py-2 bg-blue-600 text-white rounded-lg"
-              >
-                Filters
-              </button>
+              {isMobile && (
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Filter className="w-5 h-5" />
+                  Filters
+                  {Object.keys(filterValues).length > 0 && (
+                    <span className="bg-white text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {Object.keys(filterValues).length}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
           {/* Main Content */}
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Filters Sidebar */}
-            <aside
-              className={`lg:w-64 flex-shrink-0 ${
-                showFilters ? "block" : "hidden lg:block"
-              }`}
-            >
-              <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
-                <ProductFilters
-                  filters={filters}
-                  onChange={setFilters}
-                  onApply={handleApplyFilters}
-                  onReset={handleResetFilters}
-                />
-              </div>
-            </aside>
+            {/* Desktop Sidebar - Always Visible */}
+            {!isMobile && (
+              <UnifiedFilterSidebar
+                sections={PRODUCT_FILTERS}
+                values={filterValues}
+                onChange={(key, value) => {
+                  setFilterValues((prev) => ({ ...prev, [key]: value }));
+                }}
+                onApply={() => {}}
+                onReset={() => {
+                  setFilterValues({});
+                }}
+                isOpen={true}
+                onClose={() => {}}
+                searchable={true}
+                mobile={false}
+                resultCount={totalProducts}
+                isLoading={productsLoading}
+              />
+            )}
+
+            {/* Mobile Filter Drawer */}
+            {isMobile && (
+              <UnifiedFilterSidebar
+                sections={PRODUCT_FILTERS}
+                values={filterValues}
+                onChange={(key, value) => {
+                  setFilterValues((prev) => ({ ...prev, [key]: value }));
+                }}
+                onApply={() => {
+                  setShowFilters(false);
+                }}
+                onReset={() => {
+                  setFilterValues({});
+                }}
+                isOpen={showFilters}
+                onClose={() => setShowFilters(false)}
+                searchable={true}
+                mobile={true}
+                resultCount={totalProducts}
+                isLoading={productsLoading}
+              />
+            )}
 
             {/* Products Grid/List */}
             <div className="flex-1">
@@ -463,14 +491,18 @@ export default function CategoryDetailPage({ params }: PageProps) {
               ) : products.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                   <p className="text-gray-600 text-lg">
-                    No products found in this category
+                    {Object.keys(filterValues).length > 0
+                      ? "No products found matching your filters"
+                      : "No products found in this category"}
                   </p>
-                  <button
-                    onClick={handleResetFilters}
-                    className="mt-4 text-blue-600 hover:underline"
-                  >
-                    Clear filters
-                  </button>
+                  {Object.keys(filterValues).length > 0 && (
+                    <button
+                      onClick={handleResetFilters}
+                      className="mt-4 text-blue-600 hover:underline"
+                    >
+                      Clear filters
+                    </button>
+                  )}
                 </div>
               ) : (
                 <>
@@ -659,7 +691,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
                     setShowLeftArrow(target.scrollLeft > 0);
                     setShowRightArrow(
                       target.scrollLeft <
-                        target.scrollWidth - target.clientWidth,
+                        target.scrollWidth - target.clientWidth
                     );
                   }}
                 >
