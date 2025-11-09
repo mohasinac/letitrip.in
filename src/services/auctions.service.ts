@@ -1,6 +1,6 @@
-import { apiService } from './api.service';
-import { AUCTION_ROUTES, buildUrl } from '@/constants/api-routes';
-import type { Auction, AuctionStatus, Bid, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
+import type { Auction, AuctionStatus, Bid, PaginatedResponse } from "@/types";
 
 interface AuctionFilters {
   shopId?: string;
@@ -13,8 +13,8 @@ interface AuctionFilters {
   endingSoon?: boolean; // Within 24 hours
   page?: number;
   limit?: number;
-  sortBy?: 'endTime' | 'currentBid' | 'bidCount' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "endTime" | "currentBid" | "bidCount" | "createdAt";
+  sortOrder?: "asc" | "desc";
 }
 
 interface CreateAuctionData {
@@ -75,16 +75,20 @@ class AuctionsService {
   }
 
   // Get auction bids
-  async getBids(id: string, page?: number, limit?: number): Promise<PaginatedResponse<Bid>> {
+  async getBids(
+    id: string,
+    page?: number,
+    limit?: number,
+  ): Promise<PaginatedResponse<Bid>> {
     const params = new URLSearchParams();
-    if (page) params.append('page', page.toString());
-    if (limit) params.append('limit', limit.toString());
-    
+    if (page) params.append("page", page.toString());
+    if (limit) params.append("limit", limit.toString());
+
     const queryString = params.toString();
-    const endpoint = queryString 
-      ? `/auctions/${id}/bid?${queryString}` 
+    const endpoint = queryString
+      ? `/auctions/${id}/bid?${queryString}`
       : `/auctions/${id}/bid`;
-    
+
     return apiService.get<PaginatedResponse<Bid>>(endpoint);
   }
 
@@ -94,7 +98,11 @@ class AuctionsService {
   }
 
   // Set featured auction (admin only)
-  async setFeatured(id: string, isFeatured: boolean, priority?: number): Promise<Auction> {
+  async setFeatured(
+    id: string,
+    isFeatured: boolean,
+    priority?: number,
+  ): Promise<Auction> {
     return apiService.patch<Auction>(`/auctions/${id}/feature`, {
       isFeatured,
       featuredPriority: priority,
@@ -103,19 +111,19 @@ class AuctionsService {
 
   // Get live auctions
   async getLive(): Promise<Auction[]> {
-    return apiService.get<Auction[]>('/auctions/live');
+    return apiService.get<Auction[]>("/auctions/live");
   }
 
   // Get featured auctions
   async getFeatured(): Promise<Auction[]> {
-    return apiService.get<Auction[]>('/auctions/featured');
+    return apiService.get<Auction[]>("/auctions/featured");
   }
 
   // Get homepage auctions
   async getHomepage(): Promise<Auction[]> {
     const response = await this.list({
       showOnHomepage: true,
-      status: 'live',
+      status: "live",
       limit: 20,
     });
     return Array.isArray(response) ? response : (response as any).data || [];
@@ -124,26 +132,26 @@ class AuctionsService {
   // Get similar auctions
   async getSimilar(id: string, limit?: number): Promise<Auction[]> {
     const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    
+    if (limit) params.append("limit", limit.toString());
+
     const queryString = params.toString();
-    const endpoint = queryString 
-      ? `/auctions/${id}/similar?${queryString}` 
+    const endpoint = queryString
+      ? `/auctions/${id}/similar?${queryString}`
       : `/auctions/${id}/similar`;
-    
+
     return apiService.get<Auction[]>(endpoint);
   }
 
   // Get seller's other auctions
   async getSellerAuctions(id: string, limit?: number): Promise<Auction[]> {
     const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    
+    if (limit) params.append("limit", limit.toString());
+
     const queryString = params.toString();
-    const endpoint = queryString 
-      ? `/auctions/${id}/seller-items?${queryString}` 
+    const endpoint = queryString
+      ? `/auctions/${id}/seller-items?${queryString}`
       : `/auctions/${id}/seller-items`;
-    
+
     return apiService.get<Auction[]>(endpoint);
   }
 
@@ -154,19 +162,24 @@ class AuctionsService {
 
   // Get user's watchlist
   async getWatchlist(): Promise<Auction[]> {
-    return apiService.get<Auction[]>('/auctions/watchlist');
+    return apiService.get<Auction[]>("/auctions/watchlist");
   }
 
   // Get user's active bids
   async getMyBids(): Promise<Bid[]> {
-    return apiService.get<Bid[]>('/auctions/my-bids');
+    return apiService.get<Bid[]>("/auctions/my-bids");
   }
 
   // Get user's won auctions
   async getWonAuctions(): Promise<Auction[]> {
-    return apiService.get<Auction[]>('/auctions/won');
+    return apiService.get<Auction[]>("/auctions/won");
   }
 }
 
 export const auctionsService = new AuctionsService();
-export type { AuctionFilters, CreateAuctionData, UpdateAuctionData, PlaceBidData };
+export type {
+  AuctionFilters,
+  CreateAuctionData,
+  UpdateAuctionData,
+  PlaceBidData,
+};

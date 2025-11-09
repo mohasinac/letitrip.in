@@ -137,7 +137,7 @@ export default function CategoriesPage() {
         {
           action: actionId,
           ids: selectedIds,
-        }
+        },
       );
 
       if (response.success) {
@@ -167,7 +167,7 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error("Failed to load categories:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load categories"
+        error instanceof Error ? error.message : "Failed to load categories",
       );
     } finally {
       setLoading(false);
@@ -192,7 +192,7 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error("Failed to delete category:", error);
       alert(
-        "Failed to delete category. It may have subcategories or products."
+        "Failed to delete category. It may have subcategories or products.",
       );
     }
   };
@@ -201,7 +201,7 @@ export default function CategoriesPage() {
   const filteredCategories = categories.filter(
     (category) =>
       category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.slug.toLowerCase().includes(searchQuery.toLowerCase())
+      category.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Calculate hierarchy level (for display)
@@ -387,7 +387,7 @@ export default function CategoriesPage() {
                       }
                       onChange={(checked) => {
                         setSelectedIds(
-                          checked ? filteredCategories.map((c) => c.id) : []
+                          checked ? filteredCategories.map((c) => c.id) : [],
                         );
                       }}
                       aria-label="Select all categories"
@@ -425,7 +425,7 @@ export default function CategoriesPage() {
                           is_featured: values.is_featured || false,
                           show_on_homepage: values.show_on_homepage || false,
                           is_active: values.is_active !== false,
-                        }
+                        },
                       );
                       await loadCategories();
                     } catch (error) {
@@ -446,7 +446,7 @@ export default function CategoriesPage() {
                 {filteredCategories.map((category) => {
                   const isEditing = editingId === category.id;
                   const parentCategory = categories.find(
-                    (c) => c.id === category.parent_id
+                    (c) => c.id === category.parent_id,
                   );
 
                   if (isEditing) {
@@ -466,7 +466,7 @@ export default function CategoriesPage() {
                           try {
                             await apiService.patch(
                               `/api/categories/${category.slug}`,
-                              values
+                              values,
                             );
                             await loadCategories();
                             setEditingId(null);
@@ -494,7 +494,7 @@ export default function CategoriesPage() {
                             setSelectedIds((prev) =>
                               checked
                                 ? [...prev, category.id]
-                                : prev.filter((id) => id !== category.id)
+                                : prev.filter((id) => id !== category.id),
                             );
                           }}
                           aria-label={`Select ${category.name}`}

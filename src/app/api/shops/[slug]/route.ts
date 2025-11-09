@@ -23,21 +23,28 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 // GET /api/shops/[slug] - Retrieve shop by slug with role-based access control
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
 
     const user = await getCurrentUser(request);
-    const role = (user?.role || "guest") as "guest" | "user" | "seller" | "admin";
+    const role = (user?.role || "guest") as
+      | "guest"
+      | "user"
+      | "seller"
+      | "admin";
     const userId = user?.id;
 
     // Fetch shop by slug from Firestore
-    const shopSnapshot = await Collections.shops().where("slug", "==", slug).limit(1).get();
+    const shopSnapshot = await Collections.shops()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
     if (shopSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const shopDoc = shopSnapshot.docs[0];
@@ -51,7 +58,7 @@ export async function GET(
       if (!shop.is_verified || shop.is_banned) {
         return NextResponse.json(
           { success: false, error: "Shop not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
     } else if (role === "seller") {
@@ -59,7 +66,7 @@ export async function GET(
       if (!isOwner && (!shop.is_verified || shop.is_banned)) {
         return NextResponse.json(
           { success: false, error: "Shop not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
     }
@@ -73,7 +80,7 @@ export async function GET(
     console.error("[GET /api/shops/[slug]] Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -81,7 +88,7 @@ export async function GET(
 // PATCH /api/shops/[slug] - Update shop by slug (internal ID resolved first)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -89,7 +96,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -98,11 +105,14 @@ export async function PATCH(
     const body = await request.json();
 
     // Resolve slug → shop document
-    const shopSnapshot = await Collections.shops().where("slug", "==", slug).limit(1).get();
+    const shopSnapshot = await Collections.shops()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
     if (shopSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const shopDoc = shopSnapshot.docs[0];
@@ -113,7 +123,7 @@ export async function PATCH(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -129,7 +139,12 @@ export async function PATCH(
       "website",
     ] as string[];
     if (isAdmin) {
-      allowedFields.push("is_verified", "is_featured", "is_banned", "show_on_homepage");
+      allowedFields.push(
+        "is_verified",
+        "is_featured",
+        "is_banned",
+        "show_on_homepage",
+      );
     }
 
     const updates: Record<string, any> = {};
@@ -138,19 +153,24 @@ export async function PATCH(
     }
 
     if (updates.slug && updates.slug !== shop.slug) {
-      const existingShopSnapshot = await Collections.shops().where("slug", "==", updates.slug).limit(1).get();
+      const existingShopSnapshot = await Collections.shops()
+        .where("slug", "==", updates.slug)
+        .limit(1)
+        .get();
       if (!existingShopSnapshot.empty) {
         return NextResponse.json(
           { success: false, error: "Slug already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
-    await Collections.shops().doc(shop.id).update({
-      ...updates,
-      updated_at: new Date(),
-    });
+    await Collections.shops()
+      .doc(shop.id)
+      .update({
+        ...updates,
+        updated_at: new Date(),
+      });
 
     const updated = await Collections.shops().doc(shop.id).get();
     return NextResponse.json({
@@ -162,7 +182,7 @@ export async function PATCH(
     console.error("[PATCH /api/shops/[slug]] Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -170,7 +190,7 @@ export async function PATCH(
 // DELETE /api/shops/[slug] - Delete shop by slug (resolve internal ID)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -178,18 +198,21 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const role = user.role as "seller" | "admin" | "user" | "guest";
     const userId = user.id;
 
-    const shopSnapshot = await Collections.shops().where("slug", "==", slug).limit(1).get();
+    const shopSnapshot = await Collections.shops()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
     if (shopSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const shopDoc = shopSnapshot.docs[0];
@@ -200,7 +223,7 @@ export async function DELETE(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -212,30 +235,42 @@ export async function DELETE(
       .get();
     if (!productsSnapshot.empty) {
       return NextResponse.json(
-        { success: false, error: "Cannot delete shop with active products. Deactivate or remove products first." },
-        { status: 400 }
+        {
+          success: false,
+          error:
+            "Cannot delete shop with active products. Deactivate or remove products first.",
+        },
+        { status: 400 },
       );
     }
 
-    const ordersSnapshot = await Collections.orders()
+    const ordersSnapshot = (await Collections.orders()
       .where("shop_id", "==", shop.id)
-      .where("status", "in", ["pending", "confirmed", "processing", "shipped"]) as any;
+      .where("status", "in", [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+      ])) as any;
     const ordersSnap = await ordersSnapshot.limit(1).get();
     if (!ordersSnap.empty) {
       return NextResponse.json(
         { success: false, error: "Cannot delete shop with pending orders." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await Collections.shops().doc(shop.id).delete();
 
-    return NextResponse.json({ success: true, message: "Shop deleted successfully" });
+    return NextResponse.json({
+      success: true,
+      message: "Shop deleted successfully",
+    });
   } catch (error) {
     console.error("[DELETE /api/shops/[slug]] Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

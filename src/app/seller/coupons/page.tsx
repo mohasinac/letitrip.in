@@ -73,7 +73,7 @@ export default function CouponsPage() {
     (coupon) =>
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import { getSessionToken, verifySession } from '../../lib/session';
-import { adminDb } from '../../lib/firebase/config';
+import { NextRequest, NextResponse } from "next/server";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { getSessionToken, verifySession } from "../../lib/session";
+import { adminDb } from "../../lib/firebase/config";
 
 async function meHandler(req: NextRequest) {
   try {
@@ -10,8 +10,8 @@ async function meHandler(req: NextRequest) {
 
     if (!token) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'No session found' },
-        { status: 401 }
+        { error: "Unauthorized", message: "No session found" },
+        { status: 401 },
       );
     }
 
@@ -20,19 +20,16 @@ async function meHandler(req: NextRequest) {
 
     if (!session) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'Invalid or expired session' },
-        { status: 401 }
+        { error: "Unauthorized", message: "Invalid or expired session" },
+        { status: 401 },
       );
     }
 
     // Get user data from Firestore
-    const userDoc = await adminDb.collection('users').doc(session.userId).get();
+    const userDoc = await adminDb.collection("users").doc(session.userId).get();
 
     if (!userDoc.exists) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const userData = userDoc.data();
@@ -51,23 +48,25 @@ async function meHandler(req: NextRequest) {
         },
         session: {
           sessionId: session.sessionId,
-          expiresAt: session.exp ? new Date(session.exp * 1000).toISOString() : null,
-        }
+          expiresAt: session.exp
+            ? new Date(session.exp * 1000).toISOString()
+            : null,
+        },
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error: any) {
-    console.error('Get current user error:', error);
+    console.error("Get current user error:", error);
 
     return NextResponse.json(
-      { 
-        error: 'Failed to get user data',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message 
+      {
+        error: "Failed to get user data",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

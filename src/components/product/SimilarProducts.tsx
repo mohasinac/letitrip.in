@@ -37,7 +37,7 @@ export function SimilarProducts({
 
       // Filter out current product and diversify shops
       const filtered = (data.data || []).filter(
-        (p: Product) => p.id !== productId
+        (p: Product) => p.id !== productId,
       );
 
       // Diversify by prioritizing different shops

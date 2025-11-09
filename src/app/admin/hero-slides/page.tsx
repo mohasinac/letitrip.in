@@ -381,7 +381,7 @@ export default function HeroSlidesPage() {
                         try {
                           await apiService.patch(
                             `/admin/hero-slides/${slide.id}`,
-                            values
+                            values,
                           );
                           setEditingId(null);
                           await loadSlides();
@@ -415,7 +415,7 @@ export default function HeroSlidesPage() {
                             setSelectedIds(
                               checked
                                 ? [...selectedIds, slide.id]
-                                : selectedIds.filter((id) => id !== slide.id)
+                                : selectedIds.filter((id) => id !== slide.id),
                             );
                           }}
                           label={`Select ${slide.title}`}
@@ -489,7 +489,7 @@ export default function HeroSlidesPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               router.push(
-                                `/admin/hero-slides/${slide.id}/edit`
+                                `/admin/hero-slides/${slide.id}/edit`,
                               );
                             }}
                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
@@ -500,7 +500,7 @@ export default function HeroSlidesPage() {
                         </div>
                       </td>
                     </tr>
-                  )
+                  ),
                 )}
               </tbody>
             </table>

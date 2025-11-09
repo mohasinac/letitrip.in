@@ -17,7 +17,7 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
           "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
           view === "grid"
             ? "bg-blue-600 text-white"
-            : "text-gray-700 hover:bg-gray-100"
+            : "text-gray-700 hover:bg-gray-100",
         )}
       >
         <Grid3x3 className="h-4 w-4" />
@@ -29,7 +29,7 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
           "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
           view === "table"
             ? "bg-blue-600 text-white"
-            : "text-gray-700 hover:bg-gray-100"
+            : "text-gray-700 hover:bg-gray-100",
         )}
       >
         <Table2 className="h-4 w-4" />

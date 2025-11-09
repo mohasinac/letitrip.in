@@ -73,7 +73,7 @@ export default function FeaturedCategories() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
           );
         }
       }, 300);
@@ -108,7 +108,7 @@ export default function FeaturedCategories() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth
+                target.scrollLeft < target.scrollWidth - target.clientWidth,
               );
             }}
           >

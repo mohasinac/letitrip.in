@@ -105,8 +105,8 @@ export default function ShopPage({ params }: ShopPageProps) {
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         isFeatured: productFilters.featured,
         minRating: productFilters.rating,
         status: "published" as any,
@@ -209,7 +209,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {
@@ -648,10 +648,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                     auction.status === "live"
                                       ? "bg-green-500 text-white"
                                       : auction.status === "scheduled"
-                                      ? "bg-blue-500 text-white"
-                                      : auction.status === "ended"
-                                      ? "bg-gray-500 text-white"
-                                      : "bg-yellow-500 text-white"
+                                        ? "bg-blue-500 text-white"
+                                        : auction.status === "ended"
+                                          ? "bg-gray-500 text-white"
+                                          : "bg-yellow-500 text-white"
                                   }`}
                                 >
                                   {auction.status.toUpperCase()}
@@ -690,7 +690,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       <span className="text-xs text-red-600 font-medium">
                                         Ends:{" "}
                                         {new Date(
-                                          auction.endTime
+                                          auction.endTime,
                                         ).toLocaleString()}
                                       </span>
                                     </div>
@@ -722,10 +722,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       auction.status === "live"
                                         ? "bg-green-500 text-white"
                                         : auction.status === "scheduled"
-                                        ? "bg-blue-500 text-white"
-                                        : auction.status === "ended"
-                                        ? "bg-gray-500 text-white"
-                                        : "bg-yellow-500 text-white"
+                                          ? "bg-blue-500 text-white"
+                                          : auction.status === "ended"
+                                            ? "bg-gray-500 text-white"
+                                            : "bg-yellow-500 text-white"
                                     }`}
                                   >
                                     {auction.status.toUpperCase()}
@@ -768,7 +768,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                                         </span>
                                         <p className="text-sm text-red-600 font-medium">
                                           {new Date(
-                                            auction.endTime
+                                            auction.endTime,
                                           ).toLocaleString()}
                                         </p>
                                       </div>

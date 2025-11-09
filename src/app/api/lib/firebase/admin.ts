@@ -4,10 +4,10 @@
  * Location: /src/app/api/lib/firebase/admin.ts
  */
 
-import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import { getAuth, Auth } from 'firebase-admin/auth';
-import { getStorage, Storage } from 'firebase-admin/storage';
+import { initializeApp, getApps, cert, App } from "firebase-admin/app";
+import { getFirestore, Firestore } from "firebase-admin/firestore";
+import { getAuth, Auth } from "firebase-admin/auth";
+import { getStorage, Storage } from "firebase-admin/storage";
 
 let app: App;
 let db: Firestore;
@@ -23,16 +23,19 @@ export function initializeFirebaseAdmin() {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
-    const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`;
+    const storageBucket =
+      process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`;
 
     if (!projectId || !clientEmail || !privateKeyRaw) {
-      console.warn('⚠ Firebase Admin missing required env vars. Skipping init.');
-      throw new Error('Firebase Admin not configured');
+      console.warn(
+        "⚠ Firebase Admin missing required env vars. Skipping init.",
+      );
+      throw new Error("Firebase Admin not configured");
     }
 
-    const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
+    const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
 
-    console.log('🔧 Initializing Firebase Admin with bucket:', storageBucket);
+    console.log("🔧 Initializing Firebase Admin with bucket:", storageBucket);
 
     app = initializeApp({
       credential: cert({ projectId, clientEmail, privateKey }),
@@ -44,12 +47,15 @@ export function initializeFirebaseAdmin() {
     storage = getStorage(app);
 
     if (process.env.FIRESTORE_EMULATOR_HOST) {
-      console.log('🔥 Using Firestore emulator:', process.env.FIRESTORE_EMULATOR_HOST);
+      console.log(
+        "🔥 Using Firestore emulator:",
+        process.env.FIRESTORE_EMULATOR_HOST,
+      );
     }
 
     db.settings({ ignoreUndefinedProperties: true });
 
-    console.log('✅ Firebase Admin SDK initialized');
+    console.log("✅ Firebase Admin SDK initialized");
   } else {
     app = getApps()[0];
     db = getFirestore(app);
@@ -102,22 +108,25 @@ export function getStorageAdmin(): Storage {
 export function verifyFirebaseAdmin(): boolean {
   try {
     const requiredEnvVars = [
-      'FIREBASE_PROJECT_ID',
-      'FIREBASE_CLIENT_EMAIL',
-      'FIREBASE_PRIVATE_KEY',
-      'FIREBASE_STORAGE_BUCKET',
+      "FIREBASE_PROJECT_ID",
+      "FIREBASE_CLIENT_EMAIL",
+      "FIREBASE_PRIVATE_KEY",
+      "FIREBASE_STORAGE_BUCKET",
     ];
 
     const missing = requiredEnvVars.filter((key) => !process.env[key]);
 
     if (missing.length > 0) {
-      console.error('❌ Missing Firebase Admin environment variables:', missing);
+      console.error(
+        "❌ Missing Firebase Admin environment variables:",
+        missing,
+      );
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('❌ Error verifying Firebase Admin configuration:', error);
+    console.error("❌ Error verifying Firebase Admin configuration:", error);
     return false;
   }
 }

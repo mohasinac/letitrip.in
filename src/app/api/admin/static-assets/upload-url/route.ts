@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { generateUploadUrl } from '@/app/api/lib/static-assets-server.service';
+import { NextRequest, NextResponse } from "next/server";
+import { generateUploadUrl } from "@/app/api/lib/static-assets-server.service";
 
 // POST /api/admin/static-assets/upload-url - Request signed upload URL
 export async function POST(req: NextRequest) {
@@ -9,8 +9,8 @@ export async function POST(req: NextRequest) {
 
     if (!fileName || !contentType || !type) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
+        { success: false, error: "Missing required fields" },
+        { status: 400 },
       );
     }
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       fileName,
       contentType,
       type,
-      category
+      category,
     );
 
     return NextResponse.json({
@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
       storagePath,
     });
   } catch (error) {
-    console.error('Error generating upload URL:', error);
+    console.error("Error generating upload URL:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to generate upload URL' },
-      { status: 500 }
+      { success: false, error: "Failed to generate upload URL" },
+      { status: 500 },
     );
   }
 }

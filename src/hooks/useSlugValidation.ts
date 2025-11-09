@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useState, useCallback, useEffect } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 interface UseSlugValidationOptions {
   /** API endpoint for validation */
@@ -31,7 +31,7 @@ interface SlugValidationResult {
 
 /**
  * Hook for validating slugs/codes with debounced API calls
- * 
+ *
  * @example Shop Slug Validation
  * ```tsx
  * const { isAvailable, isValidating, validateSlug } = useSlugValidation({
@@ -39,13 +39,13 @@ interface SlugValidationResult {
  *   excludeId: shopId, // for edit mode
  *   debounceMs: 500,
  * });
- * 
+ *
  * <input onChange={(e) => validateSlug(e.target.value)} />
  * {isValidating && <Spinner />}
  * {isAvailable === false && <Error>Slug already taken</Error>}
  * {isAvailable === true && <Success>Slug available</Success>}
  * ```
- * 
+ *
  * @example Product Slug Validation (per shop)
  * ```tsx
  * const { isAvailable, validateSlug } = useSlugValidation({
@@ -54,7 +54,7 @@ interface SlugValidationResult {
  *   excludeId: productId,
  * });
  * ```
- * 
+ *
  * @example Coupon Code Validation (per shop)
  * ```tsx
  * const { isAvailable, validateSlug } = useSlugValidation({
@@ -69,7 +69,7 @@ export function useSlugValidation({
   params = {},
   excludeId,
   debounceMs = 500,
-  initialSlug = '',
+  initialSlug = "",
 }: UseSlugValidationOptions): SlugValidationResult {
   const [slug, setSlug] = useState(initialSlug);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -96,32 +96,32 @@ export function useSlugValidation({
         });
 
         if (excludeId) {
-          queryParams.set('exclude_id', excludeId);
+          queryParams.set("exclude_id", excludeId);
         }
 
         // Special handling for coupon codes (use 'code' param instead of 'slug')
-        if (endpoint.includes('validate-code')) {
-          queryParams.delete('slug');
-          queryParams.set('code', slugToValidate);
+        if (endpoint.includes("validate-code")) {
+          queryParams.delete("slug");
+          queryParams.set("code", slugToValidate);
         }
 
         const response = await fetch(`${endpoint}?${queryParams.toString()}`);
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Validation failed');
+          throw new Error(data.error || "Validation failed");
         }
 
         setIsAvailable(data.available);
       } catch (err) {
-        console.error('Slug validation error:', err);
-        setError(err instanceof Error ? err.message : 'Validation failed');
+        console.error("Slug validation error:", err);
+        setError(err instanceof Error ? err.message : "Validation failed");
         setIsAvailable(null);
       } finally {
         setIsValidating(false);
       }
     },
-    [endpoint, params, excludeId]
+    [endpoint, params, excludeId],
   );
 
   // Debounced validation
@@ -138,12 +138,12 @@ export function useSlugValidation({
         setError(null);
       }
     },
-    [debouncedValidate]
+    [debouncedValidate],
   );
 
   // Reset function
   const reset = useCallback(() => {
-    setSlug('');
+    setSlug("");
     setIsAvailable(null);
     setIsValidating(false);
     setError(null);

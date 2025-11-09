@@ -1,16 +1,16 @@
 /**
  * useViewingHistory Hook
- * 
+ *
  * React hook for managing viewing history with:
  * - Automatic cleanup on mount
  * - State synchronization
  * - Easy API for components
- * 
+ *
  * Usage:
  * ```typescript
  * // In product detail page
  * const { addToHistory } = useViewingHistory();
- * 
+ *
  * useEffect(() => {
  *   addToHistory({
  *     id: product.id,
@@ -23,36 +23,39 @@
  *     shop_name: product.shop_name
  *   });
  * }, [product]);
- * 
+ *
  * // In history page
  * const { history, products, auctions, clear } = useViewingHistory();
  * ```
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { ViewingHistory } from '@/lib/viewing-history';
-import type { ViewingHistoryItem } from '@/constants/navigation';
+import { useState, useEffect, useCallback } from "react";
+import { ViewingHistory } from "@/lib/viewing-history";
+import type { ViewingHistoryItem } from "@/constants/navigation";
 
 interface UseViewingHistoryReturn {
   // All history items
   history: ViewingHistoryItem[];
-  
+
   // Filtered by type
   products: ViewingHistoryItem[];
   auctions: ViewingHistoryItem[];
-  
+
   // Actions
-  addToHistory: (item: Omit<ViewingHistoryItem, 'viewed_at'>) => void;
-  removeFromHistory: (id: string, type: 'product' | 'auction') => void;
+  addToHistory: (item: Omit<ViewingHistoryItem, "viewed_at">) => void;
+  removeFromHistory: (id: string, type: "product" | "auction") => void;
   clearHistory: () => void;
-  
+
   // Utilities
-  hasInHistory: (id: string, type: 'product' | 'auction') => boolean;
+  hasInHistory: (id: string, type: "product" | "auction") => boolean;
   getRecent: (limit?: number) => ViewingHistoryItem[];
-  getRecentByType: (type: 'product' | 'auction', limit?: number) => ViewingHistoryItem[];
-  
+  getRecentByType: (
+    type: "product" | "auction",
+    limit?: number,
+  ) => ViewingHistoryItem[];
+
   // Counts
   count: number;
   productCount: number;
@@ -65,7 +68,7 @@ export function useViewingHistory(): UseViewingHistoryReturn {
   // Load history on mount
   useEffect(() => {
     loadHistory();
-    
+
     // Clean expired items
     ViewingHistory.cleanExpired();
   }, []);
@@ -77,16 +80,22 @@ export function useViewingHistory(): UseViewingHistoryReturn {
   }, []);
 
   // Add item to history
-  const addToHistory = useCallback((item: Omit<ViewingHistoryItem, 'viewed_at'>) => {
-    ViewingHistory.add(item);
-    loadHistory();
-  }, [loadHistory]);
+  const addToHistory = useCallback(
+    (item: Omit<ViewingHistoryItem, "viewed_at">) => {
+      ViewingHistory.add(item);
+      loadHistory();
+    },
+    [loadHistory],
+  );
 
   // Remove item from history
-  const removeFromHistory = useCallback((id: string, type: 'product' | 'auction') => {
-    ViewingHistory.remove(id, type);
-    loadHistory();
-  }, [loadHistory]);
+  const removeFromHistory = useCallback(
+    (id: string, type: "product" | "auction") => {
+      ViewingHistory.remove(id, type);
+      loadHistory();
+    },
+    [loadHistory],
+  );
 
   // Clear all history
   const clearHistory = useCallback(() => {
@@ -95,9 +104,12 @@ export function useViewingHistory(): UseViewingHistoryReturn {
   }, []);
 
   // Check if item exists in history
-  const hasInHistory = useCallback((id: string, type: 'product' | 'auction') => {
-    return ViewingHistory.has(id, type);
-  }, []);
+  const hasInHistory = useCallback(
+    (id: string, type: "product" | "auction") => {
+      return ViewingHistory.has(id, type);
+    },
+    [],
+  );
 
   // Get recent items
   const getRecent = useCallback((limit: number = 10) => {
@@ -105,13 +117,16 @@ export function useViewingHistory(): UseViewingHistoryReturn {
   }, []);
 
   // Get recent by type
-  const getRecentByType = useCallback((type: 'product' | 'auction', limit: number = 10) => {
-    return ViewingHistory.getRecentByType(type, limit);
-  }, []);
+  const getRecentByType = useCallback(
+    (type: "product" | "auction", limit: number = 10) => {
+      return ViewingHistory.getRecentByType(type, limit);
+    },
+    [],
+  );
 
   // Computed values
-  const products = history.filter(item => item.type === 'product');
-  const auctions = history.filter(item => item.type === 'auction');
+  const products = history.filter((item) => item.type === "product");
+  const auctions = history.filter((item) => item.type === "auction");
   const count = history.length;
   const productCount = products.length;
   const auctionCount = auctions.length;
@@ -128,6 +143,6 @@ export function useViewingHistory(): UseViewingHistoryReturn {
     getRecentByType,
     count,
     productCount,
-    auctionCount
+    auctionCount,
   };
 }

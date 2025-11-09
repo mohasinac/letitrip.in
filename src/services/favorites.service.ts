@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import type { Product } from '@/types';
+import { apiService } from "./api.service";
+import type { Product } from "@/types";
 
 interface FavoriteItem {
   id: string;
@@ -12,12 +12,12 @@ interface FavoriteItem {
 class FavoritesService {
   // Get user favorites
   async list(): Promise<FavoriteItem[]> {
-    return apiService.get<FavoriteItem[]>('/favorites');
+    return apiService.get<FavoriteItem[]>("/favorites");
   }
 
   // Add product to favorites
   async add(productId: string): Promise<FavoriteItem> {
-    return apiService.post<FavoriteItem>('/favorites', { productId });
+    return apiService.post<FavoriteItem>("/favorites", { productId });
   }
 
   // Remove product from favorites
@@ -27,30 +27,36 @@ class FavoritesService {
 
   // Remove by product ID
   async removeByProductId(productId: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/favorites/product/${productId}`);
+    return apiService.delete<{ message: string }>(
+      `/favorites/product/${productId}`,
+    );
   }
 
   // Check if product is favorited
-  async isFavorited(productId: string): Promise<{ isFavorited: boolean; favoriteId?: string }> {
-    return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(`/favorites/check/${productId}`);
+  async isFavorited(
+    productId: string,
+  ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
+    return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
+      `/favorites/check/${productId}`,
+    );
   }
 
   // Get favorites count
   async getCount(): Promise<{ count: number }> {
-    return apiService.get<{ count: number }>('/favorites/count');
+    return apiService.get<{ count: number }>("/favorites/count");
   }
 
   // Clear all favorites
   async clear(): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>('/favorites');
+    return apiService.delete<{ message: string }>("/favorites");
   }
 
   // Local storage helpers for guest favorites
-  private readonly GUEST_FAVORITES_KEY = 'guest_favorites';
+  private readonly GUEST_FAVORITES_KEY = "guest_favorites";
 
   getGuestFavorites(): string[] {
-    if (typeof window === 'undefined') return [];
-    
+    if (typeof window === "undefined") return [];
+
     try {
       const favorites = localStorage.getItem(this.GUEST_FAVORITES_KEY);
       return favorites ? JSON.parse(favorites) : [];
@@ -60,14 +66,14 @@ class FavoritesService {
   }
 
   setGuestFavorites(productIds: string[]): void {
-    if (typeof window === 'undefined') return;
-    
+    if (typeof window === "undefined") return;
+
     localStorage.setItem(this.GUEST_FAVORITES_KEY, JSON.stringify(productIds));
   }
 
   addToGuestFavorites(productId: string): void {
     const favorites = this.getGuestFavorites();
-    
+
     if (!favorites.includes(productId)) {
       favorites.push(productId);
       this.setGuestFavorites(favorites);
@@ -76,7 +82,7 @@ class FavoritesService {
 
   removeFromGuestFavorites(productId: string): void {
     const favorites = this.getGuestFavorites();
-    const filtered = favorites.filter(id => id !== productId);
+    const filtered = favorites.filter((id) => id !== productId);
     this.setGuestFavorites(filtered);
   }
 
@@ -86,7 +92,7 @@ class FavoritesService {
   }
 
   clearGuestFavorites(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     localStorage.removeItem(this.GUEST_FAVORITES_KEY);
   }
 
@@ -97,22 +103,25 @@ class FavoritesService {
   // Sync guest favorites to user account (on login)
   async syncGuestFavorites(): Promise<{ synced: number }> {
     const guestFavorites = this.getGuestFavorites();
-    
+
     if (guestFavorites.length === 0) {
       return { synced: 0 };
     }
 
     try {
-      const result = await apiService.post<{ synced: number }>('/favorites/sync', {
-        productIds: guestFavorites,
-      });
+      const result = await apiService.post<{ synced: number }>(
+        "/favorites/sync",
+        {
+          productIds: guestFavorites,
+        },
+      );
 
       // Clear guest favorites after sync
       this.clearGuestFavorites();
 
       return result;
     } catch (error) {
-      console.error('Failed to sync favorites:', error);
+      console.error("Failed to sync favorites:", error);
       return { synced: 0 };
     }
   }

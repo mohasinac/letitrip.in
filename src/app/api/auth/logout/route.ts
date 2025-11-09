@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import { 
-  getSessionToken, 
-  verifySession, 
-  deleteSession, 
-  clearSessionCookie 
-} from '../../lib/session';
+import { NextRequest, NextResponse } from "next/server";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import {
+  getSessionToken,
+  verifySession,
+  deleteSession,
+  clearSessionCookie,
+} from "../../lib/session";
 
 async function logoutHandler(req: NextRequest) {
   try {
@@ -24,27 +24,25 @@ async function logoutHandler(req: NextRequest) {
 
     // Create response
     const response = NextResponse.json(
-      { message: 'Logout successful' },
-      { status: 200 }
+      { message: "Logout successful" },
+      { status: 200 },
     );
 
     // Clear session cookie
     clearSessionCookie(response);
 
     return response;
-
   } catch (error: any) {
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
 
     // Even if there's an error, clear the cookie
     const response = NextResponse.json(
-      { 
-        message: 'Logout completed',
-        error: process.env.NODE_ENV === 'production' 
-          ? undefined 
-          : error.message 
+      {
+        message: "Logout completed",
+        error:
+          process.env.NODE_ENV === "production" ? undefined : error.message,
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     clearSessionCookie(response);

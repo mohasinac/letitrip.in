@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
-const HOMEPAGE_SETTINGS_DOC = 'homepage_config';
-const SETTINGS_COLLECTION = 'site_settings';
+const HOMEPAGE_SETTINGS_DOC = "homepage_config";
+const SETTINGS_COLLECTION = "site_settings";
 
 interface HomepageSettings {
   specialEventBanner: {
@@ -56,11 +56,12 @@ interface HomepageSettings {
 const DEFAULT_SETTINGS: HomepageSettings = {
   specialEventBanner: {
     enabled: true,
-    title: 'Special Event',
-    content: '<p>⭐ <strong>Featured Sites:</strong> International Fleemarket • Purchase Fees • Coupon week end!</p>',
-    link: '/special-offers',
-    backgroundColor: '#2563eb',
-    textColor: '#ffffff',
+    title: "Special Event",
+    content:
+      "<p>⭐ <strong>Featured Sites:</strong> International Fleemarket • Purchase Fees • Coupon week end!</p>",
+    link: "/special-offers",
+    backgroundColor: "#2563eb",
+    textColor: "#ffffff",
   },
   heroCarousel: {
     enabled: true,
@@ -98,17 +99,17 @@ const DEFAULT_SETTINGS: HomepageSettings = {
     },
   },
   sectionOrder: [
-    'hero-section',
-    'value-proposition',
-    'featured-categories-icons',
-    'featured-categories',
-    'featured-products',
-    'featured-auctions',
-    'shops-nav',
-    'featured-shops',
-    'featured-blogs',
-    'featured-reviews',
-    'faq-section',
+    "hero-section",
+    "value-proposition",
+    "featured-categories-icons",
+    "featured-categories",
+    "featured-products",
+    "featured-auctions",
+    "shops-nav",
+    "featured-shops",
+    "featured-blogs",
+    "featured-reviews",
+    "faq-section",
   ],
   updatedAt: new Date().toISOString(),
 };
@@ -117,12 +118,12 @@ const DEFAULT_SETTINGS: HomepageSettings = {
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
-    
+
     const doc = await db
       .collection(SETTINGS_COLLECTION)
       .doc(HOMEPAGE_SETTINGS_DOC)
       .get();
-    
+
     if (!doc.exists) {
       // Return default settings if not configured yet
       return NextResponse.json({
@@ -130,9 +131,9 @@ export async function GET(req: NextRequest) {
         isDefault: true,
       });
     }
-    
+
     const data = doc.data();
-    
+
     // Ensure specialEventBanner exists for backward compatibility
     const settings: HomepageSettings = {
       ...DEFAULT_SETTINGS,
@@ -142,16 +143,16 @@ export async function GET(req: NextRequest) {
         ...(data?.specialEventBanner || {}),
       },
     } as HomepageSettings;
-    
+
     return NextResponse.json({
       settings,
       isDefault: false,
     });
   } catch (error) {
-    console.error('Error fetching homepage settings:', error);
+    console.error("Error fetching homepage settings:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch homepage settings' },
-      { status: 500 }
+      { error: "Failed to fetch homepage settings" },
+      { status: 500 },
     );
   }
 }
@@ -161,36 +162,36 @@ export async function PATCH(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
     const body = await req.json();
-    
+
     // Validate the structure
     if (!body.settings) {
       return NextResponse.json(
-        { error: 'Settings object is required' },
-        { status: 400 }
+        { error: "Settings object is required" },
+        { status: 400 },
       );
     }
-    
+
     const settings: HomepageSettings = {
       ...body.settings,
       updatedAt: new Date().toISOString(),
-      updatedBy: body.userId || 'admin',
+      updatedBy: body.userId || "admin",
     };
-    
+
     // Update or create the settings document
     await db
       .collection(SETTINGS_COLLECTION)
       .doc(HOMEPAGE_SETTINGS_DOC)
       .set(settings, { merge: true });
-    
+
     return NextResponse.json({
-      message: 'Homepage settings updated successfully',
+      message: "Homepage settings updated successfully",
       settings,
     });
   } catch (error) {
-    console.error('Error updating homepage settings:', error);
+    console.error("Error updating homepage settings:", error);
     return NextResponse.json(
-      { error: 'Failed to update homepage settings' },
-      { status: 500 }
+      { error: "Failed to update homepage settings" },
+      { status: 500 },
     );
   }
 }

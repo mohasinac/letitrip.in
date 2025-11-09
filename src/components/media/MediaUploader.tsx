@@ -55,7 +55,7 @@ export default function MediaUploader({
 
     const filesToProcess = Array.from(fileList).slice(
       0,
-      maxFiles - files.length
+      maxFiles - files.length,
     );
 
     for (const file of filesToProcess) {
@@ -210,8 +210,8 @@ export default function MediaUploader({
           dragActive
             ? "border-blue-500 bg-blue-50"
             : disabled || !canAddMore
-            ? "border-gray-200 bg-gray-50 cursor-not-allowed"
-            : "border-gray-300 hover:border-gray-400 cursor-pointer"
+              ? "border-gray-200 bg-gray-50 cursor-not-allowed"
+              : "border-gray-300 hover:border-gray-400 cursor-pointer"
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -235,8 +235,8 @@ export default function MediaUploader({
           {dragActive
             ? "Drop files here"
             : canAddMore
-            ? "Upload media files"
-            : `Maximum ${maxFiles} files reached`}
+              ? "Upload media files"
+              : `Maximum ${maxFiles} files reached`}
         </h3>
 
         <p className="text-sm text-gray-500 mb-4">

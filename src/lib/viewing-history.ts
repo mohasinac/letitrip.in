@@ -1,12 +1,12 @@
 /**
  * Viewing History Manager
- * 
+ *
  * Manages recently viewed products and auctions with:
  * - LocalStorage persistence
  * - Automatic expiry
  * - Deduplication
  * - Type safety
- * 
+ *
  * Usage:
  * ```typescript
  * // Add to history
@@ -21,20 +21,23 @@
  *   shop_name: "Shop Name",
  *   viewed_at: Date.now()
  * });
- * 
+ *
  * // Get all history
  * const history = ViewingHistory.getAll();
- * 
+ *
  * // Get by type
  * const products = ViewingHistory.getByType("product");
  * const auctions = ViewingHistory.getByType("auction");
- * 
+ *
  * // Clear history
  * ViewingHistory.clear();
  * ```
  */
 
-import { VIEWING_HISTORY_CONFIG, ViewingHistoryItem } from '@/constants/navigation';
+import {
+  VIEWING_HISTORY_CONFIG,
+  ViewingHistoryItem,
+} from "@/constants/navigation";
 
 class ViewingHistoryManager {
   private storageKey: string;
@@ -52,7 +55,7 @@ class ViewingHistoryManager {
    */
   private isStorageAvailable(): boolean {
     try {
-      const test = '__storage_test__';
+      const test = "__storage_test__";
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -72,9 +75,9 @@ class ViewingHistoryManager {
       if (!stored) return [];
 
       const items: ViewingHistoryItem[] = JSON.parse(stored);
-      return items.filter(item => this.isValid(item));
+      return items.filter((item) => this.isValid(item));
     } catch (error) {
-      console.error('Error reading viewing history:', error);
+      console.error("Error reading viewing history:", error);
       return [];
     }
   }
@@ -88,7 +91,7 @@ class ViewingHistoryManager {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(items));
     } catch (error) {
-      console.error('Error saving viewing history:', error);
+      console.error("Error saving viewing history:", error);
     }
   }
 
@@ -108,18 +111,20 @@ class ViewingHistoryManager {
    * - Limits to MAX_ITEMS
    * - Removes expired items
    */
-  add(item: Omit<ViewingHistoryItem, 'viewed_at'> & { viewed_at?: number }): void {
+  add(
+    item: Omit<ViewingHistoryItem, "viewed_at"> & { viewed_at?: number },
+  ): void {
     const history = this.getStoredHistory();
 
     // Add timestamp if not provided
     const newItem: ViewingHistoryItem = {
       ...item,
-      viewed_at: item.viewed_at || Date.now()
+      viewed_at: item.viewed_at || Date.now(),
     };
 
     // Remove existing item with same id and type
     const filtered = history.filter(
-      h => !(h.id === newItem.id && h.type === newItem.type)
+      (h) => !(h.id === newItem.id && h.type === newItem.type),
     );
 
     // Add to front
@@ -141,8 +146,8 @@ class ViewingHistoryManager {
   /**
    * Get history items by type (product or auction)
    */
-  getByType(type: 'product' | 'auction'): ViewingHistoryItem[] {
-    return this.getStoredHistory().filter(item => item.type === type);
+  getByType(type: "product" | "auction"): ViewingHistoryItem[] {
+    return this.getStoredHistory().filter((item) => item.type === type);
   }
 
   /**
@@ -155,26 +160,29 @@ class ViewingHistoryManager {
   /**
    * Get recent items by type with limit
    */
-  getRecentByType(type: 'product' | 'auction', limit: number = 10): ViewingHistoryItem[] {
+  getRecentByType(
+    type: "product" | "auction",
+    limit: number = 10,
+  ): ViewingHistoryItem[] {
     return this.getByType(type).slice(0, limit);
   }
 
   /**
    * Check if item exists in history
    */
-  has(id: string, type: 'product' | 'auction'): boolean {
+  has(id: string, type: "product" | "auction"): boolean {
     return this.getStoredHistory().some(
-      item => item.id === id && item.type === type
+      (item) => item.id === id && item.type === type,
     );
   }
 
   /**
    * Remove item from history
    */
-  remove(id: string, type: 'product' | 'auction'): void {
+  remove(id: string, type: "product" | "auction"): void {
     const history = this.getStoredHistory();
     const filtered = history.filter(
-      item => !(item.id === id && item.type === type)
+      (item) => !(item.id === id && item.type === type),
     );
     this.saveHistory(filtered);
   }
@@ -198,7 +206,7 @@ class ViewingHistoryManager {
   /**
    * Get history count by type
    */
-  countByType(type: 'product' | 'auction'): number {
+  countByType(type: "product" | "auction"): number {
     return this.getByType(type).length;
   }
 

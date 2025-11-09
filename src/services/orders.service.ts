@@ -1,5 +1,10 @@
-import { apiService } from './api.service';
-import type { Order, OrderStatus, PaymentStatus, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type {
+  Order,
+  OrderStatus,
+  PaymentStatus,
+  PaginatedResponse,
+} from "@/types";
 
 interface OrderFilters {
   shopId?: string;
@@ -13,8 +18,8 @@ interface OrderFilters {
   search?: string;
   page?: number;
   limit?: number;
-  sortBy?: 'createdAt' | 'total' | 'status';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "createdAt" | "total" | "status";
+  sortOrder?: "asc" | "desc";
 }
 
 interface CreateOrderData {
@@ -43,7 +48,7 @@ interface CreateOrderData {
     pincode: string;
     country: string;
   };
-  paymentMethod: 'razorpay' | 'paypal' | 'cod';
+  paymentMethod: "razorpay" | "paypal" | "cod";
   couponCode?: string;
   customerNotes?: string;
 }
@@ -67,12 +72,12 @@ class OrdersService {
   // List orders (role-filtered)
   async list(filters?: OrderFilters): Promise<PaginatedResponse<Order>> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
-            value.forEach(v => params.append(key, v.toString()));
+            value.forEach((v) => params.append(key, v.toString()));
           } else {
             params.append(key, value.toString());
           }
@@ -81,8 +86,8 @@ class OrdersService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/orders?${queryString}` : '/orders';
-    
+    const endpoint = queryString ? `/orders?${queryString}` : "/orders";
+
     return apiService.get<PaginatedResponse<Order>>(endpoint);
   }
 
@@ -93,7 +98,7 @@ class OrdersService {
 
   // Create order (customer checkout)
   async create(data: CreateOrderData): Promise<Order> {
-    return apiService.post<Order>('/orders', data);
+    return apiService.post<Order>("/orders", data);
   }
 
   // Update order status (seller/admin)
@@ -108,7 +113,9 @@ class OrdersService {
     const payload: any = {
       carrier: data.shippingProvider,
       tracking_number: data.trackingNumber,
-      eta: data.estimatedDelivery ? data.estimatedDelivery.toISOString() : undefined,
+      eta: data.estimatedDelivery
+        ? data.estimatedDelivery.toISOString()
+        : undefined,
     };
     return apiService.post<Order>(`/orders/${id}/shipment`, payload);
   }
@@ -127,23 +134,27 @@ class OrdersService {
   async downloadInvoice(id: string): Promise<Blob> {
     // Note: This might need special handling for blob response
     const response = await fetch(`/api/orders/${id}/invoice`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Accept': 'application/pdf',
+        Accept: "application/pdf",
       },
     });
-    
+
     if (!response.ok) {
-      throw new Error('Failed to download invoice');
+      throw new Error("Failed to download invoice");
     }
-    
+
     return response.blob();
   }
 
   // Get order statistics
-  async getStats(filters?: { shopId?: string; startDate?: string; endDate?: string }): Promise<any> {
+  async getStats(filters?: {
+    shopId?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<any> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -153,8 +164,10 @@ class OrdersService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/orders/stats?${queryString}` : '/orders/stats';
-    
+    const endpoint = queryString
+      ? `/orders/stats?${queryString}`
+      : "/orders/stats";
+
     return apiService.get<any>(endpoint);
   }
 }

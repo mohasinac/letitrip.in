@@ -3,8 +3,8 @@
  * Provides reusable functions for handling bulk operations across all resources
  */
 
-import { NextRequest } from 'next/server';
-import { getFirestoreAdmin } from './firebase/admin';
+import { NextRequest } from "next/server";
+import { getFirestoreAdmin } from "./firebase/admin";
 
 export interface BulkOperationResult {
   success: boolean;
@@ -21,15 +21,22 @@ export interface BulkOperationConfig {
   data?: Record<string, any>;
   userId?: string;
   validatePermission?: (userId: string, action: string) => Promise<boolean>;
-  validateItem?: (item: any, action: string) => Promise<{ valid: boolean; error?: string }>;
-  customHandler?: (db: FirebaseFirestore.Firestore, id: string, data?: any) => Promise<void>;
+  validateItem?: (
+    item: any,
+    action: string,
+  ) => Promise<{ valid: boolean; error?: string }>;
+  customHandler?: (
+    db: FirebaseFirestore.Firestore,
+    id: string,
+    data?: any,
+  ) => Promise<void>;
 }
 
 /**
  * Execute a bulk operation with transaction support
  */
 export async function executeBulkOperation(
-  config: BulkOperationConfig
+  config: BulkOperationConfig,
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data, validateItem, customHandler } = config;
 
@@ -38,7 +45,7 @@ export async function executeBulkOperation(
       success: false,
       successCount: 0,
       failedCount: 0,
-      message: 'No items selected',
+      message: "No items selected",
     };
   }
 
@@ -53,7 +60,7 @@ export async function executeBulkOperation(
       const doc = await docRef.get();
 
       if (!doc.exists) {
-        errors.push({ id, error: 'Item not found' });
+        errors.push({ id, error: "Item not found" });
         continue;
       }
 
@@ -63,7 +70,7 @@ export async function executeBulkOperation(
       if (validateItem) {
         const validation = await validateItem(itemData, action);
         if (!validation.valid) {
-          errors.push({ id, error: validation.error || 'Validation failed' });
+          errors.push({ id, error: validation.error || "Validation failed" });
           continue;
         }
       }
@@ -82,7 +89,7 @@ export async function executeBulkOperation(
     } catch (error: any) {
       errors.push({
         id,
-        error: error.message || 'Operation failed',
+        error: error.message || "Operation failed",
       });
     }
   }
@@ -95,7 +102,7 @@ export async function executeBulkOperation(
     successCount,
     failedCount,
     errors: errors.length > 0 ? errors : undefined,
-    message: `${successCount} item(s) ${action} successfully${failedCount > 0 ? `, ${failedCount} failed` : ''}`,
+    message: `${successCount} item(s) ${action} successfully${failedCount > 0 ? `, ${failedCount} failed` : ""}`,
   };
 }
 
@@ -104,21 +111,21 @@ export async function executeBulkOperation(
  */
 export async function validateBulkPermission(
   userId: string,
-  requiredRole: 'admin' | 'seller' | 'user'
+  requiredRole: "admin" | "seller" | "user",
 ): Promise<{ valid: boolean; error?: string }> {
   if (!userId) {
-    return { valid: false, error: 'Authentication required' };
+    return { valid: false, error: "Authentication required" };
   }
 
   const db = getFirestoreAdmin();
-  const userDoc = await db.collection('users').doc(userId).get();
+  const userDoc = await db.collection("users").doc(userId).get();
 
   if (!userDoc.exists) {
-    return { valid: false, error: 'User not found' };
+    return { valid: false, error: "User not found" };
   }
 
   const userData = userDoc.data();
-  const userRole = userData?.role || 'user';
+  const userRole = userData?.role || "user";
 
   // Role hierarchy: admin > seller > user
   const roleHierarchy: Record<string, number> = {
@@ -142,9 +149,7 @@ export async function validateBulkPermission(
 /**
  * Parse and validate bulk operation request
  */
-export async function parseBulkRequest(
-  req: NextRequest
-): Promise<{
+export async function parseBulkRequest(req: NextRequest): Promise<{
   action: string;
   ids: string[];
   data?: Record<string, any>;
@@ -153,11 +158,11 @@ export async function parseBulkRequest(
   const body = await req.json();
 
   if (!body.action) {
-    throw new Error('Action is required');
+    throw new Error("Action is required");
   }
 
   if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
-    throw new Error('IDs array is required and must not be empty');
+    throw new Error("IDs array is required and must not be empty");
   }
 
   return {
@@ -176,49 +181,40 @@ export const commonBulkHandlers = {
    * Activate items (set is_active or status to true/active)
    */
   activate: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db
-      .collection('temp')
-      .doc(id)
-      .update({
-        is_active: true,
-        status: 'active',
-        updated_at: new Date().toISOString(),
-      });
+    await db.collection("temp").doc(id).update({
+      is_active: true,
+      status: "active",
+      updated_at: new Date().toISOString(),
+    });
   },
 
   /**
    * Deactivate items (set is_active or status to false/inactive)
    */
   deactivate: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db
-      .collection('temp')
-      .doc(id)
-      .update({
-        is_active: false,
-        status: 'inactive',
-        updated_at: new Date().toISOString(),
-      });
+    await db.collection("temp").doc(id).update({
+      is_active: false,
+      status: "inactive",
+      updated_at: new Date().toISOString(),
+    });
   },
 
   /**
    * Delete items (soft delete with deleted_at timestamp)
    */
   softDelete: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db
-      .collection('temp')
-      .doc(id)
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
+    await db.collection("temp").doc(id).update({
+      is_deleted: true,
+      deleted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
   },
 
   /**
    * Hard delete items (permanent deletion)
    */
   hardDelete: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db.collection('temp').doc(id).delete();
+    await db.collection("temp").doc(id).delete();
   },
 
   /**
@@ -227,7 +223,7 @@ export const commonBulkHandlers = {
   updateField: (field: string, value: any) => {
     return async (db: FirebaseFirestore.Firestore, id: string) => {
       await db
-        .collection('temp')
+        .collection("temp")
         .doc(id)
         .update({
           [field]: value,
@@ -245,7 +241,7 @@ export function createBulkErrorResponse(error: any) {
     success: false,
     successCount: 0,
     failedCount: 0,
-    message: error.message || 'Bulk operation failed',
+    message: error.message || "Bulk operation failed",
     error: error.message,
   };
 }
@@ -254,7 +250,7 @@ export function createBulkErrorResponse(error: any) {
  * Transaction-based bulk operation (for operations that need atomicity)
  */
 export async function executeBulkOperationWithTransaction(
-  config: BulkOperationConfig
+  config: BulkOperationConfig,
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data } = config;
 
@@ -263,7 +259,7 @@ export async function executeBulkOperationWithTransaction(
       success: false,
       successCount: 0,
       failedCount: 0,
-      message: 'No items selected',
+      message: "No items selected",
     };
   }
 
@@ -274,7 +270,9 @@ export async function executeBulkOperationWithTransaction(
     await db.runTransaction(async (transaction) => {
       // Get all documents
       const docRefs = ids.map((id) => db.collection(collection).doc(id));
-      const docs = await Promise.all(docRefs.map((ref) => transaction.get(ref)));
+      const docs = await Promise.all(
+        docRefs.map((ref) => transaction.get(ref)),
+      );
 
       // Validate all exist
       for (let i = 0; i < docs.length; i++) {
@@ -303,8 +301,8 @@ export async function executeBulkOperationWithTransaction(
       success: false,
       successCount: 0,
       failedCount: ids.length,
-      message: 'Transaction failed',
-      errors: [{ id: 'all', error: error.message }],
+      message: "Transaction failed",
+      errors: [{ id: "all", error: error.message }],
     };
   }
 }

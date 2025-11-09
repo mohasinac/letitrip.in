@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * GET /api/shops/[slug]/reviews
@@ -7,26 +7,26 @@ import { Collections } from '@/app/api/lib/firebase/collections';
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
 
     // First, get the shop by slug
     const shopsSnapshot = await Collections.shops()
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (shopsSnapshot.empty) {
       return NextResponse.json(
-        { success: false, error: 'Shop not found' },
-        { status: 404 }
+        { success: false, error: "Shop not found" },
+        { status: 404 },
       );
     }
 
@@ -35,8 +35,8 @@ export async function GET(
 
     // Build reviews query
     let query = Collections.reviews()
-      .where('shopId', '==', shopId)
-      .orderBy('createdAt', 'desc') as any;
+      .where("shopId", "==", shopId)
+      .orderBy("createdAt", "desc") as any;
 
     // Apply pagination
     const offset = (page - 1) * limit;
@@ -60,10 +60,10 @@ export async function GET(
 
     // Get total count
     const totalSnapshot = await Collections.reviews()
-      .where('shopId', '==', shopId)
+      .where("shopId", "==", shopId)
       .count()
       .get();
-    
+
     const total = totalSnapshot.data().count;
     const totalPages = Math.ceil(total / limit);
 
@@ -80,10 +80,13 @@ export async function GET(
       },
     });
   } catch (error: any) {
-    console.error('Shop reviews error:', error);
+    console.error("Shop reviews error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch shop reviews' },
-      { status: 500 }
+      {
+        success: false,
+        error: error.message || "Failed to fetch shop reviews",
+      },
+      { status: 500 },
     );
   }
 }

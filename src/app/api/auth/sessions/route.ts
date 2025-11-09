@@ -1,19 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
-import { 
-  getUserSessions, 
-  deleteSession, 
-  deleteAllUserSessions 
-} from '../../lib/session';
+import { NextRequest, NextResponse } from "next/server";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { requireAuth, AuthenticatedRequest } from "../../middleware/auth";
+import {
+  getUserSessions,
+  deleteSession,
+  deleteAllUserSessions,
+} from "../../lib/session";
 
 async function getSessionsHandler(req: AuthenticatedRequest) {
   try {
     if (!req.session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get all active sessions for the user
@@ -21,7 +18,7 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
 
     return NextResponse.json(
       {
-        sessions: sessions.map(session => ({
+        sessions: sessions.map((session) => ({
           sessionId: session.sessionId,
           createdAt: session.createdAt,
           expiresAt: session.expiresAt,
@@ -29,22 +26,22 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
           userAgent: session.userAgent,
           ipAddress: session.ipAddress,
           isCurrent: session.sessionId === req.session!.sessionId,
-        }))
+        })),
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error: any) {
-    console.error('Get sessions error:', error);
+    console.error("Get sessions error:", error);
 
     return NextResponse.json(
-      { 
-        error: 'Failed to get sessions',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message 
+      {
+        error: "Failed to get sessions",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -52,10 +49,7 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
 async function deleteSessionHandler(req: AuthenticatedRequest) {
   try {
     if (!req.session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -65,60 +59,68 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
     if (deleteAll) {
       await deleteAllUserSessions(req.session.userId);
       return NextResponse.json(
-        { message: 'All sessions deleted successfully' },
-        { status: 200 }
+        { message: "All sessions deleted successfully" },
+        { status: 200 },
       );
     }
 
     // Delete specific session
     if (!sessionId) {
       return NextResponse.json(
-        { error: 'Session ID is required' },
-        { status: 400 }
+        { error: "Session ID is required" },
+        { status: 400 },
       );
     }
 
     // Verify the session belongs to the user
     const sessions = await getUserSessions(req.session.userId);
-    const sessionToDelete = sessions.find(s => s.sessionId === sessionId);
+    const sessionToDelete = sessions.find((s) => s.sessionId === sessionId);
 
     if (!sessionToDelete) {
       return NextResponse.json(
-        { error: 'Session not found or does not belong to user' },
-        { status: 404 }
+        { error: "Session not found or does not belong to user" },
+        { status: 404 },
       );
     }
 
     await deleteSession(sessionId);
 
     return NextResponse.json(
-      { message: 'Session deleted successfully' },
-      { status: 200 }
+      { message: "Session deleted successfully" },
+      { status: 200 },
     );
-
   } catch (error: any) {
-    console.error('Delete session error:', error);
+    console.error("Delete session error:", error);
 
     return NextResponse.json(
-      { 
-        error: 'Failed to delete session',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message 
+      {
+        error: "Failed to delete session",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET(req: NextRequest) {
-  return withRedisRateLimit(req, async (r) => {
-    return requireAuth(r, getSessionsHandler);
-  }, RATE_LIMITS.API);
+  return withRedisRateLimit(
+    req,
+    async (r) => {
+      return requireAuth(r, getSessionsHandler);
+    },
+    RATE_LIMITS.API,
+  );
 }
 
 export async function DELETE(req: NextRequest) {
-  return withRedisRateLimit(req, async (r) => {
-    return requireAuth(r, deleteSessionHandler);
-  }, RATE_LIMITS.API);
+  return withRedisRateLimit(
+    req,
+    async (r) => {
+      return requireAuth(r, deleteSessionHandler);
+    },
+    RATE_LIMITS.API,
+  );
 }

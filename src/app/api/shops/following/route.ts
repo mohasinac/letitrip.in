@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch shop details
     const shops: any[] = [];
-    
+
     // Firestore 'in' query limited to 10 items, so batch if needed
     for (let i = 0; i < shopIds.length; i += 10) {
       const batch = shopIds.slice(i, i + 10);
@@ -61,10 +61,10 @@ export async function GET(request: NextRequest) {
         .get();
 
       shopsSnapshot.docs.forEach((doc) => {
-        const followData = followingSnapshot.docs.find(
-          (f) => f.data().shop_id === doc.id
-        )?.data();
-        
+        const followData = followingSnapshot.docs
+          .find((f) => f.data().shop_id === doc.id)
+          ?.data();
+
         shops.push({
           id: doc.id,
           ...doc.data(),
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     console.error("[GET /api/shops/following] Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

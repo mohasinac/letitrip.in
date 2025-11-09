@@ -29,7 +29,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   const updateFilter = <K extends keyof OrderFilterValues>(
     key: K,
-    value: OrderFilterValues[K]
+    value: OrderFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -131,7 +131,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "amountMin",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -146,7 +146,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "amountMax",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

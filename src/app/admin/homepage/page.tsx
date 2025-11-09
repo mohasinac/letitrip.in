@@ -116,7 +116,7 @@ export default function HomepageSettingsPage() {
   const updateSectionValue = (
     sectionKey: string,
     field: string,
-    value: number
+    value: number,
   ) => {
     if (!settings) return;
 
@@ -457,7 +457,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "valueProposition"
                   ? null
-                  : "valueProposition"
+                  : "valueProposition",
               )
             }
           />
@@ -473,7 +473,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "featuredCategories"
                   ? null
-                  : "featuredCategories"
+                  : "featuredCategories",
               )
             }
           >
@@ -487,7 +487,7 @@ export default function HomepageSettingsPage() {
                   updateSectionValue(
                     "featuredCategories",
                     "maxCategories",
-                    value
+                    value,
                   )
                 }
               />
@@ -500,7 +500,7 @@ export default function HomepageSettingsPage() {
                   updateSectionValue(
                     "featuredCategories",
                     "productsPerCategory",
-                    value
+                    value,
                   )
                 }
               />
@@ -518,7 +518,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "featuredProducts"
                   ? null
-                  : "featuredProducts"
+                  : "featuredProducts",
               )
             }
           >
@@ -544,7 +544,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "featuredAuctions"
                   ? null
-                  : "featuredAuctions"
+                  : "featuredAuctions",
               )
             }
           >
@@ -568,7 +568,7 @@ export default function HomepageSettingsPage() {
             expanded={expandedSection === "featuredShops"}
             onToggleExpand={() =>
               setExpandedSection(
-                expandedSection === "featuredShops" ? null : "featuredShops"
+                expandedSection === "featuredShops" ? null : "featuredShops",
               )
             }
           >
@@ -603,7 +603,7 @@ export default function HomepageSettingsPage() {
             expanded={expandedSection === "featuredBlogs"}
             onToggleExpand={() =>
               setExpandedSection(
-                expandedSection === "featuredBlogs" ? null : "featuredBlogs"
+                expandedSection === "featuredBlogs" ? null : "featuredBlogs",
               )
             }
           >
@@ -627,7 +627,9 @@ export default function HomepageSettingsPage() {
             expanded={expandedSection === "featuredReviews"}
             onToggleExpand={() =>
               setExpandedSection(
-                expandedSection === "featuredReviews" ? null : "featuredReviews"
+                expandedSection === "featuredReviews"
+                  ? null
+                  : "featuredReviews",
               )
             }
           >

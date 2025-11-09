@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import type { CartItem } from '@/types';
+import { apiService } from "./api.service";
+import type { CartItem } from "@/types";
 
 interface AddToCartData {
   productId: string;
@@ -37,16 +37,19 @@ interface CartSummary {
 class CartService {
   // Get user cart
   async get(): Promise<CartSummary> {
-    return apiService.get<CartSummary>('/cart');
+    return apiService.get<CartSummary>("/cart");
   }
 
   // Add item to cart
   async addItem(data: AddToCartData): Promise<CartItem> {
-    return apiService.post<CartItem>('/cart', data);
+    return apiService.post<CartItem>("/cart", data);
   }
 
   // Update cart item quantity
-  async updateItem(itemId: string, data: UpdateCartItemData): Promise<CartItem> {
+  async updateItem(
+    itemId: string,
+    data: UpdateCartItemData,
+  ): Promise<CartItem> {
     return apiService.patch<CartItem>(`/cart/${itemId}`, data);
   }
 
@@ -57,27 +60,27 @@ class CartService {
 
   // Clear cart
   async clear(): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>('/cart');
+    return apiService.delete<{ message: string }>("/cart");
   }
 
   // Merge guest cart with user cart (on login)
   async mergeGuestCart(data: MergeGuestCartData): Promise<CartSummary> {
-    return apiService.post<CartSummary>('/cart/merge', data);
+    return apiService.post<CartSummary>("/cart/merge", data);
   }
 
   // Apply coupon to cart
   async applyCoupon(data: ApplyCouponData): Promise<CartSummary> {
-    return apiService.post<CartSummary>('/cart/coupon', data);
+    return apiService.post<CartSummary>("/cart/coupon", data);
   }
 
   // Remove coupon from cart
   async removeCoupon(): Promise<CartSummary> {
-    return apiService.delete<CartSummary>('/cart/coupon');
+    return apiService.delete<CartSummary>("/cart/coupon");
   }
 
   // Get cart item count
   async getItemCount(): Promise<{ count: number }> {
-    return apiService.get<{ count: number }>('/cart/count');
+    return apiService.get<{ count: number }>("/cart/count");
   }
 
   // Validate cart (check stock, prices)
@@ -89,15 +92,15 @@ class CartService {
       error: string;
     }>;
   }> {
-    return apiService.get('/cart/validate');
+    return apiService.get("/cart/validate");
   }
 
   // Local storage helpers for guest cart
-  private readonly GUEST_CART_KEY = 'guest_cart';
+  private readonly GUEST_CART_KEY = "guest_cart";
 
   getGuestCart(): CartItem[] {
-    if (typeof window === 'undefined') return [];
-    
+    if (typeof window === "undefined") return [];
+
     try {
       const cart = localStorage.getItem(this.GUEST_CART_KEY);
       return cart ? JSON.parse(cart) : [];
@@ -107,17 +110,17 @@ class CartService {
   }
 
   setGuestCart(items: CartItem[]): void {
-    if (typeof window === 'undefined') return;
-    
+    if (typeof window === "undefined") return;
+
     localStorage.setItem(this.GUEST_CART_KEY, JSON.stringify(items));
   }
 
-  addToGuestCart(item: Omit<CartItem, 'id' | 'addedAt'>): void {
+  addToGuestCart(item: Omit<CartItem, "id" | "addedAt">): void {
     const cart = this.getGuestCart();
-    
+
     // Check if item already exists
     const existingIndex = cart.findIndex(
-      i => i.productId === item.productId && i.variant === item.variant
+      (i) => i.productId === item.productId && i.variant === item.variant,
     );
 
     if (existingIndex >= 0) {
@@ -146,7 +149,7 @@ class CartService {
     quantity: number;
     variant?: string;
   }): void {
-    const cartItem: Omit<CartItem, 'id' | 'addedAt'> = {
+    const cartItem: Omit<CartItem, "id" | "addedAt"> = {
       productId: product.productId,
       productName: product.name,
       productImage: product.image,
@@ -162,8 +165,8 @@ class CartService {
 
   updateGuestCartItem(itemId: string, quantity: number): void {
     const cart = this.getGuestCart();
-    const index = cart.findIndex(i => i.id === itemId);
-    
+    const index = cart.findIndex((i) => i.id === itemId);
+
     if (index >= 0) {
       if (quantity <= 0) {
         cart.splice(index, 1);
@@ -176,12 +179,12 @@ class CartService {
 
   removeFromGuestCart(itemId: string): void {
     const cart = this.getGuestCart();
-    const filtered = cart.filter(i => i.id !== itemId);
+    const filtered = cart.filter((i) => i.id !== itemId);
     this.setGuestCart(filtered);
   }
 
   clearGuestCart(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     localStorage.removeItem(this.GUEST_CART_KEY);
   }
 

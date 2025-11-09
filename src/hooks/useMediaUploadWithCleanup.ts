@@ -1,16 +1,16 @@
 /**
  * useMediaUploadWithCleanup Hook
- * 
+ *
  * Hook for media uploads with automatic cleanup on resource creation failure.
  * Tracks uploaded media URLs and provides cleanup functionality if the parent
  * resource (product, shop, hero slide, etc.) fails to create.
- * 
+ *
  * Also prevents navigation when unsaved media exists.
  */
 
-import { useState, useCallback, useRef } from 'react';
-import { mediaService } from '@/services/media.service';
-import { useNavigationGuard } from './useNavigationGuard';
+import { useState, useCallback, useRef } from "react";
+import { mediaService } from "@/services/media.service";
+import { useNavigationGuard } from "./useNavigationGuard";
 
 export interface UploadedMedia {
   url: string;
@@ -34,13 +34,15 @@ export interface MediaUploadWithCleanupOptions {
   navigationGuardMessage?: string;
 }
 
-export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions = {}) {
-  const { 
-    onUploadSuccess, 
-    onUploadError, 
+export function useMediaUploadWithCleanup(
+  options: MediaUploadWithCleanupOptions = {},
+) {
+  const {
+    onUploadSuccess,
+    onUploadError,
     onCleanupComplete,
     enableNavigationGuard = true,
-    navigationGuardMessage = 'You have uploaded media that will be deleted if you leave. Are you sure you want to leave?'
+    navigationGuardMessage = "You have uploaded media that will be deleted if you leave. Are you sure you want to leave?",
   } = options;
 
   const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
@@ -57,8 +59,15 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
   const uploadMedia = useCallback(
     async (
       file: File,
-      context: 'product' | 'shop' | 'auction' | 'review' | 'return' | 'avatar' | 'category',
-      contextId?: string
+      context:
+        | "product"
+        | "shop"
+        | "auction"
+        | "review"
+        | "return"
+        | "avatar"
+        | "category",
+      contextId?: string,
     ): Promise<string> => {
       setIsUploading(true);
 
@@ -81,14 +90,15 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
 
         return result.url;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        const errorMessage =
+          error instanceof Error ? error.message : "Upload failed";
         onUploadError?.(errorMessage);
         throw error;
       } finally {
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError]
+    [onUploadSuccess, onUploadError],
   );
 
   /**
@@ -97,14 +107,21 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
   const uploadMultipleMedia = useCallback(
     async (
       files: File[],
-      context: 'product' | 'shop' | 'auction' | 'review' | 'return' | 'avatar' | 'category',
-      contextId?: string
+      context:
+        | "product"
+        | "shop"
+        | "auction"
+        | "review"
+        | "return"
+        | "avatar"
+        | "category",
+      contextId?: string,
     ): Promise<string[]> => {
       setIsUploading(true);
 
       try {
         const uploadPromises = files.map((file) =>
-          mediaService.upload({ file, context, contextId })
+          mediaService.upload({ file, context, contextId }),
         );
 
         const results = await Promise.all(uploadPromises);
@@ -124,14 +141,15 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
 
         return results.map((r) => r.url);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        const errorMessage =
+          error instanceof Error ? error.message : "Upload failed";
         onUploadError?.(errorMessage);
         throw error;
       } finally {
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError]
+    [onUploadSuccess, onUploadError],
   );
 
   /**
@@ -139,7 +157,7 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
    */
   const cleanupUploadedMedia = useCallback(async (): Promise<void> => {
     const mediaToCleanup = uploadedMediaRef.current;
-    
+
     if (mediaToCleanup.length === 0) {
       return;
     }
@@ -152,7 +170,7 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
         mediaService.deleteByUrl(media.url).catch((error) => {
           console.error(`Failed to delete ${media.url}:`, error);
           // Don't throw, continue with other deletions
-        })
+        }),
       );
 
       await Promise.allSettled(deletePromises);
@@ -163,7 +181,7 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
 
       onCleanupComplete?.();
     } catch (error) {
-      console.error('Cleanup error:', error);
+      console.error("Cleanup error:", error);
     } finally {
       setIsCleaning(false);
     }
@@ -226,7 +244,7 @@ export function useMediaUploadWithCleanup(options: MediaUploadWithCleanupOptions
 
     // Utilities
     getUploadedUrls,
-    
+
     // Navigation guard
     confirmNavigation,
   };

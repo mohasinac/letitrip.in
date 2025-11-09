@@ -91,7 +91,7 @@ export default function HeroSlideFormWithCleanup({
     try {
       setLoading(true);
       const data = (await apiService.get(
-        `/admin/hero-slides/${params.id}`
+        `/admin/hero-slides/${params.id}`,
       )) as HeroSlide;
       setFormData(data);
     } catch (error) {
@@ -161,7 +161,7 @@ export default function HeroSlideFormWithCleanup({
       alert(
         `Failed to ${mode === "create" ? "create" : "update"} slide. ${
           hasUploadedMedia ? "Uploaded image has been deleted." : ""
-        }`
+        }`,
       );
     } finally {
       setSaving(false);
@@ -378,8 +378,8 @@ export default function HeroSlideFormWithCleanup({
             {saving
               ? "Saving..."
               : mode === "create"
-              ? "Create Slide"
-              : "Save Changes"}
+                ? "Create Slide"
+                : "Save Changes"}
           </button>
 
           <button

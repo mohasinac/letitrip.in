@@ -31,7 +31,7 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
 
   const updateFilter = <K extends keyof AuctionFilterValues>(
     key: K,
-    value: AuctionFilterValues[K]
+    value: AuctionFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -122,7 +122,7 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "bidMin",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -137,7 +137,7 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "bidMax",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

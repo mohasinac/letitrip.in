@@ -18,7 +18,7 @@ export default function MediaEditorModal({
 }: MediaEditorModalProps) {
   const handleVideoThumbnailSelect = (
     thumbnailDataUrl: string,
-    timestamp: number
+    timestamp: number,
   ) => {
     const updatedMedia: MediaFile = {
       ...media,

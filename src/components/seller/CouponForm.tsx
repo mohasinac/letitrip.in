@@ -100,7 +100,7 @@ export default function CouponForm({
       const response = await fetch(
         `/api/coupons/validate-code?code=${encodeURIComponent(code)}&shop_id=${
           formData.shopId
-        }`
+        }`,
       );
       const data = await response.json();
 

@@ -15,12 +15,12 @@
  * All operations go through API routes (following architecture pattern)
  */
 
-import { apiService } from './api.service';
+import { apiService } from "./api.service";
 
 export interface StaticAsset {
   id: string;
   name: string;
-  type: 'payment-logo' | 'icon' | 'image' | 'document';
+  type: "payment-logo" | "icon" | "image" | "document";
   url: string;
   storagePath: string;
   category?: string;
@@ -38,21 +38,23 @@ export interface AssetUploadResult {
 }
 
 class StaticAssetsService {
-  private readonly BASE_PATH = '/admin/static-assets';
+  private readonly BASE_PATH = "/admin/static-assets";
 
   /**
    * Get all static assets with optional filters
    */
   async getAssets(filters?: {
-    type?: StaticAsset['type'];
+    type?: StaticAsset["type"];
     category?: string;
   }): Promise<StaticAsset[]> {
     const params = new URLSearchParams();
-    if (filters?.type) params.append('type', filters.type);
-    if (filters?.category) params.append('category', filters.category);
+    if (filters?.type) params.append("type", filters.type);
+    if (filters?.category) params.append("category", filters.category);
 
     const queryString = params.toString();
-    const endpoint = queryString ? `${this.BASE_PATH}?${queryString}` : this.BASE_PATH;
+    const endpoint = queryString
+      ? `${this.BASE_PATH}?${queryString}`
+      : this.BASE_PATH;
 
     const response = await apiService.get<{ assets: StaticAsset[] }>(endpoint);
     return response.assets || [];
@@ -61,7 +63,7 @@ class StaticAssetsService {
   /**
    * Get assets by type
    */
-  async getAssetsByType(type: StaticAsset['type']): Promise<StaticAsset[]> {
+  async getAssetsByType(type: StaticAsset["type"]): Promise<StaticAsset[]> {
     return this.getAssets({ type });
   }
 
@@ -76,7 +78,9 @@ class StaticAssetsService {
    * Get single asset
    */
   async getAsset(id: string): Promise<StaticAsset> {
-    const response = await apiService.get<{ asset: StaticAsset }>(`${this.BASE_PATH}/${id}`);
+    const response = await apiService.get<{ asset: StaticAsset }>(
+      `${this.BASE_PATH}/${id}`,
+    );
     return response.asset;
   }
 
@@ -86,7 +90,7 @@ class StaticAssetsService {
   async requestUploadUrl(data: {
     fileName: string;
     contentType: string;
-    type: StaticAsset['type'];
+    type: StaticAsset["type"];
     category?: string;
   }): Promise<{ uploadUrl: string; assetId: string; storagePath: string }> {
     return apiService.post<{
@@ -101,8 +105,8 @@ class StaticAssetsService {
    */
   async uploadAsset(
     file: File,
-    type: StaticAsset['type'],
-    category?: string
+    type: StaticAsset["type"],
+    category?: string,
   ): Promise<AssetUploadResult> {
     try {
       // Step 1: Request upload URL from server
@@ -115,27 +119,30 @@ class StaticAssetsService {
 
       // Step 2: Upload directly to Firebase Storage
       const uploadResponse = await fetch(uploadUrl, {
-        method: 'PUT',
+        method: "PUT",
         body: file,
         headers: {
-          'Content-Type': file.type,
+          "Content-Type": file.type,
         },
       });
 
       if (!uploadResponse.ok) {
-        throw new Error('Upload to storage failed');
+        throw new Error("Upload to storage failed");
       }
 
       // Step 3: Notify server that upload completed
-      const asset = await apiService.post<StaticAsset>(`${this.BASE_PATH}/confirm-upload`, {
-        assetId,
-        name: file.name,
-        type,
-        storagePath,
-        category,
-        size: file.size,
-        contentType: file.type,
-      });
+      const asset = await apiService.post<StaticAsset>(
+        `${this.BASE_PATH}/confirm-upload`,
+        {
+          assetId,
+          name: file.name,
+          type,
+          storagePath,
+          category,
+          size: file.size,
+          contentType: file.type,
+        },
+      );
 
       return {
         asset,
@@ -145,7 +152,7 @@ class StaticAssetsService {
       return {
         asset: {} as StaticAsset,
         success: false,
-        error: error.message || 'Upload failed',
+        error: error.message || "Upload failed",
       };
     }
   }
@@ -153,10 +160,13 @@ class StaticAssetsService {
   /**
    * Update asset metadata
    */
-  async updateAsset(id: string, updates: Partial<StaticAsset>): Promise<StaticAsset> {
+  async updateAsset(
+    id: string,
+    updates: Partial<StaticAsset>,
+  ): Promise<StaticAsset> {
     const response = await apiService.patch<{ asset: StaticAsset }>(
       `${this.BASE_PATH}/${id}`,
-      updates
+      updates,
     );
     return response.asset;
   }
@@ -173,11 +183,11 @@ class StaticAssetsService {
    */
   async getPaymentLogoUrl(paymentId: string): Promise<string | null> {
     try {
-      const logos = await this.getAssetsByType('payment-logo');
-      const logo = logos.find(l => l.metadata?.paymentId === paymentId);
+      const logos = await this.getAssetsByType("payment-logo");
+      const logo = logos.find((l) => l.metadata?.paymentId === paymentId);
       return logo ? logo.url : null;
     } catch (error) {
-      console.error('Error fetching payment logo:', error);
+      console.error("Error fetching payment logo:", error);
       return null;
     }
   }

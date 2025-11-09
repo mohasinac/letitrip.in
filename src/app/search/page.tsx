@@ -29,7 +29,7 @@ export default function SearchPage() {
     try {
       setLoading(true);
       const data = await apiService.get(
-        `/api/search?q=${encodeURIComponent(searchQuery)}&type=${type}&limit=50`
+        `/api/search?q=${encodeURIComponent(searchQuery)}&type=${type}&limit=50`,
       );
       setResults(data);
     } catch (error) {

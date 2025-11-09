@@ -1,24 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
-import { requireRole, getShopIdFromRequest, handleAuthError } from "@/app/api/lib/auth-helpers";
+import {
+  requireRole,
+  getShopIdFromRequest,
+  handleAuthError,
+} from "@/app/api/lib/auth-helpers";
 
 /**
  * GET /api/seller/dashboard
  * Get seller dashboard statistics
- * 
+ *
  * Query params:
  * - shop_id (optional - will use user's primary shop if not provided)
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = await requireRole(req, ['seller', 'admin']);
+    const user = await requireRole(req, ["seller", "admin"]);
     const shopId = await getShopIdFromRequest(req, user);
 
     if (!shopId) {
       return NextResponse.json(
         { error: "No shop found. Please create a shop first." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -28,21 +32,24 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-    
+
     // Get current month date range
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const firstDayOfLastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      1,
+    );
 
     // Get shops stats (only for the specified shop)
     const shopDoc = await db.collection(COLLECTIONS.SHOPS).doc(shopId).get();
-    const shopData: any = shopDoc.exists ? { id: shopDoc.id, ...shopDoc.data() } : null;
+    const shopData: any = shopDoc.exists
+      ? { id: shopDoc.id, ...shopDoc.data() }
+      : null;
 
     if (!shopData) {
-      return NextResponse.json(
-        { error: "Shop not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Shop not found" }, { status: 404 });
     }
 
     // Count products
@@ -50,15 +57,23 @@ export async function GET(req: NextRequest) {
       .collection(COLLECTIONS.PRODUCTS)
       .where("shop_id", "==", shopId);
     const productsSnapshot = await productsQuery.get();
-    const allProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const activeProducts = allProducts.filter((p: any) => p.status === "active").length;
+    const allProducts = productsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    const activeProducts = allProducts.filter(
+      (p: any) => p.status === "active",
+    ).length;
 
     // Count orders and calculate revenue
     const ordersQuery = db
       .collection(COLLECTIONS.ORDERS)
       .where("shop_id", "==", shopId);
     const ordersSnapshot = await ordersQuery.get();
-    const allOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allOrders = ordersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     // Current month orders
     const currentMonthOrders = allOrders.filter((order: any) => {
@@ -73,16 +88,24 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate revenues
-    const currentMonthRevenue = currentMonthOrders.reduce((sum: number, order: any) => {
-      return sum + (order.total_amount || 0);
-    }, 0);
+    const currentMonthRevenue = currentMonthOrders.reduce(
+      (sum: number, order: any) => {
+        return sum + (order.total_amount || 0);
+      },
+      0,
+    );
 
-    const lastMonthRevenue = lastMonthOrders.reduce((sum: number, order: any) => {
-      return sum + (order.total_amount || 0);
-    }, 0);
+    const lastMonthRevenue = lastMonthOrders.reduce(
+      (sum: number, order: any) => {
+        return sum + (order.total_amount || 0);
+      },
+      0,
+    );
 
     // Order counts by status
-    const pendingOrders = allOrders.filter((o: any) => o.status === "pending").length;
+    const pendingOrders = allOrders.filter(
+      (o: any) => o.status === "pending",
+    ).length;
     const totalOrders = allOrders.length;
 
     // Get recent orders (last 5)
@@ -107,24 +130,33 @@ export async function GET(req: NextRequest) {
       .collection(COLLECTIONS.ORDER_ITEMS)
       .where("shop_id", "==", shopId);
     const orderItemsSnapshot = await orderItemsQuery.get();
-    const orderItems = orderItemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const orderItems = orderItemsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     // Aggregate by product
-    const productStats = new Map<string, { name: string; sales: number; revenue: number; views: number }>();
-    
+    const productStats = new Map<
+      string,
+      { name: string; sales: number; revenue: number; views: number }
+    >();
+
     for (const item of orderItems) {
       const itemData = item as any;
       const productId = itemData.product_id;
       const existing = productStats.get(productId);
-      
+
       if (existing) {
         existing.sales += itemData.quantity || 1;
         existing.revenue += (itemData.price || 0) * (itemData.quantity || 1);
       } else {
         // Get product name
-        const productDoc = await db.collection(COLLECTIONS.PRODUCTS).doc(productId).get();
+        const productDoc = await db
+          .collection(COLLECTIONS.PRODUCTS)
+          .doc(productId)
+          .get();
         const productData = productDoc.data();
-        
+
         productStats.set(productId, {
           name: productData?.name || "Unknown Product",
           sales: itemData.quantity || 1,
@@ -165,16 +197,22 @@ export async function GET(req: NextRequest) {
       shopPerformance: {
         averageRating: shopData.rating || 0,
         totalRatings: shopData.total_ratings || 0,
-        orderFulfillment: totalOrders > 0 
-          ? Math.round((allOrders.filter((o: any) => o.status === "delivered").length / totalOrders) * 100)
-          : 0,
+        orderFulfillment:
+          totalOrders > 0
+            ? Math.round(
+                (allOrders.filter((o: any) => o.status === "delivered").length /
+                  totalOrders) *
+                  100,
+              )
+            : 0,
         responseTime: "2.5 hours", // TODO: Calculate from actual data
       },
       alerts: {
-        lowStock: allProducts.filter((p: any) => 
-          p.stock_quantity !== undefined && p.stock_quantity < 5
+        lowStock: allProducts.filter(
+          (p: any) => p.stock_quantity !== undefined && p.stock_quantity < 5,
         ).length,
-        pendingShipment: allOrders.filter((o: any) => o.status === "confirmed").length,
+        pendingShipment: allOrders.filter((o: any) => o.status === "confirmed")
+          .length,
         newReviews: 0, // TODO: Get from reviews collection
       },
     };

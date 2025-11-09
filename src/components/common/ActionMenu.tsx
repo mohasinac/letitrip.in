@@ -60,12 +60,9 @@ export function ActionMenu({
   };
 
   const variantStyles = {
-    default:
-      "text-gray-700 hover:bg-gray-100:bg-gray-700",
-    danger:
-      "text-red-600 hover:bg-red-50:bg-red-900/20",
-    success:
-      "text-green-600 hover:bg-green-50:bg-green-900/20",
+    default: "text-gray-700 hover:bg-gray-100:bg-gray-700",
+    danger: "text-red-600 hover:bg-red-50:bg-red-900/20",
+    success: "text-green-600 hover:bg-green-50:bg-green-900/20",
   };
 
   return (

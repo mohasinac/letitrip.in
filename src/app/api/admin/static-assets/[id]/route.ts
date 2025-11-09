@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import {
   listAssets,
   updateAssetMetadata,
   deleteAsset,
-} from '@/app/api/lib/static-assets-server.service';
+} from "@/app/api/lib/static-assets-server.service";
 
 // GET /api/admin/static-assets/[id] - Get single asset
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -19,8 +19,8 @@ export async function GET(
 
     if (!asset) {
       return NextResponse.json(
-        { success: false, error: 'Asset not found' },
-        { status: 404 }
+        { success: false, error: "Asset not found" },
+        { status: 404 },
       );
     }
 
@@ -29,10 +29,10 @@ export async function GET(
       asset,
     });
   } catch (error) {
-    console.error('Error fetching asset:', error);
+    console.error("Error fetching asset:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch asset' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch asset" },
+      { status: 500 },
     );
   }
 }
@@ -40,7 +40,7 @@ export async function GET(
 // PATCH /api/admin/static-assets/[id] - Update asset metadata
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -59,10 +59,10 @@ export async function PATCH(
       asset,
     });
   } catch (error) {
-    console.error('Error updating asset:', error);
+    console.error("Error updating asset:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update asset' },
-      { status: 500 }
+      { success: false, error: "Failed to update asset" },
+      { status: 500 },
     );
   }
 }
@@ -70,7 +70,7 @@ export async function PATCH(
 // DELETE /api/admin/static-assets/[id] - Delete asset
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -79,13 +79,13 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Asset deleted successfully',
+      message: "Asset deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting asset:', error);
+    console.error("Error deleting asset:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete asset' },
-      { status: 500 }
+      { success: false, error: "Failed to delete asset" },
+      { status: 500 },
     );
   }
 }

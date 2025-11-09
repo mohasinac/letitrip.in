@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 /**
  * Hook for managing filter state with URL synchronization
@@ -20,7 +20,7 @@ export function useFilters<T extends Record<string, any>>(
     syncWithUrl?: boolean;
     /** Callback when filters change */
     onChange?: (filters: T) => void;
-  } = {}
+  } = {},
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -28,7 +28,7 @@ export function useFilters<T extends Record<string, any>>(
 
   const {
     persist = false,
-    storageKey = 'filters',
+    storageKey = "filters",
     syncWithUrl = true,
     onChange,
   } = options;
@@ -53,14 +53,14 @@ export function useFilters<T extends Record<string, any>>(
     }
 
     // Then try localStorage if persist is enabled
-    if (persist && typeof window !== 'undefined') {
+    if (persist && typeof window !== "undefined") {
       try {
         const stored = localStorage.getItem(storageKey);
         if (stored) {
           return { ...initialFilters, ...JSON.parse(stored) };
         }
       } catch (error) {
-        console.error('Failed to load filters from localStorage:', error);
+        console.error("Failed to load filters from localStorage:", error);
       }
     }
 
@@ -77,7 +77,7 @@ export function useFilters<T extends Record<string, any>>(
 
       const params = new URLSearchParams();
       Object.entries(newFilters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
+        if (value !== undefined && value !== null && value !== "") {
           if (Array.isArray(value) && value.length === 0) return;
           params.set(key, JSON.stringify(value));
         }
@@ -88,21 +88,21 @@ export function useFilters<T extends Record<string, any>>(
         : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [syncWithUrl, pathname, router]
+    [syncWithUrl, pathname, router],
   );
 
   // Persist filters to localStorage
   const persistFilters = useCallback(
     (newFilters: T) => {
-      if (!persist || typeof window === 'undefined') return;
+      if (!persist || typeof window === "undefined") return;
 
       try {
         localStorage.setItem(storageKey, JSON.stringify(newFilters));
       } catch (error) {
-        console.error('Failed to persist filters to localStorage:', error);
+        console.error("Failed to persist filters to localStorage:", error);
       }
     },
-    [persist, storageKey]
+    [persist, storageKey],
   );
 
   // Update filters (without applying)
@@ -134,13 +134,13 @@ export function useFilters<T extends Record<string, any>>(
       delete newFilters[key];
       setFilters(newFilters);
     },
-    [filters]
+    [filters],
   );
 
   // Check if filters are active
   const hasActiveFilters = Object.keys(appliedFilters).some((key) => {
     const value = appliedFilters[key];
-    if (value === undefined || value === null || value === '') return false;
+    if (value === undefined || value === null || value === "") return false;
     if (Array.isArray(value)) return value.length > 0;
     return true;
   });
@@ -148,7 +148,7 @@ export function useFilters<T extends Record<string, any>>(
   // Count active filters
   const activeFilterCount = Object.keys(appliedFilters).filter((key) => {
     const value = appliedFilters[key];
-    if (value === undefined || value === null || value === '') return false;
+    if (value === undefined || value === null || value === "") return false;
     if (Array.isArray(value)) return value.length > 0;
     return true;
   }).length;

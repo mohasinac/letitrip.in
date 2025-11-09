@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
-const COLLECTION = 'blog_posts';
+const COLLECTION = "blog_posts";
 
 // GET /api/blog - List blog posts with filters
 export async function GET(req: NextRequest) {
@@ -9,24 +9,24 @@ export async function GET(req: NextRequest) {
     const db = getFirestoreAdmin();
     const { searchParams } = new URL(req.url);
 
-    const status = searchParams.get('status') || 'published';
-    const category = searchParams.get('category');
-    const showOnHomepage = searchParams.get('showOnHomepage');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const page = parseInt(searchParams.get('page') || '1');
+    const status = searchParams.get("status") || "published";
+    const category = searchParams.get("category");
+    const showOnHomepage = searchParams.get("showOnHomepage");
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const page = parseInt(searchParams.get("page") || "1");
 
-    let query = db.collection(COLLECTION).where('status', '==', status);
+    let query = db.collection(COLLECTION).where("status", "==", status);
 
     if (category) {
-      query = query.where('category', '==', category) as any;
+      query = query.where("category", "==", category) as any;
     }
 
-    if (showOnHomepage === 'true') {
-      query = query.where('showOnHomepage', '==', true) as any;
+    if (showOnHomepage === "true") {
+      query = query.where("showOnHomepage", "==", true) as any;
     }
 
     // Order by published date
-    query = query.orderBy('publishedAt', 'desc') as any;
+    query = query.orderBy("publishedAt", "desc") as any;
 
     // Pagination
     const offset = (page - 1) * limit;
@@ -34,18 +34,18 @@ export async function GET(req: NextRequest) {
 
     const snapshot = await query.get();
 
-    const posts = snapshot.docs.map(doc => ({
+    const posts = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
     // Get total count (for pagination)
-    let countQuery = db.collection(COLLECTION).where('status', '==', status);
+    let countQuery = db.collection(COLLECTION).where("status", "==", status);
     if (category) {
-      countQuery = countQuery.where('category', '==', category) as any;
+      countQuery = countQuery.where("category", "==", category) as any;
     }
-    if (showOnHomepage === 'true') {
-      countQuery = countQuery.where('showOnHomepage', '==', true) as any;
+    if (showOnHomepage === "true") {
+      countQuery = countQuery.where("showOnHomepage", "==", true) as any;
     }
     const countSnapshot = await countQuery.count().get();
     const total = countSnapshot.data().count;
@@ -60,10 +60,10 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
+    console.error("Error fetching blog posts:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch blog posts' },
-      { status: 500 }
+      { error: "Failed to fetch blog posts" },
+      { status: 500 },
     );
   }
 }
@@ -90,22 +90,22 @@ export async function POST(req: NextRequest) {
 
     if (!title || !slug || !content) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, slug, content' },
-        { status: 400 }
+        { error: "Missing required fields: title, slug, content" },
+        { status: 400 },
       );
     }
 
     // Check if slug already exists
     const existingSlug = await db
       .collection(COLLECTION)
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (!existingSlug.empty) {
       return NextResponse.json(
-        { error: 'A blog post with this slug already exists' },
-        { status: 400 }
+        { error: "A blog post with this slug already exists" },
+        { status: 400 },
       );
     }
 
@@ -113,18 +113,18 @@ export async function POST(req: NextRequest) {
     const post = {
       title,
       slug,
-      excerpt: excerpt || '',
+      excerpt: excerpt || "",
       content,
       featuredImage: featuredImage || null,
-      author: author || { name: 'Admin', id: 'admin' },
-      category: category || 'Uncategorized',
+      author: author || { name: "Admin", id: "admin" },
+      category: category || "Uncategorized",
       tags: tags || [],
-      status: status || 'draft',
+      status: status || "draft",
       showOnHomepage: showOnHomepage || false,
       isFeatured: isFeatured || false,
       views: 0,
       likes: 0,
-      publishedAt: status === 'published' ? now : null,
+      publishedAt: status === "published" ? now : null,
       createdAt: now,
       updatedAt: now,
     };
@@ -136,10 +136,10 @@ export async function POST(req: NextRequest) {
       ...post,
     });
   } catch (error) {
-    console.error('Error creating blog post:', error);
+    console.error("Error creating blog post:", error);
     return NextResponse.json(
-      { error: 'Failed to create blog post' },
-      { status: 500 }
+      { error: "Failed to create blog post" },
+      { status: 500 },
     );
   }
 }

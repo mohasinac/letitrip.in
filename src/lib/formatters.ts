@@ -1,6 +1,6 @@
 /**
  * Formatting Utilities
- * 
+ *
  * Provides consistent formatting for currency, dates, numbers, etc.
  * Used throughout the application for display purposes
  */
@@ -14,17 +14,13 @@ export function formatCurrency(
     showDecimals?: boolean;
     showSymbol?: boolean;
     locale?: string;
-  } = {}
+  } = {},
 ): string {
-  const {
-    showDecimals = true,
-    showSymbol = true,
-    locale = 'en-IN',
-  } = options;
+  const { showDecimals = true, showSymbol = true, locale = "en-IN" } = options;
 
   const formatted = new Intl.NumberFormat(locale, {
-    style: showSymbol ? 'currency' : 'decimal',
-    currency: 'INR',
+    style: showSymbol ? "currency" : "decimal",
+    currency: "INR",
     minimumFractionDigits: showDecimals ? 2 : 0,
     maximumFractionDigits: showDecimals ? 2 : 0,
   }).format(amount);
@@ -55,27 +51,24 @@ export function formatCompactCurrency(amount: number): string {
 export function formatDate(
   date: Date | string | number,
   options: {
-    format?: 'short' | 'medium' | 'long' | 'full';
+    format?: "short" | "medium" | "long" | "full";
     includeTime?: boolean;
     locale?: string;
-  } = {}
+  } = {},
 ): string {
-  const {
-    format = 'medium',
-    includeTime = false,
-    locale = 'en-IN',
-  } = options;
+  const { format = "medium", includeTime = false, locale = "en-IN" } = options;
 
-  const dateObj = typeof date === 'string' || typeof date === 'number' 
-    ? new Date(date) 
-    : date;
+  const dateObj =
+    typeof date === "string" || typeof date === "number"
+      ? new Date(date)
+      : date;
 
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
     dateStyle: format,
   };
 
   if (includeTime) {
-    dateFormatOptions.timeStyle = format === 'short' ? 'short' : 'medium';
+    dateFormatOptions.timeStyle = format === "short" ? "short" : "medium";
   }
 
   return new Intl.DateTimeFormat(locale, dateFormatOptions).format(dateObj);
@@ -88,31 +81,29 @@ export function formatRelativeTime(
   date: Date | string | number,
   options: {
     locale?: string;
-    style?: 'long' | 'short' | 'narrow';
-  } = {}
+    style?: "long" | "short" | "narrow";
+  } = {},
 ): string {
-  const {
-    locale = 'en-IN',
-    style = 'long',
-  } = options;
+  const { locale = "en-IN", style = "long" } = options;
 
-  const dateObj = typeof date === 'string' || typeof date === 'number' 
-    ? new Date(date) 
-    : date;
+  const dateObj =
+    typeof date === "string" || typeof date === "number"
+      ? new Date(date)
+      : date;
 
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
 
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style });
 
   const intervals: [Intl.RelativeTimeFormatUnit, number][] = [
-    ['year', 31536000],
-    ['month', 2592000],
-    ['week', 604800],
-    ['day', 86400],
-    ['hour', 3600],
-    ['minute', 60],
-    ['second', 1],
+    ["year", 31536000],
+    ["month", 2592000],
+    ["week", 604800],
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+    ["second", 1],
   ];
 
   for (const [unit, secondsInUnit] of intervals) {
@@ -122,7 +113,7 @@ export function formatRelativeTime(
     }
   }
 
-  return rtf.format(0, 'second');
+  return rtf.format(0, "second");
 }
 
 /**
@@ -134,10 +125,10 @@ export function formatNumber(
     locale?: string;
     minimumFractionDigits?: number;
     maximumFractionDigits?: number;
-  } = {}
+  } = {},
 ): string {
   const {
-    locale = 'en-IN',
+    locale = "en-IN",
     minimumFractionDigits = 0,
     maximumFractionDigits = 2,
   } = options;
@@ -151,10 +142,13 @@ export function formatNumber(
 /**
  * Format compact number (1K, 1M, 1B)
  */
-export function formatCompactNumber(num: number, locale: string = 'en-IN'): string {
+export function formatCompactNumber(
+  num: number,
+  locale: string = "en-IN",
+): string {
   return new Intl.NumberFormat(locale, {
-    notation: 'compact',
-    compactDisplay: 'short',
+    notation: "compact",
+    compactDisplay: "short",
   }).format(num);
 }
 
@@ -166,10 +160,10 @@ export function formatPercentage(
   options: {
     decimals?: number;
     showSign?: boolean;
-  } = {}
+  } = {},
 ): string {
   const { decimals = 0, showSign = false } = options;
-  const sign = showSign && value > 0 ? '+' : '';
+  const sign = showSign && value > 0 ? "+" : "";
   return `${sign}${value.toFixed(decimals)}%`;
 }
 
@@ -178,15 +172,15 @@ export function formatPercentage(
  */
 export function formatPhoneNumber(phone: string): string {
   // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-  
+  const cleaned = phone.replace(/\D/g, "");
+
   // Indian mobile number format: +91 XXXXX XXXXX
   if (cleaned.length === 10) {
     return `+91 ${cleaned.slice(0, 5)} ${cleaned.slice(5)}`;
-  } else if (cleaned.length === 12 && cleaned.startsWith('91')) {
+  } else if (cleaned.length === 12 && cleaned.startsWith("91")) {
     return `+91 ${cleaned.slice(2, 7)} ${cleaned.slice(7)}`;
   }
-  
+
   return phone;
 }
 
@@ -194,7 +188,7 @@ export function formatPhoneNumber(phone: string): string {
  * Format file size
  */
 export function formatFileSize(bytes: number): string {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const units = ["B", "KB", "MB", "GB", "TB"];
   let size = bytes;
   let unitIndex = 0;
 
@@ -219,7 +213,7 @@ export function formatDuration(seconds: number): string {
   if (minutes > 0) parts.push(`${minutes}m`);
   if (secs > 0 || parts.length === 0) parts.push(`${secs}s`);
 
-  return parts.join(' ');
+  return parts.join(" ");
 }
 
 /**
@@ -248,7 +242,7 @@ export function formatSKU(sku: string): string {
  */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength - 3) + '...';
+  return text.slice(0, maxLength - 3) + "...";
 }
 
 /**
@@ -256,15 +250,18 @@ export function truncateText(text: string, maxLength: number): string {
  */
 export function slugToTitle(slug: string): string {
   return slug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**
  * Format discount percentage
  */
-export function formatDiscount(originalPrice: number, currentPrice: number): string {
+export function formatDiscount(
+  originalPrice: number,
+  currentPrice: number,
+): string {
   const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
   return formatPercentage(discount, { decimals: 0 });
 }
@@ -280,8 +277,8 @@ export function formatRating(rating: number, maxRating: number = 5): string {
  * Format review count (e.g., "1.2K reviews")
  */
 export function formatReviewCount(count: number): string {
-  if (count === 0) return 'No reviews';
-  if (count === 1) return '1 review';
+  if (count === 0) return "No reviews";
+  if (count === 1) return "1 review";
   return `${formatCompactNumber(count)} reviews`;
 }
 
@@ -289,23 +286,25 @@ export function formatReviewCount(count: number): string {
  * Format stock status
  */
 export function formatStockStatus(stock: number): string {
-  if (stock === 0) return 'Out of Stock';
+  if (stock === 0) return "Out of Stock";
   if (stock <= 5) return `Only ${stock} left`;
-  return 'In Stock';
+  return "In Stock";
 }
 
 /**
  * Format auction time remaining
  */
 export function formatTimeRemaining(endTime: Date | string): string {
-  const end = typeof endTime === 'string' ? new Date(endTime) : endTime;
+  const end = typeof endTime === "string" ? new Date(endTime) : endTime;
   const now = new Date();
   const diffInMs = end.getTime() - now.getTime();
 
-  if (diffInMs <= 0) return 'Auction ended';
+  if (diffInMs <= 0) return "Auction ended";
 
   const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const hours = Math.floor(
+    (diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+  );
   const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
 
   if (days > 0) return `${days}d ${hours}h`;
@@ -330,18 +329,18 @@ export function formatAddress(address: {
     address.city,
     address.state,
     address.pincode,
-    address.country || 'India',
+    address.country || "India",
   ].filter(Boolean);
 
-  return parts.join(', ');
+  return parts.join(", ");
 }
 
 /**
  * Format card number (mask)
  */
 export function formatCardNumber(cardNumber: string): string {
-  const cleaned = cardNumber.replace(/\s/g, '');
-  const masked = '**** **** **** ' + cleaned.slice(-4);
+  const cleaned = cardNumber.replace(/\s/g, "");
+  const masked = "**** **** **** " + cleaned.slice(-4);
   return masked;
 }
 
@@ -357,15 +356,18 @@ export function formatUPI(upiId: string): string {
  */
 export function formatBankAccount(accountNumber: string): string {
   if (accountNumber.length <= 4) return accountNumber;
-  return '*'.repeat(accountNumber.length - 4) + accountNumber.slice(-4);
+  return "*".repeat(accountNumber.length - 4) + accountNumber.slice(-4);
 }
 
 /**
  * Format date range
  */
-export function formatDateRange(startDate: Date | string, endDate: Date | string): string {
-  const start = formatDate(startDate, { format: 'medium' });
-  const end = formatDate(endDate, { format: 'medium' });
+export function formatDateRange(
+  startDate: Date | string,
+  endDate: Date | string,
+): string {
+  const start = formatDate(startDate, { format: "medium" });
+  const end = formatDate(endDate, { format: "medium" });
   return `${start} - ${end}`;
 }
 
@@ -373,15 +375,18 @@ export function formatDateRange(startDate: Date | string, endDate: Date | string
  * Format boolean as Yes/No
  */
 export function formatBoolean(value: boolean): string {
-  return value ? 'Yes' : 'No';
+  return value ? "Yes" : "No";
 }
 
 /**
  * Format list with commas and "and"
  */
-export function formatList(items: string[], locale: string = 'en-IN'): string {
-  if (items.length === 0) return '';
+export function formatList(items: string[], locale: string = "en-IN"): string {
+  if (items.length === 0) return "";
   if (items.length === 1) return items[0];
-  
-  return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(items);
+
+  return new Intl.ListFormat(locale, {
+    style: "long",
+    type: "conjunction",
+  }).format(items);
 }

@@ -75,7 +75,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
     if (subcategorySearch.trim()) {
       const query = subcategorySearch.toLowerCase();
       filtered = filtered.filter((cat) =>
-        cat.name.toLowerCase().includes(query)
+        cat.name.toLowerCase().includes(query),
       );
     }
 
@@ -117,7 +117,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
       } else {
         // Load default breadcrumb (nearest parent path)
         const breadcrumbData = await categoriesService.getBreadcrumb(
-          categoryData.id
+          categoryData.id,
         );
         setBreadcrumb(breadcrumbData);
       }
@@ -151,8 +151,8 @@ export default function CategoryDetailPage({ params }: PageProps) {
           filters.stock === "in_stock"
             ? true
             : filters.stock === "out_of_stock"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         isFeatured: filters.featured,
         sortBy: sortBy as any,
         sortOrder,
@@ -188,7 +188,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {
@@ -229,7 +229,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
           setShowRightArrow(
             subcategoriesScrollRef.current.scrollLeft <
               subcategoriesScrollRef.current.scrollWidth -
-                subcategoriesScrollRef.current.clientWidth
+                subcategoriesScrollRef.current.clientWidth,
           );
         }
       }, 300);
@@ -659,7 +659,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
                     setShowLeftArrow(target.scrollLeft > 0);
                     setShowRightArrow(
                       target.scrollLeft <
-                        target.scrollWidth - target.clientWidth
+                        target.scrollWidth - target.clientWidth,
                     );
                   }}
                 >

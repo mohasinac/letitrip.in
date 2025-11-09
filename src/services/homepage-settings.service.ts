@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import { ADMIN_ROUTES } from '@/constants/api-routes';
+import { apiService } from "./api.service";
+import { ADMIN_ROUTES } from "@/constants/api-routes";
 
 export interface HomepageSettings {
   specialEventBanner: {
@@ -62,10 +62,13 @@ class HomepageSettingsService {
   }
 
   // Update homepage settings (admin only)
-  async updateSettings(settings: Partial<HomepageSettings>, userId?: string): Promise<HomepageSettings> {
+  async updateSettings(
+    settings: Partial<HomepageSettings>,
+    userId?: string,
+  ): Promise<HomepageSettings> {
     const response = await apiService.patch<{ settings: HomepageSettings }>(
       ADMIN_ROUTES.HOMEPAGE,
-      { settings, userId }
+      { settings, userId },
     );
     return response.settings;
   }
@@ -73,21 +76,24 @@ class HomepageSettingsService {
   // Reset to default settings (admin only)
   async resetSettings(): Promise<HomepageSettings> {
     const response = await apiService.post<{ settings: HomepageSettings }>(
-      ADMIN_ROUTES.HOMEPAGE_RESET
+      ADMIN_ROUTES.HOMEPAGE_RESET,
     );
     return response.settings;
   }
 
   // Toggle a section on/off (admin only)
-  async toggleSection(sectionKey: string, enabled: boolean): Promise<HomepageSettings> {
+  async toggleSection(
+    sectionKey: string,
+    enabled: boolean,
+  ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };
-    
+
     if (sections[sectionKey as keyof typeof sections]) {
       (sections[sectionKey as keyof typeof sections] as any).enabled = enabled;
       return this.updateSettings({ sections });
     }
-    
+
     throw new Error(`Section ${sectionKey} not found`);
   }
 
@@ -99,20 +105,29 @@ class HomepageSettingsService {
   // Update section limits (admin only)
   async updateSectionLimits(
     section: string,
-    limits: { maxCategories?: number; productsPerCategory?: number; maxProducts?: number; maxAuctions?: number; maxShops?: number; productsPerShop?: number; maxBlogs?: number; maxReviews?: number }
+    limits: {
+      maxCategories?: number;
+      productsPerCategory?: number;
+      maxProducts?: number;
+      maxAuctions?: number;
+      maxShops?: number;
+      productsPerShop?: number;
+      maxBlogs?: number;
+      maxReviews?: number;
+    },
   ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };
-    
+
     if (sections[section as keyof typeof sections]) {
       sections[section as keyof typeof sections] = {
         ...sections[section as keyof typeof sections],
         ...limits,
       } as any;
-      
+
       return this.updateSettings({ sections });
     }
-    
+
     throw new Error(`Section ${section} not found`);
   }
 }

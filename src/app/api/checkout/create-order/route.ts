@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Collections } from '../../lib/firebase/collections';
-import { getCurrentUser } from '../../lib/session';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import { z } from 'zod';
-import crypto from 'crypto';
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "../../lib/firebase/collections";
+import { getCurrentUser } from "../../lib/session";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { z } from "zod";
+import crypto from "crypto";
 
 const ShopOrderSchema = z.object({
   shopId: z.string(),
@@ -13,9 +13,9 @@ const ShopOrderSchema = z.object({
 });
 
 const CreateOrderSchema = z.object({
-  shippingAddressId: z.string().min(1, 'Shipping address is required'),
+  shippingAddressId: z.string().min(1, "Shipping address is required"),
   billingAddressId: z.string().optional(),
-  paymentMethod: z.enum(['razorpay', 'cod']),
+  paymentMethod: z.enum(["razorpay", "cod"]),
   shopOrders: z.array(ShopOrderSchema),
   notes: z.string().optional(),
 });
@@ -24,7 +24,7 @@ async function createOrderHandler(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -33,41 +33,62 @@ async function createOrderHandler(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { shippingAddressId, billingAddressId, paymentMethod, shopOrders, notes } =
-      validation.data;
+    const {
+      shippingAddressId,
+      billingAddressId,
+      paymentMethod,
+      shopOrders,
+      notes,
+    } = validation.data;
 
     if (!shopOrders || shopOrders.length === 0) {
       return NextResponse.json(
-        { error: 'No shop orders provided' },
-        { status: 400 }
+        { error: "No shop orders provided" },
+        { status: 400 },
       );
     }
 
     // Fetch and validate addresses
-    const shippingAddressDoc = await Collections.addresses().doc(shippingAddressId).get();
+    const shippingAddressDoc = await Collections.addresses()
+      .doc(shippingAddressId)
+      .get();
     if (!shippingAddressDoc.exists) {
-      return NextResponse.json({ error: 'Shipping address not found' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Shipping address not found" },
+        { status: 400 },
+      );
     }
 
     const shippingAddress = shippingAddressDoc.data();
     if (shippingAddress?.user_id !== user.id) {
-      return NextResponse.json({ error: 'Invalid shipping address' }, { status: 403 });
+      return NextResponse.json(
+        { error: "Invalid shipping address" },
+        { status: 403 },
+      );
     }
 
     let billingAddress = shippingAddress;
     if (billingAddressId && billingAddressId !== shippingAddressId) {
-      const billingAddressDoc = await Collections.addresses().doc(billingAddressId).get();
+      const billingAddressDoc = await Collections.addresses()
+        .doc(billingAddressId)
+        .get();
       if (!billingAddressDoc.exists) {
-        return NextResponse.json({ error: 'Billing address not found' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Billing address not found" },
+          { status: 400 },
+        );
       }
 
       const billingData = billingAddressDoc.data();
       if (billingData?.user_id !== user.id) {
-        return NextResponse.json({ error: 'Invalid billing address' }, { status: 403 });
+        return NextResponse.json(
+          { error: "Invalid billing address" },
+          { status: 403 },
+        );
       }
       billingAddress = billingData;
     }
@@ -84,7 +105,7 @@ async function createOrderHandler(request: NextRequest) {
       // Validate products
       const productIds = items.map((item: any) => item.productId);
       const productSnapshots = await Promise.all(
-        productIds.map((id: string) => Collections.products().doc(id).get())
+        productIds.map((id: string) => Collections.products().doc(id).get()),
       );
 
       const products = productSnapshots.map((snap: any) => ({
@@ -98,21 +119,23 @@ async function createOrderHandler(request: NextRequest) {
         if (!product) {
           return NextResponse.json(
             { error: `Product ${item.productName} not found` },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
         if (product.stock_count < item.quantity) {
           return NextResponse.json(
-            { error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available` },
-            { status: 400 }
+            {
+              error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available`,
+            },
+            { status: 400 },
           );
         }
 
-        if (product.status !== 'active') {
+        if (product.status !== "active") {
           return NextResponse.json(
             { error: `Product ${product.name} is no longer available` },
-            { status: 400 }
+            { status: 400 },
           );
         }
       }
@@ -141,13 +164,16 @@ async function createOrderHandler(request: NextRequest) {
 
       if (couponCode) {
         const couponSnapshot = await Collections.coupons()
-          .where('code', '==', couponCode.toUpperCase())
-          .where('shop_id', '==', shopId)
+          .where("code", "==", couponCode.toUpperCase())
+          .where("shop_id", "==", shopId)
           .limit(1)
           .get();
 
         if (!couponSnapshot.empty) {
-          const coupon: any = { id: couponSnapshot.docs[0].id, ...couponSnapshot.docs[0].data() };
+          const coupon: any = {
+            id: couponSnapshot.docs[0].id,
+            ...couponSnapshot.docs[0].data(),
+          };
 
           // Validate coupon
           const now = new Date();
@@ -155,19 +181,22 @@ async function createOrderHandler(request: NextRequest) {
           const validUntil = coupon.valid_until?.toDate();
 
           if (
-            coupon.status === 'active' &&
+            coupon.status === "active" &&
             (!validFrom || now >= validFrom) &&
             (!validUntil || now <= validUntil) &&
             shopSubtotal >= (coupon.min_purchase || 0) &&
-            (coupon.usage_limit === null || coupon.used_count < coupon.usage_limit)
+            (coupon.usage_limit === null ||
+              coupon.used_count < coupon.usage_limit)
           ) {
             // Calculate discount
-            if (coupon.discount_type === 'percentage') {
-              discount = Math.round((shopSubtotal * coupon.discount_value) / 100);
+            if (coupon.discount_type === "percentage") {
+              discount = Math.round(
+                (shopSubtotal * coupon.discount_value) / 100,
+              );
               if (coupon.max_discount) {
                 discount = Math.min(discount, coupon.max_discount);
               }
-            } else if (coupon.discount_type === 'flat') {
+            } else if (coupon.discount_type === "flat") {
               discount = Math.min(coupon.discount_value, shopSubtotal);
             }
 
@@ -194,7 +223,7 @@ async function createOrderHandler(request: NextRequest) {
       grandTotal += shopTotal;
 
       // Create order for this shop
-      const orderId = `ORD-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      const orderId = `ORD-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
 
       const orderData = {
         order_id: orderId,
@@ -219,7 +248,7 @@ async function createOrderHandler(request: NextRequest) {
           city: shippingAddress?.city,
           state: shippingAddress?.state,
           postal_code: shippingAddress?.pincode,
-          country: shippingAddress?.country || 'India',
+          country: shippingAddress?.country || "India",
         },
         billing_address: {
           id: billingAddressId || shippingAddressId,
@@ -230,27 +259,27 @@ async function createOrderHandler(request: NextRequest) {
           city: billingAddress?.city,
           state: billingAddress?.state,
           postal_code: billingAddress?.pincode,
-          country: billingAddress?.country || 'India',
+          country: billingAddress?.country || "India",
         },
         payment_method: paymentMethod,
-        payment_status: paymentMethod === 'cod' ? 'pending' : 'awaiting',
-        order_status: 'pending',
+        payment_status: paymentMethod === "cod" ? "pending" : "awaiting",
+        order_status: "pending",
         notes: notes || null,
         created_at: new Date(),
         updated_at: new Date(),
       };
 
       const orderRef = await Collections.orders().add(orderData);
-      orderRefs.push({ 
-        id: orderRef.id, 
-        orderId, 
+      orderRefs.push({
+        id: orderRef.id,
+        orderId,
         shopId,
         shopName,
-        total: shopTotal 
+        total: shopTotal,
       });
 
       // If COD, update stock immediately
-      if (paymentMethod === 'cod') {
+      if (paymentMethod === "cod") {
         for (const item of items) {
           const product = products.find((p: any) => p.id === item.productId);
           const productRef = Collections.products().doc(item.productId);
@@ -263,7 +292,7 @@ async function createOrderHandler(request: NextRequest) {
     }
 
     // If COD, commit batch (stock updates + coupon updates + cart clear)
-    if (paymentMethod === 'cod') {
+    if (paymentMethod === "cod") {
       // Update coupon usage
       for (const coupon of usedCoupons) {
         batch.update(coupon.ref, {
@@ -274,9 +303,9 @@ async function createOrderHandler(request: NextRequest) {
 
       // Delete cart items
       const cartSnapshot = await Collections.cart()
-        .where('user_id', '==', user.id)
+        .where("user_id", "==", user.id)
         .get();
-      
+
       cartSnapshot.docs.forEach((doc: any) => {
         batch.delete(doc.ref);
       });
@@ -286,9 +315,9 @@ async function createOrderHandler(request: NextRequest) {
 
     // Generate Razorpay order if not COD
     let razorpayOrderId = null;
-    if (paymentMethod === 'razorpay') {
+    if (paymentMethod === "razorpay") {
       // In production, integrate with Razorpay SDK
-      razorpayOrderId = `razorpay_order_${crypto.randomBytes(8).toString('hex')}`;
+      razorpayOrderId = `razorpay_order_${crypto.randomBytes(8).toString("hex")}`;
 
       // Update all orders with Razorpay order ID
       const razorpayBatch = Collections.orders().firestore.batch();
@@ -304,14 +333,14 @@ async function createOrderHandler(request: NextRequest) {
       orders: orderRefs,
       razorpay_order_id: razorpayOrderId,
       amount: Math.round(grandTotal * 100), // Amount in paise for Razorpay
-      currency: 'INR',
+      currency: "INR",
       total: grandTotal,
     });
   } catch (error: any) {
-    console.error('Create order error:', error);
+    console.error("Create order error:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create order' },
-      { status: 500 }
+      { error: error.message || "Failed to create order" },
+      { status: 500 },
     );
   }
 }

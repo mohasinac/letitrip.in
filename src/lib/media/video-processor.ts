@@ -3,7 +3,7 @@
  * Handles video thumbnail extraction and metadata
  */
 
-import type { VideoThumbnail, ThumbnailGenerationOptions } from '@/types/media';
+import type { VideoThumbnail, ThumbnailGenerationOptions } from "@/types/media";
 
 /**
  * Extract video thumbnail at specific timestamp
@@ -11,12 +11,17 @@ import type { VideoThumbnail, ThumbnailGenerationOptions } from '@/types/media';
 export async function extractVideoThumbnail(
   file: File,
   timestamp: number = 0,
-  options?: Partial<ThumbnailGenerationOptions>
+  options?: Partial<ThumbnailGenerationOptions>,
 ): Promise<string> {
-  const { width = 320, height = 180, quality = 0.8, format = 'jpeg' } = options || {};
+  const {
+    width = 320,
+    height = 180,
+    quality = 0.8,
+    format = "jpeg",
+  } = options || {};
 
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
+    const video = document.createElement("video");
     const objectUrl = URL.createObjectURL(file);
 
     video.onloadedmetadata = () => {
@@ -26,14 +31,14 @@ export async function extractVideoThumbnail(
 
     video.onseeked = () => {
       try {
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) {
           URL.revokeObjectURL(objectUrl);
-          reject(new Error('Failed to get canvas context'));
+          reject(new Error("Failed to get canvas context"));
           return;
         }
 
@@ -53,7 +58,7 @@ export async function extractVideoThumbnail(
 
     video.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      reject(new Error('Failed to load video'));
+      reject(new Error("Failed to load video"));
     };
 
     video.src = objectUrl;
@@ -66,10 +71,10 @@ export async function extractVideoThumbnail(
 export async function extractMultipleThumbnails(
   file: File,
   count: number = 5,
-  options?: Partial<ThumbnailGenerationOptions>
+  options?: Partial<ThumbnailGenerationOptions>,
 ): Promise<VideoThumbnail[]> {
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
+    const video = document.createElement("video");
     const objectUrl = URL.createObjectURL(file);
     const thumbnails: VideoThumbnail[] = [];
 
@@ -98,7 +103,7 @@ export async function extractMultipleThumbnails(
 
     video.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      reject(new Error('Failed to load video'));
+      reject(new Error("Failed to load video"));
     };
 
     video.src = objectUrl;
@@ -108,9 +113,7 @@ export async function extractMultipleThumbnails(
 /**
  * Get video metadata
  */
-export async function getVideoMetadata(
-  file: File
-): Promise<{
+export async function getVideoMetadata(file: File): Promise<{
   duration: number;
   width: number;
   height: number;
@@ -118,7 +121,7 @@ export async function getVideoMetadata(
   size: number;
 }> {
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
+    const video = document.createElement("video");
     const objectUrl = URL.createObjectURL(file);
 
     video.onloadedmetadata = () => {
@@ -127,7 +130,7 @@ export async function getVideoMetadata(
         width: video.videoWidth,
         height: video.videoHeight,
         aspectRatio: video.videoWidth / video.videoHeight,
-        size: file.size
+        size: file.size,
       };
 
       URL.revokeObjectURL(objectUrl);
@@ -136,7 +139,7 @@ export async function getVideoMetadata(
 
     video.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      reject(new Error('Failed to load video'));
+      reject(new Error("Failed to load video"));
     };
 
     video.src = objectUrl;
@@ -149,7 +152,7 @@ export async function getVideoMetadata(
 export async function generateVideoPreview(
   file: File,
   width: number = 640,
-  height: number = 360
+  height: number = 360,
 ): Promise<string> {
   return extractVideoThumbnail(file, 0, { width, height });
 }
@@ -161,11 +164,11 @@ export function createThumbnailFromBlob(
   blobUrl: string,
   timestamp: number = 0,
   width: number = 320,
-  height: number = 180
+  height: number = 180,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
-    video.crossOrigin = 'anonymous';
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
 
     video.onloadedmetadata = () => {
       video.currentTime = Math.min(timestamp, video.duration);
@@ -173,18 +176,18 @@ export function createThumbnailFromBlob(
 
     video.onseeked = () => {
       try {
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
+          reject(new Error("Failed to get canvas context"));
           return;
         }
 
         ctx.drawImage(video, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
 
         resolve(dataUrl);
       } catch (error) {
@@ -193,7 +196,7 @@ export function createThumbnailFromBlob(
     };
 
     video.onerror = () => {
-      reject(new Error('Failed to load video'));
+      reject(new Error("Failed to load video"));
     };
 
     video.src = blobUrl;

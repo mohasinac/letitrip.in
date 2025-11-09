@@ -38,7 +38,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"recent" | "helpful" | "rating">(
-    "recent"
+    "recent",
   );
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
@@ -50,7 +50,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
     setLoading(true);
     try {
       const response: any = await apiService.get(
-        `/api/reviews?product_id=${productId}&limit=20`
+        `/api/reviews?product_id=${productId}&limit=20`,
       );
 
       let reviewsList = response.reviews || [];
@@ -58,14 +58,14 @@ export default function ReviewList({ productId }: ReviewListProps) {
       // Apply rating filter
       if (filterRating) {
         reviewsList = reviewsList.filter(
-          (r: Review) => r.rating === filterRating
+          (r: Review) => r.rating === filterRating,
         );
       }
 
       // Apply sort
       if (sortBy === "helpful") {
         reviewsList.sort(
-          (a: Review, b: Review) => b.helpful_count - a.helpful_count
+          (a: Review, b: Review) => b.helpful_count - a.helpful_count,
         );
       } else if (sortBy === "rating") {
         reviewsList.sort((a: Review, b: Review) => b.rating - a.rating);
@@ -88,8 +88,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
       // Update local state
       setReviews(
         reviews.map((r) =>
-          r.id === reviewId ? { ...r, helpful_count: r.helpful_count + 1 } : r
-        )
+          r.id === reviewId ? { ...r, helpful_count: r.helpful_count + 1 } : r,
+        ),
       );
     } catch (error: any) {
       console.error("Failed to mark as helpful:", error);

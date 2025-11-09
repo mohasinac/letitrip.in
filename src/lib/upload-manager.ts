@@ -1,6 +1,6 @@
 /**
  * Upload Manager Utility
- * 
+ *
  * Handles failed uploads, retry logic, and upload persistence
  */
 
@@ -19,7 +19,7 @@ export interface FailedUpload {
   };
 }
 
-const STORAGE_KEY = 'failed_uploads';
+const STORAGE_KEY = "failed_uploads";
 const MAX_RETRY_COUNT = 3;
 const RETRY_DELAY_MS = 2000; // 2 seconds
 
@@ -32,7 +32,7 @@ export function saveFailedUpload(upload: FailedUpload): void {
     failed.push(upload);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(failed));
   } catch (error) {
-    console.error('Failed to save upload:', error);
+    console.error("Failed to save upload:", error);
   }
 }
 
@@ -44,7 +44,7 @@ export function getFailedUploads(): FailedUpload[] {
     const item = localStorage.getItem(STORAGE_KEY);
     return item ? JSON.parse(item) : [];
   } catch (error) {
-    console.error('Failed to load uploads:', error);
+    console.error("Failed to load uploads:", error);
     return [];
   }
 }
@@ -55,10 +55,10 @@ export function getFailedUploads(): FailedUpload[] {
 export function removeFailedUpload(id: string): void {
   try {
     const failed = getFailedUploads();
-    const updated = failed.filter(u => u.id !== id);
+    const updated = failed.filter((u) => u.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
-    console.error('Failed to remove upload:', error);
+    console.error("Failed to remove upload:", error);
   }
 }
 
@@ -69,7 +69,7 @@ export function clearFailedUploads(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    console.error('Failed to clear uploads:', error);
+    console.error("Failed to clear uploads:", error);
   }
 }
 
@@ -78,13 +78,13 @@ export function clearFailedUploads(): void {
  */
 export function getFailedUploadsForResource(
   resourceType: string,
-  resourceId: string
+  resourceId: string,
 ): FailedUpload[] {
   const failed = getFailedUploads();
   return failed.filter(
-    u =>
+    (u) =>
       u.context?.resourceType === resourceType &&
-      u.context?.resourceId === resourceId
+      u.context?.resourceId === resourceId,
   );
 }
 
@@ -107,14 +107,14 @@ export function getRetryDelay(retryCount: number): number {
  */
 export async function retryUploadWithDelay(
   uploadFn: () => Promise<string>,
-  retryCount: number
+  retryCount: number,
 ): Promise<string> {
   if (retryCount >= MAX_RETRY_COUNT) {
-    throw new Error('Maximum retry attempts reached');
+    throw new Error("Maximum retry attempts reached");
   }
 
   const delay = getRetryDelay(retryCount);
-  await new Promise(resolve => setTimeout(resolve, delay));
+  await new Promise((resolve) => setTimeout(resolve, delay));
 
   try {
     return await uploadFn();
@@ -131,9 +131,9 @@ export function cleanupOldFailedUploads(): void {
   const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
   const failed = getFailedUploads();
   const now = Date.now();
-  
-  const recent = failed.filter(u => now - u.timestamp < SEVEN_DAYS_MS);
-  
+
+  const recent = failed.filter((u) => now - u.timestamp < SEVEN_DAYS_MS);
+
   if (recent.length !== failed.length) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(recent));
   }
@@ -149,17 +149,18 @@ export function getUploadStats(): {
   byResourceType: Record<string, number>;
 } {
   const failed = getFailedUploads();
-  
+
   const stats = {
     total: failed.length,
     canRetry: failed.filter(shouldRetry).length,
-    maxedOut: failed.filter(u => !shouldRetry(u)).length,
+    maxedOut: failed.filter((u) => !shouldRetry(u)).length,
     byResourceType: {} as Record<string, number>,
   };
 
-  failed.forEach(upload => {
-    const resourceType = upload.context?.resourceType || 'unknown';
-    stats.byResourceType[resourceType] = (stats.byResourceType[resourceType] || 0) + 1;
+  failed.forEach((upload) => {
+    const resourceType = upload.context?.resourceType || "unknown";
+    stats.byResourceType[resourceType] =
+      (stats.byResourceType[resourceType] || 0) + 1;
   });
 
   return stats;
@@ -173,7 +174,7 @@ export function initUploadManager(): void {
   cleanupOldFailedUploads();
 
   // Set up periodic cleanup (every hour)
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     setInterval(cleanupOldFailedUploads, 60 * 60 * 1000);
   }
 }
@@ -184,8 +185,8 @@ export function initUploadManager(): void {
 export function createUploadContext(
   resourceType: string,
   resourceId: string,
-  fieldName?: string
-): FailedUpload['context'] {
+  fieldName?: string,
+): FailedUpload["context"] {
   return {
     resourceType,
     resourceId,

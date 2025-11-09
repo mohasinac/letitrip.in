@@ -28,15 +28,19 @@ import {
   TableCheckbox,
   InlineField,
   BulkAction,
+  UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import {
   productsService,
   type ProductFilters,
 } from "@/services/products.service";
 import type { Product, ProductStatus } from "@/types";
+import { PRODUCT_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminProductsPage() {
   const { user, isAdmin } = useAuth();
+  const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -46,15 +50,7 @@ export default function AdminProductsPage() {
   const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState<ProductStatus | "all">(
-    "all"
-  );
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [shopFilter, setShopFilter] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({
-    min: "",
-    max: "",
-  });
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,16 +67,7 @@ export default function AdminProductsPage() {
     if (user && isAdmin) {
       loadProducts();
     }
-  }, [
-    user,
-    isAdmin,
-    searchQuery,
-    statusFilter,
-    categoryFilter,
-    shopFilter,
-    priceRange,
-    currentPage,
-  ]);
+  }, [user, isAdmin, searchQuery, filterValues, currentPage]);
 
   const loadProducts = async () => {
     try {
@@ -91,11 +78,7 @@ export default function AdminProductsPage() {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
-        status: statusFilter !== "all" ? statusFilter : undefined,
-        categoryId: categoryFilter !== "all" ? categoryFilter : undefined,
-        shopId: shopFilter !== "all" ? shopFilter : undefined,
-        minPrice: priceRange.min ? parseFloat(priceRange.min) : undefined,
-        maxPrice: priceRange.max ? parseFloat(priceRange.max) : undefined,
+        ...filterValues,
         sortBy: "createdAt",
         sortOrder: "desc",
       };
@@ -377,82 +360,38 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value as ProductStatus | "all");
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              >
-                <option value="all">All Status</option>
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="archived">Archived</option>
-                <option value="out-of-stock">Out of Stock</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Min Price (₹)
-              </label>
-              <input
-                type="number"
-                value={priceRange.min}
-                onChange={(e) => {
-                  setPriceRange((prev) => ({ ...prev, min: e.target.value }));
-                  setCurrentPage(1);
-                }}
-                placeholder="Min"
-                min="0"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max Price (₹)
-              </label>
-              <input
-                type="number"
-                value={priceRange.max}
-                onChange={(e) => {
-                  setPriceRange((prev) => ({ ...prev, max: e.target.value }));
-                  setCurrentPage(1);
-                }}
-                placeholder="Max"
-                min="0"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              />
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={() => {
-                  setStatusFilter("all");
-                  setPriceRange({ min: "", max: "" });
-                  setCategoryFilter("all");
-                  setShopFilter("all");
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Main Content with Sidebar Layout */}
+      <div className="flex gap-6">
+        {/* Desktop Filters */}
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={PRODUCT_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({
+                ...prev,
+                [key]: value,
+              }));
+            }}
+            onApply={() => setCurrentPage(1)}
+            onReset={() => {
+              setFilterValues({});
+              setCurrentPage(1);
+            }}
+            isOpen={false}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={totalProducts}
+            isLoading={loading}
+          />
+        )}
 
-      {/* Grid View */}
-      {view === "grid" && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* Content Area */}
+        <div className="flex-1 space-y-6">
+          {/* Grid View */}
+          {view === "grid" && (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
             <div
               key={product.id}
@@ -525,12 +464,12 @@ export default function AdminProductsPage() {
               </div>
             </div>
           ))}
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* Table View */}
-      {view === "table" && (
-        <div className="rounded-lg border border-gray-200 bg-white">
+          {/* Table View */}
+          {view === "table" && (
+            <div className="rounded-lg border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b border-gray-200 bg-gray-50">
@@ -759,8 +698,53 @@ export default function AdminProductsPage() {
               </div>
             </div>
           )}
+
+          {/* Empty State */}
+          {products.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <Package className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {searchQuery || Object.keys(filterValues).length > 0
+                  ? "No products found"
+                  : "No products yet"}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {searchQuery || Object.keys(filterValues).length > 0
+                  ? "Try adjusting your filters"
+                  : "Products from sellers will appear here"}
+              </p>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Mobile Filters */}
+        {isMobile && (
+          <UnifiedFilterSidebar
+            sections={PRODUCT_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({
+                ...prev,
+                [key]: value,
+              }));
+            }}
+            onApply={() => {
+              setShowFilters(false);
+              setCurrentPage(1);
+            }}
+            onReset={() => {
+              setFilterValues({});
+              setCurrentPage(1);
+            }}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={true}
+            resultCount={totalProducts}
+            isLoading={loading}
+          />
+        )}
+      </div>
 
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
@@ -772,23 +756,6 @@ export default function AdminProductsPage() {
           loading={actionLoading}
           resourceName="product"
         />
-      )}
-
-      {/* Empty State */}
-      {products.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <Package className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
-            {searchQuery || statusFilter !== "all"
-              ? "No products found"
-              : "No products yet"}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            {searchQuery || statusFilter !== "all"
-              ? "Try adjusting your filters"
-              : "Products from sellers will appear here"}
-          </p>
-        </div>
       )}
 
       {/* Delete Confirmation */}

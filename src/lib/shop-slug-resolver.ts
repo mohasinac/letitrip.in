@@ -1,18 +1,18 @@
 /**
  * Shop Slug Resolution Utilities
- * 
+ *
  * Helper functions for resolving shop slugs to IDs in API routes.
  * Use these utilities to maintain consistency across all validation APIs.
  */
 
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * Resolve shop slug to shop ID
- * 
+ *
  * @param shopSlug - The shop slug to resolve
  * @returns Shop ID if found, null otherwise
- * 
+ *
  * @example
  * ```ts
  * const shopId = await resolveShopSlug('awesome-shop');
@@ -21,10 +21,12 @@ import { Collections } from '@/app/api/lib/firebase/collections';
  * }
  * ```
  */
-export async function resolveShopSlug(shopSlug: string): Promise<string | null> {
+export async function resolveShopSlug(
+  shopSlug: string,
+): Promise<string | null> {
   try {
     const snapshot = await Collections.shops()
-      .where('slug', '==', shopSlug)
+      .where("slug", "==", shopSlug)
       .limit(1)
       .get();
 
@@ -34,17 +36,17 @@ export async function resolveShopSlug(shopSlug: string): Promise<string | null> 
 
     return snapshot.docs[0].id;
   } catch (error) {
-    console.error('Error resolving shop slug:', error);
+    console.error("Error resolving shop slug:", error);
     return null;
   }
 }
 
 /**
  * Resolve shop slug to shop data
- * 
+ *
  * @param shopSlug - The shop slug to resolve
  * @returns Shop data if found, null otherwise
- * 
+ *
  * @example
  * ```ts
  * const shop = await resolveShopSlugToData('awesome-shop');
@@ -55,11 +57,11 @@ export async function resolveShopSlug(shopSlug: string): Promise<string | null> 
  * ```
  */
 export async function resolveShopSlugToData(
-  shopSlug: string
+  shopSlug: string,
 ): Promise<{ id: string; [key: string]: any } | null> {
   try {
     const snapshot = await Collections.shops()
-      .where('slug', '==', shopSlug)
+      .where("slug", "==", shopSlug)
       .limit(1)
       .get();
 
@@ -73,17 +75,17 @@ export async function resolveShopSlugToData(
       ...doc.data(),
     };
   } catch (error) {
-    console.error('Error resolving shop slug:', error);
+    console.error("Error resolving shop slug:", error);
     return null;
   }
 }
 
 /**
  * Batch resolve multiple shop slugs to IDs
- * 
+ *
  * @param shopSlugs - Array of shop slugs to resolve
  * @returns Map of slug → ID
- * 
+ *
  * @example
  * ```ts
  * const slugToIdMap = await batchResolveShopSlugs(['shop-1', 'shop-2']);
@@ -91,7 +93,7 @@ export async function resolveShopSlugToData(
  * ```
  */
 export async function batchResolveShopSlugs(
-  shopSlugs: string[]
+  shopSlugs: string[],
 ): Promise<Map<string, string>> {
   const map = new Map<string, string>();
 
@@ -105,7 +107,7 @@ export async function batchResolveShopSlugs(
 
     for (const chunk of chunks) {
       const snapshot = await Collections.shops()
-        .where('slug', 'in', chunk)
+        .where("slug", "in", chunk)
         .get();
 
       snapshot.docs.forEach((doc) => {
@@ -118,18 +120,18 @@ export async function batchResolveShopSlugs(
 
     return map;
   } catch (error) {
-    console.error('Error batch resolving shop slugs:', error);
+    console.error("Error batch resolving shop slugs:", error);
     return map;
   }
 }
 
 /**
  * Validate shop ownership by slug
- * 
+ *
  * @param shopSlug - The shop slug
  * @param userId - The user ID to validate against
  * @returns true if user owns the shop, false otherwise
- * 
+ *
  * @example
  * ```ts
  * const isOwner = await validateShopOwnership('awesome-shop', session.user.id);
@@ -140,29 +142,29 @@ export async function batchResolveShopSlugs(
  */
 export async function validateShopOwnership(
   shopSlug: string,
-  userId: string
+  userId: string,
 ): Promise<boolean> {
   try {
     const snapshot = await Collections.shops()
-      .where('slug', '==', shopSlug)
-      .where('owner_id', '==', userId)
+      .where("slug", "==", shopSlug)
+      .where("owner_id", "==", userId)
       .limit(1)
       .get();
 
     return !snapshot.empty;
   } catch (error) {
-    console.error('Error validating shop ownership:', error);
+    console.error("Error validating shop ownership:", error);
     return false;
   }
 }
 
 /**
  * Get shop ID and validate ownership
- * 
+ *
  * @param shopSlug - The shop slug
  * @param userId - The user ID to validate against
  * @returns Object with shopId and isOwner flags, or null if shop not found
- * 
+ *
  * @example
  * ```ts
  * const result = await getShopIdAndValidateOwnership('awesome-shop', session.user.id);
@@ -177,11 +179,11 @@ export async function validateShopOwnership(
  */
 export async function getShopIdAndValidateOwnership(
   shopSlug: string,
-  userId: string
+  userId: string,
 ): Promise<{ shopId: string; isOwner: boolean } | null> {
   try {
     const snapshot = await Collections.shops()
-      .where('slug', '==', shopSlug)
+      .where("slug", "==", shopSlug)
       .limit(1)
       .get();
 
@@ -197,7 +199,7 @@ export async function getShopIdAndValidateOwnership(
       isOwner: data.owner_id === userId,
     };
   } catch (error) {
-    console.error('Error getting shop ID and validating ownership:', error);
+    console.error("Error getting shop ID and validating ownership:", error);
     return null;
   }
 }

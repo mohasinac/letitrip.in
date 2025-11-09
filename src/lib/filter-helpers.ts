@@ -8,12 +8,12 @@
  * Removes undefined, null, and empty values
  */
 export function buildQueryFromFilters<T extends Record<string, any>>(
-  filters: T
+  filters: T,
 ): Record<string, any> {
   const query: Record<string, any> = {};
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') {
+    if (value === undefined || value === null || value === "") {
       return;
     }
 
@@ -32,12 +32,12 @@ export function buildQueryFromFilters<T extends Record<string, any>>(
  * Convert filter values to URL search params
  */
 export function filtersToSearchParams<T extends Record<string, any>>(
-  filters: T
+  filters: T,
 ): URLSearchParams {
   const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') {
+    if (value === undefined || value === null || value === "") {
       return;
     }
 
@@ -45,7 +45,7 @@ export function filtersToSearchParams<T extends Record<string, any>>(
       if (value.length === 0) return;
       // Serialize arrays as JSON
       params.set(key, JSON.stringify(value));
-    } else if (typeof value === 'object') {
+    } else if (typeof value === "object") {
       // Serialize objects as JSON
       params.set(key, JSON.stringify(value));
     } else {
@@ -61,7 +61,7 @@ export function filtersToSearchParams<T extends Record<string, any>>(
  */
 export function searchParamsToFilters<T extends Record<string, any>>(
   searchParams: URLSearchParams,
-  initialFilters: T
+  initialFilters: T,
 ): T {
   const filters = { ...initialFilters };
 
@@ -85,14 +85,14 @@ export function searchParamsToFilters<T extends Record<string, any>>(
  */
 export function persistFilters<T extends Record<string, any>>(
   key: string,
-  filters: T
+  filters: T,
 ): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   try {
     localStorage.setItem(key, JSON.stringify(filters));
   } catch (error) {
-    console.error('Failed to persist filters:', error);
+    console.error("Failed to persist filters:", error);
   }
 }
 
@@ -101,9 +101,9 @@ export function persistFilters<T extends Record<string, any>>(
  */
 export function loadPersistedFilters<T extends Record<string, any>>(
   key: string,
-  initialFilters: T
+  initialFilters: T,
 ): T {
-  if (typeof window === 'undefined') return initialFilters;
+  if (typeof window === "undefined") return initialFilters;
 
   try {
     const stored = localStorage.getItem(key);
@@ -111,7 +111,7 @@ export function loadPersistedFilters<T extends Record<string, any>>(
       return { ...initialFilters, ...JSON.parse(stored) };
     }
   } catch (error) {
-    console.error('Failed to load persisted filters:', error);
+    console.error("Failed to load persisted filters:", error);
   }
 
   return initialFilters;
@@ -121,12 +121,12 @@ export function loadPersistedFilters<T extends Record<string, any>>(
  * Clear persisted filters from localStorage
  */
 export function clearPersistedFilters(key: string): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   try {
     localStorage.removeItem(key);
   } catch (error) {
-    console.error('Failed to clear persisted filters:', error);
+    console.error("Failed to clear persisted filters:", error);
   }
 }
 
@@ -138,7 +138,7 @@ export function mergeFilters<T extends Record<string, any>>(
 ): Partial<T> {
   return filterObjects.reduce(
     (acc, filters) => ({ ...acc, ...filters }),
-    {} as Partial<T>
+    {} as Partial<T>,
   );
 }
 
@@ -146,11 +146,11 @@ export function mergeFilters<T extends Record<string, any>>(
  * Get active filter count
  */
 export function getActiveFilterCount<T extends Record<string, any>>(
-  filters: T
+  filters: T,
 ): number {
   return Object.keys(filters).filter((key) => {
     const value = filters[key];
-    if (value === undefined || value === null || value === '') return false;
+    if (value === undefined || value === null || value === "") return false;
     if (Array.isArray(value)) return value.length > 0;
     return true;
   }).length;
@@ -160,7 +160,7 @@ export function getActiveFilterCount<T extends Record<string, any>>(
  * Check if any filters are active
  */
 export function hasActiveFilters<T extends Record<string, any>>(
-  filters: T
+  filters: T,
 ): boolean {
   return getActiveFilterCount(filters) > 0;
 }
@@ -170,19 +170,19 @@ export function hasActiveFilters<T extends Record<string, any>>(
  */
 export function filtersToSummary<T extends Record<string, any>>(
   filters: T,
-  labels: Record<keyof T, string>
+  labels: Record<keyof T, string>,
 ): string[] {
   const summary: string[] = [];
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
+    if (value === undefined || value === null || value === "") return;
 
     const label = labels[key as keyof T] || key;
 
     if (Array.isArray(value)) {
       if (value.length === 0) return;
-      summary.push(`${label}: ${value.join(', ')}`);
-    } else if (typeof value === 'boolean') {
+      summary.push(`${label}: ${value.join(", ")}`);
+    } else if (typeof value === "boolean") {
       if (value) summary.push(label);
     } else {
       summary.push(`${label}: ${value}`);
@@ -199,13 +199,13 @@ export function validateFilters<T extends Record<string, any>>(
   filters: T,
   schema: {
     [K in keyof T]?: {
-      type: 'string' | 'number' | 'boolean' | 'array' | 'object';
+      type: "string" | "number" | "boolean" | "array" | "object";
       required?: boolean;
       min?: number;
       max?: number;
       options?: any[];
     };
-  }
+  },
 ): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
@@ -222,18 +222,18 @@ export function validateFilters<T extends Record<string, any>>(
     if (value === undefined || value === null) return;
 
     // Check type
-    if (rules?.type === 'array' && !Array.isArray(value)) {
+    if (rules?.type === "array" && !Array.isArray(value)) {
       errors.push(`${key} must be an array`);
-    } else if (rules?.type === 'number' && typeof value !== 'number') {
+    } else if (rules?.type === "number" && typeof value !== "number") {
       errors.push(`${key} must be a number`);
-    } else if (rules?.type === 'boolean' && typeof value !== 'boolean') {
+    } else if (rules?.type === "boolean" && typeof value !== "boolean") {
       errors.push(`${key} must be a boolean`);
-    } else if (rules?.type === 'string' && typeof value !== 'string') {
+    } else if (rules?.type === "string" && typeof value !== "string") {
       errors.push(`${key} must be a string`);
     }
 
     // Check min/max for numbers
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       if (rules?.min !== undefined && value < rules.min) {
         errors.push(`${key} must be at least ${rules.min}`);
       }
@@ -244,7 +244,7 @@ export function validateFilters<T extends Record<string, any>>(
 
     // Check options
     if (rules?.options && !rules.options.includes(value)) {
-      errors.push(`${key} must be one of: ${rules.options.join(', ')}`);
+      errors.push(`${key} must be one of: ${rules.options.join(", ")}`);
     }
   });
 

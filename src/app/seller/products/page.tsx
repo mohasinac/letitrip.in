@@ -62,11 +62,11 @@ export default function ProductsPage() {
   const loadCategories = async () => {
     try {
       const response = await apiService.get<{ success: boolean; data: any[] }>(
-        "/api/categories"
+        "/api/categories",
       );
       if (response.success && response.data) {
         setCategories(
-          response.data.map((cat: any) => ({ id: cat.id, name: cat.name }))
+          response.data.map((cat: any) => ({ id: cat.id, name: cat.name })),
         );
       }
     } catch (error) {
@@ -169,7 +169,7 @@ export default function ProductsPage() {
           action: actionId,
           ids: selectedIds,
           input,
-        }
+        },
       );
 
       if (response.success) {
@@ -199,7 +199,7 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -325,7 +325,7 @@ export default function ProductsPage() {
                         }
                         onChange={(checked) => {
                           setSelectedIds(
-                            checked ? filteredProducts.map((p) => p.id) : []
+                            checked ? filteredProducts.map((p) => p.id) : [],
                           );
                         }}
                         aria-label="Select all products"
@@ -386,7 +386,7 @@ export default function ProductsPage() {
                   {filteredProducts.map((product) => {
                     const isEditing = editingId === product.id;
                     const category = categories.find(
-                      (c) => c.id === product.categoryId
+                      (c) => c.id === product.categoryId,
                     );
 
                     if (isEditing) {
@@ -411,7 +411,7 @@ export default function ProductsPage() {
                                   images: values.images
                                     ? [values.images]
                                     : product.images,
-                                }
+                                },
                               );
                               await loadProducts();
                               setEditingId(null);
@@ -445,7 +445,7 @@ export default function ProductsPage() {
                               setSelectedIds((prev) =>
                                 checked
                                   ? [...prev, product.id]
-                                  : prev.filter((id) => id !== product.id)
+                                  : prev.filter((id) => id !== product.id),
                               );
                             }}
                             aria-label={`Select ${product.name}`}
@@ -499,8 +499,8 @@ export default function ProductsPage() {
                               isOutOfStock
                                 ? "text-red-600"
                                 : isLowStock
-                                ? "text-yellow-600"
-                                : "text-gray-900"
+                                  ? "text-yellow-600"
+                                  : "text-gray-900"
                             }`}
                           >
                             {product.stockCount}

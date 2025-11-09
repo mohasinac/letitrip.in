@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import { PRODUCT_ROUTES, buildUrl } from '@/constants/api-routes';
+import { apiService } from "./api.service";
+import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
 import type {
   Product,
   ProductCondition,
@@ -8,7 +8,7 @@ import type {
   ProductVariant,
   ProductDimensions,
   PaginatedResponse,
-} from '@/types';
+} from "@/types";
 
 interface ProductFilters {
   shopId?: string;
@@ -27,8 +27,8 @@ interface ProductFilters {
   tags?: string[];
   page?: number;
   limit?: number;
-  sortBy?: 'price' | 'rating' | 'sales' | 'views' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "price" | "rating" | "sales" | "views" | "createdAt";
+  sortOrder?: "asc" | "desc";
 }
 
 interface CreateProductData {
@@ -51,7 +51,7 @@ interface CreateProductData {
   specifications?: ProductSpecification[];
   variants?: ProductVariant[];
   dimensions?: ProductDimensions;
-  shippingClass?: 'standard' | 'express' | 'heavy' | 'fragile';
+  shippingClass?: "standard" | "express" | "heavy" | "fragile";
   tags?: string[];
   isReturnable: boolean;
   returnWindowDays: number;
@@ -112,27 +112,35 @@ class ProductsService {
 
   // Get product variants (same leaf category)
   async getVariants(slug: string): Promise<Product[]> {
-    const res = await apiService.get<any>(`${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`);
+    const res = await apiService.get<any>(
+      `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`,
+    );
     return res.data || [];
   }
 
   // Get similar products
   async getSimilar(slug: string, limit?: number): Promise<Product[]> {
-    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/similar`, { limit });
+    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/similar`, {
+      limit,
+    });
     const res = await apiService.get<any>(endpoint);
     return res.data || [];
   }
 
   // Get seller's other products
   async getSellerProducts(slug: string, limit?: number): Promise<Product[]> {
-    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, { limit });
+    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
+      limit,
+    });
     const res = await apiService.get<any>(endpoint);
     return res.data || [];
   }
 
   // Update product stock
   async updateStock(slug: string, stockCount: number): Promise<Product> {
-    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), { stockCount });
+    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), {
+      stockCount,
+    });
   }
 
   // Update product status
@@ -147,10 +155,10 @@ class ProductsService {
 
   // Get featured products
   async getFeatured(): Promise<Product[]> {
-    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, { 
-      isFeatured: true, 
-      status: 'published', 
-      limit: 100 
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
+      isFeatured: true,
+      status: "published",
+      limit: 100,
     });
     const res = await apiService.get<any>(endpoint);
     return res.data || res.products || res;
@@ -158,10 +166,10 @@ class ProductsService {
 
   // Get homepage products
   async getHomepage(): Promise<Product[]> {
-    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, { 
-      isFeatured: true, 
-      status: 'published', 
-      limit: 20 
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
+      isFeatured: true,
+      status: "published",
+      limit: 20,
     });
     const res = await apiService.get<any>(endpoint);
     return res.data || res.products || res;

@@ -28,12 +28,16 @@ import {
   TableCheckbox,
   InlineField,
   BulkAction,
+  UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { shopsService, type ShopFilters } from "@/services/shops.service";
 import type { Shop } from "@/types";
+import { SHOP_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminShopsPage() {
   const { user, isAdmin } = useAuth();
+  const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [shops, setShops] = useState<Shop[]>([]);
@@ -43,12 +47,7 @@ export default function AdminShopsPage() {
   const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
 
   // Filters
-  const [verifiedFilter, setVerifiedFilter] = useState<
-    "all" | "verified" | "unverified"
-  >("all");
-  const [bannedFilter, setBannedFilter] = useState<"all" | "active" | "banned">(
-    "all"
-  );
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,7 +64,7 @@ export default function AdminShopsPage() {
     if (user && isAdmin) {
       loadShops();
     }
-  }, [user, isAdmin, searchQuery, verifiedFilter, bannedFilter, currentPage]);
+  }, [user, isAdmin, searchQuery, filterValues, currentPage]);
 
   const loadShops = async () => {
     try {
@@ -76,18 +75,7 @@ export default function AdminShopsPage() {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
-        verified:
-          verifiedFilter === "verified"
-            ? true
-            : verifiedFilter === "unverified"
-            ? false
-            : undefined,
-        banned:
-          bannedFilter === "banned"
-            ? true
-            : bannedFilter === "active"
-            ? false
-            : undefined,
+        ...filterValues,
       };
 
       const response = await shopsService.list(filters);
@@ -372,63 +360,37 @@ export default function AdminShopsPage() {
         </button>
       </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Verification Status
-              </label>
-              <select
-                value={verifiedFilter}
-                onChange={(e) => {
-                  setVerifiedFilter(e.target.value as any);
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              >
-                <option value="all">All Shops</option>
-                <option value="verified">Verified Only</option>
-                <option value="unverified">Unverified Only</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Shop Status
-              </label>
-              <select
-                value={bannedFilter}
-                onChange={(e) => {
-                  setBannedFilter(e.target.value as any);
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active Only</option>
-                <option value="banned">Suspended Only</option>
-              </select>
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={() => {
-                  setVerifiedFilter("all");
-                  setBannedFilter("all");
-                  setSearchQuery("");
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Main Content with Sidebar Layout */}
+      <div className="flex gap-6">
+        {/* Desktop Filters */}
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={SHOP_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({
+                ...prev,
+                [key]: value,
+              }));
+            }}
+            onApply={() => setCurrentPage(1)}
+            onReset={() => {
+              setFilterValues({});
+              setCurrentPage(1);
+            }}
+            isOpen={false}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={totalShops}
+            isLoading={loading}
+          />
+        )}
 
-      {/* Grid View */}
-      {view === "grid" && (
+        {/* Content Area */}
+        <div className="flex-1 space-y-6">
+          {/* Grid View */}
+          {view === "grid" && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {shops.map((shop) => (
             <div
@@ -507,11 +469,11 @@ export default function AdminShopsPage() {
               </div>
             </div>
           ))}
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* Table View */}
-      {view === "table" && (
+          {/* Table View */}
+          {view === "table" && (
         <div className="rounded-lg border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -760,8 +722,53 @@ export default function AdminShopsPage() {
               </div>
             </div>
           )}
+
+          {/* Empty State */}
+          {shops.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <Store className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {searchQuery || Object.keys(filterValues).length > 0
+                  ? "No shops found"
+                  : "No shops yet"}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {searchQuery || Object.keys(filterValues).length > 0
+                  ? "Try adjusting your filters"
+                  : "Shops from sellers will appear here"}
+              </p>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Mobile Filters */}
+        {isMobile && (
+          <UnifiedFilterSidebar
+            sections={SHOP_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({
+                ...prev,
+                [key]: value,
+              }));
+            }}
+            onApply={() => {
+              setShowFilters(false);
+              setCurrentPage(1);
+            }}
+            onReset={() => {
+              setFilterValues({});
+              setCurrentPage(1);
+            }}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={true}
+            resultCount={totalShops}
+            isLoading={loading}
+          />
+        )}
+      </div>
 
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
@@ -773,23 +780,6 @@ export default function AdminShopsPage() {
           loading={actionLoading}
           resourceName="shop"
         />
-      )}
-
-      {/* Empty State */}
-      {shops.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <Store className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
-            {searchQuery || verifiedFilter !== "all" || bannedFilter !== "all"
-              ? "No shops found"
-              : "No shops yet"}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            {searchQuery || verifiedFilter !== "all" || bannedFilter !== "all"
-              ? "Try adjusting your filters"
-              : "Shops from sellers will appear here"}
-          </p>
-        </div>
       )}
 
       {/* Delete Confirmation */}

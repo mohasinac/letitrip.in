@@ -28,7 +28,7 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
 
   const updateFilter = <K extends keyof ShopFilterValues>(
     key: K,
-    value: ShopFilterValues[K]
+    value: ShopFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

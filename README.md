@@ -426,8 +426,8 @@ const config = {
 Edit `src/app/api/middleware/logger.ts`:
 
 ```typescript
-level: process.env.LOG_LEVEL || "debug", // Log level
-  logger.add(new winston.transports.Console());
+level: (process.env.LOG_LEVEL || "debug", // Log level
+  logger.add(new winston.transports.Console()));
 ```
 
 ### Auction Settings

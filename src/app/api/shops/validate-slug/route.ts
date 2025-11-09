@@ -1,34 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * Validate Shop Slug Uniqueness
  * GET /api/shops/validate-slug?slug=awesome-shop&exclude_id=xxx
- * 
+ *
  * Slugs are globally unique across all shops
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get('slug');
-    const excludeId = searchParams.get('exclude_id'); // For edit mode
+    const slug = searchParams.get("slug");
+    const excludeId = searchParams.get("exclude_id"); // For edit mode
 
     if (!slug) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Slug parameter is required',
+          error: "Slug parameter is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if slug exists
-    const query = Collections.shops().where('slug', '==', slug);
+    const query = Collections.shops().where("slug", "==", slug);
     const snapshot = await query.get();
 
     // If editing, exclude current shop
-    const exists = snapshot.docs.some(doc => doc.id !== excludeId);
+    const exists = snapshot.docs.some((doc) => doc.id !== excludeId);
 
     return NextResponse.json({
       success: true,
@@ -36,13 +36,13 @@ export async function GET(request: NextRequest) {
       slug,
     });
   } catch (error) {
-    console.error('Error validating shop slug:', error);
+    console.error("Error validating shop slug:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to validate slug',
+        error: "Failed to validate slug",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

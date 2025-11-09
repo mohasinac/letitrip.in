@@ -1,6 +1,6 @@
 /**
  * Export Utilities
- * 
+ *
  * Utilities for exporting data to CSV, PDF, and other formats
  * Used for reports, invoices, and data exports
  */
@@ -15,46 +15,46 @@ export function arrayToCSV<T extends Record<string, any>>(
     columns?: (keyof T)[]; // Specific columns to include
     delimiter?: string;
     includeHeaders?: boolean;
-  } = {}
+  } = {},
 ): string {
-  const {
-    headers,
-    columns,
-    delimiter = ',',
-    includeHeaders = true,
-  } = options;
+  const { headers, columns, delimiter = ",", includeHeaders = true } = options;
 
-  if (data.length === 0) return '';
+  if (data.length === 0) return "";
 
   // Determine columns to export
   const cols = columns || (Object.keys(data[0]) as (keyof T)[]);
-  
+
   // Generate header row
   const headerRow = headers || cols.map(String);
-  
+
   // Generate data rows
-  const rows = data.map(item => 
-    cols.map(col => {
-      const value = item[col];
-      
-      // Handle different types
-      if (value === null || value === undefined) return '';
-      if (typeof value === 'object') return JSON.stringify(value);
-      if (typeof value === 'string' && (value.includes(delimiter) || value.includes('\n') || value.includes('"'))) {
-        // Escape quotes and wrap in quotes
-        return `"${value.replace(/"/g, '""')}"`;
-      }
-      
-      return String(value);
-    }).join(delimiter)
+  const rows = data.map((item) =>
+    cols
+      .map((col) => {
+        const value = item[col];
+
+        // Handle different types
+        if (value === null || value === undefined) return "";
+        if (typeof value === "object") return JSON.stringify(value);
+        if (
+          typeof value === "string" &&
+          (value.includes(delimiter) ||
+            value.includes("\n") ||
+            value.includes('"'))
+        ) {
+          // Escape quotes and wrap in quotes
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+
+        return String(value);
+      })
+      .join(delimiter),
   );
 
   // Combine header and rows
-  const lines = includeHeaders 
-    ? [headerRow.join(delimiter), ...rows]
-    : rows;
+  const lines = includeHeaders ? [headerRow.join(delimiter), ...rows] : rows;
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
@@ -63,21 +63,24 @@ export function arrayToCSV<T extends Record<string, any>>(
 export function downloadCSV(
   data: any[],
   filename: string,
-  options?: Parameters<typeof arrayToCSV>[1]
+  options?: Parameters<typeof arrayToCSV>[1],
 ): void {
   const csv = arrayToCSV(data, options);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename.endsWith('.csv') ? filename : `${filename}.csv`);
-  link.style.visibility = 'hidden';
-  
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    filename.endsWith(".csv") ? filename : `${filename}.csv`,
+  );
+  link.style.visibility = "hidden";
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   // Clean up
   URL.revokeObjectURL(url);
 }
@@ -97,18 +100,19 @@ export function exportProductsToCSV(
     status: string;
     createdAt: Date | string;
   }>,
-  filename: string = 'products-export'
+  filename: string = "products-export",
 ): void {
-  const formatted = products.map(p => ({
-    'Product ID': p.id,
-    'Product Name': p.name,
-    'SKU': p.sku || '',
-    'Price (₹)': p.price,
-    'Original Price (₹)': p.originalPrice || '',
-    'Stock': p.stockCount,
-    'Category': p.category || '',
-    'Status': p.status,
-    'Created At': typeof p.createdAt === 'string' ? p.createdAt : p.createdAt.toISOString(),
+  const formatted = products.map((p) => ({
+    "Product ID": p.id,
+    "Product Name": p.name,
+    SKU: p.sku || "",
+    "Price (₹)": p.price,
+    "Original Price (₹)": p.originalPrice || "",
+    Stock: p.stockCount,
+    Category: p.category || "",
+    Status: p.status,
+    "Created At":
+      typeof p.createdAt === "string" ? p.createdAt : p.createdAt.toISOString(),
   }));
 
   downloadCSV(formatted, filename);
@@ -128,17 +132,18 @@ export function exportOrdersToCSV(
     paymentStatus?: string;
     createdAt: Date | string;
   }>,
-  filename: string = 'orders-export'
+  filename: string = "orders-export",
 ): void {
-  const formatted = orders.map(o => ({
-    'Order ID': o.id,
-    'Order Number': o.orderNumber || o.id.slice(-8).toUpperCase(),
-    'Customer Name': o.customerName,
-    'Customer Email': o.customerEmail,
-    'Total Amount (₹)': o.totalAmount,
-    'Order Status': o.status,
-    'Payment Status': o.paymentStatus || '',
-    'Order Date': typeof o.createdAt === 'string' ? o.createdAt : o.createdAt.toISOString(),
+  const formatted = orders.map((o) => ({
+    "Order ID": o.id,
+    "Order Number": o.orderNumber || o.id.slice(-8).toUpperCase(),
+    "Customer Name": o.customerName,
+    "Customer Email": o.customerEmail,
+    "Total Amount (₹)": o.totalAmount,
+    "Order Status": o.status,
+    "Payment Status": o.paymentStatus || "",
+    "Order Date":
+      typeof o.createdAt === "string" ? o.createdAt : o.createdAt.toISOString(),
   }));
 
   downloadCSV(formatted, filename);
@@ -154,13 +159,13 @@ export function exportRevenueToCSV(
     orders: number;
     averageOrderValue: number;
   }>,
-  filename: string = 'revenue-report'
+  filename: string = "revenue-report",
 ): void {
-  const formatted = revenueData.map(r => ({
-    'Date': r.date,
-    'Revenue (₹)': r.revenue,
-    'Orders': r.orders,
-    'Average Order Value (₹)': r.averageOrderValue,
+  const formatted = revenueData.map((r) => ({
+    Date: r.date,
+    "Revenue (₹)": r.revenue,
+    Orders: r.orders,
+    "Average Order Value (₹)": r.averageOrderValue,
   }));
 
   downloadCSV(formatted, filename);
@@ -179,16 +184,17 @@ export function exportCustomersToCSV(
     totalSpent: number;
     createdAt: Date | string;
   }>,
-  filename: string = 'customers-export'
+  filename: string = "customers-export",
 ): void {
-  const formatted = customers.map(c => ({
-    'Customer ID': c.id,
-    'Name': c.name,
-    'Email': c.email,
-    'Phone': c.phone || '',
-    'Total Orders': c.totalOrders,
-    'Total Spent (₹)': c.totalSpent,
-    'Registered On': typeof c.createdAt === 'string' ? c.createdAt : c.createdAt.toISOString(),
+  const formatted = customers.map((c) => ({
+    "Customer ID": c.id,
+    Name: c.name,
+    Email: c.email,
+    Phone: c.phone || "",
+    "Total Orders": c.totalOrders,
+    "Total Spent (₹)": c.totalSpent,
+    "Registered On":
+      typeof c.createdAt === "string" ? c.createdAt : c.createdAt.toISOString(),
   }));
 
   downloadCSV(formatted, filename);
@@ -201,19 +207,19 @@ export function generateInvoiceHTML(invoice: {
   invoiceNumber: string;
   invoiceDate: string;
   dueDate?: string;
-  
+
   // Seller info
   sellerName: string;
   sellerAddress: string;
   sellerGST?: string;
   sellerPAN?: string;
-  
+
   // Customer info
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
   customerAddress: string;
-  
+
   // Items
   items: Array<{
     name: string;
@@ -221,7 +227,7 @@ export function generateInvoiceHTML(invoice: {
     price: number;
     total: number;
   }>;
-  
+
   // Totals
   subtotal: number;
   tax?: number;
@@ -229,7 +235,7 @@ export function generateInvoiceHTML(invoice: {
   shipping?: number;
   discount?: number;
   total: number;
-  
+
   // Notes
   notes?: string;
   terms?: string;
@@ -338,21 +344,21 @@ export function generateInvoiceHTML(invoice: {
     <div>
       <p class="section-title">From</p>
       <p><strong>${invoice.sellerName}</strong></p>
-      <p>${invoice.sellerAddress.replace(/\n/g, '<br>')}</p>
-      ${invoice.sellerGST ? `<p>GST: ${invoice.sellerGST}</p>` : ''}
-      ${invoice.sellerPAN ? `<p>PAN: ${invoice.sellerPAN}</p>` : ''}
+      <p>${invoice.sellerAddress.replace(/\n/g, "<br>")}</p>
+      ${invoice.sellerGST ? `<p>GST: ${invoice.sellerGST}</p>` : ""}
+      ${invoice.sellerPAN ? `<p>PAN: ${invoice.sellerPAN}</p>` : ""}
     </div>
     <div>
       <p class="section-title">To</p>
       <p><strong>${invoice.customerName}</strong></p>
       <p>${invoice.customerEmail}</p>
-      ${invoice.customerPhone ? `<p>${invoice.customerPhone}</p>` : ''}
-      <p>${invoice.customerAddress.replace(/\n/g, '<br>')}</p>
+      ${invoice.customerPhone ? `<p>${invoice.customerPhone}</p>` : ""}
+      <p>${invoice.customerAddress.replace(/\n/g, "<br>")}</p>
     </div>
     <div>
       <p class="section-title">Invoice Details</p>
       <p><strong>Date:</strong> ${invoice.invoiceDate}</p>
-      ${invoice.dueDate ? `<p><strong>Due Date:</strong> ${invoice.dueDate}</p>` : ''}
+      ${invoice.dueDate ? `<p><strong>Due Date:</strong> ${invoice.dueDate}</p>` : ""}
     </div>
   </div>
 
@@ -366,14 +372,18 @@ export function generateInvoiceHTML(invoice: {
       </tr>
     </thead>
     <tbody>
-      ${invoice.items.map(item => `
+      ${invoice.items
+        .map(
+          (item) => `
         <tr>
           <td>${item.name}</td>
           <td class="text-right">${item.quantity}</td>
-          <td class="text-right">₹${item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-          <td class="text-right">₹${item.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td class="text-right">₹${item.price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+          <td class="text-right">₹${item.total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
         </tr>
-      `).join('')}
+      `,
+        )
+        .join("")}
     </tbody>
   </table>
 
@@ -381,50 +391,70 @@ export function generateInvoiceHTML(invoice: {
     <table>
       <tr>
         <td>Subtotal:</td>
-        <td class="text-right">₹${invoice.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+        <td class="text-right">₹${invoice.subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
       </tr>
-      ${invoice.discount ? `
+      ${
+        invoice.discount
+          ? `
         <tr>
           <td>Discount:</td>
-          <td class="text-right">-₹${invoice.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td class="text-right">-₹${invoice.discount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
         </tr>
-      ` : ''}
-      ${invoice.shipping ? `
+      `
+          : ""
+      }
+      ${
+        invoice.shipping
+          ? `
         <tr>
           <td>Shipping:</td>
-          <td class="text-right">₹${invoice.shipping.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td class="text-right">₹${invoice.shipping.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
         </tr>
-      ` : ''}
-      ${invoice.tax ? `
+      `
+          : ""
+      }
+      ${
+        invoice.tax
+          ? `
         <tr>
           <td>Tax (${invoice.taxRate || 18}%):</td>
-          <td class="text-right">₹${invoice.tax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td class="text-right">₹${invoice.tax.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
         </tr>
-      ` : ''}
+      `
+          : ""
+      }
       <tr class="total-row">
         <td>Total:</td>
-        <td class="text-right">₹${invoice.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+        <td class="text-right">₹${invoice.total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
       </tr>
     </table>
   </div>
 
-  ${invoice.notes ? `
+  ${
+    invoice.notes
+      ? `
     <div class="notes">
       <p class="section-title">Notes</p>
       <p>${invoice.notes}</p>
     </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${invoice.terms ? `
+  ${
+    invoice.terms
+      ? `
     <div class="notes">
       <p class="section-title">Terms & Conditions</p>
       <p>${invoice.terms}</p>
     </div>
-  ` : ''}
+  `
+      : ""
+  }
 
   <div class="footer">
     <p>Thank you for your business!</p>
-    <p>Generated on ${new Date().toLocaleDateString('en-IN')}</p>
+    <p>Generated on ${new Date().toLocaleDateString("en-IN")}</p>
   </div>
 </body>
 </html>
@@ -435,15 +465,15 @@ export function generateInvoiceHTML(invoice: {
  * Print HTML content (for invoices)
  */
 export function printHTML(html: string): void {
-  const printWindow = window.open('', '_blank');
+  const printWindow = window.open("", "_blank");
   if (!printWindow) {
-    console.error('Failed to open print window');
+    console.error("Failed to open print window");
     return;
   }
-  
+
   printWindow.document.write(html);
   printWindow.document.close();
-  
+
   // Wait for content to load before printing
   printWindow.onload = () => {
     printWindow.print();
@@ -454,32 +484,38 @@ export function printHTML(html: string): void {
  * Download HTML as file
  */
 export function downloadHTML(html: string, filename: string): void {
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
-  const link = document.createElement('a');
-  
+  const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+  const link = document.createElement("a");
+
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename.endsWith('.html') ? filename : `${filename}.html`);
-  link.style.visibility = 'hidden';
-  
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    filename.endsWith(".html") ? filename : `${filename}.html`,
+  );
+  link.style.visibility = "hidden";
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   URL.revokeObjectURL(url);
 }
 
 /**
  * Generate date range filename suffix
  */
-export function generateDateRangeFilename(startDate?: Date, endDate?: Date): string {
+export function generateDateRangeFilename(
+  startDate?: Date,
+  endDate?: Date,
+): string {
   if (!startDate && !endDate) {
-    return new Date().toISOString().split('T')[0];
+    return new Date().toISOString().split("T")[0];
   }
-  
-  const start = startDate ? startDate.toISOString().split('T')[0] : 'start';
-  const end = endDate ? endDate.toISOString().split('T')[0] : 'end';
-  
+
+  const start = startDate ? startDate.toISOString().split("T")[0] : "start";
+  const end = endDate ? endDate.toISOString().split("T")[0] : "end";
+
   return `${start}_to_${end}`;
 }
 
@@ -488,17 +524,20 @@ export function generateDateRangeFilename(startDate?: Date, endDate?: Date): str
  */
 export function exportJSON(data: any, filename: string): void {
   const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
-  const link = document.createElement('a');
-  
+  const blob = new Blob([json], { type: "application/json;charset=utf-8;" });
+  const link = document.createElement("a");
+
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename.endsWith('.json') ? filename : `${filename}.json`);
-  link.style.visibility = 'hidden';
-  
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    filename.endsWith(".json") ? filename : `${filename}.json`,
+  );
+  link.style.visibility = "hidden";
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   URL.revokeObjectURL(url);
 }

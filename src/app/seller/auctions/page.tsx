@@ -157,7 +157,7 @@ export default function SellerAuctionsPage() {
         {
           action: actionId,
           ids: selectedIds,
-        }
+        },
       );
 
       if (response.success) {
@@ -370,7 +370,7 @@ export default function SellerAuctionsPage() {
                           }
                           onChange={(checked) => {
                             setSelectedIds(
-                              checked ? auctions.map((a) => a.id) : []
+                              checked ? auctions.map((a) => a.id) : [],
                             );
                           }}
                           aria-label="Select all auctions"
@@ -453,14 +453,14 @@ export default function SellerAuctionsPage() {
                                     images: values.images
                                       ? [values.images]
                                       : auction.images,
-                                  }
+                                  },
                                 );
                                 await loadAuctions();
                                 setEditingId(null);
                               } catch (error) {
                                 console.error(
                                   "Failed to update auction:",
-                                  error
+                                  error,
                                 );
                                 throw error;
                               }
@@ -485,7 +485,7 @@ export default function SellerAuctionsPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, auction.id]
-                                    : prev.filter((id) => id !== auction.id)
+                                    : prev.filter((id) => id !== auction.id),
                                 );
                               }}
                               aria-label={`Select ${auction.name}`}

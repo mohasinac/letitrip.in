@@ -34,7 +34,7 @@ export default function FAQPage() {
     FAQ_ITEMS.map((item) => ({
       question: item.question,
       answer: item.answer,
-    }))
+    })),
   );
 
   return (

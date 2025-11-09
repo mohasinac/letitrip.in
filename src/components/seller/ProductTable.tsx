@@ -136,8 +136,8 @@ export default function ProductTable({
                 isOutOfStock
                   ? "text-red-600"
                   : isLowStock
-                  ? "text-yellow-600"
-                  : "text-gray-900"
+                    ? "text-yellow-600"
+                    : "text-gray-900"
               }`}
             >
               {stockCount}

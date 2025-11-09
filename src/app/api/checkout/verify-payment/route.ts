@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Collections } from '../../lib/firebase/collections';
-import { getCurrentUser } from '../../lib/session';
-import { z } from 'zod';
-import crypto from 'crypto';
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "../../lib/firebase/collections";
+import { getCurrentUser } from "../../lib/session";
+import { z } from "zod";
+import crypto from "crypto";
 
 const VerifyPaymentSchema = z.object({
   order_ids: z.array(z.string()).optional(), // Array of order IDs for multi-shop
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -25,57 +25,56 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { order_id, order_ids, razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      validation.data;
+    const {
+      order_id,
+      order_ids,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = validation.data;
 
     // Support both single order and multiple orders
     const orderIdsToProcess = order_ids || (order_id ? [order_id] : []);
 
     if (orderIdsToProcess.length === 0) {
       return NextResponse.json(
-        { error: 'No order IDs provided' },
-        { status: 400 }
+        { error: "No order IDs provided" },
+        { status: 400 },
       );
     }
 
     // Fetch all orders
     const orderDocs = await Promise.all(
-      orderIdsToProcess.map((id: string) => Collections.orders().doc(id).get())
+      orderIdsToProcess.map((id: string) => Collections.orders().doc(id).get()),
     );
 
     // Validate all orders exist and belong to user
     for (const orderDoc of orderDocs) {
       if (!orderDoc.exists) {
-        return NextResponse.json(
-          { error: 'Order not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Order not found" }, { status: 404 });
       }
 
       const order = orderDoc.data();
       if (order?.user_id !== user.id) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     }
 
     // Verify signature
     // In production, use actual Razorpay secret key
-    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET || 'test_secret';
+    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET || "test_secret";
     const generatedSignature = crypto
-      .createHmac('sha256', razorpaySecret)
+      .createHmac("sha256", razorpaySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest('hex');
+      .digest("hex");
 
     if (generatedSignature !== razorpay_signature) {
       // In production, log this as potential fraud
-      console.error('Payment signature mismatch:', {
+      console.error("Payment signature mismatch:", {
         order_ids: orderIdsToProcess,
         razorpay_order_id,
         razorpay_payment_id,
@@ -85,16 +84,16 @@ export async function POST(request: NextRequest) {
       const failBatch = Collections.orders().firestore.batch();
       for (const orderDoc of orderDocs) {
         failBatch.update(orderDoc.ref, {
-          payment_status: 'failed',
-          payment_error: 'Signature verification failed',
+          payment_status: "failed",
+          payment_error: "Signature verification failed",
           updated_at: new Date(),
         });
       }
       await failBatch.commit();
 
       return NextResponse.json(
-        { error: 'Payment verification failed' },
-        { status: 400 }
+        { error: "Payment verification failed" },
+        { status: 400 },
       );
     }
 
@@ -106,16 +105,17 @@ export async function POST(request: NextRequest) {
     // Update all orders to paid status
     for (const orderDoc of orderDocs) {
       batch.update(orderDoc.ref, {
-        payment_status: 'paid',
+        payment_status: "paid",
         razorpay_payment_id,
         paid_at: new Date(),
         updated_at: new Date(),
       });
 
       const order = orderDoc.data();
-      
+
       // Collect product IDs for stock update
-      const productIds = order?.items?.map((item: any) => item.product_id) || [];
+      const productIds =
+        order?.items?.map((item: any) => item.product_id) || [];
       allProductIds.push(...productIds);
 
       // Collect coupons for usage update
@@ -127,7 +127,9 @@ export async function POST(request: NextRequest) {
     // Fetch and update product stock
     const uniqueProductIds = [...new Set(allProductIds)];
     const productSnapshots = await Promise.all(
-      uniqueProductIds.map((id: string) => Collections.products().doc(id).get())
+      uniqueProductIds.map((id: string) =>
+        Collections.products().doc(id).get(),
+      ),
     );
 
     const products = productSnapshots.map((snap: any) => ({
@@ -140,7 +142,8 @@ export async function POST(request: NextRequest) {
     for (const orderDoc of orderDocs) {
       const order = orderDoc.data();
       for (const item of order?.items || []) {
-        productQuantities[item.product_id] = (productQuantities[item.product_id] || 0) + item.quantity;
+        productQuantities[item.product_id] =
+          (productQuantities[item.product_id] || 0) + item.quantity;
       }
     }
 
@@ -150,7 +153,10 @@ export async function POST(request: NextRequest) {
       if (product) {
         const productRef = Collections.products().doc(productId);
         batch.update(productRef, {
-          stock_count: Math.max(0, product.stock_count - productQuantities[productId]),
+          stock_count: Math.max(
+            0,
+            product.stock_count - productQuantities[productId],
+          ),
           updated_at: new Date(),
         });
       }
@@ -158,7 +164,7 @@ export async function POST(request: NextRequest) {
 
     // Clear cart
     const cartSnapshot = await Collections.cart()
-      .where('user_id', '==', user.id)
+      .where("user_id", "==", user.id)
       .get();
 
     cartSnapshot.docs.forEach((doc: any) => {
@@ -169,7 +175,7 @@ export async function POST(request: NextRequest) {
     const uniqueCoupons = [...new Set(allCoupons)];
     for (const couponCode of uniqueCoupons) {
       const couponSnapshot = await Collections.coupons()
-        .where('code', '==', couponCode)
+        .where("code", "==", couponCode)
         .limit(1)
         .get();
 
@@ -187,13 +193,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       order_ids: orderIdsToProcess,
-      payment_status: 'paid',
+      payment_status: "paid",
     });
   } catch (error: any) {
-    console.error('Verify payment error:', error);
+    console.error("Verify payment error:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to verify payment' },
-      { status: 500 }
+      { error: error.message || "Failed to verify payment" },
+      { status: 500 },
     );
   }
 }

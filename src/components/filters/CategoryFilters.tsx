@@ -27,7 +27,7 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
 
   const updateFilter = <K extends keyof CategoryFilterValues>(
     key: K,
-    value: CategoryFilterValues[K]
+    value: CategoryFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

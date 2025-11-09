@@ -8,38 +8,38 @@
  */
 export const STORAGE_BUCKETS = {
   // Shop & Product Media
-  SHOP_LOGOS: 'shop-logos',
-  SHOP_BANNERS: 'shop-banners',
-  PRODUCT_IMAGES: 'product-images',
-  PRODUCT_VIDEOS: 'product-videos',
-  
+  SHOP_LOGOS: "shop-logos",
+  SHOP_BANNERS: "shop-banners",
+  PRODUCT_IMAGES: "product-images",
+  PRODUCT_VIDEOS: "product-videos",
+
   // Category Media
-  CATEGORY_IMAGES: 'category-images',
-  
+  CATEGORY_IMAGES: "category-images",
+
   // Auction Media
-  AUCTION_IMAGES: 'auction-images',
-  AUCTION_VIDEOS: 'auction-videos',
-  
+  AUCTION_IMAGES: "auction-images",
+  AUCTION_VIDEOS: "auction-videos",
+
   // User Media
-  USER_AVATARS: 'user-avatars',
-  
+  USER_AVATARS: "user-avatars",
+
   // Review Media
-  REVIEW_IMAGES: 'review-images',
-  REVIEW_VIDEOS: 'review-videos',
-  
+  REVIEW_IMAGES: "review-images",
+  REVIEW_VIDEOS: "review-videos",
+
   // Return Media (for dispute evidence)
-  RETURN_IMAGES: 'return-images',
-  RETURN_VIDEOS: 'return-videos',
-  
+  RETURN_IMAGES: "return-images",
+  RETURN_VIDEOS: "return-videos",
+
   // Support Ticket Attachments
-  TICKET_ATTACHMENTS: 'ticket-attachments',
-  
+  TICKET_ATTACHMENTS: "ticket-attachments",
+
   // Documents
-  INVOICES: 'invoices',
-  SHIPPING_LABELS: 'shipping-labels',
-  
+  INVOICES: "invoices",
+  SHIPPING_LABELS: "shipping-labels",
+
   // Temporary uploads (for processing)
-  TEMP_UPLOADS: 'temp-uploads',
+  TEMP_UPLOADS: "temp-uploads",
 } as const;
 
 /**
@@ -48,61 +48,61 @@ export const STORAGE_BUCKETS = {
  */
 export const STORAGE_PATHS = {
   // Shop paths
-  shopLogo: (shopId: string, filename: string) => 
+  shopLogo: (shopId: string, filename: string) =>
     `${STORAGE_BUCKETS.SHOP_LOGOS}/${shopId}/${filename}`,
-  
-  shopBanner: (shopId: string, filename: string) => 
+
+  shopBanner: (shopId: string, filename: string) =>
     `${STORAGE_BUCKETS.SHOP_BANNERS}/${shopId}/${filename}`,
-  
+
   // Product paths
-  productImage: (shopId: string, productId: string, filename: string) => 
+  productImage: (shopId: string, productId: string, filename: string) =>
     `${STORAGE_BUCKETS.PRODUCT_IMAGES}/${shopId}/${productId}/${filename}`,
-  
-  productVideo: (shopId: string, productId: string, filename: string) => 
+
+  productVideo: (shopId: string, productId: string, filename: string) =>
     `${STORAGE_BUCKETS.PRODUCT_VIDEOS}/${shopId}/${productId}/${filename}`,
-  
+
   // Category paths
-  categoryImage: (categoryId: string, filename: string) => 
+  categoryImage: (categoryId: string, filename: string) =>
     `${STORAGE_BUCKETS.CATEGORY_IMAGES}/${categoryId}/${filename}`,
-  
+
   // Auction paths
-  auctionImage: (shopId: string, auctionId: string, filename: string) => 
+  auctionImage: (shopId: string, auctionId: string, filename: string) =>
     `${STORAGE_BUCKETS.AUCTION_IMAGES}/${shopId}/${auctionId}/${filename}`,
-  
-  auctionVideo: (shopId: string, auctionId: string, filename: string) => 
+
+  auctionVideo: (shopId: string, auctionId: string, filename: string) =>
     `${STORAGE_BUCKETS.AUCTION_VIDEOS}/${shopId}/${auctionId}/${filename}`,
-  
+
   // User paths
-  userAvatar: (userId: string, filename: string) => 
+  userAvatar: (userId: string, filename: string) =>
     `${STORAGE_BUCKETS.USER_AVATARS}/${userId}/${filename}`,
-  
+
   // Review paths
-  reviewImage: (userId: string, reviewId: string, filename: string) => 
+  reviewImage: (userId: string, reviewId: string, filename: string) =>
     `${STORAGE_BUCKETS.REVIEW_IMAGES}/${userId}/${reviewId}/${filename}`,
-  
-  reviewVideo: (userId: string, reviewId: string, filename: string) => 
+
+  reviewVideo: (userId: string, reviewId: string, filename: string) =>
     `${STORAGE_BUCKETS.REVIEW_VIDEOS}/${userId}/${reviewId}/${filename}`,
-  
+
   // Return paths
-  returnImage: (userId: string, returnId: string, filename: string) => 
+  returnImage: (userId: string, returnId: string, filename: string) =>
     `${STORAGE_BUCKETS.RETURN_IMAGES}/${userId}/${returnId}/${filename}`,
-  
-  returnVideo: (userId: string, returnId: string, filename: string) => 
+
+  returnVideo: (userId: string, returnId: string, filename: string) =>
     `${STORAGE_BUCKETS.RETURN_VIDEOS}/${userId}/${returnId}/${filename}`,
-  
+
   // Support ticket paths
-  ticketAttachment: (userId: string, ticketId: string, filename: string) => 
+  ticketAttachment: (userId: string, ticketId: string, filename: string) =>
     `${STORAGE_BUCKETS.TICKET_ATTACHMENTS}/${userId}/${ticketId}/${filename}`,
-  
+
   // Document paths
-  invoice: (orderId: string, filename: string) => 
+  invoice: (orderId: string, filename: string) =>
     `${STORAGE_BUCKETS.INVOICES}/${orderId}/${filename}`,
-  
-  shippingLabel: (orderId: string, filename: string) => 
+
+  shippingLabel: (orderId: string, filename: string) =>
     `${STORAGE_BUCKETS.SHIPPING_LABELS}/${orderId}/${filename}`,
-  
+
   // Temporary upload path
-  tempUpload: (userId: string, filename: string) => 
+  tempUpload: (userId: string, filename: string) =>
     `${STORAGE_BUCKETS.TEMP_UPLOADS}/${userId}/${Date.now()}-${filename}`,
 } as const;
 
@@ -117,35 +117,29 @@ export const STORAGE_CONFIG = {
     DOCUMENT: 5 * 1024 * 1024, // 5MB
     AVATAR: 2 * 1024 * 1024, // 2MB
   },
-  
+
   // Allowed MIME types
   ALLOWED_MIME_TYPES: {
-    IMAGES: [
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'image/webp',
-      'image/gif',
-    ],
+    IMAGES: ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"],
     VIDEOS: [
-      'video/mp4',
-      'video/webm',
-      'video/quicktime', // .mov
+      "video/mp4",
+      "video/webm",
+      "video/quicktime", // .mov
     ],
     DOCUMENTS: [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ],
   },
-  
+
   // File extensions
   ALLOWED_EXTENSIONS: {
-    IMAGES: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
-    VIDEOS: ['.mp4', '.webm', '.mov'],
-    DOCUMENTS: ['.pdf', '.doc', '.docx'],
+    IMAGES: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+    VIDEOS: [".mp4", ".webm", ".mov"],
+    DOCUMENTS: [".pdf", ".doc", ".docx"],
   },
-  
+
   // Image optimization settings
   IMAGE_OPTIMIZATION: {
     THUMBNAIL: {
@@ -169,7 +163,7 @@ export const STORAGE_CONFIG = {
       quality: 90,
     },
   },
-  
+
   // Video optimization settings
   VIDEO_OPTIMIZATION: {
     THUMBNAIL: {
@@ -179,7 +173,7 @@ export const STORAGE_CONFIG = {
     },
     MAX_DURATION: 300, // 5 minutes in seconds
   },
-  
+
   // Cleanup settings
   CLEANUP: {
     TEMP_FILES_TTL: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
@@ -193,25 +187,26 @@ export const STORAGE_CONFIG = {
 export const MEDIA_URL_CONFIG = {
   // Placeholder images
   PLACEHOLDERS: {
-    PRODUCT: '/images/placeholder-product.png',
-    SHOP_LOGO: '/images/placeholder-shop-logo.png',
-    SHOP_BANNER: '/images/placeholder-shop-banner.png',
-    CATEGORY: '/images/placeholder-category.png',
-    AVATAR: '/images/placeholder-avatar.png',
-    AUCTION: '/images/placeholder-auction.png',
+    PRODUCT: "/images/placeholder-product.png",
+    SHOP_LOGO: "/images/placeholder-shop-logo.png",
+    SHOP_BANNER: "/images/placeholder-shop-banner.png",
+    CATEGORY: "/images/placeholder-category.png",
+    AVATAR: "/images/placeholder-avatar.png",
+    AUCTION: "/images/placeholder-auction.png",
   },
-  
+
   // CDN settings (if using a CDN)
-  CDN_BASE_URL: process.env.NEXT_PUBLIC_CDN_URL || '',
-  USE_CDN: process.env.NEXT_PUBLIC_USE_CDN === 'true',
-  
+  CDN_BASE_URL: process.env.NEXT_PUBLIC_CDN_URL || "",
+  USE_CDN: process.env.NEXT_PUBLIC_USE_CDN === "true",
+
   // Cache control
   CACHE_CONTROL: {
-    IMMUTABLE: 'public, max-age=31536000, immutable',
-    LONG: 'public, max-age=86400', // 1 day
-    SHORT: 'public, max-age=3600', // 1 hour
-    NO_CACHE: 'no-cache, no-store, must-revalidate',
+    IMMUTABLE: "public, max-age=31536000, immutable",
+    LONG: "public, max-age=86400", // 1 day
+    SHORT: "public, max-age=3600", // 1 hour
+    NO_CACHE: "no-cache, no-store, must-revalidate",
   },
 } as const;
 
-export type StorageBucket = typeof STORAGE_BUCKETS[keyof typeof STORAGE_BUCKETS];
+export type StorageBucket =
+  (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];

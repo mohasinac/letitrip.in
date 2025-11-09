@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withMiddleware } from '../middleware';
-import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { withMiddleware } from "../middleware";
+import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 
 /**
  * Example protected route that requires authentication
@@ -12,7 +12,7 @@ async function protectedHandler(req: AuthenticatedRequest) {
 
   return NextResponse.json(
     {
-      message: 'This is a protected endpoint',
+      message: "This is a protected endpoint",
       user: {
         userId,
         email,
@@ -21,7 +21,7 @@ async function protectedHandler(req: AuthenticatedRequest) {
       sessionId,
       timestamp: new Date().toISOString(),
     },
-    { status: 200 }
+    { status: 200 },
   );
 }
 

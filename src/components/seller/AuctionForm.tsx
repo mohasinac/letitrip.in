@@ -69,7 +69,7 @@ export default function AuctionForm({
       const response = await fetch(
         `/api/auctions/validate-slug?slug=${encodeURIComponent(slug)}&shop_id=${
           formData.shopId
-        }`
+        }`,
       );
       const data = await response.json();
 
@@ -272,7 +272,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean)
+                    .filter(Boolean),
                 )
               }
               rows={3}
@@ -297,7 +297,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean)
+                    .filter(Boolean),
                 )
               }
               rows={2}

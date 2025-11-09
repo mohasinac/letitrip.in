@@ -37,7 +37,7 @@ export function ShopOrderSummary({
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const discount = appliedCoupon?.discountAmount || 0;
   const shipping = subtotal >= 5000 ? 0 : 100;

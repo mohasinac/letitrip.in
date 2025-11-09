@@ -65,7 +65,7 @@ export default function EditHeroSlidePage({
     try {
       setLoading(true);
       const data = (await apiService.get(
-        `/admin/hero-slides/${params.id}`
+        `/admin/hero-slides/${params.id}`,
       )) as HeroSlide;
       setFormData(data);
     } catch (error) {

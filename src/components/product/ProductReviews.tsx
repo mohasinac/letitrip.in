@@ -47,7 +47,7 @@ export function ProductReviews({
       if (reviewsList.length > 0) {
         const totalRating = reviewsList.reduce(
           (sum: number, r: Review) => sum + r.rating,
-          0
+          0,
         );
         const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
         reviewsList.forEach((r: Review) => {

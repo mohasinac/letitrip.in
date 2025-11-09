@@ -27,7 +27,7 @@ export default function ComponentDemoPage() {
     setTimeout(() => toast.error("Error! Something went wrong."), 500);
     setTimeout(
       () => toast.warning("Warning! Please review your changes."),
-      1000
+      1000,
     );
     setTimeout(() => toast.info("Info: Processing your request..."), 1500);
   };

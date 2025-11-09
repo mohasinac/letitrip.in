@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit } from './ratelimiter';
-import { withCache } from './cache';
-import { withLogger } from './logger';
+import { NextRequest, NextResponse } from "next/server";
+import { withRateLimit } from "./ratelimiter";
+import { withCache } from "./cache";
+import { withLogger } from "./logger";
 
 interface MiddlewareConfig {
   rateLimit?: {
@@ -23,7 +23,7 @@ interface MiddlewareConfig {
 export async function withMiddleware(
   req: NextRequest,
   handler: (req: NextRequest) => Promise<NextResponse>,
-  config: MiddlewareConfig = {}
+  config: MiddlewareConfig = {},
 ) {
   // Apply middleware in order: Logger -> RateLimit -> Cache -> Handler
   return withLogger(
@@ -34,14 +34,14 @@ export async function withMiddleware(
         async (rateLimitedReq) => {
           return withCache(rateLimitedReq, handler, config.cache);
         },
-        config.rateLimit
+        config.rateLimit,
       );
     },
-    config.logger?.context
+    config.logger?.context,
   );
 }
 
 // Export individual middleware
-export { withRateLimit } from './ratelimiter';
-export { withCache, cacheManager } from './cache';
-export { withLogger, apiLogger } from './logger';
+export { withRateLimit } from "./ratelimiter";
+export { withCache, cacheManager } from "./cache";
+export { withLogger, apiLogger } from "./logger";

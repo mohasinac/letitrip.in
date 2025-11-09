@@ -39,7 +39,7 @@ export default function UploadProgress() {
   if (uploads.length === 0) return null;
 
   const activeUploads = uploads.filter(
-    (u) => u.status === "pending" || u.status === "uploading"
+    (u) => u.status === "pending" || u.status === "uploading",
   );
 
   return (

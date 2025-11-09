@@ -1,28 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Collections } from '@/app/api/lib/firebase/collections';
-import { getCurrentUser } from '../lib/session';
-import { COLLECTIONS } from '@/constants/database';
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import { getCurrentUser } from "../lib/session";
+import { COLLECTIONS } from "@/constants/database";
 
 // GET /api/cart - Get user cart with summary
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     // Get cart items
     const cartSnapshot = await Collections.cart()
-      .where('user_id', '==', user.id)
+      .where("user_id", "==", user.id)
       .get();
 
     const items = await Promise.all(
       cartSnapshot.docs.map(async (doc: any) => {
         const data = doc.data();
-        
+
         // Get product details
-        const productDoc = await Collections.products().doc(data.product_id).get();
+        const productDoc = await Collections.products()
+          .doc(data.product_id)
+          .get();
         const product = productDoc.data();
 
         if (!product) {
@@ -38,23 +43,26 @@ export async function GET(request: NextRequest) {
           userId: data.user_id,
           productId: data.product_id,
           productName: product.name,
-          productImage: product.images?.[0] || '',
+          productImage: product.images?.[0] || "",
           price: product.price,
           originalPrice: product.original_price,
           quantity: data.quantity,
           variant: data.variant,
           shopId: product.shop_id,
-          shopName: shop?.name || 'Unknown',
+          shopName: shop?.name || "Unknown",
           stockCount: product.stock_count || 0,
           addedAt: data.added_at,
         };
-      })
+      }),
     );
 
     const validItems = items.filter((item: any) => item !== null);
 
     // Calculate totals
-    const subtotal = validItems.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+    const subtotal = validItems.reduce(
+      (sum: number, item: any) => sum + item.price * item.quantity,
+      0,
+    );
     const shipping = subtotal > 5000 ? 0 : 100; // Free shipping above ₹5000
     const tax = subtotal * 0.18; // 18% GST
     const discount = 0; // Will be calculated if coupon applied
@@ -67,13 +75,19 @@ export async function GET(request: NextRequest) {
       tax,
       discount,
       total,
-      itemCount: validItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
+      itemCount: validItems.reduce(
+        (sum: number, item: any) => sum + item.quantity,
+        0,
+      ),
     };
 
     return NextResponse.json({ success: true, data: summary });
   } catch (error) {
-    console.error('Error fetching cart:', error);
-    return NextResponse.json({ success: false, error: 'Failed to fetch cart' }, { status: 500 });
+    console.error("Error fetching cart:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch cart" },
+      { status: 500 },
+    );
   }
 }
 
@@ -81,34 +95,46 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const body = await request.json();
     const { productId, quantity = 1, variant } = body;
 
     if (!productId) {
-      return NextResponse.json({ success: false, error: 'Product ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Product ID is required" },
+        { status: 400 },
+      );
     }
 
     // Check if product exists and has stock
     const productDoc = await Collections.products().doc(productId).get();
     if (!productDoc.exists) {
-      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Product not found" },
+        { status: 404 },
+      );
     }
 
     const product = productDoc.data();
     if (product.stock_count < quantity) {
-      return NextResponse.json({ success: false, error: 'Insufficient stock' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Insufficient stock" },
+        { status: 400 },
+      );
     }
 
     // Check if item already in cart
     const existingSnapshot = await Collections.cart()
-      .where('user_id', '==', user.id)
-      .where('product_id', '==', productId)
-      .where('variant', '==', variant || null)
+      .where("user_id", "==", user.id)
+      .where("product_id", "==", productId)
+      .where("variant", "==", variant || null)
       .get();
 
     const now = new Date().toISOString();
@@ -119,7 +145,10 @@ export async function POST(request: NextRequest) {
       const newQuantity = existingDoc.data().quantity + quantity;
 
       if (product.stock_count < newQuantity) {
-        return NextResponse.json({ success: false, error: 'Insufficient stock' }, { status: 400 });
+        return NextResponse.json(
+          { success: false, error: "Insufficient stock" },
+          { status: 400 },
+        );
       }
 
       await existingDoc.ref.update({
@@ -127,10 +156,10 @@ export async function POST(request: NextRequest) {
         updated_at: now,
       });
 
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         data: { id: existingDoc.id, quantity: newQuantity },
-        message: 'Cart updated'
+        message: "Cart updated",
       });
     } else {
       // Add new item
@@ -143,15 +172,21 @@ export async function POST(request: NextRequest) {
         updated_at: now,
       });
 
-      return NextResponse.json({ 
-        success: true, 
-        data: { id: docRef.id, quantity },
-        message: 'Item added to cart'
-      }, { status: 201 });
+      return NextResponse.json(
+        {
+          success: true,
+          data: { id: docRef.id, quantity },
+          message: "Item added to cart",
+        },
+        { status: 201 },
+      );
     }
   } catch (error) {
-    console.error('Error adding to cart:', error);
-    return NextResponse.json({ success: false, error: 'Failed to add to cart' }, { status: 500 });
+    console.error("Error adding to cart:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to add to cart" },
+      { status: 500 },
+    );
   }
 }
 
@@ -159,13 +194,16 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const snapshot = await Collections.cart()
-      .where('user_id', '==', user.id)
+      .where("user_id", "==", user.id)
       .get();
 
     const batch = Collections.cart().firestore.batch();
@@ -175,9 +213,12 @@ export async function DELETE(request: NextRequest) {
 
     await batch.commit();
 
-    return NextResponse.json({ success: true, message: 'Cart cleared' });
+    return NextResponse.json({ success: true, message: "Cart cleared" });
   } catch (error) {
-    console.error('Error clearing cart:', error);
-    return NextResponse.json({ success: false, error: 'Failed to clear cart' }, { status: 500 });
+    console.error("Error clearing cart:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to clear cart" },
+      { status: 500 },
+    );
   }
 }

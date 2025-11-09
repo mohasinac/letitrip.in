@@ -225,9 +225,7 @@ export function InlineEditor({
       )}
 
       {/* Error Message */}
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       {/* Character Count */}
       {maxLength && (

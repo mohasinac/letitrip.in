@@ -2,9 +2,9 @@
  * Accessibility utilities and hooks
  */
 
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Hook to manage focus trap within a component
@@ -17,14 +17,16 @@ export function useFocusTrap(isActive: boolean = true) {
 
     const container = containerRef.current;
     const focusableElements = container.querySelectorAll(
-      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -39,13 +41,13 @@ export function useFocusTrap(isActive: boolean = true) {
       }
     };
 
-    container.addEventListener('keydown', handleTabKey);
+    container.addEventListener("keydown", handleTabKey);
 
     // Focus first element on mount
     firstElement?.focus();
 
     return () => {
-      container.removeEventListener('keydown', handleTabKey);
+      container.removeEventListener("keydown", handleTabKey);
     };
   }, [isActive]);
 
@@ -56,10 +58,13 @@ export function useFocusTrap(isActive: boolean = true) {
  * Hook to announce messages to screen readers
  */
 export function useAnnouncer() {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  const announce = (text: string, priority: 'polite' | 'assertive' = 'polite') => {
-    setMessage(''); // Clear first
+  const announce = (
+    text: string,
+    priority: "polite" | "assertive" = "polite",
+  ) => {
+    setMessage(""); // Clear first
     setTimeout(() => {
       setMessage(text);
     }, 100);
@@ -75,7 +80,7 @@ export function useAnnouncer() {
  * Generate unique IDs for ARIA attributes
  */
 let idCounter = 0;
-export function useId(prefix: string = 'id'): string {
+export function useId(prefix: string = "id"): string {
   const [id] = useState(() => `${prefix}-${++idCounter}`);
   return id;
 }
@@ -89,7 +94,7 @@ export function useKeyboardNavigation(
   options: {
     loop?: boolean;
     initialIndex?: number;
-  } = {}
+  } = {},
 ) {
   const { loop = true, initialIndex = -1 } = options;
   const [focusedIndex, setFocusedIndex] = useState(initialIndex);
@@ -98,7 +103,7 @@ export function useKeyboardNavigation(
     const maxIndex = items.length - 1;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         setFocusedIndex((prev) => {
           const next = prev + 1;
@@ -107,7 +112,7 @@ export function useKeyboardNavigation(
         });
         break;
 
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setFocusedIndex((prev) => {
           const next = prev - 1;
@@ -116,25 +121,25 @@ export function useKeyboardNavigation(
         });
         break;
 
-      case 'Home':
+      case "Home":
         e.preventDefault();
         setFocusedIndex(0);
         break;
 
-      case 'End':
+      case "End":
         e.preventDefault();
         setFocusedIndex(maxIndex);
         break;
 
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         e.preventDefault();
         if (focusedIndex >= 0 && focusedIndex <= maxIndex) {
           onSelect(focusedIndex);
         }
         break;
 
-      case 'Escape':
+      case "Escape":
         setFocusedIndex(-1);
         break;
     }
@@ -154,15 +159,15 @@ export function usePrefersReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
     const handler = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
     };
 
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   return prefersReducedMotion;
@@ -171,7 +176,8 @@ export function usePrefersReducedMotion(): boolean {
 /**
  * Screen reader only CSS class utility
  */
-export const srOnly = 'sr-only absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0';
+export const srOnly =
+  "sr-only absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0";
 
 /**
  * Get ARIA label for rating
@@ -183,6 +189,6 @@ export function getRatingLabel(rating: number, maxRating: number = 5): string {
 /**
  * Get ARIA label for price
  */
-export function getPriceLabel(price: number, currency: string = 'INR'): string {
+export function getPriceLabel(price: number, currency: string = "INR"): string {
   return `Price: ${price.toLocaleString()} ${currency}`;
 }

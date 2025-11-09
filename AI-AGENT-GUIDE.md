@@ -131,7 +131,7 @@ export async function uploadAsset(file: File, type: string, category?: string) {
   // Step 1: Get signed URL from API
   const { uploadUrl, assetId, storagePath } = await apiService.post(
     "/api/admin/static-assets/upload-url",
-    { fileName: file.name, contentType: file.type, type, category }
+    { fileName: file.name, contentType: file.type, type, category },
   );
 
   // Step 2: Upload directly to Firebase Storage
@@ -140,7 +140,7 @@ export async function uploadAsset(file: File, type: string, category?: string) {
   // Step 3: Confirm and save metadata
   const { asset } = await apiService.post(
     "/api/admin/static-assets/confirm-upload",
-    { assetId, name: file.name, type, storagePath, size: file.size }
+    { assetId, name: file.name, type, storagePath, size: file.size },
   );
 
   return asset;
@@ -615,7 +615,7 @@ const { uploadUrl, assetId, storagePath } = await generateUploadUrl(
   "logo.png",
   "image/png",
   "payment-logo",
-  "payment-methods"
+  "payment-methods",
 );
 
 // Save metadata after successful upload

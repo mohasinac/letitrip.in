@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { buildQueryFromFilters } from '@/lib/filter-helpers';
-import { getCurrentUser } from '../lib/session';
-import { Collections } from '@/app/api/lib/firebase/collections';
-import { getShopsQuery, UserRole, buildQuery } from '@/app/api/lib/firebase/queries';
+import { NextRequest, NextResponse } from "next/server";
+import { buildQueryFromFilters } from "@/lib/filter-helpers";
+import { getCurrentUser } from "../lib/session";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import {
+  getShopsQuery,
+  UserRole,
+  buildQuery,
+} from "@/app/api/lib/firebase/queries";
 
 /**
  * Unified Shops API with Firebase Integration
@@ -14,7 +18,7 @@ import { getShopsQuery, UserRole, buildQuery } from '@/app/api/lib/firebase/quer
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     const { searchParams } = new URL(request.url);
 
     // Extract filters from query params
@@ -23,70 +27,82 @@ export async function GET(request: NextRequest) {
       if (value) filters[key] = value;
     });
 
-    const role = (user?.role || 'user') as UserRole;
+    const role = (user?.role || "user") as UserRole;
     const userId = user?.id;
-    
+
     // Build role-based query
     let query = getShopsQuery(role, userId);
-    
+
     // Apply additional filters from search params
     const queryFilters: any[] = [];
-    
-    if (filters.verified === 'true') {
-      queryFilters.push({ field: 'is_verified', operator: '==', value: true });
+
+    if (filters.verified === "true") {
+      queryFilters.push({ field: "is_verified", operator: "==", value: true });
     }
-    if (filters.featured === 'true') {
-      queryFilters.push({ field: 'is_featured', operator: '==', value: true });
+    if (filters.featured === "true") {
+      queryFilters.push({ field: "is_featured", operator: "==", value: true });
     }
     if (filters.search) {
       // Note: Firestore doesn't support full-text search natively
       // This is a simple startAt/endAt approach for name field
       // Consider using Algolia or Firebase Extensions for better search
-      queryFilters.push({ field: 'name', operator: '>=', value: filters.search });
-      queryFilters.push({ field: 'name', operator: '<=', value: filters.search + '\uf8ff' });
+      queryFilters.push({
+        field: "name",
+        operator: ">=",
+        value: filters.search,
+      });
+      queryFilters.push({
+        field: "name",
+        operator: "<=",
+        value: filters.search + "\uf8ff",
+      });
     }
-    
+
     // Apply filters and pagination
     query = buildQuery(query, {
       filters: queryFilters,
-      orderBy: { field: 'created_at', direction: 'desc' },
+      orderBy: { field: "created_at", direction: "desc" },
       limit: filters.limit ? parseInt(filters.limit) : 20,
     });
-    
+
     // Execute query
     const snapshot = await query.get();
-    
-    let shops = snapshot.docs.map(doc => ({
+
+    let shops = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    
+
     // For sellers, also fetch public verified shops if needed
-    if (role === UserRole.SELLER && filters.includePublic === 'true') {
+    if (role === UserRole.SELLER && filters.includePublic === "true") {
       const publicQuery = Collections.shops()
-        .where('is_verified', '==', true)
-        .where('is_banned', '==', false)
+        .where("is_verified", "==", true)
+        .where("is_banned", "==", false)
         .limit(20);
-      
+
       const publicSnapshot = await publicQuery.get();
-      const publicShops = publicSnapshot.docs.map(doc => ({
+      const publicShops = publicSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      
+
       // Merge and deduplicate
       const shopMap = new Map();
-      [...shops, ...publicShops].forEach(shop => shopMap.set(shop.id, shop));
+      [...shops, ...publicShops].forEach((shop) => shopMap.set(shop.id, shop));
       shops = Array.from(shopMap.values());
     }
-    
+
     // Check if user can create more shops
     let canCreateMore = false;
     if (role === UserRole.ADMIN) {
       canCreateMore = true; // Admins can create unlimited shops
     } else if (role === UserRole.SELLER && userId) {
       // Count user's existing shops
-      const userShopsQuery = Collections.shops().where('owner_id', '==', userId);
+      const userShopsQuery = Collections.shops().where(
+        "owner_id",
+        "==",
+        userId,
+      );
       const userShopsSnapshot = await userShopsQuery.get();
       canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
     }
@@ -98,13 +114,13 @@ export async function GET(request: NextRequest) {
       total: shops.length,
     });
   } catch (error) {
-    console.error('Error fetching shops:', error);
+    console.error("Error fetching shops:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch shops',
+        error: "Failed to fetch shops",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -119,20 +135,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Unauthorized',
+          error: "Unauthorized",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     // Check role (seller or admin)
-    if (user.role !== 'seller' && user.role !== 'admin') {
+    if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         {
           success: false,
-          error: 'Only sellers and admins can create shops',
+          error: "Only sellers and admins can create shops",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -140,17 +156,21 @@ export async function POST(request: NextRequest) {
     const userRole = user.role;
 
     // Check shop creation limit (1 for sellers, unlimited for admins)
-    if (userRole === 'seller') {
-      const userShopsQuery = Collections.shops().where('owner_id', '==', userId);
+    if (userRole === "seller") {
+      const userShopsQuery = Collections.shops().where(
+        "owner_id",
+        "==",
+        userId,
+      );
       const userShopsSnapshot = await userShopsQuery.get();
-      
+
       if (userShopsSnapshot.size >= 1) {
         return NextResponse.json(
           {
             success: false,
-            error: 'You can only create 1 shop. Please contact admin for more.',
+            error: "You can only create 1 shop. Please contact admin for more.",
           },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -162,23 +182,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Missing required fields: name, slug, description',
+          error: "Missing required fields: name, slug, description",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if slug is unique
-    const existingShopQuery = Collections.shops().where('slug', '==', data.slug);
+    const existingShopQuery = Collections.shops().where(
+      "slug",
+      "==",
+      data.slug,
+    );
     const existingShopSnapshot = await existingShopQuery.get();
-    
+
     if (!existingShopSnapshot.empty) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Shop slug already exists. Please choose a different slug.',
+          error: "Shop slug already exists. Please choose a different slug.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -208,7 +232,7 @@ export async function POST(request: NextRequest) {
     // Save to Firestore
     const shopsRef = Collections.shops();
     const docRef = await shopsRef.add(shopData);
-    
+
     const shop = {
       id: docRef.id,
       ...shopData,
@@ -217,16 +241,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       shop,
-      message: 'Shop created successfully. You can now upload logo and banner.',
+      message: "Shop created successfully. You can now upload logo and banner.",
     });
   } catch (error) {
-    console.error('Error creating shop:', error);
+    console.error("Error creating shop:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to create shop',
+        error: "Failed to create shop",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

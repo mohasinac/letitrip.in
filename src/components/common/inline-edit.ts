@@ -3,13 +3,15 @@
  * Export all components for easy importing
  */
 
-export { InlineEditRow } from './InlineEditRow';
-export { QuickCreateRow } from './QuickCreateRow';
-export { BulkActionBar } from './BulkActionBar';
-export { InlineImageUpload } from './InlineImageUpload';
-export { MobileFilterSidebar } from './MobileFilterSidebar';
-export { TableCheckbox } from './TableCheckbox';
-export { ResponsiveTable } from './ResponsiveTable';
+export { InlineEditRow } from "./InlineEditRow";
+export { QuickCreateRow } from "./QuickCreateRow";
+export { BulkActionBar } from "./BulkActionBar";
+export { InlineImageUpload } from "./InlineImageUpload";
+export { MobileFilterSidebar } from "./MobileFilterSidebar";
+export { TableCheckbox } from "./TableCheckbox";
+export { ResponsiveTable } from "./ResponsiveTable";
+export { UnifiedFilterSidebar } from "./UnifiedFilterSidebar";
+export { FilterSidebar } from "./FilterSidebar";
 
 // Re-export types
 export type {
@@ -25,4 +27,4 @@ export type {
   BulkOperationResult,
   FieldType,
   SelectOption,
-} from '@/types/inline-edit';
+} from "@/types/inline-edit";

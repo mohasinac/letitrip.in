@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import type { Review, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type { Review, PaginatedResponse } from "@/types";
 
 interface ReviewFilters {
   productId?: string;
@@ -15,8 +15,8 @@ interface ReviewFilters {
   showOnHomepage?: boolean;
   page?: number;
   limit?: number;
-  sortBy?: 'createdAt' | 'rating' | 'helpfulCount';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "createdAt" | "rating" | "helpfulCount";
+  sortOrder?: "asc" | "desc";
 }
 
 interface CreateReviewData {
@@ -46,7 +46,7 @@ class ReviewsService {
   // List reviews
   async list(filters?: ReviewFilters): Promise<PaginatedResponse<Review>> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -56,8 +56,8 @@ class ReviewsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/reviews?${queryString}` : '/reviews';
-    
+    const endpoint = queryString ? `/reviews?${queryString}` : "/reviews";
+
     return apiService.get<PaginatedResponse<Review>>(endpoint);
   }
 
@@ -68,7 +68,7 @@ class ReviewsService {
 
   // Create review (authenticated users after purchase)
   async create(data: CreateReviewData): Promise<Review> {
-    return apiService.post<Review>('/reviews', data);
+    return apiService.post<Review>("/reviews", data);
   }
 
   // Update review (author only)
@@ -88,24 +88,27 @@ class ReviewsService {
 
   // Mark review as helpful
   async markHelpful(id: string): Promise<{ helpfulCount: number }> {
-    return apiService.post<{ helpfulCount: number }>(`/reviews/${id}/helpful`, {});
+    return apiService.post<{ helpfulCount: number }>(
+      `/reviews/${id}/helpful`,
+      {},
+    );
   }
 
   // Upload media for review
   async uploadMedia(files: File[]): Promise<{ urls: string[] }> {
     const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
-    
-    const response = await fetch('/api/reviews/media', {
-      method: 'POST',
+    files.forEach((file) => formData.append("files", file));
+
+    const response = await fetch("/api/reviews/media", {
+      method: "POST",
       body: formData,
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Failed to upload media');
+      throw new Error(error.message || "Failed to upload media");
     }
-    
+
     return response.json();
   }
 
@@ -121,7 +124,7 @@ class ReviewsService {
     verifiedPurchasePercentage: number;
   }> {
     const params = new URLSearchParams();
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         params.append(key, value.toString());
@@ -129,35 +132,49 @@ class ReviewsService {
     });
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/reviews/summary?${queryString}` : '/reviews/summary';
-    
+    const endpoint = queryString
+      ? `/reviews/summary?${queryString}`
+      : "/reviews/summary";
+
     return apiService.get<any>(endpoint);
   }
 
   // Check if user can review
-  async canReview(productId?: string, auctionId?: string): Promise<{ canReview: boolean; reason?: string }> {
+  async canReview(
+    productId?: string,
+    auctionId?: string,
+  ): Promise<{ canReview: boolean; reason?: string }> {
     const params = new URLSearchParams();
-    if (productId) params.append('productId', productId);
-    if (auctionId) params.append('auctionId', auctionId);
-    
+    if (productId) params.append("productId", productId);
+    if (auctionId) params.append("auctionId", auctionId);
+
     const queryString = params.toString();
     const endpoint = `/reviews/can-review?${queryString}`;
-    
+
     return apiService.get<{ canReview: boolean; reason?: string }>(endpoint);
   }
 
   // Get featured reviews
   async getFeatured(): Promise<Review[]> {
-    const res = await apiService.get<any>('/reviews?isFeatured=true&isApproved=true&limit=100');
+    const res = await apiService.get<any>(
+      "/reviews?isFeatured=true&isApproved=true&limit=100",
+    );
     return res.data || res.reviews || res;
   }
 
   // Get homepage reviews
   async getHomepage(): Promise<Review[]> {
-    const res = await apiService.get<any>('/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20');
+    const res = await apiService.get<any>(
+      "/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20",
+    );
     return res.data || res.reviews || res;
   }
 }
 
 export const reviewsService = new ReviewsService();
-export type { ReviewFilters, CreateReviewData, UpdateReviewData, ModerateReviewData };
+export type {
+  ReviewFilters,
+  CreateReviewData,
+  UpdateReviewData,
+  ModerateReviewData,
+};

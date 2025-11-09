@@ -3,7 +3,7 @@
  * Production error tracking and performance monitoring
  */
 
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Initialize Sentry for error tracking
@@ -11,12 +11,12 @@ import * as Sentry from '@sentry/nextjs';
  */
 export function initSentry() {
   if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
-    console.warn('⚠️ SENTRY_DSN not configured. Error monitoring disabled.');
+    console.warn("⚠️ SENTRY_DSN not configured. Error monitoring disabled.");
     return;
   }
 
-  const environment = process.env.NODE_ENV || 'development';
-  const release = process.env.NEXT_PUBLIC_APP_VERSION || 'unknown';
+  const environment = process.env.NODE_ENV || "development";
+  const release = process.env.NEXT_PUBLIC_APP_VERSION || "unknown";
 
   Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -24,28 +24,28 @@ export function initSentry() {
     release: `justforview@${release}`,
 
     // Adjust sample rates for production
-    tracesSampleRate: environment === 'production' ? 0.1 : 1.0,
-    profilesSampleRate: environment === 'production' ? 0.1 : 1.0,
+    tracesSampleRate: environment === "production" ? 0.1 : 1.0,
+    profilesSampleRate: environment === "production" ? 0.1 : 1.0,
 
     // Ignore common non-critical errors
     ignoreErrors: [
       // Browser extensions
-      'top.GLOBALS',
-      'chrome-extension://',
-      'moz-extension://',
-      
+      "top.GLOBALS",
+      "chrome-extension://",
+      "moz-extension://",
+
       // Random browser errors
-      'ResizeObserver loop limit exceeded',
-      'ResizeObserver loop completed with undelivered notifications',
-      
+      "ResizeObserver loop limit exceeded",
+      "ResizeObserver loop completed with undelivered notifications",
+
       // Network errors
-      'NetworkError',
-      'Network request failed',
-      'Failed to fetch',
-      
+      "NetworkError",
+      "Network request failed",
+      "Failed to fetch",
+
       // User cancellations
-      'AbortError',
-      'The user aborted a request',
+      "AbortError",
+      "The user aborted a request",
     ],
 
     // Filter sensitive data
@@ -53,7 +53,7 @@ export function initSentry() {
       // Remove sensitive query parameters
       if (event.request?.url) {
         const url = new URL(event.request.url);
-        ['password', 'token', 'key', 'secret'].forEach((param) => {
+        ["password", "token", "key", "secret"].forEach((param) => {
           url.searchParams.delete(param);
         });
         event.request.url = url.toString();
@@ -61,9 +61,9 @@ export function initSentry() {
 
       // Remove sensitive headers
       if (event.request?.headers) {
-        delete event.request.headers['authorization'];
-        delete event.request.headers['cookie'];
-        delete event.request.headers['x-api-key'];
+        delete event.request.headers["authorization"];
+        delete event.request.headers["cookie"];
+        delete event.request.headers["x-api-key"];
       }
 
       // Remove sensitive data from error messages
@@ -71,9 +71,9 @@ export function initSentry() {
         event.exception.values = event.exception.values.map((exception) => {
           if (exception.value) {
             exception.value = exception.value
-              .replace(/password=[\w\d]+/gi, 'password=***')
-              .replace(/token=[\w\d]+/gi, 'token=***')
-              .replace(/key=[\w\d]+/gi, 'key=***');
+              .replace(/password=[\w\d]+/gi, "password=***")
+              .replace(/token=[\w\d]+/gi, "token=***")
+              .replace(/key=[\w\d]+/gi, "key=***");
           }
           return exception;
         });
@@ -85,9 +85,9 @@ export function initSentry() {
     // Add breadcrumbs for better debugging
     beforeBreadcrumb(breadcrumb) {
       // Don't log fetch requests to external analytics
-      if (breadcrumb.category === 'fetch' && breadcrumb.data?.url) {
+      if (breadcrumb.category === "fetch" && breadcrumb.data?.url) {
         const url = breadcrumb.data.url;
-        if (url.includes('google-analytics') || url.includes('facebook.com')) {
+        if (url.includes("google-analytics") || url.includes("facebook.com")) {
           return null;
         }
       }
@@ -96,11 +96,11 @@ export function initSentry() {
     },
 
     // Replay sample rates
-    replaysSessionSampleRate: environment === 'production' ? 0.1 : 0.5,
+    replaysSessionSampleRate: environment === "production" ? 0.1 : 0.5,
     replaysOnErrorSampleRate: 1.0,
   });
 
-  console.log('✅ Sentry initialized');
+  console.log("✅ Sentry initialized");
 }
 
 /**
@@ -117,7 +117,7 @@ export function captureException(
       email?: string;
       username?: string;
     };
-  }
+  },
 ) {
   Sentry.withScope((scope) => {
     if (context?.level) {
@@ -149,11 +149,11 @@ export function captureException(
  */
 export function captureMessage(
   message: string,
-  level: Sentry.SeverityLevel = 'info',
+  level: Sentry.SeverityLevel = "info",
   context?: {
     tags?: Record<string, string>;
     extra?: Record<string, any>;
-  }
+  },
 ) {
   Sentry.withScope((scope) => {
     scope.setLevel(level);
@@ -200,13 +200,13 @@ export function addBreadcrumb(
   message: string,
   data?: Record<string, any>,
   category?: string,
-  level?: Sentry.SeverityLevel
+  level?: Sentry.SeverityLevel,
 ) {
   Sentry.addBreadcrumb({
     message,
     data,
-    category: category || 'custom',
-    level: level || 'info',
+    category: category || "custom",
+    level: level || "info",
     timestamp: Date.now() / 1000,
   });
 }
@@ -217,24 +217,29 @@ export function addBreadcrumb(
 export function startSpan(
   name: string,
   op: string,
-  data?: Record<string, any>
+  data?: Record<string, any>,
 ) {
-  return Sentry.startSpan({
-    name,
-    op,
-    attributes: data,
-  }, () => {});
+  return Sentry.startSpan(
+    {
+      name,
+      op,
+      attributes: data,
+    },
+    () => {},
+  );
 }
 
 /**
  * API route error handler wrapper
  */
-export function withSentryErrorHandler<T extends (...args: any[]) => Promise<any>>(
+export function withSentryErrorHandler<
+  T extends (...args: any[]) => Promise<any>,
+>(
   handler: T,
   context?: {
     route?: string;
     method?: string;
-  }
+  },
 ): T {
   return (async (...args: Parameters<T>) => {
     try {
@@ -243,10 +248,10 @@ export function withSentryErrorHandler<T extends (...args: any[]) => Promise<any
     } catch (error) {
       // Capture error with context
       captureException(error as Error, {
-        level: 'error',
+        level: "error",
         tags: {
-          route: context?.route || 'unknown',
-          method: context?.method || 'unknown',
+          route: context?.route || "unknown",
+          method: context?.method || "unknown",
         },
       });
 
@@ -262,10 +267,10 @@ export const SentryErrorBoundary = Sentry.ErrorBoundary;
 
 /**
  * Example usage in API route:
- * 
+ *
  * ```typescript
  * import { withSentryErrorHandler, captureException } from '@/lib/sentry';
- * 
+ *
  * export const GET = withSentryErrorHandler(
  *   async (req: NextRequest) => {
  *     try {
@@ -282,12 +287,12 @@ export const SentryErrorBoundary = Sentry.ErrorBoundary;
  *   { route: '/api/products', method: 'GET' }
  * );
  * ```
- * 
+ *
  * Example usage in components:
- * 
+ *
  * ```tsx
  * import { SentryErrorBoundary, captureException } from '@/lib/sentry';
- * 
+ *
  * export default function MyApp({ Component, pageProps }) {
  *   return (
  *     <SentryErrorBoundary fallback={<ErrorPage />}>

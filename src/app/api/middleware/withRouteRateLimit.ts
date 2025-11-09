@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit } from './ratelimiter';
+import { NextRequest, NextResponse } from "next/server";
+import { withRateLimit } from "./ratelimiter";
 
 // Route pattern → config map
 // Keep simple string includes/regex matching to avoid heavy parsing.
@@ -19,7 +19,7 @@ const routeRateLimitConfig: Array<{
   },
   // Search endpoint: can be bursty; keep modest
   {
-    test: (url) => url.pathname === '/api/search',
+    test: (url) => url.pathname === "/api/search",
     config: { maxRequests: 120, windowMs: 60 * 1000 },
   },
 ];
@@ -34,7 +34,7 @@ function pickConfig(url: URL) {
 
 export async function withRouteRateLimit(
   req: NextRequest,
-  handler: (req: NextRequest) => Promise<NextResponse>
+  handler: (req: NextRequest) => Promise<NextResponse>,
 ) {
   const url = new URL(req.url);
   const cfg = pickConfig(url);

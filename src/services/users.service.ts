@@ -1,5 +1,5 @@
-import { apiService } from './api.service';
-import type { User, UserRole, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type { User, UserRole, PaginatedResponse } from "@/types";
 
 interface UserFilters {
   role?: UserRole;
@@ -45,7 +45,7 @@ class UsersService {
   // List users (admin only)
   async list(filters?: UserFilters): Promise<PaginatedResponse<User>> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -55,8 +55,8 @@ class UsersService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/users?${queryString}` : '/users';
-    
+    const endpoint = queryString ? `/users?${queryString}` : "/users";
+
     return apiService.get<PaginatedResponse<User>>(endpoint);
   }
 
@@ -82,70 +82,78 @@ class UsersService {
 
   // Get current user profile
   async getMe(): Promise<User> {
-    return apiService.get<User>('/users/me');
+    return apiService.get<User>("/users/me");
   }
 
   // Update current user profile
   async updateMe(data: UpdateUserData): Promise<User> {
-    return apiService.patch<User>('/users/me', data);
+    return apiService.patch<User>("/users/me", data);
   }
 
   // Change password
   async changePassword(data: ChangePasswordData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/password', data);
+    return apiService.post<{ message: string }>("/users/me/password", data);
   }
 
   // Send email verification OTP
   async sendEmailVerification(): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/verify-email', {});
+    return apiService.post<{ message: string }>("/users/me/verify-email", {});
   }
 
   // Verify email with OTP
   async verifyEmail(data: VerifyEmailData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/verify-email/confirm', data);
+    return apiService.post<{ message: string }>(
+      "/users/me/verify-email/confirm",
+      data,
+    );
   }
 
   // Send mobile verification OTP
   async sendMobileVerification(): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/verify-mobile', {});
+    return apiService.post<{ message: string }>("/users/me/verify-mobile", {});
   }
 
   // Verify mobile with OTP
   async verifyMobile(data: VerifyMobileData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/verify-mobile/confirm', data);
+    return apiService.post<{ message: string }>(
+      "/users/me/verify-mobile/confirm",
+      data,
+    );
   }
 
   // Upload avatar
   async uploadAvatar(file: File): Promise<{ url: string }> {
     const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch('/api/users/me/avatar', {
-      method: 'POST',
+    formData.append("file", file);
+
+    const response = await fetch("/api/users/me/avatar", {
+      method: "POST",
       body: formData,
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Failed to upload avatar');
+      throw new Error(error.message || "Failed to upload avatar");
     }
-    
+
     return response.json();
   }
 
   // Delete avatar
   async deleteAvatar(): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>('/users/me/avatar');
+    return apiService.delete<{ message: string }>("/users/me/avatar");
   }
 
   // Delete account
   async deleteAccount(password: string): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/users/me/delete', { password });
+    return apiService.post<{ message: string }>("/users/me/delete", {
+      password,
+    });
   }
 
   // Get user statistics (admin only)
   async getStats(): Promise<any> {
-    return apiService.get<any>('/users/stats');
+    return apiService.get<any>("/users/stats");
   }
 }
 

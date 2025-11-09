@@ -3,8 +3,12 @@
  * Provides server-side validation for API endpoints
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { validateFormData, getValidationSchema, validateBulkAction } from '@/lib/validation/inline-edit-schemas';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  validateFormData,
+  getValidationSchema,
+  validateBulkAction,
+} from "@/lib/validation/inline-edit-schemas";
 
 export interface ValidationError {
   field: string;
@@ -22,7 +26,7 @@ export interface ValidationResult {
  */
 export async function validateRequest(
   req: NextRequest,
-  resourceType: string
+  resourceType: string,
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
@@ -31,17 +35,24 @@ export async function validateRequest(
     if (!schema || schema.length === 0) {
       return {
         valid: false,
-        errors: [{ field: '_general', message: `No validation schema found for ${resourceType}` }],
+        errors: [
+          {
+            field: "_general",
+            message: `No validation schema found for ${resourceType}`,
+          },
+        ],
       };
     }
 
     const validationErrors = validateFormData(body, schema);
-    
+
     if (Object.keys(validationErrors).length > 0) {
-      const errors: ValidationError[] = Object.entries(validationErrors).map(([field, message]) => ({
-        field,
-        message,
-      }));
+      const errors: ValidationError[] = Object.entries(validationErrors).map(
+        ([field, message]) => ({
+          field,
+          message,
+        }),
+      );
 
       return {
         valid: false,
@@ -56,7 +67,7 @@ export async function validateRequest(
   } catch (error) {
     return {
       valid: false,
-      errors: [{ field: '_general', message: 'Invalid request body' }],
+      errors: [{ field: "_general", message: "Invalid request body" }],
     };
   }
 }
@@ -66,24 +77,29 @@ export async function validateRequest(
  */
 export async function validateBulkRequest(
   req: NextRequest,
-  resourceType: string
+  resourceType: string,
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
-    
+
     const { action, ids, data } = body;
 
-    if (!action || typeof action !== 'string') {
+    if (!action || typeof action !== "string") {
       return {
         valid: false,
-        errors: [{ field: 'action', message: 'Action is required and must be a string' }],
+        errors: [
+          {
+            field: "action",
+            message: "Action is required and must be a string",
+          },
+        ],
       };
     }
 
     if (!Array.isArray(ids) || ids.length === 0) {
       return {
         valid: false,
-        errors: [{ field: 'ids', message: 'IDs must be a non-empty array' }],
+        errors: [{ field: "ids", message: "IDs must be a non-empty array" }],
       };
     }
 
@@ -92,7 +108,12 @@ export async function validateBulkRequest(
     if (!actionValidation.valid) {
       return {
         valid: false,
-        errors: [{ field: 'action', message: actionValidation.error || 'Invalid action' }],
+        errors: [
+          {
+            field: "action",
+            message: actionValidation.error || "Invalid action",
+          },
+        ],
       };
     }
 
@@ -103,7 +124,7 @@ export async function validateBulkRequest(
   } catch (error) {
     return {
       valid: false,
-      errors: [{ field: '_general', message: 'Invalid request body' }],
+      errors: [{ field: "_general", message: "Invalid request body" }],
     };
   }
 }
@@ -111,17 +132,22 @@ export async function validateBulkRequest(
 /**
  * Create validation error response
  */
-export function createValidationErrorResponse(errors: ValidationError[]): NextResponse {
+export function createValidationErrorResponse(
+  errors: ValidationError[],
+): NextResponse {
   return NextResponse.json(
     {
       success: false,
-      message: 'Validation failed',
-      errors: errors.reduce((acc, err) => {
-        acc[err.field] = err.message;
-        return acc;
-      }, {} as Record<string, string>),
+      message: "Validation failed",
+      errors: errors.reduce(
+        (acc, err) => {
+          acc[err.field] = err.message;
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
     },
-    { status: 400 }
+    { status: 400 },
   );
 }
 
@@ -130,11 +156,11 @@ export function createValidationErrorResponse(errors: ValidationError[]): NextRe
  */
 export function withValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateRequest(req, resourceType);
-    
+
     if (!validation.valid) {
       return createValidationErrorResponse(validation.errors || []);
     }
@@ -148,11 +174,11 @@ export function withValidation(
  */
 export function withBulkValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateBulkRequest(req, resourceType);
-    
+
     if (!validation.valid) {
       return createValidationErrorResponse(validation.errors || []);
     }
@@ -165,27 +191,27 @@ export function withBulkValidation(
  * Sanitize input to prevent XSS and injection attacks
  */
 export function sanitizeInput(input: any): any {
-  if (typeof input === 'string') {
+  if (typeof input === "string") {
     // Remove script tags and dangerous attributes
     return input
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/on\w+="[^"]*"/gi, '')
-      .replace(/javascript:/gi, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+      .replace(/on\w+="[^"]*"/gi, "")
+      .replace(/javascript:/gi, "")
       .trim();
   }
-  
+
   if (Array.isArray(input)) {
     return input.map(sanitizeInput);
   }
-  
-  if (typeof input === 'object' && input !== null) {
+
+  if (typeof input === "object" && input !== null) {
     const sanitized: any = {};
     for (const key in input) {
       sanitized[key] = sanitizeInput(input[key]);
     }
     return sanitized;
   }
-  
+
   return input;
 }
 
@@ -194,16 +220,16 @@ export function sanitizeInput(input: any): any {
  */
 export async function validateAndSanitize(
   req: NextRequest,
-  resourceType: string
+  resourceType: string,
 ): Promise<ValidationResult> {
   const validation = await validateRequest(req, resourceType);
-  
+
   if (!validation.valid) {
     return validation;
   }
-  
+
   const sanitized = sanitizeInput(validation.data);
-  
+
   return {
     valid: true,
     data: sanitized,

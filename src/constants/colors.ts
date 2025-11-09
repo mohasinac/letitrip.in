@@ -62,7 +62,8 @@ export const COLOR_CLASSES = {
   // Buttons
   button: {
     primary: "bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold",
-    primaryFull: "bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold",
+    primaryFull:
+      "bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold",
     secondary: "bg-gray-700 hover:bg-gray-600 text-white font-medium",
   },
 

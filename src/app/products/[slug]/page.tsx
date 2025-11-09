@@ -156,10 +156,13 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* Description & Specs */}
             <ProductDescription
               description={product.description}
-              specifications={product.specifications?.reduce((acc, spec) => {
-                acc[spec.name] = spec.value;
-                return acc;
-              }, {} as Record<string, string>)}
+              specifications={product.specifications?.reduce(
+                (acc, spec) => {
+                  acc[spec.name] = spec.value;
+                  return acc;
+                },
+                {} as Record<string, string>,
+              )}
             />
 
             {/* Variants Section */}

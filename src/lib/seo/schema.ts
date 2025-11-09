@@ -3,31 +3,31 @@
  * These create JSON-LD markup for better SEO and rich snippets
  */
 
-import { siteConfig } from './metadata'
+import { siteConfig } from "./metadata";
 
 /**
  * Organization schema for the business
  */
 export function generateOrganizationSchema() {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
+    "@context": "https://schema.org",
+    "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.url,
     logo: `${siteConfig.url}/logo.png`,
     description: siteConfig.description,
     address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'IN',
-      addressRegion: 'India',
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+      addressRegion: "India",
     },
     contactPoint: [
       {
-        '@type': 'ContactPoint',
-        telephone: '+91-XXXX-XXXXXX',
-        contactType: 'customer service',
-        areaServed: 'IN',
-        availableLanguage: ['English', 'Hindi'],
+        "@type": "ContactPoint",
+        telephone: "+91-XXXX-XXXXXX",
+        contactType: "customer service",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
       },
     ],
     sameAs: [
@@ -35,7 +35,7 @@ export function generateOrganizationSchema() {
       siteConfig.links.facebook,
       siteConfig.links.instagram,
     ],
-  }
+  };
 }
 
 /**
@@ -43,20 +43,20 @@ export function generateOrganizationSchema() {
  */
 export function generateWebSiteSchema() {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
+    "@context": "https://schema.org",
+    "@type": "WebSite",
     name: siteConfig.name,
     url: siteConfig.url,
     description: siteConfig.description,
     potentialAction: {
-      '@type': 'SearchAction',
+      "@type": "SearchAction",
       target: {
-        '@type': 'EntryPoint',
+        "@type": "EntryPoint",
         urlTemplate: `${siteConfig.url}/search?q={search_term_string}`,
       },
-      'query-input': 'required name=search_term_string',
+      "query-input": "required name=search_term_string",
     },
-  }
+  };
 }
 
 /**
@@ -69,123 +69,127 @@ export function generateProductSchema({
   sku,
   brand,
   price,
-  currency = 'INR',
-  availability = 'InStock',
-  condition = 'NewCondition',
+  currency = "INR",
+  availability = "InStock",
+  condition = "NewCondition",
   url,
   rating,
   reviewCount,
 }: {
-  name: string
-  description: string
-  image: string
-  sku: string
-  brand?: string
-  price: number
-  currency?: string
-  availability?: 'InStock' | 'OutOfStock' | 'PreOrder'
-  condition?: 'NewCondition' | 'UsedCondition' | 'RefurbishedCondition'
-  url: string
-  rating?: number
-  reviewCount?: number
+  name: string;
+  description: string;
+  image: string;
+  sku: string;
+  brand?: string;
+  price: number;
+  currency?: string;
+  availability?: "InStock" | "OutOfStock" | "PreOrder";
+  condition?: "NewCondition" | "UsedCondition" | "RefurbishedCondition";
+  url: string;
+  rating?: number;
+  reviewCount?: number;
 }) {
   const schema: any = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
+    "@context": "https://schema.org",
+    "@type": "Product",
     name,
     description,
     image,
     sku,
     brand: brand
       ? {
-          '@type': 'Brand',
+          "@type": "Brand",
           name: brand,
         }
       : undefined,
     offers: {
-      '@type': 'Offer',
+      "@type": "Offer",
       url,
       priceCurrency: currency,
       price: price.toString(),
       availability: `https://schema.org/${availability}`,
       itemCondition: `https://schema.org/${condition}`,
       seller: {
-        '@type': 'Organization',
+        "@type": "Organization",
         name: siteConfig.name,
       },
       shippingDetails: {
-        '@type': 'OfferShippingDetails',
+        "@type": "OfferShippingDetails",
         shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'IN',
+          "@type": "DefinedRegion",
+          addressCountry: "IN",
         },
         deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
+          "@type": "ShippingDeliveryTime",
           handlingTime: {
-            '@type': 'QuantitativeValue',
+            "@type": "QuantitativeValue",
             minValue: 1,
             maxValue: 2,
-            unitCode: 'DAY',
+            unitCode: "DAY",
           },
           transitTime: {
-            '@type': 'QuantitativeValue',
+            "@type": "QuantitativeValue",
             minValue: 2,
             maxValue: 7,
-            unitCode: 'DAY',
+            unitCode: "DAY",
           },
         },
       },
     },
-  }
+  };
 
   // Add aggregateRating if available
   if (rating && reviewCount) {
     schema.aggregateRating = {
-      '@type': 'AggregateRating',
+      "@type": "AggregateRating",
       ratingValue: rating.toString(),
       reviewCount: reviewCount.toString(),
-      bestRating: '5',
-      worstRating: '1',
-    }
+      bestRating: "5",
+      worstRating: "1",
+    };
   }
 
-  return schema
+  return schema;
 }
 
 /**
  * FAQ schema for FAQ pages
  */
-export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+export function generateFAQSchema(
+  faqs: Array<{ question: string; answer: string }>,
+) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
+        "@type": "Answer",
         text: faq.answer,
       },
     })),
-  }
+  };
 }
 
 /**
  * Breadcrumb schema
  */
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
+  items: Array<{ name: string; url: string }>,
 ) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${siteConfig.url}${item.url}`,
+      item: item.url.startsWith("http")
+        ? item.url
+        : `${siteConfig.url}${item.url}`,
     })),
-  }
+  };
 }
 
 /**
@@ -193,38 +197,45 @@ export function generateBreadcrumbSchema(
  */
 export function generateLocalBusinessSchema() {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    '@id': siteConfig.url,
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": siteConfig.url,
     name: siteConfig.name,
     description: siteConfig.description,
     url: siteConfig.url,
     logo: `${siteConfig.url}/logo.png`,
     image: `${siteConfig.url}/og-image.jpg`,
-    telephone: '+91-XXXX-XXXXXX',
-    email: 'support@letitrip.com',
+    telephone: "+91-XXXX-XXXXXX",
+    email: "support@letitrip.com",
     address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'IN',
-      addressRegion: 'India',
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+      addressRegion: "India",
     },
     geo: {
-      '@type': 'GeoCoordinates',
+      "@type": "GeoCoordinates",
       // Add actual coordinates when available
     },
     openingHoursSpecification: [
       {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        opens: '10:00',
-        closes: '19:00',
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ],
+        opens: "10:00",
+        closes: "19:00",
       },
     ],
-    priceRange: '₹₹',
-    acceptsReservations: 'False',
-    paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking, Wallets, COD',
-    currenciesAccepted: 'INR',
-  }
+    priceRange: "₹₹",
+    acceptsReservations: "False",
+    paymentAccepted: "UPI, Credit Card, Debit Card, Net Banking, Wallets, COD",
+    currenciesAccepted: "INR",
+  };
 }
 
 /**
@@ -232,31 +243,31 @@ export function generateLocalBusinessSchema() {
  */
 export function generateItemListSchema(
   items: Array<{
-    name: string
-    url: string
-    image: string
-    price: number
-  }>
+    name: string;
+    url: string;
+    image: string;
+    price: number;
+  }>,
 ) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    "@context": "https://schema.org",
+    "@type": "ItemList",
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       item: {
-        '@type': 'Product',
+        "@type": "Product",
         name: item.name,
         url: item.url,
         image: item.image,
         offers: {
-          '@type': 'Offer',
+          "@type": "Offer",
           price: item.price.toString(),
-          priceCurrency: 'INR',
+          priceCurrency: "INR",
         },
       },
     })),
-  }
+  };
 }
 
 /**
@@ -269,32 +280,32 @@ export function generateReviewSchema({
   authorName,
   datePublished,
 }: {
-  productName: string
-  reviewBody: string
-  rating: number
-  authorName: string
-  datePublished: string
+  productName: string;
+  reviewBody: string;
+  rating: number;
+  authorName: string;
+  datePublished: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Review',
+    "@context": "https://schema.org",
+    "@type": "Review",
     itemReviewed: {
-      '@type': 'Product',
+      "@type": "Product",
       name: productName,
     },
     reviewRating: {
-      '@type': 'Rating',
+      "@type": "Rating",
       ratingValue: rating.toString(),
-      bestRating: '5',
-      worstRating: '1',
+      bestRating: "5",
+      worstRating: "1",
     },
     reviewBody,
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: authorName,
     },
     datePublished,
-  }
+  };
 }
 
 /**
@@ -309,36 +320,36 @@ export function generateOfferSchema({
   validFrom,
   validThrough,
 }: {
-  name: string
-  description: string
-  code: string
-  discountType: 'percentage' | 'fixed'
-  discountValue: number
-  validFrom: string
-  validThrough: string
+  name: string;
+  description: string;
+  code: string;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
+  validFrom: string;
+  validThrough: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Offer',
+    "@context": "https://schema.org",
+    "@type": "Offer",
     name,
     description,
     priceSpecification: {
-      '@type': 'PriceSpecification',
-      ...(discountType === 'percentage'
-        ? { price: `-${discountValue}`, priceCurrency: 'PERCENT' }
-        : { price: `-${discountValue}`, priceCurrency: 'INR' }),
+      "@type": "PriceSpecification",
+      ...(discountType === "percentage"
+        ? { price: `-${discountValue}`, priceCurrency: "PERCENT" }
+        : { price: `-${discountValue}`, priceCurrency: "INR" }),
     },
     eligibleTransactionVolume: {
-      '@type': 'PriceSpecification',
-      priceCurrency: 'INR',
+      "@type": "PriceSpecification",
+      priceCurrency: "INR",
     },
     validFrom,
     validThrough,
     seller: {
-      '@type': 'Organization',
+      "@type": "Organization",
       name: siteConfig.name,
     },
-  }
+  };
 }
 
 /**
@@ -347,5 +358,5 @@ export function generateOfferSchema({
 export function generateJSONLD(schema: object) {
   return {
     __html: JSON.stringify(schema),
-  }
+  };
 }

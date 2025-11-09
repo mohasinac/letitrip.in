@@ -139,7 +139,7 @@ export default function RichTextEditor({
   // Filter buttons based on enabled tools
   const visibleButtons = useMemo(
     () => EDITOR_BUTTONS.filter((btn) => tools.includes(btn.tool)),
-    [tools]
+    [tools],
   );
 
   // Initialize editor content only once
@@ -172,7 +172,7 @@ export default function RichTextEditor({
       // Refocus editor
       editorRef.current?.focus();
     },
-    [disabled, onChange]
+    [disabled, onChange],
   );
 
   // Handle content change
@@ -201,7 +201,7 @@ export default function RichTextEditor({
       const text = e.clipboardData.getData("text/plain");
       document.execCommand("insertText", false, text);
     },
-    [disabled]
+    [disabled],
   );
 
   // Get character count

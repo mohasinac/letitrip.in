@@ -220,7 +220,7 @@ export async function uploadAsset(file: File, type: string) {
   // 1. Request signed URL
   const { uploadUrl, assetId } = await apiService.post(
     "/api/admin/static-assets/upload-url",
-    { fileName: file.name, contentType: file.type, type }
+    { fileName: file.name, contentType: file.type, type },
   );
 
   // 2. Upload directly to Firebase
@@ -229,7 +229,7 @@ export async function uploadAsset(file: File, type: string) {
   // 3. Confirm and save metadata
   const { asset } = await apiService.post(
     "/api/admin/static-assets/confirm-upload",
-    { assetId, name: file.name, type, size: file.size }
+    { assetId, name: file.name, type, size: file.size },
   );
 
   return asset;

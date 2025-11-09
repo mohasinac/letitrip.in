@@ -82,11 +82,11 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
     (id: string, updates: Partial<UploadFile>) => {
       setUploads((prev) =>
         prev.map((upload) =>
-          upload.id === id ? { ...upload, ...updates } : upload
-        )
+          upload.id === id ? { ...upload, ...updates } : upload,
+        ),
       );
     },
-    []
+    [],
   );
 
   // Remove an upload
@@ -113,8 +113,8 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
               progress: 0,
               retryCount: (upload.retryCount || 0) + 1,
             }
-          : upload
-      )
+          : upload,
+      ),
     );
   }, []);
 

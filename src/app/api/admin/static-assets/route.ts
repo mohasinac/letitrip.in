@@ -1,12 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { listAssets, generateUploadUrl, saveAssetMetadata, getDownloadUrl } from '@/app/api/lib/static-assets-server.service';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  listAssets,
+  generateUploadUrl,
+  saveAssetMetadata,
+  getDownloadUrl,
+} from "@/app/api/lib/static-assets-server.service";
 
 // GET /api/admin/static-assets - List all static assets
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const type = searchParams.get('type');
-    const category = searchParams.get('category');
+    const type = searchParams.get("type");
+    const category = searchParams.get("category");
 
     const filters: any = {};
     if (type) filters.type = type;
@@ -20,10 +25,10 @@ export async function GET(req: NextRequest) {
       count: assets.length,
     });
   } catch (error) {
-    console.error('Error fetching static assets:', error);
+    console.error("Error fetching static assets:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch assets' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch assets" },
+      { status: 500 },
     );
   }
 }
@@ -47,8 +52,8 @@ export async function POST(req: NextRequest) {
 
     if (!id || !name || !type || !url || !storagePath) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
+        { success: false, error: "Missing required fields" },
+        { status: 400 },
       );
     }
 
@@ -62,7 +67,7 @@ export async function POST(req: NextRequest) {
       uploadedBy,
       uploadedAt: new Date().toISOString(),
       size: size || 0,
-      contentType: contentType || 'application/octet-stream',
+      contentType: contentType || "application/octet-stream",
       metadata: metadata || {},
     });
 
@@ -71,10 +76,10 @@ export async function POST(req: NextRequest) {
       asset,
     });
   } catch (error) {
-    console.error('Error creating asset:', error);
+    console.error("Error creating asset:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create asset' },
-      { status: 500 }
+      { success: false, error: "Failed to create asset" },
+      { status: 500 },
     );
   }
 }

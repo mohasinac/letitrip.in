@@ -1,13 +1,13 @@
-import { Address } from '@/types';
+import { Address } from "@/types";
 
-const API_BASE = '/api/addresses';
+const API_BASE = "/api/addresses";
 
 export const addressService = {
   async getAll(): Promise<Address[]> {
     const response = await fetch(API_BASE);
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to fetch addresses');
+      throw new Error(error.error || "Failed to fetch addresses");
     }
     return response.json();
   },
@@ -16,61 +16,63 @@ export const addressService = {
     const response = await fetch(`${API_BASE}/${id}`);
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to fetch address');
+      throw new Error(error.error || "Failed to fetch address");
     }
     return response.json();
   },
 
-  async create(data: Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>): Promise<Address> {
+  async create(
+    data: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">,
+  ): Promise<Address> {
     const response = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to create address');
+      throw new Error(error.error || "Failed to create address");
     }
     return response.json();
   },
 
   async update(
     id: string,
-    data: Partial<Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>
+    data: Partial<Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">>,
   ): Promise<Address> {
     const response = await fetch(`${API_BASE}/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to update address');
+      throw new Error(error.error || "Failed to update address");
     }
     return response.json();
   },
 
   async delete(id: string): Promise<void> {
     const response = await fetch(`${API_BASE}/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to delete address');
+      throw new Error(error.error || "Failed to delete address");
     }
   },
 
   async setDefault(id: string): Promise<Address> {
     const response = await fetch(`${API_BASE}/${id}/default`, {
-      method: 'POST',
+      method: "POST",
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to set default address');
+      throw new Error(error.error || "Failed to set default address");
     }
     return response.json();
   },

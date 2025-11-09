@@ -4,37 +4,37 @@
  */
 
 // Base API URL
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 // Authentication Routes
 export const AUTH_ROUTES = {
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  LOGOUT: '/auth/logout',
-  SESSION: '/auth/session',
-  SESSIONS: '/auth/sessions',
-  VERIFY_EMAIL: '/auth/verify-email',
-  RESET_PASSWORD: '/auth/reset-password',
-  CHANGE_PASSWORD: '/auth/change-password',
+  LOGIN: "/auth/login",
+  REGISTER: "/auth/register",
+  LOGOUT: "/auth/logout",
+  SESSION: "/auth/session",
+  SESSIONS: "/auth/sessions",
+  VERIFY_EMAIL: "/auth/verify-email",
+  RESET_PASSWORD: "/auth/reset-password",
+  CHANGE_PASSWORD: "/auth/change-password",
 } as const;
 
 // User Routes
 export const USER_ROUTES = {
-  PROFILE: '/user/profile',
-  UPDATE_PROFILE: '/user/profile',
-  AVATAR: '/users/me/avatar',
-  CHANGE_PASSWORD: '/user/change-password',
-  ADDRESSES: '/user/addresses',
+  PROFILE: "/user/profile",
+  UPDATE_PROFILE: "/user/profile",
+  AVATAR: "/users/me/avatar",
+  CHANGE_PASSWORD: "/user/change-password",
+  ADDRESSES: "/user/addresses",
   ADDRESS_BY_ID: (id: string) => `/user/addresses/${id}`,
-  ORDERS: '/user/orders',
+  ORDERS: "/user/orders",
   ORDER_BY_ID: (id: string) => `/user/orders/${id}`,
-  WISHLIST: '/user/wishlist',
-  VIEWING_HISTORY: '/user/viewing-history',
+  WISHLIST: "/user/wishlist",
+  VIEWING_HISTORY: "/user/viewing-history",
 } as const;
 
 // Product Routes
 export const PRODUCT_ROUTES = {
-  LIST: '/products',
+  LIST: "/products",
   BY_ID: (id: string) => `/products/${id}`,
   BY_SLUG: (slug: string) => `/products/${slug}`,
   REVIEWS: (productId: string) => `/products/${productId}/reviews`,
@@ -43,30 +43,30 @@ export const PRODUCT_ROUTES = {
 
 // Auction Routes
 export const AUCTION_ROUTES = {
-  LIST: '/auctions',
+  LIST: "/auctions",
   BY_ID: (id: string) => `/auctions/${id}`,
   BY_SLUG: (slug: string) => `/auctions/${slug}`,
   BIDS: (auctionId: string) => `/auctions/${auctionId}/bids`,
   PLACE_BID: (auctionId: string) => `/auctions/${auctionId}/bids`,
   AUTO_BID: (auctionId: string) => `/auctions/${auctionId}/auto-bid`,
   WATCH: (auctionId: string) => `/auctions/${auctionId}/watch`,
-  MY_BIDS: '/auctions/my-bids',
-  WATCHLIST: '/auctions/watchlist',
-  WON: '/auctions/won',
+  MY_BIDS: "/auctions/my-bids",
+  WATCHLIST: "/auctions/watchlist",
+  WON: "/auctions/won",
 } as const;
 
 // Category Routes
 export const CATEGORY_ROUTES = {
-  LIST: '/categories',
+  LIST: "/categories",
   BY_ID: (id: string) => `/categories/${id}`,
   BY_SLUG: (slug: string) => `/categories/${slug}`,
-  TREE: '/categories/tree',
+  TREE: "/categories/tree",
   PRODUCTS: (categoryId: string) => `/categories/${categoryId}/products`,
 } as const;
 
 // Shop Routes
 export const SHOP_ROUTES = {
-  LIST: '/shops',
+  LIST: "/shops",
   BY_ID: (id: string) => `/shops/${id}`,
   BY_SLUG: (slug: string) => `/shops/${slug}`,
   PRODUCTS: (shopId: string) => `/shops/${shopId}/products`,
@@ -76,19 +76,19 @@ export const SHOP_ROUTES = {
 
 // Cart Routes
 export const CART_ROUTES = {
-  GET: '/cart',
-  ADD: '/cart',
+  GET: "/cart",
+  ADD: "/cart",
   UPDATE: (itemId: string) => `/cart/${itemId}`,
   REMOVE: (itemId: string) => `/cart/${itemId}`,
-  CLEAR: '/cart/clear',
-  MERGE: '/cart/merge',
-  VALIDATE: '/cart/validate',
+  CLEAR: "/cart/clear",
+  MERGE: "/cart/merge",
+  VALIDATE: "/cart/validate",
 } as const;
 
 // Order Routes
 export const ORDER_ROUTES = {
-  LIST: '/orders',
-  CREATE: '/orders',
+  LIST: "/orders",
+  CREATE: "/orders",
   BY_ID: (id: string) => `/orders/${id}`,
   CANCEL: (id: string) => `/orders/${id}/cancel`,
   TRACKING: (id: string) => `/orders/${id}/tracking`,
@@ -97,172 +97,172 @@ export const ORDER_ROUTES = {
 
 // Coupon Routes
 export const COUPON_ROUTES = {
-  LIST: '/coupons',
-  VALIDATE: '/coupons/validate',
-  APPLY: '/coupons/apply',
+  LIST: "/coupons",
+  VALIDATE: "/coupons/validate",
+  APPLY: "/coupons/apply",
 } as const;
 
 // Media Routes
 export const MEDIA_ROUTES = {
-  UPLOAD: '/media/upload',
-  UPLOAD_MULTIPLE: '/media/upload-multiple',
-  DELETE: '/media/delete',
-  LIST: '/media',
+  UPLOAD: "/media/upload",
+  UPLOAD_MULTIPLE: "/media/upload-multiple",
+  DELETE: "/media/delete",
+  LIST: "/media",
 } as const;
 
 // Search Routes
 export const SEARCH_ROUTES = {
-  PRODUCTS: '/search/products',
-  AUCTIONS: '/search/auctions',
-  SHOPS: '/search/shops',
-  GLOBAL: '/search',
+  PRODUCTS: "/search/products",
+  AUCTIONS: "/search/auctions",
+  SHOPS: "/search/shops",
+  GLOBAL: "/search",
 } as const;
 
 // Review Routes
 export const REVIEW_ROUTES = {
-  CREATE: '/reviews',
+  CREATE: "/reviews",
   BY_ID: (id: string) => `/reviews/${id}`,
   UPDATE: (id: string) => `/reviews/${id}`,
   DELETE: (id: string) => `/reviews/${id}`,
   HELPFUL: (id: string) => `/reviews/${id}/helpful`,
-  MEDIA: '/reviews/media',
+  MEDIA: "/reviews/media",
 } as const;
 
 // Admin Routes
 export const ADMIN_ROUTES = {
   // Dashboard
-  DASHBOARD: '/admin/dashboard',
-  
+  DASHBOARD: "/admin/dashboard",
+
   // Hero Slides
-  HERO_SLIDES: '/admin/hero-slides',
+  HERO_SLIDES: "/admin/hero-slides",
   HERO_SLIDE_BY_ID: (id: string) => `/admin/hero-slides/${id}`,
-  HERO_SLIDES_BULK: '/admin/hero-slides/bulk',
-  
+  HERO_SLIDES_BULK: "/admin/hero-slides/bulk",
+
   // Categories
-  CATEGORIES: '/admin/categories',
+  CATEGORIES: "/admin/categories",
   CATEGORY_BY_ID: (id: string) => `/admin/categories/${id}`,
-  CATEGORIES_BULK: '/admin/categories/bulk',
-  
+  CATEGORIES_BULK: "/admin/categories/bulk",
+
   // Users
-  USERS: '/admin/users',
+  USERS: "/admin/users",
   USER_BY_ID: (id: string) => `/admin/users/${id}`,
-  USERS_BULK: '/admin/users/bulk',
-  
+  USERS_BULK: "/admin/users/bulk",
+
   // Products
-  PRODUCTS: '/admin/products',
+  PRODUCTS: "/admin/products",
   PRODUCT_BY_ID: (id: string) => `/admin/products/${id}`,
-  PRODUCTS_BULK: '/admin/products/bulk',
-  
+  PRODUCTS_BULK: "/admin/products/bulk",
+
   // Auctions
-  AUCTIONS: '/admin/auctions',
+  AUCTIONS: "/admin/auctions",
   AUCTION_BY_ID: (id: string) => `/admin/auctions/${id}`,
-  AUCTIONS_BULK: '/admin/auctions/bulk',
-  
+  AUCTIONS_BULK: "/admin/auctions/bulk",
+
   // Orders
-  ORDERS: '/admin/orders',
+  ORDERS: "/admin/orders",
   ORDER_BY_ID: (id: string) => `/admin/orders/${id}`,
-  ORDERS_BULK: '/admin/orders/bulk',
-  
+  ORDERS_BULK: "/admin/orders/bulk",
+
   // Shops
-  SHOPS: '/admin/shops',
+  SHOPS: "/admin/shops",
   SHOP_BY_ID: (id: string) => `/admin/shops/${id}`,
-  SHOPS_BULK: '/admin/shops/bulk',
-  
+  SHOPS_BULK: "/admin/shops/bulk",
+
   // Analytics
-  ANALYTICS_DASHBOARD: '/admin/analytics/dashboard',
-  ANALYTICS_SALES: '/admin/analytics/sales',
-  ANALYTICS_USERS: '/admin/analytics/users',
-  
+  ANALYTICS_DASHBOARD: "/admin/analytics/dashboard",
+  ANALYTICS_SALES: "/admin/analytics/sales",
+  ANALYTICS_USERS: "/admin/analytics/users",
+
   // Homepage Settings
-  HOMEPAGE: '/admin/homepage',
-  HOMEPAGE_RESET: '/admin/homepage/reset',
-  
+  HOMEPAGE: "/admin/homepage",
+  HOMEPAGE_RESET: "/admin/homepage/reset",
+
   // Special Banners
-  BANNERS: '/admin/banners',
+  BANNERS: "/admin/banners",
 } as const;
 
 // Seller Routes
 export const SELLER_ROUTES = {
   // Dashboard
-  DASHBOARD: '/seller/dashboard',
-  
+  DASHBOARD: "/seller/dashboard",
+
   // Products
-  PRODUCTS: '/seller/products',
+  PRODUCTS: "/seller/products",
   PRODUCT_BY_ID: (id: string) => `/seller/products/${id}`,
-  PRODUCTS_BULK: '/seller/products/bulk',
-  
+  PRODUCTS_BULK: "/seller/products/bulk",
+
   // Auctions
-  AUCTIONS: '/seller/auctions',
+  AUCTIONS: "/seller/auctions",
   AUCTION_BY_ID: (id: string) => `/seller/auctions/${id}`,
-  AUCTIONS_BULK: '/seller/auctions/bulk',
-  
+  AUCTIONS_BULK: "/seller/auctions/bulk",
+
   // Orders
-  ORDERS: '/seller/orders',
+  ORDERS: "/seller/orders",
   ORDER_BY_ID: (id: string) => `/seller/orders/${id}`,
-  ORDERS_BULK: '/seller/orders/bulk',
-  
+  ORDERS_BULK: "/seller/orders/bulk",
+
   // Shop
-  SHOP: '/seller/shop',
-  SHOP_UPDATE: '/seller/shop',
-  
+  SHOP: "/seller/shop",
+  SHOP_UPDATE: "/seller/shop",
+
   // Analytics
-  ANALYTICS: '/analytics',
-  ANALYTICS_DASHBOARD: '/seller/analytics/dashboard',
-  ANALYTICS_SALES: '/seller/analytics/sales',
+  ANALYTICS: "/analytics",
+  ANALYTICS_DASHBOARD: "/seller/analytics/dashboard",
+  ANALYTICS_SALES: "/seller/analytics/sales",
 } as const;
 
 // Homepage Public Routes (for frontend display)
 export const HOMEPAGE_ROUTES = {
-  BANNER: '/homepage/banner',
-  HERO_SLIDES: '/homepage/hero-slides',
+  BANNER: "/homepage/banner",
+  HERO_SLIDES: "/homepage/hero-slides",
 } as const;
 
 // Checkout Routes
 export const CHECKOUT_ROUTES = {
-  CREATE_ORDER: '/checkout/create-order',
-  VERIFY_PAYMENT: '/checkout/verify-payment',
+  CREATE_ORDER: "/checkout/create-order",
+  VERIFY_PAYMENT: "/checkout/verify-payment",
 } as const;
 
 // Support Routes
 export const SUPPORT_ROUTES = {
-  CREATE_TICKET: '/support',
-  ATTACHMENTS: '/support/attachments',
+  CREATE_TICKET: "/support",
+  ATTACHMENTS: "/support/attachments",
 } as const;
 
 // Returns Routes
 export const RETURNS_ROUTES = {
-  CREATE: '/returns',
+  CREATE: "/returns",
   BY_ID: (id: string) => `/returns/${id}`,
   MEDIA: (id: string) => `/returns/${id}/media`,
 } as const;
 
 // Analytics Routes
 export const ANALYTICS_ROUTES = {
-  BASE: '/analytics',
+  BASE: "/analytics",
 } as const;
 
 // Health & System Routes
 export const SYSTEM_ROUTES = {
-  HEALTH: '/health',
-  VERSION: '/version',
+  HEALTH: "/health",
+  VERSION: "/version",
 } as const;
 
 // Helper function to build query string
 export function buildQueryString(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       if (Array.isArray(value)) {
-        value.forEach(v => searchParams.append(key, String(v)));
+        value.forEach((v) => searchParams.append(key, String(v)));
       } else {
         searchParams.append(key, String(value));
       }
     }
   });
-  
+
   const queryString = searchParams.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? `?${queryString}` : "";
 }
 
 // Helper function to build full URL with query params

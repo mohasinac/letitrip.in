@@ -2,9 +2,9 @@
  * Mobile detection utilities and hooks
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Hook to detect if user is on mobile device
@@ -21,10 +21,10 @@ export function useIsMobile(breakpoint: number = 768): boolean {
     checkMobile();
 
     // Add event listener
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
     // Cleanup
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, [breakpoint]);
 
   return isMobile;
@@ -37,10 +37,7 @@ export function useIsTouchDevice(): boolean {
   const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
-    setIsTouch(
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0
-    );
+    setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 
   return isTouch;
@@ -64,9 +61,9 @@ export function useViewport() {
     };
 
     updateViewport();
-    window.addEventListener('resize', updateViewport);
+    window.addEventListener("resize", updateViewport);
 
-    return () => window.removeEventListener('resize', updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
   return viewport;
@@ -80,7 +77,7 @@ export const breakpoints = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  '2xl': 1536,
+  "2xl": 1536,
 } as const;
 
 /**
@@ -95,9 +92,9 @@ export function useBreakpoint(breakpoint: keyof typeof breakpoints): boolean {
     };
 
     checkBreakpoint();
-    window.addEventListener('resize', checkBreakpoint);
+    window.addEventListener("resize", checkBreakpoint);
 
-    return () => window.removeEventListener('resize', checkBreakpoint);
+    return () => window.removeEventListener("resize", checkBreakpoint);
   }, [breakpoint]);
 
   return matches;
@@ -107,38 +104,42 @@ export function useBreakpoint(breakpoint: keyof typeof breakpoints): boolean {
  * Detect iOS device
  */
 export function isIOS(): boolean {
-  if (typeof window === 'undefined') return false;
-  
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  if (typeof window === "undefined") return false;
+
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+  );
 }
 
 /**
  * Detect Android device
  */
 export function isAndroid(): boolean {
-  if (typeof window === 'undefined') return false;
-  
+  if (typeof window === "undefined") return false;
+
   return /Android/.test(navigator.userAgent);
 }
 
 /**
  * Get device type
  */
-export function getDeviceType(): 'desktop' | 'tablet' | 'mobile' {
-  if (typeof window === 'undefined') return 'desktop';
-  
+export function getDeviceType(): "desktop" | "tablet" | "mobile" {
+  if (typeof window === "undefined") return "desktop";
+
   const width = window.innerWidth;
-  
-  if (width < 768) return 'mobile';
-  if (width < 1024) return 'tablet';
-  return 'desktop';
+
+  if (width < 768) return "mobile";
+  if (width < 1024) return "tablet";
+  return "desktop";
 }
 
 /**
  * Hook to get device type
  */
 export function useDeviceType() {
-  const [deviceType, setDeviceType] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [deviceType, setDeviceType] = useState<"desktop" | "tablet" | "mobile">(
+    "desktop",
+  );
 
   useEffect(() => {
     const updateDeviceType = () => {
@@ -146,9 +147,9 @@ export function useDeviceType() {
     };
 
     updateDeviceType();
-    window.addEventListener('resize', updateDeviceType);
+    window.addEventListener("resize", updateDeviceType);
 
-    return () => window.removeEventListener('resize', updateDeviceType);
+    return () => window.removeEventListener("resize", updateDeviceType);
   }, []);
 
   return deviceType;

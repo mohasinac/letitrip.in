@@ -149,7 +149,7 @@ export default function AuctionsPage() {
             <span key={i} className="px-2 text-gray-400">
               {p}
             </span>
-          )
+          ),
         )}
         <button
           onClick={() => router.push(`/auctions?page=${page + 1}`)}
@@ -501,7 +501,7 @@ export default function AuctionsPage() {
                                 new Date(auction.startTime),
                                 {
                                   addSuffix: true,
-                                }
+                                },
                               )}
                             </p>
                           </div>

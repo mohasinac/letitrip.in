@@ -1,8 +1,15 @@
-import { apiService } from './api.service';
+import { apiService } from "./api.service";
 
 interface UploadMediaData {
   file: File;
-  context: 'product' | 'shop' | 'auction' | 'review' | 'return' | 'avatar' | 'category';
+  context:
+    | "product"
+    | "shop"
+    | "auction"
+    | "review"
+    | "return"
+    | "avatar"
+    | "category";
   contextId?: string;
   slug?: string;
   description?: string;
@@ -12,7 +19,7 @@ interface MediaItem {
   id: string;
   url: string;
   thumbnailUrl?: string;
-  type: 'image' | 'video';
+  type: "image" | "video";
   size: number;
   mimeType: string;
   slug?: string;
@@ -38,29 +45,31 @@ class MediaService {
   // Upload single media file
   async upload(data: UploadMediaData): Promise<MediaUploadResponse> {
     const formData = new FormData();
-    formData.append('file', data.file);
-    formData.append('context', data.context);
-    if (data.contextId) formData.append('contextId', data.contextId);
-    if (data.slug) formData.append('slug', data.slug);
-    if (data.description) formData.append('description', data.description);
-    
-    const response = await fetch('/api/media/upload', {
-      method: 'POST',
+    formData.append("file", data.file);
+    formData.append("context", data.context);
+    if (data.contextId) formData.append("contextId", data.contextId);
+    if (data.slug) formData.append("slug", data.slug);
+    if (data.description) formData.append("description", data.description);
+
+    const response = await fetch("/api/media/upload", {
+      method: "POST",
       body: formData,
     });
-    
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Failed to upload media' }));
-      throw new Error(error.error || error.message || 'Failed to upload media');
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Failed to upload media" }));
+      throw new Error(error.error || error.message || "Failed to upload media");
     }
-    
+
     const result = await response.json();
-    
+
     // Handle API response format { success: true, url, id }
     if (!result.success) {
-      throw new Error(result.error || 'Failed to upload media');
+      throw new Error(result.error || "Failed to upload media");
     }
-    
+
     return {
       url: result.url,
       id: result.id,
@@ -69,29 +78,35 @@ class MediaService {
   }
 
   // Upload multiple media files
-  async uploadMultiple(files: File[], context: string, contextId?: string): Promise<MediaUploadResponse[]> {
+  async uploadMultiple(
+    files: File[],
+    context: string,
+    contextId?: string,
+  ): Promise<MediaUploadResponse[]> {
     const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
-    formData.append('context', context);
-    if (contextId) formData.append('contextId', contextId);
-    
-    const response = await fetch('/api/media/upload-multiple', {
-      method: 'POST',
+    files.forEach((file) => formData.append("files", file));
+    formData.append("context", context);
+    if (contextId) formData.append("contextId", contextId);
+
+    const response = await fetch("/api/media/upload-multiple", {
+      method: "POST",
       body: formData,
     });
-    
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Failed to upload media' }));
-      throw new Error(error.error || error.message || 'Failed to upload media');
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Failed to upload media" }));
+      throw new Error(error.error || error.message || "Failed to upload media");
     }
-    
+
     const result = await response.json();
-    
+
     // Handle API response format
     if (!result.success) {
-      throw new Error(result.error || 'Failed to upload media');
+      throw new Error(result.error || "Failed to upload media");
     }
-    
+
     return result.uploads || [];
   }
 
@@ -111,36 +126,40 @@ class MediaService {
   }
 
   // Delete media by URL or path from Firebase Storage
-  async deleteByUrl(url: string): Promise<{ success: boolean; message: string }> {
-    const response = await fetch('/api/media/delete', {
-      method: 'DELETE',
+  async deleteByUrl(
+    url: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await fetch("/api/media/delete", {
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ url }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to delete media');
+      throw new Error(error.error || "Failed to delete media");
     }
 
     return response.json();
   }
 
   // Delete media by path from Firebase Storage
-  async deleteByPath(path: string): Promise<{ success: boolean; message: string }> {
-    const response = await fetch('/api/media/delete', {
-      method: 'DELETE',
+  async deleteByPath(
+    path: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await fetch("/api/media/delete", {
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ path }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to delete media');
+      throw new Error(error.error || "Failed to delete media");
     }
 
     return response.json();
@@ -148,37 +167,49 @@ class MediaService {
 
   // Get media by context
   async getByContext(context: string, contextId: string): Promise<MediaItem[]> {
-    return apiService.get<MediaItem[]>(`/media/context/${context}/${contextId}`);
+    return apiService.get<MediaItem[]>(
+      `/media/context/${context}/${contextId}`,
+    );
   }
 
   // Generate signed URL for upload (for large files)
   async getUploadUrl(
     fileName: string,
     fileType: string,
-    context: string
+    context: string,
   ): Promise<{ uploadUrl: string; fileUrl: string }> {
-    return apiService.post<{ uploadUrl: string; fileUrl: string }>('/media/upload-url', {
-      fileName,
-      fileType,
-      context,
-    });
+    return apiService.post<{ uploadUrl: string; fileUrl: string }>(
+      "/media/upload-url",
+      {
+        fileName,
+        fileType,
+        context,
+      },
+    );
   }
 
   // Confirm upload (after using signed URL)
-  async confirmUpload(fileUrl: string, metadata: {
-    context: string;
-    contextId?: string;
-    slug?: string;
-    description?: string;
-  }): Promise<MediaItem> {
-    return apiService.post<MediaItem>('/media/confirm-upload', {
+  async confirmUpload(
+    fileUrl: string,
+    metadata: {
+      context: string;
+      contextId?: string;
+      slug?: string;
+      description?: string;
+    },
+  ): Promise<MediaItem> {
+    return apiService.post<MediaItem>("/media/confirm-upload", {
       fileUrl,
       ...metadata,
     });
   }
 
   // Validate file before upload
-  validateFile(file: File, maxSizeMB: number, allowedTypes: string[]): { valid: boolean; error?: string } {
+  validateFile(
+    file: File,
+    maxSizeMB: number,
+    allowedTypes: string[],
+  ): { valid: boolean; error?: string } {
     // Check file size
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxSizeBytes) {
@@ -200,41 +231,48 @@ class MediaService {
   }
 
   // Get media constraints
-  getConstraints(context: string): { maxSizeMB: number; allowedTypes: string[]; maxFiles: number } {
-    const constraints: Record<string, { maxSizeMB: number; allowedTypes: string[]; maxFiles: number }> = {
+  getConstraints(context: string): {
+    maxSizeMB: number;
+    allowedTypes: string[];
+    maxFiles: number;
+  } {
+    const constraints: Record<
+      string,
+      { maxSizeMB: number; allowedTypes: string[]; maxFiles: number }
+    > = {
       product: {
         maxSizeMB: 5,
-        allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'],
+        allowedTypes: ["image/jpeg", "image/png", "image/webp", "video/mp4"],
         maxFiles: 10,
       },
       shop: {
         maxSizeMB: 2,
-        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        allowedTypes: ["image/jpeg", "image/png", "image/webp"],
         maxFiles: 2,
       },
       auction: {
         maxSizeMB: 5,
-        allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'],
+        allowedTypes: ["image/jpeg", "image/png", "image/webp", "video/mp4"],
         maxFiles: 10,
       },
       review: {
         maxSizeMB: 3,
-        allowedTypes: ['image/jpeg', 'image/png', 'video/mp4'],
+        allowedTypes: ["image/jpeg", "image/png", "video/mp4"],
         maxFiles: 5,
       },
       return: {
         maxSizeMB: 3,
-        allowedTypes: ['image/jpeg', 'image/png', 'video/mp4'],
+        allowedTypes: ["image/jpeg", "image/png", "video/mp4"],
         maxFiles: 5,
       },
       avatar: {
         maxSizeMB: 1,
-        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        allowedTypes: ["image/jpeg", "image/png", "image/webp"],
         maxFiles: 1,
       },
       category: {
         maxSizeMB: 2,
-        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        allowedTypes: ["image/jpeg", "image/png", "image/webp"],
         maxFiles: 1,
       },
     };
@@ -244,4 +282,9 @@ class MediaService {
 }
 
 export const mediaService = new MediaService();
-export type { UploadMediaData, MediaItem, UpdateMediaData, MediaUploadResponse };
+export type {
+  UploadMediaData,
+  MediaItem,
+  UpdateMediaData,
+  MediaUploadResponse,
+};

@@ -27,7 +27,7 @@ export const ReviewFilters: React.FC<ReviewFiltersProps> = ({
 
   const updateFilter = <K extends keyof ReviewFilterValues>(
     key: K,
-    value: ReviewFilterValues[K]
+    value: ReviewFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

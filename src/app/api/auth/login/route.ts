@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '../../lib/firebase/config';
-import { createSession, setSessionCookie, clearSessionCookie } from '../../lib/session';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { adminAuth, adminDb } from "../../lib/firebase/config";
+import {
+  createSession,
+  setSessionCookie,
+  clearSessionCookie,
+} from "../../lib/session";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import bcrypt from "bcryptjs";
 
 interface LoginRequestBody {
   email: string;
@@ -17,22 +21,22 @@ async function loginHandler(req: NextRequest) {
     // Validate input
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Missing required fields', fields: ['email', 'password'] },
-        { status: 400 }
+        { error: "Missing required fields", fields: ["email", "password"] },
+        { status: 400 },
       );
     }
 
     // Get user from Firestore
     const userSnapshot = await adminDb
-      .collection('users')
-      .where('email', '==', email.toLowerCase())
+      .collection("users")
+      .where("email", "==", email.toLowerCase())
       .limit(1)
       .get();
 
     if (userSnapshot.empty) {
       const response = NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+        { error: "Invalid credentials" },
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -43,12 +47,15 @@ async function loginHandler(req: NextRequest) {
     const userData = userDoc.data();
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, userData.hashedPassword);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      userData.hashedPassword,
+    );
 
     if (!isPasswordValid) {
       const response = NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+        { error: "Invalid credentials" },
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -60,18 +67,18 @@ async function loginHandler(req: NextRequest) {
       const userRecord = await adminAuth.getUser(userData.uid);
       if (userRecord.disabled) {
         const response = NextResponse.json(
-          { error: 'Account has been disabled' },
-          { status: 403 }
+          { error: "Account has been disabled" },
+          { status: 403 },
         );
         // Clear any existing invalid session cookie
         clearSessionCookie(response);
         return response;
       }
     } catch (error) {
-      console.error('Error checking user status:', error);
+      console.error("Error checking user status:", error);
       const response = NextResponse.json(
-        { error: 'Authentication failed' },
-        { status: 500 }
+        { error: "Authentication failed" },
+        { status: 500 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -83,11 +90,11 @@ async function loginHandler(req: NextRequest) {
       userData.uid,
       userData.email,
       userData.role,
-      req
+      req,
     );
 
     // Update last login
-    await adminDb.collection('users').doc(userData.uid).update({
+    await adminDb.collection("users").doc(userData.uid).update({
       lastLogin: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -95,7 +102,7 @@ async function loginHandler(req: NextRequest) {
     // Create response with session cookie
     const response = NextResponse.json(
       {
-        message: 'Login successful',
+        message: "Login successful",
         user: {
           uid: userData.uid,
           email: userData.email,
@@ -106,27 +113,27 @@ async function loginHandler(req: NextRequest) {
         },
         sessionId,
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     // Set session cookie
     setSessionCookie(response, token);
 
     return response;
-
   } catch (error: any) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
 
     const response = NextResponse.json(
-      { 
-        error: 'Login failed',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message 
+      {
+        error: "Login failed",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
-    
+
     // Clear any existing invalid session cookie
     clearSessionCookie(response);
     return response;

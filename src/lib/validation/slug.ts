@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export interface ValidationResult {
   checking: boolean;
@@ -19,7 +19,7 @@ interface UseRemoteValidationOptions {
 export function useRemoteValidation({
   value,
   endpoint,
-  paramName = 'slug',
+  paramName = "slug",
   extraParams = {},
   debounceMs = 400,
   skip = false,
@@ -57,19 +57,19 @@ export function useRemoteValidation({
         });
 
         const res = await fetch(`${endpoint}?${params.toString()}`, {
-          method: 'GET',
+          method: "GET",
           signal: abortRef.current.signal,
         });
         const json = await res.json();
         if (!res.ok || !json.success) {
-          setError(json.error || 'Validation failed');
+          setError(json.error || "Validation failed");
           setAvailable(null);
         } else {
           setAvailable(Boolean(json.available));
         }
       } catch (e: any) {
-        if (e?.name === 'AbortError') return; // ignore aborts
-        setError('Network error');
+        if (e?.name === "AbortError") return; // ignore aborts
+        setError("Network error");
         setAvailable(null);
       } finally {
         setChecking(false);
@@ -80,18 +80,50 @@ export function useRemoteValidation({
       if (timerRef.current) clearTimeout(timerRef.current);
       if (abortRef.current) abortRef.current.abort();
     };
-  }, [value, endpoint, paramName, JSON.stringify(extraParams), debounceMs, skip, minLength]);
+  }, [
+    value,
+    endpoint,
+    paramName,
+    JSON.stringify(extraParams),
+    debounceMs,
+    skip,
+    minLength,
+  ]);
 
   return { checking, available, error };
 }
 
 // Convenience hook wrappers
 export function useShopSlugValidation(slug: string, excludeId?: string) {
-  return useRemoteValidation({ value: slug, endpoint: '/api/shops/validate-slug', extraParams: { exclude_id: excludeId } });
+  return useRemoteValidation({
+    value: slug,
+    endpoint: "/api/shops/validate-slug",
+    extraParams: { exclude_id: excludeId },
+  });
 }
-export function useProductSlugValidation(slug: string, shopSlug: string | undefined, excludeId?: string) {
-  return useRemoteValidation({ value: slug, endpoint: '/api/products/validate-slug', extraParams: { shop_slug: shopSlug, exclude_id: excludeId }, skip: !shopSlug });
+export function useProductSlugValidation(
+  slug: string,
+  shopSlug: string | undefined,
+  excludeId?: string,
+) {
+  return useRemoteValidation({
+    value: slug,
+    endpoint: "/api/products/validate-slug",
+    extraParams: { shop_slug: shopSlug, exclude_id: excludeId },
+    skip: !shopSlug,
+  });
 }
-export function useCouponCodeValidation(code: string, shopSlug: string | undefined, excludeId?: string) {
-  return useRemoteValidation({ value: code.toUpperCase(), endpoint: '/api/coupons/validate-code', paramName: 'code', extraParams: { shop_slug: shopSlug, exclude_id: excludeId }, skip: !shopSlug, minLength: 2 });
+export function useCouponCodeValidation(
+  code: string,
+  shopSlug: string | undefined,
+  excludeId?: string,
+) {
+  return useRemoteValidation({
+    value: code.toUpperCase(),
+    endpoint: "/api/coupons/validate-code",
+    paramName: "code",
+    extraParams: { shop_slug: shopSlug, exclude_id: excludeId },
+    skip: !shopSlug,
+    minLength: 2,
+  });
 }

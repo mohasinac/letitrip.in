@@ -53,8 +53,8 @@ export default function ReviewsListClient() {
         prev.map((review) =>
           review.id === reviewId
             ? { ...review, helpfulCount: review.helpfulCount + 1 }
-            : review
-        )
+            : review,
+        ),
       );
     } catch (err) {
       console.error("Error marking review as helpful:", err);

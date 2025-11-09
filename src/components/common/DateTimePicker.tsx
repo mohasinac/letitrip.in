@@ -116,7 +116,7 @@ export default function DateTimePicker({
       if (maxDate && date > maxDate) return true;
       return false;
     },
-    [minDate, maxDate]
+    [minDate, maxDate],
   );
 
   // Check if date is selected
@@ -129,7 +129,7 @@ export default function DateTimePicker({
         date.getFullYear() === value.getFullYear()
       );
     },
-    [value]
+    [value],
   );
 
   // Check if date is today
@@ -162,7 +162,7 @@ export default function DateTimePicker({
         setIsOpen(false);
       }
     },
-    [value, mode, isDateDisabled, onChange]
+    [value, mode, isDateDisabled, onChange],
   );
 
   // Handle time change
@@ -172,7 +172,7 @@ export default function DateTimePicker({
       newDate.setHours(hours, minutes, 0, 0);
       onChange(newDate);
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   // Navigate month
@@ -191,7 +191,7 @@ export default function DateTimePicker({
       onChange(null);
       setIsOpen(false);
     },
-    [onChange]
+    [onChange],
   );
 
   // Get time values
@@ -205,16 +205,8 @@ export default function DateTimePicker({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`
           flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer
-          ${
-            disabled
-              ? "bg-gray-100 cursor-not-allowed"
-              : "bg-white"
-          }
-          ${
-            error
-              ? "border-red-500"
-              : "border-gray-300"
-          }
+          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
+          ${error ? "border-red-500" : "border-gray-300"}
           ${isOpen ? "ring-2 ring-blue-500" : ""}
         `}
       >
@@ -234,11 +226,7 @@ export default function DateTimePicker({
         </svg>
 
         {/* Display value */}
-        <span
-          className={`flex-1 ${
-            value ? "" : "text-gray-500"
-          }`}
-        >
+        <span className={`flex-1 ${value ? "" : "text-gray-500"}`}>
           {displayValue || placeholder}
         </span>
 
@@ -439,9 +427,7 @@ export default function DateTimePicker({
       )}
 
       {/* Error message */}
-      {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 }

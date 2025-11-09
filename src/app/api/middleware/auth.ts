@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSessionToken, verifySession, SessionData } from '../lib/session';
+import { NextRequest, NextResponse } from "next/server";
+import { getSessionToken, verifySession, SessionData } from "../lib/session";
 
 export interface AuthenticatedRequest extends NextRequest {
   session?: SessionData;
@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends NextRequest {
  */
 export async function requireAuth(
   req: NextRequest,
-  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+  handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {
     // Get session token from cookie
@@ -18,8 +18,8 @@ export async function requireAuth(
 
     if (!token) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'No session token found' },
-        { status: 401 }
+        { error: "Unauthorized", message: "No session token found" },
+        { status: 401 },
       );
     }
 
@@ -28,8 +28,8 @@ export async function requireAuth(
 
     if (!session) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'Invalid or expired session' },
-        { status: 401 }
+        { error: "Unauthorized", message: "Invalid or expired session" },
+        { status: 401 },
       );
     }
 
@@ -40,10 +40,10 @@ export async function requireAuth(
     // Call the handler
     return handler(authenticatedReq);
   } catch (error) {
-    console.error('Auth middleware error:', error);
+    console.error("Auth middleware error:", error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 500 }
+      { error: "Authentication failed" },
+      { status: 500 },
     );
   }
 }
@@ -54,7 +54,7 @@ export async function requireAuth(
 export async function requireRole(
   req: NextRequest,
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
-  allowedRoles: string[]
+  allowedRoles: string[],
 ): Promise<NextResponse> {
   try {
     // First authenticate
@@ -62,8 +62,8 @@ export async function requireRole(
 
     if (!token) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'No session token found' },
-        { status: 401 }
+        { error: "Unauthorized", message: "No session token found" },
+        { status: 401 },
       );
     }
 
@@ -71,16 +71,16 @@ export async function requireRole(
 
     if (!session) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'Invalid or expired session' },
-        { status: 401 }
+        { error: "Unauthorized", message: "Invalid or expired session" },
+        { status: 401 },
       );
     }
 
     // Check role
     if (!allowedRoles.includes(session.role)) {
       return NextResponse.json(
-        { error: 'Forbidden', message: 'Insufficient permissions' },
-        { status: 403 }
+        { error: "Forbidden", message: "Insufficient permissions" },
+        { status: 403 },
       );
     }
 
@@ -91,10 +91,10 @@ export async function requireRole(
     // Call the handler
     return handler(authenticatedReq);
   } catch (error) {
-    console.error('Role middleware error:', error);
+    console.error("Role middleware error:", error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 500 }
+      { error: "Authentication failed" },
+      { status: 500 },
     );
   }
 }
@@ -104,7 +104,7 @@ export async function requireRole(
  */
 export async function optionalAuth(
   req: NextRequest,
-  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+  handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {
     const token = getSessionToken(req);
@@ -121,7 +121,7 @@ export async function optionalAuth(
     // No session or invalid session - continue without auth
     return handler(req as AuthenticatedRequest);
   } catch (error) {
-    console.error('Optional auth middleware error:', error);
+    console.error("Optional auth middleware error:", error);
     // Continue without auth on error
     return handler(req as AuthenticatedRequest);
   }

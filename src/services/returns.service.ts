@@ -1,5 +1,10 @@
-import { apiService } from './api.service';
-import type { Return, ReturnStatus, ReturnReason, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type {
+  Return,
+  ReturnStatus,
+  ReturnReason,
+  PaginatedResponse,
+} from "@/types";
 
 interface ReturnFilters {
   orderId?: string;
@@ -48,7 +53,7 @@ class ReturnsService {
   // List returns (role-filtered)
   async list(filters?: ReturnFilters): Promise<PaginatedResponse<Return>> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -58,8 +63,8 @@ class ReturnsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/returns?${queryString}` : '/returns';
-    
+    const endpoint = queryString ? `/returns?${queryString}` : "/returns";
+
     return apiService.get<PaginatedResponse<Return>>(endpoint);
   }
 
@@ -70,7 +75,7 @@ class ReturnsService {
 
   // Initiate return (customer)
   async initiate(data: InitiateReturnData): Promise<Return> {
-    return apiService.post<Return>('/returns', data);
+    return apiService.post<Return>("/returns", data);
   }
 
   // Update return (seller/admin)
@@ -96,25 +101,29 @@ class ReturnsService {
   // Upload media for return
   async uploadMedia(id: string, files: File[]): Promise<{ urls: string[] }> {
     const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
-    
+    files.forEach((file) => formData.append("files", file));
+
     const response = await fetch(`/api/returns/${id}/media`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Failed to upload media');
+      throw new Error(error.message || "Failed to upload media");
     }
-    
+
     return response.json();
   }
 
   // Get return statistics
-  async getStats(filters?: { shopId?: string; startDate?: string; endDate?: string }): Promise<any> {
+  async getStats(filters?: {
+    shopId?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<any> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -124,8 +133,10 @@ class ReturnsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/returns/stats?${queryString}` : '/returns/stats';
-    
+    const endpoint = queryString
+      ? `/returns/stats?${queryString}`
+      : "/returns/stats";
+
     return apiService.get<any>(endpoint);
   }
 }

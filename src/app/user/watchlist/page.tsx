@@ -66,13 +66,13 @@ export default function WatchlistPage() {
       // Fetch auction details for each watchlist item
       if (watchlistData.length > 0) {
         const auctionPromises = watchlistData.map((item: WatchlistItem) =>
-          fetch(`/api/auctions/${item.auction_id}`).then((res) => res.json())
+          fetch(`/api/auctions/${item.auction_id}`).then((res) => res.json()),
         );
 
         const auctionResults = await Promise.allSettled(auctionPromises);
         const auctionData = auctionResults
           .filter(
-            (result) => result.status === "fulfilled" && result.value.success
+            (result) => result.status === "fulfilled" && result.value.success,
           )
           .map((result: any) => result.value.data);
 
@@ -81,7 +81,7 @@ export default function WatchlistPage() {
     } catch (error) {
       console.error("Failed to load watchlist:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load watchlist"
+        error instanceof Error ? error.message : "Failed to load watchlist",
       );
     } finally {
       setLoading(false);
@@ -102,7 +102,7 @@ export default function WatchlistPage() {
 
       // Remove from local state
       setWatchlist((prev) =>
-        prev.filter((item) => item.auction_id !== auctionId)
+        prev.filter((item) => item.auction_id !== auctionId),
       );
       setAuctions((prev) => prev.filter((auction) => auction.id !== auctionId));
     } catch (error) {

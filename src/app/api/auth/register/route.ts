@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '../../lib/firebase/config';
-import { createSession, setSessionCookie, clearSessionCookie } from '../../lib/session';
-import { withRedisRateLimit, RATE_LIMITS } from '../../lib/rate-limiter-redis';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { adminAuth, adminDb } from "../../lib/firebase/config";
+import {
+  createSession,
+  setSessionCookie,
+  clearSessionCookie,
+} from "../../lib/session";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import bcrypt from "bcryptjs";
 
 interface RegisterRequestBody {
   email: string;
@@ -20,23 +24,26 @@ async function registerHandler(req: NextRequest) {
     // Validate input
     if (!email || !password || !name) {
       const response = NextResponse.json(
-        { error: 'Missing required fields', fields: ['email', 'password', 'name'] },
-        { status: 400 }
+        {
+          error: "Missing required fields",
+          fields: ["email", "password", "name"],
+        },
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
     }
 
     // Validate role (default to 'user' if not provided or invalid)
-    const validRoles = ['user', 'seller', 'admin'];
-    const userRole = role && validRoles.includes(role) ? role : 'user';
+    const validRoles = ["user", "seller", "admin"];
+    const userRole = role && validRoles.includes(role) ? role : "user";
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       const response = NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
+        { error: "Invalid email format" },
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -45,8 +52,8 @@ async function registerHandler(req: NextRequest) {
     // Validate password strength
     if (password.length < 8) {
       const response = NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
-        { status: 400 }
+        { error: "Password must be at least 8 characters long" },
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -54,15 +61,15 @@ async function registerHandler(req: NextRequest) {
 
     // Check if user already exists in Firestore
     const userSnapshot = await adminDb
-      .collection('users')
-      .where('email', '==', email.toLowerCase())
+      .collection("users")
+      .where("email", "==", email.toLowerCase())
       .limit(1)
       .get();
 
     if (!userSnapshot.empty) {
       const response = NextResponse.json(
-        { error: 'User already exists' },
-        { status: 409 }
+        { error: "User already exists" },
+        { status: 409 },
       );
       clearSessionCookie(response);
       return response;
@@ -101,15 +108,16 @@ async function registerHandler(req: NextRequest) {
       },
     };
 
-    await adminDb.collection('users').doc(userRecord.uid).set(userData);
+    await adminDb.collection("users").doc(userRecord.uid).set(userData);
 
     // Send verification email
     try {
-      const verificationLink = await adminAuth.generateEmailVerificationLink(email);
+      const verificationLink =
+        await adminAuth.generateEmailVerificationLink(email);
       // TODO: Send email with verification link using your email service
-      console.log('Verification link:', verificationLink);
+      console.log("Verification link:", verificationLink);
     } catch (error) {
-      console.error('Error sending verification email:', error);
+      console.error("Error sending verification email:", error);
     }
 
     // Create session for immediate login
@@ -117,13 +125,13 @@ async function registerHandler(req: NextRequest) {
       userRecord.uid,
       email.toLowerCase(),
       userRole, // Use the validated role
-      req
+      req,
     );
 
     // Create response with session cookie
     const response = NextResponse.json(
       {
-        message: 'User registered successfully',
+        message: "User registered successfully",
         user: {
           uid: userRecord.uid,
           email: userRecord.email,
@@ -133,53 +141,53 @@ async function registerHandler(req: NextRequest) {
         },
         sessionId,
       },
-      { status: 201 }
+      { status: 201 },
     );
 
     // Set session cookie
     setSessionCookie(response, token);
 
     return response;
-
   } catch (error: any) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
 
     // Handle Firebase Auth errors
-    if (error.code === 'auth/email-already-exists') {
+    if (error.code === "auth/email-already-exists") {
       const response = NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 409 }
+        { error: "Email already exists" },
+        { status: 409 },
       );
       clearSessionCookie(response);
       return response;
     }
 
-    if (error.code === 'auth/invalid-email') {
+    if (error.code === "auth/invalid-email") {
       const response = NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
+        { error: "Invalid email address" },
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
     }
 
-    if (error.code === 'auth/invalid-password') {
+    if (error.code === "auth/invalid-password") {
       const response = NextResponse.json(
-        { error: 'Invalid password. Password must be at least 6 characters' },
-        { status: 400 }
+        { error: "Invalid password. Password must be at least 6 characters" },
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
     }
 
     const response = NextResponse.json(
-      { 
-        error: 'Registration failed',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message 
+      {
+        error: "Registration failed",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
     clearSessionCookie(response);
     return response;

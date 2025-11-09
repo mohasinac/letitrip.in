@@ -39,7 +39,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   const [localSortKey, setLocalSortKey] = useState<string | null>(null);
   const [localSortDirection, setLocalSortDirection] = useState<"asc" | "desc">(
-    "asc"
+    "asc",
   );
 
   const activeSortKey = sortKey || localSortKey;
@@ -149,9 +149,7 @@ export function DataTable<T>({
             <tr
               key={keyExtractor(row)}
               className={`${
-                onRowClick
-                  ? "cursor-pointer hover:bg-gray-50:bg-gray-800"
-                  : ""
+                onRowClick ? "cursor-pointer hover:bg-gray-50:bg-gray-800" : ""
               } ${rowClassName ? rowClassName(row) : ""}`}
               onClick={() => onRowClick?.(row)}
             >

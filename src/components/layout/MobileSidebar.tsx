@@ -82,7 +82,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
   // Filter out logout from main menu
   const userMenuWithoutLogout = USER_MENU_ITEMS.filter(
-    (item) => item.id !== "logout"
+    (item) => item.id !== "logout",
   );
   const logoutItem = USER_MENU_ITEMS.find((item) => item.id === "logout");
 

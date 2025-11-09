@@ -59,7 +59,7 @@ export default function FormWithNavigationGuard() {
     try {
       await uploadMultipleMedia(
         files.map((f) => f.file),
-        "product"
+        "product",
       );
     } catch (error) {
       console.error("Upload error:", error);

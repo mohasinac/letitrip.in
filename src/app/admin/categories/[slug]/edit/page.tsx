@@ -47,7 +47,7 @@ export default function EditCategoryPage() {
 
         // Find the category with matching slug
         const foundCategory = result.data?.find(
-          (cat: Category) => cat.slug === slug
+          (cat: Category) => cat.slug === slug,
         );
 
         if (!foundCategory) {
@@ -58,7 +58,7 @@ export default function EditCategoryPage() {
       } catch (err) {
         console.error("Failed to load category:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load category"
+          err instanceof Error ? err.message : "Failed to load category",
         );
       } finally {
         setLoading(false);

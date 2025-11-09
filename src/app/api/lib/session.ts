@@ -1,10 +1,11 @@
-import jwt from 'jsonwebtoken';
-import { serialize, parse } from 'cookie';
-import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from './firebase/config';
+import jwt from "jsonwebtoken";
+import { serialize, parse } from "cookie";
+import { NextRequest, NextResponse } from "next/server";
+import { adminDb } from "./firebase/config";
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
-const SESSION_COOKIE_NAME = 'session';
+const SESSION_SECRET =
+  process.env.SESSION_SECRET || "your-secret-key-change-in-production";
+const SESSION_COOKIE_NAME = "session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
 
 export interface SessionData {
@@ -42,17 +43,18 @@ export async function createSession(
   userId: string,
   email: string,
   role: string,
-  req?: NextRequest
+  req?: NextRequest,
 ): Promise<{ sessionId: string; token: string }> {
   const sessionId = generateSessionId();
   const now = new Date();
   const expiresAt = new Date(now.getTime() + SESSION_MAX_AGE * 1000);
 
   // Get user agent and IP if available
-  const userAgent = req?.headers.get('user-agent') || undefined;
-  const ipAddress = req?.headers.get('x-forwarded-for') || 
-                    req?.headers.get('x-real-ip') || 
-                    undefined;
+  const userAgent = req?.headers.get("user-agent") || undefined;
+  const ipAddress =
+    req?.headers.get("x-forwarded-for") ||
+    req?.headers.get("x-real-ip") ||
+    undefined;
 
   // Store session in Firestore
   const sessionDoc: SessionDocument = {
@@ -67,7 +69,7 @@ export async function createSession(
     ipAddress,
   };
 
-  await adminDb.collection('sessions').doc(sessionId).set(sessionDoc);
+  await adminDb.collection("sessions").doc(sessionId).set(sessionDoc);
 
   // Generate JWT token
   const token = jwt.sign(
@@ -80,7 +82,7 @@ export async function createSession(
     SESSION_SECRET,
     {
       expiresIn: SESSION_MAX_AGE,
-    }
+    },
   );
 
   return { sessionId, token };
@@ -89,14 +91,16 @@ export async function createSession(
 /**
  * Verify and decode a session token
  */
-export async function verifySession(token: string): Promise<SessionData | null> {
+export async function verifySession(
+  token: string,
+): Promise<SessionData | null> {
   try {
     // Verify JWT
     const decoded = jwt.verify(token, SESSION_SECRET) as SessionData;
 
     // Check if session exists in Firestore
     const sessionDoc = await adminDb
-      .collection('sessions')
+      .collection("sessions")
       .doc(decoded.sessionId)
       .get();
 
@@ -110,21 +114,18 @@ export async function verifySession(token: string): Promise<SessionData | null> 
     const expiresAt = new Date(sessionData.expiresAt);
     if (expiresAt < new Date()) {
       // Delete expired session
-      await adminDb.collection('sessions').doc(decoded.sessionId).delete();
+      await adminDb.collection("sessions").doc(decoded.sessionId).delete();
       return null;
     }
 
     // Update last activity
-    await adminDb
-      .collection('sessions')
-      .doc(decoded.sessionId)
-      .update({
-        lastActivity: new Date().toISOString(),
-      });
+    await adminDb.collection("sessions").doc(decoded.sessionId).update({
+      lastActivity: new Date().toISOString(),
+    });
 
     return decoded;
   } catch (error) {
-    console.error('Session verification error:', error);
+    console.error("Session verification error:", error);
     return null;
   }
 }
@@ -133,7 +134,7 @@ export async function verifySession(token: string): Promise<SessionData | null> 
  * Delete a session from Firestore
  */
 export async function deleteSession(sessionId: string): Promise<void> {
-  await adminDb.collection('sessions').doc(sessionId).delete();
+  await adminDb.collection("sessions").doc(sessionId).delete();
 }
 
 /**
@@ -141,8 +142,8 @@ export async function deleteSession(sessionId: string): Promise<void> {
  */
 export async function deleteAllUserSessions(userId: string): Promise<void> {
   const sessionsSnapshot = await adminDb
-    .collection('sessions')
-    .where('userId', '==', userId)
+    .collection("sessions")
+    .where("userId", "==", userId)
     .get();
 
   const batch = adminDb.batch();
@@ -156,10 +157,12 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
 /**
  * Get all active sessions for a user
  */
-export async function getUserSessions(userId: string): Promise<SessionDocument[]> {
+export async function getUserSessions(
+  userId: string,
+): Promise<SessionDocument[]> {
   const sessionsSnapshot = await adminDb
-    .collection('sessions')
-    .where('userId', '==', userId)
+    .collection("sessions")
+    .where("userId", "==", userId)
     .get();
 
   const sessions: SessionDocument[] = [];
@@ -186,35 +189,35 @@ export async function getUserSessions(userId: string): Promise<SessionDocument[]
 export function setSessionCookie(response: NextResponse, token: string): void {
   const cookie = serialize(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     maxAge: SESSION_MAX_AGE,
-    path: '/',
+    path: "/",
   });
 
-  response.headers.set('Set-Cookie', cookie);
+  response.headers.set("Set-Cookie", cookie);
 }
 
 /**
  * Clear session cookie
  */
 export function clearSessionCookie(response: NextResponse): void {
-  const cookie = serialize(SESSION_COOKIE_NAME, '', {
+  const cookie = serialize(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     maxAge: 0,
-    path: '/',
+    path: "/",
   });
 
-  response.headers.set('Set-Cookie', cookie);
+  response.headers.set("Set-Cookie", cookie);
 }
 
 /**
  * Get session token from request cookies
  */
 export function getSessionToken(req: NextRequest): string | null {
-  const cookieHeader = req.headers.get('cookie');
+  const cookieHeader = req.headers.get("cookie");
   if (!cookieHeader) return null;
 
   const cookies = parse(cookieHeader);
@@ -234,8 +237,8 @@ function generateSessionId(): string {
 export async function cleanupExpiredSessions(): Promise<number> {
   const now = new Date().toISOString();
   const expiredSessionsSnapshot = await adminDb
-    .collection('sessions')
-    .where('expiresAt', '<', now)
+    .collection("sessions")
+    .where("expiresAt", "<", now)
     .get();
 
   if (expiredSessionsSnapshot.empty) {
@@ -255,21 +258,23 @@ export async function cleanupExpiredSessions(): Promise<number> {
  * Get current user from session token
  * Returns user data if authenticated, null otherwise
  */
-export async function getCurrentUser(request: NextRequest): Promise<UserData | null> {
+export async function getCurrentUser(
+  request: NextRequest,
+): Promise<UserData | null> {
   const token = getSessionToken(request);
   if (!token) return null;
 
   const session = await verifySession(token);
   if (!session) return null;
 
-  const userDoc = await adminDb.collection('users').doc(session.userId).get();
+  const userDoc = await adminDb.collection("users").doc(session.userId).get();
   if (!userDoc.exists) return null;
 
   const userData = userDoc.data();
   return {
     id: session.userId,
     email: userData?.email || session.email,
-    name: userData?.name || '',
-    role: userData?.role || session.role || 'user',
+    name: userData?.name || "",
+    role: userData?.role || session.role || "user",
   };
 }

@@ -5,7 +5,7 @@ import { COLLECTIONS } from "@/constants/database";
 /**
  * GET /api/admin/dashboard
  * Get admin dashboard statistics
- * 
+ *
  * Admin only endpoint
  */
 export async function GET(req: NextRequest) {
@@ -17,41 +17,71 @@ export async function GET(req: NextRequest) {
 
     // Get all users
     const usersSnapshot = await db.collection(COLLECTIONS.USERS).get();
-    const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
+    const allUsers = usersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
     const totalUsers = allUsers.length;
-    const totalSellers = allUsers.filter((u: any) => u.role === "seller").length;
+    const totalSellers = allUsers.filter(
+      (u: any) => u.role === "seller",
+    ).length;
     const totalAdmins = allUsers.filter((u: any) => u.role === "admin").length;
-    const activeUsers = allUsers.filter((u: any) => u.status === "active").length;
-    const bannedUsers = allUsers.filter((u: any) => u.status === "banned").length;
+    const activeUsers = allUsers.filter(
+      (u: any) => u.status === "active",
+    ).length;
+    const bannedUsers = allUsers.filter(
+      (u: any) => u.status === "banned",
+    ).length;
 
     // Get all shops
     const shopsSnapshot = await db.collection(COLLECTIONS.SHOPS).get();
-    const allShops = shopsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allShops = shopsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     const totalShops = allShops.length;
-    const activeShops = allShops.filter((s: any) => s.status === "active").length;
+    const activeShops = allShops.filter(
+      (s: any) => s.status === "active",
+    ).length;
     const verifiedShops = allShops.filter((s: any) => s.is_verified).length;
 
     // Get all categories
-    const categoriesSnapshot = await db.collection(COLLECTIONS.CATEGORIES).get();
+    const categoriesSnapshot = await db
+      .collection(COLLECTIONS.CATEGORIES)
+      .get();
     const totalCategories = categoriesSnapshot.size;
 
     // Get all products
     const productsSnapshot = await db.collection(COLLECTIONS.PRODUCTS).get();
-    const allProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allProducts = productsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     const totalProducts = allProducts.length;
-    const activeProducts = allProducts.filter((p: any) => p.status === "active").length;
-    const outOfStockProducts = allProducts.filter((p: any) => 
-      p.stock_quantity !== undefined && p.stock_quantity === 0
+    const activeProducts = allProducts.filter(
+      (p: any) => p.status === "active",
+    ).length;
+    const outOfStockProducts = allProducts.filter(
+      (p: any) => p.stock_quantity !== undefined && p.stock_quantity === 0,
     ).length;
 
     // Get all orders
     const ordersSnapshot = await db.collection(COLLECTIONS.ORDERS).get();
-    const allOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allOrders = ordersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     const totalOrders = allOrders.length;
-    const pendingOrders = allOrders.filter((o: any) => o.status === "pending").length;
-    const completedOrders = allOrders.filter((o: any) => o.status === "delivered").length;
-    const cancelledOrders = allOrders.filter((o: any) => o.status === "cancelled").length;
+    const pendingOrders = allOrders.filter(
+      (o: any) => o.status === "pending",
+    ).length;
+    const completedOrders = allOrders.filter(
+      (o: any) => o.status === "delivered",
+    ).length;
+    const cancelledOrders = allOrders.filter(
+      (o: any) => o.status === "cancelled",
+    ).length;
 
     // Calculate total revenue
     const totalRevenue = allOrders.reduce((sum: number, order: any) => {
@@ -106,21 +136,37 @@ export async function GET(req: NextRequest) {
     }).length;
 
     // Calculate percentage changes
-    const usersTrend = prev30DaysUsers > 0 
-      ? ((last30DaysUsers - prev30DaysUsers) / prev30DaysUsers * 100).toFixed(1)
-      : "+100.0";
-    
-    const shopsTrend = prev30DaysShops > 0
-      ? ((last30DaysShops - prev30DaysShops) / prev30DaysShops * 100).toFixed(1)
-      : "+100.0";
-    
-    const productsTrend = prev30DaysProducts > 0
-      ? ((last30DaysProducts - prev30DaysProducts) / prev30DaysProducts * 100).toFixed(1)
-      : "+100.0";
-    
-    const ordersTrend = prev30DaysOrders > 0
-      ? ((last30DaysOrders - prev30DaysOrders) / prev30DaysOrders * 100).toFixed(1)
-      : "+100.0";
+    const usersTrend =
+      prev30DaysUsers > 0
+        ? (
+            ((last30DaysUsers - prev30DaysUsers) / prev30DaysUsers) *
+            100
+          ).toFixed(1)
+        : "+100.0";
+
+    const shopsTrend =
+      prev30DaysShops > 0
+        ? (
+            ((last30DaysShops - prev30DaysShops) / prev30DaysShops) *
+            100
+          ).toFixed(1)
+        : "+100.0";
+
+    const productsTrend =
+      prev30DaysProducts > 0
+        ? (
+            ((last30DaysProducts - prev30DaysProducts) / prev30DaysProducts) *
+            100
+          ).toFixed(1)
+        : "+100.0";
+
+    const ordersTrend =
+      prev30DaysOrders > 0
+        ? (
+            ((last30DaysOrders - prev30DaysOrders) / prev30DaysOrders) *
+            100
+          ).toFixed(1)
+        : "+100.0";
 
     // Get recent activities (simulated - in production, use an activities collection)
     const recentActivities = [
@@ -191,7 +237,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching admin dashboard stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch dashboard stats" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

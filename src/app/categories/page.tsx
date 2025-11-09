@@ -43,7 +43,7 @@ export default function CategoriesPage() {
       filtered = filtered.filter(
         (cat) =>
           cat.name.toLowerCase().includes(query) ||
-          cat.description?.toLowerCase().includes(query)
+          cat.description?.toLowerCase().includes(query),
       );
     }
 

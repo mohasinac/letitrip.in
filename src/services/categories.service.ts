@@ -1,6 +1,6 @@
-import { apiService } from './api.service';
-import type { Category } from '@/types';
-import type { Product, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type { Category } from "@/types";
+import type { Product, PaginatedResponse } from "@/types";
 
 interface CategoryFilters {
   parentId?: string | null;
@@ -37,7 +37,7 @@ class CategoriesService {
   // List categories
   async list(filters?: CategoryFilters): Promise<Category[]> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -47,51 +47,72 @@ class CategoriesService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/categories?${queryString}` : '/categories';
-    
-    const response = await apiService.get<{ success: boolean; data: Category[] }>(endpoint);
+    const endpoint = queryString ? `/categories?${queryString}` : "/categories";
+
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>(endpoint);
     return response.data || [];
   }
 
   // Get category by ID
   async getById(id: string): Promise<Category> {
-    const response = await apiService.get<{ success: boolean; data: Category }>(`/categories/${id}`);
+    const response = await apiService.get<{ success: boolean; data: Category }>(
+      `/categories/${id}`,
+    );
     return response.data;
   }
 
   // Get category by slug
   async getBySlug(slug: string): Promise<Category> {
-    const response = await apiService.get<{ success: boolean; data: Category }>(`/categories/${slug}`);
+    const response = await apiService.get<{ success: boolean; data: Category }>(
+      `/categories/${slug}`,
+    );
     return response.data;
   }
 
   // Get category tree
   async getTree(parentId?: string): Promise<CategoryTree[]> {
     const params = new URLSearchParams();
-    if (parentId) params.append('parentId', parentId);
-    
+    if (parentId) params.append("parentId", parentId);
+
     const queryString = params.toString();
-    const endpoint = queryString ? `/categories/tree?${queryString}` : '/categories/tree';
-    
-    const response = await apiService.get<{ success: boolean; data: CategoryTree[] }>(endpoint);
+    const endpoint = queryString
+      ? `/categories/tree?${queryString}`
+      : "/categories/tree";
+
+    const response = await apiService.get<{
+      success: boolean;
+      data: CategoryTree[];
+    }>(endpoint);
     return response.data || [];
   }
 
   // Get leaf categories (for product creation)
   async getLeaves(): Promise<Category[]> {
-    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/leaves');
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>("/categories/leaves");
     return response.data || [];
   }
 
   // Create category (admin only)
   async create(data: CreateCategoryData): Promise<Category> {
-    const response = await apiService.post<{ success: boolean; data: Category }>('/categories', data);
+    const response = await apiService.post<{
+      success: boolean;
+      data: Category;
+    }>("/categories", data);
     return response.data;
   }
 
   // Update category (admin only)
   async update(slug: string, data: UpdateCategoryData): Promise<Category> {
-    const response = await apiService.patch<{ success: boolean; data: Category }>(`/categories/${slug}`, data);
+    const response = await apiService.patch<{
+      success: boolean;
+      data: Category;
+    }>(`/categories/${slug}`, data);
     return response.data;
   }
 
@@ -102,42 +123,58 @@ class CategoriesService {
 
   // Get category breadcrumb
   async getBreadcrumb(id: string): Promise<Category[]> {
-    const response = await apiService.get<{ success: boolean; data: Category[] }>(`/categories/${id}/breadcrumb`);
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>(`/categories/${id}/breadcrumb`);
     return response.data || [];
   }
 
   // Get featured categories
   async getFeatured(): Promise<Category[]> {
-    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/featured');
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>("/categories/featured");
     return response.data || [];
   }
 
   // Get homepage categories
   async getHomepage(): Promise<Category[]> {
-    const response = await apiService.get<{ success: boolean; data: Category[] }>('/categories/homepage');
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>("/categories/homepage");
     return response.data || [];
   }
 
   // Search categories
   async search(query: string): Promise<Category[]> {
-    const response = await apiService.get<{ success: boolean; data: Category[] }>(`/categories/search?q=${encodeURIComponent(query)}`);
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>(`/categories/search?q=${encodeURIComponent(query)}`);
     return response.data || [];
   }
 
   // Reorder categories (admin only)
-  async reorder(orders: { id: string; sortOrder: number }[]): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>('/categories/reorder', { orders });
+  async reorder(
+    orders: { id: string; sortOrder: number }[],
+  ): Promise<{ message: string }> {
+    return apiService.post<{ message: string }>("/categories/reorder", {
+      orders,
+    });
   }
 
   // Get products in a category (includes subcategories' products)
   async getCategoryProducts(
-    slug: string, 
-    filters?: { 
-      page?: number; 
+    slug: string,
+    filters?: {
+      page?: number;
       limit?: number;
       includeSubcategories?: boolean;
       [key: string]: any;
-    }
+    },
   ): Promise<PaginatedResponse<Product>> {
     const params = new URLSearchParams();
     if (filters) {
@@ -149,10 +186,10 @@ class CategoriesService {
     }
 
     const qs = params.toString();
-    const endpoint = qs 
-      ? `/categories/${slug}/products?${qs}` 
+    const endpoint = qs
+      ? `/categories/${slug}/products?${qs}`
       : `/categories/${slug}/products`;
-    
+
     const res = await apiService.get<any>(endpoint);
     return {
       data: res.products || res.data || res,
@@ -174,15 +211,18 @@ class CategoriesService {
   }
 
   // Get similar categories (siblings or related)
-  async getSimilarCategories(slug: string, limit?: number): Promise<Category[]> {
+  async getSimilarCategories(
+    slug: string,
+    limit?: number,
+  ): Promise<Category[]> {
     const params = new URLSearchParams();
-    if (limit) params.append('limit', String(limit));
-    
+    if (limit) params.append("limit", String(limit));
+
     const qs = params.toString();
-    const endpoint = qs 
-      ? `/categories/${slug}/similar?${qs}` 
+    const endpoint = qs
+      ? `/categories/${slug}/similar?${qs}`
       : `/categories/${slug}/similar`;
-    
+
     const res = await apiService.get<any>(endpoint);
     return res.data || res.categories || res || [];
   }
@@ -195,4 +235,9 @@ class CategoriesService {
 }
 
 export const categoriesService = new CategoriesService();
-export type { CategoryFilters, CreateCategoryData, UpdateCategoryData, CategoryTree };
+export type {
+  CategoryFilters,
+  CreateCategoryData,
+  UpdateCategoryData,
+  CategoryTree,
+};

@@ -139,8 +139,8 @@ export default function EditProductPage() {
                     currentStep > step.id
                       ? "border-blue-600 bg-blue-600 text-white"
                       : currentStep === step.id
-                      ? "border-blue-600 bg-white text-blue-600"
-                      : "border-gray-300 bg-white text-gray-400"
+                        ? "border-blue-600 bg-white text-blue-600"
+                        : "border-gray-300 bg-white text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (

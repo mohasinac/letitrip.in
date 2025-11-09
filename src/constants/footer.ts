@@ -7,7 +7,7 @@ export const ABOUT_LINKS = [
   { id: "privacy", name: "Privacy Policy", link: "/privacy-policy" },
   { id: "refund", name: "Refund Policy", link: "/refund-policy" },
   { id: "shipping", name: "Shipping Policy", link: "/shipping-policy" },
-  { id: "cookie", name: "Cookie Policy", link: "/cookie-policy" }
+  { id: "cookie", name: "Cookie Policy", link: "/cookie-policy" },
 ];
 
 // Shopping Notes (Column 2)
@@ -15,7 +15,7 @@ export const SHOPPING_NOTES = [
   { id: "faq", name: "FAQ", link: "/faq" },
   { id: "new-user", name: "New Users' Guide", link: "/guide/new-user" },
   { id: "returns", name: "Returns & Refunds", link: "/guide/returns" },
-  { id: "prohibited", name: "Prohibited Items", link: "/guide/prohibited" }
+  { id: "prohibited", name: "Prohibited Items", link: "/guide/prohibited" },
 ];
 
 // Fee Description (Column 3)
@@ -23,13 +23,13 @@ export const FEE_DESCRIPTION = [
   { id: "payment", name: "Payment Methods", link: "/fees/payment" },
   { id: "structure", name: "Fee Structure", link: "/fees/structure" },
   { id: "optional", name: "Optional Services", link: "/fees/optional" },
-  { id: "shipping", name: "International Shipping", link: "/fees/shipping" }
+  { id: "shipping", name: "International Shipping", link: "/fees/shipping" },
 ];
 
 // Company Information (Column 4)
 export const COMPANY_INFO = [
   { id: "overview", name: "Company Overview", link: "/company/overview" },
-  { id: "ticket", name: "Customer Ticket", link: "/support/ticket" }
+  { id: "ticket", name: "Customer Ticket", link: "/support/ticket" },
 ];
 
 // Payment Method Logos
@@ -44,7 +44,7 @@ export const PAYMENT_METHODS = [
   { id: "paidy", name: "Paidy", logo: "/payments/paidy.svg" },
   { id: "alipay", name: "Alipay+", logo: "/payments/alipay.svg" },
   { id: "unionpay", name: "UnionPay", logo: "/payments/unionpay.svg" },
-  { id: "atome", name: "Atome", logo: "/payments/atome.svg" }
+  { id: "atome", name: "Atome", logo: "/payments/atome.svg" },
 ];
 
 // Language Options
@@ -65,20 +65,41 @@ export const LANGUAGES = [
   { code: "tr", name: "Türkçe", fullName: "Turkish" },
   { code: "pt", name: "Português", fullName: "Portuguese" },
   { code: "id", name: "Bahasa Indonesia", fullName: "Indonesian" },
-  { code: "ru", name: "Русский", fullName: "Russian" }
+  { code: "ru", name: "Русский", fullName: "Russian" },
 ];
 
 // Social Media Links
 export const SOCIAL_LINKS = [
-  { id: "facebook", name: "Facebook", link: "https://facebook.com", icon: "facebook" },
-  { id: "youtube", name: "YouTube", link: "https://youtube.com", icon: "youtube" },
-  { id: "twitter", name: "Twitter", link: "https://twitter.com", icon: "twitter" },
-  { id: "instagram", name: "Instagram", link: "https://instagram.com", icon: "instagram" }
+  {
+    id: "facebook",
+    name: "Facebook",
+    link: "https://facebook.com",
+    icon: "facebook",
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    link: "https://youtube.com",
+    icon: "youtube",
+  },
+  {
+    id: "twitter",
+    name: "Twitter",
+    link: "https://twitter.com",
+    icon: "twitter",
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    link: "https://instagram.com",
+    icon: "instagram",
+  },
 ];
 
-export const COPYRIGHT_TEXT = "Copyright © 2015-2025 letitrip.com. All Rights Reserved";
+export const COPYRIGHT_TEXT =
+  "Copyright © 2015-2025 letitrip.com. All Rights Reserved";
 
 export const SUPPORT_INFO = {
   title: "Need help? Please use the Customer Ticket",
-  ticketLink: "/support/ticket"
+  ticketLink: "/support/ticket",
 };

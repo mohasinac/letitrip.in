@@ -51,7 +51,7 @@ export default function ReviewForm({
       await uploadMultipleMedia(
         files.map((f) => f.file),
         "review",
-        productId
+        productId,
       );
     } catch (err) {
       console.error("Upload error:", err);
@@ -110,7 +110,7 @@ export default function ReviewForm({
   const handleCancelClick = async () => {
     if (hasUploadedMedia) {
       const confirmed = window.confirm(
-        "You have uploaded media. Cancel and delete?"
+        "You have uploaded media. Cancel and delete?",
       );
       if (!confirmed) return;
       await cleanupUploadedMedia();

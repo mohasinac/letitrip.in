@@ -16,10 +16,7 @@ export async function GET(req: NextRequest) {
     const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
 
     if (!userDoc.exists) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const userData = { id: userDoc.id, ...userDoc.data() };
@@ -49,17 +46,11 @@ export async function PATCH(req: NextRequest) {
     const { name, email, phone } = body;
 
     if (!name || !name.trim()) {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
     if (!email || !email.trim()) {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     // Basic email validation
@@ -67,7 +58,7 @@ export async function PATCH(req: NextRequest) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: "Invalid email format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -83,7 +74,7 @@ export async function PATCH(req: NextRequest) {
         if (existingUser.id !== userId) {
           return NextResponse.json(
             { error: "Email already in use" },
-            { status: 409 }
+            { status: 409 },
           );
         }
       }

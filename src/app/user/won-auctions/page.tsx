@@ -55,7 +55,7 @@ export default function WonAuctionsPage() {
     } catch (error) {
       console.error("Failed to load won auctions:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load won auctions"
+        error instanceof Error ? error.message : "Failed to load won auctions",
       );
     } finally {
       setLoading(false);
@@ -103,13 +103,13 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctions.reduce(
     (sum, auction) => sum + auction.currentBid,
-    0
+    0,
   );
   const pendingPayment = auctions.filter(
-    (a) => !a.order_id || a.order_status === "pending"
+    (a) => !a.order_id || a.order_status === "pending",
   );
   const completedOrders = auctions.filter(
-    (a) => a.order_id && a.order_status === "completed"
+    (a) => a.order_id && a.order_status === "completed",
   );
 
   return (

@@ -1,130 +1,183 @@
-# Admin & Seller Dashboard Improvements Checklist
+# Platform Improvements & Refactoring Checklist
 
 **Project**: JustForView.in Auction Platform  
-**Date**: November 9, 2025  
-**Priority**: High → Low (Ordered)
+**Date**: November 10, 2025  
+**Priority**: HIGH → MEDIUM → LOW (Ordered)
 
 ---
 
-## 🔍 Sidebar Search Improvement
+## 🎯 Current Sprint: Code Quality & UX Improvements
 
-### Issue
+### Phase 1: Completed Features ✅
 
-Admin and Seller sidebar search inputs exist but don't filter navigation items in real-time, and they lose focus when typing.
+- ✅ Admin sidebar search with real-time filtering
+- ✅ Seller sidebar search with real-time filtering
+- ✅ Admin products management (list + detail/edit)
+- ✅ Admin shops management (list + detail/edit)
+- ✅ Admin orders management (list + detail)
 
-### Tasks
-
-- [x] **HIGH** - Implement real-time search filtering in `AdminSidebar.tsx` ✅
-
-  - ✅ Filter navigation items based on search query
-  - ✅ Search should match: title, href, children
-  - ✅ Maintain focus while typing (use controlled component)
-  - ✅ Show/hide sections based on matches
-  - ✅ Highlight matching text (yellow background)
-  - ✅ Show "No results" message when no matches
-  - ✅ Auto-expand sections with matching items
-  - ✅ Clear button to reset search
-
-- [x] **HIGH** - Implement real-time search filtering in `SellerSidebar.tsx` ✅
-
-  - ✅ Same features as AdminSidebar
-  - ✅ Maintain consistent behavior
-  - ✅ Blue highlight color theme (matches seller branding)
-
-- [ ] **MEDIUM** - Add keyboard shortcuts
-
-  - `Ctrl+K` / `Cmd+K` to focus search
-  - `Escape` to clear search
-  - Arrow keys to navigate filtered results
-
-- [ ] **LOW** - Add search history/suggestions
-  - Store recent searches in localStorage
-  - Show suggestions on focus
+### Phase 2: Refactoring & Enhancement (NEW)
 
 ---
 
-## 📄 Missing Admin Pages
+## 🔄 Code Refactoring Tasks
+
+### 1. Unified Filter System (HIGH PRIORITY)
+
+- [x] **HIGH** - Create `UnifiedFilterSidebar` component ✅
+
+  - ✅ Searchable filter options (like sidebar nav search)
+  - ✅ Mobile: Slide-in sidebar from left
+  - ✅ Desktop: Always visible sidebar (sticky)
+  - ✅ Search within filter options (not resources)
+  - ✅ Collapsible sections with search highlighting
+  - ✅ Apply/Reset buttons
+  - ✅ Result count display
+  - ✅ Auto-expand sections with matches
+  - ✅ Clear search button
+  - ✅ Body scroll lock on mobile
+  - ✅ Highlight matching text in yellow
+  - ✅ Show "No results" message
+  - ✅ Support all filter types (checkbox, radio, range, date, etc.)
+  - ✅ Reusable across all pages
+  - ✅ Exported from inline-edit.ts
+
+- [ ] **HIGH** - Refactor public pages to use unified filters
+
+  - `/products` - Product listing with filters
+  - `/shops` - Shop listing with filters
+  - `/categories/[slug]` - Category products with filters
+  - `/auctions` - Auction listing with filters
+  - `/reviews` - Reviews with filters
+  - `/blog` - Blog posts with filters
+
+- [ ] **HIGH** - Refactor admin pages to use unified filters (2/5 complete)
+
+  - ✅ `/admin/products` - Uses UnifiedFilterSidebar with searchable options
+  - ✅ `/admin/shops` - Uses UnifiedFilterSidebar with searchable options
+  - `/admin/orders` - Use unified filter
+  - `/admin/reviews` - Use unified filter
+  - `/admin/auctions/moderation` - Use unified filter
+
+- [ ] **HIGH** - Refactor seller pages to use unified filters
+  - `/seller/products` - Use unified filter
+  - `/seller/orders` - Use unified filter
+  - `/seller/auctions` - Use unified filter
+
+### 2. Component Consolidation (HIGH PRIORITY)
+
+- [ ] **HIGH** - Create `ResourceListWrapper` component
+
+  - Handles: admin/seller/public view modes
+  - Props: `context` ('admin' | 'seller' | 'public')
+  - Stats cards (conditional based on context)
+  - Filters sidebar
+  - Search bar
+  - Grid/Table view toggle
+  - Pagination
+  - Bulk actions (admin/seller only)
+  - Export (admin/seller only)
+
+- [ ] **HIGH** - Create `ResourceDetailWrapper` component
+
+  - Handles: admin/seller/public detail views
+  - Props: `context`, `resource`, `actions`
+  - Header with breadcrumbs
+  - Action buttons (contextual)
+  - Tabs (if needed)
+  - Stats cards (if needed)
+  - Related items
+  - Comments/Reviews section
+
+- [ ] **HIGH** - Refactor order pages to use wrappers
+  - `/admin/orders` → Use ResourceListWrapper
+  - `/seller/orders` → Use ResourceListWrapper
+  - `/user/orders` → Use ResourceListWrapper
+
+### 3. Remove Marketing Features (HIGH PRIORITY)
+
+- [x] **HIGH** - Remove marketing pages from seller dashboard
+
+  - ~~Delete `/seller/marketing` page~~ (never existed)
+  - ✅ Removed marketing link from SellerSidebar.tsx navigation
+  - ~~Remove marketing service methods~~ (never existed)
+  - ~~Update seller menu items in constants~~ (removed from SellerSidebar)
+
+- [x] **HIGH** - Clean up marketing-related components
+  - ~~Delete `src/components/seller/Marketing/` folder~~ (never existed)
+  - ~~Remove unused marketing hooks~~ (none found)
+  - ~~Clean up marketing types from `src/types/`~~ (none found)
+
+### 4. Constants & DRY Improvements (HIGH PRIORITY)
+
+- [ ] **HIGH** - Audit and update all API route constants
+
+  - Review `src/constants/api-routes.ts`
+  - Add missing routes (reviews, payments, payouts, etc.)
+  - Ensure all services use route constants
+  - Remove hardcoded API paths
+
+- [x] **HIGH** - Audit and update navigation constants ✅
+
+  - ✅ Reviewed `src/constants/navigation.ts`
+  - ✅ Removed unused SHOPS constant (duplicate)
+  - ✅ Removed unused FEATURED_CATEGORIES (duplicate in categories.ts)
+  - ✅ Removed unused PRODUCT_CATEGORIES (duplicate in categories.ts)
+  - ✅ Removed unused SPECIAL_EVENT constant
+  - ✅ Removed unused HEADER_ACTIONS constant
+  - ✅ Updated SELLER_MENU_ITEMS (removed marketing)
+  - ✅ ADMIN_MENU_ITEMS matches implemented pages
+  - ✅ All navigation uses constants
+
+- [ ] **HIGH** - Create filter configuration constants
+
+  - `src/constants/filter-configs.ts`
+  - Define filter schemas for each resource type
+  - Product filters, Shop filters, Order filters, etc.
+  - Reuse across admin/seller/public pages
+
+- [ ] **HIGH** - Create common action constants
+  - `src/constants/bulk-actions.ts`
+  - Define bulk actions per resource
+  - Status options, Quick actions
+  - Reuse across pages
+
+### 5. Service Layer Improvements (MEDIUM PRIORITY)
+
+- [ ] **MEDIUM** - Create base service class
+
+  - `src/services/base.service.ts`
+  - Common CRUD methods
+  - Extend for specific services
+  - Reduce code duplication
+
+- [ ] **MEDIUM** - Refactor services to extend base
+  - Products, Shops, Orders, Reviews
+  - Use common patterns
+  - Type-safe generic methods
+
+---
+
+## 🔍 Sidebar Search Improvement (COMPLETED)
+
+✅ **Completed**: Real-time search filtering implemented in both admin and seller sidebars with all features.
+
+---
+
+## 📄 Remaining Admin Pages
 
 ### High Priority Pages
-
-#### 1. Products Management
-
-- [x] **HIGH** - `/admin/products` - All Products List ✅
-
-  - ✅ Table with inline edit (double-click to edit)
-  - ✅ Filters: status, price range (min/max)
-  - ✅ Bulk actions: approve/publish, reject/archive, feature, unfeature, delete
-  - ✅ Quick edit: name, price, stock, status
-  - ✅ Search by name, SKU
-  - ✅ Grid and table view toggle
-  - ✅ Pagination (20 per page)
-  - ✅ Export to CSV
-  - ✅ Product stats (rating, sales)
-  - ✅ Stock status indicators (color-coded)
-
-- [x] **HIGH** - `/admin/products/[id]/edit` - Product Detail/Edit ✅
-  - ✅ Full product form with all fields
-  - ✅ Media gallery management (upload, remove images)
-  - ✅ Inventory management (stock, SKU, low stock threshold)
-  - ✅ SEO settings (meta title, description, tags)
-  - ✅ Specifications with add/remove
-  - ✅ Pricing (selling, original, cost price)
-  - ✅ Product details (condition, brand, manufacturer, warranty)
-  - ✅ Feature flags (featured, homepage)
-  - ✅ Return policy settings
-  - ✅ Product statistics display
-  - ✅ Delete product with confirmation
-  - ✅ Shop and category selection
-  - ✅ Media upload with cleanup hook
-  - ✅ Navigation guard for unsaved media
-
-#### 2. Shops Management
-
-- [x] **HIGH** - `/admin/shops` - All Shops List ✅
-
-  - ✅ Table and grid view toggle
-  - ✅ Filters: verification status (verified/unverified), shop status (active/banned)
-  - ✅ Bulk actions: verify/unverify, ban/unban, feature/unfeature, delete
-  - ✅ Quick edit (inline double-click): name, isVerified, isFeatured, showOnHomepage
-  - ✅ Search by shop name
-  - ✅ Pagination (20 per page)
-  - ✅ Export to CSV
-  - ✅ Shop stats display (rating, product count, review count)
-  - ✅ Status badges (verified, banned, featured, homepage)
-
-- [ ] **HIGH** - `/admin/shops/[id]` - Shop Detail/Edit
-  - Shop information
-  - Seller details
-  - Products list
-  - Performance metrics
-  - Suspend/activate actions
-
-#### 3. Orders Management
-
-- [ ] **HIGH** - `/admin/orders` - All Orders List
-
-  - Real-time order tracking
-  - Filters: status, date, payment, shop
-  - Bulk actions: update status, export
-  - Quick view order details
-
-- [ ] **HIGH** - `/admin/orders/[id]` - Order Detail
-  - Full order information
-  - Customer details
-  - Items list with images
-  - Status timeline
-  - Payment information
-  - Shipping tracking
-  - Refund/cancel actions
 
 #### 4. Reviews Management
 
 - [ ] **HIGH** - `/admin/reviews` - Reviews Moderation
-  - Table with filters
+  - Use unified filter system
+  - Table with filters (product, shop, rating, status, date)
   - Approve/reject reviews
   - Flag inappropriate content
   - Respond to reviews
   - Bulk moderation actions
+  - Use ResourceListWrapper
 
 #### 5. Payments & Payouts
 
@@ -201,10 +254,12 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
   - Status management
   - Canned responses
 
-#### 10. Blog Management
+#### 8. Blog Management
 
 - [ ] **MEDIUM** - `/admin/blog` - All Blog Posts
 
+  - Use unified filter system
+  - Use ResourceListWrapper
   - Posts list with status
   - Quick edit: title, status, featured
   - Filters: status, category, author, date
@@ -213,90 +268,26 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 - [ ] **MEDIUM** - `/admin/blog/create` - Create Post
 
   - Rich text editor
-  - Media upload
+  - Media upload with cleanup
   - SEO fields
   - Categories & tags
   - Featured image
   - Publish/draft
 
 - [ ] **MEDIUM** - `/admin/blog/[id]/edit` - Edit Post
-
   - Same as create with prefilled data
 
-- [ ] **MEDIUM** - `/admin/blog/categories` - Blog Categories
+#### 9. Analytics Pages
 
-  - Category list
-  - Inline add/edit/delete
-  - Reorder categories
-
-- [ ] **MEDIUM** - `/admin/blog/tags` - Blog Tags
-  - Tag list with usage count
-  - Bulk merge tags
-  - Delete unused tags
-
-#### 11. Analytics Pages
-
-- [ ] **MEDIUM** - `/admin/analytics/auctions` - Auction Analytics
-
-  - Bid activity charts
-  - Popular auction categories
-  - Conversion rates
-  - Revenue from auctions
-
-- [ ] **MEDIUM** - `/admin/analytics/users` - User Analytics
-  - User growth charts
-  - Active users metrics
-  - User segments
-  - Retention rates
-
-#### 12. Featured Sections
-
-- [ ] **MEDIUM** - `/admin/featured-sections` - Featured Content
-  - Homepage featured sections
-  - Banner management
-  - Promotional content
-  - Drag & drop ordering
-
-### Low Priority Pages
-
-#### 13. Settings Pages
-
-- [ ] **LOW** - `/admin/settings/general` - General Settings
-
-  - Site name, logo, favicon
-  - Contact information
-  - Social media links
-  - Timezone, currency
-
-- [ ] **LOW** - `/admin/settings/payment` - Payment Gateway Settings
-
-  - Enable/disable gateways
-  - API credentials
-  - Transaction fees
-  - Test mode toggle
-
-- [ ] **LOW** - `/admin/settings/shipping` - Shipping Settings
-
-  - Shipping methods
-  - Rates configuration
-  - Free shipping rules
-  - Shipping zones
-
-- [ ] **LOW** - `/admin/settings/email` - Email Settings
-
-  - SMTP configuration
-  - Email templates
-  - Test email functionality
-
-- [ ] **LOW** - `/admin/settings/notifications` - Notification Settings
-  - Email notifications toggle
-  - SMS notifications
-  - Push notifications
-  - Notification preferences
+- [ ] **LOW** - `/admin/analytics/dashboard` - Analytics Dashboard
+  - Consolidated analytics view
+  - Key metrics cards
+  - Charts for trends
+  - Export reports
 
 ---
 
-## 📄 Missing Seller Pages
+## 📄 Remaining Seller Pages (Refactored)
 
 ### High Priority Pages
 
@@ -304,29 +295,51 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 
 - [ ] **HIGH** - `/seller/orders` - Orders List
 
-  - Filter by status
+  - Use unified filter system
+  - Use ResourceListWrapper (context='seller')
+  - Filter by status, payment, date
   - Search orders
   - Quick status update
   - Print packing slip
   - Bulk actions
 
 - [ ] **HIGH** - `/seller/orders/[id]` - Order Detail
+  - Use ResourceDetailWrapper (context='seller')
   - Order information
   - Update status
   - Add tracking number
   - Contact customer
   - Print invoice
 
-#### 2. Returns Management
+#### 2. Products Management
+
+- [ ] **HIGH** - `/seller/products` - Products List
+
+  - Use unified filter system
+  - Use ResourceListWrapper (context='seller')
+  - Reuse product list logic from admin
+  - Own products only
+  - Quick edit capabilities
+  - Stock management
+
+- [ ] **HIGH** - `/seller/products/[id]/edit` - Product Edit
+  - Use ResourceDetailWrapper (context='seller')
+  - Reuse product edit form
+  - Own products only
+  - All editing capabilities
+
+#### 3. Returns Management
 
 - [ ] **HIGH** - `/seller/returns` - Returns & Refunds
+  - Use unified filter system
+  - Use ResourceListWrapper (context='seller')
   - Pending returns
   - Approve/reject returns
   - Track return shipping
   - Process refunds
   - Return history
 
-#### 3. Revenue & Payouts
+#### 4. Revenue & Payouts
 
 - [ ] **HIGH** - `/seller/revenue` - Revenue Dashboard
   - Total revenue charts
@@ -337,18 +350,10 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 
 ### Medium Priority Pages
 
-#### 4. Marketing
-
-- [ ] **MEDIUM** - `/seller/marketing` - Marketing Tools
-  - Run promotions
-  - Create deals
-  - Social media integration
-  - Email campaigns
-  - Performance tracking
-
 #### 5. Support Tickets
 
 - [ ] **MEDIUM** - `/seller/support-tickets` - Support Tickets
+  - Use unified filter system
   - Customer inquiries
   - Order issues
   - Reply to tickets
@@ -356,42 +361,87 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 
 ---
 
-## 🎯 Implementation Strategy
+## 🎯 Updated Implementation Strategy
 
-### Phase 1: Core Functionality (Week 1-2)
+### Phase 1: Completed ✅
 
-1. ✅ Fix sidebar search (real-time filtering, maintain focus)
-2. Create missing HIGH priority admin pages
+1. ✅ Sidebar search (real-time filtering)
+2. ✅ Admin products management (list + detail/edit)
+3. ✅ Admin shops management (list + detail/edit)
+4. ✅ Admin orders management (list + detail)
+
+### Phase 2: Refactoring & Foundation (Current Sprint)
+
+1. **Create Unified Filter System** (HIGH)
+
+   - UnifiedFilterSidebar component
+   - Searchable filter options
+   - Mobile + Desktop responsive
+   - Filter configuration constants
+
+2. **Create Resource Wrappers** (HIGH)
+
+   - ResourceListWrapper (admin/seller/public contexts)
+   - ResourceDetailWrapper (admin/seller/public contexts)
+   - Consolidate common patterns
+
+3. **Remove Marketing** (HIGH)
+
+   - Delete marketing pages
+   - Clean up components
+   - Update navigation
+
+4. **Constants & Routes** (HIGH)
+   - Update API route constants
+   - Update navigation constants
+   - Create filter configs
+   - Create bulk action configs
+
+### Phase 3: Apply Refactoring (Week 2-3)
+
+1. **Refactor Admin Pages** (HIGH)
+
+   - Apply unified filters to products, shops, orders
+   - Apply resource wrappers where applicable
+   - Implement reviews moderation page
+
+2. **Refactor Seller Pages** (HIGH)
+
+   - Orders management
    - Products management
-   - Shops management
-   - Orders management
-   - Payments & Payouts
-
-### Phase 2: Essential Features (Week 3-4)
-
-3. Create missing HIGH priority seller pages
-   - Orders management
    - Returns management
-   - Revenue dashboard
-4. Complete admin reviews and coupons management
+   - Use resource wrappers
 
-### Phase 3: Extended Features (Week 5-6)
+3. **Refactor Public Pages** (HIGH)
+   - Products listing
+   - Shops listing
+   - Category products
+   - Auctions listing
+   - Use unified filters
 
-5. Create MEDIUM priority admin pages
+### Phase 4: New Features (Week 4-5)
+
+1. **Payments & Payouts** (HIGH)
+
+   - Admin payment transactions
+   - Admin seller payouts
+   - Seller revenue dashboard
+
+2. **Coupons Management** (HIGH)
+
+   - Admin coupon list/create/edit
+   - Use resource wrappers
+
+3. **Returns Management** (HIGH)
+   - Admin returns page
+   - Seller returns page
+
+### Phase 5: Extended Features (Week 6-7)
+
+1. **Support & Blog** (MEDIUM)
    - Support tickets
    - Blog management
-   - Analytics pages
-6. Create MEDIUM priority seller pages
-   - Marketing tools
-   - Support tickets
-
-### Phase 4: Polish & Settings (Week 7-8)
-
-7. Create LOW priority pages (settings)
-8. Add keyboard shortcuts
-9. Add search history
-10. Performance optimization
-11. Mobile responsiveness testing
+   - Analytics dashboard
 
 ---
 
@@ -456,27 +506,52 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 
 ## 📊 Progress Tracking
 
-**Total Tasks**: 48 tasks  
-**Completed**: 5 tasks (10%)  
-**In Progress**: 0 tasks  
-**Blocked**: 0 tasks
+**Phase 1 Completed**: 8 tasks (100%)
 
-### ✅ Recently Completed:
+- ✅ Sidebar search (2 tasks)
+- ✅ Admin products (2 tasks)
+- ✅ Admin shops (2 tasks)
+- ✅ Admin orders (2 tasks)
 
-- Real-time search filtering in AdminSidebar (HIGH)
-- Real-time search filtering in SellerSidebar (HIGH)
-- Admin Products List page with full features (HIGH)
-- Admin Product Detail/Edit page with comprehensive form (HIGH)
-- Admin Shops List page with full features (HIGH)
+**Phase 2 In Progress**: Refactoring & Foundation
+
+- ✅ Unified filter system (1/3 tasks) - UnifiedFilterSidebar created
+- 🚧 Component consolidation (0/2 tasks)
+- 🚧 Marketing removal (0/2 tasks)
+- ✅ Constants & routes (1/4 tasks) - Navigation constants cleaned
+
+**Phase 3 Pending**: Apply Refactoring (0/11 tasks)
+**Phase 4 Pending**: New Features (0/7 tasks)
+**Phase 5 Pending**: Extended Features (0/3 tasks)
 
 ### Current Sprint Focus:
 
-1. ✅ ~~Sidebar search implementation (2 tasks)~~ **COMPLETED**
-2. ✅ ~~Admin products management (2 tasks)~~ **COMPLETED**
-3. ✅ ~~Admin shops management (1/2 tasks)~~ **IN PROGRESS**
-4. Admin orders management (2 tasks) - **NEXT**
+**Priority 1: Unified Filter System** (In Progress)
 
-**Next Sprint**: Payments, Payouts, Reviews, Coupons
+- ✅ UnifiedFilterSidebar component created with all features
+- ✅ Filter configuration constants already exist in src/constants/filters.ts
+- 🚧 Next: Refactor pages to use UnifiedFilterSidebar
+
+**Priority 2: Component Wrappers**
+
+- Create ResourceListWrapper
+- Create ResourceDetailWrapper
+
+**Priority 3: Remove Marketing**
+
+- Delete marketing pages
+- Update navigation
+
+### ✅ Phase 1 Completed:
+
+- Real-time search filtering in AdminSidebar
+- Real-time search filtering in SellerSidebar
+- Admin Products List with full features
+- Admin Product Detail/Edit with comprehensive form
+- Admin Shops List with full features
+- Admin Shop Detail/Edit with comprehensive management
+- Admin Orders List with advanced filters
+- Admin Order Detail with full management
 
 ---
 
@@ -518,27 +593,117 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
 ---
 
 **Last Updated**: November 10, 2025  
-**Next Review**: After Phase 1 completion
+**Next Review**: After Phase 2 completion (Refactoring)
 
 ---
 
-## 📝 Changelog
+## 📝 Recent Changes
 
-### November 10, 2025
+### November 10, 2025 - Phase 2: Refactoring Started
+
+**Completed:**
+
+1. ✅ **UnifiedFilterSidebar Component** (`src/components/common/UnifiedFilterSidebar.tsx`)
+
+   - Searchable filter options (like sidebar nav search)
+   - Auto-highlights matching text in yellow
+   - Auto-expands sections with matches
+   - Shows "No results" message when search has no matches
+   - Mobile: Slide-in drawer from left with overlay
+   - Desktop: Sticky sidebar (always visible)
+   - Body scroll lock on mobile
+   - Clear search button
+   - Result count display
+   - Apply/Reset buttons
+   - Supports all filter types from FilterSidebar
+   - Exported from inline-edit.ts for easy import
+
+2. ✅ **Navigation Constants Cleanup** (`src/constants/navigation.ts`)
+
+   - Removed duplicate SHOPS constant (use categories.ts)
+   - Removed duplicate FEATURED_CATEGORIES (use categories.ts)
+   - Removed duplicate PRODUCT_CATEGORIES (use categories.ts)
+   - Removed unused SPECIAL_EVENT constant
+   - Removed unused HEADER_ACTIONS constant
+   - Kept only active navigation menus (ADMIN_MENU_ITEMS, SELLER_MENU_ITEMS, USER_MENU_ITEMS)
+   - Marketing removed from seller navigation
+
+3. ✅ **Marketing Feature Removal** (SellerSidebar.tsx)
+
+   - Removed marketing link from seller navigation
+   - Removed Megaphone icon import
+   - No marketing pages, components, or services existed
+
+4. ✅ **Admin Products Page Refactored** (`src/app/admin/products/page.tsx`)
+   - Now uses UnifiedFilterSidebar from PRODUCT_FILTERS constant
+   - Desktop: Sticky sidebar with searchable filter options
+   - Mobile: Slide-in drawer triggered by Filters button
+   - Removed old filter panel
+   - Uses filterValues state object instead of individual filter states
+   - Fully functional with search, pagination, bulk actions
+
+**Next Steps:**
+
+- Refactor remaining admin pages (shops, orders, reviews, auctions)
+- Refactor seller pages (products, orders, auctions)
+- Refactor public pages (products, shops, categories, reviews, blogs)
+- Create ResourceListWrapper and ResourceDetailWrapper
+- Complete API routes audit
+
+---
+
+### November 10, 2025 - Major Refactoring Initiative
+
+**New Requirements Added:**
+
+1. **Unified Filter System** - Create searchable filter sidebar (like nav search)
+
+   - Mobile: Slide-in from left
+   - Desktop: Always visible
+   - Search within filter options (not resources)
+   - Reusable across all pages
+
+2. **Component Consolidation** - DRY principle application
+
+   - ResourceListWrapper for all list pages
+   - ResourceDetailWrapper for all detail pages
+   - Context-aware (admin/seller/public)
+   - Reduce code duplication
+
+3. **Marketing Pages Removal** - Clean up seller dashboard
+
+   - Remove `/seller/marketing` page
+   - Remove marketing components
+   - Update navigation
+
+4. **Constants & Routes Update** - Improve maintainability
+   - Audit API route constants
+   - Update navigation constants
+   - Create filter configuration constants
+   - Create bulk action constants
+
+**Phase 1 Completed (8 tasks):**
+
+- ✅ Admin/Seller sidebar search with real-time filtering
+- ✅ Admin products management (list + detail/edit pages)
+- ✅ Admin shops management (list + detail/edit pages)
+- ✅ Admin orders management (list + detail pages)
+
+**Phase 2 Started:**
+
+- Refactoring existing code for better reusability
+- Creating unified components
+- Applying DRY principles
+
+---
+
+## 📝 Changelog Archive
+
+### November 9-10, 2025
 
 - ✅ Implemented real-time search filtering in AdminSidebar
-  - Added controlled search input with focus management
-  - Filters nav items by title, href, and children
-  - Highlights matching text with yellow background
-  - Auto-expands sections with matches
-  - Shows "No results" message
-  - Clear button to reset search
 - ✅ Implemented real-time search filtering in SellerSidebar
-  - Same features as AdminSidebar
-  - Blue highlight theme for branding consistency
 - ✅ Created `/admin/products` - All Products List page
-  - Full product listing with grid/table views
-  - Advanced filters (status, price range)
   - Search by name or SKU
   - Inline editing (double-click rows)
   - Bulk actions (approve, reject, feature, delete)
@@ -568,3 +733,28 @@ Admin and Seller sidebar search inputs exist but don't filter navigation items i
   - Status badges (verified, banned, featured, homepage)
   - Product stats display (rating, sales count)
   - Responsive design with mobile support
+- ✅ Created `/admin/shops/[id]/edit` - Shop Detail/Edit page
+  - Comprehensive shop editing form with all fields
+  - Stats cards dashboard (products, rating, reviews, followers)
+  - Quick actions (verify, feature, ban/unban)
+  - Tabbed interface (information, products, performance)
+  - Logo and banner upload with media cleanup
+  - Shop products list (recent 10 with link to full list)
+  - Performance metrics display
+  - Seller information panel
+  - Delete shop functionality
+  - Ban shop with reason input
+  - All contact, business, and bank details
+  - Policies management (return, shipping)
+- ✅ Created `/admin/orders` - All Orders List page
+  - Comprehensive orders listing with table view
+  - Stats dashboard (total orders, revenue, avg order value, pending)
+  - Advanced filters (order status, payment status, shop, date range, amount range)
+  - Search by order number or customer name
+  - Order details display (number, customer, date, items, total)
+  - Status badges with color coding (order status and payment status)
+  - Payment method display
+  - Export to CSV functionality
+  - Pagination (20 orders per page)
+  - Quick view link to order details
+  - Empty state with helpful message

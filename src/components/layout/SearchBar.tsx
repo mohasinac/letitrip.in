@@ -26,7 +26,7 @@ interface SearchBarProps {
 const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
   ({ isVisible = true, onClose }, ref) => {
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-      null
+      null,
     );
     const [selectedCategoryName, setSelectedCategoryName] =
       useState<string>("All Categories");
@@ -87,7 +87,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         "Search:",
         searchQuery,
         "Category:",
-        selectedCategoryId || "all"
+        selectedCategoryId || "all",
       );
     };
 
@@ -99,7 +99,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
 
     const handleCategoryChange = (
       categoryId: string | null,
-      category: Category | null
+      category: Category | null,
     ) => {
       setSelectedCategoryId(categoryId);
       setSelectedCategoryName(category?.name || "All Categories");
@@ -190,7 +190,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 SearchBar.displayName = "SearchBar";

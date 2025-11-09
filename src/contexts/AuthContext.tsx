@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    []
+    [],
   );
 
   // Logout function

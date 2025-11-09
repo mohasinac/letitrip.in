@@ -1,5 +1,10 @@
-import { apiService } from './api.service';
-import type { Coupon, CouponType, CouponStatus, PaginatedResponse } from '@/types';
+import { apiService } from "./api.service";
+import type {
+  Coupon,
+  CouponType,
+  CouponStatus,
+  PaginatedResponse,
+} from "@/types";
 
 interface CouponFilters {
   shopId?: string;
@@ -30,7 +35,7 @@ interface CreateCouponData {
   };
   minPurchaseAmount: number;
   minQuantity: number;
-  applicability: 'all' | 'category' | 'product';
+  applicability: "all" | "category" | "product";
   applicableCategories?: string[];
   applicableProducts?: string[];
   excludedCategories?: string[];
@@ -72,12 +77,12 @@ class CouponsService {
   // List coupons (public active/owner all)
   async list(filters?: CouponFilters): Promise<PaginatedResponse<Coupon>> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
-            value.forEach(v => params.append(key, v.toString()));
+            value.forEach((v) => params.append(key, v.toString()));
           } else {
             params.append(key, value.toString());
           }
@@ -86,8 +91,8 @@ class CouponsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/coupons?${queryString}` : '/coupons';
-    
+    const endpoint = queryString ? `/coupons?${queryString}` : "/coupons";
+
     return apiService.get<PaginatedResponse<Coupon>>(endpoint);
   }
 
@@ -103,7 +108,7 @@ class CouponsService {
 
   // Create coupon (seller/admin)
   async create(data: CreateCouponData): Promise<Coupon> {
-    return apiService.post<Coupon>('/coupons', data);
+    return apiService.post<Coupon>("/coupons", data);
   }
 
   // Update coupon (owner/admin)
@@ -118,17 +123,19 @@ class CouponsService {
 
   // Validate coupon
   async validate(data: ValidateCouponData): Promise<ValidateCouponResponse> {
-    return apiService.post<ValidateCouponResponse>('/coupons/validate', data);
+    return apiService.post<ValidateCouponResponse>("/coupons/validate", data);
   }
 
   // Get public coupons (featured/active)
   async getPublic(shopId?: string): Promise<Coupon[]> {
     const params = new URLSearchParams();
-    if (shopId) params.append('shopId', shopId);
-    
+    if (shopId) params.append("shopId", shopId);
+
     const queryString = params.toString();
-    const endpoint = queryString ? `/coupons/public?${queryString}` : '/coupons/public';
-    
+    const endpoint = queryString
+      ? `/coupons/public?${queryString}`
+      : "/coupons/public";
+
     return apiService.get<Coupon[]>(endpoint);
   }
 }

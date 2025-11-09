@@ -12,7 +12,6 @@ import {
   Ticket,
   BarChart3,
   DollarSign,
-  Megaphone,
   Star,
   Gavel,
   ChevronDown,
@@ -90,11 +89,6 @@ const navigation: NavItem[] = [
     icon: DollarSign,
   },
   {
-    title: "Marketing",
-    href: "/seller/marketing",
-    icon: Megaphone,
-  },
-  {
     title: "Analytics",
     href: "/seller/analytics",
     icon: BarChart3,
@@ -126,7 +120,7 @@ export function SellerSidebar() {
     setExpandedItems((prev) =>
       prev.includes(title)
         ? prev.filter((item) => item !== title)
-        : [...prev, title]
+        : [...prev, title],
     );
   };
 
@@ -152,7 +146,7 @@ export function SellerSidebar() {
           ? item.children.filter(
               (child) =>
                 child.title.toLowerCase().includes(query) ||
-                child.href.toLowerCase().includes(query)
+                child.href.toLowerCase().includes(query),
             )
           : [];
 
@@ -276,13 +270,13 @@ export function SellerSidebar() {
                       "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       active
                         ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
                     )}
                   >
                     <Icon
                       className={cn(
                         "h-5 w-5",
-                        active ? "text-blue-600" : "text-gray-400"
+                        active ? "text-blue-600" : "text-gray-400",
                       )}
                     />
                     <span className="flex-1">{highlightText(item.title)}</span>
@@ -317,13 +311,13 @@ export function SellerSidebar() {
                               "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                               childActive
                                 ? "bg-blue-50 text-blue-700"
-                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                             )}
                           >
                             <ChildIcon
                               className={cn(
                                 "h-4 w-4",
-                                childActive ? "text-blue-600" : "text-gray-400"
+                                childActive ? "text-blue-600" : "text-gray-400",
                               )}
                             />
                             <span>{highlightText(child.title)}</span>

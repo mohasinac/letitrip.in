@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
-const COLLECTION = 'blog_posts';
+const COLLECTION = "blog_posts";
 
 // GET /api/blog/[slug] - Get single blog post by slug
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -14,14 +14,14 @@ export async function GET(
 
     const snapshot = await db
       .collection(COLLECTION)
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (snapshot.empty) {
       return NextResponse.json(
-        { error: 'Blog post not found' },
-        { status: 404 }
+        { error: "Blog post not found" },
+        { status: 404 },
       );
     }
 
@@ -38,10 +38,10 @@ export async function GET(
 
     return NextResponse.json(post);
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    console.error("Error fetching blog post:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch blog post' },
-      { status: 500 }
+      { error: "Failed to fetch blog post" },
+      { status: 500 },
     );
   }
 }
@@ -49,7 +49,7 @@ export async function GET(
 // PATCH /api/blog/[slug] - Update blog post (admin only)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -58,14 +58,14 @@ export async function PATCH(
 
     const snapshot = await db
       .collection(COLLECTION)
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (snapshot.empty) {
       return NextResponse.json(
-        { error: 'Blog post not found' },
-        { status: 404 }
+        { error: "Blog post not found" },
+        { status: 404 },
       );
     }
 
@@ -76,25 +76,25 @@ export async function PATCH(
 
     // Allow updating specific fields
     const allowedFields = [
-      'title',
-      'excerpt',
-      'content',
-      'featuredImage',
-      'category',
-      'tags',
-      'status',
-      'showOnHomepage',
-      'isFeatured',
+      "title",
+      "excerpt",
+      "content",
+      "featuredImage",
+      "category",
+      "tags",
+      "status",
+      "showOnHomepage",
+      "isFeatured",
     ];
 
-    allowedFields.forEach(field => {
+    allowedFields.forEach((field) => {
       if (body[field] !== undefined) {
         updates[field] = body[field];
       }
     });
 
     // Update publishedAt if changing to published
-    if (body.status === 'published' && doc.data().status !== 'published') {
+    if (body.status === "published" && doc.data().status !== "published") {
       updates.publishedAt = new Date().toISOString();
     }
 
@@ -106,10 +106,10 @@ export async function PATCH(
       ...updates,
     });
   } catch (error) {
-    console.error('Error updating blog post:', error);
+    console.error("Error updating blog post:", error);
     return NextResponse.json(
-      { error: 'Failed to update blog post' },
-      { status: 500 }
+      { error: "Failed to update blog post" },
+      { status: 500 },
     );
   }
 }
@@ -117,7 +117,7 @@ export async function PATCH(
 // DELETE /api/blog/[slug] - Delete blog post (admin only)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -125,14 +125,14 @@ export async function DELETE(
 
     const snapshot = await db
       .collection(COLLECTION)
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (snapshot.empty) {
       return NextResponse.json(
-        { error: 'Blog post not found' },
-        { status: 404 }
+        { error: "Blog post not found" },
+        { status: 404 },
       );
     }
 
@@ -140,13 +140,13 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Blog post deleted successfully',
+      message: "Blog post deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting blog post:', error);
+    console.error("Error deleting blog post:", error);
     return NextResponse.json(
-      { error: 'Failed to delete blog post' },
-      { status: 500 }
+      { error: "Failed to delete blog post" },
+      { status: 500 },
     );
   }
 }

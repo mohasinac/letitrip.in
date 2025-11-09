@@ -35,7 +35,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [categorySearch, setCategorySearch] = useState("");
 
@@ -58,14 +58,14 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
   const updateFilter = <K extends keyof ProductFilterValues>(
     key: K,
-    value: ProductFilterValues[K]
+    value: ProductFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
 
   const toggleArrayFilter = <K extends keyof ProductFilterValues>(
     key: K,
-    value: string
+    value: string,
   ) => {
     const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
@@ -194,7 +194,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "priceMin",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -209,7 +209,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) =>
                 updateFilter(
                   "priceMax",
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -300,7 +300,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               <input
                 type="checkbox"
                 checked={(filters.condition || []).includes(
-                  option.value as any
+                  option.value as any,
                 )}
                 onChange={() => toggleArrayFilter("condition", option.value)}
                 className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"

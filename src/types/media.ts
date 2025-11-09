@@ -3,11 +3,17 @@
  * Type definitions for media handling throughout the application
  */
 
-export type MediaType = 'image' | 'video' | 'document';
+export type MediaType = "image" | "video" | "document";
 
-export type MediaSource = 'file' | 'camera' | 'screen';
+export type MediaSource = "file" | "camera" | "screen";
 
-export type UploadStatus = 'pending' | 'uploading' | 'processing' | 'completed' | 'failed' | 'cancelled';
+export type UploadStatus =
+  | "pending"
+  | "uploading"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 export interface MediaFile {
   id: string;
@@ -62,7 +68,7 @@ export interface EditorState {
   brightness: number; // -100 to 100
   contrast: number; // -100 to 100
   saturation: number; // -100 to 100
-  filter?: 'none' | 'grayscale' | 'sepia' | 'vintage' | 'cold' | 'warm';
+  filter?: "none" | "grayscale" | "sepia" | "vintage" | "cold" | "warm";
 }
 
 export interface CropArea {
@@ -105,7 +111,7 @@ export interface MediaGalleryItem {
 }
 
 export interface CameraOptions {
-  facingMode?: 'user' | 'environment';
+  facingMode?: "user" | "environment";
   resolution?: {
     width: number;
     height: number;
@@ -114,7 +120,7 @@ export interface CameraOptions {
 }
 
 export interface VideoRecorderOptions {
-  source: 'camera' | 'screen';
+  source: "camera" | "screen";
   maxDuration?: number; // In seconds
   videoBitsPerSecond?: number;
   audioBitsPerSecond?: number;
@@ -124,7 +130,7 @@ export interface ImageProcessingOptions {
   maxWidth?: number;
   maxHeight?: number;
   quality?: number; // 0-1
-  format?: 'jpeg' | 'png' | 'webp';
+  format?: "jpeg" | "png" | "webp";
   maintainAspectRatio?: boolean;
 }
 
@@ -132,6 +138,6 @@ export interface ThumbnailGenerationOptions {
   width: number;
   height: number;
   quality?: number;
-  format?: 'jpeg' | 'png' | 'webp';
+  format?: "jpeg" | "png" | "webp";
   timestamps?: number[]; // Generate multiple thumbnails at different times
 }

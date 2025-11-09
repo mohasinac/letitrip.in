@@ -1,13 +1,13 @@
 /**
  * useNavigationGuard Hook
- * 
+ *
  * Prevents navigation away from a page with unsaved changes.
  * Works with browser back/forward, route changes, and page refreshes.
  * Integrates with media cleanup to delete uploaded files on navigation.
  */
 
-import { useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export interface NavigationGuardOptions {
   /**
@@ -36,7 +36,7 @@ export interface NavigationGuardOptions {
 export function useNavigationGuard(options: NavigationGuardOptions) {
   const {
     enabled,
-    message = 'You have unsaved changes. Do you want to leave this page?',
+    message = "You have unsaved changes. Do you want to leave this page?",
     onNavigate,
     onCancel,
   } = options;
@@ -57,10 +57,10 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
       return message;
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [enabled, message]);
 
@@ -88,7 +88,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error) {
-            console.error('Navigation cleanup error:', error);
+            console.error("Navigation cleanup error:", error);
           }
         }
 
@@ -101,17 +101,17 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         }
 
         // Prevent the navigation by pushing current state back
-        window.history.pushState(null, '', window.location.href);
+        window.history.pushState(null, "", window.location.href);
       }
     };
 
     // Push an initial state to enable popstate detection
-    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, "", window.location.href);
 
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, [enabled, message, onNavigate, onCancel]);
 
@@ -120,9 +120,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
    * Use this when programmatically navigating (e.g., form submission, button clicks)
    */
   const confirmNavigation = useCallback(
-    async (
-      callback: () => void | Promise<void>
-    ): Promise<boolean> => {
+    async (callback: () => void | Promise<void>): Promise<boolean> => {
       if (!enabled) {
         await callback();
         return true;
@@ -138,7 +136,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error) {
-            console.error('Navigation cleanup error:', error);
+            console.error("Navigation cleanup error:", error);
           }
         }
 
@@ -154,7 +152,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         return false;
       }
     },
-    [enabled, message, onNavigate, onCancel]
+    [enabled, message, onNavigate, onCancel],
   );
 
   return {

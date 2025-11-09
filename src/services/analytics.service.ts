@@ -1,10 +1,10 @@
-import { apiService } from './api.service';
+import { apiService } from "./api.service";
 
 interface AnalyticsFilters {
   shopId?: string;
   startDate?: string;
   endDate?: string;
-  period?: 'day' | 'week' | 'month' | 'year';
+  period?: "day" | "week" | "month" | "year";
 }
 
 interface AnalyticsOverview {
@@ -45,7 +45,7 @@ class AnalyticsService {
   // Get analytics overview (seller: own, admin: all)
   async getOverview(filters?: AnalyticsFilters): Promise<AnalyticsOverview> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -55,15 +55,15 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics?${queryString}` : '/analytics';
-    
+    const endpoint = queryString ? `/analytics?${queryString}` : "/analytics";
+
     return apiService.get<AnalyticsOverview>(endpoint);
   }
 
   // Get sales data (time series)
   async getSalesData(filters?: AnalyticsFilters): Promise<SalesData[]> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -73,15 +73,19 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics/sales?${queryString}` : '/analytics/sales';
-    
+    const endpoint = queryString
+      ? `/analytics/sales?${queryString}`
+      : "/analytics/sales";
+
     return apiService.get<SalesData[]>(endpoint);
   }
 
   // Get top products
-  async getTopProducts(filters?: AnalyticsFilters & { limit?: number }): Promise<TopProduct[]> {
+  async getTopProducts(
+    filters?: AnalyticsFilters & { limit?: number },
+  ): Promise<TopProduct[]> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -91,15 +95,19 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics/top-products?${queryString}` : '/analytics/top-products';
-    
+    const endpoint = queryString
+      ? `/analytics/top-products?${queryString}`
+      : "/analytics/top-products";
+
     return apiService.get<TopProduct[]>(endpoint);
   }
 
   // Get category performance
-  async getCategoryPerformance(filters?: AnalyticsFilters): Promise<CategoryPerformance[]> {
+  async getCategoryPerformance(
+    filters?: AnalyticsFilters,
+  ): Promise<CategoryPerformance[]> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -109,15 +117,17 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics/categories?${queryString}` : '/analytics/categories';
-    
+    const endpoint = queryString
+      ? `/analytics/categories?${queryString}`
+      : "/analytics/categories";
+
     return apiService.get<CategoryPerformance[]>(endpoint);
   }
 
   // Get customer analytics
   async getCustomerAnalytics(filters?: AnalyticsFilters): Promise<any> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -127,15 +137,17 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics/customers?${queryString}` : '/analytics/customers';
-    
+    const endpoint = queryString
+      ? `/analytics/customers?${queryString}`
+      : "/analytics/customers";
+
     return apiService.get<any>(endpoint);
   }
 
   // Get traffic analytics
   async getTrafficAnalytics(filters?: AnalyticsFilters): Promise<any> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -145,15 +157,20 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/analytics/traffic?${queryString}` : '/analytics/traffic';
-    
+    const endpoint = queryString
+      ? `/analytics/traffic?${queryString}`
+      : "/analytics/traffic";
+
     return apiService.get<any>(endpoint);
   }
 
   // Export analytics data
-  async exportData(filters?: AnalyticsFilters, format: 'csv' | 'pdf' = 'csv'): Promise<Blob> {
+  async exportData(
+    filters?: AnalyticsFilters,
+    format: "csv" | "pdf" = "csv",
+  ): Promise<Blob> {
     const params = new URLSearchParams();
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -162,19 +179,19 @@ class AnalyticsService {
       });
     }
 
-    params.append('format', format);
-    
+    params.append("format", format);
+
     const queryString = params.toString();
     const endpoint = `/analytics/export?${queryString}`;
-    
+
     const response = await fetch(`/api${endpoint}`, {
-      method: 'GET',
+      method: "GET",
     });
-    
+
     if (!response.ok) {
-      throw new Error('Failed to export analytics data');
+      throw new Error("Failed to export analytics data");
     }
-    
+
     return response.blob();
   }
 }

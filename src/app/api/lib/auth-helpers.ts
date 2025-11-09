@@ -3,10 +3,10 @@
  * Reusable utilities for session-based authentication in API routes
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from './session';
-import { getFirestoreAdmin } from './firebase/admin';
-import { COLLECTIONS } from '@/constants/database';
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "./session";
+import { getFirestoreAdmin } from "./firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export interface AuthUser {
   id: string;
@@ -34,14 +34,14 @@ export async function getAuthUser(req: NextRequest): Promise<AuthUser | null> {
  */
 export async function requireAuth(req: NextRequest): Promise<AuthUser> {
   const user = await getCurrentUser(req);
-  
+
   if (!user) {
     throw {
       status: 401,
-      message: 'Unauthorized - Please log in to continue',
+      message: "Unauthorized - Please log in to continue",
     } as AuthError;
   }
-  
+
   return user;
 }
 
@@ -50,17 +50,17 @@ export async function requireAuth(req: NextRequest): Promise<AuthUser> {
  */
 export async function requireRole(
   req: NextRequest,
-  allowedRoles: string[]
+  allowedRoles: string[],
 ): Promise<AuthUser> {
   const user = await requireAuth(req);
-  
+
   if (!allowedRoles.includes(user.role)) {
     throw {
       status: 403,
-      message: `Forbidden - ${allowedRoles.join(' or ')} role required`,
+      message: `Forbidden - ${allowedRoles.join(" or ")} role required`,
     } as AuthError;
   }
-  
+
   return user;
 }
 
@@ -73,14 +73,14 @@ export async function getUserShops(userId: string): Promise<string[]> {
     const db = getFirestoreAdmin();
     const shopsSnapshot = await db
       .collection(COLLECTIONS.SHOPS)
-      .where('owner_id', '==', userId)
-      .where('is_banned', '==', false)
-      .select('__name__') // Only fetch document IDs for performance
+      .where("owner_id", "==", userId)
+      .where("is_banned", "==", false)
+      .select("__name__") // Only fetch document IDs for performance
       .get();
-    
-    return shopsSnapshot.docs.map(doc => doc.id);
+
+    return shopsSnapshot.docs.map((doc) => doc.id);
   } catch (error) {
-    console.error('Error fetching user shops:', error);
+    console.error("Error fetching user shops:", error);
     return [];
   }
 }
@@ -95,19 +95,19 @@ export async function getPrimaryShopId(userId: string): Promise<string | null> {
     const db = getFirestoreAdmin();
     const shopsSnapshot = await db
       .collection(COLLECTIONS.SHOPS)
-      .where('owner_id', '==', userId)
-      .where('is_banned', '==', false)
-      .orderBy('created_at', 'desc')
+      .where("owner_id", "==", userId)
+      .where("is_banned", "==", false)
+      .orderBy("created_at", "desc")
       .limit(1)
       .get();
-    
+
     if (shopsSnapshot.empty) {
       return null;
     }
-    
+
     return shopsSnapshot.docs[0].id;
   } catch (error) {
-    console.error('Error fetching primary shop:', error);
+    console.error("Error fetching primary shop:", error);
     return null;
   }
 }
@@ -119,28 +119,25 @@ export async function getPrimaryShopId(userId: string): Promise<string | null> {
 export async function verifyShopOwnership(
   userId: string,
   shopId: string,
-  userRole: string
+  userRole: string,
 ): Promise<boolean> {
   // Admins can access any shop
-  if (userRole === 'admin') {
+  if (userRole === "admin") {
     return true;
   }
-  
+
   try {
     const db = getFirestoreAdmin();
-    const shopDoc = await db
-      .collection(COLLECTIONS.SHOPS)
-      .doc(shopId)
-      .get();
-    
+    const shopDoc = await db.collection(COLLECTIONS.SHOPS).doc(shopId).get();
+
     if (!shopDoc.exists) {
       return false;
     }
-    
+
     const shopData = shopDoc.data();
     return shopData?.owner_id === userId;
   } catch (error) {
-    console.error('Error verifying shop ownership:', error);
+    console.error("Error verifying shop ownership:", error);
     return false;
   }
 }
@@ -153,21 +150,18 @@ export function handleAuthError(error: any): NextResponse {
   if (error.status) {
     return NextResponse.json(
       { error: error.message },
-      { status: error.status }
+      { status: error.status },
     );
   }
-  
-  console.error('Unexpected auth error:', error);
-  return NextResponse.json(
-    { error: 'Internal server error' },
-    { status: 500 }
-  );
+
+  console.error("Unexpected auth error:", error);
+  return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }
 
 /**
  * Get shop ID from query params or user's primary shop
  * Useful for seller APIs that need a shop_id parameter
- * 
+ *
  * Priority:
  * 1. shop_id from query params (if provided and user has access)
  * 2. User's primary shop (for sellers)
@@ -175,58 +169,62 @@ export function handleAuthError(error: any): NextResponse {
  */
 export async function getShopIdFromRequest(
   req: NextRequest,
-  user: AuthUser
+  user: AuthUser,
 ): Promise<string | null> {
   const { searchParams } = new URL(req.url);
-  const shopIdParam = searchParams.get('shop_id');
-  
+  const shopIdParam = searchParams.get("shop_id");
+
   // If shop_id provided in params, verify ownership
   if (shopIdParam) {
-    const hasAccess = await verifyShopOwnership(user.id, shopIdParam, user.role);
+    const hasAccess = await verifyShopOwnership(
+      user.id,
+      shopIdParam,
+      user.role,
+    );
     if (hasAccess) {
       return shopIdParam;
     }
-    
+
     // User doesn't have access to requested shop
     throw {
       status: 403,
-      message: 'You do not have access to this shop',
+      message: "You do not have access to this shop",
     } as AuthError;
   }
-  
+
   // For sellers, get their primary shop
-  if (user.role === 'seller') {
+  if (user.role === "seller") {
     return await getPrimaryShopId(user.id);
   }
-  
+
   // Admins need to explicitly specify shop_id
-  if (user.role === 'admin') {
+  if (user.role === "admin") {
     return null; // Admins should provide shop_id or get all shops
   }
-  
+
   return null;
 }
 
 /**
  * Example usage in API route:
- * 
+ *
  * ```typescript
  * import { requireAuth, getShopIdFromRequest, handleAuthError } from '@/app/api/lib/auth-helpers';
- * 
+ *
  * export async function GET(req: NextRequest) {
  *   try {
  *     const user = await requireAuth(req);
  *     const shopId = await getShopIdFromRequest(req, user);
- *     
+ *
  *     if (!shopId) {
  *       return NextResponse.json(
  *         { error: 'No shop found. Please create a shop first.' },
  *         { status: 404 }
  *       );
  *     }
- *     
+ *
  *     // Use shopId for your queries...
- *     
+ *
  *   } catch (error) {
  *     return handleAuthError(error);
  *   }

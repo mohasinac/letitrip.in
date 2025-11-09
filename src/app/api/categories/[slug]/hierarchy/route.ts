@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * GET /api/categories/[slug]/hierarchy
@@ -7,21 +7,21 @@ import { Collections } from '@/app/api/lib/firebase/collections';
  */
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
 
     // First, get the category by slug
     const categoriesSnapshot = await Collections.categories()
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (categoriesSnapshot.empty) {
       return NextResponse.json(
-        { success: false, error: 'Category not found' },
-        { status: 404 }
+        { success: false, error: "Category not found" },
+        { status: 404 },
       );
     }
 
@@ -49,10 +49,13 @@ export async function GET(
       data: hierarchy,
     });
   } catch (error: any) {
-    console.error('Category hierarchy error:', error);
+    console.error("Category hierarchy error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch category hierarchy' },
-      { status: 500 }
+      {
+        success: false,
+        error: error.message || "Failed to fetch category hierarchy",
+      },
+      { status: 500 },
     );
   }
 }

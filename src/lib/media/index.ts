@@ -13,7 +13,7 @@ export {
   getMediaType,
   formatFileSize,
   formatDuration,
-} from './media-validator';
+} from "./media-validator";
 
 // Image Processing
 export {
@@ -23,7 +23,7 @@ export {
   flipImage,
   applyImageEdits,
   blobToFile,
-} from './image-processor';
+} from "./image-processor";
 
 // Video Processing
 export {
@@ -32,4 +32,4 @@ export {
   getVideoMetadata,
   generateVideoPreview,
   createThumbnailFromBlob,
-} from './video-processor';
+} from "./video-processor";

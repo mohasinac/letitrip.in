@@ -2,16 +2,16 @@
  * Types for Inline Edit & Quick Create functionality
  */
 
-export type FieldType = 
-  | 'text' 
-  | 'number' 
-  | 'select' 
-  | 'checkbox' 
-  | 'image' 
-  | 'date'
-  | 'textarea'
-  | 'url'
-  | 'email';
+export type FieldType =
+  | "text"
+  | "number"
+  | "select"
+  | "checkbox"
+  | "image"
+  | "date"
+  | "textarea"
+  | "url"
+  | "email";
 
 export interface SelectOption {
   value: string | number;
@@ -39,7 +39,7 @@ export interface BulkAction {
   id: string;
   label: string;
   icon?: React.ComponentType<any>;
-  variant?: 'default' | 'danger' | 'warning' | 'success';
+  variant?: "default" | "danger" | "warning" | "success";
   confirm?: boolean;
   confirmTitle?: string;
   confirmMessage?: string;

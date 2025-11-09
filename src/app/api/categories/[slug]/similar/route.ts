@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * GET /api/categories/[slug]/similar
@@ -7,23 +7,23 @@ import { Collections } from '@/app/api/lib/firebase/collections';
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = parseInt(searchParams.get("limit") || "10");
 
     // First, get the category by slug
     const categoriesSnapshot = await Collections.categories()
-      .where('slug', '==', slug)
+      .where("slug", "==", slug)
       .limit(1)
       .get();
 
     if (categoriesSnapshot.empty) {
       return NextResponse.json(
-        { success: false, error: 'Category not found' },
-        { status: 404 }
+        { success: false, error: "Category not found" },
+        { status: 404 },
       );
     }
 
@@ -31,19 +31,20 @@ export async function GET(
     const category: any = { id: categoryDoc.id, ...categoryDoc.data() };
 
     // Get sibling categories (same parent)
-    let similarQuery = Collections.categories()
-      .where('isActive', '==', true) as any;
+    let similarQuery = Collections.categories().where(
+      "isActive",
+      "==",
+      true,
+    ) as any;
 
     if (category.parentId) {
-      similarQuery = similarQuery.where('parentId', '==', category.parentId);
+      similarQuery = similarQuery.where("parentId", "==", category.parentId);
     } else {
       // If it's a root category, get other root categories
-      similarQuery = similarQuery.where('parentId', '==', null);
+      similarQuery = similarQuery.where("parentId", "==", null);
     }
 
-    similarQuery = similarQuery
-      .orderBy('sortOrder', 'asc')
-      .limit(limit + 1);
+    similarQuery = similarQuery.orderBy("sortOrder", "asc").limit(limit + 1);
 
     const similarSnapshot = await similarQuery.get();
 
@@ -58,10 +59,13 @@ export async function GET(
       data: similar,
     });
   } catch (error: any) {
-    console.error('Similar categories error:', error);
+    console.error("Similar categories error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch similar categories' },
-      { status: 500 }
+      {
+        success: false,
+        error: error.message || "Failed to fetch similar categories",
+      },
+      { status: 500 },
     );
   }
 }

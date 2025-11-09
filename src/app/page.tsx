@@ -26,7 +26,7 @@ const FeaturedCategories = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const FAQSection = dynamic(() => import("@/components/faq/FAQSection"), {
@@ -80,7 +80,7 @@ const FeaturedProductsSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const FeaturedAuctionsSection = dynamic(
@@ -103,7 +103,7 @@ const FeaturedAuctionsSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const HeroCarousel = dynamic(() => import("@/components/layout/HeroCarousel"), {
@@ -142,7 +142,7 @@ const FeaturedBlogsSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const FeaturedReviewsSection = dynamic(
@@ -165,7 +165,7 @@ const FeaturedReviewsSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const FeaturedCategoriesSection = dynamic(
@@ -195,7 +195,7 @@ const FeaturedCategoriesSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const FeaturedShopsSection = dynamic(
@@ -225,7 +225,7 @@ const FeaturedShopsSection = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 export default function Home() {

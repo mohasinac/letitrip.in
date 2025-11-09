@@ -79,7 +79,7 @@ export default function SearchBar() {
     try {
       setLoading(true);
       const data = (await apiService.get(
-        `/api/search?q=${encodeURIComponent(searchQuery)}`
+        `/api/search?q=${encodeURIComponent(searchQuery)}`,
       )) as SearchResult;
       setResults(data);
       setShowResults(true);

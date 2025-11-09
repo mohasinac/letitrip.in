@@ -1,5 +1,5 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,7 +13,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 
-if (typeof window !== 'undefined' && getApps().length === 0) {
+if (typeof window !== "undefined" && getApps().length === 0) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
 }

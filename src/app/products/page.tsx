@@ -30,7 +30,7 @@ export default function ProductsPage() {
 
   const [filters, setFilters] = useState<ProductFilterValues>({});
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -53,8 +53,8 @@ export default function ProductsPage() {
           filters.stock === "in_stock"
             ? true
             : filters.stock === "out_of_stock"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         isFeatured: filters.featured,
         minRating: filters.rating,
         sortBy: sortBy as any,
@@ -105,7 +105,7 @@ export default function ProductsPage() {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {

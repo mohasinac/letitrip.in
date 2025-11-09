@@ -79,7 +79,7 @@ export default function MyBidsPage() {
       // Fetch auction details for each bid
       if (latestBids.length > 0) {
         const auctionPromises = latestBids.map((bid) =>
-          fetch(`/api/auctions/${bid.auction_id}`).then((res) => res.json())
+          fetch(`/api/auctions/${bid.auction_id}`).then((res) => res.json()),
         );
 
         const auctionResults = await Promise.allSettled(auctionPromises);
@@ -104,7 +104,7 @@ export default function MyBidsPage() {
         // Sort by created_at descending
         bidsWithAuctions.sort(
           (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         );
 
         setBids(bidsWithAuctions);
@@ -290,7 +290,7 @@ export default function MyBidsPage() {
                           <div className="text-gray-500 mb-1">Current Bid</div>
                           <div className="font-semibold text-gray-900">
                             {formatCurrency(
-                              bid.auction?.currentBid || bid.amount
+                              bid.auction?.currentBid || bid.amount,
                             )}
                           </div>
                         </div>

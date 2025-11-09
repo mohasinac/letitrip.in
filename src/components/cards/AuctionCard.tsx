@@ -197,8 +197,8 @@ export default function AuctionCard({
             isEnded
               ? "text-gray-500"
               : isEndingSoon
-              ? "text-red-600 font-semibold"
-              : "text-gray-700"
+                ? "text-red-600 font-semibold"
+                : "text-gray-700"
           }`}
         >
           <Clock size={14} />

@@ -1,51 +1,67 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '../lib/session';
-import { Collections } from '@/app/api/lib/firebase/collections';
-import { getProductsQuery, userOwnsShop, UserRole } from '@/app/api/lib/firebase/queries';
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "../lib/session";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import {
+  getProductsQuery,
+  userOwnsShop,
+  UserRole,
+} from "@/app/api/lib/firebase/queries";
 
 // GET /api/products - List all products (role-based)
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user?.email) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { searchParams } = new URL(request.url);
-    const shopId = searchParams.get('shopId') || searchParams.get('shop_id');
-    const categoryId = searchParams.get('categoryId') || searchParams.get('category_id');
-    const status = searchParams.get('status');
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const isFeatured = searchParams.get('isFeatured');
-    const slug = searchParams.get('slug');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const shopId = searchParams.get("shopId") || searchParams.get("shop_id");
+    const categoryId =
+      searchParams.get("categoryId") || searchParams.get("category_id");
+    const status = searchParams.get("status");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const isFeatured = searchParams.get("isFeatured");
+    const slug = searchParams.get("slug");
+    const limit = parseInt(searchParams.get("limit") || "50");
 
-    const role = (user.role || 'user') as UserRole;
+    const role = (user.role || "user") as UserRole;
     const userId = user.id;
 
     // Build query based on role
-    const query = getProductsQuery(role, role === 'seller' ? (shopId || userId) : undefined);
+    const query = getProductsQuery(
+      role,
+      role === "seller" ? shopId || userId : undefined,
+    );
 
     // Apply filters
     const filters: any[] = [];
-    if (shopId) filters.push({ field: 'shop_id', operator: '==', value: shopId });
-    if (categoryId) filters.push({ field: 'category_id', operator: '==', value: categoryId });
-    if (status) filters.push({ field: 'status', operator: '==', value: status });
-    if (isFeatured === 'true') filters.push({ field: 'is_featured', operator: '==', value: true });
-    if (slug) filters.push({ field: 'slug', operator: '==', value: slug });
+    if (shopId)
+      filters.push({ field: "shop_id", operator: "==", value: shopId });
+    if (categoryId)
+      filters.push({ field: "category_id", operator: "==", value: categoryId });
+    if (status)
+      filters.push({ field: "status", operator: "==", value: status });
+    if (isFeatured === "true")
+      filters.push({ field: "is_featured", operator: "==", value: true });
+    if (slug) filters.push({ field: "slug", operator: "==", value: slug });
 
     let productsQuery = query;
     for (const filter of filters) {
-      productsQuery = productsQuery.where(filter.field, filter.operator as any, filter.value);
+      productsQuery = productsQuery.where(
+        filter.field,
+        filter.operator as any,
+        filter.value,
+      );
     }
 
     const snapshot = await productsQuery.limit(limit).get();
-    let products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     if (minPrice) {
       const min = parseFloat(minPrice);
@@ -56,10 +72,17 @@ export async function GET(request: NextRequest) {
       products = products.filter((p: any) => (p.price ?? 0) <= max);
     }
 
-    return NextResponse.json({ success: true, data: products, count: products.length });
+    return NextResponse.json({
+      success: true,
+      data: products,
+      count: products.length,
+    });
   } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json({ success: false, error: 'Failed to fetch products' }, { status: 500 });
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch products" },
+      { status: 500 },
+    );
   }
 }
 
@@ -68,7 +91,10 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
     if (!user?.email) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const body = await request.json();
@@ -76,28 +102,43 @@ export async function POST(request: NextRequest) {
     const shop_id = body.shop_id || body.shopId;
     const name = body.name;
     const slug = body.slug;
-    const description = body.description || '';
+    const description = body.description || "";
     const price = Number(body.price);
     const category_id = body.category_id || body.categoryId;
     const images = body.images || [];
-    const status = body.status || 'draft';
+    const status = body.status || "draft";
     const stock_quantity = body.stock_quantity ?? body.stockCount ?? null;
     const is_featured = body.is_featured ?? body.isFeatured ?? false;
 
     if (!shop_id || !name || !slug || !price || !category_id) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Validate user owns the shop
     const ownsShop = await userOwnsShop(shop_id, user.id);
     if (!ownsShop) {
-      return NextResponse.json({ success: false, error: 'You do not have permission to add products to this shop' }, { status: 403 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You do not have permission to add products to this shop",
+        },
+        { status: 403 },
+      );
     }
 
     // Check if slug is unique (global for now)
-    const existingSlug = await Collections.products().where('slug', '==', slug).limit(1).get();
+    const existingSlug = await Collections.products()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
     if (!existingSlug.empty) {
-      return NextResponse.json({ success: false, error: 'Product slug already exists' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Product slug already exists" },
+        { status: 400 },
+      );
     }
 
     const now = new Date().toISOString();
@@ -118,9 +159,15 @@ export async function POST(request: NextRequest) {
 
     const docRef = await Collections.products().add(productData);
 
-    return NextResponse.json({ success: true, data: { id: docRef.id, ...productData } }, { status: 201 });
+    return NextResponse.json(
+      { success: true, data: { id: docRef.id, ...productData } },
+      { status: 201 },
+    );
   } catch (error) {
-    console.error('Error creating product:', error);
-    return NextResponse.json({ success: false, error: 'Failed to create product' }, { status: 500 });
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create product" },
+      { status: 500 },
+    );
   }
 }

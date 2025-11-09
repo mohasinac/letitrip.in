@@ -40,7 +40,7 @@ export function FilterBar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -55,16 +55,12 @@ export function FilterBar({
   });
 
   return (
-    <div
-      className={`bg-white border-b border-gray-200 ${className}`}
-    >
+    <div className={`bg-white border-b border-gray-200 ${className}`}>
       <div className="px-6 py-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <h3 className="text-sm font-medium text-gray-900">
-              Quick Filters
-            </h3>
+            <h3 className="text-sm font-medium text-gray-900">Quick Filters</h3>
             {resultCount !== undefined && (
               <span className="text-sm text-gray-500">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}
@@ -164,13 +160,13 @@ export function FilterBar({
                       <input
                         type="checkbox"
                         checked={(values[filter.key] || []).includes(
-                          option.value
+                          option.value,
                         )}
                         onChange={(e) =>
                           handleCheckboxChange(
                             filter.key,
                             option.value,
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
@@ -190,9 +186,7 @@ export function FilterBar({
         {/* Active Filters Pills */}
         {hasActiveFilters && (
           <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200">
-            <span className="text-sm text-gray-500">
-              Active:
-            </span>
+            <span className="text-sm text-gray-500">Active:</span>
             {Object.entries(values).map(([key, value]) => {
               const filter = filters.find((f) => f.key === key);
               if (

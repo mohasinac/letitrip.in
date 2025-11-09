@@ -14,7 +14,7 @@ export default function ShopsPage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [sortBy, setSortBy] = useState<string>("rating");
   const [showFilters, setShowFilters] = useState(false);
@@ -49,7 +49,7 @@ export default function ShopsPage() {
       } else if (sortBy === "newest") {
         shopsData.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
       }
 
@@ -185,7 +185,7 @@ export default function ShopsPage() {
                     value={minRating || ""}
                     onChange={(e) =>
                       setMinRating(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

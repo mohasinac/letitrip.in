@@ -3,7 +3,7 @@
  * Provides client-side and server-side validation rules
  */
 
-import { InlineField } from '@/types/inline-edit';
+import { InlineField } from "@/types/inline-edit";
 
 // Common validation patterns
 const PATTERNS = {
@@ -19,7 +19,7 @@ const PATTERNS = {
 // Validation helper functions
 export const validators = {
   required: (value: any, fieldName: string): string | null => {
-    if (value === undefined || value === null || value === '') {
+    if (value === undefined || value === null || value === "") {
       return `${fieldName} is required`;
     }
     return null;
@@ -27,21 +27,21 @@ export const validators = {
 
   email: (value: string): string | null => {
     if (value && !PATTERNS.email.test(value)) {
-      return 'Invalid email address';
+      return "Invalid email address";
     }
     return null;
   },
 
   url: (value: string): string | null => {
     if (value && !PATTERNS.url.test(value)) {
-      return 'Invalid URL (must start with http:// or https://)';
+      return "Invalid URL (must start with http:// or https://)";
     }
     return null;
   },
 
   slug: (value: string): string | null => {
     if (value && !PATTERNS.slug.test(value)) {
-      return 'Slug can only contain lowercase letters, numbers, and hyphens';
+      return "Slug can only contain lowercase letters, numbers, and hyphens";
     }
     return null;
   },
@@ -81,7 +81,11 @@ export const validators = {
     return null;
   },
 
-  custom: (value: any, validator: (val: any) => boolean, message: string): string | null => {
+  custom: (
+    value: any,
+    validator: (val: any) => boolean,
+    message: string,
+  ): string | null => {
     if (value && !validator(value)) {
       return message;
     }
@@ -92,160 +96,160 @@ export const validators = {
 // Hero Slides validation schema
 export const heroSlideFields: InlineField[] = [
   {
-    key: 'title',
-    type: 'text',
-    label: 'Title',
+    key: "title",
+    type: "text",
+    label: "Title",
     required: true,
-    placeholder: 'Enter slide title',
+    placeholder: "Enter slide title",
     validate: (value) => {
-      const required = validators.required(value, 'Title');
+      const required = validators.required(value, "Title");
       if (required) return required;
       return validators.maxLength(value, 100);
     },
   },
   {
-    key: 'subtitle',
-    type: 'text',
-    label: 'Subtitle',
-    placeholder: 'Enter subtitle (optional)',
+    key: "subtitle",
+    type: "text",
+    label: "Subtitle",
+    placeholder: "Enter subtitle (optional)",
     validate: (value) => validators.maxLength(value, 200),
   },
   {
-    key: 'image_url',
-    type: 'image',
-    label: 'Image',
+    key: "image_url",
+    type: "image",
+    label: "Image",
     required: true,
-    placeholder: 'hero-slide',
+    placeholder: "hero-slide",
     validate: (value) => {
-      const required = validators.required(value, 'Image');
+      const required = validators.required(value, "Image");
       if (required) return required;
       return validators.url(value);
     },
   },
   {
-    key: 'link_url',
-    type: 'url',
-    label: 'Link URL',
-    placeholder: '/products',
-    validate: (value) => value ? validators.url(value) : null,
+    key: "link_url",
+    type: "url",
+    label: "Link URL",
+    placeholder: "/products",
+    validate: (value) => (value ? validators.url(value) : null),
   },
   {
-    key: 'is_active',
-    type: 'checkbox',
-    label: 'Active',
+    key: "is_active",
+    type: "checkbox",
+    label: "Active",
   },
   {
-    key: 'show_in_carousel',
-    type: 'checkbox',
-    label: 'Show in Carousel',
+    key: "show_in_carousel",
+    type: "checkbox",
+    label: "Show in Carousel",
   },
 ];
 
 // Category validation schema
 export const categoryFields: InlineField[] = [
   {
-    key: 'name',
-    type: 'text',
-    label: 'Name',
+    key: "name",
+    type: "text",
+    label: "Name",
     required: true,
-    placeholder: 'Category name',
+    placeholder: "Category name",
     validate: (value) => {
-      const required = validators.required(value, 'Name');
+      const required = validators.required(value, "Name");
       if (required) return required;
       return validators.maxLength(value, 50);
     },
   },
   {
-    key: 'slug',
-    type: 'text',
-    label: 'Slug',
+    key: "slug",
+    type: "text",
+    label: "Slug",
     required: true,
-    placeholder: 'category-slug',
+    placeholder: "category-slug",
     validate: (value) => {
-      const required = validators.required(value, 'Slug');
+      const required = validators.required(value, "Slug");
       if (required) return required;
       return validators.slug(value);
     },
   },
   {
-    key: 'image_url',
-    type: 'image',
-    label: 'Icon',
-    placeholder: 'category',
-    validate: (value) => value ? validators.url(value) : null,
+    key: "image_url",
+    type: "image",
+    label: "Icon",
+    placeholder: "category",
+    validate: (value) => (value ? validators.url(value) : null),
   },
   {
-    key: 'is_featured',
-    type: 'checkbox',
-    label: 'Featured',
+    key: "is_featured",
+    type: "checkbox",
+    label: "Featured",
   },
   {
-    key: 'is_active',
-    type: 'checkbox',
-    label: 'Active',
+    key: "is_active",
+    type: "checkbox",
+    label: "Active",
   },
 ];
 
 // Product validation schema
 export const productFields: InlineField[] = [
   {
-    key: 'name',
-    type: 'text',
-    label: 'Product Name',
+    key: "name",
+    type: "text",
+    label: "Product Name",
     required: true,
-    placeholder: 'Enter product name',
+    placeholder: "Enter product name",
     validate: (value) => {
-      const required = validators.required(value, 'Product name');
+      const required = validators.required(value, "Product name");
       if (required) return required;
       return validators.maxLength(value, 100);
     },
   },
   {
-    key: 'price',
-    type: 'number',
-    label: 'Price (₹)',
+    key: "price",
+    type: "number",
+    label: "Price (₹)",
     required: true,
     min: 0,
     step: 0.01,
     validate: (value) => {
-      const required = validators.required(value, 'Price');
+      const required = validators.required(value, "Price");
       if (required) return required;
       return validators.min(parseFloat(value), 0);
     },
   },
   {
-    key: 'stockCount',
-    type: 'number',
-    label: 'Stock',
+    key: "stockCount",
+    type: "number",
+    label: "Stock",
     required: true,
     min: 0,
     validate: (value) => {
-      const required = validators.required(value, 'Stock');
+      const required = validators.required(value, "Stock");
       if (required) return required;
       return validators.min(parseInt(value), 0);
     },
   },
   {
-    key: 'image_url',
-    type: 'image',
-    label: 'Image',
+    key: "image_url",
+    type: "image",
+    label: "Image",
     required: true,
-    placeholder: 'product',
+    placeholder: "product",
     validate: (value) => {
-      const required = validators.required(value, 'Image');
+      const required = validators.required(value, "Image");
       if (required) return required;
       return validators.url(value);
     },
   },
   {
-    key: 'status',
-    type: 'select',
-    label: 'Status',
+    key: "status",
+    type: "select",
+    label: "Status",
     required: true,
     options: [
-      { value: 'draft', label: 'Draft' },
-      { value: 'published', label: 'Published' },
-      { value: 'archived', label: 'Archived' },
+      { value: "draft", label: "Draft" },
+      { value: "published", label: "Published" },
+      { value: "archived", label: "Archived" },
     ],
   },
 ];
@@ -253,89 +257,89 @@ export const productFields: InlineField[] = [
 // Auction validation schema
 export const auctionFields: InlineField[] = [
   {
-    key: 'title',
-    type: 'text',
-    label: 'Auction Title',
+    key: "title",
+    type: "text",
+    label: "Auction Title",
     required: true,
-    placeholder: 'Enter auction title',
+    placeholder: "Enter auction title",
     validate: (value) => {
-      const required = validators.required(value, 'Title');
+      const required = validators.required(value, "Title");
       if (required) return required;
       return validators.maxLength(value, 100);
     },
   },
   {
-    key: 'starting_bid',
-    type: 'number',
-    label: 'Starting Bid (₹)',
+    key: "starting_bid",
+    type: "number",
+    label: "Starting Bid (₹)",
     required: true,
     min: 1,
     step: 1,
     validate: (value) => {
-      const required = validators.required(value, 'Starting bid');
+      const required = validators.required(value, "Starting bid");
       if (required) return required;
       return validators.min(parseFloat(value), 1);
     },
   },
   {
-    key: 'start_time',
-    type: 'date',
-    label: 'Start Time',
+    key: "start_time",
+    type: "date",
+    label: "Start Time",
     required: true,
     validate: (value) => {
-      const required = validators.required(value, 'Start time');
+      const required = validators.required(value, "Start time");
       if (required) return required;
-      
+
       const startDate = new Date(value);
       const now = new Date();
-      
+
       if (startDate < now) {
-        return 'Start time must be in the future';
+        return "Start time must be in the future";
       }
       return null;
     },
   },
   {
-    key: 'end_time',
-    type: 'date',
-    label: 'End Time',
+    key: "end_time",
+    type: "date",
+    label: "End Time",
     required: true,
     validate: (value, formData) => {
-      const required = validators.required(value, 'End time');
+      const required = validators.required(value, "End time");
       if (required) return required;
-      
+
       const endDate = new Date(value);
       const startDate = new Date(formData?.start_time);
-      
+
       if (endDate <= startDate) {
-        return 'End time must be after start time';
+        return "End time must be after start time";
       }
       return null;
     },
   },
   {
-    key: 'image_url',
-    type: 'image',
-    label: 'Image',
+    key: "image_url",
+    type: "image",
+    label: "Image",
     required: true,
-    placeholder: 'auction',
+    placeholder: "auction",
     validate: (value) => {
-      const required = validators.required(value, 'Image');
+      const required = validators.required(value, "Image");
       if (required) return required;
       return validators.url(value);
     },
   },
   {
-    key: 'status',
-    type: 'select',
-    label: 'Status',
+    key: "status",
+    type: "select",
+    label: "Status",
     required: true,
     options: [
-      { value: 'draft', label: 'Draft' },
-      { value: 'scheduled', label: 'Scheduled' },
-      { value: 'live', label: 'Live' },
-      { value: 'ended', label: 'Ended' },
-      { value: 'cancelled', label: 'Cancelled' },
+      { value: "draft", label: "Draft" },
+      { value: "scheduled", label: "Scheduled" },
+      { value: "live", label: "Live" },
+      { value: "ended", label: "Ended" },
+      { value: "cancelled", label: "Cancelled" },
     ],
   },
 ];
@@ -343,63 +347,65 @@ export const auctionFields: InlineField[] = [
 // User validation schema
 export const userFields: InlineField[] = [
   {
-    key: 'name',
-    type: 'text',
-    label: 'Full Name',
+    key: "name",
+    type: "text",
+    label: "Full Name",
     required: true,
     validate: (value) => {
-      const required = validators.required(value, 'Name');
+      const required = validators.required(value, "Name");
       if (required) return required;
       return validators.maxLength(value, 100);
     },
   },
   {
-    key: 'email',
-    type: 'email',
-    label: 'Email',
+    key: "email",
+    type: "email",
+    label: "Email",
     required: true,
     validate: (value) => {
-      const required = validators.required(value, 'Email');
+      const required = validators.required(value, "Email");
       if (required) return required;
       return validators.email(value);
     },
   },
   {
-    key: 'role',
-    type: 'select',
-    label: 'Role',
+    key: "role",
+    type: "select",
+    label: "Role",
     required: true,
     options: [
-      { value: 'user', label: 'User' },
-      { value: 'seller', label: 'Seller' },
-      { value: 'admin', label: 'Admin' },
+      { value: "user", label: "User" },
+      { value: "seller", label: "Seller" },
+      { value: "admin", label: "Admin" },
     ],
   },
   {
-    key: 'is_banned',
-    type: 'checkbox',
-    label: 'Banned',
+    key: "is_banned",
+    type: "checkbox",
+    label: "Banned",
   },
 ];
 
 // Validation schema map
 export const validationSchemas = {
-  'hero-slides': heroSlideFields,
-  'categories': categoryFields,
-  'products': productFields,
-  'auctions': auctionFields,
-  'users': userFields,
+  "hero-slides": heroSlideFields,
+  categories: categoryFields,
+  products: productFields,
+  auctions: auctionFields,
+  users: userFields,
 };
 
 // Get validation schema by resource name
 export function getValidationSchema(resourceName: string): InlineField[] {
-  return validationSchemas[resourceName as keyof typeof validationSchemas] || [];
+  return (
+    validationSchemas[resourceName as keyof typeof validationSchemas] || []
+  );
 }
 
 // Validate form data against schema
 export function validateFormData(
   data: Record<string, any>,
-  fields: InlineField[]
+  fields: InlineField[],
 ): Record<string, string> {
   const errors: Record<string, string> = {};
 
@@ -416,7 +422,12 @@ export function validateFormData(
     }
 
     // Custom validation
-    if (field.validate && value !== undefined && value !== null && value !== '') {
+    if (
+      field.validate &&
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
       const error = field.validate(value, data);
       if (error) {
         errors[field.key] = error;
@@ -424,19 +435,19 @@ export function validateFormData(
     }
 
     // Type-specific validation
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       switch (field.type) {
-        case 'email':
+        case "email":
           const emailError = validators.email(value);
           if (emailError) errors[field.key] = emailError;
           break;
 
-        case 'url':
+        case "url":
           const urlError = validators.url(value);
           if (urlError) errors[field.key] = urlError;
           break;
 
-        case 'number':
+        case "number":
           if (field.min !== undefined) {
             const minError = validators.min(parseFloat(value), field.min);
             if (minError) errors[field.key] = minError;
@@ -457,15 +468,21 @@ export function validateFormData(
 export function validateBulkAction(
   action: string,
   resourceType: string,
-  data?: Record<string, any>
+  data?: Record<string, any>,
 ): { valid: boolean; error?: string } {
   // Validate action exists for resource type
   const validActions: Record<string, string[]> = {
-    'hero-slides': ['activate', 'deactivate', 'add-to-carousel', 'remove-from-carousel', 'delete'],
-    'categories': ['activate', 'deactivate', 'feature', 'unfeature', 'delete'],
-    'products': ['publish', 'draft', 'archive', 'update-stock', 'delete'],
-    'auctions': ['schedule', 'cancel', 'end', 'delete'],
-    'users': ['make-seller', 'make-user', 'ban', 'unban'],
+    "hero-slides": [
+      "activate",
+      "deactivate",
+      "add-to-carousel",
+      "remove-from-carousel",
+      "delete",
+    ],
+    categories: ["activate", "deactivate", "feature", "unfeature", "delete"],
+    products: ["publish", "draft", "archive", "update-stock", "delete"],
+    auctions: ["schedule", "cancel", "end", "delete"],
+    users: ["make-seller", "make-user", "ban", "unban"],
   };
 
   const actions = validActions[resourceType];
@@ -477,10 +494,10 @@ export function validateBulkAction(
   }
 
   // Validate required data for specific actions
-  if (action === 'update-stock' && !data?.stockCount) {
+  if (action === "update-stock" && !data?.stockCount) {
     return {
       valid: false,
-      error: 'Stock count is required for update-stock action',
+      error: "Stock count is required for update-stock action",
     };
   }
 
