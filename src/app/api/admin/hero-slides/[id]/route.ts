@@ -62,6 +62,7 @@ export async function PATCH(
     if (body.cta_text !== undefined) updateData.cta_text = body.cta_text;
     if (body.position !== undefined) updateData.position = body.position;
     if (body.is_active !== undefined) updateData.is_active = body.is_active;
+    if (body.show_in_carousel !== undefined) updateData.show_in_carousel = body.show_in_carousel;
     
     await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).update(updateData);
     

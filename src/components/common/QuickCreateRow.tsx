@@ -35,7 +35,10 @@ export function QuickCreateRow({
     const value = values[field.key];
 
     // Required validation
-    if (field.required && (value === undefined || value === null || value === "")) {
+    if (
+      field.required &&
+      (value === undefined || value === null || value === "")
+    ) {
       return `${field.label} is required`;
     }
 
@@ -78,7 +81,7 @@ export function QuickCreateRow({
 
     try {
       await onSave(values);
-      
+
       // Reset form after successful save
       setValues(defaultValues);
       setErrors({});
@@ -146,7 +149,9 @@ export function QuickCreateRow({
             <input
               type="number"
               value={value ?? ""}
-              onChange={(e) => handleChange(field.key, parseFloat(e.target.value))}
+              onChange={(e) =>
+                handleChange(field.key, parseFloat(e.target.value))
+              }
               onKeyDown={handleKeyDown}
               placeholder={field.placeholder}
               disabled={field.disabled || loading}

@@ -17,6 +17,16 @@ import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  InlineEditRow,
+  QuickCreateRow,
+  BulkActionBar,
+  InlineImageUpload,
+  TableCheckbox,
+  InlineField,
+  BulkAction,
+} from "@/components/common/inline-edit";
+import { apiService } from "@/services/api.service";
 
 interface Category {
   id: string;
@@ -43,11 +53,104 @@ export default function CategoriesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  // Inline edit states
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
   useEffect(() => {
     if (user && isAdmin) {
       loadCategories();
     }
   }, [user, isAdmin]);
+
+  // Fields configuration for inline edit
+  const fields: InlineField[] = [
+    { key: "image", label: "Image", type: "image", required: false },
+    { key: "name", label: "Name", type: "text", required: true },
+    {
+      key: "parent_id",
+      label: "Parent",
+      type: "select",
+      required: false,
+      options: [
+        { value: "", label: "None (Root Category)" },
+        ...categories
+          .filter((c) => c.id !== editingId) // Prevent self-parent
+          .map((c) => ({
+            value: c.id,
+            label: c.name,
+          })),
+      ],
+    },
+    { key: "is_featured", label: "Featured", type: "checkbox" },
+    { key: "show_on_homepage", label: "Show on Homepage", type: "checkbox" },
+    { key: "is_active", label: "Active", type: "checkbox" },
+  ];
+
+  // Bulk actions configuration
+  const bulkActions: BulkAction[] = [
+    {
+      id: "activate",
+      label: "Activate",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "deactivate",
+      label: "Deactivate",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "feature",
+      label: "Set Featured",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "unfeature",
+      label: "Remove Featured",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      variant: "danger",
+      confirm: true,
+      confirmTitle: "Delete Categories",
+      confirmMessage: `Are you sure you want to delete ${
+        selectedIds.length
+      } categor${
+        selectedIds.length === 1 ? "y" : "ies"
+      }? This cannot be undone.`,
+    },
+  ];
+
+  // Bulk action handler
+  const handleBulkAction = async (actionId: string) => {
+    try {
+      setActionLoading(true);
+      const response = await apiService.post<{ success: boolean }>(
+        "/api/admin/categories/bulk",
+        {
+          action: actionId,
+          ids: selectedIds,
+        }
+      );
+
+      if (response.success) {
+        await loadCategories();
+        setSelectedIds([]);
+      }
+    } catch (error) {
+      console.error("Bulk action failed:", error);
+      alert("Failed to perform bulk action");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const loadCategories = async () => {
     try {
@@ -272,14 +375,29 @@ export default function CategoriesPage() {
             <table className="w-full">
               <thead className="border-b border-gray-200 bg-gray-50">
                 <tr>
+                  <th className="w-12 px-6 py-3">
+                    <TableCheckbox
+                      checked={
+                        selectedIds.length === filteredCategories.length &&
+                        filteredCategories.length > 0
+                      }
+                      indeterminate={
+                        selectedIds.length > 0 &&
+                        selectedIds.length < filteredCategories.length
+                      }
+                      onChange={(checked) => {
+                        setSelectedIds(
+                          checked ? filteredCategories.map((c) => c.id) : []
+                        );
+                      }}
+                      aria-label="Select all categories"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Category
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Level
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Products
+                    Parent
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
@@ -293,100 +411,186 @@ export default function CategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredCategories.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
-                          {category.image ? (
-                            <img
-                              src={category.image}
-                              alt={category.name}
-                              className="h-full w-full rounded object-cover"
-                            />
-                          ) : (
-                            <FolderTree className="h-5 w-5 text-gray-400" />
+                {/* Quick Create Row */}
+                <QuickCreateRow
+                  fields={fields}
+                  onSave={async (values) => {
+                    try {
+                      const response = await apiService.post(
+                        "/api/categories",
+                        {
+                          name: values.name,
+                          parent_id: values.parent_id || null,
+                          image: values.image || "",
+                          is_featured: values.is_featured || false,
+                          show_on_homepage: values.show_on_homepage || false,
+                          is_active: values.is_active !== false,
+                        }
+                      );
+                      await loadCategories();
+                    } catch (error) {
+                      console.error("Failed to create category:", error);
+                      throw error;
+                    }
+                  }}
+                  resourceName="category"
+                  defaultValues={{
+                    is_active: true,
+                    is_featured: false,
+                    show_on_homepage: false,
+                    parent_id: "",
+                  }}
+                />
+
+                {/* Category Rows */}
+                {filteredCategories.map((category) => {
+                  const isEditing = editingId === category.id;
+                  const parentCategory = categories.find(
+                    (c) => c.id === category.parent_id
+                  );
+
+                  if (isEditing) {
+                    return (
+                      <InlineEditRow
+                        key={category.id}
+                        fields={fields}
+                        initialValues={{
+                          image: category.image || "",
+                          name: category.name,
+                          parent_id: category.parent_id || "",
+                          is_featured: category.is_featured,
+                          show_on_homepage: category.show_on_homepage,
+                          is_active: category.is_active,
+                        }}
+                        onSave={async (values) => {
+                          try {
+                            await apiService.patch(
+                              `/api/categories/${category.slug}`,
+                              values
+                            );
+                            await loadCategories();
+                            setEditingId(null);
+                          } catch (error) {
+                            console.error("Failed to update category:", error);
+                            throw error;
+                          }
+                        }}
+                        onCancel={() => setEditingId(null)}
+                        resourceName="category"
+                      />
+                    );
+                  }
+
+                  return (
+                    <tr
+                      key={category.id}
+                      className="hover:bg-gray-50"
+                      onDoubleClick={() => setEditingId(category.id)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <TableCheckbox
+                          checked={selectedIds.includes(category.id)}
+                          onChange={(checked) => {
+                            setSelectedIds((prev) =>
+                              checked
+                                ? [...prev, category.id]
+                                : prev.filter((id) => id !== category.id)
+                            );
+                          }}
+                          aria-label={`Select ${category.name}`}
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                            {category.image ? (
+                              <img
+                                src={category.image}
+                                alt={category.name}
+                                className="h-full w-full rounded object-cover"
+                              />
+                            ) : (
+                              <FolderTree className="h-5 w-5 text-gray-400" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {category.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              /{category.slug}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {parentCategory ? parentCategory.name : "Root"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge
+                          status={category.is_active ? "active" : "inactive"}
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {category.is_featured && (
+                            <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                              Featured
+                            </span>
+                          )}
+                          {category.show_on_homepage && (
+                            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                              Homepage
+                            </span>
                           )}
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {category.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            /{category.slug}
-                          </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/categories/${category.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                            title="View"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                          <Link
+                            href={`/admin/categories/${category.slug}/edit`}
+                            className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Link>
+                          <button
+                            onClick={() => setDeleteId(category.id)}
+                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {getCategoryLevel(category)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {/* Product count to be calculated later */}-
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge
-                        status={category.is_active ? "active" : "inactive"}
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        {category.is_featured && (
-                          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                            Featured
-                          </span>
-                        )}
-                        {category.show_on_homepage && (
-                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                            Homepage
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/categories/${category.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                          title="View"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                        <Link
-                          href={`/admin/categories/${category.slug}/edit`}
-                          className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                        <button
-                          onClick={() => setDeleteId(category.id)}
-                          className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-
-          {/* Inline Create Row */}
-          <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-            <Link
-              href="/admin/categories/create"
-              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-            >
-              <Plus className="h-4 w-4" />
-              Add New Category
-            </Link>
-          </div>
         </div>
+      )}
+
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <BulkActionBar
+          selectedCount={selectedIds.length}
+          actions={bulkActions}
+          onAction={handleBulkAction}
+          onClearSelection={() => setSelectedIds([])}
+          loading={actionLoading}
+          resourceName="category"
+        />
       )}
 
       {/* Empty State */}

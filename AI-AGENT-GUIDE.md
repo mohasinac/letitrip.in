@@ -872,13 +872,13 @@ const handleFilesAdded = async (files: MediaFile[]) => {
 
 ```typescript
 import {
-  InlineEditRow,      // Convert table rows to editable forms
-  QuickCreateRow,     // Add quick create at top of tables
-  BulkActionBar,      // Bulk operations with selection
-  InlineImageUpload,  // Small inline image uploader (64x64)
-  MobileFilterSidebar,// Mobile filter sidebar with slide animation
-  TableCheckbox,      // Accessible checkboxes with indeterminate
-} from '@/components/common/inline-edit';
+  InlineEditRow, // Convert table rows to editable forms
+  QuickCreateRow, // Add quick create at top of tables
+  BulkActionBar, // Bulk operations with selection
+  InlineImageUpload, // Small inline image uploader (64x64)
+  MobileFilterSidebar, // Mobile filter sidebar with slide animation
+  TableCheckbox, // Accessible checkboxes with indeterminate
+} from "@/components/common/inline-edit";
 ```
 
 ### Usage Pattern
@@ -894,7 +894,7 @@ const fields: InlineField[] = [
 // In table
 <tbody>
   <QuickCreateRow fields={fields} onSave={handleCreate} />
-  {items.map(item => (
+  {items.map((item) =>
     editingId === item.id ? (
       <InlineEditRow
         fields={fields}
@@ -904,12 +904,14 @@ const fields: InlineField[] = [
       />
     ) : (
       <tr onDoubleClick={() => setEditingId(item.id)}>
-        <td><TableCheckbox checked={selected} onChange={setSelected} /></td>
+        <td>
+          <TableCheckbox checked={selected} onChange={setSelected} />
+        </td>
         {/* cells */}
       </tr>
     )
-  ))}
-</tbody>
+  )}
+</tbody>;
 ```
 
 ### Field Types Supported

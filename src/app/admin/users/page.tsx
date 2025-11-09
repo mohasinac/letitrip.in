@@ -17,6 +17,14 @@ import {
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { UserRole } from "@/types";
+import {
+  InlineEditRow,
+  BulkActionBar,
+  TableCheckbox,
+  InlineField,
+  BulkAction,
+} from "@/components/common/inline-edit";
+import { apiService } from "@/services/api.service";
 
 interface User {
   id: string;
@@ -53,6 +61,10 @@ export default function AdminUsersPage() {
   const [newRole, setNewRole] = useState<UserRole>("user");
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Inline edit states
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   // Load users
   const loadUsers = async () => {
     try {
@@ -84,6 +96,120 @@ export default function AdminUsersPage() {
       loadUsers();
     }
   }, [currentUser, isAdmin, roleFilter, statusFilter]);
+
+  // Fields configuration for inline edit
+  const fields: InlineField[] = [
+    {
+      key: "role",
+      label: "Role",
+      type: "select",
+      required: true,
+      options: [
+        { value: "user", label: "User" },
+        { value: "seller", label: "Seller" },
+        { value: "admin", label: "Admin" },
+      ],
+    },
+    {
+      key: "is_banned",
+      label: "Banned",
+      type: "checkbox",
+    },
+  ];
+
+  // Bulk actions configuration
+  const bulkActions: BulkAction[] = [
+    {
+      id: "make-seller",
+      label: "Make Seller",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "make-user",
+      label: "Make User",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "ban",
+      label: "Ban Users",
+      variant: "danger",
+      confirm: true,
+      confirmTitle: "Ban Users",
+      confirmMessage: `Are you sure you want to ban ${selectedIds.length} user${
+        selectedIds.length === 1 ? "" : "s"
+      }?`,
+    },
+    {
+      id: "unban",
+      label: "Unban Users",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "export",
+      label: "Export Selected",
+      variant: "default",
+      confirm: false,
+    },
+  ];
+
+  // Bulk action handler
+  const handleBulkAction = async (actionId: string) => {
+    try {
+      setActionLoading(true);
+
+      if (actionId === "export") {
+        // Export selected users as CSV
+        const selectedUsers = users.filter((u) => selectedIds.includes(u.id));
+        const csv = [
+          ["Email", "Name", "Role", "Phone", "Status", "Joined"].join(","),
+          ...selectedUsers.map((u) =>
+            [
+              u.email,
+              u.name || "",
+              u.role,
+              u.phone || "",
+              u.is_banned ? "Banned" : "Active",
+              new Date(u.createdAt).toLocaleDateString(),
+            ].join(",")
+          ),
+        ].join("\n");
+
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `users-export-${new Date().toISOString()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        setSelectedIds([]);
+        return;
+      }
+
+      const response = await apiService.post<{ success: boolean }>(
+        "/api/admin/users/bulk",
+        {
+          action: actionId,
+          ids: selectedIds,
+        }
+      );
+
+      if (response.success) {
+        await loadUsers();
+        setSelectedIds([]);
+      }
+    } catch (error) {
+      console.error("Bulk action failed:", error);
+      alert("Failed to perform bulk action");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   // Update user
   const updateUser = async (userId: string, updates: any) => {
@@ -284,6 +410,28 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <th className="w-12 px-6 py-3">
+                    <TableCheckbox
+                      checked={
+                        selectedIds.length === filteredUsers.length &&
+                        filteredUsers.length > 0
+                      }
+                      indeterminate={
+                        selectedIds.length > 0 &&
+                        selectedIds.length < filteredUsers.length
+                      }
+                      onChange={(checked) => {
+                        setSelectedIds(
+                          checked
+                            ? filteredUsers
+                                .filter((u) => u.id !== currentUser?.uid)
+                                .map((u) => u.id)
+                            : []
+                        );
+                      }}
+                      aria-label="Select all users"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User
                   </th>
@@ -308,7 +456,7 @@ export default function AdminUsersPage() {
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-6 py-12 text-center text-gray-500"
                     >
                       {searchQuery
@@ -317,170 +465,235 @@ export default function AdminUsersPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      {/* User Info */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {user.avatar ? (
-                            <img
-                              src={user.avatar}
-                              alt={user.name || user.email}
-                              className="h-10 w-10 rounded-full object-cover"
+                  filteredUsers.map((user) => {
+                    const isEditing = editingId === user.id;
+                    const canEdit = user.id !== currentUser?.uid;
+
+                    if (isEditing && canEdit) {
+                      return (
+                        <InlineEditRow
+                          key={user.id}
+                          fields={fields}
+                          initialValues={{
+                            role: user.role,
+                            is_banned: user.is_banned || false,
+                          }}
+                          onSave={async (values) => {
+                            try {
+                              await updateUser(user.id, values);
+                              await loadUsers();
+                              setEditingId(null);
+                            } catch (error) {
+                              console.error("Failed to update user:", error);
+                              throw error;
+                            }
+                          }}
+                          onCancel={() => setEditingId(null)}
+                          resourceName="user"
+                        />
+                      );
+                    }
+
+                    return (
+                      <tr
+                        key={user.id}
+                        className="hover:bg-gray-50"
+                        onDoubleClick={() => canEdit && setEditingId(user.id)}
+                      >
+                        {/* Checkbox */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {canEdit && (
+                            <TableCheckbox
+                              checked={selectedIds.includes(user.id)}
+                              onChange={(checked) => {
+                                setSelectedIds((prev) =>
+                                  checked
+                                    ? [...prev, user.id]
+                                    : prev.filter((id) => id !== user.id)
+                                );
+                              }}
+                              aria-label={`Select ${user.name || user.email}`}
                             />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <span className="text-blue-600 font-semibold text-sm">
-                                {(user.name || user.email)[0].toUpperCase()}
-                              </span>
-                            </div>
                           )}
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {user.name || "No name"}
-                            </div>
-                            <div className="text-sm text-gray-500 flex items-center gap-1">
-                              <Mail className="h-3 w-3" />
-                              {user.email}
-                            </div>
-                            {user.phone && (
-                              <div className="text-sm text-gray-500 flex items-center gap-1">
-                                <Phone className="h-3 w-3" />
-                                {user.phone}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Role */}
-                      <td className="px-6 py-4">
-                        <StatusBadge status={user.role} />
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-6 py-4">
-                        {user.is_banned ? (
-                          <div>
-                            <StatusBadge status="banned" />
-                            {user.ban_reason && (
-                              <div className="text-xs text-gray-500 mt-1">
-                                {user.ban_reason}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <StatusBadge status="active" />
-                        )}
-                      </td>
-
-                      {/* Verification */}
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm">
-                            {user.emailVerified ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
+                        {/* User Info */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {user.avatar ? (
+                              <img
+                                src={user.avatar}
+                                alt={user.name || user.email}
+                                className="h-10 w-10 rounded-full object-cover"
+                              />
                             ) : (
-                              <span className="h-4 w-4 text-gray-300">✕</span>
+                              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span className="text-blue-600 font-semibold text-sm">
+                                  {(user.name || user.email)[0].toUpperCase()}
+                                </span>
+                              </div>
                             )}
-                            <span
-                              className={
-                                user.emailVerified
-                                  ? "text-green-600"
-                                  : "text-gray-400"
-                              }
-                            >
-                              Email
-                            </span>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                {user.name || "No name"}
+                              </div>
+                              <div className="text-sm text-gray-500 flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {user.email}
+                              </div>
+                              {user.phone && (
+                                <div className="text-sm text-gray-500 flex items-center gap-1">
+                                  <Phone className="h-3 w-3" />
+                                  {user.phone}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          {user.phone && (
+                        </td>
+
+                        {/* Role */}
+                        <td className="px-6 py-4">
+                          <StatusBadge status={user.role} />
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-6 py-4">
+                          {user.is_banned ? (
+                            <div>
+                              <StatusBadge status="banned" />
+                              {user.ban_reason && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {user.ban_reason}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <StatusBadge status="active" />
+                          )}
+                        </td>
+
+                        {/* Verification */}
+                        <td className="px-6 py-4">
+                          <div className="space-y-1">
                             <div className="flex items-center gap-2 text-sm">
-                              {user.phoneVerified ? (
+                              {user.emailVerified ? (
                                 <CheckCircle className="h-4 w-4 text-green-500" />
                               ) : (
                                 <span className="h-4 w-4 text-gray-300">✕</span>
                               )}
                               <span
                                 className={
-                                  user.phoneVerified
+                                  user.emailVerified
                                     ? "text-green-600"
                                     : "text-gray-400"
                                 }
                               >
-                                Phone
+                                Email
                               </span>
                             </div>
-                          )}
-                        </div>
-                      </td>
+                            {user.phone && (
+                              <div className="flex items-center gap-2 text-sm">
+                                {user.phoneVerified ? (
+                                  <CheckCircle className="h-4 w-4 text-green-500" />
+                                ) : (
+                                  <span className="h-4 w-4 text-gray-300">
+                                    ✕
+                                  </span>
+                                )}
+                                <span
+                                  className={
+                                    user.phoneVerified
+                                      ? "text-green-600"
+                                      : "text-gray-400"
+                                  }
+                                >
+                                  Phone
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </td>
 
-                      {/* Joined Date */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "en-IN",
-                            {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </div>
-                      </td>
+                        {/* Joined Date */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                            <Calendar className="h-4 w-4" />
+                            {new Date(user.createdAt).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </div>
+                        </td>
 
-                      {/* Actions */}
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {/* Change Role */}
-                          {user.id !== currentUser?.uid && (
-                            <button
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setNewRole(user.role);
-                                setShowRoleDialog(true);
-                              }}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="Change Role"
-                            >
-                              <Shield className="h-4 w-4" />
-                            </button>
-                          )}
-
-                          {/* Ban/Unban */}
-                          {user.id !== currentUser?.uid &&
-                            (user.is_banned ? (
+                        {/* Actions */}
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {/* Change Role */}
+                            {user.id !== currentUser?.uid && (
                               <button
                                 onClick={() => {
                                   setSelectedUser(user);
-                                  setShowUnbanDialog(true);
+                                  setNewRole(user.role);
+                                  setShowRoleDialog(true);
                                 }}
-                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                title="Unban User"
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Change Role"
                               >
-                                <CheckCircle className="h-4 w-4" />
+                                <Shield className="h-4 w-4" />
                               </button>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(user);
-                                  setShowBanDialog(true);
-                                }}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                title="Ban User"
-                              >
-                                <Ban className="h-4 w-4" />
-                              </button>
-                            ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                            )}
+
+                            {/* Ban/Unban */}
+                            {user.id !== currentUser?.uid &&
+                              (user.is_banned ? (
+                                <button
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setShowUnbanDialog(true);
+                                  }}
+                                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                  title="Unban User"
+                                >
+                                  <CheckCircle className="h-4 w-4" />
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setShowBanDialog(true);
+                                  }}
+                                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Ban User"
+                                >
+                                  <Ban className="h-4 w-4" />
+                                </button>
+                              ))}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Bulk Action Bar */}
+        {selectedIds.length > 0 && (
+          <BulkActionBar
+            selectedCount={selectedIds.length}
+            actions={bulkActions}
+            onAction={handleBulkAction}
+            onClearSelection={() => setSelectedIds([])}
+            loading={actionLoading}
+            resourceName="user"
+          />
+        )}
       </div>
 
       {/* Ban Dialog */}

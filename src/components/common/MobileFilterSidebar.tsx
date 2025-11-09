@@ -52,7 +52,10 @@ export function MobileFilterSidebar({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
-          <h2 id="filter-sidebar-title" className="text-lg font-semibold text-gray-900">
+          <h2
+            id="filter-sidebar-title"
+            className="text-lg font-semibold text-gray-900"
+          >
             {title}
           </h2>
           <button
@@ -65,9 +68,7 @@ export function MobileFilterSidebar({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto px-4 py-4">{children}</div>
 
         {/* Footer - Actions */}
         <div className="px-4 py-4 border-t border-gray-200 bg-gray-50 flex gap-3">

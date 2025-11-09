@@ -15,7 +15,14 @@ export function InlineImageUpload({
   disabled,
   context = "product",
 }: InlineImageUploadProps) {
-  const validContext = context as 'product' | 'shop' | 'auction' | 'review' | 'return' | 'avatar' | 'category';
+  const validContext = context as
+    | "product"
+    | "shop"
+    | "auction"
+    | "review"
+    | "return"
+    | "avatar"
+    | "category";
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +48,10 @@ export function InlineImageUpload({
       setUploading(true);
       setError(null);
 
-      const response = await mediaService.upload({ file, context: validContext });
+      const response = await mediaService.upload({
+        file,
+        context: validContext,
+      });
       onChange(response.url);
     } catch (err) {
       console.error("Failed to upload image:", err);

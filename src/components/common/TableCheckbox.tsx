@@ -28,7 +28,10 @@ export function TableCheckbox({
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
         className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label={label || (indeterminate ? "Select all" : checked ? "Deselect" : "Select")}
+        aria-label={
+          label ||
+          (indeterminate ? "Select all" : checked ? "Deselect" : "Select")
+        }
       />
     </label>
   );

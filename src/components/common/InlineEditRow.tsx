@@ -39,7 +39,10 @@ export function InlineEditRow({
     const value = values[field.key];
 
     // Required validation
-    if (field.required && (value === undefined || value === null || value === "")) {
+    if (
+      field.required &&
+      (value === undefined || value === null || value === "")
+    ) {
       return `${field.label} is required`;
     }
 
@@ -137,7 +140,9 @@ export function InlineEditRow({
             <input
               type="number"
               value={value ?? ""}
-              onChange={(e) => handleChange(field.key, parseFloat(e.target.value))}
+              onChange={(e) =>
+                handleChange(field.key, parseFloat(e.target.value))
+              }
               onKeyDown={handleKeyDown}
               placeholder={field.placeholder}
               disabled={field.disabled || loading}

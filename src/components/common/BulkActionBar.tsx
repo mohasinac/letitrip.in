@@ -64,7 +64,8 @@ export function BulkActionBar({
       <div className="hidden md:flex items-center justify-between px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg mb-4">
         <div className="flex items-center gap-4">
           <p className="text-sm font-medium text-gray-900">
-            {selectedCount} {selectedCount === 1 ? resourceName : resourceNamePlural} selected
+            {selectedCount}{" "}
+            {selectedCount === 1 ? resourceName : resourceNamePlural} selected
             {totalCount && ` (of ${totalCount})`}
           </p>
           <button
@@ -154,7 +155,13 @@ export function BulkActionBar({
             }?`
           }
           confirmLabel={confirmAction.label}
-          variant={confirmAction.variant === "danger" ? "danger" : confirmAction.variant === "warning" ? "warning" : "info"}
+          variant={
+            confirmAction.variant === "danger"
+              ? "danger"
+              : confirmAction.variant === "warning"
+              ? "warning"
+              : "info"
+          }
           onConfirm={() => executeAction(confirmAction, inputValue)}
           onClose={() => {
             setConfirmAction(null);

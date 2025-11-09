@@ -45,27 +45,28 @@ const fields: InlineField[] = [
 ];
 
 // In your table body
-{editingId === item.id ? (
-  <InlineEditRow
-    fields={fields}
-    initialValues={item}
-    onSave={async (values) => {
-      await apiService.patch(`/products/${item.id}`, values);
-      setEditingId(null);
-      loadItems();
-    }}
-    onCancel={() => setEditingId(null)}
-    loading={saving}
-    resourceName="product"
-  />
-) : (
-  <tr onClick={() => setEditingId(item.id)}>
-    {/* Regular table cells */}
-  </tr>
-)}
+{
+  editingId === item.id ? (
+    <InlineEditRow
+      fields={fields}
+      initialValues={item}
+      onSave={async (values) => {
+        await apiService.patch(`/products/${item.id}`, values);
+        setEditingId(null);
+        loadItems();
+      }}
+      onCancel={() => setEditingId(null)}
+      loading={saving}
+      resourceName="product"
+    />
+  ) : (
+    <tr onClick={() => setEditingId(item.id)}>{/* Regular table cells */}</tr>
+  );
+}
 ```
 
 **Features**:
+
 - ✅ Inline validation
 - ✅ Keyboard shortcuts (Enter to save, Esc to cancel)
 - ✅ Loading states
@@ -93,10 +94,11 @@ import { QuickCreateRow } from "@/components/common/QuickCreateRow";
   loading={creating}
   resourceName="product"
   defaultValues={{ is_active: true }}
-/>
+/>;
 ```
 
 **Features**:
+
 - ✅ Expandable/collapsible
 - ✅ Auto-reset after save
 - ✅ Same validation as InlineEditRow
@@ -149,10 +151,11 @@ const bulkActions: BulkAction[] = [
   loading={processing}
   resourceName="product"
   totalCount={items.length}
-/>
+/>;
 ```
 
 **Features**:
+
 - ✅ Responsive (top bar desktop, bottom sticky mobile)
 - ✅ Confirmation dialogs
 - ✅ Loading states
@@ -176,10 +179,11 @@ import { InlineImageUpload } from "@/components/common/InlineImageUpload";
   size={64}
   context="product"
   disabled={loading}
-/>
+/>;
 ```
 
 **Features**:
+
 - ✅ 64x64 preview (customizable)
 - ✅ Click to upload
 - ✅ Loading spinner
@@ -211,17 +215,14 @@ import { MobileFilterSidebar } from "@/components/common/MobileFilterSidebar";
 >
   {/* Filter content */}
   <div className="space-y-4">
-    <FilterGroup title="Category">
-      {/* Category filters */}
-    </FilterGroup>
-    <FilterGroup title="Price">
-      {/* Price filters */}
-    </FilterGroup>
+    <FilterGroup title="Category">{/* Category filters */}</FilterGroup>
+    <FilterGroup title="Price">{/* Price filters */}</FilterGroup>
   </div>
-</MobileFilterSidebar>
+</MobileFilterSidebar>;
 ```
 
 **Features**:
+
 - ✅ Smooth slide animation
 - ✅ Backdrop overlay
 - ✅ Body scroll lock
@@ -272,6 +273,7 @@ import { TableCheckbox } from "@/components/common/TableCheckbox";
 ```
 
 **Features**:
+
 - ✅ Indeterminate state support
 - ✅ 44px touch target
 - ✅ Accessible labels
@@ -282,6 +284,7 @@ import { TableCheckbox } from "@/components/common/TableCheckbox";
 All field types supported in `InlineEditRow` and `QuickCreateRow`:
 
 ### text / email / url
+
 ```tsx
 {
   key: "name",
@@ -293,6 +296,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### number
+
 ```tsx
 {
   key: "price",
@@ -306,6 +310,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### select
+
 ```tsx
 {
   key: "status",
@@ -319,6 +324,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### checkbox
+
 ```tsx
 {
   key: "is_active",
@@ -328,6 +334,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### date
+
 ```tsx
 {
   key: "start_date",
@@ -338,6 +345,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### image
+
 ```tsx
 {
   key: "image_url",
@@ -348,6 +356,7 @@ All field types supported in `InlineEditRow` and `QuickCreateRow`:
 ```
 
 ### textarea
+
 ```tsx
 {
   key: "description",
@@ -400,7 +409,13 @@ export default function HeroSlidesPage() {
   const fields: InlineField[] = [
     { key: "title", type: "text", label: "Title", required: true },
     { key: "subtitle", type: "text", label: "Subtitle" },
-    { key: "image_url", type: "image", label: "Image", required: true, placeholder: "shop" },
+    {
+      key: "image_url",
+      type: "image",
+      label: "Image",
+      required: true,
+      placeholder: "shop",
+    },
     { key: "link_url", type: "url", label: "Link" },
     { key: "is_active", type: "checkbox", label: "Active" },
   ];
@@ -469,9 +484,11 @@ export default function HeroSlidesPage() {
             <th>
               <TableCheckbox
                 checked={selectedIds.length === slides.length}
-                indeterminate={selectedIds.length > 0 && selectedIds.length < slides.length}
+                indeterminate={
+                  selectedIds.length > 0 && selectedIds.length < slides.length
+                }
                 onChange={(checked) => {
-                  setSelectedIds(checked ? slides.map(s => s.id) : []);
+                  setSelectedIds(checked ? slides.map((s) => s.id) : []);
                 }}
               />
             </th>
@@ -501,7 +518,10 @@ export default function HeroSlidesPage() {
                 fields={fields}
                 initialValues={slide}
                 onSave={async (values) => {
-                  await apiService.patch(`/admin/hero-slides/${slide.id}`, values);
+                  await apiService.patch(
+                    `/admin/hero-slides/${slide.id}`,
+                    values
+                  );
                   setEditingId(null);
                   loadSlides();
                 }}
@@ -521,7 +541,7 @@ export default function HeroSlidesPage() {
                       setSelectedIds(
                         checked
                           ? [...selectedIds, slide.id]
-                          : selectedIds.filter(id => id !== slide.id)
+                          : selectedIds.filter((id) => id !== slide.id)
                       );
                     }}
                   />
@@ -529,7 +549,10 @@ export default function HeroSlidesPage() {
                 <td>{slide.title}</td>
                 <td>{slide.subtitle}</td>
                 <td>
-                  <img src={slide.image_url} className="w-16 h-16 object-cover" />
+                  <img
+                    src={slide.image_url}
+                    className="w-16 h-16 object-cover"
+                  />
                 </td>
                 <td>{slide.link_url}</td>
                 <td>{slide.is_active ? "Active" : "Inactive"}</td>
@@ -559,12 +582,14 @@ export default function HeroSlidesPage() {
 ## API Requirements
 
 ### Partial Update (PATCH)
+
 ```typescript
 PATCH /api/resource/:id
 Body: { [field]: value, ... }
 ```
 
 ### Bulk Operations
+
 ```typescript
 POST /api/resource/bulk
 Body: {
@@ -574,6 +599,7 @@ Body: {
 ```
 
 Response:
+
 ```typescript
 {
   success: boolean,

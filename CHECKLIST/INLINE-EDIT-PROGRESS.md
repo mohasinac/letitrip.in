@@ -1,4 +1,13 @@
-# Inline Edit & Quick Create - Progress Tracker
+# Inline Edit & Quick Cr### Week 2: Admin Pages (Target: Nov 16-22)
+
+**Status**: � Complete  
+**Progress**: 3/3 pages
+
+| Page        | Status  | Started    | Completed  | Features                                |
+| ----------- | ------- | ---------- | ---------- | --------------------------------------- |
+| Hero Slides | 🟢 Done | 2025-11-09 | 2025-11-09 | Quick create, inline edit, bulk actions |
+| Categories  | 🟢 Done | 2025-11-09 | 2025-11-09 | Quick create, inline edit, bulk actions |
+| Users       | � Done  | 2025-11-09 | 2025-11-09 | Inline edit, bulk actions               |
 
 **Started**: 2025-11-09  
 **Target Completion**: 2025-12-07  
@@ -9,48 +18,52 @@
 ## Weekly Progress
 
 ### Week 1: Core Components (Target: Nov 9-15)
+
 **Status**: � Completed  
 **Progress**: 6/6 components
 
-| Component | Status | Started | Completed | Notes |
-|-----------|--------|---------|-----------|-------|
-| InlineEditRow | � Done | 2025-11-09 | 2025-11-09 | All field types supported |
-| QuickCreateRow | � Done | 2025-11-09 | 2025-11-09 | Expandable row with reset |
-| BulkActionBar | � Done | 2025-11-09 | 2025-11-09 | Desktop + mobile responsive |
-| InlineImageUpload | � Done | 2025-11-09 | 2025-11-09 | 64x64 preview, media service |
-| MobileFilterSidebar | � Done | 2025-11-09 | 2025-11-09 | Slide animation, backdrop |
-| TableCheckbox | 🟢 Done | 2025-11-09 | 2025-11-09 | Indeterminate support |
+| Component           | Status  | Started    | Completed  | Notes                        |
+| ------------------- | ------- | ---------- | ---------- | ---------------------------- |
+| InlineEditRow       | � Done  | 2025-11-09 | 2025-11-09 | All field types supported    |
+| QuickCreateRow      | � Done  | 2025-11-09 | 2025-11-09 | Expandable row with reset    |
+| BulkActionBar       | � Done  | 2025-11-09 | 2025-11-09 | Desktop + mobile responsive  |
+| InlineImageUpload   | � Done  | 2025-11-09 | 2025-11-09 | 64x64 preview, media service |
+| MobileFilterSidebar | � Done  | 2025-11-09 | 2025-11-09 | Slide animation, backdrop    |
+| TableCheckbox       | 🟢 Done | 2025-11-09 | 2025-11-09 | Indeterminate support        |
 
 ### Week 2: Admin Pages (Target: Nov 16-22)
-**Status**: 🔴 Not Started  
-**Progress**: 0/3 pages
 
-| Page | Status | Started | Completed | Features |
-|------|--------|---------|-----------|----------|
-| Hero Slides | 🔴 Todo | - | - | Quick create, inline edit, bulk actions |
-| Categories | 🔴 Todo | - | - | Quick create, inline edit, bulk actions |
-| Users | 🔴 Todo | - | - | Inline edit, bulk actions |
+**Status**: � In Progress  
+**Progress**: 1/3 pages
+
+| Page        | Status  | Started    | Completed  | Features                                |
+| ----------- | ------- | ---------- | ---------- | --------------------------------------- |
+| Hero Slides | � Done  | 2025-11-09 | 2025-11-09 | Quick create, inline edit, bulk actions |
+| Categories  | 🔴 Todo | -          | -          | Quick create, inline edit, bulk actions |
+| Users       | 🔴 Todo | -          | -          | Inline edit, bulk actions               |
 
 ### Week 3: Seller Pages (Target: Nov 23-29)
+
 **Status**: 🔴 Not Started  
 **Progress**: 0/3 pages
 
-| Page | Status | Started | Completed | Features |
-|------|--------|---------|-----------|----------|
-| Products | 🔴 Todo | - | - | Quick create, inline edit, bulk actions |
-| Orders | 🔴 Todo | - | - | Inline status, bulk actions |
-| Auctions | 🔴 Todo | - | - | Quick create, inline edit, bulk actions |
+| Page     | Status  | Started | Completed | Features                                |
+| -------- | ------- | ------- | --------- | --------------------------------------- |
+| Products | 🔴 Todo | -       | -         | Quick create, inline edit, bulk actions |
+| Orders   | 🔴 Todo | -       | -         | Inline status, bulk actions             |
+| Auctions | 🔴 Todo | -       | -         | Quick create, inline edit, bulk actions |
 
 ### Week 4: Polish & Testing (Target: Nov 30-Dec 7)
+
 **Status**: 🔴 Not Started  
 **Progress**: 0/4 areas
 
-| Area | Status | Started | Completed | Notes |
-|------|--------|---------|-----------|-------|
-| Mobile Optimizations | 🔴 Todo | - | - | Filter sidebar, responsive tables |
-| API Endpoints | 🔴 Todo | - | - | Bulk operations, partial updates |
-| Testing | 🔴 Todo | - | - | Component, integration, mobile |
-| Documentation | 🔴 Todo | - | - | Guide + API docs |
+| Area                 | Status  | Started | Completed | Notes                             |
+| -------------------- | ------- | ------- | --------- | --------------------------------- |
+| Mobile Optimizations | 🔴 Todo | -       | -         | Filter sidebar, responsive tables |
+| API Endpoints        | 🔴 Todo | -       | -         | Bulk operations, partial updates  |
+| Testing              | 🔴 Todo | -       | -         | Component, integration, mobile    |
+| Documentation        | 🔴 Todo | -       | -         | Guide + API docs                  |
 
 ---
 
@@ -59,6 +72,7 @@
 ### Phase 1: Core Components ✅ 26/26 tasks
 
 #### InlineEditRow Component
+
 - [x] Create file structure
 - [x] Define TypeScript interfaces
 - [x] Implement field rendering (text, number, select)
@@ -70,6 +84,7 @@
 - [x] Test with sample data
 
 #### QuickCreateRow Component
+
 - [x] Create file structure
 - [x] Inherit from InlineEditRow logic
 - [x] Add "always visible" state management
@@ -79,6 +94,7 @@
 - [x] Test create flow
 
 #### BulkActionBar Component
+
 - [x] Create file structure
 - [x] Implement selection counter
 - [x] Add action button rendering
@@ -90,6 +106,7 @@
 - [x] Test bulk operations
 
 #### InlineImageUpload Component
+
 - [x] Create file structure
 - [x] Implement 64x64 preview
 - [x] Add click-to-upload
@@ -101,6 +118,7 @@
 - [x] Test upload flow
 
 #### MobileFilterSidebar Component
+
 - [x] Create file structure
 - [x] Implement slide animation
 - [x] Add backdrop overlay
@@ -111,59 +129,64 @@
 - [x] Test on mobile devices
 
 #### TableCheckbox Component
+
 - [x] Create file structure
 - [x] Implement indeterminate state
 - [x] Add accessibility (min 44px touch target)
 - [x] Style with Tailwind
 
-### Phase 2: Admin Pages ✅ 0/30 tasks
+### Phase 2: Admin Pages ✅ 30/30 tasks
 
 #### Hero Slides Page
-- [ ] Add QuickCreateRow to top
-- [ ] Integrate InlineEditRow
-- [ ] Add checkbox column
-- [ ] Implement inline image upload
-- [ ] Add bulk selection logic
-- [ ] Create bulk action bar
-- [ ] Implement bulk activate/deactivate
-- [ ] Implement bulk delete
-- [ ] Implement bulk reorder
-- [ ] Expand max slides to 10
-- [ ] Add carousel selector (5 display)
-- [ ] Test all operations
-- [ ] Update API endpoint
-- [ ] Create bulk API handler
+
+- [x] Add QuickCreateRow to top
+- [x] Integrate InlineEditRow
+- [x] Add checkbox column
+- [x] Implement inline image upload
+- [x] Add bulk selection logic
+- [x] Create bulk action bar
+- [x] Implement bulk activate/deactivate
+- [x] Implement bulk delete
+- [x] Implement bulk reorder (preserved drag-drop)
+- [x] Expand max slides to 10
+- [x] Add carousel selector (5 display)
+- [x] Test all operations
+- [x] Update API endpoint (PATCH show_in_carousel)
+- [x] Create bulk API handler
 
 #### Categories Page
-- [ ] Add QuickCreateRow to top
-- [ ] Integrate InlineEditRow
-- [ ] Add checkbox column
-- [ ] Implement inline image upload
-- [ ] Add bulk selection logic
-- [ ] Create bulk action bar
-- [ ] Implement bulk set parent
-- [ ] Implement bulk toggle featured
-- [ ] Implement bulk toggle active
-- [ ] Implement bulk delete
-- [ ] Test all operations
-- [ ] Update API endpoint
-- [ ] Create bulk API handler
+
+- [x] Add QuickCreateRow to top
+- [x] Integrate InlineEditRow
+- [x] Add checkbox column
+- [x] Implement inline image upload
+- [x] Add bulk selection logic
+- [x] Create bulk action bar
+- [x] Implement bulk set parent (via inline edit)
+- [x] Implement bulk toggle featured
+- [x] Implement bulk toggle active
+- [x] Implement bulk delete
+- [x] Test all operations
+- [x] Update API endpoint (PATCH already exists)
+- [x] Create bulk API handler
 
 #### Users Page
-- [ ] Add checkbox column
-- [ ] Integrate InlineEditRow for role/ban
-- [ ] Add bulk selection logic
-- [ ] Create bulk action bar
-- [ ] Implement bulk change role
-- [ ] Implement bulk ban/unban
-- [ ] Implement bulk export
-- [ ] Test all operations
-- [ ] Update API endpoint
-- [ ] Create bulk API handler
+
+- [x] Add checkbox column
+- [x] Integrate InlineEditRow for role/ban
+- [x] Add bulk selection logic
+- [x] Create bulk action bar
+- [x] Implement bulk change role
+- [x] Implement bulk ban/unban
+- [x] Implement bulk export
+- [x] Test all operations
+- [x] Update API endpoint (uses existing PATCH)
+- [x] Create bulk API handler
 
 ### Phase 3: Seller Pages ✅ 0/27 tasks
 
 #### Products Page
+
 - [ ] Add QuickCreateRow to top
 - [ ] Integrate InlineEditRow
 - [ ] Add checkbox column
@@ -179,6 +202,7 @@
 - [ ] Create API endpoints
 
 #### Orders Page
+
 - [ ] Add checkbox column
 - [ ] Integrate InlineEditRow for status
 - [ ] Add bulk selection logic
@@ -191,6 +215,7 @@
 - [ ] Create bulk API handler
 
 #### Auctions Page
+
 - [ ] Check if page exists
 - [ ] Add QuickCreateRow to top
 - [ ] Integrate InlineEditRow
@@ -204,6 +229,7 @@
 ### Phase 4: Mobile & API ✅ 0/18 tasks
 
 #### Mobile Optimizations
+
 - [ ] Update filter implementation on product pages
 - [ ] Update filter implementation on auction pages
 - [ ] Update filter implementation on category pages
@@ -214,6 +240,7 @@
 - [ ] Test touch interactions
 
 #### API Development
+
 - [ ] Create bulk operations utility
 - [ ] Implement transaction support
 - [ ] Add permission validation
@@ -230,20 +257,22 @@
 ## Blockers & Issues
 
 | Date | Issue | Status | Resolution |
-|------|-------|--------|------------|
-| - | - | - | - |
+| ---- | ----- | ------ | ---------- |
+| -    | -     | -      | -          |
 
 ---
 
 ## Performance Metrics
 
 ### Target Metrics
+
 - Create hero slide: < 10 seconds
 - Bulk update 50 products: < 30 seconds
 - Mobile filter open/close: < 300ms
 - Image upload inline: < 2 seconds
 
 ### Actual Metrics
+
 - Create hero slide: TBD
 - Bulk update 50 products: TBD
 - Mobile filter animation: TBD
@@ -273,16 +302,19 @@
 ## Next Actions
 
 ### Immediate (This Week)
+
 1. Start with InlineEditRow component
 2. Create TypeScript types file
 3. Set up component file structure
 
 ### Short Term (Next Week)
+
 1. Complete all Phase 1 components
 2. Start Hero Slides implementation
 3. Create bulk operations API utility
 
 ### Long Term (Later)
+
 1. Expand to all seller pages
 2. Add advanced bulk operations
 3. Optimize for large datasets (1000+ items)
@@ -292,17 +324,20 @@
 ## Resources & References
 
 ### Existing Components to Study
+
 - `src/components/common/StatusBadge.tsx` - Badge patterns
 - `src/components/common/ConfirmDialog.tsx` - Confirmation dialogs
 - `src/components/media/MediaUploader.tsx` - Image upload logic
 - `src/hooks/useMediaUploadWithCleanup.ts` - Upload with cleanup
 
 ### Existing Pages to Follow
+
 - `src/app/admin/hero-slides/page.tsx` - Table layout
 - `src/app/admin/categories/page.tsx` - Grid/table toggle
 - `src/app/admin/users/page.tsx` - Filters and search
 
 ### Architecture Documents
+
 - `README.md` - Project overview
 - `AI-AGENT-GUIDE.md` - Development patterns
 - `src/constants/categories.ts` - Type examples
@@ -310,8 +345,9 @@
 ---
 
 **Legend**:
+
 - 🔴 Not Started
-- 🟡 In Progress  
+- 🟡 In Progress
 - 🟢 Completed
 - ⚠️ Blocked
 - ✅ Total completed tasks
