@@ -20,7 +20,7 @@ export default function FavoritesPage() {
   const loadFavorites = async () => {
     try {
       setLoading(true);
-      const data = (await apiService.get("/api/favorites")) as {
+      const data = (await apiService.get("/favorites")) as {
         favorites: any[];
       };
       setFavorites(data.favorites || []);
@@ -35,7 +35,7 @@ export default function FavoritesPage() {
     if (!removingId) return;
 
     try {
-      await apiService.delete(`/api/favorites/${removingId}`);
+      await apiService.delete(`/favorites/${removingId}`);
       setFavorites(favorites.filter((f) => f.id !== removingId));
       setRemovingId(null);
     } catch (error) {

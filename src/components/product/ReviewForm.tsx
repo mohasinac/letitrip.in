@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Star, X, Upload, Image as ImageIcon } from "lucide-react";
+import { Star, Image as ImageIcon } from "lucide-react";
 import { apiService } from "@/services/api.service";
+import MediaUploader from "@/components/media/MediaUploader";
+import { MediaFile } from "@/types/media";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 
 interface ReviewFormProps {
   productId: string;
@@ -21,42 +24,42 @@ export default function ReviewForm({
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
-  const [images, setImages] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+  const {
+    uploadMultipleMedia,
+    cleanupUploadedMedia,
+    clearTracking,
+    isUploading,
+    getUploadedUrls,
+    hasUploadedMedia,
+  } = useMediaUploadWithCleanup({
+    enableNavigationGuard: true,
+    navigationGuardMessage: "You have uploaded media. Leave and delete?",
+    onUploadError: (error) => {
+      setError(`Upload failed: ${error}`);
+    },
+  });
 
-    setUploading(true);
+  const handleFilesAdded = async (files: MediaFile[]) => {
+    setMediaFiles([...mediaFiles, ...files]);
     setError("");
 
     try {
-      // TODO: Implement actual image upload to Firebase Storage
-      // For now, using placeholder URLs
-      const uploadedUrls: string[] = [];
-
-      for (let i = 0; i < Math.min(files.length, 5 - images.length); i++) {
-        // Simulate upload delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Create object URL for preview
-        const url = URL.createObjectURL(files[i]);
-        uploadedUrls.push(url);
-      }
-
-      setImages([...images, ...uploadedUrls]);
+      await uploadMultipleMedia(
+        files.map((f) => f.file),
+        "review",
+        productId
+      );
     } catch (err) {
-      setError("Failed to upload images");
-    } finally {
-      setUploading(false);
+      console.error("Upload error:", err);
     }
   };
 
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+  const handleFileRemoved = (id: string) => {
+    setMediaFiles(mediaFiles.filter((f) => f.id !== id));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,22 +79,44 @@ export default function ReviewForm({
     setError("");
 
     try {
-      await apiService.post("/api/reviews", {
+      await apiService.post("/reviews", {
         product_id: productId,
         order_id: orderId,
         rating,
         title: title.trim(),
         comment: comment.trim(),
-        images,
+        images: getUploadedUrls(),
       });
+
+      // Success! Clear tracking
+      clearTracking();
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to submit review");
+
+      // Failure! Clean up uploaded media
+      if (hasUploadedMedia) {
+        await cleanupUploadedMedia();
+        setMediaFiles([]);
+      }
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleCancelClick = async () => {
+    if (hasUploadedMedia) {
+      const confirmed = window.confirm(
+        "You have uploaded media. Cancel and delete?"
+      );
+      if (!confirmed) return;
+      await cleanupUploadedMedia();
+    }
+    if (onCancel) {
+      onCancel();
     }
   };
 
@@ -177,59 +202,38 @@ export default function ReviewForm({
       {/* Images */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Add Photos (Optional)
+          Add Photos/Videos (Optional)
         </label>
         <p className="text-xs text-gray-500 mb-3">
-          Upload up to 5 photos to help others see your experience
+          Upload up to 5 photos or videos to help others see your experience.
+          You can also use your camera!
         </p>
 
-        {/* Image Preview */}
-        {images.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {images.map((url, index) => (
-              <div key={index} className="relative group">
-                <img
-                  src={url}
-                  alt={`Review image ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+        <MediaUploader
+          accept="all"
+          maxFiles={5}
+          multiple={true}
+          resourceType="product"
+          onFilesAdded={handleFilesAdded}
+          onFileRemoved={handleFileRemoved}
+          files={mediaFiles}
+          disabled={isUploading || submitting}
+          enableCamera={true}
+          enableVideoRecording={true}
+        />
+
+        {isUploading && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-700">📤 Uploading media...</p>
           </div>
         )}
 
-        {/* Upload Button */}
-        {images.length < 5 && (
-          <label className="inline-flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
-            {uploading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-gray-600">Uploading...</span>
-              </>
-            ) : (
-              <>
-                <Upload className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-600">
-                  Upload Photos ({images.length}/5)
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  disabled={uploading || images.length >= 5}
-                />
-              </>
-            )}
-          </label>
+        {hasUploadedMedia && !isUploading && (
+          <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+            <p className="text-sm text-orange-700">
+              ⚠️ Media uploaded. Will be deleted if review submission fails.
+            </p>
+          </div>
         )}
       </div>
 

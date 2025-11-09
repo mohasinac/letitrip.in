@@ -83,7 +83,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
 
   const handleMarkHelpful = async (reviewId: string) => {
     try {
-      await apiService.post(`/api/reviews/${reviewId}/helpful`, {});
+      await apiService.post(`/reviews/${reviewId}/helpful`, {});
 
       // Update local state
       setReviews(

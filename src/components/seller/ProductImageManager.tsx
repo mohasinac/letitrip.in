@@ -10,6 +10,7 @@ import {
   CheckCircle,
   RefreshCw,
   Star,
+  Camera,
 } from "lucide-react";
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import {
@@ -20,6 +21,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { mediaService } from "@/services/media.service";
+import CameraCapture from "@/components/media/CameraCapture";
+import { MediaFile } from "@/types/media";
 
 interface ProductImage {
   id: string;
@@ -151,6 +154,7 @@ export default function ProductImageManager({
     }))
   );
   const [uploading, setUploading] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   const canAddMore = productImages.length < maxImages && !disabled;
 
@@ -307,8 +311,37 @@ export default function ProductImageManager({
     }
   };
 
+  // Handle camera capture
+  const handleCameraCapture = async (mediaFile: MediaFile) => {
+    setShowCamera(false);
+
+    if (!canAddMore) return;
+
+    const newImage: ProductImage = {
+      id: `camera-${Date.now()}`,
+      url: mediaFile.preview,
+      file: mediaFile.file,
+      uploading: true,
+      progress: 0,
+    };
+
+    setProductImages((prev) => [...prev, newImage]);
+    setUploading(true);
+
+    await uploadImage(newImage);
+
+    setUploading(false);
+  };
+
   return (
     <div className="space-y-4">
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
       {/* Upload Area */}
       {canAddMore && (
         <div
@@ -327,7 +360,7 @@ export default function ProductImageManager({
           />
           <label
             htmlFor="product-image-upload"
-            className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            className={`block border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
               disabled || uploading
                 ? "border-gray-200 bg-gray-50 cursor-not-allowed"
                 : "border-gray-300 hover:border-blue-500 hover:bg-blue-50"
@@ -337,10 +370,24 @@ export default function ProductImageManager({
             <p className="text-sm font-medium text-gray-700 mb-1">
               Click to upload or drag and drop
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mb-4">
               PNG, JPG, GIF up to 10MB ({productImages.length}/{maxImages}{" "}
               images)
             </p>
+
+            {/* Camera Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowCamera(true);
+              }}
+              disabled={disabled || uploading}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            >
+              <Camera className="w-4 h-4" />
+              Use Camera
+            </button>
           </label>
         </div>
       )}

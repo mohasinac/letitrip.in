@@ -10,6 +10,7 @@ import CategorySelector, {
 } from "@/components/common/CategorySelector";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 
 interface CategoryFormProps {
   initialData?: {
@@ -33,6 +34,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     slug: initialData?.slug || "",
@@ -47,6 +49,28 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     meta_description: initialData?.meta_description || "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const {
+    uploadMedia,
+    cleanupUploadedMedia,
+    clearTracking,
+    confirmNavigation,
+    isUploading,
+    isCleaning,
+    hasUploadedMedia,
+  } = useMediaUploadWithCleanup({
+    enableNavigationGuard: true,
+    navigationGuardMessage: "You have uploaded an image. Leave and delete?",
+    onUploadSuccess: (url) => {
+      setFormData((prev) => ({ ...prev, image: url }));
+    },
+    onUploadError: (error) => {
+      setErrors((prev) => ({ ...prev, image: `Upload failed: ${error}` }));
+    },
+    onCleanupComplete: () => {
+      setUploadedFiles([]);
+    },
+  });
 
   // Load categories for CategorySelector
   useEffect(() => {
@@ -116,11 +140,21 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
         throw new Error(result.error || "Failed to save category");
       }
 
+      // Success! Clear tracking
+      clearTracking();
+
       // Redirect to categories list
       router.push("/admin/categories");
       router.refresh();
     } catch (error) {
       console.error("Failed to save category:", error);
+
+      // Failure! Clean up uploaded media
+      if (hasUploadedMedia) {
+        await cleanupUploadedMedia();
+        setFormData((prev) => ({ ...prev, image: initialData?.image || "" }));
+      }
+
       setErrors({
         submit:
           error instanceof Error
@@ -132,10 +166,23 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     }
   };
 
-  const handleImageUpload = (files: MediaFile[]) => {
-    if (files.length > 0) {
-      // Use preview for new uploads, will be replaced with actual URL after upload
-      setFormData((prev) => ({ ...prev, image: files[0].preview || "" }));
+  const handleImageUpload = async (files: MediaFile[]) => {
+    if (files.length === 0) return;
+
+    setUploadedFiles(files);
+
+    try {
+      await uploadMedia(files[0].file, "category");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (hasUploadedMedia) {
+      await confirmNavigation(() => router.back());
+    } else {
+      router.back();
     }
   };
 
@@ -247,33 +294,41 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Category Image</h2>
 
+        {formData.image && !uploadedFiles.length && (
+          <div className="mb-4">
+            <img
+              src={formData.image}
+              alt="Current category"
+              className="w-full max-w-md h-48 object-cover rounded-lg"
+            />
+          </div>
+        )}
+
+        {isUploading && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-700">📤 Uploading image...</p>
+          </div>
+        )}
+
+        {hasUploadedMedia && !isUploading && (
+          <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+            <p className="text-sm text-orange-700">
+              ⚠️ New image uploaded. Will be deleted if save fails.
+            </p>
+          </div>
+        )}
+
         <MediaUploader
           accept="image"
           maxFiles={1}
           multiple={false}
           resourceType="category"
           onFilesAdded={handleImageUpload}
-          files={
-            formData.image
-              ? [
-                  {
-                    id: "current",
-                    file: new File([], ""),
-                    type: "image" as const,
-                    source: "file" as const,
-                    preview: formData.image,
-                    uploadStatus: "completed" as const,
-                    uploadProgress: 100,
-                    metadata: {
-                      slug: "",
-                      description: "",
-                      size: 0,
-                      mimeType: "image/jpeg",
-                    },
-                  },
-                ]
-              : []
-          }
+          onFileRemoved={() => {
+            setUploadedFiles([]);
+          }}
+          files={uploadedFiles}
+          disabled={loading || isUploading || isCleaning}
         />
       </div>
 

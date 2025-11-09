@@ -1,3 +1,15 @@
+/**
+ * REFERENCE IMPLEMENTATION: Hero Slide Form with Media Cleanup
+ *
+ * This is a reference implementation showing how to integrate
+ * the media cleanup hook with an existing form.
+ *
+ * Use this as a template for implementing cleanup in:
+ * - src/app/admin/hero-slides/create/page.tsx
+ * - src/app/admin/hero-slides/[id]/edit/page.tsx
+ * - Other forms with media upload
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -5,8 +17,6 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { apiService } from "@/services/api.service";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { MediaFile } from "@/types/media";
 
@@ -21,18 +31,27 @@ interface HeroSlide {
   is_active: boolean;
 }
 
-export default function EditHeroSlidePage({
+export default function HeroSlideFormWithCleanup({
   params,
+  mode = "create",
 }: {
-  params: { id: string };
+  params?: { id: string };
+  mode?: "create" | "edit";
 }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [formData, setFormData] = useState<HeroSlide | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
+  const [formData, setFormData] = useState<Partial<HeroSlide>>({
+    title: "",
+    subtitle: "",
+    description: "",
+    image_url: "",
+    link_url: "",
+    cta_text: "",
+    is_active: true,
+  });
 
+  // Initialize media cleanup hook with navigation guard
   const {
     uploadMedia,
     cleanupUploadedMedia,
@@ -44,24 +63,31 @@ export default function EditHeroSlidePage({
   } = useMediaUploadWithCleanup({
     enableNavigationGuard: true,
     navigationGuardMessage:
-      "You have uploaded a new image. Leave and delete it?",
+      "You have uploaded an image that will be deleted. Leave anyway?",
+
     onUploadSuccess: (url) => {
-      setFormData((prev) => (prev ? { ...prev, image_url: url } : null));
+      console.log("Image uploaded:", url);
+      setFormData((prev) => ({ ...prev, image_url: url }));
     },
     onUploadError: (error) => {
-      alert(`Upload failed: ${error}`);
+      console.error("Upload failed:", error);
+      alert(`Image upload failed: ${error}`);
     },
     onCleanupComplete: () => {
-      console.log("Uploaded media cleaned up");
-      setUploadedFiles([]);
+      console.log("Cleanup completed - media deleted from storage");
     },
   });
 
+  // Load existing slide data in edit mode
   useEffect(() => {
-    loadSlide();
-  }, [params.id]);
+    if (mode === "edit" && params?.id) {
+      loadSlide();
+    }
+  }, [params?.id, mode]);
 
   const loadSlide = async () => {
+    if (!params?.id) return;
+
     try {
       setLoading(true);
       const data = (await apiService.get(
@@ -77,68 +103,95 @@ export default function EditHeroSlidePage({
     }
   };
 
+  /**
+   * Handle file upload from MediaUploader
+   * Files are uploaded immediately and tracked for cleanup
+   */
   const handleFilesAdded = async (files: MediaFile[]) => {
     if (files.length === 0) return;
 
-    setUploadedFiles(files);
-
     try {
+      // Upload the first file (hero slides use single image)
+      // Context is 'shop' for hero slides (no specific hero-slide context)
       await uploadMedia(files[0].file, "shop");
     } catch (error) {
       console.error("Failed to upload image:", error);
     }
   };
 
+  /**
+   * Handle form submission with automatic cleanup on failure
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData || !formData.title || !formData.image_url) {
+    if (!formData.title || !formData.image_url) {
       alert("Title and image are required");
       return;
     }
 
+    setSaving(true);
+
     try {
-      setSaving(true);
-      await apiService.patch(`/admin/hero-slides/${params.id}`, formData);
-
-      // Success! Clear tracking
-      clearTracking();
-
-      router.push("/admin/hero-slides");
-    } catch (error) {
-      console.error("Failed to update slide:", error);
-
-      // Failure! Clean up newly uploaded media
-      if (hasUploadedMedia) {
-        await cleanupUploadedMedia();
-        // Restore original image URL would need to be tracked separately
+      if (mode === "create") {
+        // Create new hero slide
+        await apiService.post("/admin/hero-slides", formData);
+      } else if (params?.id) {
+        // Update existing hero slide
+        await apiService.patch(`/admin/hero-slides/${params.id}`, formData);
       }
 
-      alert("Failed to update slide. New image deleted.");
+      // ✅ Success! Clear tracking without deleting files
+      clearTracking();
+
+      // Navigate to list page
+      router.push("/admin/hero-slides");
+    } catch (error) {
+      console.error("Failed to save slide:", error);
+
+      // ❌ Failure! Clean up newly uploaded media
+      // Only cleanup if we uploaded new media (hasUploadedMedia)
+      if (hasUploadedMedia) {
+        await cleanupUploadedMedia();
+
+        // Reset image URL in form
+        setFormData((prev) => ({ ...prev, image_url: "" }));
+      }
+
+      alert(
+        `Failed to ${mode === "create" ? "create" : "update"} slide. ${
+          hasUploadedMedia ? "Uploaded image has been deleted." : ""
+        }`
+      );
     } finally {
       setSaving(false);
     }
   };
 
+  /**
+   * Handle cancel with navigation guard
+   * Navigation guard automatically prompts and cleans up if user confirms
+   */
   const handleCancel = async () => {
     if (hasUploadedMedia) {
-      await confirmNavigation(() => router.back());
+      // Use navigation guard for automatic cleanup
+      await confirmNavigation(() => {
+        router.back();
+      });
     } else {
+      // No uploaded media, navigate directly
       router.back();
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      await apiService.delete(`/admin/hero-slides/${params.id}`);
-      router.push("/admin/hero-slides");
-    } catch (error) {
-      console.error("Failed to delete slide:", error);
-      alert("Failed to delete slide");
-    }
+  /**
+   * Handle file removal
+   */
+  const handleFileRemoved = (id: string) => {
+    setFormData((prev) => ({ ...prev, image_url: "" }));
   };
 
-  if (loading || !formData) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -157,19 +210,15 @@ export default function EditHeroSlidePage({
           <ArrowLeft className="w-4 h-4" />
           Back
         </button>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Edit Hero Slide
-            </h1>
-            <p className="text-gray-600 mt-1">Update hero carousel slide</p>
-          </div>
-          <button
-            onClick={() => setShowDeleteDialog(true)}
-            className="px-4 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"
-          >
-            Delete Slide
-          </button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {mode === "create" ? "Create" : "Edit"} Hero Slide
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {mode === "create"
+              ? "Add a new slide to the homepage carousel"
+              : "Update hero carousel slide"}
+          </p>
         </div>
       </div>
 
@@ -190,84 +239,74 @@ export default function EditHeroSlidePage({
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Main headline text"
               required
+              disabled={saving || isUploading || isCleaning}
             />
           </div>
 
           {/* Subtitle */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subtitle (Rich Text)
+              Subtitle
             </label>
-            <RichTextEditor
+            <input
+              type="text"
               value={formData.subtitle}
-              onChange={(value: string) =>
-                setFormData({ ...formData, subtitle: value })
+              onChange={(e) =>
+                setFormData({ ...formData, subtitle: e.target.value })
               }
-              placeholder="Secondary text with formatting..."
-              minHeight={120}
-              tools={["bold", "italic", "underline", "link", "clear"]}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Secondary text"
+              disabled={saving || isUploading || isCleaning}
             />
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description (Rich Text)
-            </label>
-            <RichTextEditor
-              value={formData.description}
-              onChange={(value: string) =>
-                setFormData({ ...formData, description: value })
-              }
-              placeholder="Additional details with formatting..."
-              minHeight={150}
-            />
-          </div>
-
-          {/* Image */}
+          {/* Image Upload with Cleanup Tracking */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Image <span className="text-red-500">*</span>
             </label>
 
-            {formData.image_url && !uploadedFiles.length && (
+            {/* Current Image Preview */}
+            {formData.image_url && (
               <div className="mb-4">
                 <img
                   src={formData.image_url}
-                  alt="Current hero slide"
+                  alt="Hero slide"
                   className="w-full h-48 object-cover rounded-lg"
                 />
               </div>
             )}
 
+            {/* Upload Status */}
             {isUploading && (
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  📤 Uploading new image...
-                </p>
+                <p className="text-sm text-blue-700">Uploading image...</p>
               </div>
             )}
 
             {hasUploadedMedia && !isUploading && (
               <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                 <p className="text-sm text-orange-700">
-                  ⚠️ New image uploaded. Will be deleted if save fails.
+                  ⚠️ New image uploaded. Will be deleted if creation fails.
                 </p>
               </div>
             )}
 
+            {/* Media Uploader */}
             <MediaUploader
               accept="image"
               maxFiles={1}
               resourceType="shop"
               onFilesAdded={handleFilesAdded}
-              onFileRemoved={() => {
-                setUploadedFiles([]);
-              }}
-              files={uploadedFiles}
+              onFileRemoved={handleFileRemoved}
+              files={[]}
               disabled={saving || isUploading || isCleaning}
               enableCamera={true}
             />
+
+            <p className="text-sm text-gray-500 mt-2">
+              Recommended size: 1920x800px for best results
+            </p>
           </div>
 
           {/* Link URL */}
@@ -283,10 +322,8 @@ export default function EditHeroSlidePage({
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="https://..."
+              disabled={saving || isUploading || isCleaning}
             />
-            <p className="text-sm text-gray-500 mt-1">
-              Where users go when they click the slide
-            </p>
           </div>
 
           {/* CTA Text */}
@@ -302,6 +339,7 @@ export default function EditHeroSlidePage({
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Shop Now"
+              disabled={saving || isUploading || isCleaning}
             />
           </div>
 
@@ -315,6 +353,7 @@ export default function EditHeroSlidePage({
                   setFormData({ ...formData, is_active: e.target.checked })
                 }
                 className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                disabled={saving || isUploading || isCleaning}
               />
               <span className="text-sm font-medium text-gray-700">
                 Active (show on homepage)
@@ -336,8 +375,13 @@ export default function EditHeroSlidePage({
             }
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving
+              ? "Saving..."
+              : mode === "create"
+              ? "Create Slide"
+              : "Save Changes"}
           </button>
+
           <button
             type="button"
             onClick={handleCancel}
@@ -348,23 +392,28 @@ export default function EditHeroSlidePage({
           </button>
 
           {hasUploadedMedia && (
-            <span className="text-sm text-orange-600">Unsaved changes</span>
+            <span className="text-sm text-orange-600">
+              Unsaved changes (uploaded media will be cleaned up if you cancel)
+            </span>
           )}
         </div>
       </form>
 
-      {/* Delete Confirmation */}
-      {showDeleteDialog && (
-        <ConfirmDialog
-          isOpen={true}
-          title="Delete Hero Slide"
-          description={`Are you sure you want to delete "${formData.title}"? This action cannot be undone.`}
-          confirmLabel="Delete"
-          variant="danger"
-          onConfirm={handleDelete}
-          onClose={() => setShowDeleteDialog(false)}
-        />
-      )}
+      {/* Info Box */}
+      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 className="font-semibold text-blue-900 mb-2">
+          🔒 Automatic Media Cleanup & Navigation Guard
+        </h3>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li>✓ Images upload immediately when selected</li>
+          <li>✓ Uploaded images are tracked for cleanup</li>
+          <li>✓ If creation succeeds, images are kept</li>
+          <li>✓ If creation fails, images are automatically deleted</li>
+          <li>✓ Navigation guard prevents leaving page with unsaved media</li>
+          <li>✓ Browser back, close, refresh all show confirmation dialog</li>
+          <li>✓ Confirming navigation auto-cleans media from storage</li>
+        </ul>
+      </div>
     </div>
   );
 }

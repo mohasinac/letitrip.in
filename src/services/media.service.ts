@@ -92,6 +92,42 @@ class MediaService {
     return apiService.delete<{ message: string }>(`/media/${id}`);
   }
 
+  // Delete media by URL or path from Firebase Storage
+  async deleteByUrl(url: string): Promise<{ success: boolean; message: string }> {
+    const response = await fetch('/api/media/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete media');
+    }
+
+    return response.json();
+  }
+
+  // Delete media by path from Firebase Storage
+  async deleteByPath(path: string): Promise<{ success: boolean; message: string }> {
+    const response = await fetch('/api/media/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ path }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete media');
+    }
+
+    return response.json();
+  }
+
   // Get media by context
   async getByContext(context: string, contextId: string): Promise<MediaItem[]> {
     return apiService.get<MediaItem[]>(`/media/context/${context}/${contextId}`);

@@ -596,3 +596,269 @@ Comprehensive checklists for:
 ---
 
 _This guide is for AI agents. Focus on code implementation and follow the patterns established in the codebase._
+
+## Media Upload with Automatic Cleanup
+
+### Overview
+
+The application includes a sophisticated media upload system with automatic cleanup when resource creation fails. This prevents orphaned files in Firebase Storage.
+
+### The Problem
+
+When creating resources (products, shops, hero slides, etc.), users upload media files first. If the resource creation fails afterward, those uploaded files become orphaned in Firebase Storage, wasting storage space and creating clutter.
+
+### The Solution
+
+**Hook**: `useMediaUploadWithCleanup` (located in `src/hooks/useMediaUploadWithCleanup.ts`)
+
+This hook tracks all uploaded media and provides automatic cleanup if the parent resource fails to create.
+
+### How It Works
+
+1. **Upload Phase**: Media files are uploaded to Firebase Storage immediately
+2. **Tracking**: Each uploaded file's URL is tracked by the hook
+3. **Resource Creation**: Attempt to create the parent resource (product, shop, etc.)
+4. **Success Path**: If creation succeeds, call `clearTracking()` to stop tracking (files are kept)
+5. **Failure Path**: If creation fails, call `cleanupUploadedMedia()` to delete all tracked files
+
+### API Endpoints
+
+**Upload Media**
+
+```
+POST /api/media/upload
+Body: FormData with file, context, contextId
+Returns: { success, url, id }
+```
+
+**Delete Media**
+
+```
+DELETE /api/media/delete
+Body: { url: string } or { path: string }
+Returns: { success, message, path }
+```
+
+### Hook API
+
+```typescript
+const {
+  // Upload functions
+  uploadMedia, // Upload single file
+  uploadMultipleMedia, // Upload multiple files
+
+  // Cleanup functions
+  cleanupUploadedMedia, // Delete all tracked files
+  clearTracking, // Stop tracking without deleting
+  removeFromTracking, // Remove specific file from tracking
+
+  // State
+  uploadedMedia, // Array of uploaded media objects
+  isUploading, // Upload in progress
+  isCleaning, // Cleanup in progress
+  hasUploadedMedia, // True if any media tracked
+
+  // Utilities
+  getUploadedUrls, // Get array of uploaded URLs
+} = useMediaUploadWithCleanup({
+  onUploadSuccess: (url) => {},
+  onUploadError: (error) => {},
+  onCleanupComplete: () => {},
+});
+```
+
+### Usage Pattern
+
+```typescript
+"use client";
+
+import { useState } from "react";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { apiService } from "@/services/api.service";
+
+export default function CreateResourceForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    images: [],
+  });
+
+  const {
+    uploadMultipleMedia,
+    cleanupUploadedMedia,
+    clearTracking,
+    isUploading,
+  } = useMediaUploadWithCleanup({
+    onUploadSuccess: (url) => {
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, url],
+      }));
+    },
+  });
+
+  const handleFilesAdded = async (files) => {
+    // Upload and track files
+    await uploadMultipleMedia(
+      files.map((f) => f.file),
+      "product"
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Try to create resource
+      await apiService.post("/products", formData);
+
+      // Success! Clear tracking (keep files)
+      clearTracking();
+
+      router.push("/products");
+    } catch (error) {
+      // Failure! Clean up uploaded files
+      await cleanupUploadedMedia();
+
+      // Reset form
+      setFormData((prev) => ({ ...prev, images: [] }));
+
+      alert("Failed to create product. Uploaded images deleted.");
+    }
+  };
+
+  const handleCancel = async () => {
+    // Clean up on cancel
+    await cleanupUploadedMedia();
+    router.back();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+
+      <MediaUploader onFilesAdded={handleFilesAdded} files={formData.images} />
+
+      <button type="submit" disabled={isUploading}>
+        Create
+      </button>
+      <button type="button" onClick={handleCancel}>
+        Cancel
+      </button>
+    </form>
+  );
+}
+```
+
+### Best Practices
+
+1. **Always use the cleanup hook** for forms that upload media
+2. **Call `clearTracking()` on success** to stop tracking uploaded files
+3. **Call `cleanupUploadedMedia()` on failure** to delete orphaned files
+4. **Handle cancel/navigation** by cleaning up uploaded media
+5. **Show loading states** using `isUploading` and `isCleaning` flags
+6. **Navigation guard is enabled by default** - automatically prevents leaving with unsaved media
+
+### Navigation Guard Feature
+
+**Automatic Protection**: The cleanup hook includes a built-in navigation guard that prevents users from leaving the page when they have uploaded media that hasn't been saved.
+
+**How it works**:
+
+1. User uploads media → Navigation guard activates automatically
+2. User tries to navigate away (back button, link, close tab) → Confirmation dialog appears
+3. User confirms → Media is cleaned up automatically, then navigation proceeds
+4. User cancels → Stays on page, media is preserved
+5. Save succeeds → `clearTracking()` disables guard, free navigation
+
+**Usage with Navigation Guard**:
+
+```typescript
+const {
+  uploadMedia,
+  cleanupUploadedMedia,
+  clearTracking,
+  confirmNavigation, // For programmatic navigation
+  hasUploadedMedia,
+} = useMediaUploadWithCleanup({
+  // Guard enabled by default, customize if needed
+  enableNavigationGuard: true,
+  navigationGuardMessage: "You have unsaved images. Leave anyway?",
+
+  onUploadSuccess: (url) => {},
+  onCleanupComplete: () => {
+    console.log("Media cleaned up before navigation");
+  },
+});
+
+// Programmatic navigation with guard
+const handleGoToProducts = async () => {
+  await confirmNavigation(async () => {
+    router.push("/products");
+  });
+};
+
+// Cancel button with guard
+const handleCancel = async () => {
+  if (hasUploadedMedia) {
+    await confirmNavigation(() => router.back());
+  } else {
+    router.back();
+  }
+};
+```
+
+**Guard Options**:
+
+- `enableNavigationGuard`: Enable/disable guard (default: true)
+- `navigationGuardMessage`: Custom confirmation message
+- `confirmNavigation()`: Helper for programmatic navigation
+
+**Protected Scenarios**:
+
+- ✅ Browser back/forward buttons
+- ✅ Page refresh (Ctrl+R / Cmd+R)
+- ✅ Close tab/window
+- ✅ Link clicks (when using confirmNavigation)
+- ✅ Programmatic router.push/replace
+
+### Example Locations
+
+- Full example: `src/components/examples/ExampleMediaCleanup.tsx`
+- Navigation guard example: `src/components/examples/FormWithNavigationGuard.tsx`
+- Real implementation in:
+  - ✅ Hero slide creation/edit forms (`src/app/admin/hero-slides/`)
+  - ✅ Review form (`src/components/product/ReviewForm.tsx`)
+  - ✅ Category form (`src/components/admin/CategoryForm.tsx`)
+
+### Preview Display
+
+**Important**: The MediaUploader component shows previews automatically when you pass the `files` prop with MediaFile objects.
+
+**Correct Pattern**:
+
+```typescript
+const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
+
+const handleFilesAdded = async (files: MediaFile[]) => {
+  // Store files for preview display
+  setUploadedFiles(files);
+
+  // Upload to Firebase
+  await uploadMedia(files[0].file, "product");
+};
+
+// Pass files to MediaUploader for preview
+<MediaUploader
+  onFilesAdded={handleFilesAdded}
+  files={uploadedFiles} // This shows the preview!
+/>;
+```
+
+**Why previews may not show**:
+
+- ❌ Not passing `files` prop to MediaUploader
+- ❌ Passing empty array to `files` prop
+- ❌ Not storing MediaFile objects in state
+- ❌ Trying to use `url` or `previewUrl` (use `preview` property)
+
+### Media Service Methods

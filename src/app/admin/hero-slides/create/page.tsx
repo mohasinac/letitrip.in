@@ -6,10 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { apiService } from "@/services/api.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { MediaFile } from "@/types/media";
 
 export default function CreateHeroSlidePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
@@ -19,6 +22,41 @@ export default function CreateHeroSlidePage() {
     cta_text: "Shop Now",
     is_active: true,
   });
+
+  const {
+    uploadMedia,
+    cleanupUploadedMedia,
+    clearTracking,
+    confirmNavigation,
+    isUploading,
+    isCleaning,
+    hasUploadedMedia,
+  } = useMediaUploadWithCleanup({
+    enableNavigationGuard: true,
+    navigationGuardMessage: "You have uploaded an image. Leave and delete it?",
+    onUploadSuccess: (url) => {
+      setFormData((prev) => ({ ...prev, image_url: url }));
+    },
+    onUploadError: (error) => {
+      alert(`Upload failed: ${error}`);
+    },
+    onCleanupComplete: () => {
+      console.log("Uploaded media cleaned up");
+      setUploadedFiles([]);
+    },
+  });
+
+  const handleFilesAdded = async (files: MediaFile[]) => {
+    if (files.length === 0) return;
+
+    setUploadedFiles(files);
+
+    try {
+      await uploadMedia(files[0].file, "shop");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,13 +68,32 @@ export default function CreateHeroSlidePage() {
 
     try {
       setLoading(true);
-      await apiService.post("/api/admin/hero-slides", formData);
+      await apiService.post("/admin/hero-slides", formData);
+
+      // Success! Clear tracking
+      clearTracking();
+
       router.push("/admin/hero-slides");
     } catch (error) {
       console.error("Failed to create slide:", error);
-      alert("Failed to create slide");
+
+      // Failure! Clean up uploaded media
+      if (hasUploadedMedia) {
+        await cleanupUploadedMedia();
+        setFormData((prev) => ({ ...prev, image_url: "" }));
+      }
+
+      alert("Failed to create slide. Uploaded image deleted.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (hasUploadedMedia) {
+      await confirmNavigation(() => router.back());
+    } else {
+      router.back();
     }
   };
 
@@ -113,20 +170,36 @@ export default function CreateHeroSlidePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Image <span className="text-red-500">*</span>
             </label>
+
+            {isUploading && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">📤 Uploading image...</p>
+              </div>
+            )}
+
+            {hasUploadedMedia && !isUploading && (
+              <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <p className="text-sm text-orange-700">
+                  ⚠️ New image uploaded. Will be deleted if creation fails.
+                </p>
+              </div>
+            )}
+
             <MediaUploader
               accept="image"
               maxFiles={1}
               resourceType="shop"
-              onFilesAdded={(files: any[]) => {
-                if (files.length > 0) {
-                  setFormData({
-                    ...formData,
-                    image_url: files[0].url || files[0].previewUrl,
-                  });
-                }
+              onFilesAdded={handleFilesAdded}
+              onFileRemoved={() => {
+                setFormData({ ...formData, image_url: "" });
+                setUploadedFiles([]);
               }}
+              files={uploadedFiles}
+              disabled={loading || isUploading || isCleaning}
+              enableCamera={true}
             />
-            {formData.image_url && (
+
+            {formData.image_url && !uploadedFiles.length && (
               <div className="mt-4">
                 <img
                   src={formData.image_url}
@@ -194,18 +267,29 @@ export default function CreateHeroSlidePage() {
         <div className="flex items-center gap-4 mt-8 pt-6 border-t">
           <button
             type="submit"
-            disabled={loading || !formData.title || !formData.image_url}
+            disabled={
+              loading ||
+              isUploading ||
+              isCleaning ||
+              !formData.title ||
+              !formData.image_url
+            }
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating..." : "Create Slide"}
           </button>
           <button
             type="button"
-            onClick={() => router.back()}
-            className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+            onClick={handleCancel}
+            disabled={loading || isUploading || isCleaning}
+            className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
           >
-            Cancel
+            {isCleaning ? "Cleaning up..." : "Cancel"}
           </button>
+
+          {hasUploadedMedia && (
+            <span className="text-sm text-orange-600">Unsaved changes</span>
+          )}
         </div>
       </form>
     </div>

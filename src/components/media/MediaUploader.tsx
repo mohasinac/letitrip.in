@@ -5,6 +5,8 @@ import { Upload, Camera, Video, X, AlertCircle } from "lucide-react";
 import { MediaFile, MediaType, MediaUploadOptions } from "@/types/media";
 import { validateMedia } from "@/lib/media/media-validator";
 import MediaPreviewCard from "./MediaPreviewCard";
+import CameraCapture from "./CameraCapture";
+import VideoRecorder from "./VideoRecorder";
 
 interface MediaUploaderProps {
   accept?: "image" | "video" | "all";
@@ -13,11 +15,11 @@ interface MediaUploaderProps {
   multiple?: boolean;
   onFilesAdded?: (files: MediaFile[]) => void;
   onFileRemoved?: (id: string) => void;
-  onCameraClick?: () => void;
-  onVideoRecordClick?: () => void;
   files?: MediaFile[];
   className?: string;
   disabled?: boolean;
+  enableCamera?: boolean;
+  enableVideoRecording?: boolean;
 }
 
 export default function MediaUploader({
@@ -27,15 +29,17 @@ export default function MediaUploader({
   multiple = true,
   onFilesAdded,
   onFileRemoved,
-  onCameraClick,
-  onVideoRecordClick,
   files = [],
   className = "",
   disabled = false,
+  enableCamera = true,
+  enableVideoRecording = true,
 }: MediaUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [showCamera, setShowCamera] = useState(false);
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
 
   const acceptedTypes = {
     image: "image/*",
@@ -169,8 +173,37 @@ export default function MediaUploader({
     }
   };
 
+  const handleCameraCapture = (mediaFile: MediaFile) => {
+    if (onFilesAdded) {
+      onFilesAdded([mediaFile]);
+    }
+    setShowCamera(false);
+  };
+
+  const handleVideoRecorded = (mediaFile: MediaFile) => {
+    if (onFilesAdded) {
+      onFilesAdded([mediaFile]);
+    }
+    setShowVideoRecorder(false);
+  };
+
   return (
     <div className={className}>
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
+
+      {/* Video Recorder Modal */}
+      {showVideoRecorder && (
+        <VideoRecorder
+          onRecorded={handleVideoRecorded}
+          onClose={() => setShowVideoRecorder(false)}
+        />
+      )}
       {/* Upload Area */}
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
@@ -226,12 +259,12 @@ export default function MediaUploader({
               Choose Files
             </button>
 
-            {accept !== "video" && onCameraClick && (
+            {accept !== "video" && enableCamera && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onCameraClick();
+                  setShowCamera(true);
                 }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium flex items-center gap-2"
               >
@@ -240,12 +273,12 @@ export default function MediaUploader({
               </button>
             )}
 
-            {accept !== "image" && onVideoRecordClick && (
+            {accept !== "image" && enableVideoRecording && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onVideoRecordClick();
+                  setShowVideoRecorder(true);
                 }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium flex items-center gap-2"
               >

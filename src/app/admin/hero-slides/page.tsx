@@ -45,7 +45,7 @@ export default function HeroSlidesPage() {
   const loadSlides = async () => {
     try {
       setLoading(true);
-      const response = (await apiService.get("/api/admin/hero-slides")) as {
+      const response = (await apiService.get("/admin/hero-slides")) as {
         slides: HeroSlide[];
       };
       setSlides(response.slides || []);
@@ -60,7 +60,7 @@ export default function HeroSlidesPage() {
     if (!deleteSlide) return;
 
     try {
-      await apiService.delete(`/api/admin/hero-slides/${deleteSlide.id}`);
+      await apiService.delete(`/admin/hero-slides/${deleteSlide.id}`);
       setSlides(slides.filter((s) => s.id !== deleteSlide.id));
       setDeleteSlide(null);
     } catch (error) {
@@ -71,7 +71,7 @@ export default function HeroSlidesPage() {
 
   const handleToggleActive = async (slide: HeroSlide) => {
     try {
-      await apiService.patch(`/api/admin/hero-slides/${slide.id}`, {
+      await apiService.patch(`/admin/hero-slides/${slide.id}`, {
         is_active: !slide.is_active,
       });
       setSlides(
@@ -120,7 +120,7 @@ export default function HeroSlidesPage() {
 
     // Save to backend
     try {
-      await apiService.post("/api/admin/hero-slides/reorder", {
+      await apiService.post("/admin/hero-slides/reorder", {
         slides: reorderedSlides.map((s) => ({
           id: s.id,
           position: s.position,
