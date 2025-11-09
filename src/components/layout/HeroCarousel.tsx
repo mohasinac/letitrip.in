@@ -62,12 +62,14 @@ export default function HeroCarousel() {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/admin/homepage/hero-slides');
-        // const data = await response.json();
-        // setSlides(data.slides || DEFAULT_SLIDES);
+        const response = await fetch("/api/homepage/hero-slides");
+        const data = await response.json();
+        if (data.slides && data.slides.length > 0) {
+          setSlides(data.slides);
+        }
       } catch (error) {
         console.error("Error fetching hero slides:", error);
+        // Keep default slides on error
       }
     };
 
@@ -153,9 +155,10 @@ export default function HeroCarousel() {
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="text-lg md:text-xl lg:text-2xl text-gray-200 animate-fade-in-up animation-delay-200">
-                    {slide.subtitle}
-                  </p>
+                  <div
+                    className="text-lg md:text-xl lg:text-2xl text-gray-200 animate-fade-in-up animation-delay-200 prose prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: slide.subtitle }}
+                  />
 
                   {/* CTA Button */}
                   <div className="animate-fade-in-up animation-delay-400">
@@ -234,7 +237,7 @@ export default function HeroCarousel() {
         </button>
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         @keyframes fade-in-up {
           from {
             opacity: 0;
@@ -258,6 +261,26 @@ export default function HeroCarousel() {
         .animation-delay-400 {
           animation-delay: 0.4s;
           opacity: 0;
+        }
+
+        /* Hero Carousel Rich Text Styles */
+        .prose-invert p {
+          margin: 0;
+          display: inline;
+        }
+        .prose-invert strong {
+          font-weight: 700;
+          color: #fff;
+        }
+        .prose-invert em {
+          font-style: italic;
+        }
+        .prose-invert a {
+          color: #fbbf24;
+          text-decoration: underline;
+        }
+        .prose-invert a:hover {
+          color: #f59e0b;
         }
       `}</style>
     </div>

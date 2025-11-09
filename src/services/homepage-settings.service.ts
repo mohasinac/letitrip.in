@@ -1,6 +1,14 @@
 import { apiService } from './api.service';
 
 export interface HomepageSettings {
+  specialEventBanner: {
+    enabled: boolean;
+    title: string;
+    content: string; // Rich text HTML
+    link?: string;
+    backgroundColor?: string;
+    textColor?: string;
+  };
   heroCarousel: {
     enabled: boolean;
     autoPlayInterval: number;

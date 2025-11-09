@@ -20,6 +20,7 @@ import {
   toast,
 } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import RichTextEditor from "@/components/common/RichTextEditor";
 
 export default function HomepageSettingsPage() {
   const [settings, setSettings] = useState<HomepageSettings | null>(null);
@@ -200,6 +201,181 @@ export default function HomepageSettingsPage() {
             </p>
           </div>
         )}
+
+        {/* Special Event Banner Settings */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Special Event Banner
+              </h2>
+              <p className="text-sm text-gray-500">
+                Announcement banner at the very top of the site
+              </p>
+            </div>
+            <ToggleSwitch
+              enabled={settings.specialEventBanner.enabled}
+              onToggle={() => {
+                setSettings({
+                  ...settings,
+                  specialEventBanner: {
+                    ...settings.specialEventBanner,
+                    enabled: !settings.specialEventBanner.enabled,
+                  },
+                });
+                setHasChanges(true);
+              }}
+            />
+          </div>
+
+          {settings.specialEventBanner.enabled && (
+            <div className="space-y-4 pt-4 border-t border-gray-200">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Banner Content (Rich Text)
+                </label>
+                <RichTextEditor
+                  value={settings.specialEventBanner.content}
+                  onChange={(value: string) => {
+                    setSettings({
+                      ...settings,
+                      specialEventBanner: {
+                        ...settings.specialEventBanner,
+                        content: value,
+                      },
+                    });
+                    setHasChanges(true);
+                  }}
+                  placeholder="Enter banner content..."
+                  minHeight={150}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Link URL (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={settings.specialEventBanner.link || ""}
+                  onChange={(e) => {
+                    setSettings({
+                      ...settings,
+                      specialEventBanner: {
+                        ...settings.specialEventBanner,
+                        link: e.target.value,
+                      },
+                    });
+                    setHasChanges(true);
+                  }}
+                  placeholder="/special-offers"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={
+                        settings.specialEventBanner.backgroundColor || "#2563eb"
+                      }
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          specialEventBanner: {
+                            ...settings.specialEventBanner,
+                            backgroundColor: e.target.value,
+                          },
+                        });
+                        setHasChanges(true);
+                      }}
+                      className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={
+                        settings.specialEventBanner.backgroundColor || "#2563eb"
+                      }
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          specialEventBanner: {
+                            ...settings.specialEventBanner,
+                            backgroundColor: e.target.value,
+                          },
+                        });
+                        setHasChanges(true);
+                      }}
+                      placeholder="#2563eb"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Text Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={settings.specialEventBanner.textColor || "#ffffff"}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          specialEventBanner: {
+                            ...settings.specialEventBanner,
+                            textColor: e.target.value,
+                          },
+                        });
+                        setHasChanges(true);
+                      }}
+                      className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={settings.specialEventBanner.textColor || "#ffffff"}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          specialEventBanner: {
+                            ...settings.specialEventBanner,
+                            textColor: e.target.value,
+                          },
+                        });
+                        setHasChanges(true);
+                      }}
+                      placeholder="#ffffff"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 rounded-lg border border-gray-200">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Preview:
+                </p>
+                <div
+                  style={{
+                    backgroundColor:
+                      settings.specialEventBanner.backgroundColor || "#2563eb",
+                    color: settings.specialEventBanner.textColor || "#ffffff",
+                  }}
+                  className="py-2 px-4 rounded text-center"
+                  dangerouslySetInnerHTML={{
+                    __html: settings.specialEventBanner.content,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Hero Carousel Settings */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">

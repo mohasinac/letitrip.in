@@ -5,6 +5,14 @@ const HOMEPAGE_SETTINGS_DOC = 'homepage_config';
 const SETTINGS_COLLECTION = 'site_settings';
 
 interface HomepageSettings {
+  specialEventBanner: {
+    enabled: boolean;
+    title: string;
+    content: string; // Rich text HTML
+    link?: string;
+    backgroundColor?: string;
+    textColor?: string;
+  };
   heroCarousel: {
     enabled: boolean;
     autoPlayInterval: number; // milliseconds
@@ -46,6 +54,14 @@ interface HomepageSettings {
 }
 
 const DEFAULT_SETTINGS: HomepageSettings = {
+  specialEventBanner: {
+    enabled: true,
+    title: 'Special Event',
+    content: '<p>⭐ <strong>Featured Sites:</strong> International Fleemarket • Purchase Fees • Coupon week end!</p>',
+    link: '/special-offers',
+    backgroundColor: '#2563eb',
+    textColor: '#ffffff',
+  },
   heroCarousel: {
     enabled: true,
     autoPlayInterval: 5000,

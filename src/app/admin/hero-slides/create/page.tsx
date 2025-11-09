@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { apiService } from "@/services/api.service";
+import RichTextEditor from "@/components/common/RichTextEditor";
 
 export default function CreateHeroSlidePage() {
   const router = useRouter();
@@ -79,32 +80,31 @@ export default function CreateHeroSlidePage() {
           {/* Subtitle */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subtitle
+              Subtitle (Rich Text)
             </label>
-            <input
-              type="text"
+            <RichTextEditor
               value={formData.subtitle}
-              onChange={(e) =>
-                setFormData({ ...formData, subtitle: e.target.value })
+              onChange={(value: string) =>
+                setFormData({ ...formData, subtitle: value })
               }
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Secondary text"
+              placeholder="Secondary text with formatting..."
+              minHeight={120}
+              tools={["bold", "italic", "underline", "link", "clear"]}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              Description (Rich Text)
             </label>
-            <textarea
+            <RichTextEditor
               value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+              onChange={(value: string) =>
+                setFormData({ ...formData, description: value })
               }
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Additional details"
-              rows={3}
+              placeholder="Additional details with formatting..."
+              minHeight={150}
             />
           </div>
 
