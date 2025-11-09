@@ -862,3 +862,74 @@ const handleFilesAdded = async (files: MediaFile[]) => {
 - ❌ Trying to use `url` or `previewUrl` (use `preview` property)
 
 ### Media Service Methods
+
+## Inline Edit & Quick Create Components
+
+**Location**: `src/components/common/`  
+**Guide**: `INLINE-EDIT-GUIDE.md`
+
+### Components Available
+
+```typescript
+import {
+  InlineEditRow,      // Convert table rows to editable forms
+  QuickCreateRow,     // Add quick create at top of tables
+  BulkActionBar,      // Bulk operations with selection
+  InlineImageUpload,  // Small inline image uploader (64x64)
+  MobileFilterSidebar,// Mobile filter sidebar with slide animation
+  TableCheckbox,      // Accessible checkboxes with indeterminate
+} from '@/components/common/inline-edit';
+```
+
+### Usage Pattern
+
+```typescript
+// Define fields
+const fields: InlineField[] = [
+  { key: "name", type: "text", label: "Name", required: true },
+  { key: "price", type: "number", label: "Price", min: 0 },
+  { key: "image", type: "image", label: "Image", placeholder: "product" },
+];
+
+// In table
+<tbody>
+  <QuickCreateRow fields={fields} onSave={handleCreate} />
+  {items.map(item => (
+    editingId === item.id ? (
+      <InlineEditRow
+        fields={fields}
+        initialValues={item}
+        onSave={handleSave}
+        onCancel={() => setEditingId(null)}
+      />
+    ) : (
+      <tr onDoubleClick={() => setEditingId(item.id)}>
+        <td><TableCheckbox checked={selected} onChange={setSelected} /></td>
+        {/* cells */}
+      </tr>
+    )
+  ))}
+</tbody>
+```
+
+### Field Types Supported
+
+- `text`, `email`, `url` - Text inputs
+- `number` - Number input with min/max/step
+- `textarea` - Multi-line text
+- `select` - Dropdown with options
+- `checkbox` - Boolean toggle
+- `date` - Date picker
+- `image` - Inline image upload
+
+### Key Features
+
+- ✅ Excel-like inline editing
+- ✅ Validation with custom validators
+- ✅ Keyboard shortcuts (Enter, Esc)
+- ✅ Loading states
+- ✅ Bulk operations
+- ✅ Mobile responsive
+- ✅ Accessible (WCAG compliant)
+
+See `INLINE-EDIT-GUIDE.md` for complete documentation.
