@@ -4,18 +4,19 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import {
-  uploadStaticAsset,
-  getStaticAssetsByType,
-  deleteStaticAsset,
-  updateStaticAsset,
-  StaticAsset,
-} from "@/services/static-assets";
+  uploadAsset,
+  getAssetsByType,
+  deleteAsset,
+  updateAsset,
+  type StaticAsset,
+} from "@/services/static-assets-client.service";
 // Icons will be inline SVGs
 
 const ASSET_TYPES = [
   { value: "payment-logo", label: "Payment Logos" },
   { value: "icon", label: "Icons" },
   { value: "image", label: "Images" },
+  { value: "video", label: "Videos" },
   { value: "document", label: "Documents" },
 ] as const;
 
@@ -40,7 +41,7 @@ export default function StaticAssetsPage() {
   const loadAssets = async () => {
     try {
       setLoading(true);
-      const data = await getStaticAssetsByType(selectedType);
+      const data = await getAssetsByType(selectedType);
       setAssets(data);
     } catch (error) {
       console.error("Error loading assets:", error);
@@ -57,14 +58,11 @@ export default function StaticAssetsPage() {
       setUploading(true);
 
       for (const file of Array.from(files)) {
-        await uploadStaticAsset({
-          name: file.name,
+        await uploadAsset(
           file,
-          type: selectedType,
-          category:
-            selectedType === "payment-logo" ? "payment-methods" : "default",
-          userId: user.uid,
-        });
+          selectedType,
+          selectedType === "payment-logo" ? "payment-methods" : "default"
+        );
       }
 
       await loadAssets();
@@ -81,7 +79,7 @@ export default function StaticAssetsPage() {
     if (!confirm("Delete this asset? This action cannot be undone.")) return;
 
     try {
-      await deleteStaticAsset(id);
+      await deleteAsset(id);
       await loadAssets();
     } catch (error) {
       console.error("Error deleting:", error);
@@ -91,7 +89,7 @@ export default function StaticAssetsPage() {
 
   const handleUpdate = async (id: string, updates: Partial<StaticAsset>) => {
     try {
-      await updateStaticAsset(id, updates);
+      await updateAsset(id, updates);
       await loadAssets();
       setEditingAsset(null);
     } catch (error) {
@@ -159,6 +157,10 @@ export default function StaticAssetsPage() {
                 accept={
                   selectedType === "payment-logo"
                     ? "image/svg+xml,image/png"
+                    : selectedType === "video"
+                    ? "video/*"
+                    : selectedType === "document"
+                    ? ".pdf,.doc,.docx,.xls,.xlsx,.txt"
                     : "image/*"
                 }
                 onChange={handleUpload}
@@ -197,6 +199,14 @@ export default function StaticAssetsPage() {
                       alt={asset.name}
                       className="max-w-full max-h-full object-contain"
                     />
+                  ) : asset.contentType.startsWith("video/") ? (
+                    <video
+                      src={asset.url}
+                      controls
+                      className="max-w-full max-h-full"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
                   ) : (
                     <div className="text-gray-400 text-center">
                       <DocumentIcon className="w-16 h-16 mx-auto mb-2" />

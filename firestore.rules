@@ -306,6 +306,30 @@ service cloud.firestore {
     }
     
     // ============================================
+    // STATIC ASSETS COLLECTION
+    // ============================================
+    
+    match /static_assets/{assetId} {
+      // Anyone can read assets (for CDN URLs)
+      allow read: if true;
+      
+      // Only admins can write
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
+    // BLOG POSTS COLLECTION
+    // ============================================
+    
+    match /blog_posts/{postId} {
+      // Anyone can read published posts
+      allow read: if resource.data.status == 'published' || isAdmin();
+      
+      // Only admins can write
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
     // FALLBACK RULE (Deny all other access)
     // ============================================
     

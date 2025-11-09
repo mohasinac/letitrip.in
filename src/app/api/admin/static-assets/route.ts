@@ -1,32 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
-import { getStorage } from 'firebase-admin/storage';
-import { COLLECTIONS } from '@/constants/database';
+import { listAssets, generateUploadUrl, saveAssetMetadata, getDownloadUrl } from '@/app/api/lib/static-assets-server.service';
 
 // GET /api/admin/static-assets - List all static assets
 export async function GET(req: NextRequest) {
   try {
-    const db = getFirestoreAdmin();
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type');
     const category = searchParams.get('category');
 
-    let query = db.collection('static_assets');
+    const filters: any = {};
+    if (type) filters.type = type;
+    if (category) filters.category = category;
 
-    if (type) {
-      query = query.where('type', '==', type) as any;
-    }
-
-    if (category) {
-      query = query.where('category', '==', category) as any;
-    }
-
-    const snapshot = await query.orderBy('uploadedAt', 'desc').get();
-
-    const assets = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const assets = await listAssets(filters);
 
     return NextResponse.json({
       success: true,
@@ -42,12 +28,10 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/admin/static-assets - Upload new asset (metadata only, actual upload via client SDK)
+// POST /api/admin/static-assets - Create asset metadata (legacy endpoint, use /upload-url + /confirm-upload instead)
 export async function POST(req: NextRequest) {
   try {
-    const db = getFirestoreAdmin();
     const body = await req.json();
-
     const {
       id,
       name,
@@ -68,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const asset = {
+    const asset = await saveAssetMetadata({
       id,
       name,
       type,
@@ -80,9 +64,7 @@ export async function POST(req: NextRequest) {
       size: size || 0,
       contentType: contentType || 'application/octet-stream',
       metadata: metadata || {},
-    };
-
-    await db.collection('static_assets').doc(id).set(asset);
+    });
 
     return NextResponse.json({
       success: true,

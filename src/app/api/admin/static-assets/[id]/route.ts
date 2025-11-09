@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
-import { getStorage } from 'firebase-admin/storage';
+import {
+  listAssets,
+  updateAssetMetadata,
+  deleteAsset,
+} from '@/app/api/lib/static-assets-server.service';
 
 // GET /api/admin/static-assets/[id] - Get single asset
 export async function GET(
@@ -8,12 +11,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const db = getFirestoreAdmin();
     const { id } = await params;
 
-    const doc = await db.collection('static_assets').doc(id).get();
+    // List with no filters to get all, then find by id
+    const assets = await listAssets({});
+    const asset = assets.find((a) => a.id === id);
 
-    if (!doc.exists) {
+    if (!asset) {
       return NextResponse.json(
         { success: false, error: 'Asset not found' },
         { status: 404 }
@@ -22,10 +26,7 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      asset: {
-        id: doc.id,
-        ...doc.data(),
-      },
+      asset,
     });
   } catch (error) {
     console.error('Error fetching asset:', error);
@@ -42,36 +43,20 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const db = getFirestoreAdmin();
     const { id } = await params;
     const body = await req.json();
 
-    const doc = await db.collection('static_assets').doc(id).get();
-
-    if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: 'Asset not found' },
-        { status: 404 }
-      );
-    }
-
-    const updates: any = {
-      updatedAt: new Date().toISOString(),
-    };
+    const updates: any = {};
 
     if (body.name !== undefined) updates.name = body.name;
     if (body.category !== undefined) updates.category = body.category;
     if (body.metadata !== undefined) updates.metadata = body.metadata;
 
-    await db.collection('static_assets').doc(id).update(updates);
+    const asset = await updateAssetMetadata(id, updates);
 
     return NextResponse.json({
       success: true,
-      asset: {
-        id,
-        ...doc.data(),
-        ...updates,
-      },
+      asset,
     });
   } catch (error) {
     console.error('Error updating asset:', error);
@@ -88,32 +73,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const db = getFirestoreAdmin();
     const { id } = await params;
 
-    const doc = await db.collection('static_assets').doc(id).get();
-
-    if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: 'Asset not found' },
-        { status: 404 }
-      );
-    }
-
-    const data = doc.data();
-
-    // Delete from Storage
-    try {
-      const storage = getStorage();
-      const bucket = storage.bucket();
-      await bucket.file(data?.storagePath).delete();
-    } catch (storageError) {
-      console.warn('Storage deletion failed:', storageError);
-      // Continue with Firestore deletion even if storage fails
-    }
-
-    // Delete from Firestore
-    await db.collection('static_assets').doc(id).delete();
+    await deleteAsset(id);
 
     return NextResponse.json({
       success: true,
