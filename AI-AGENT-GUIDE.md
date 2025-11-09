@@ -4,16 +4,26 @@ This guide helps AI agents understand and work effectively with this Next.js auc
 
 ## Quick Reference
 
-**Project Type**: Next.js 14+ (App Router) with TypeScript  
-**Primary Domain**: Auction & E-commerce Platform for India  
-**No Mocks**: All APIs are real and ready - never suggest mock data  
+### 6. State Management
+
+````typescript
+// Use Context for global state
+import { useAuth } from "@/contexts/AuthContext";
+
+// Use custom hooks for feature state
+import { useCart } from "@/hooks/useCart";
+import { useAuctionSocket } from "@/hooks/useAuctionSocket";
+``` Type**: Next.js 14+ (App Router) with TypeScript
+**Primary Domain**: Auction & E-commerce Platform for India
+**No Mocks**: All APIs are real and ready - never suggest mock data
 **Code Over Docs**: Focus on implementation, not documentation
 
 ## Architecture Overview
 
 ### Application Structure
 
-```
+````
+
 ROUTING: Next.js App Router (src/app/)
 ├── Pages: Each folder in app/ is a route
 ├── API Routes: app/api/ contains backend endpoints
@@ -33,7 +43,8 @@ STATE: Context + Hooks pattern
 ├── AuthContext: User authentication
 ├── UploadContext: Media uploads
 └── Custom hooks: useCart, useAuctionSocket, etc.
-```
+
+````
 
 ### Core Technologies
 
@@ -59,7 +70,7 @@ import { useState } from "react";
 // Component organization
 components / feature - name / ComponentName.tsx; // Main component
 SubComponent.tsx; // Related components
-```
+````
 
 ### 2. Service Layer Pattern
 
@@ -90,7 +101,97 @@ export async function POST(request: Request) {
 }
 ```
 
-### 4. State Management
+### 4. Firebase Storage Architecture Pattern
+
+**CRITICAL**: Never use Firebase Client SDK directly in client code. Always use API routes.
+
+```
+Client (UI)
+  ↓ API call
+Client Service (src/services/)
+  ↓ HTTP request
+API Route (src/app/api/)
+  ↓ Firebase Admin SDK
+Server Service (src/app/api/lib/)
+  ↓ Firebase Storage/Firestore
+Firebase Backend
+```
+
+**Upload Flow (2-Step Process)**:
+
+1. **Request Signed URL**: Client calls API to get temporary upload URL
+2. **Direct Upload**: Client uploads directly to Firebase Storage using signed URL
+3. **Confirm Upload**: Client calls API to save metadata to Firestore
+
+**Example Pattern**:
+
+```typescript
+// ✅ CORRECT: Client Service
+export async function uploadAsset(file: File, type: string, category?: string) {
+  // Step 1: Get signed URL from API
+  const { uploadUrl, assetId, storagePath } = await apiService.post(
+    "/api/admin/static-assets/upload-url",
+    { fileName: file.name, contentType: file.type, type, category }
+  );
+
+  // Step 2: Upload directly to Firebase Storage
+  await fetch(uploadUrl, { method: "PUT", body: file });
+
+  // Step 3: Confirm and save metadata
+  const { asset } = await apiService.post(
+    "/api/admin/static-assets/confirm-upload",
+    { assetId, name: file.name, type, storagePath, size: file.size }
+  );
+
+  return asset;
+}
+
+// ❌ WRONG: Direct Firebase SDK in client
+import { getStorage } from "firebase/storage"; // NO!
+const storage = getStorage();
+await uploadBytes(ref(storage, path), file); // NO!
+```
+
+**Server Service Pattern** (`src/app/api/lib/`):
+
+```typescript
+// Firebase Admin SDK operations only
+import { getStorage } from "firebase-admin/storage";
+import { getFirestoreAdmin } from "./firebase/admin";
+
+export async function generateUploadUrl(fileName: string, contentType: string) {
+  const storage = getStorage();
+  const bucket = storage.bucket();
+  const file = bucket.file(`static-assets/${fileName}`);
+
+  const [uploadUrl] = await file.getSignedUrl({
+    version: "v4",
+    action: "write",
+    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    contentType,
+  });
+
+  return { uploadUrl, storagePath: file.name };
+}
+```
+
+**Storage Paths & Rules**:
+
+- `/shop-logos/**` - Sellers, images only
+- `/shop-banners/**` - Sellers, images only
+- `/product-images/**` - Sellers, images only
+- `/product-videos/**` - Sellers, videos only, 100MB limit
+- `/static-assets/{type}/{category}/**` - Admins, all types, 50MB limit
+- `/blog-media/{postId}/**` - Admins, images/videos, 50MB limit
+- `/user-documents/{userId}/**` - Users (own files), documents only, 10MB limit
+
+**Supported File Types**:
+
+- **Images**: All formats (`image/*`)
+- **Videos**: All formats (`video/*`)
+- **Documents**: PDF, Word, Excel, Text
+
+### 5. State Management
 
 ```typescript
 // Use Context for global state
@@ -246,10 +347,12 @@ apiService.get("admin/homepage"); // Missing /api prefix!
 
 ### Media Handling
 
-- **Storage**: Firebase Storage
-- **Types**: Images and videos
+- **Storage**: Firebase Storage with CDN
+- **Types**: Images, videos, documents (PDF, Word, Excel)
 - **Optimization**: Automatic resize/compress
 - **Queue**: Upload queue system for multiple files
+- **Architecture**: 2-step signed URL upload pattern (client → API → Firebase)
+- **Security**: Storage rules with file type validation and size limits
 
 ## Debugging & Testing
 
@@ -447,6 +550,137 @@ className = "min-h-[44px] min-w-[44px]";
 - User's orders: `userId === currentUser.uid`
 - Shop products: `shopId === shopId`
 
+## Static Assets CDN Management
+
+### Overview
+
+The platform includes a comprehensive static assets management system with Firebase Storage CDN for payment logos, icons, images, videos, and documents.
+
+### Admin UI
+
+**Location**: `/admin/static-assets`
+
+**Features**:
+
+- Upload images, videos, documents
+- Filter by type (payment-logo, icon, image, video, document)
+- Inline preview (images show thumbnails, videos show player)
+- Copy CDN URL to clipboard
+- Edit metadata (name, category)
+- Delete assets with confirmation
+
+### Client Service Pattern
+
+**Location**: `src/services/static-assets-client.service.ts`
+
+```typescript
+import {
+  getAssets,
+  uploadAsset,
+  updateAsset,
+  deleteAsset,
+} from "@/services/static-assets-client.service";
+
+// List assets with filters
+const assets = await getAssets({
+  type: "payment-logo",
+  category: "payment-methods",
+});
+
+// Upload asset (2-step process handled internally)
+const newAsset = await uploadAsset(file, "icon", "navigation");
+
+// Update metadata
+await updateAsset(assetId, { name: "New Name", category: "updated" });
+
+// Delete asset (removes from Storage + Firestore)
+await deleteAsset(assetId);
+```
+
+### Server Service Pattern
+
+**Location**: `src/app/api/lib/static-assets-server.service.ts`
+
+```typescript
+// Only use in API routes - server-side only!
+import {
+  generateUploadUrl,
+  saveAssetMetadata,
+  listAssets,
+  deleteAsset,
+} from "@/app/api/lib/static-assets-server.service";
+
+// Generate signed upload URL (15min expiry)
+const { uploadUrl, assetId, storagePath } = await generateUploadUrl(
+  "logo.png",
+  "image/png",
+  "payment-logo",
+  "payment-methods"
+);
+
+// Save metadata after successful upload
+const asset = await saveAssetMetadata({
+  id: assetId,
+  name: "logo.png",
+  type: "payment-logo",
+  url: publicUrl,
+  storagePath,
+  category: "payment-methods",
+  uploadedBy: userId,
+  uploadedAt: new Date().toISOString(),
+  size: 12345,
+  contentType: "image/png",
+});
+```
+
+### API Endpoints
+
+| Endpoint                                  | Method | Purpose                        |
+| ----------------------------------------- | ------ | ------------------------------ |
+| `/api/admin/static-assets`                | GET    | List assets with filters       |
+| `/api/admin/static-assets/upload-url`     | POST   | Get signed upload URL          |
+| `/api/admin/static-assets/confirm-upload` | POST   | Confirm upload & save metadata |
+| `/api/admin/static-assets/[id]`           | GET    | Get single asset               |
+| `/api/admin/static-assets/[id]`           | PATCH  | Update metadata                |
+| `/api/admin/static-assets/[id]`           | DELETE | Delete asset                   |
+
+### File Type Support
+
+**Images**: SVG, PNG, JPEG, WebP, GIF - No size limit  
+**Videos**: MP4, WebM, MOV - 50MB limit for static assets, 100MB for products  
+**Documents**: PDF, Word, Excel, Text - 10-50MB depending on context
+
+### Storage Rules
+
+All rules are defined in `storage.rules` with automatic validation:
+
+- File type validation (images, videos, documents)
+- Size limits by category
+- Role-based permissions (admin, seller, user)
+- Public CDN read access
+
+### Usage in Components
+
+```typescript
+// Import the client service
+import { getAssetsByType } from "@/services/static-assets-client.service";
+
+// Fetch payment logos
+const paymentLogos = await getAssetsByType("payment-logo");
+
+// Use CDN URLs directly
+<img src={paymentLogos[0].url} alt="Payment Logo" />;
+```
+
+### Best Practices
+
+1. **Always use client service** in components (never direct Firebase SDK)
+2. **Use CDN URLs** for fast global delivery
+3. **Add meaningful names** for better organization
+4. **Use categories** for grouping (e.g., "payment-methods", "navigation")
+5. **Delete unused assets** to save storage costs
+6. **Size limits**: Keep videos under 50MB, documents under 10MB
+
 ## Quick Command Reference
 
 ```bash
@@ -567,6 +801,8 @@ Comprehensive checklists for:
 6. **Be concise** - Direct action over explanation
 7. **Mobile-first** - Always consider responsive design
 8. **Accessible** - Support keyboard, screen readers, and touch
+9. **Firebase architecture** - Client services → API routes → Server services → Firebase Admin SDK
+10. **Static assets** - Use CDN for all media (images, videos, documents)
 
 ---
 
