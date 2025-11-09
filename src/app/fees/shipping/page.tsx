@@ -10,7 +10,8 @@ export default function InternationalShippingPage() {
   const regions = [
     {
       name: "Asia Pacific",
-      countries: "Singapore, Malaysia, Thailand, Indonesia, Vietnam, Philippines",
+      countries:
+        "Singapore, Malaysia, Thailand, Indonesia, Vietnam, Philippines",
       baseRate: "₹1,500",
       deliveryTime: "5-10 business days",
     },
@@ -48,7 +49,8 @@ export default function InternationalShippingPage() {
             International Shipping
           </h1>
           <p className="text-gray-600 mb-8">
-            We ship worldwide! Check our shipping rates and delivery times for international orders.
+            We ship worldwide! Check our shipping rates and delivery times for
+            international orders.
           </p>
 
           {/* Shipping Regions */}
@@ -64,7 +66,9 @@ export default function InternationalShippingPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
                         {region.name}
                       </h3>
-                      <p className="text-sm text-gray-600">{region.countries}</p>
+                      <p className="text-sm text-gray-600">
+                        {region.countries}
+                      </p>
                     </div>
                     <div className="flex-shrink-0 text-right">
                       <p className="text-2xl font-bold text-gray-900">
@@ -88,7 +92,8 @@ export default function InternationalShippingPage() {
               Weight-Based Pricing
             </h2>
             <p className="text-gray-600 mb-4">
-              Base rates apply to packages up to 1 kg. Additional charges apply for heavier items:
+              Base rates apply to packages up to 1 kg. Additional charges apply
+              for heavier items:
             </p>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -121,7 +126,9 @@ export default function InternationalShippingPage() {
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-gray-700">Above 10 kg</td>
-                    <td className="px-4 py-3 text-gray-900">Contact for quote</td>
+                    <td className="px-4 py-3 text-gray-900">
+                      Contact for quote
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -151,9 +158,12 @@ export default function InternationalShippingPage() {
 
           {/* Restrictions */}
           <section className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-4">❌ Shipping Restrictions</h3>
+            <h3 className="font-bold text-gray-900 mb-4">
+              ❌ Shipping Restrictions
+            </h3>
             <p className="text-gray-700 mb-3">
-              Due to international shipping regulations, the following items cannot be shipped internationally:
+              Due to international shipping regulations, the following items
+              cannot be shipped internationally:
             </p>
             <ul className="space-y-2 text-gray-700 text-sm">
               <li>• Liquids and aerosols</li>
@@ -174,8 +184,8 @@ export default function InternationalShippingPage() {
                   How is shipping cost calculated?
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  Shipping cost is based on destination region, package weight, and dimensions. 
-                  Final cost is calculated at checkout.
+                  Shipping cost is based on destination region, package weight,
+                  and dimensions. Final cost is calculated at checkout.
                 </p>
               </div>
               <div>
@@ -183,8 +193,9 @@ export default function InternationalShippingPage() {
                   Can I track my international order?
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  Yes! All international shipments include end-to-end tracking. You'll receive 
-                  tracking updates via email and can monitor your order in real-time.
+                  Yes! All international shipments include end-to-end tracking.
+                  You'll receive tracking updates via email and can monitor your
+                  order in real-time.
                 </p>
               </div>
               <div>
@@ -192,8 +203,9 @@ export default function InternationalShippingPage() {
                   What about returns?
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  International returns are accepted within 14 days. Return shipping costs are 
-                  buyer's responsibility unless the item is defective.
+                  International returns are accepted within 14 days. Return
+                  shipping costs are buyer's responsibility unless the item is
+                  defective.
                 </p>
               </div>
             </div>

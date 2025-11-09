@@ -3,7 +3,8 @@ import { Building2, Users, Target, Award, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Company Overview | Let It Rip",
-  description: "Learn about Let It Rip - India's premier auction and e-commerce platform",
+  description:
+    "Learn about Let It Rip - India's premier auction and e-commerce platform",
 };
 
 export default function CompanyOverviewPage() {
@@ -40,13 +41,25 @@ export default function CompanyOverviewPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">About Us</h2>
             <div className="prose max-w-none text-gray-700">
               <p className="mb-4">
-                Let It Rip is India's leading auction and e-commerce platform, connecting millions of buyers and sellers across the country. Founded in 2015, we've revolutionized the way Indians buy and sell products online, offering a secure, transparent, and exciting marketplace.
+                Let It Rip is India's leading auction and e-commerce platform,
+                connecting millions of buyers and sellers across the country.
+                Founded in 2015, we've revolutionized the way Indians buy and
+                sell products online, offering a secure, transparent, and
+                exciting marketplace.
               </p>
               <p className="mb-4">
-                Our platform combines the thrill of live auctions with the convenience of traditional e-commerce, creating a unique shopping experience. Whether you're looking for collectibles, electronics, fashion, or everyday items, Let It Rip offers an unparalleled selection and competitive prices.
+                Our platform combines the thrill of live auctions with the
+                convenience of traditional e-commerce, creating a unique
+                shopping experience. Whether you're looking for collectibles,
+                electronics, fashion, or everyday items, Let It Rip offers an
+                unparalleled selection and competitive prices.
               </p>
               <p>
-                With advanced technology, robust security measures, and dedicated customer support, we ensure that every transaction is safe and seamless. Our commitment to innovation and customer satisfaction has made us the preferred choice for millions of Indians.
+                With advanced technology, robust security measures, and
+                dedicated customer support, we ensure that every transaction is
+                safe and seamless. Our commitment to innovation and customer
+                satisfaction has made us the preferred choice for millions of
+                Indians.
               </p>
             </div>
           </section>
@@ -59,7 +72,10 @@ export default function CompanyOverviewPage() {
                 <h3 className="text-xl font-bold text-gray-900">Our Mission</h3>
               </div>
               <p className="text-gray-700">
-                To democratize commerce by providing a platform where anyone can buy and sell with confidence, transparency, and ease. We aim to create economic opportunities for sellers while offering buyers access to quality products at fair prices.
+                To democratize commerce by providing a platform where anyone can
+                buy and sell with confidence, transparency, and ease. We aim to
+                create economic opportunities for sellers while offering buyers
+                access to quality products at fair prices.
               </p>
             </div>
 
@@ -69,14 +85,19 @@ export default function CompanyOverviewPage() {
                 <h3 className="text-xl font-bold text-gray-900">Our Vision</h3>
               </div>
               <p className="text-gray-700">
-                To become the most trusted and innovative marketplace in India, where every transaction creates value and every user feels empowered. We envision a future where online commerce is accessible, secure, and beneficial for all.
+                To become the most trusted and innovative marketplace in India,
+                where every transaction creates value and every user feels
+                empowered. We envision a future where online commerce is
+                accessible, secure, and beneficial for all.
               </p>
             </div>
           </section>
 
           {/* Core Values */}
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Core Values</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Core Values
+            </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <ValueCard
                 title="Trust & Transparency"
@@ -117,15 +138,24 @@ export default function CompanyOverviewPage() {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">General Inquiries</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  General Inquiries
+                </h3>
                 <p className="text-gray-600 mb-1">Email: info@letitrip.com</p>
-                <p className="text-gray-600">Phone: +91 1800-123-4567 (Toll-free)</p>
+                <p className="text-gray-600">
+                  Phone: +91 1800-123-4567 (Toll-free)
+                </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Support</h3>
-                <p className="text-gray-600 mb-1">Email: support@letitrip.com</p>
+                <p className="text-gray-600 mb-1">
+                  Email: support@letitrip.com
+                </p>
                 <p className="text-gray-600">
-                  <a href="/support/ticket" className="text-yellow-600 hover:text-yellow-700">
+                  <a
+                    href="/support/ticket"
+                    className="text-yellow-600 hover:text-yellow-700"
+                  >
                     Submit a Support Ticket →
                   </a>
                 </p>
@@ -168,7 +198,9 @@ function ValueCard({
 function StatCard({ value, label }: { value: string; label: string }) {
   return (
     <div className="text-center">
-      <p className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">{value}</p>
+      <p className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
+        {value}
+      </p>
       <p className="text-sm text-gray-600">{label}</p>
     </div>
   );

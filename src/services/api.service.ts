@@ -33,12 +33,17 @@ class ApiService {
 
       // Handle unauthorized
       if (response.status === 401) {
-        // Clear local storage and redirect to login
+        // Clear local storage but DON'T redirect automatically
+        // Let the calling code handle the redirect to avoid loops
         if (typeof window !== "undefined") {
           localStorage.removeItem("user");
-          window.location.href = "/login";
         }
-        throw new Error("Unauthorized. Please log in again.");
+        
+        // Create error with status code for better handling
+        const error = new Error("Unauthorized. Please log in again.") as any;
+        error.status = 401;
+        error.response = { status: 401 };
+        throw error;
       }
 
       // Handle forbidden

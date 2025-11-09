@@ -1,10 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, ShoppingBag, Search, Heart, ShoppingCart, CreditCard } from "lucide-react";
+import {
+  BookOpen,
+  ShoppingBag,
+  Search,
+  Heart,
+  ShoppingCart,
+  CreditCard,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "New Users' Guide | Let It Rip",
-  description: "Complete guide for new users to get started with Let It Rip auction platform",
+  description:
+    "Complete guide for new users to get started with Let It Rip auction platform",
 };
 
 export default function NewUserGuidePage() {
@@ -16,7 +24,8 @@ export default function NewUserGuidePage() {
             New Users' Guide
           </h1>
           <p className="text-gray-600 mb-8">
-            Welcome to Let It Rip! This guide will help you get started with buying and bidding on our platform.
+            Welcome to Let It Rip! This guide will help you get started with
+            buying and bidding on our platform.
           </p>
 
           {/* Step by Step Guide */}
@@ -58,9 +67,7 @@ export default function NewUserGuidePage() {
               icon={<CreditCard className="w-6 h-6" />}
               title="5. Secure Payment"
               description="We support multiple payment methods including credit/debit cards, UPI, and net banking. All transactions are secure and encrypted."
-              links={[
-                { label: "Payment Methods", href: "/fees/payment" },
-              ]}
+              links={[{ label: "Payment Methods", href: "/fees/payment" }]}
             />
 
             <GuideSection
@@ -80,19 +87,30 @@ export default function NewUserGuidePage() {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start gap-2">
                 <span className="text-yellow-600 mt-1">•</span>
-                <span>Set up email notifications to get alerts for auction endings and new listings</span>
+                <span>
+                  Set up email notifications to get alerts for auction endings
+                  and new listings
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-yellow-600 mt-1">•</span>
-                <span>Read seller ratings and reviews before making a purchase</span>
+                <span>
+                  Read seller ratings and reviews before making a purchase
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-yellow-600 mt-1">•</span>
-                <span>Check our prohibited items list before listing anything for sale</span>
+                <span>
+                  Check our prohibited items list before listing anything for
+                  sale
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-yellow-600 mt-1">•</span>
-                <span>Contact support if you have any questions - we're here to help!</span>
+                <span>
+                  Contact support if you have any questions - we're here to
+                  help!
+                </span>
               </li>
             </ul>
           </div>

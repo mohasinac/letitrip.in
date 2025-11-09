@@ -28,7 +28,14 @@ export default function PaymentMethodsPage() {
       icon: <Building2 className="w-8 h-8" />,
       title: "Net Banking",
       description: "Direct payment from your bank account",
-      supported: ["All major Indian banks", "HDFC", "ICICI", "SBI", "Axis", "Others"],
+      supported: [
+        "All major Indian banks",
+        "HDFC",
+        "ICICI",
+        "SBI",
+        "Axis",
+        "Others",
+      ],
       processingTime: "Instant",
       fees: "No additional fees",
     },
@@ -36,7 +43,10 @@ export default function PaymentMethodsPage() {
       icon: <Wallet className="w-8 h-8" />,
       title: "Cash on Delivery",
       description: "Pay when you receive your order (select items only)",
-      supported: ["Available for orders under ₹50,000", "ID verification required"],
+      supported: [
+        "Available for orders under ₹50,000",
+        "ID verification required",
+      ],
       processingTime: "At delivery",
       fees: "₹50 COD handling fee",
     },
@@ -50,7 +60,9 @@ export default function PaymentMethodsPage() {
             Payment Methods
           </h1>
           <p className="text-gray-600 mb-8">
-            We offer multiple secure payment options to make your shopping experience convenient and safe. All transactions are encrypted and protected.
+            We offer multiple secure payment options to make your shopping
+            experience convenient and safe. All transactions are encrypted and
+            protected.
           </p>
 
           {/* Payment Methods Grid */}
@@ -65,7 +77,9 @@ export default function PaymentMethodsPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {method.title}
                     </h3>
-                    <p className="text-sm text-gray-600">{method.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {method.description}
+                    </p>
                   </div>
                 </div>
 
@@ -89,7 +103,9 @@ export default function PaymentMethodsPage() {
                   <div className="flex items-center justify-between text-sm pt-2 border-t">
                     <div>
                       <p className="text-xs text-gray-500">Processing Time</p>
-                      <p className="font-medium text-gray-900">{method.processingTime}</p>
+                      <p className="font-medium text-gray-900">
+                        {method.processingTime}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-500">Fees</p>
@@ -103,9 +119,13 @@ export default function PaymentMethodsPage() {
 
           {/* Security Section */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-4">🔒 Payment Security</h3>
+            <h3 className="font-bold text-gray-900 mb-4">
+              🔒 Payment Security
+            </h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li>• All transactions are encrypted using 256-bit SSL technology</li>
+              <li>
+                • All transactions are encrypted using 256-bit SSL technology
+              </li>
               <li>• PCI DSS Level 1 compliant payment gateway</li>
               <li>• We never store your complete card details</li>
               <li>• Two-factor authentication for high-value transactions</li>
@@ -115,9 +135,13 @@ export default function PaymentMethodsPage() {
 
           {/* Refund Info */}
           <div className="border-t pt-6">
-            <h3 className="font-bold text-gray-900 mb-3">Refunds & Cancellations</h3>
+            <h3 className="font-bold text-gray-900 mb-3">
+              Refunds & Cancellations
+            </h3>
             <p className="text-gray-600 mb-4">
-              Refunds are processed to your original payment method within 5-7 business days. For COD orders, refunds are issued as store credit or bank transfer.
+              Refunds are processed to your original payment method within 5-7
+              business days. For COD orders, refunds are issued as store credit
+              or bank transfer.
             </p>
             <a
               href="/refund-policy"

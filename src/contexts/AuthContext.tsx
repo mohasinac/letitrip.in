@@ -40,11 +40,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const cachedUser = authService.getCachedUser();
       if (cachedUser) {
         setUser(cachedUser);
+        setLoading(false); // Show UI immediately with cached user
       }
 
-      // Then validate with server
+      // Then validate with server (silently)
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
+
+      if (!currentUser && cachedUser) {
+        // Session expired, clear cached user
+        console.log("Session expired, clearing cached user");
+      }
     } catch (error) {
       console.error("Auth initialization error:", error);
       setUser(null);
@@ -92,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Logout function

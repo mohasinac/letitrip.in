@@ -4,7 +4,8 @@ import { Package, Clock, RefreshCcw, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Returns & Refunds Guide | Let It Rip",
-  description: "Learn about our return policy, refund process, and how to initiate returns",
+  description:
+    "Learn about our return policy, refund process, and how to initiate returns",
 };
 
 export default function ReturnsGuidePage() {
@@ -16,7 +17,8 @@ export default function ReturnsGuidePage() {
             Returns & Refunds Guide
           </h1>
           <p className="text-gray-600 mb-8">
-            We want you to be completely satisfied with your purchase. Here's everything you need to know about our return and refund policy.
+            We want you to be completely satisfied with your purchase. Here's
+            everything you need to know about our return and refund policy.
           </p>
 
           {/* Return Process */}
@@ -124,10 +126,22 @@ export default function ReturnsGuidePage() {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
             <h3 className="font-bold text-gray-900 mb-3">Important Notes</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li>• Return shipping costs may apply unless the item is defective or wrong</li>
-              <li>• Items must be returned in original condition with all tags and packaging</li>
-              <li>• Refunds exclude original shipping charges (unless seller error)</li>
-              <li>• Auction items have different return policies - check before bidding</li>
+              <li>
+                • Return shipping costs may apply unless the item is defective
+                or wrong
+              </li>
+              <li>
+                • Items must be returned in original condition with all tags and
+                packaging
+              </li>
+              <li>
+                • Refunds exclude original shipping charges (unless seller
+                error)
+              </li>
+              <li>
+                • Auction items have different return policies - check before
+                bidding
+              </li>
             </ul>
           </div>
 

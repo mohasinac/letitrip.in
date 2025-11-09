@@ -102,13 +102,13 @@ export default function ResourceListWrapper({
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className={`bg-gradient-to-br ${stat.color || "from-blue-50 to-blue-100"} p-4 rounded-lg`}
+                  className={`bg-gradient-to-br ${
+                    stat.color || "from-blue-50 to-blue-100"
+                  } p-4 rounded-lg`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">
-                        {stat.label}
-                      </p>
+                      <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
                       <p className="text-2xl font-bold text-gray-900">
                         {stat.value}
                       </p>
@@ -155,14 +155,22 @@ export default function ResourceListWrapper({
                 <div className="hidden md:flex items-center gap-2 border border-gray-300 rounded-lg p-1">
                   <button
                     onClick={() => onViewModeChange("grid")}
-                    className={`p-2 rounded ${viewMode === "grid" ? "bg-yellow-500 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`p-2 rounded ${
+                      viewMode === "grid"
+                        ? "bg-yellow-500 text-white"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
                     aria-label="Grid view"
                   >
                     <Grid className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => onViewModeChange("table")}
-                    className={`p-2 rounded ${viewMode === "table" ? "bg-yellow-500 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`p-2 rounded ${
+                      viewMode === "table"
+                        ? "bg-yellow-500 text-white"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
                     aria-label="Table view"
                   >
                     <List className="w-4 h-4" />

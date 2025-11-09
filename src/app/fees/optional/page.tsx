@@ -59,7 +59,8 @@ export default function OptionalServicesPage() {
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Extended Coverage",
-      description: "Additional buyer protection and insurance for high-value items",
+      description:
+        "Additional buyer protection and insurance for high-value items",
       pricing: [
         { duration: "Per Item", price: "2% of value" },
         { duration: "Min Fee", price: "₹99" },
@@ -82,7 +83,8 @@ export default function OptionalServicesPage() {
             Optional Services
           </h1>
           <p className="text-gray-600 mb-8">
-            Boost your sales and visibility with our premium services. All services are optional - choose what works best for your business.
+            Boost your sales and visibility with our premium services. All
+            services are optional - choose what works best for your business.
           </p>
 
           {/* Services Grid */}
@@ -97,7 +99,9 @@ export default function OptionalServicesPage() {
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-gray-600">{service.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {service.description}
+                    </p>
                   </div>
                 </div>
 
@@ -135,7 +139,10 @@ export default function OptionalServicesPage() {
                   </p>
                   <ul className="space-y-2">
                     {service.benefits.map((benefit) => (
-                      <li key={benefit} className="flex items-start gap-2 text-sm text-gray-700">
+                      <li
+                        key={benefit}
+                        className="flex items-start gap-2 text-sm text-gray-700"
+                      >
                         <span className="text-green-600 mt-0.5">✓</span>
                         <span>{benefit}</span>
                       </li>
@@ -151,7 +158,9 @@ export default function OptionalServicesPage() {
             <h3 className="font-bold text-gray-900 mb-4">🎁 Package Deals</h3>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-white rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Starter Package</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  Starter Package
+                </h4>
                 <p className="text-sm text-gray-600 mb-3">
                   Featured Listing (7 days) + Premium Shop Badge (1 month)
                 </p>
@@ -164,7 +173,9 @@ export default function OptionalServicesPage() {
               </div>
 
               <div className="bg-white rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Growth Package</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  Growth Package
+                </h4>
                 <p className="text-sm text-gray-600 mb-3">
                   Promoted Product (30 days) + Premium Shop Badge (3 months)
                 </p>
@@ -187,7 +198,8 @@ export default function OptionalServicesPage() {
                   1
                 </span>
                 <span>
-                  Go to your seller dashboard and select the product or shop you want to promote
+                  Go to your seller dashboard and select the product or shop you
+                  want to promote
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -195,7 +207,8 @@ export default function OptionalServicesPage() {
                   2
                 </span>
                 <span>
-                  Click on "Promote" or "Upgrade" and choose the service you want
+                  Click on "Promote" or "Upgrade" and choose the service you
+                  want
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -203,7 +216,8 @@ export default function OptionalServicesPage() {
                   3
                 </span>
                 <span>
-                  Complete the payment and your promotion will be activated immediately
+                  Complete the payment and your promotion will be activated
+                  immediately
                 </span>
               </li>
             </ol>

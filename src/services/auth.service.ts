@@ -33,6 +33,7 @@ interface RegisterData {
 
 class AuthService {
   private readonly STORAGE_KEY = "user";
+  private readonly SESSION_COOKIE_NAME = "session";
 
   // Register new user
   async register(data: RegisterData): Promise<AuthResponse> {
@@ -68,6 +69,15 @@ class AuthService {
     }
   }
 
+  // Clear session cookie on client side
+  private clearSessionCookie() {
+    if (typeof document !== "undefined") {
+      // Clear the session cookie by setting it to expire immediately
+      document.cookie = `${this.SESSION_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+      document.cookie = `${this.SESSION_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Lax`;
+    }
+  }
+
   // Logout user
   async logout() {
     try {
@@ -80,6 +90,8 @@ class AuthService {
       if (typeof window !== "undefined") {
         localStorage.removeItem(this.STORAGE_KEY);
       }
+      // Clear session cookie on client side
+      this.clearSessionCookie();
     }
   }
 
@@ -94,11 +106,15 @@ class AuthService {
       this.setUser(response.user);
 
       return response.user;
-    } catch (error) {
-      // Clear stored user if session is invalid
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(this.STORAGE_KEY);
+    } catch (error: any) {
+      // Only clear if it's a 401 (unauthorized), not network errors
+      if (error?.status === 401 || error?.response?.status === 401) {
+        // Clear stored user if session is invalid
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(this.STORAGE_KEY);
+        }
       }
+      // Return null silently for unauthenticated users
       return null;
     }
   }

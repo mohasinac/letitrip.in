@@ -3,7 +3,8 @@ import { AlertTriangle, ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Prohibited Items | Let It Rip",
-  description: "List of items that cannot be listed or sold on Let It Rip platform",
+  description:
+    "List of items that cannot be listed or sold on Let It Rip platform",
 };
 
 export default function ProhibitedItemsPage() {
@@ -94,7 +95,9 @@ export default function ProhibitedItemsPage() {
                 Prohibited Items
               </h1>
               <p className="text-gray-600">
-                The following items are strictly prohibited from being listed, sold, or purchased on Let It Rip. Violations may result in account suspension or legal action.
+                The following items are strictly prohibited from being listed,
+                sold, or purchased on Let It Rip. Violations may result in
+                account suspension or legal action.
               </p>
             </div>
           </div>
@@ -105,7 +108,9 @@ export default function ProhibitedItemsPage() {
             <div className="text-sm text-red-800">
               <p className="font-semibold mb-1">Important Warning</p>
               <p>
-                Listing prohibited items may result in immediate removal of your listing, account suspension, and potential legal consequences. When in doubt, contact support before listing.
+                Listing prohibited items may result in immediate removal of your
+                listing, account suspension, and potential legal consequences.
+                When in doubt, contact support before listing.
               </p>
             </div>
           </div>
@@ -113,13 +118,19 @@ export default function ProhibitedItemsPage() {
           {/* Prohibited Categories */}
           <div className="space-y-6 mb-8">
             {prohibitedCategories.map((category) => (
-              <div key={category.category} className="border-b pb-6 last:border-b-0">
+              <div
+                key={category.category}
+                className="border-b pb-6 last:border-b-0"
+              >
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
                   {category.category}
                 </h2>
                 <ul className="grid md:grid-cols-2 gap-3">
                   {category.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-gray-700">
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-gray-700"
+                    >
                       <span className="text-red-600 mt-1">✗</span>
                       <span>{item}</span>
                     </li>
@@ -131,9 +142,13 @@ export default function ProhibitedItemsPage() {
 
           {/* Additional Info */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-3">Not Sure If Your Item Is Allowed?</h3>
+            <h3 className="font-bold text-gray-900 mb-3">
+              Not Sure If Your Item Is Allowed?
+            </h3>
             <p className="text-gray-700 mb-4">
-              If you're uncertain whether an item is permitted on our platform, please contact our support team before listing. We're here to help ensure compliance with our policies.
+              If you're uncertain whether an item is permitted on our platform,
+              please contact our support team before listing. We're here to help
+              ensure compliance with our policies.
             </p>
             <a
               href="/support/ticket"
@@ -145,12 +160,17 @@ export default function ProhibitedItemsPage() {
 
           {/* Reporting */}
           <div className="border-t pt-6">
-            <h3 className="font-bold text-gray-900 mb-3">Reporting Prohibited Items</h3>
+            <h3 className="font-bold text-gray-900 mb-3">
+              Reporting Prohibited Items
+            </h3>
             <p className="text-gray-600 mb-4">
-              If you encounter a listing that violates our policies, please report it immediately. We review all reports and take appropriate action.
+              If you encounter a listing that violates our policies, please
+              report it immediately. We review all reports and take appropriate
+              action.
             </p>
             <p className="text-sm text-gray-500">
-              Our team monitors listings 24/7 to ensure platform safety and compliance.
+              Our team monitors listings 24/7 to ensure platform safety and
+              compliance.
             </p>
           </div>
         </div>

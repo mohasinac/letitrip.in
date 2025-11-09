@@ -3,7 +3,8 @@ import { IndianRupee, ShoppingBag, Store, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Fee Structure | Let It Rip",
-  description: "Complete breakdown of fees for buyers and sellers on Let It Rip platform",
+  description:
+    "Complete breakdown of fees for buyers and sellers on Let It Rip platform",
 };
 
 export default function FeeStructurePage() {
@@ -15,7 +16,8 @@ export default function FeeStructurePage() {
             Fee Structure
           </h1>
           <p className="text-gray-600 mb-8">
-            Transparent pricing for all services on our platform. No hidden charges.
+            Transparent pricing for all services on our platform. No hidden
+            charges.
           </p>
 
           {/* Buyer Fees */}
@@ -125,7 +127,9 @@ export default function FeeStructurePage() {
                     <td className="px-4 py-3 text-gray-600">₹500</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700">Fashion & Apparel</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      Fashion & Apparel
+                    </td>
                     <td className="px-4 py-3 text-gray-900 font-medium">7%</td>
                     <td className="px-4 py-3 text-gray-600">₹700</td>
                   </tr>
@@ -135,12 +139,16 @@ export default function FeeStructurePage() {
                     <td className="px-4 py-3 text-gray-600">₹600</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700">Collectibles & Art</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      Collectibles & Art
+                    </td>
                     <td className="px-4 py-3 text-gray-900 font-medium">10%</td>
                     <td className="px-4 py-3 text-gray-600">₹1,000</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700">Other Categories</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      Other Categories
+                    </td>
                     <td className="px-4 py-3 text-gray-900 font-medium">7%</td>
                     <td className="px-4 py-3 text-gray-600">₹700</td>
                   </tr>
@@ -151,9 +159,13 @@ export default function FeeStructurePage() {
 
           {/* Payment Schedule */}
           <section className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-4">💰 Seller Payment Schedule</h3>
+            <h3 className="font-bold text-gray-900 mb-4">
+              💰 Seller Payment Schedule
+            </h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li>• Payments processed every Monday for previous week's sales</li>
+              <li>
+                • Payments processed every Monday for previous week's sales
+              </li>
               <li>• Minimum payout threshold: ₹500</li>
               <li>• Bank transfer within 3-5 business days</li>
               <li>• Transaction history available in seller dashboard</li>
@@ -164,7 +176,8 @@ export default function FeeStructurePage() {
           <div className="text-center bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="font-bold text-gray-900 mb-2">✓ No Hidden Fees</h3>
             <p className="text-gray-600 text-sm">
-              The fees listed above are all-inclusive. What you see is what you pay. No surprise charges ever.
+              The fees listed above are all-inclusive. What you see is what you
+              pay. No surprise charges ever.
             </p>
           </div>
         </div>

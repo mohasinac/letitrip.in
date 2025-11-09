@@ -1,20 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Prevent redirect loop: if already authenticated, redirect to home or specified page
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirect = searchParams.get("redirect") || "/";
+      router.replace(redirect);
+    }
+  }, [isAuthenticated, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,9 +32,11 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password);
+      // Get redirect URL from query params or default to home
+      const redirect = searchParams.get("redirect") || "/";
       // Small delay to ensure state is updated before redirect
       setTimeout(() => {
-        router.push("/");
+        router.replace(redirect);
       }, 100);
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");

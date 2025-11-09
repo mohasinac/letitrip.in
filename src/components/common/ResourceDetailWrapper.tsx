@@ -116,9 +116,7 @@ export default function ResourceDetailWrapper({
 
             {/* Action Buttons */}
             {actions && (
-              <div className="flex items-center gap-2 flex-wrap">
-                {actions}
-              </div>
+              <div className="flex items-center gap-2 flex-wrap">{actions}</div>
             )}
           </div>
 
@@ -128,13 +126,13 @@ export default function ResourceDetailWrapper({
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className={`bg-gradient-to-br ${stat.color || "from-blue-50 to-blue-100"} p-4 rounded-lg`}
+                  className={`bg-gradient-to-br ${
+                    stat.color || "from-blue-50 to-blue-100"
+                  } p-4 rounded-lg`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">
-                        {stat.label}
-                      </p>
+                      <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
                       <p className="text-2xl font-bold text-gray-900">
                         {stat.value}
                       </p>

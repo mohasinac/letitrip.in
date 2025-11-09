@@ -202,15 +202,30 @@ export function setSessionCookie(response: NextResponse, token: string): void {
  * Clear session cookie
  */
 export function clearSessionCookie(response: NextResponse): void {
-  const cookie = serialize(SESSION_COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-    path: "/",
-  });
+  // Set multiple cookie deletion strategies to ensure it's cleared
+  const cookies = [
+    serialize(SESSION_COOKIE_NAME, "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+      expires: new Date(0),
+    }),
+    // Also try without httpOnly to clear client-side cookies if any
+    serialize(SESSION_COOKIE_NAME, "", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+      expires: new Date(0),
+    }),
+  ];
 
-  response.headers.set("Set-Cookie", cookie);
+  // Set both versions to ensure cookie is cleared
+  response.headers.set("Set-Cookie", cookies[0]);
+  response.headers.append("Set-Cookie", cookies[1]);
 }
 
 /**
