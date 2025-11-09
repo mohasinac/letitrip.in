@@ -9,6 +9,7 @@ export { BulkActionBar } from './BulkActionBar';
 export { InlineImageUpload } from './InlineImageUpload';
 export { MobileFilterSidebar } from './MobileFilterSidebar';
 export { TableCheckbox } from './TableCheckbox';
+export { ResponsiveTable } from './ResponsiveTable';
 
 // Re-export types
 export type {

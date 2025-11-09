@@ -131,8 +131,20 @@ export async function GET(req: NextRequest) {
       });
     }
     
+    const data = doc.data();
+    
+    // Ensure specialEventBanner exists for backward compatibility
+    const settings: HomepageSettings = {
+      ...DEFAULT_SETTINGS,
+      ...data,
+      specialEventBanner: {
+        ...DEFAULT_SETTINGS.specialEventBanner,
+        ...(data?.specialEventBanner || {}),
+      },
+    } as HomepageSettings;
+    
     return NextResponse.json({
-      settings: doc.data() as HomepageSettings,
+      settings,
       isDefault: false,
     });
   } catch (error) {
@@ -178,29 +190,6 @@ export async function PATCH(req: NextRequest) {
     console.error('Error updating homepage settings:', error);
     return NextResponse.json(
       { error: 'Failed to update homepage settings' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/admin/homepage/reset - Reset to default settings
-export async function POST(req: NextRequest) {
-  try {
-    const db = getFirestoreAdmin();
-    
-    await db
-      .collection(SETTINGS_COLLECTION)
-      .doc(HOMEPAGE_SETTINGS_DOC)
-      .set(DEFAULT_SETTINGS);
-    
-    return NextResponse.json({
-      message: 'Homepage settings reset to defaults',
-      settings: DEFAULT_SETTINGS,
-    });
-  } catch (error) {
-    console.error('Error resetting homepage settings:', error);
-    return NextResponse.json(
-      { error: 'Failed to reset homepage settings' },
       { status: 500 }
     );
   }

@@ -1,92 +1,63 @@
-import { NextResponse } from "next/server";
-import { getFirestoreAdmin } from "../../../lib/firebase/admin";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  executeBulkOperation,
+  parseBulkRequest,
+  createBulkErrorResponse,
+} from "../../../lib/bulk-operations";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action, ids } = body;
+    // Parse and validate request
+    const { action, ids } = await parseBulkRequest(request);
 
-    if (!action || !ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json(
-        { error: "Action and IDs array required" },
-        { status: 400 }
-      );
-    }
-
-    const db = getFirestoreAdmin();
-
-    const results = {
-      success: true,
-      successCount: 0,
-      failedCount: 0,
-      errors: [] as { id: string; error: string }[],
-    };
-
-    // Process each user
-    for (const id of ids) {
-      try {
+    // Execute bulk operation
+    const result = await executeBulkOperation({
+      collection: "users",
+      action,
+      ids,
+      customHandler: async (db, id) => {
         const userRef = db.collection("users").doc(id);
-        const userDoc = await userRef.get();
-
-        if (!userDoc.exists) {
-          results.failedCount++;
-          results.errors.push({ id, error: "User not found" });
-          continue;
-        }
-
-        const updates: any = { updated_at: new Date().toISOString() };
 
         switch (action) {
           case "make-seller":
-            updates.role = "seller";
-            await userRef.update(updates);
-            results.successCount++;
+            await userRef.update({
+              role: "seller",
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "make-user":
-            updates.role = "user";
-            await userRef.update(updates);
-            results.successCount++;
+            await userRef.update({
+              role: "user",
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "ban":
-            updates.is_banned = true;
-            updates.ban_reason = "Bulk ban action";
-            await userRef.update(updates);
-            results.successCount++;
+            await userRef.update({
+              is_banned: true,
+              ban_reason: "Bulk ban action",
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "unban":
-            updates.is_banned = false;
-            updates.ban_reason = null;
-            await userRef.update(updates);
-            results.successCount++;
+            await userRef.update({
+              is_banned: false,
+              ban_reason: null,
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           default:
-            results.failedCount++;
-            results.errors.push({ id, error: `Unknown action: ${action}` });
+            throw new Error(`Unknown action: ${action}`);
         }
-      } catch (error) {
-        results.failedCount++;
-        results.errors.push({
-          id,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
-    }
-
-    results.success = results.failedCount === 0;
-
-    return NextResponse.json(results);
-  } catch (error) {
-    console.error("Bulk operation error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Bulk operation failed",
       },
-      { status: 500 }
-    );
+    });
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error("Bulk operation error:", error);
+    return NextResponse.json(createBulkErrorResponse(error), { status: 500 });
   }
 }

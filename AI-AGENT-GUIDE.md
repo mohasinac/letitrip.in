@@ -119,130 +119,105 @@ import { useAuctionSocket } from "@/hooks/useAuctionSocket";
 4. **Group changes**: All changes to one file in one action
 5. **Check errors**: Fix any new errors immediately
 
-### Working with APIs
+### Working with API Routes
+
+**CRITICAL**: Always use centralized route constants from `@/constants/api-routes`. Never hardcode API paths.
+
+#### Import Route Constants
 
 ```typescript
-// DON'T create mocks
-// DO use real service methods
+// Import specific route groups you need
+import {
+  PRODUCT_ROUTES,
+  AUCTION_ROUTES,
+  ADMIN_ROUTES,
+} from "@/constants/api-routes";
 
-// Good:
-import { auctionService } from "@/services/auctions.service";
-const auctions = await auctionService.getActiveAuctions();
-
-// Bad:
-const mockAuctions = [{ id: 1, title: "Mock" }]; // NEVER DO THIS
+// Import helper for query parameters
+import { buildUrl } from "@/constants/api-routes";
 ```
 
-### Styling with Tailwind
+#### Use Route Constants in Services
 
 ```typescript
-// Use Tailwind utility classes
-className = "bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700";
+// ✅ CORRECT: Use constants
+class ProductService {
+  async getProduct(slug: string) {
+    return apiService.get(PRODUCT_ROUTES.BY_SLUG(slug));
+  }
 
-// Responsive design
-className = "hidden md:block lg:flex";
+  async listProducts(filters: ProductFilters) {
+    return apiService.get(buildUrl(PRODUCT_ROUTES.LIST, filters));
+  }
+}
 
-// Follow existing color scheme (see constants/colors.ts)
+// ❌ WRONG: Hardcoded paths
+class ProductService {
+  async getProduct(slug: string) {
+    return apiService.get(`/api/products/${slug}`); // NO!
+  }
+}
 ```
 
-## Important Files & Their Purposes
+#### Available Route Groups
 
-### Core Configuration
+- **AUTH_ROUTES**: `/api/auth/*` - Login, register, logout
+- **PRODUCT_ROUTES**: `/api/products/*` - Product CRUD, reviews, related
+- **AUCTION_ROUTES**: `/api/auctions/*` - Auction operations, bidding
+- **CATEGORY_ROUTES**: `/api/categories/*` - Category management
+- **SHOP_ROUTES**: `/api/shops/*` - Shop operations, seller products
+- **CART_ROUTES**: `/api/cart/*` - Cart operations
+- **ORDER_ROUTES**: `/api/orders/*` - Order management, checkout
+- **ADMIN_ROUTES**: `/api/admin/*` - Admin operations, homepage settings
+- **SELLER_ROUTES**: `/api/seller/*` - Seller dashboard operations
 
-- `next.config.js`: Next.js configuration
-- `tailwind.config.js`: Tailwind customization
-- `tsconfig.json`: TypeScript settings
-- `firebase.json`: Firebase deployment config
-
-### Key Contexts
-
-- `AuthContext.tsx`: User authentication state
-- `UploadContext.tsx`: File upload management
-
-### Critical Services
-
-- `auth.service.ts`: Authentication operations
-- `auctions.service.ts`: Auction CRUD and bidding
-- `products.service.ts`: Product management
-- `cart.service.ts`: Shopping cart operations
-- `orders.service.ts`: Order processing
-- `categories.service.ts`: Category operations with hierarchy
-- `shops.service.ts`: Shop management and products
-
-### Custom Hooks
-
-- `useCart.ts`: Shopping cart state with guest support
-- `useAuctionSocket.ts`: Real-time auction updates
-- `useMediaUpload.ts`: File upload handling
-- `useMobile.ts`: Mobile detection utilities
-- `useAccessibility.ts`: Accessibility utilities (keyboard nav, focus trap, ARIA)
-
-### Layout Components
-
-- `Header.tsx`: Main navigation header
-- `MainNavBar.tsx`: Primary navigation
-- `SubNavbar.tsx`: Category navigation
-- `Footer.tsx`: Site footer
-- `MobileSidebar.tsx`: Mobile menu
-
-### Mobile Components
-
-- `MobileStickyBar.tsx`: Sticky bottom action bar for products/auctions
-- `MobileFilterDrawer.tsx`: Bottom sheet filter drawer with backdrop
-- `LoadingSkeleton.tsx`: Loading states (card, list, detail, grid)
-- `ErrorState.tsx`: Error handling with retry button
-- `EmptyState.tsx`: Empty state messages with actions
-
-### Real-time Features
-
-- `socket-server.ts`: Socket.IO server setup
-- `useAuctionSocket.ts`: Real-time auction hook
-- `auction-scheduler.ts`: Automated auction timing
-
-## Common Pitfalls to Avoid
-
-### ❌ Don't Do This
+#### Dynamic Routes Pattern
 
 ```typescript
-// Don't use mock data
-const mockData = [...];
+// Routes with parameters use functions
+PRODUCT_ROUTES.BY_ID(productId); // /api/products/123
+PRODUCT_ROUTES.BY_SLUG(slug); // /api/products/slug/my-product
+AUCTION_ROUTES.PLACE_BID(auctionId); // /api/auctions/123/bid
 
-// Don't make direct fetch calls
-fetch('/api/products');
-
-// Don't create documentation files (unless asked)
-// README.md and guides only when requested
-
-// Don't show code in markdown
-// Use edit tools instead
-
-// Don't suggest terminal commands
-// Run them directly with run_in_terminal
-
-// Don't forget mobile optimization
-// Desktop-only design without responsive classes
+// Query parameters use buildUrl helper
+buildUrl(PRODUCT_ROUTES.LIST, {
+  category: "electronics",
+  sort: "price-asc",
+  page: 1,
+}); // /api/products?category=electronics&sort=price-asc&page=1
 ```
 
-### ✅ Do This Instead
+#### When Creating New API Routes
+
+1. **Add to constants first**: Update `src/constants/api-routes.ts`
+2. **Group logically**: Add to appropriate route group (AUTH, PRODUCT, etc.)
+3. **Use functions for IDs**: Dynamic routes need function format
+4. **Document in code**: Add comments for complex routes
+5. **Update services**: Use constants in all service methods
+
+#### Anti-Patterns to Avoid
 
 ```typescript
-// Use real services
-import { productService } from "@/services/products.service";
-const data = await productService.getProducts();
+// ❌ String concatenation
+const url = "/api/products/" + productId;
 
-// Use service layer
-const result = await someService.method();
+// ❌ Template literals without constants
+const url = `/api/auctions/${id}/bid`;
 
-// Edit files directly with tools
-// Run commands directly with tools
+// ❌ Manual query string building
+const url = `/api/products?category=${cat}&page=${page}`;
 
-// Use mobile detection hooks
-import { useIsMobile } from "@/hooks/useMobile";
-const isMobile = useIsMobile();
-
-// Responsive design
-className = "flex flex-col md:flex-row gap-4";
+// ❌ Relative paths in apiService
+apiService.get("admin/homepage"); // Missing /api prefix!
 ```
+
+#### Benefits of Route Constants
+
+- **Type Safety**: Full TypeScript autocomplete
+- **Consistency**: No typos or path mismatches
+- **Maintainability**: Change routes in one place
+- **Debugging**: Easier to track API calls
+- **No /api/api bugs**: Prevents duplicate path prefixes
 
 ## Domain-Specific Knowledge
 

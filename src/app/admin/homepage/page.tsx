@@ -38,7 +38,22 @@ export default function HomepageSettingsPage() {
     try {
       setLoading(true);
       const response = await homepageSettingsService.getSettings();
-      setSettings(response.settings);
+
+      // Ensure specialEventBanner exists with default values
+      const loadedSettings = {
+        ...response.settings,
+        specialEventBanner: {
+          enabled: false,
+          title: "",
+          content: "",
+          link: "",
+          backgroundColor: "#2563eb",
+          textColor: "#ffffff",
+          ...response.settings.specialEventBanner,
+        },
+      };
+
+      setSettings(loadedSettings);
       setHasChanges(false);
     } catch (error) {
       console.error("Failed to load homepage settings:", error);

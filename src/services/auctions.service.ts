@@ -1,4 +1,5 @@
 import { apiService } from './api.service';
+import { AUCTION_ROUTES, buildUrl } from '@/constants/api-routes';
 import type { Auction, AuctionStatus, Bid, PaginatedResponse } from '@/types';
 
 interface AuctionFilters {
@@ -44,49 +45,33 @@ interface PlaceBidData {
 class AuctionsService {
   // List auctions (role-filtered)
   async list(filters?: AuctionFilters): Promise<PaginatedResponse<Auction>> {
-    const params = new URLSearchParams();
-    
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach(v => params.append(key, v.toString()));
-          } else {
-            params.append(key, value.toString());
-          }
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/auctions?${queryString}` : '/auctions';
-    
+    const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
     return apiService.get<PaginatedResponse<Auction>>(endpoint);
   }
 
   // Get auction by ID
   async getById(id: string): Promise<Auction> {
-    return apiService.get<Auction>(`/auctions/${id}`);
+    return apiService.get<Auction>(AUCTION_ROUTES.BY_ID(id));
   }
 
   // Get auction by slug
   async getBySlug(slug: string): Promise<Auction> {
-    return apiService.get<Auction>(`/auctions/slug/${slug}`);
+    return apiService.get<Auction>(AUCTION_ROUTES.BY_SLUG(slug));
   }
 
   // Create auction (seller/admin)
   async create(data: CreateAuctionData): Promise<Auction> {
-    return apiService.post<Auction>('/auctions', data);
+    return apiService.post<Auction>(AUCTION_ROUTES.LIST, data);
   }
 
   // Update auction (owner/admin)
   async update(id: string, data: UpdateAuctionData): Promise<Auction> {
-    return apiService.patch<Auction>(`/auctions/${id}`, data);
+    return apiService.patch<Auction>(AUCTION_ROUTES.BY_ID(id), data);
   }
 
   // Delete auction (owner/admin)
   async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/auctions/${id}`);
+    return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
   }
 
   // Get auction bids
@@ -130,7 +115,7 @@ class AuctionsService {
   async getHomepage(): Promise<Auction[]> {
     const response = await this.list({
       showOnHomepage: true,
-      status: 'active',
+      status: 'live',
       limit: 20,
     });
     return Array.isArray(response) ? response : (response as any).data || [];

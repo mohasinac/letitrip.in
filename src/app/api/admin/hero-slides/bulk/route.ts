@@ -1,89 +1,65 @@
-import { NextResponse } from "next/server";
-import { getFirestoreAdmin } from "../../../lib/firebase/admin";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  executeBulkOperation,
+  parseBulkRequest,
+  createBulkErrorResponse,
+} from "../../../lib/bulk-operations";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action, ids } = body;
+    // Parse and validate request
+    const { action, ids } = await parseBulkRequest(request);
 
-    if (!action || !ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json(
-        { error: "Action and IDs array required" },
-        { status: 400 }
-      );
-    }
-
-    const db = getFirestoreAdmin();
-
-    const results = {
-      success: true,
-      successCount: 0,
-      failedCount: 0,
-      errors: [] as { id: string; error: string }[],
-    };
-
-    // Process each slide
-    for (const id of ids) {
-      try {
+    // Execute bulk operation
+    const result = await executeBulkOperation({
+      collection: "hero_slides",
+      action,
+      ids,
+      customHandler: async (db, id) => {
         const slideRef = db.collection("hero_slides").doc(id);
-        const slideDoc = await slideRef.get();
-
-        if (!slideDoc.exists) {
-          results.failedCount++;
-          results.errors.push({ id, error: "Slide not found" });
-          continue;
-        }
 
         switch (action) {
           case "activate":
-            await slideRef.update({ is_active: true, updated_at: new Date().toISOString() });
-            results.successCount++;
+            await slideRef.update({
+              is_active: true,
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "deactivate":
-            await slideRef.update({ is_active: false, updated_at: new Date().toISOString() });
-            results.successCount++;
+            await slideRef.update({
+              is_active: false,
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "add-to-carousel":
-            await slideRef.update({ show_in_carousel: true, updated_at: new Date().toISOString() });
-            results.successCount++;
+            await slideRef.update({
+              show_in_carousel: true,
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "remove-from-carousel":
-            await slideRef.update({ show_in_carousel: false, updated_at: new Date().toISOString() });
-            results.successCount++;
+            await slideRef.update({
+              show_in_carousel: false,
+              updated_at: new Date().toISOString(),
+            });
             break;
 
           case "delete":
             await slideRef.delete();
-            results.successCount++;
             break;
 
           default:
-            results.failedCount++;
-            results.errors.push({ id, error: `Unknown action: ${action}` });
+            throw new Error(`Unknown action: ${action}`);
         }
-      } catch (error) {
-        results.failedCount++;
-        results.errors.push({
-          id,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
-    }
-
-    results.success = results.failedCount === 0;
-
-    return NextResponse.json(results);
-  } catch (error) {
-    console.error("Bulk operation error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Bulk operation failed",
       },
-      { status: 500 }
-    );
+    });
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error("Bulk operation error:", error);
+    return NextResponse.json(createBulkErrorResponse(error), { status: 500 });
   }
 }

@@ -20,6 +20,7 @@ import {
   AuctionFilters,
   type AuctionFilterValues,
 } from "@/components/filters/AuctionFilters";
+import { MobileFilterSidebar } from "@/components/common/MobileFilterSidebar";
 import { auctionsService } from "@/services/auctions.service";
 import type { Auction, AuctionStatus } from "@/types";
 import { formatDistanceToNow } from "date-fns";
@@ -199,12 +200,26 @@ export default function AuctionsPage() {
         </p>
       </div>
 
+      {/* Mobile Filter Sidebar */}
+      <MobileFilterSidebar
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+        title="Auction Filters"
+      >
+        <AuctionFilters
+          filters={filters}
+          onChange={setFilters}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+        />
+      </MobileFilterSidebar>
+
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar */}
-        <aside
-          className={`lg:w-64 ${showFilters ? "block" : "hidden lg:block"}`}
-        >
+        {/* Filters Sidebar - Desktop Only */}
+        <aside className="hidden lg:block lg:w-64">
           <div className="lg:sticky lg:top-4">
             <AuctionFilters
               filters={filters}
@@ -233,8 +248,8 @@ export default function AuctionsPage() {
 
             {/* Filter Toggle (Mobile) */}
             <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              onClick={() => setShowFilters(true)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
             >
               <FilterIcon className="h-5 w-5" />
               Filters

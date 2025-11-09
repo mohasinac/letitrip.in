@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, Fragment } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Grid, List, Loader2 } from "lucide-react";
+import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import {
   ProductFilters,
   ProductFilterValues,
 } from "@/components/filters/ProductFilters";
+import { MobileFilterSidebar } from "@/components/common/MobileFilterSidebar";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/types";
@@ -204,22 +205,36 @@ export default function ProductsPage() {
 
             {/* Filter Toggle (Mobile) */}
             <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() => setShowFilters(true)}
+              className="lg:hidden px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
             >
+              <Filter className="w-4 h-4" />
               Filters
             </button>
           </div>
         </div>
 
+        {/* Mobile Filter Sidebar */}
+        <MobileFilterSidebar
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+          title="Product Filters"
+        >
+          <ProductFilters
+            filters={filters}
+            onChange={setFilters}
+            onApply={handleApplyFilters}
+            onReset={handleResetFilters}
+            availableBrands={availableBrands}
+          />
+        </MobileFilterSidebar>
+
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
-          <aside
-            className={`lg:w-64 flex-shrink-0 ${
-              showFilters ? "block" : "hidden lg:block"
-            }`}
-          >
+          {/* Filters Sidebar - Desktop Only */}
+          <aside className="hidden lg:block lg:w-64 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
               <ProductFilters
                 filters={filters}

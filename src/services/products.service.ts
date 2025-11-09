@@ -1,4 +1,5 @@
 import { apiService } from './api.service';
+import { PRODUCT_ROUTES, buildUrl } from '@/constants/api-routes';
 import type {
   Product,
   ProductCondition,
@@ -71,114 +72,98 @@ interface UpdateProductData extends Partial<CreateProductData> {
 class ProductsService {
   // List products (role-filtered)
   async list(filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
-    const params = new URLSearchParams();
-    
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach(v => params.append(key, v.toString()));
-          } else {
-            params.append(key, value.toString());
-          }
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/products?${queryString}` : '/products';
-    
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, filters);
     return apiService.get<PaginatedResponse<Product>>(endpoint);
   }
 
   // Get product by ID
   async getById(id: string): Promise<Product> {
-    return apiService.get<Product>(`/products/${id}`);
+    return apiService.get<Product>(PRODUCT_ROUTES.BY_ID(id));
   }
 
   // Get product by slug
   async getBySlug(slug: string): Promise<Product> {
-    const res = await apiService.get<any>(`/products/${slug}`);
+    const res = await apiService.get<any>(PRODUCT_ROUTES.BY_SLUG(slug));
     return res.data ?? res; // tolerate both shapes
   }
 
   // Create product (seller/admin)
   async create(data: CreateProductData): Promise<Product> {
-    const res = await apiService.post<any>('/products', data);
+    const res = await apiService.post<any>(PRODUCT_ROUTES.LIST, data);
     return res.data ?? res;
   }
 
   // Update product (owner/admin)
   async update(slug: string, data: UpdateProductData): Promise<Product> {
-    const res = await apiService.patch<any>(`/products/${slug}`, data);
+    const res = await apiService.patch<any>(PRODUCT_ROUTES.BY_SLUG(slug), data);
     return res.data ?? res;
   }
 
   // Delete product (owner/admin)
   async delete(slug: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/products/${slug}`);
+    return apiService.delete<{ message: string }>(PRODUCT_ROUTES.BY_SLUG(slug));
   }
 
   // Get product reviews
   async getReviews(slug: string, page?: number, limit?: number): Promise<any> {
-    const params = new URLSearchParams();
-    if (page) params.append('page', page.toString());
-    if (limit) params.append('limit', limit.toString());
-    const qs = params.toString();
-    const endpoint = qs ? `/products/${slug}/reviews?${qs}` : `/products/${slug}/reviews`;
+    const endpoint = buildUrl(PRODUCT_ROUTES.REVIEWS(slug), { page, limit });
     return apiService.get<any>(endpoint);
   }
 
   // Get product variants (same leaf category)
   async getVariants(slug: string): Promise<Product[]> {
-    const res = await apiService.get<any>(`/products/${slug}/variants`);
+    const res = await apiService.get<any>(`${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`);
     return res.data || [];
   }
 
   // Get similar products
   async getSimilar(slug: string, limit?: number): Promise<Product[]> {
-    const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    const qs = params.toString();
-    const endpoint = qs ? `/products/${slug}/similar?${qs}` : `/products/${slug}/similar`;
+    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/similar`, { limit });
     const res = await apiService.get<any>(endpoint);
     return res.data || [];
   }
 
   // Get seller's other products
   async getSellerProducts(slug: string, limit?: number): Promise<Product[]> {
-    const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    const qs = params.toString();
-    const endpoint = qs ? `/products/${slug}/seller-items?${qs}` : `/products/${slug}/seller-items`;
+    const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, { limit });
     const res = await apiService.get<any>(endpoint);
     return res.data || [];
   }
 
   // Update product stock
   async updateStock(slug: string, stockCount: number): Promise<Product> {
-    return apiService.patch<Product>(`/products/${slug}`, { stockCount });
+    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), { stockCount });
   }
 
   // Update product status
   async updateStatus(slug: string, status: ProductStatus): Promise<Product> {
-    return apiService.patch<Product>(`/products/${slug}`, { status });
+    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), { status });
   }
 
   // Increment view count
   async incrementView(slug: string): Promise<void> {
-    await apiService.post(`/products/${slug}/view`, {});
+    await apiService.post(`${PRODUCT_ROUTES.BY_SLUG(slug)}/view`, {});
   }
 
   // Get featured products
   async getFeatured(): Promise<Product[]> {
-    const res = await apiService.get<any>('/products?isFeatured=true&status=published&limit=100');
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, { 
+      isFeatured: true, 
+      status: 'published', 
+      limit: 100 
+    });
+    const res = await apiService.get<any>(endpoint);
     return res.data || res.products || res;
   }
 
   // Get homepage products
   async getHomepage(): Promise<Product[]> {
-    const res = await apiService.get<any>('/products?isFeatured=true&status=published&limit=20');
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, { 
+      isFeatured: true, 
+      status: 'published', 
+      limit: 20 
+    });
+    const res = await apiService.get<any>(endpoint);
     return res.data || res.products || res;
   }
 }

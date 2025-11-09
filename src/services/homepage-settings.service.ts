@@ -1,4 +1,5 @@
 import { apiService } from './api.service';
+import { ADMIN_ROUTES } from '@/constants/api-routes';
 
 export interface HomepageSettings {
   specialEventBanner: {
@@ -57,13 +58,13 @@ interface HomepageSettingsResponse {
 class HomepageSettingsService {
   // Get current homepage settings
   async getSettings(): Promise<HomepageSettingsResponse> {
-    return apiService.get<HomepageSettingsResponse>('/admin/homepage');
+    return apiService.get<HomepageSettingsResponse>(ADMIN_ROUTES.HOMEPAGE);
   }
 
   // Update homepage settings (admin only)
   async updateSettings(settings: Partial<HomepageSettings>, userId?: string): Promise<HomepageSettings> {
     const response = await apiService.patch<{ settings: HomepageSettings }>(
-      '/admin/homepage',
+      ADMIN_ROUTES.HOMEPAGE,
       { settings, userId }
     );
     return response.settings;
@@ -72,7 +73,7 @@ class HomepageSettingsService {
   // Reset to default settings (admin only)
   async resetSettings(): Promise<HomepageSettings> {
     const response = await apiService.post<{ settings: HomepageSettings }>(
-      '/admin/homepage/reset'
+      ADMIN_ROUTES.HOMEPAGE_RESET
     );
     return response.settings;
   }

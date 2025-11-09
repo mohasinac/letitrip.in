@@ -2,11 +2,28 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, Filter } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash2,
+  ExternalLink,
+} from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import ProductTable from "@/components/seller/ProductTable";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import {
+  InlineEditRow,
+  QuickCreateRow,
+  BulkActionBar,
+  TableCheckbox,
+  InlineField,
+  BulkAction,
+} from "@/components/common/inline-edit";
 import { productsService } from "@/services/products.service";
+import { apiService } from "@/services/api.service";
 import type { Product } from "@/types";
 
 export default function ProductsPage() {
@@ -16,8 +33,18 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Inline edit states
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
+
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
 
   const loadProducts = async () => {
@@ -29,6 +56,145 @@ export default function ProductsPage() {
       console.error("Failed to load products:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: any[] }>(
+        "/api/categories"
+      );
+      if (response.success && response.data) {
+        setCategories(
+          response.data.map((cat: any) => ({ id: cat.id, name: cat.name }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+    }
+  };
+
+  // Fields configuration for inline edit
+  const fields: InlineField[] = [
+    { key: "images", label: "Image", type: "image", required: false },
+    { key: "name", label: "Product Name", type: "text", required: true },
+    {
+      key: "price",
+      label: "Price (₹)",
+      type: "number",
+      required: true,
+      min: 0,
+      step: 0.01,
+    },
+    {
+      key: "stockCount",
+      label: "Stock",
+      type: "number",
+      required: true,
+      min: 0,
+    },
+    {
+      key: "categoryId",
+      label: "Category",
+      type: "select",
+      required: true,
+      options: categories.map((cat) => ({ value: cat.id, label: cat.name })),
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "select",
+      required: true,
+      options: [
+        { value: "draft", label: "Draft" },
+        { value: "published", label: "Published" },
+        { value: "archived", label: "Archived" },
+      ],
+    },
+  ];
+
+  // Bulk actions configuration
+  const bulkActions: BulkAction[] = [
+    {
+      id: "publish",
+      label: "Publish",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "draft",
+      label: "Set as Draft",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "archive",
+      label: "Archive",
+      variant: "warning",
+      confirm: false,
+    },
+    {
+      id: "update-stock",
+      label: "Update Stock",
+      variant: "default",
+      confirm: false,
+      requiresInput: true,
+      inputConfig: {
+        key: "stockCount",
+        label: "Stock Count",
+        type: "number",
+        required: true,
+        min: 0,
+      },
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      variant: "danger",
+      confirm: true,
+      confirmTitle: "Delete Products",
+      confirmMessage: `Are you sure you want to delete ${
+        selectedIds.length
+      } product${selectedIds.length === 1 ? "" : "s"}? This cannot be undone.`,
+    },
+  ];
+
+  // Bulk action handler
+  const handleBulkAction = async (actionId: string, input?: any) => {
+    try {
+      setActionLoading(true);
+      const response = await apiService.post<{ success: boolean }>(
+        "/api/seller/products/bulk",
+        {
+          action: actionId,
+          ids: selectedIds,
+          input,
+        }
+      );
+
+      if (response.success) {
+        await loadProducts();
+        setSelectedIds([]);
+      }
+    } catch (error) {
+      console.error("Bulk action failed:", error);
+      alert("Failed to perform bulk action");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const product = products.find((p) => p.id === id);
+      if (!product) return;
+
+      await productsService.delete(product.slug);
+      await loadProducts();
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+      alert("Failed to delete product");
     }
   };
 
@@ -142,12 +308,286 @@ export default function ProductsPage() {
 
         {/* Table View */}
         {!loading && view === "table" && (
-          <ProductTable
-            products={filteredProducts}
-            isLoading={loading}
-            onRefresh={loadProducts}
+          <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-gray-200 bg-gray-50">
+                  <tr>
+                    <th className="w-12 px-6 py-3">
+                      <TableCheckbox
+                        checked={
+                          selectedIds.length === filteredProducts.length &&
+                          filteredProducts.length > 0
+                        }
+                        indeterminate={
+                          selectedIds.length > 0 &&
+                          selectedIds.length < filteredProducts.length
+                        }
+                        onChange={(checked) => {
+                          setSelectedIds(
+                            checked ? filteredProducts.map((p) => p.id) : []
+                          );
+                        }}
+                        aria-label="Select all products"
+                      />
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stock
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {/* Quick Create Row */}
+                  <QuickCreateRow
+                    fields={fields}
+                    onSave={async (values) => {
+                      try {
+                        // Create product via API directly since service requires more fields
+                        await apiService.post("/api/seller/products", {
+                          name: values.name,
+                          price: values.price,
+                          stockCount: values.stockCount,
+                          categoryId: values.categoryId,
+                          status: values.status,
+                          images: values.images ? [values.images] : [],
+                          description: "", // Required field
+                          slug: values.name.toLowerCase().replace(/\s+/g, "-"),
+                        });
+                        await loadProducts();
+                      } catch (error) {
+                        console.error("Failed to create product:", error);
+                        throw error;
+                      }
+                    }}
+                    resourceName="product"
+                    defaultValues={{
+                      status: "draft",
+                      stockCount: 0,
+                      price: 0,
+                    }}
+                  />
+
+                  {/* Product Rows */}
+                  {filteredProducts.map((product) => {
+                    const isEditing = editingId === product.id;
+                    const category = categories.find(
+                      (c) => c.id === product.categoryId
+                    );
+
+                    if (isEditing) {
+                      return (
+                        <InlineEditRow
+                          key={product.id}
+                          fields={fields}
+                          initialValues={{
+                            images: product.images?.[0] || "",
+                            name: product.name,
+                            price: product.price,
+                            stockCount: product.stockCount,
+                            categoryId: product.categoryId || "",
+                            status: product.status,
+                          }}
+                          onSave={async (values) => {
+                            try {
+                              await apiService.patch(
+                                `/api/products/${product.slug}`,
+                                {
+                                  ...values,
+                                  images: values.images
+                                    ? [values.images]
+                                    : product.images,
+                                }
+                              );
+                              await loadProducts();
+                              setEditingId(null);
+                            } catch (error) {
+                              console.error("Failed to update product:", error);
+                              throw error;
+                            }
+                          }}
+                          onCancel={() => setEditingId(null)}
+                          resourceName="product"
+                        />
+                      );
+                    }
+
+                    const isLowStock =
+                      product.stockCount <= (product.lowStockThreshold || 5) &&
+                      product.stockCount > 0;
+                    const isOutOfStock = product.stockCount === 0;
+
+                    return (
+                      <tr
+                        key={product.id}
+                        className="hover:bg-gray-50"
+                        onDoubleClick={() => setEditingId(product.id)}
+                      >
+                        {/* Checkbox */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <TableCheckbox
+                            checked={selectedIds.includes(product.id)}
+                            onChange={(checked) => {
+                              setSelectedIds((prev) =>
+                                checked
+                                  ? [...prev, product.id]
+                                  : prev.filter((id) => id !== product.id)
+                              );
+                            }}
+                            aria-label={`Select ${product.name}`}
+                          />
+                        </td>
+
+                        {/* Product */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden">
+                              {product.images?.[0] ? (
+                                <img
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                {product.name}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {product.slug}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Price */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-gray-900">
+                            ₹{product.price?.toLocaleString("en-IN") || "0"}
+                          </div>
+                          {product.originalPrice &&
+                            product.originalPrice > product.price && (
+                              <div className="text-xs text-gray-500 line-through">
+                                ₹{product.originalPrice.toLocaleString("en-IN")}
+                              </div>
+                            )}
+                        </td>
+
+                        {/* Stock */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`font-medium ${
+                              isOutOfStock
+                                ? "text-red-600"
+                                : isLowStock
+                                ? "text-yellow-600"
+                                : "text-gray-900"
+                            }`}
+                          >
+                            {product.stockCount}
+                          </span>
+                          {isLowStock && (
+                            <div className="text-xs text-yellow-600 mt-1">
+                              Low stock
+                            </div>
+                          )}
+                          {isOutOfStock && (
+                            <div className="text-xs text-red-600 mt-1">
+                              Out of stock
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Category */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {category?.name || "Uncategorized"}
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge status={product.status} />
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/products/${product.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                              title="View"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                            <Link
+                              href={`/seller/products/${product.slug}/edit`}
+                              className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
+                              title="Full Edit"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Link>
+                            <button
+                              onClick={() => setDeleteId(product.id)}
+                              className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Action Bar */}
+        {selectedIds.length > 0 && (
+          <BulkActionBar
+            selectedCount={selectedIds.length}
+            actions={bulkActions}
+            onAction={handleBulkAction}
+            onClearSelection={() => setSelectedIds([])}
+            loading={actionLoading}
+            resourceName="product"
           />
         )}
+
+        {/* Delete Confirmation */}
+        <ConfirmDialog
+          isOpen={deleteId !== null}
+          title="Delete Product"
+          description="Are you sure you want to delete this product? This action cannot be undone."
+          onConfirm={() => {
+            if (deleteId) handleDelete(deleteId);
+          }}
+          onClose={() => setDeleteId(null)}
+          variant="danger"
+          confirmLabel="Delete"
+        />
       </div>
     </>
   );
