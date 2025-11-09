@@ -5,11 +5,11 @@ import { COLLECTIONS } from "@/constants/database";
 // POST /api/reviews/[id]/helpful - Mark review as helpful
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
-    const { id } = params;
+    const { id } = await params;
 
     // TODO: Get user_id from session
     const userId = req.headers.get("x-user-id");

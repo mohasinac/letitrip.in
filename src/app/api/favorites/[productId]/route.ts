@@ -5,10 +5,11 @@ import { COLLECTIONS } from '@/constants/database';
 // DELETE /api/favorites/[productId] - Remove from favorites
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
+    const { productId } = await params;
     
     // TODO: Get user_id from session
     const userId = req.headers.get('x-user-id') || 'demo-user';
@@ -17,7 +18,7 @@ export async function DELETE(
     const snapshot = await db
       .collection(COLLECTIONS.FAVORITES)
       .where('user_id', '==', userId)
-      .where('product_id', '==', params.productId)
+      .where('product_id', '==', productId)
       .limit(1)
       .get();
     

@@ -5,11 +5,12 @@ import { COLLECTIONS } from '@/constants/database';
 // GET /api/admin/hero-slides/[id] - Get hero slide
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
-    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).get();
+    const { id } = await params;
+    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).get();
     
     if (!doc.exists) {
       return NextResponse.json(
@@ -34,14 +35,15 @@ export async function GET(
 // PATCH /api/admin/hero-slides/[id] - Update hero slide
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
     const body = await req.json();
+    const { id } = await params;
     
     // Check if slide exists
-    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).get();
+    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).get();
     if (!doc.exists) {
       return NextResponse.json(
         { error: 'Hero slide not found' },
@@ -64,10 +66,10 @@ export async function PATCH(
     if (body.is_active !== undefined) updateData.is_active = body.is_active;
     if (body.show_in_carousel !== undefined) updateData.show_in_carousel = body.show_in_carousel;
     
-    await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).update(updateData);
+    await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).update(updateData);
     
     return NextResponse.json({
-      id: params.id,
+      id: id,
       ...doc.data(),
       ...updateData,
     });
@@ -83,13 +85,14 @@ export async function PATCH(
 // DELETE /api/admin/hero-slides/[id] - Delete hero slide
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
+    const { id } = await params;
     
     // Check if slide exists
-    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).get();
+    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).get();
     if (!doc.exists) {
       return NextResponse.json(
         { error: 'Hero slide not found' },
@@ -98,7 +101,7 @@ export async function DELETE(
     }
     
     // Delete slide
-    await db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id).delete();
+    await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).delete();
     
     return NextResponse.json({ success: true });
   } catch (error) {

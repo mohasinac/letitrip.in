@@ -5,11 +5,11 @@ import { COLLECTIONS } from "@/constants/database";
 // GET /api/reviews/[id] - Get review details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
-    const { id } = params;
+    const { id } = await params;
 
     const doc = await db.collection(COLLECTIONS.REVIEWS).doc(id).get();
 
@@ -36,11 +36,11 @@ export async function GET(
 // PATCH /api/reviews/[id] - Update review
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     // TODO: Get user_id from session
@@ -109,11 +109,11 @@ export async function PATCH(
 // DELETE /api/reviews/[id] - Delete review
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
-    const { id } = params;
+    const { id } = await params;
 
     // TODO: Get user_id from session
     const userId = req.headers.get("x-user-id");

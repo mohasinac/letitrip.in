@@ -25,7 +25,7 @@ export interface InlineField {
   label: string;
   required?: boolean;
   options?: SelectOption[];
-  validate?: (value: any) => string | null;
+  validate?: (value: any, formData?: Record<string, any>) => string | null;
   placeholder?: string;
   disabled?: boolean;
   min?: number;

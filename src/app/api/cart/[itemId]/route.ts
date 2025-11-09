@@ -5,9 +5,10 @@ import { getCurrentUser } from '../../lib/session';
 // PATCH /api/cart/[itemId] - Update cart item quantity
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
+    const { itemId } = await params;
     const user = await getCurrentUser(request);
     
     if (!user) {
@@ -22,7 +23,7 @@ export async function PATCH(
     }
 
     // Get cart item
-    const itemDoc = await Collections.cart().doc(params.itemId).get();
+    const itemDoc = await Collections.cart().doc(itemId).get();
     
     if (!itemDoc.exists) {
       return NextResponse.json({ success: false, error: 'Cart item not found' }, { status: 404 });
@@ -59,7 +60,7 @@ export async function PATCH(
 
     return NextResponse.json({ 
       success: true, 
-      data: { id: params.itemId, quantity },
+      data: { id: itemId, quantity },
       message: 'Cart item updated'
     });
   } catch (error) {

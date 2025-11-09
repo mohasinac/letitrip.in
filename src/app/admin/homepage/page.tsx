@@ -40,15 +40,19 @@ export default function HomepageSettingsPage() {
       const response = await homepageSettingsService.getSettings();
 
       // Ensure specialEventBanner exists with default values
+      const defaultBanner = {
+        enabled: false,
+        title: "",
+        content: "",
+        link: "",
+        backgroundColor: "#2563eb",
+        textColor: "#ffffff",
+      };
+
       const loadedSettings = {
         ...response.settings,
         specialEventBanner: {
-          enabled: false,
-          title: "",
-          content: "",
-          link: "",
-          backgroundColor: "#2563eb",
-          textColor: "#ffffff",
+          ...defaultBanner,
           ...response.settings.specialEventBanner,
         },
       };
