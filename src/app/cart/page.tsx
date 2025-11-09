@@ -8,6 +8,7 @@ import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import Toast from "@/components/common/Toast";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -17,6 +18,8 @@ export default function CartPage() {
   const {
     cart,
     loading,
+    isMerging,
+    mergeSuccess,
     updateItem,
     removeItem,
     clearCart,
@@ -24,6 +27,7 @@ export default function CartPage() {
     removeCoupon,
   } = useCart();
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleClearCart = async () => {
     try {
@@ -52,12 +56,21 @@ export default function CartPage() {
     }
   };
 
+  // Show toast when merge succeeds
+  useState(() => {
+    if (mergeSuccess) {
+      setShowToast(true);
+    }
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600">Loading cart...</p>
+          <p className="mt-2 text-sm text-gray-600">
+            {isMerging ? "Merging your cart items..." : "Loading cart..."}
+          </p>
         </div>
       </div>
     );
@@ -96,6 +109,15 @@ export default function CartPage() {
 
   return (
     <>
+      {/* Toast Notification */}
+      <Toast
+        message="Your cart items have been successfully merged!"
+        type="success"
+        duration={3000}
+        show={showToast && mergeSuccess}
+        onClose={() => setShowToast(false)}
+      />
+
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200">

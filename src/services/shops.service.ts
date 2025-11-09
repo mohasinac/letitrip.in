@@ -1,5 +1,5 @@
 import { apiService } from './api.service';
-import type { Shop, PaginatedResponse } from '@/types';
+import type { Shop, PaginatedResponse, Product } from '@/types';
 
 interface ShopFilters {
   verified?: boolean;
@@ -159,6 +159,47 @@ class ShopsService {
   // Get shop statistics
   async getStats(slug: string): Promise<any> {
     return apiService.get<any>(`/shops/${slug}/stats`);
+  }
+
+  // Get products for a shop (supports pagination & basic filters)
+  async getShopProducts(
+    slug: string,
+    options?: { page?: number; limit?: number; filters?: Record<string, any> }
+  ): Promise<PaginatedResponse<Product>> {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', String(options.page));
+    if (options?.limit) params.append('limit', String(options.limit));
+    if (options?.filters) {
+      Object.entries(options.filters).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) params.append(k, String(v));
+      });
+    }
+
+    const qs = params.toString();
+    const endpoint = qs ? `/shops/${slug}/products?${qs}` : `/shops/${slug}/products`;
+    const res = await apiService.get<any>(endpoint);
+
+    return {
+      data: res.products || res.data || res,
+      pagination: res.pagination || {
+        page: options?.page || 1,
+        limit: options?.limit || 20,
+        total: (res.products || res.data || res).length || 0,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+    } as PaginatedResponse<Product>;
+  }
+  
+  // Get shop reviews (paginated)
+  async getShopReviews(slug: string, page?: number, limit?: number): Promise<any> {
+    const params = new URLSearchParams();
+    if (page) params.append('page', String(page));
+    if (limit) params.append('limit', String(limit));
+    const qs = params.toString();
+    const endpoint = qs ? `/shops/${slug}/reviews?${qs}` : `/shops/${slug}/reviews`;
+    return apiService.get<any>(endpoint);
   }
 
   // Follow shop (user feature)

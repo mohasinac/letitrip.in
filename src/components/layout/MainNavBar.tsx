@@ -253,7 +253,7 @@ export default function MainNavBar({
             <ShoppingCart className="w-6 h-6" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-yellow-500 text-gray-900 text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
-                {cartCount}
+                <span className="animate-pulse">{cartCount}</span>
               </span>
             )}
           </Link>

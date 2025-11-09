@@ -1,5 +1,6 @@
 import { apiService } from './api.service';
 import type { Category } from '@/types';
+import type { Product, PaginatedResponse } from '@/types';
 
 interface CategoryFilters {
   parentId?: string | null;
@@ -126,6 +127,70 @@ class CategoriesService {
   // Reorder categories (admin only)
   async reorder(orders: { id: string; sortOrder: number }[]): Promise<{ message: string }> {
     return apiService.post<{ message: string }>('/categories/reorder', { orders });
+  }
+
+  // Get products in a category (includes subcategories' products)
+  async getCategoryProducts(
+    slug: string, 
+    filters?: { 
+      page?: number; 
+      limit?: number;
+      includeSubcategories?: boolean;
+      [key: string]: any;
+    }
+  ): Promise<PaginatedResponse<Product>> {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value));
+        }
+      });
+    }
+
+    const qs = params.toString();
+    const endpoint = qs 
+      ? `/categories/${slug}/products?${qs}` 
+      : `/categories/${slug}/products`;
+    
+    const res = await apiService.get<any>(endpoint);
+    return {
+      data: res.products || res.data || res,
+      pagination: res.pagination || {
+        page: filters?.page || 1,
+        limit: filters?.limit || 20,
+        total: (res.products || res.data || res).length || 0,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+    };
+  }
+
+  // Get immediate subcategories of a category
+  async getSubcategories(slug: string): Promise<Category[]> {
+    const res = await apiService.get<any>(`/categories/${slug}/subcategories`);
+    return res.data || res.subcategories || res || [];
+  }
+
+  // Get similar categories (siblings or related)
+  async getSimilarCategories(slug: string, limit?: number): Promise<Category[]> {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', String(limit));
+    
+    const qs = params.toString();
+    const endpoint = qs 
+      ? `/categories/${slug}/similar?${qs}` 
+      : `/categories/${slug}/similar`;
+    
+    const res = await apiService.get<any>(endpoint);
+    return res.data || res.categories || res || [];
+  }
+
+  // Get full category hierarchy path (breadcrumb)
+  async getCategoryHierarchy(slug: string): Promise<Category[]> {
+    const res = await apiService.get<any>(`/categories/${slug}/hierarchy`);
+    return res.data || res.hierarchy || res || [];
   }
 }
 

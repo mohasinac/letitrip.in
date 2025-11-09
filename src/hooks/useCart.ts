@@ -10,6 +10,8 @@ export function useCart() {
   const [cart, setCart] = useState<CartSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMerging, setIsMerging] = useState(false);
+  const [mergeSuccess, setMergeSuccess] = useState(false);
 
   // Load cart (authenticated or guest)
   const loadCart = useCallback(async () => {
@@ -204,6 +206,10 @@ export function useCart() {
     if (guestItems.length === 0) return;
 
     try {
+      setIsMerging(true);
+      setMergeSuccess(false);
+      setError(null);
+
       await cartService.mergeGuestCart({
         guestCartItems: guestItems.map(item => ({
           productId: item.productId,
@@ -215,10 +221,17 @@ export function useCart() {
       // Clear guest cart after merge
       cartService.clearGuestCart();
       
+      // Show success message
+      setMergeSuccess(true);
+      setTimeout(() => setMergeSuccess(false), 3000);
+      
       // Reload cart
       await loadCart();
     } catch (err: any) {
       console.error('Failed to merge guest cart:', err);
+      setError(err.message || 'Failed to merge cart items');
+    } finally {
+      setIsMerging(false);
     }
   }, [user, loadCart]);
 
@@ -238,6 +251,8 @@ export function useCart() {
     cart,
     loading,
     error,
+    isMerging,
+    mergeSuccess,
     addItem,
     updateItem,
     removeItem,

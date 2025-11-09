@@ -166,6 +166,16 @@ className = "hidden md:block lg:flex";
 - `products.service.ts`: Product management
 - `cart.service.ts`: Shopping cart operations
 - `orders.service.ts`: Order processing
+- `categories.service.ts`: Category operations with hierarchy
+- `shops.service.ts`: Shop management and products
+
+### Custom Hooks
+
+- `useCart.ts`: Shopping cart state with guest support
+- `useAuctionSocket.ts`: Real-time auction updates
+- `useMediaUpload.ts`: File upload handling
+- `useMobile.ts`: Mobile detection utilities
+- `useAccessibility.ts`: Accessibility utilities (keyboard nav, focus trap, ARIA)
 
 ### Layout Components
 
@@ -174,6 +184,14 @@ className = "hidden md:block lg:flex";
 - `SubNavbar.tsx`: Category navigation
 - `Footer.tsx`: Site footer
 - `MobileSidebar.tsx`: Mobile menu
+
+### Mobile Components
+
+- `MobileStickyBar.tsx`: Sticky bottom action bar for products/auctions
+- `MobileFilterDrawer.tsx`: Bottom sheet filter drawer with backdrop
+- `LoadingSkeleton.tsx`: Loading states (card, list, detail, grid)
+- `ErrorState.tsx`: Error handling with retry button
+- `EmptyState.tsx`: Empty state messages with actions
 
 ### Real-time Features
 
@@ -200,6 +218,9 @@ fetch('/api/products');
 
 // Don't suggest terminal commands
 // Run them directly with run_in_terminal
+
+// Don't forget mobile optimization
+// Desktop-only design without responsive classes
 ```
 
 ### ✅ Do This Instead
@@ -214,6 +235,13 @@ const result = await someService.method();
 
 // Edit files directly with tools
 // Run commands directly with tools
+
+// Use mobile detection hooks
+import { useIsMobile } from "@/hooks/useMobile";
+const isMobile = useIsMobile();
+
+// Responsive design
+className = "flex flex-col md:flex-row gap-4";
 ```
 
 ## Domain-Specific Knowledge
@@ -279,6 +307,120 @@ node scripts/monitor-production.js
 3. **Upload errors**: Verify Firebase Storage rules
 4. **Build errors**: Run `npm run build` to check
 
+## Mobile Optimization Guide
+
+### Mobile Detection Utilities
+
+**Location**: `src/hooks/useMobile.ts`
+
+```typescript
+// Detect mobile viewport
+import { useIsMobile, useDeviceType, useBreakpoint } from "@/hooks/useMobile";
+
+const isMobile = useIsMobile(768); // Custom breakpoint
+const deviceType = useDeviceType(); // 'mobile' | 'tablet' | 'desktop'
+const isTabletUp = useBreakpoint("md"); // Tailwind breakpoint
+
+// Platform detection
+import { isIOS, isAndroid } from "@/hooks/useMobile";
+if (isIOS()) {
+  /* iOS-specific code */
+}
+if (isAndroid()) {
+  /* Android-specific code */
+}
+
+// Touch device detection
+const isTouch = useIsTouchDevice();
+
+// Viewport dimensions
+const { width, height } = useViewport();
+```
+
+### Mobile Components
+
+**MobileStickyBar** (`src/components/common/MobileStickyBar.tsx`)
+
+- Sticky bottom action bar for product/auction pages
+- Auto-hides on desktop (useIsMobile hook)
+- Supports both product and auction modes
+- Price/bid display with add to cart/place bid buttons
+
+```typescript
+<MobileStickyBar
+  type="product" // or "auction"
+  price={1999}
+  originalPrice={2999}
+  inStock={true}
+  onAddToCart={handleAddToCart}
+  onBuyNow={handleBuyNow}
+  onAddToWishlist={handleWishlist}
+/>
+```
+
+**MobileFilterDrawer** (`src/components/common/MobileFilterDrawer.tsx`)
+
+- Bottom sheet with smooth slide-up animation
+- Auto body scroll lock when open
+- Backdrop overlay
+- Sticky header and footer
+- Apply/Reset buttons
+
+```typescript
+<MobileFilterDrawer
+  isOpen={isFilterOpen}
+  onClose={() => setIsFilterOpen(false)}
+  onApply={handleApply}
+  onReset={handleReset}
+  title="Filters"
+>
+  {/* Filter content */}
+</MobileFilterDrawer>
+```
+
+### Responsive Design Patterns
+
+**Breakpoints** (from Tailwind config):
+
+- `sm`: 640px - Small devices
+- `md`: 768px - Tablets
+- `lg`: 1024px - Laptops
+- `xl`: 1280px - Desktops
+- `2xl`: 1536px - Large screens
+
+**Mobile-First Approach**:
+
+```typescript
+// Stack vertically on mobile, horizontal on desktop
+className = "flex flex-col md:flex-row gap-4";
+
+// Hide on mobile, show on desktop
+className = "hidden md:block";
+
+// Show on mobile only
+className = "block md:hidden";
+
+// Touch targets (minimum 44px)
+className = "min-h-[44px] min-w-[44px]";
+```
+
+**Common Mobile Patterns**:
+
+- Horizontal scroll sections with arrows
+- Collapsible filter sidebars → bottom drawers
+- Sticky action bars at bottom
+- Hamburger menus for navigation
+- Touch-optimized carousels
+
+### Mobile Testing Checklist
+
+1. **Viewport sizes**: Test 375px (mobile), 768px (tablet), 1024px+ (desktop)
+2. **Touch targets**: All buttons minimum 44×44px
+3. **Gestures**: Swipe, pinch-to-zoom where applicable
+4. **Orientation**: Both portrait and landscape
+5. **Performance**: Fast load times on mobile networks
+6. **Keyboard**: Mobile keyboard doesn't break layout
+
 ## Best Practices for AI Agents
 
 ### 1. Context Gathering
@@ -294,6 +436,7 @@ node scripts/monitor-production.js
 - **Match patterns**: Follow existing code style
 - **Use services**: Never bypass the service layer
 - **Test immediately**: Run and verify changes
+- **Mobile-first**: Consider mobile UX in all components
 
 ### 3. Communication
 
@@ -356,6 +499,89 @@ npm run lint            # Lint code
 - **insert_edit_into_file**: Complex edits with context
 - **run_in_terminal**: Execute commands (PowerShell on Windows)
 
+## Accessibility Support
+
+### Available Utilities (`src/hooks/useAccessibility.ts`)
+
+```typescript
+// Focus management
+const containerRef = useFocusTrap(isActive);
+
+// Keyboard navigation
+const { focusedIndex, handleKeyDown } = useKeyboardNavigation(items, onSelect, {
+  loop: true,
+  initialIndex: 0,
+});
+
+// Screen reader announcements
+const { message, announce } = useAnnouncer();
+announce("Item added to cart", "polite");
+
+// Unique IDs for ARIA
+const id = useId("dropdown");
+
+// Motion preferences
+const prefersReducedMotion = usePrefersReducedMotion();
+
+// ARIA labels
+const ratingLabel = getRatingLabel(4.5, 5); // "Rated 4.5 out of 5 stars"
+const priceLabel = getPriceLabel(1999); // "Price: 1,999 INR"
+```
+
+### Accessibility Components (`src/components/common/Accessibility.tsx`)
+
+```typescript
+// Skip link for keyboard users
+<SkipToContent contentId="main-content" />
+
+// Live region for dynamic updates
+<LiveRegion message="Loading..." priority="polite" />
+
+// Screen reader announcements
+<Announcer message="Item added to cart" />
+```
+
+### Best Practices
+
+- All interactive elements have min 44×44px touch targets
+- Keyboard navigation supported (Tab, Arrow keys, Enter, Escape)
+- ARIA labels on all images and buttons
+- Focus visible on all interactive elements
+- Screen reader compatible
+- Reduced motion support for animations
+
+## Testing Infrastructure
+
+### Automated Tests
+
+**Location**: `scripts/test-pages.js`
+
+Tests all major API endpoints:
+
+- Products (filters, pagination, search)
+- Shops (listing, detail, products, reviews)
+- Categories (tree, products, subcategories, hierarchy)
+- Auctions (filters, status)
+- Cart (merge functionality)
+
+```bash
+# Run automated API tests
+node scripts/test-pages.js
+```
+
+### Manual Testing
+
+**Location**: `TESTING-GUIDE.md`
+
+Comprehensive checklists for:
+
+- Functionality testing (all pages)
+- Guest cart flow
+- Mobile responsiveness
+- Accessibility (keyboard, screen readers)
+- Performance (load times, API calls)
+- Deployment readiness
+
 ## Remember
 
 1. **No mocks** - Real APIs are ready
@@ -364,6 +590,8 @@ npm run lint            # Lint code
 4. **Match patterns** - Follow existing code style
 5. **Test changes** - Verify immediately
 6. **Be concise** - Direct action over explanation
+7. **Mobile-first** - Always consider responsive design
+8. **Accessible** - Support keyboard, screen readers, and touch
 
 ---
 
