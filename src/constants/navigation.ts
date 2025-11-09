@@ -189,6 +189,7 @@ export const ADMIN_MENU_ITEMS = [
       { id: "hero-slides", name: "Hero Slides", link: "/admin/hero-slides", icon: "image" },
       { id: "featured-sections", name: "Featured Sections", link: "/admin/featured-sections", icon: "star" },
       { id: "categories", name: "Categories", link: "/admin/categories", icon: "folder-tree" },
+      { id: "static-assets", name: "Static Assets", link: "/admin/static-assets", icon: "file" },
     ]
   },
   {
