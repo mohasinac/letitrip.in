@@ -7,8 +7,8 @@ export const siteConfig = {
   name: "Let It Rip",
   description:
     "India's trusted seller of authentic imported collectibles - Beyblades, Pokemon TCG, Yu-Gi-Oh TCG, Transformers, Hot Wheels, stickers & more! In-stock items ship in 3-7 days. We handle all customs - you pay zero import duties!",
-  url: "https://justforview.in",
-  ogImage: "https://justforview.in/og-image.jpg",
+  url: "https://letitrip.in",
+  ogImage: "https://letitrip.in/og-image.jpg",
   links: {
     twitter: "https://twitter.com/letitrip",
     facebook: "https://facebook.com/letitrip",

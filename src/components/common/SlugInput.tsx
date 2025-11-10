@@ -47,7 +47,7 @@ export default function SlugInput({
   value,
   onChange,
   sourceText,
-  baseUrl = "https://justforview.in",
+  baseUrl = "https://letitrip.in",
   placeholder = "auto-generated-slug",
   disabled = false,
   error,

@@ -48,7 +48,7 @@ class DiscordNotifier {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: message,
-          username: "JustForView Bot",
+          username: "Letitrip Bot",
         }),
       });
     } catch (error) {
@@ -70,7 +70,7 @@ class DiscordNotifier {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "JustForView Bot",
+          username: "Letitrip Bot",
           embeds: [embed],
         }),
       });
@@ -107,7 +107,7 @@ class DiscordNotifier {
       ],
       timestamp: new Date().toISOString(),
       footer: {
-        text: "JustForView.in Error Monitor",
+        text: "Letitrip.in Error Monitor",
       },
     });
   }

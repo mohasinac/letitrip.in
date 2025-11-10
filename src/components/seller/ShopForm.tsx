@@ -139,7 +139,7 @@ export default function ShopForm({
                 )}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              URL: justforview.in/shops/{slug || "your-slug"}
+              URL: letitrip.in/shops/{slug || "your-slug"}
             </p>
           </div>
 

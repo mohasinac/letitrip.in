@@ -4,11 +4,11 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Admin Dashboard - JustForView.in",
-    default: "Admin Dashboard - JustForView.in",
+    template: "%s | Admin Dashboard - Letitrip",
+    default: "Admin Dashboard - Letitrip",
   },
   description:
-    "Manage users, shops, products, and platform settings on JustForView.in",
+    "Manage users, shops, products, and platform settings on Letitrip",
 };
 
 export default function AdminLayout({

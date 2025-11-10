@@ -222,7 +222,7 @@ export default function CartPage() {
               {!user && (
                 <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-900">
-                    <strong>New to JustForView?</strong> Create an account to
+                    <strong>New to Letitrip?</strong> Create an account to
                     track your order and enjoy faster checkout next time.
                   </p>
                   <Link
