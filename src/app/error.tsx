@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
 
 export default function Error({
   error,
@@ -11,156 +10,79 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const { mode } = useModernTheme();
-
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error("Global error caught:", error);
+    console.error("Application error:", error);
   }, [error]);
 
-  const isDevelopment = process.env.NODE_ENV === "development";
-
   return (
-    <div
-      className={`min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 ${
-        mode === "dark" ? "bg-gray-900" : "bg-gray-50"
-      }`}
-    >
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <div className="mx-auto h-24 w-24 text-red-500 mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
+        <div className="mb-6">
+          <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
             <svg
+              className="w-12 h-12 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              className="w-full h-full"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={1}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               />
             </svg>
           </div>
-          <h1
-            className={`text-3xl font-bold mb-2 ${
-              mode === "dark" ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Oops! Something went wrong
-          </h1>
-          <p
-            className={`text-lg mb-8 ${
-              mode === "dark" ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            {isDevelopment
-              ? "An unexpected error occurred. Check the console for details."
-              : "We're sorry, but something unexpected happened. Our team has been notified."}
-          </p>
         </div>
-      </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div
-          className={`py-8 px-4 shadow sm:rounded-lg sm:px-10 ${
-            mode === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"
-          }`}
-        >
-          <div className="space-y-4">
-            <button
-              onClick={reset}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors"
-            >
-              Try Again
-            </button>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Oops! Something went wrong
+        </h1>
 
+        <p className="text-gray-600 mb-6">
+          We encountered an unexpected error. Don't worry, we're on it!
+        </p>
+
+        {process.env.NODE_ENV === "development" && error.message && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
+            <p className="text-sm font-mono text-red-800 break-words">
+              {error.message}
+            </p>
+            {error.digest && (
+              <p className="text-xs text-red-600 mt-2">
+                Error ID: {error.digest}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={reset}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-md hover:shadow-lg"
+          >
+            Try Again
+          </button>
+
+          <Link
+            href="/"
+            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Go Home
+          </Link>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500">
+            Need help?{" "}
             <Link
-              href="/"
-              className={`w-full block text-center py-3 px-4 rounded-md font-medium transition-colors ${
-                mode === "dark"
-                  ? "border border-gray-600 hover:bg-gray-700 text-gray-200"
-                  : "border border-gray-300 hover:bg-gray-50 text-gray-700"
-              }`}
-            >
-              Go Home
-            </Link>
-
-            <Link
-              href="/contact"
-              className="w-full block text-center text-green-600 hover:text-green-700 py-2 px-4 text-sm transition-colors"
+              href="/support/ticket"
+              className="text-red-600 hover:text-red-700 font-medium"
             >
               Contact Support
             </Link>
-
-            {isDevelopment && (
-              <div className="mt-8">
-                <details className="cursor-pointer">
-                  <summary
-                    className={`text-sm font-medium mb-2 ${
-                      mode === "dark" ? "text-gray-200" : "text-gray-700"
-                    }`}
-                  >
-                    Error Details (Development Only)
-                  </summary>
-                  <div
-                    className={`border rounded-md p-4 ${
-                      mode === "dark"
-                        ? "bg-red-900 border-red-700"
-                        : "bg-red-50 border-red-200"
-                    }`}
-                  >
-                    <div className="text-sm">
-                      <div
-                        className={`font-medium mb-2 ${
-                          mode === "dark" ? "text-red-200" : "text-red-800"
-                        }`}
-                      >
-                        Error: {error.name}
-                      </div>
-                      <div
-                        className={`mb-4 ${
-                          mode === "dark" ? "text-red-300" : "text-red-700"
-                        }`}
-                      >
-                        {error.message}
-                      </div>
-                      {error.digest && (
-                        <div
-                          className={`mb-4 ${
-                            mode === "dark" ? "text-red-400" : "text-red-600"
-                          }`}
-                        >
-                          <strong>Digest:</strong> {error.digest}
-                        </div>
-                      )}
-                      {error.stack && (
-                        <div>
-                          <div
-                            className={`font-medium mb-2 ${
-                              mode === "dark" ? "text-red-200" : "text-red-800"
-                            }`}
-                          >
-                            Stack Trace:
-                          </div>
-                          <pre
-                            className={`text-xs whitespace-pre-wrap p-2 rounded overflow-auto max-h-40 ${
-                              mode === "dark"
-                                ? "text-red-300 bg-red-800"
-                                : "text-red-600 bg-red-100"
-                            }`}
-                          >
-                            {error.stack}
-                          </pre>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </details>
-              </div>
-            )}
-          </div>
+          </p>
         </div>
       </div>
     </div>

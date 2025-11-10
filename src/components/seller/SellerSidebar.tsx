@@ -1,231 +1,359 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
-  Truck,
-  TicketPercent,
-  Megaphone,
-  Bell,
-  BarChart3,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Store,
-  TrendingUp,
-  DollarSign,
-} from "lucide-react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useModernTheme } from "@/contexts/ModernThemeContext";
-import { SELLER_ROUTES } from "@/constants/routes";
+import {
+  LayoutDashboard,
+  Store,
+  Package,
+  ShoppingCart,
+  RotateCcw,
+  Ticket,
+  BarChart3,
+  DollarSign,
+  Star,
+  Gavel,
+  ChevronDown,
+  ChevronRight,
+  Search,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface SellerSidebarProps {
-  open?: boolean;
-  onToggle?: (open: boolean) => void;
-  unreadAlerts?: number;
+interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  children?: NavItem[];
 }
 
-const sellerMenuItems = [
+const navigation: NavItem[] = [
   {
-    label: "Dashboard",
+    title: "Dashboard",
+    href: "/seller",
     icon: LayoutDashboard,
-    href: SELLER_ROUTES.DASHBOARD,
   },
   {
-    label: "Shop Setup",
+    title: "My Shops",
+    href: "/seller/my-shops",
     icon: Store,
-    href: SELLER_ROUTES.SHOP_SETUP,
   },
   {
-    label: "Products",
-    icon: ShoppingCart,
-    href: SELLER_ROUTES.PRODUCTS,
-  },
-  {
-    label: "Orders",
+    title: "Products",
+    href: "/seller/products",
     icon: Package,
-    href: SELLER_ROUTES.ORDERS,
+    children: [
+      {
+        title: "All Products",
+        href: "/seller/products",
+        icon: Package,
+      },
+      {
+        title: "Add Product",
+        href: "/seller/products/add",
+        icon: Package,
+      },
+    ],
   },
   {
-    label: "Shipments",
-    icon: Truck,
-    href: SELLER_ROUTES.SHIPMENTS,
+    title: "Auctions",
+    href: "/seller/auctions",
+    icon: Gavel,
+    children: [
+      {
+        title: "All Auctions",
+        href: "/seller/auctions",
+        icon: Gavel,
+      },
+      {
+        title: "Create Auction",
+        href: "/seller/auctions/create",
+        icon: Gavel,
+      },
+    ],
   },
   {
-    label: "Coupons",
-    icon: TicketPercent,
-    href: SELLER_ROUTES.COUPONS,
+    title: "Orders",
+    href: "/seller/orders",
+    icon: ShoppingCart,
   },
   {
-    label: "Sales",
-    icon: Megaphone,
-    href: SELLER_ROUTES.SALES,
+    title: "Returns & Refunds",
+    href: "/seller/returns",
+    icon: RotateCcw,
   },
   {
-    label: "Analytics",
-    icon: BarChart3,
-    href: SELLER_ROUTES.ANALYTICS,
-  },
-  {
-    label: "Revenue",
+    title: "Revenue",
+    href: "/seller/revenue",
     icon: DollarSign,
-    href: SELLER_ROUTES.ANALYTICS + "?tab=revenue",
   },
   {
-    label: "Alerts",
-    icon: Bell,
-    href: SELLER_ROUTES.ALERTS,
-    badge: true,
+    title: "Analytics",
+    href: "/seller/analytics",
+    icon: BarChart3,
   },
   {
-    label: "Settings",
-    icon: Settings,
-    href: SELLER_ROUTES.SETTINGS,
+    title: "Reviews",
+    href: "/seller/reviews",
+    icon: Star,
+  },
+  {
+    title: "Support Tickets",
+    href: "/seller/support-tickets",
+    icon: Ticket,
+  },
+  {
+    title: "Coupons",
+    href: "/seller/coupons",
+    icon: Ticket,
   },
 ];
 
-export default function SellerSidebar({
-  open = true,
-  onToggle,
-  unreadAlerts = 0,
-}: SellerSidebarProps) {
-  const { isDark } = useModernTheme();
-  const pathname = usePathname() || "";
-  const [isCollapsed, setIsCollapsed] = useState(false);
+export function SellerSidebar() {
+  const pathname = usePathname();
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleToggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-    onToggle?.(!isCollapsed);
+  const toggleItem = (title: string) => {
+    setExpandedItems((prev) =>
+      prev.includes(title)
+        ? prev.filter((item) => item !== title)
+        : [...prev, title],
+    );
   };
 
-  const isItemActive = (href: string) => {
-    if (href === SELLER_ROUTES.DASHBOARD) {
-      return pathname === SELLER_ROUTES.DASHBOARD;
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  // Filter navigation items based on search query
+  const filterNavigation = React.useMemo(() => {
+    if (!searchQuery.trim()) return navigation;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return navigation
+      .map((item) => {
+        // Check if parent matches
+        const parentMatches =
+          item.title.toLowerCase().includes(query) ||
+          item.href.toLowerCase().includes(query);
+
+        // Check if any children match
+        const matchingChildren = item.children
+          ? item.children.filter(
+              (child) =>
+                child.title.toLowerCase().includes(query) ||
+                child.href.toLowerCase().includes(query),
+            )
+          : [];
+
+        // Include item if parent matches or has matching children
+        if (parentMatches || matchingChildren.length > 0) {
+          return {
+            ...item,
+            children:
+              matchingChildren.length > 0 ? matchingChildren : item.children,
+          };
+        }
+
+        return null;
+      })
+      .filter((item) => item !== null) as NavItem[];
+  }, [searchQuery]);
+
+  // Auto-expand sections with search results
+  React.useEffect(() => {
+    if (searchQuery.trim() && filterNavigation.length > 0) {
+      const itemsToExpand = filterNavigation
+        .filter((item) => item.children && item.children.length > 0)
+        .map((item) => item.title);
+      setExpandedItems(itemsToExpand);
     }
-    return pathname.startsWith(href);
-  };
+  }, [searchQuery, filterNavigation]);
 
-  if (!open) return null;
+  // Highlight matching text
+  const highlightText = (text: string) => {
+    if (!searchQuery.trim()) return text;
+
+    const query = searchQuery.toLowerCase();
+    const index = text.toLowerCase().indexOf(query);
+
+    if (index === -1) return text;
+
+    return (
+      <>
+        {text.slice(0, index)}
+        <span className="bg-blue-200 text-blue-900 font-semibold">
+          {text.slice(index, index + searchQuery.length)}
+        </span>
+        {text.slice(index + searchQuery.length)}
+      </>
+    );
+  };
 
   return (
-    <aside
-      className={`h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col sticky top-0 ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
-      style={{ minWidth: isCollapsed ? "5rem" : "16rem" }}
-    >
-      {/* Sidebar Header */}
-      <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 min-h-16">
-        {!isCollapsed && (
-          <h2 className="text-base font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-            Seller Panel
-          </h2>
-        )}
-        <button
-          onClick={handleToggleCollapse}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400" />
-          ) : (
-            <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400" />
-          )}
-        </button>
-      </div>
+    <aside className="hidden w-64 border-r border-gray-200 bg-white lg:block lg:fixed lg:top-[7rem] lg:bottom-0 lg:left-0 lg:z-30">
+      <div className="flex h-full flex-col">
+        {/* Logo */}
+        <div className="flex h-16 items-center border-b border-gray-200 px-6">
+          <Link href="/seller" className="flex items-center gap-2">
+            <Store className="h-6 w-6 text-blue-600" />
+            <span className="text-lg font-semibold text-gray-900">
+              Seller Hub
+            </span>
+          </Link>
+        </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 py-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
-        {sellerMenuItems.map((item, index) => {
-          const Icon = item.icon;
-          const isActive = isItemActive(item.href);
-          const showBadge = item.badge && unreadAlerts > 0;
-
-          return (
-            <React.Fragment key={item.href}>
-              <Link
-                href={item.href}
-                className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 no-underline group ${
-                  isCollapsed ? "justify-center" : ""
-                } ${
-                  isActive
-                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-600 dark:hover:text-green-400"
-                }`}
-                title={isCollapsed ? item.label : ""}
+        {/* Search */}
+        <div className="border-b border-gray-200 p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Clear search"
               >
-                <div
-                  className={`flex items-center ${
-                    isCollapsed ? "" : "min-w-10"
-                  } justify-center relative`}
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {showBadge ? (
-                    <div className="relative">
-                      <Icon
-                        className={`h-5 w-5 ${isActive ? "animate-pulse" : ""}`}
-                      />
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold animate-bounce">
-                        {unreadAlerts > 9 ? "9+" : unreadAlerts}
-                      </span>
-                    </div>
-                  ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          {filterNavigation.length === 0 ? (
+            <div className="px-3 py-8 text-center text-sm text-gray-500">
+              <p>No results found</p>
+              <p className="mt-1 text-xs">Try a different search term</p>
+            </div>
+          ) : (
+            filterNavigation.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              const expanded = expandedItems.includes(item.title);
+
+              return (
+                <div key={item.title}>
+                  <Link
+                    href={item.href}
+                    onClick={(e) => {
+                      if (item.children) {
+                        e.preventDefault();
+                        toggleItem(item.title);
+                      }
+                    }}
+                    className={cn(
+                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      active
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                    )}
+                  >
                     <Icon
-                      className={`h-5 w-5 ${isActive ? "animate-pulse" : ""}`}
+                      className={cn(
+                        "h-5 w-5",
+                        active ? "text-blue-600" : "text-gray-400",
+                      )}
                     />
+                    <span className="flex-1">{highlightText(item.title)}</span>
+                    {item.badge && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.children && (
+                      <div>
+                        {expanded ? (
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                        )}
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Submenu */}
+                  {item.children && expanded && (
+                    <div className="ml-8 mt-1 space-y-1">
+                      {item.children.map((child) => {
+                        const ChildIcon = child.icon;
+                        const childActive = isActive(child.href);
+
+                        return (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={cn(
+                              "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                              childActive
+                                ? "bg-blue-50 text-blue-700"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                            )}
+                          >
+                            <ChildIcon
+                              className={cn(
+                                "h-4 w-4",
+                                childActive ? "text-blue-600" : "text-gray-400",
+                              )}
+                            />
+                            <span>{highlightText(child.title)}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
-                {!isCollapsed && (
-                  <span
-                    className={`ml-3 text-sm ${
-                      isActive ? "font-semibold" : "font-medium"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                )}
-                {!isCollapsed && showBadge && (
-                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
-                    {unreadAlerts > 99 ? "99+" : unreadAlerts}
-                  </span>
-                )}
-              </Link>
-              {/* Add dividers for visual grouping */}
-              {(index === 1 || index === 4 || index === 7) && (
-                <div className="border-t border-gray-200 dark:border-gray-700 my-2 mx-4"></div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </nav>
+              );
+            })
+          )}
+        </nav>
 
-      {/* Sidebar Footer */}
-      <div
-        className={`p-4 border-t border-gray-200 dark:border-gray-800 ${
-          isCollapsed ? "text-center" : ""
-        }`}
-      >
-        {!isCollapsed ? (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-              <span>Store Status</span>
-              <span className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold">
-                <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
-                Active
-              </span>
-            </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              <span>Version v1.2.0</span>
-            </div>
-          </div>
-        ) : (
-          <div className="w-8 h-8 mx-auto rounded-full bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center">
-            <Store className="h-4 w-4 text-white" />
-          </div>
-        )}
+        {/* Footer */}
+        <div className="border-t border-gray-200 p-4">
+          <Link
+            href="/help"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+          >
+            <svg
+              className="h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Help & Support</span>
+          </Link>
+        </div>
       </div>
     </aside>
   );

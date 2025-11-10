@@ -1,101 +1,111 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { getAdminDb } from "@/lib/database/admin";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
+import { requireAuth, handleAuthError } from "@/app/api/lib/auth-helpers";
 
-// GET /api/user/profile - Get user profile
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/user/profile
+ * Get current user profile
+ */
+export async function GET(req: NextRequest) {
   try {
-    const user = await verifyFirebaseToken(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 },
-      );
-    }
+    const user = await requireAuth(req);
+    const userId = user.id;
 
-    const db = getAdminDb();
-    const userDoc = await db.collection("users").doc(user.uid).get();
+    const db = getFirestoreAdmin();
+    const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
 
     if (!userDoc.exists) {
-      return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const userData = userDoc.data();
+    const userData = { id: userDoc.id, ...userDoc.data() };
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: userDoc.id,
-        uid: user.uid,
-        ...userData,
-      },
-    });
-  } catch (error: any) {
-    console.error("Error fetching profile:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch profile" },
-      { status: 500 },
-    );
+    // Remove sensitive fields
+    const { password, ...safeUserData } = userData as any;
+
+    return NextResponse.json({ user: safeUserData });
+  } catch (error) {
+    return handleAuthError(error);
   }
 }
 
-// PUT /api/user/profile - Update user profile
-export async function PUT(request: NextRequest) {
+/**
+ * PATCH /api/user/profile
+ * Update current user profile
+ */
+export async function PATCH(req: NextRequest) {
   try {
-    const user = await verifyFirebaseToken(request);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 },
-      );
+    const user = await requireAuth(req);
+    const userId = user.id;
+
+    const db = getFirestoreAdmin();
+    const body = await req.json();
+
+    // Validate input
+    const { name, email, phone } = body;
+
+    if (!name || !name.trim()) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const body = await request.json();
-    const db = getAdminDb();
-
-    // Only allow updating certain fields
-    const allowedFields = ["name", "phone", "avatar", "addresses"];
-    const updates: any = {};
-
-    for (const field of allowedFields) {
-      if (body[field] !== undefined) {
-        updates[field] = body[field];
-      }
+    if (!email || !email.trim()) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    if (Object.keys(updates).length === 0) {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { success: false, error: "No valid fields to update" },
+        { error: "Invalid email format" },
         { status: 400 },
       );
     }
 
-    // Add updated timestamp
-    updates.updatedAt = new Date().toISOString();
+    // Check if email is already taken by another user
+    if (email) {
+      const existingUserSnapshot = await db
+        .collection(COLLECTIONS.USERS)
+        .where("email", "==", email)
+        .get();
+
+      if (!existingUserSnapshot.empty) {
+        const existingUser = existingUserSnapshot.docs[0];
+        if (existingUser.id !== userId) {
+          return NextResponse.json(
+            { error: "Email already in use" },
+            { status: 409 },
+          );
+        }
+      }
+    }
 
     // Update user document
-    await db.collection("users").doc(user.uid).update(updates);
+    const updateData: any = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only update phone if provided
+    if (phone && phone.trim()) {
+      updateData.phone = phone.trim();
+    }
+
+    await db.collection(COLLECTIONS.USERS).doc(userId).update(updateData);
 
     // Fetch updated user data
-    const updatedDoc = await db.collection("users").doc(user.uid).get();
-    const updatedData = updatedDoc.data();
+    const updatedDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
+    const updatedUser = { id: updatedDoc.id, ...updatedDoc.data() };
+
+    // Remove sensitive fields
+    const { password, ...safeUserData } = updatedUser as any;
 
     return NextResponse.json({
-      success: true,
-      data: {
-        id: updatedDoc.id,
-        uid: user.uid,
-        ...updatedData,
-      },
+      message: "Profile updated successfully",
+      user: safeUserData,
     });
-  } catch (error: any) {
-    console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Failed to update profile" },
-      { status: 500 },
-    );
+  } catch (error) {
+    return handleAuthError(error);
   }
 }

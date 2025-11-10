@@ -1,0 +1,469 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Filter,
+  MessageSquare,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  Search,
+  Plus,
+} from "lucide-react";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { supportService } from "@/services/support.service";
+import { TICKET_FILTERS } from "@/constants/filters";
+import { useIsMobile } from "@/hooks/useMobile";
+import type { SupportTicket } from "@/types";
+
+export default function SellerSupportTicketsPage() {
+  return (
+    <AuthGuard requireAuth allowedRoles={["seller", "admin"]}>
+      <SellerSupportTicketsContent />
+    </AuthGuard>
+  );
+}
+
+function SellerSupportTicketsContent() {
+  const isMobile = useIsMobile();
+  const [showFilters, setShowFilters] = useState(false);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [totalTickets, setTotalTickets] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [stats, setStats] = useState({
+    total: 0,
+    open: 0,
+    inProgress: 0,
+    resolved: 0,
+  });
+
+  useEffect(() => {
+    loadTickets();
+    loadStats();
+  }, [searchQuery, filterValues, currentPage]);
+
+  const loadTickets = async () => {
+    try {
+      setLoading(true);
+      const response = await supportService.getMyTickets({
+        search: searchQuery || undefined,
+        page: currentPage,
+        limit: 20,
+        ...filterValues,
+      });
+      setTickets(response.data || []);
+      setTotalTickets(response.pagination?.total || 0);
+    } catch (error) {
+      console.error("Failed to load tickets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const [totalRes, openRes, inProgressRes, resolvedRes] = await Promise.all(
+        [
+          supportService.getTicketCount({}),
+          supportService.getTicketCount({ status: "open" }),
+          supportService.getTicketCount({ status: "in_progress" }),
+          supportService.getTicketCount({ status: "resolved" }),
+        ]
+      );
+
+      setStats({
+        total: totalRes.count || 0,
+        open: openRes.count || 0,
+        inProgress: inProgressRes.count || 0,
+        resolved: resolvedRes.count || 0,
+      });
+    } catch (error) {
+      console.error("Failed to load stats:", error);
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "urgent":
+        return "text-red-600 bg-red-50";
+      case "high":
+        return "text-orange-600 bg-orange-50";
+      case "medium":
+        return "text-yellow-600 bg-yellow-50";
+      case "low":
+        return "text-blue-600 bg-blue-50";
+      default:
+        return "text-gray-600 bg-gray-50";
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "order":
+        return "📦";
+      case "product":
+        return "🛍️";
+      case "payment":
+        return "💳";
+      case "shipping":
+        return "🚚";
+      case "return":
+        return "↩️";
+      case "technical":
+        return "🔧";
+      case "account":
+        return "👤";
+      default:
+        return "❓";
+    }
+  };
+
+  const formatTimeAgo = (date: Date | string) => {
+    const now = new Date();
+    const ticketDate = new Date(date);
+    const diffInMinutes = Math.floor(
+      (now.getTime() - ticketDate.getTime()) / 60000
+    );
+
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Support Tickets</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage your support inquiries
+          </p>
+        </div>
+        <Link
+          href="/seller/support-tickets/create"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4" />
+          New Ticket
+        </Link>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Tickets</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">
+                {stats.total}
+              </p>
+            </div>
+            <div className="rounded-full bg-blue-50 p-3">
+              <MessageSquare className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Open</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">
+                {stats.open}
+              </p>
+            </div>
+            <div className="rounded-full bg-yellow-50 p-3">
+              <Clock className="h-6 w-6 text-yellow-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">In Progress</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">
+                {stats.inProgress}
+              </p>
+            </div>
+            <div className="rounded-full bg-blue-50 p-3">
+              <AlertCircle className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Resolved</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">
+                {stats.resolved}
+              </p>
+            </div>
+            <div className="rounded-full bg-green-50 p-3">
+              <CheckCircle className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <input
+            type="search"
+            placeholder="Search tickets..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        {isMobile && (
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </button>
+        )}
+      </div>
+
+      {/* Main Content with Sidebar Layout */}
+      <div className="flex gap-6">
+        {/* Desktop Filters - Always Visible Sidebar */}
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={TICKET_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({
+                ...prev,
+                [key]: value,
+              }));
+            }}
+            onApply={() => {}}
+            onReset={() => {
+              setFilterValues({});
+            }}
+            isOpen={false}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={totalTickets}
+            isLoading={loading}
+          />
+        )}
+
+        {/* Content Area */}
+        <div className="flex-1 space-y-4">
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-gray-600">Loading tickets...</div>
+            </div>
+          )}
+
+          {!loading && tickets.length === 0 && (
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
+              <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">
+                No tickets found
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                {searchQuery || Object.keys(filterValues).length > 0
+                  ? "Try adjusting your search or filters"
+                  : "Create your first support ticket to get help"}
+              </p>
+              <Link
+                href="/seller/support-tickets/create"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4" />
+                New Ticket
+              </Link>
+            </div>
+          )}
+
+          {!loading && tickets.length > 0 && (
+            <div className="space-y-3">
+              {tickets.map((ticket) => (
+                <Link
+                  key={ticket.id}
+                  href={`/seller/support-tickets/${ticket.id}`}
+                  className="block rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      {/* Header */}
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">
+                          {getCategoryIcon(ticket.category)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {ticket.subject}
+                          </h3>
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                            <span>#{ticket.id.slice(0, 8)}</span>
+                            <span>•</span>
+                            <span className="capitalize">
+                              {ticket.category}
+                            </span>
+                            {ticket.orderId && (
+                              <>
+                                <span>•</span>
+                                <span>Order #{ticket.orderId.slice(0, 8)}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                        {ticket.description ||
+                          ticket.messages?.[0]?.message ||
+                          "No description"}
+                      </p>
+
+                      {/* Meta Info */}
+                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatTimeAgo(ticket.createdAt)}
+                        </span>
+                        {ticket.assignedTo && (
+                          <span>Assigned to support agent</span>
+                        )}
+                        {ticket.lastReplyAt && (
+                          <span>
+                            Last reply {formatTimeAgo(ticket.lastReplyAt)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Status & Priority */}
+                    <div className="flex flex-col items-end gap-2">
+                      <StatusBadge status={ticket.status} />
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPriorityColor(
+                          ticket.priority
+                        )}`}
+                      >
+                        {ticket.priority}
+                      </span>
+                      {ticket.messageCount && ticket.messageCount > 0 && (
+                        <div className="flex items-center gap-1 text-xs text-gray-600">
+                          <MessageSquare className="h-3 w-3" />
+                          {ticket.messageCount} replies
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && totalTickets > 20 && (
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+              <div className="flex flex-1 justify-between sm:hidden">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  disabled={currentPage * 20 >= totalTickets}
+                  className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Showing{" "}
+                    <span className="font-medium">
+                      {(currentPage - 1) * 20 + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-medium">
+                      {Math.min(currentPage * 20, totalTickets)}
+                    </span>{" "}
+                    of <span className="font-medium">{totalTickets}</span>{" "}
+                    results
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300">
+                      {currentPage}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage((p) => p + 1)}
+                      disabled={currentPage * 20 >= totalTickets}
+                      className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Filters Drawer */}
+      {isMobile && (
+        <UnifiedFilterSidebar
+          sections={TICKET_FILTERS}
+          values={filterValues}
+          onChange={(key, value) => {
+            setFilterValues((prev) => ({
+              ...prev,
+              [key]: value,
+            }));
+          }}
+          onApply={() => {
+            setShowFilters(false);
+          }}
+          onReset={() => {
+            setFilterValues({});
+          }}
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          searchable={true}
+          mobile={true}
+          resultCount={totalTickets}
+          isLoading={loading}
+        />
+      )}
+    </div>
+  );
+}

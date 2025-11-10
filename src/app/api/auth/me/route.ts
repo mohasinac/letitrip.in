@@ -1,79 +1,76 @@
-import {
-  createApiHandler,
-  successResponse,
-  unauthorizedResponse,
-  getCorsHeaders,
-} from "@/lib/api";
-import { verifyFirebaseToken } from "@/lib/auth/firebase-api-auth";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from "next/server";
+import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { getSessionToken, verifySession } from "../../lib/session";
+import { adminDb } from "../../lib/firebase/config";
 
-/**
- * Handle OPTIONS request for CORS preflight
- * REFACTORED: Uses standardized CORS utilities
- */
-export async function OPTIONS() {
-  return new Response(null, { headers: getCorsHeaders() });
+async function meHandler(req: NextRequest) {
+  try {
+    // Get session token from cookie
+    const token = getSessionToken(req);
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "No session found" },
+        { status: 401 },
+      );
+    }
+
+    // Verify session
+    const session = await verifySession(token);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Invalid or expired session" },
+        { status: 401 },
+      );
+    }
+
+    // Get user data from Firestore
+    const userDoc = await adminDb.collection("users").doc(session.userId).get();
+
+    if (!userDoc.exists) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const userData = userDoc.data();
+
+    return NextResponse.json(
+      {
+        user: {
+          uid: userData?.uid,
+          email: userData?.email,
+          name: userData?.name,
+          role: userData?.role,
+          isEmailVerified: userData?.isEmailVerified,
+          profile: userData?.profile,
+          createdAt: userData?.createdAt,
+          lastLogin: userData?.lastLogin,
+        },
+        session: {
+          sessionId: session.sessionId,
+          expiresAt: session.exp
+            ? new Date(session.exp * 1000).toISOString()
+            : null,
+        },
+      },
+      { status: 200 },
+    );
+  } catch (error: any) {
+    console.error("Get current user error:", error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to get user data",
+        message:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred"
+            : error.message,
+      },
+      { status: 500 },
+    );
+  }
 }
 
-/**
- * GET /api/auth/me
- * REFACTORED: Uses standardized API utilities
- */
-export const GET = createApiHandler(async (request) => {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return unauthorizedResponse("Not authenticated");
-  }
-
-  const token = authHeader.substring(7);
-  const auth = getAdminAuth();
-  const decodedToken = await auth.verifyIdToken(token);
-
-  // Get user data from Firestore
-  const db = getAdminDb();
-  const userDoc = await db.collection("users").doc(decodedToken.uid).get();
-  const userData = userDoc.data();
-
-  // If Firestore document doesn't exist yet, return basic Firebase user info
-  // This handles race conditions during registration
-  if (!userData) {
-    console.log(
-      "Firestore user document not found for uid:",
-      decodedToken.uid,
-      "- returning Firebase data",
-    );
-    return successResponse({
-      id: decodedToken.uid,
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name || decodedToken.email?.split("@")[0] || "User",
-      phone: null,
-      role: "user", // Default role
-      isEmailVerified: decodedToken.email_verified || false,
-      isPhoneVerified: false,
-      addresses: [],
-      profile: {},
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    });
-  }
-
-  // Return full user data from Firestore
-  return successResponse({
-    id: decodedToken.uid,
-    uid: decodedToken.uid,
-    email: decodedToken.email,
-    name: userData?.name || userData?.displayName,
-    phone: userData?.phone,
-    role: userData?.role || "user",
-    isEmailVerified:
-      userData?.isEmailVerified || decodedToken.email_verified || false,
-    isPhoneVerified: userData?.isPhoneVerified || false,
-    addresses: userData?.addresses || [],
-    profile: userData?.profile || {},
-    createdAt: userData?.createdAt,
-    updatedAt: userData?.updatedAt,
-    lastLogin: userData?.lastLogin,
-  });
-});
+export async function GET(req: NextRequest) {
+  return withRedisRateLimit(req, meHandler, RATE_LIMITS.API);
+}

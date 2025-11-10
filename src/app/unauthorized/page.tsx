@@ -1,45 +1,58 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Shield, ArrowLeft, Home } from "lucide-react";
 
-export default function UnauthorizedPage() {
-  const router = useRouter();
-
+export default function Unauthorized() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Shield className="w-8 h-8 text-red-600" />
-          </div>
-
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Access Denied
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Sorry, you don't have permission to access this page. Please contact
-            an administrator if you believe this is an error.
-          </p>
-
-          <div className="space-y-3">
-            <button
-              onClick={() => router.back()}
-              className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
+        <div className="mb-6">
+          <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center">
+            <svg
+              className="w-12 h-12 text-orange-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Go Back
-            </button>
-
-            <Link
-              href="/"
-              className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <Home className="w-4 h-4 mr-2" />
-              Home Page
-            </Link>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
           </div>
+        </div>
+
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">401</h1>
+
+        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          Unauthorized Access
+        </h2>
+
+        <p className="text-gray-600 mb-8">
+          You need to be logged in to access this page. Please sign in to
+          continue.
+        </p>
+
+        <div className="space-y-3">
+          <Link
+            href="/login"
+            className="block w-full px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg font-semibold hover:from-orange-700 hover:to-red-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+          >
+            Sign In
+          </Link>
+
+          <Link
+            href="/register"
+            className="block w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Create Account
+          </Link>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+            ← Back to Home
+          </Link>
         </div>
       </div>
     </div>

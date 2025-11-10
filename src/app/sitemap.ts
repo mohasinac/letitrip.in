@@ -1,128 +1,221 @@
-/**
- * Dynamic Sitemap Generation
- * Generates sitemap.xml for search engines
- * Next.js 13+ App Router approach
- */
-
 import { MetadataRoute } from "next";
-import { getAdminDb } from "@/lib/database/admin";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
+// Note: This is a server component, we can fetch data directly
+async function fetchProducts() {
+  try {
+    const res = await fetch(
+      "https://letitrip.in/api/products?status=active&limit=1000",
+      {
+        next: { revalidate: 3600 }, // Cache for 1 hour
+      },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.products || [];
+  } catch (error) {
+    console.error("Failed to fetch products for sitemap:", error);
+    return [];
+  }
+}
+
+async function fetchCategories() {
+  try {
+    const res = await fetch(
+      "https://letitrip.in/api/categories?limit=1000",
+      {
+        next: { revalidate: 3600 },
+      },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.categories || [];
+  } catch (error) {
+    console.error("Failed to fetch categories for sitemap:", error);
+    return [];
+  }
+}
+
+async function fetchShops() {
+  try {
+    const res = await fetch(
+      "https://letitrip.in/api/shops?status=active&limit=1000",
+      {
+        next: { revalidate: 3600 },
+      },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.shops || [];
+  } catch (error) {
+    console.error("Failed to fetch shops for sitemap:", error);
+    return [];
+  }
+}
+
+async function fetchAuctions() {
+  try {
+    const res = await fetch(
+      "https://letitrip.in/api/auctions?status=active&limit=1000",
+      {
+        next: { revalidate: 3600 },
+      },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || data.auctions || [];
+  } catch (error) {
+    console.error("Failed to fetch auctions for sitemap:", error);
+    return [];
+  }
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const sitemapEntries: MetadataRoute.Sitemap = [];
+  const baseUrl = "https://letitrip.in";
+  const currentDate = new Date();
 
-  // Static pages
-  const staticPages = [
+  // Static pages with their priorities and change frequencies
+  const staticPages: MetadataRoute.Sitemap = [
     {
-      url: `${BASE_URL}`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
+      url: baseUrl,
+      lastModified: currentDate,
+      changeFrequency: "daily",
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
+      url: `${baseUrl}/about`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/faq`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/help`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/game`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      url: `${baseUrl}/faq`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly" as const,
+      url: `${baseUrl}/categories`,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/shops`,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/cart`,
+      lastModified: currentDate,
+      changeFrequency: "always",
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/terms`,
-      lastModified: new Date(),
-      changeFrequency: "yearly" as const,
+      url: `${baseUrl}/coupons`,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 0.7,
+    },
+    // Legal Pages
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/terms-of-service`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/refund-policy`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/shipping-policy`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/cookie-policy`,
+      lastModified: new Date("2025-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    // Auth Pages (low priority, noindex in robots)
+    {
+      url: `${baseUrl}/login`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/cookies`,
-      lastModified: new Date(),
-      changeFrequency: "yearly" as const,
+      url: `${baseUrl}/register`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
       priority: 0.3,
     },
   ];
 
-  sitemapEntries.push(...staticPages);
+  // Fetch dynamic data
+  const [products, categories, shops, auctions] = await Promise.all([
+    fetchProducts(),
+    fetchCategories(),
+    fetchShops(),
+    fetchAuctions(),
+  ]);
 
-  try {
-    const db = getAdminDb();
+  // Dynamic product pages
+  const productPages: MetadataRoute.Sitemap = products.map((product: any) => ({
+    url: `${baseUrl}/products/${product.slug}`,
+    lastModified: product.updated_at
+      ? new Date(product.updated_at)
+      : currentDate,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
 
-    // Add categories
-    const categoriesSnapshot = await db
-      .collection("categories")
-      .where("isActive", "==", true)
-      .get();
+  // Dynamic category pages
+  const categoryPages: MetadataRoute.Sitemap = categories.map(
+    (category: any) => ({
+      url: `${baseUrl}/categories/${category.slug}`,
+      lastModified: category.updated_at
+        ? new Date(category.updated_at)
+        : currentDate,
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    }),
+  );
 
-    categoriesSnapshot.docs.forEach((doc: any) => {
-      const category = doc.data();
-      sitemapEntries.push({
-        url: `${BASE_URL}/categories/${category.slug}`,
-        lastModified: category.updatedAt?.toDate() || new Date(),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      });
-    });
+  // Dynamic shop pages
+  const shopPages: MetadataRoute.Sitemap = shops.map((shop: any) => ({
+    url: `${baseUrl}/shops/${shop.slug}`,
+    lastModified: shop.updated_at ? new Date(shop.updated_at) : currentDate,
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
 
-    // Add products (limit to active products)
-    const productsSnapshot = await db
-      .collection("products")
-      .where("status", "==", "active")
-      .limit(1000) // Limit for performance
-      .get();
+  // Dynamic auction pages
+  const auctionPages: MetadataRoute.Sitemap = auctions.map((auction: any) => ({
+    url: `${baseUrl}/auctions/${auction.slug || auction.id}`,
+    lastModified: auction.updated_at
+      ? new Date(auction.updated_at)
+      : currentDate,
+    changeFrequency: "hourly" as const,
+    priority: 0.8,
+  }));
 
-    productsSnapshot.docs.forEach((doc: any) => {
-      const product = doc.data();
-      sitemapEntries.push({
-        url: `${BASE_URL}/products/${product.slug}`,
-        lastModified: product.updatedAt?.toDate() || new Date(),
-        changeFrequency: "daily",
-        priority: 0.9,
-      });
-    });
-
-    // Add shops (active sellers)
-    const shopsSnapshot = await db
-      .collection("shops")
-      .where("isActive", "==", true)
-      .where("isVerified", "==", true)
-      .limit(500)
-      .get();
-
-    shopsSnapshot.docs.forEach((doc: any) => {
-      const shop = doc.data();
-      sitemapEntries.push({
-        url: `${BASE_URL}/shops/${shop.storeSlug}`,
-        lastModified: shop.updatedAt?.toDate() || new Date(),
-        changeFrequency: "weekly",
-        priority: 0.6,
-      });
-    });
-  } catch (error) {
-    console.error("Error generating sitemap:", error);
-    // Return at least static pages if database fails
-  }
-
-  return sitemapEntries;
+  return [
+    ...staticPages,
+    ...productPages,
+    ...categoryPages,
+    ...shopPages,
+    ...auctionPages,
+  ];
 }

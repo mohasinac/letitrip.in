@@ -1,112 +1,93 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/database/admin";
+import { requireRole, handleAuthError } from "../../lib/auth-helpers";
+import { getFirestoreAdmin } from "../../lib/firebase/admin";
 
-/**
- * GET /api/seller/orders
- * List all orders for the authenticated seller
- */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const user = await requireRole(request, ["seller"]);
 
-    const token = authHeader.split("Bearer ")[1];
-    const auth = getAdminAuth();
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-    const role = decodedToken.role || "user";
-    const sellerId = uid;
-
-    // Only sellers and admins can access
-    if (role !== "seller" && role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Access denied. Seller role required." },
-        { status: 403 },
-      );
-    }
-
-    const adminDb = getAdminDb();
-
-    // Get query parameters
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
-    const search = searchParams.get("search");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const paymentStatus = searchParams.get("paymentStatus");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
 
-    // Build query
-    let query = adminDb
-      .collection("orders")
-      .where("sellerId", "==", sellerId);
+    const db = getFirestoreAdmin();
 
-    // Filter by status if provided
-    if (status && status !== "all") {
-      query = query.where("status", "==", status);
-    }
-
-    // Order by creation date (newest first)
-    query = query.orderBy("createdAt", "desc").limit(limit);
-
-    // Execute query
-    const snapshot = await query.get();
-
-    // Map documents to orders
-    let orders = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Apply search filter if provided (client-side for flexibility)
-    if (search) {
-      const searchLower = search.toLowerCase();
-      orders = orders.filter(
-        (order: any) =>
-          order.orderNumber?.toLowerCase().includes(searchLower) ||
-          order.customerName?.toLowerCase().includes(searchLower) ||
-          order.customerEmail?.toLowerCase().includes(searchLower),
-      );
-    }
-
-    // Calculate stats
-    const allOrdersSnapshot = await adminDb
-      .collection("orders")
-      .where("sellerId", "==", sellerId)
+    // Get seller's shop ID
+    const shopSnapshot = await db
+      .collection("shops")
+      .where("owner_id", "==", user.id)
+      .limit(1)
       .get();
 
-    const allOrders = allOrdersSnapshot.docs.map((doc: any) => doc.data());
+    if (shopSnapshot.empty) {
+      return NextResponse.json({ error: "Shop not found" }, { status: 404 });
+    }
 
-    const stats = {
-      total: allOrders.length,
-      pendingApproval: allOrders.filter((o: any) => o.status === "pending")
-        .length,
-      processing: allOrders.filter((o: any) => o.status === "processing")
-        .length,
-      shipped: allOrders.filter((o: any) => o.status === "shipped").length,
-      delivered: allOrders.filter((o: any) => o.status === "delivered").length,
-      cancelled: allOrders.filter((o: any) => o.status === "cancelled").length,
-      totalRevenue: allOrders
-        .filter((o: any) => o.status === "delivered")
-        .reduce((sum: number, o: any) => sum + (o.total || 0), 0),
-    };
+    const shopId = shopSnapshot.docs[0].id;
+
+    let query = db.collection("orders").where("shop_id", "==", shopId);
+
+    // Apply filters
+    if (status) {
+      query = query.where("status", "==", status) as any;
+    }
+    if (paymentStatus) {
+      query = query.where("payment_status", "==", paymentStatus) as any;
+    }
+    if (startDate) {
+      query = query.where("created_at", ">=", new Date(startDate)) as any;
+    }
+    if (endDate) {
+      query = query.where("created_at", "<=", new Date(endDate)) as any;
+    }
+
+    // Add ordering
+    query = query.orderBy("created_at", "desc") as any;
+
+    // Get total count
+    const countSnapshot = await query.get();
+    const total = countSnapshot.size;
+
+    // Apply pagination
+    const offset = (page - 1) * limit;
+    const snapshot = await query.limit(limit).offset(offset).get();
+
+    const orders = snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        customerId: data.customer_id,
+        customerName: data.customer_name,
+        customerEmail: data.customer_email,
+        status: data.status,
+        paymentStatus: data.payment_status,
+        total: data.total,
+        subtotal: data.subtotal,
+        tax: data.tax,
+        shipping: data.shipping,
+        discount: data.discount,
+        items: data.items,
+        shippingAddress: data.shipping_address,
+        trackingNumber: data.tracking_number,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+    });
 
     return NextResponse.json({
-      success: true,
       data: orders,
-      stats,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error: any) {
-    console.error("Error fetching seller orders:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to fetch orders",
-      },
-      { status: 500 },
-    );
+    return handleAuthError(error);
   }
 }

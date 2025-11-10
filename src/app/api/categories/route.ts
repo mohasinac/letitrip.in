@@ -1,70 +1,103 @@
-import { createApiHandler, successResponse } from "@/lib/api";
-import { getAdminDb } from "@/lib/database/admin";
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import { getCurrentUser } from "../lib/session";
 
-/**
- * Public endpoint to fetch categories from database
- * No authentication required - for public category browsing
- * REFACTORED: Uses standardized API utilities
- */
-export const GET = createApiHandler(async (request) => {
-  const db = getAdminDb();
-  const { searchParams } = request.nextUrl;
-  const format = searchParams.get("format"); // 'tree' or 'list'
-  const search = searchParams.get("search");
-  const limit = parseInt(searchParams.get("limit") || "1000");
+// GET /api/categories - List categories (public)
+// POST /api/categories - Create category (admin only)
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const isFeatured = searchParams.get("isFeatured");
+    const showOnHomepage = searchParams.get("showOnHomepage");
+    const parentId = searchParams.get("parentId");
 
-  // Fetch all categories from Firestore
-  const snapshot = await db
-    .collection("categories")
-    .orderBy("sortOrder", "asc")
-    .limit(limit)
-    .get();
+    let query: FirebaseFirestore.Query = Collections.categories();
 
-  let allCategories = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+    if (isFeatured !== null) {
+      query = query.where("is_featured", "==", isFeatured === "true");
+    }
+    if (showOnHomepage !== null) {
+      query = query.where("show_on_homepage", "==", showOnHomepage === "true");
+    }
+    if (parentId !== null) {
+      query = query.where(
+        "parent_id",
+        "==",
+        parentId === "null" ? null : parentId,
+      );
+    }
 
-  // Filter by search if provided
-  if (search) {
-    const searchLower = search.toLowerCase();
-    allCategories = allCategories.filter(
-      (cat: any) =>
-        cat.name?.toLowerCase().includes(searchLower) ||
-        cat.slug?.toLowerCase().includes(searchLower),
+    const snapshot = await query.limit(200).get();
+    const categories = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    return NextResponse.json({ success: true, data: categories });
+  } catch (error) {
+    console.error("Error listing categories:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to list categories" },
+      { status: 500 },
     );
   }
+}
 
-  // Filter to only active categories
-  allCategories = allCategories.filter((cat: any) => cat.isActive !== false);
-
-  // Build tree structure if requested
-  let result: any = allCategories;
-  if (format === "tree") {
-    result = buildCategoryTree(allCategories);
-  }
-
-  return successResponse(result);
-});
-
-// Helper function to build tree structure from flat category array
-function buildCategoryTree(categories: any[]): any[] {
-  const categoryMap = new Map(
-    categories.map((cat) => [cat.id, { ...cat, children: [] }]),
-  );
-  const roots: any[] = [];
-
-  for (const category of categories) {
-    const node = categoryMap.get(category.id)!;
-    if (!category.parentId) {
-      roots.push(node);
-    } else {
-      const parent = categoryMap.get(category.parentId);
-      if (parent) {
-        parent.children.push(node);
-      }
+export async function POST(request: NextRequest) {
+  try {
+    const user = await getCurrentUser(request);
+    if (user?.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "Forbidden" },
+        { status: 403 },
+      );
     }
-  }
 
-  return roots;
+    const body = await request.json();
+    const { name, slug } = body;
+    if (!name || !slug) {
+      return NextResponse.json(
+        { success: false, error: "Name and slug are required" },
+        { status: 400 },
+      );
+    }
+
+    // Slug uniqueness (global)
+    const existing = await Collections.categories()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+    if (!existing.empty) {
+      return NextResponse.json(
+        { success: false, error: "Category slug already exists" },
+        { status: 400 },
+      );
+    }
+
+    const now = new Date().toISOString();
+    const docRef = await Collections.categories().add({
+      name,
+      slug,
+      description: body.description || "",
+      parent_id: body.parent_id || null,
+      is_featured: !!body.is_featured,
+      show_on_homepage: !!body.show_on_homepage,
+      is_active: body.is_active !== false,
+      meta_title: body.meta_title || "",
+      meta_description: body.meta_description || "",
+      sort_order: body.sort_order || 0,
+      commission_rate: body.commission_rate || 0,
+      created_at: now,
+      updated_at: now,
+    });
+
+    const created = await docRef.get();
+    return NextResponse.json(
+      { success: true, data: { id: created.id, ...created.data() } },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Error creating category:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create category" },
+      { status: 500 },
+    );
+  }
 }

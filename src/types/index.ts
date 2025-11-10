@@ -1,202 +1,355 @@
 /**
- * Shared TypeScript Type Definitions
+ * Shared Type Definitions
+ *
+ * Common types used throughout the application
  */
 
-// User Types
+/**
+ * User Role
+ */
+export type UserRole = "guest" | "user" | "seller" | "admin";
+
+/**
+ * User Interface
+ */
 export interface User {
   id: string;
   email: string;
-  name: string;
-  phone?: string;
-  role: "admin" | "user" | "seller";
+  name?: string;
+  role: UserRole;
   avatar?: string;
-  addresses: Address[];
-  isOver18?: boolean; // Age verification flag
-  createdAt: string;
-  updatedAt: string;
+  phone?: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface Address {
+/**
+ * Shop Interface
+ */
+export interface Shop {
   id: string;
+  ownerId: string;
   name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-  isDefault: boolean;
+  slug: string;
+  description?: string;
+  logo?: string;
+  banner?: string;
+
+  // Contact
+  email?: string;
+  phone?: string;
+  location?: string;
+
+  // Address
+  address?: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+  };
+
+  // Categories
+  categories?: string[];
+
+  // Social
+  website?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+
+  // Business
+  gst?: string;
+  pan?: string;
+
+  // Bank details
+  bankDetails?: {
+    accountHolderName: string;
+    accountNumber: string;
+    ifscCode: string;
+    bankName: string;
+    branchName?: string;
+  };
+
+  upiId?: string;
+
+  // Policies
+  returnPolicy?: string;
+  shippingPolicy?: string;
+
+  // Stats
+  rating: number;
+  reviewCount: number;
+  productCount: number;
+  follower_count?: number;
+
+  // Flags
+  isVerified: boolean;
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+  isBanned: boolean;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Product Types
+/**
+ * Product Condition
+ */
+export type ProductCondition = "new" | "used" | "refurbished";
+
+/**
+ * Product Status
+ */
+export type ProductStatus = "draft" | "published" | "archived" | "out-of-stock";
+
+/**
+ * Product Specification
+ */
+export interface ProductSpecification {
+  name: string;
+  value: string;
+}
+
+/**
+ * Product Variant
+ */
+export interface ProductVariant {
+  name: string;
+  value: string;
+  priceAdjustment?: number;
+  stockCount?: number;
+  sku?: string;
+}
+
+/**
+ * Product Dimensions
+ */
+export interface ProductDimensions {
+  length: number;
+  width: number;
+  height: number;
+  unit: "cm" | "inch";
+  weight: number;
+  weightUnit: "kg" | "g" | "lb";
+}
+
+/**
+ * Product Interface
+ */
 export interface Product {
   id: string;
+  shopId: string;
+  categoryId: string;
+
+  // Basic info
   name: string;
   slug: string;
   description: string;
   shortDescription?: string;
+
+  // Pricing
   price: number;
-  compareAtPrice?: number;
-  cost?: number;
-  sku: string;
-  barcode?: string;
-  quantity: number;
+  originalPrice?: number;
+  costPrice?: number;
+
+  // Inventory
+  stockCount: number;
   lowStockThreshold: number;
-  weight: number; // Required for shipping calculations
-  weightUnit: "kg" | "g" | "lb" | "oz"; // Weight unit
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-    unit: "cm" | "in";
-  };
-  images: ProductImage[];
-  videos?: ProductVideo[]; // Support for product videos
-  category: string;
-  categorySlug?: string; // For display purposes
-  tags: string[];
-  status: "active" | "draft" | "archived";
-  isFeatured: boolean;
-  rating?: number;
-  reviewCount?: number;
-  sellerId: string; // Reference to seller (required)
-  seller?: {
-    id: string;
-    name?: string;
-    storeName?: string;
-    businessName?: string;
-    storeStatus?: "live" | "maintenance" | "offline";
-    isVerified?: boolean;
-  };
-  // Condition & Features
-  condition?: "new" | "used-mint" | "used-good" | "used-fair" | "damaged";
-  returnable?: boolean;
-  returnPeriod?: number; // days
-  features?: string[];
-  specifications?: { [key: string]: string };
-  seo?: {
-    title: string;
-    description: string;
-    keywords: string[];
-  };
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
+  sku?: string;
 
-export interface ProductImage {
-  url: string;
-  alt: string;
-  order: number;
-}
+  // Details
+  condition: ProductCondition;
+  brand?: string;
+  manufacturer?: string;
+  countryOfOrigin: string;
 
-export interface ProductVideo {
-  url: string;
-  title: string;
-  thumbnail?: string;
-  duration?: number; // in seconds
-  order: number;
-}
+  // Media
+  images: string[];
+  videos?: string[];
 
-// Category Types
-export interface CategorySEO {
+  // Specifications
+  specifications?: ProductSpecification[];
+  variants?: ProductVariant[];
+  dimensions?: ProductDimensions;
+
+  // Shipping
+  shippingClass?: "standard" | "express" | "heavy" | "fragile";
+
+  // Tags
+  tags?: string[];
+
+  // Policies
+  isReturnable: boolean;
+  returnWindowDays: number;
+  warranty?: string;
+
+  // SEO
   metaTitle?: string;
   metaDescription?: string;
-  altText?: string;
-  keywords?: string[];
+
+  // Scheduling
+  publishDate?: Date;
+
+  // Stats
+  rating: number;
+  reviewCount: number;
+  salesCount: number;
+  viewCount: number;
+
+  // Status
+  status: ProductStatus;
+
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+/**
+ * Category Interface
+ */
 export interface Category {
   id: string;
   name: string;
   slug: string;
   description?: string;
 
-  // SEO and Images
-  image?: string;
-  icon?: string;
-  seo?: CategorySEO;
-
-  // Hierarchy - Many-to-Many Relationship
-  parentIds?: string[]; // Multiple parent category IDs
-  parentSlugs?: string[]; // Multiple parent category slugs for easy identification
-  childIds?: string[]; // Multiple child category IDs (computed)
-  paths?: string[][]; // All possible paths from root to this category
-  minLevel?: number; // Minimum level in hierarchy (shortest path from root)
-  maxLevel?: number; // Maximum level in hierarchy (longest path from root)
-  children?: Category[]; // For tree view (computed)
-
-  // Status and Organization
-  isActive: boolean;
-  featured: boolean;
-  sortOrder: number;
-
-  // Metadata
-  productCount?: number;
-  inStockCount?: number;
-  outOfStockCount?: number;
-  lowStockCount?: number;
-  isLeaf?: boolean; // Indicates if this is a leaf category (no children)
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string; // Admin user ID
-  updatedBy: string; // Admin user ID
-}
-
-export interface CategoryFormData {
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  icon?: string;
-  parentIds?: string[]; // Multiple parents
-  isActive: boolean;
-  featured: boolean;
-  sortOrder: number;
-  seo?: CategorySEO;
-}
-
-export interface CategoryTreeNode extends Category {
-  children: CategoryTreeNode[];
+  // Hierarchy
+  parentId?: string | null;
+  path: string; // e.g., "electronics/phones/smartphones"
+  level: number;
   hasChildren: boolean;
+  childCount: number;
+
+  // Display
+  icon?: string;
+  image?: string; // Profile/card image
+  banner?: string; // Banner image for category page
+  color?: string;
+  sortOrder: number;
+
+  // Stats
+  productCount: number;
+
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+  isActive: boolean;
+
+  // SEO
+  metaTitle?: string;
+  metaDescription?: string;
+
+  // Commission
+  commissionRate: number;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Order Types
-export interface Order {
+/**
+ * Coupon Type
+ */
+export type CouponType =
+  | "percentage"
+  | "flat"
+  | "bogo"
+  | "tiered"
+  | "free-shipping";
+
+/**
+ * Coupon Status
+ */
+export type CouponStatus = "active" | "inactive" | "expired" | "used-up";
+
+/**
+ * Coupon Applicability
+ */
+export type CouponApplicability = "all" | "category" | "product";
+
+/**
+ * Tiered Discount
+ */
+export interface TieredDiscount {
+  minAmount: number;
+  discountPercentage: number;
+}
+
+/**
+ * BOGO Configuration
+ */
+export interface BogoConfig {
+  buyQuantity: number;
+  getQuantity: number;
+  discountPercentage: number;
+  applicableProducts?: string[];
+}
+
+/**
+ * Coupon Interface
+ */
+export interface Coupon {
   id: string;
-  orderNumber: string;
-  userId: string;
-  customerName?: string; // Added for seller order views
-  items: OrderItem[];
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  discount: number;
-  total: number;
-  status: OrderStatus;
-  paymentStatus: PaymentStatus;
-  paymentMethod: "razorpay" | "cod";
-  paymentId?: string;
-  shippingAddress: Address;
-  billingAddress: Address;
-  trackingNumber?: string;
-  shiprocketOrderId?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  shopId: string;
+
+  // Basic info
+  code: string;
+  name: string;
+  description?: string;
+
+  // Type & value
+  type: CouponType;
+  discountValue?: number;
+  maxDiscountAmount?: number;
+
+  // Configurations
+  tiers?: TieredDiscount[];
+  bogoConfig?: BogoConfig;
+
+  // Requirements
+  minPurchaseAmount: number;
+  minQuantity: number;
+
+  // Applicability
+  applicability: CouponApplicability;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  excludedCategories?: string[];
+  excludedProducts?: string[];
+
+  // Usage
+  usageLimit?: number;
+  usageLimitPerUser: number;
+  usageCount: number;
+
+  // Validity
+  startDate: Date;
+  endDate: Date;
+  status: CouponStatus;
+
+  // Restrictions
+  firstOrderOnly: boolean;
+  newUsersOnly: boolean;
+  canCombineWithOtherCoupons: boolean;
+
+  // Display
+  autoApply: boolean;
+  isPublic: boolean;
+  isFeatured: boolean;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface OrderItem {
-  id: string;
-  productId: string;
-  productName: string;
-  productImage: string;
-  sku: string;
-  price: number;
-  quantity: number;
-  total: number;
-}
-
+/**
+ * Order Status
+ */
 export type OrderStatus =
   | "pending"
   | "confirmed"
@@ -206,867 +359,465 @@ export type OrderStatus =
   | "cancelled"
   | "refunded";
 
+/**
+ * Payment Status
+ */
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 
-// Cart Types
-export interface CartItem {
+/**
+ * Order Item Interface
+ */
+export interface OrderItem {
   id: string;
+  orderId: string;
   productId: string;
-  quantity: number;
-  price: number;
-  name: string;
-  image?: string;
+
+  // Product details (snapshot at time of order)
+  productName: string;
+  productImage: string;
   sku?: string;
-  seller?: {
-    id: string;
+
+  // Pricing
+  price: number;
+  quantity: number;
+  total: number;
+
+  // Variant
+  variant?: string;
+
+  // Shop
+  shopId: string;
+  shopName: string;
+
+  createdAt: Date;
+}
+
+/**
+ * Order Interface
+ */
+export interface Order {
+  id: string;
+  orderNumber: string;
+  customerId: string;
+
+  // Items
+  items: OrderItem[];
+
+  // Pricing
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  discount: number;
+  total: number;
+
+  // Coupon
+  couponCode?: string;
+  couponDiscount?: number;
+
+  // Address
+  shippingAddress: {
     name: string;
-    storeName?: string;
+    phone: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
   };
-  addedAt: Date;
+
+  billingAddress?: {
+    name: string;
+    phone: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+  };
+
+  // Status
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+
+  // Payment
+  paymentMethod: "razorpay" | "paypal" | "cod";
+  paymentId?: string;
+
+  // Shipping
+  trackingNumber?: string;
+  shippingProvider?: string;
+  estimatedDelivery?: Date;
+  deliveredAt?: Date;
+
+  // Notes
+  customerNotes?: string;
+  internalNotes?: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface Cart {
+/**
+ * Review Interface
+ */
+export interface Review {
+  id: string;
   userId: string;
-  items: CartItem[];
-  updatedAt: string;
+  productId?: string;
+  shopId?: string;
+  auctionId?: string;
+  categoryId?: string;
+  orderItemId?: string; // For verification
+
+  // Content
+  rating: number;
+  title?: string;
+  comment: string;
+  media?: string[]; // Images/videos
+
+  // Verification
+  verifiedPurchase: boolean;
+
+  // Engagement
+  helpfulCount: number;
+
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+
+  // Moderation
+  isApproved: boolean;
+  moderatedAt?: Date;
+  moderatedBy?: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Auction Types
+/**
+ * Auction Status
+ */
+export type AuctionStatus =
+  | "draft"
+  | "scheduled"
+  | "live"
+  | "ended"
+  | "cancelled";
+
+/**
+ * Auction Interface
+ */
 export interface Auction {
   id: string;
-  productId: string;
-  product: Product;
-  startingPrice: number;
-  currentBid: number;
+  shopId: string;
+
+  // Basic info
+  name: string;
+  slug: string;
+  description: string;
+
+  // Media
+  images: string[];
+  videos?: string[];
+
+  // Bidding
+  startingBid: number;
   reservePrice?: number;
-  buyNowPrice?: number;
-  startTime: string;
-  endTime: string;
-  status: "upcoming" | "active" | "ended" | "cancelled";
+  currentBid: number;
+  bidCount: number;
+
+  // Timing
+  startTime: Date;
+  endTime: Date;
+
+  // Winner
   winnerId?: string;
-  bids: Bid[];
-  createdAt: string;
-  updatedAt: string;
+  finalBid?: number;
+
+  // Status
+  status: AuctionStatus;
+
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+  featuredPriority?: number;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+/**
+ * Bid Interface
+ */
 export interface Bid {
   id: string;
   auctionId: string;
   userId: string;
-  userName: string;
-  amount: number;
+  bidAmount: number;
+  bidTime: Date;
+  isWinning: boolean;
   isAutoBid: boolean;
   maxAutoBid?: number;
-  timestamp: string;
 }
 
-// Review Types
-export interface Review {
+/**
+ * Blog Post Status
+ */
+export type BlogPostStatus = "draft" | "published" | "archived";
+
+/**
+ * Blog Post Interface
+ */
+export interface BlogPost {
   id: string;
-  productId: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  rating: number;
   title: string;
-  comment: string;
-  images?: string[];
-  verified: boolean;
-  helpful: number;
-  status: "pending" | "approved" | "rejected";
-  createdAt: string;
-  updatedAt: string;
-}
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage?: string;
 
-// Payment Types
-export interface RazorpayOrder {
-  id: string;
-  entity: string;
-  amount: number;
-  currency: string;
-  receipt: string;
-  status: string;
-}
-
-// Shipping Types
-export interface ShiprocketOrder {
-  order_id: string;
-  shipment_id: string;
-  awb_code: string;
-  courier_name: string;
-  tracking_url: string;
-}
-
-export interface ShippingRate {
-  courier_name: string;
-  rate: number;
-  estimated_delivery_days: string;
-}
-
-// Analytics Types
-export interface Analytics {
-  revenue: number;
-  orders: number;
-  customers: number;
-  averageOrderValue: number;
-  topProducts: Array<{
-    productId: string;
+  // Author
+  author: {
+    id: string;
     name: string;
-    sales: number;
-    revenue: number;
-  }>;
-  salesByDay: Array<{
-    date: string;
-    sales: number;
-    orders: number;
-  }>;
-}
-
-// API Response Types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  errors?: any;
-}
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-// Filter and Search Types
-export interface ProductFilters {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  tags?: string[];
-  search?: string;
-  sort?: "price-asc" | "price-desc" | "newest" | "popular";
-  page?: number;
-  pageSize?: number;
-  sellerId?: string;
-  status?: "active" | "inactive" | "pending";
-}
-
-export interface OrderFilters {
-  status?: OrderStatus;
-  paymentStatus?: PaymentStatus;
-  startDate?: string;
-  endDate?: string;
-  search?: string;
-  page?: number;
-  pageSize?: number;
-}
-
-// Coupon Types
-export interface Coupon {
-  id: string;
-  code: string;
-  name: string;
-  description?: string;
-  type: "percentage" | "fixed" | "free_shipping" | "bogo";
-  value: number; // percentage (0-100) or fixed amount
-  minimumAmount?: number; // minimum order amount required
-  maximumAmount?: number; // maximum discount amount (for percentage coupons)
-  maxUses?: number; // total usage limit
-  maxUsesPerUser?: number; // per-user usage limit
-  usedCount: number;
-  startDate: string;
-  endDate: string;
-  status: "active" | "inactive" | "expired";
-  applicableProducts?: string[]; // product IDs
-  applicableCategories?: string[]; // category IDs
-  excludeProducts?: string[]; // excluded product IDs
-  excludeCategories?: string[]; // excluded category IDs
-  restrictions?: {
-    firstTimeOnly?: boolean;
-    newCustomersOnly?: boolean;
-    existingCustomersOnly?: boolean;
-    minQuantity?: number;
-    maxQuantity?: number;
+    avatar?: string;
   };
-  combinable?: boolean; // can be combined with other coupons
-  priority: number; // for stacking order
-  createdBy: string; // admin user ID
-  createdAt: string;
-  updatedAt: string;
+
+  // Categorization
+  category: string;
+  tags: string[];
+
+  // Status
+  status: BlogPostStatus;
+
+  // Flags
+  isFeatured: boolean;
+  showOnHomepage: boolean;
+
+  // Publishing
+  publishedAt?: Date;
+
+  // Stats
+  views: number;
+  likes: number;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface CouponUsage {
-  id: string;
-  couponId: string;
-  couponCode: string;
-  userId: string;
-  orderId: string;
-  discountAmount: number;
-  usedAt: string;
-}
-
-export interface CouponValidationResult {
-  valid: boolean;
-  coupon?: Coupon;
-  discountAmount?: number;
-  error?: string;
-  warnings?: string[];
-}
-
-export interface CouponFormData {
-  code: string;
-  name: string;
-  description: string;
-  type: "percentage" | "fixed" | "free_shipping" | "bogo";
-  value: number;
-  minimumAmount: number;
-  maximumAmount: number;
-  maxUses: number;
-  maxUsesPerUser: number;
-  startDate: string;
-  endDate: string;
-  status: "active" | "inactive";
-  applicableProducts: string[];
-  applicableCategories: string[];
-  excludeProducts: string[];
-  excludeCategories: string[];
-  restrictions: {
-    firstTimeOnly: boolean;
-    newCustomersOnly: boolean;
-    existingCustomersOnly: boolean;
-    minQuantity: number;
-    maxQuantity: number;
-  };
-  combinable: boolean;
-  priority: number;
-}
-
-// Payment Gateway Types
-export interface RazorpayConfig {
-  keyId: string;
-  keySecret: string;
-  webhookSecret: string;
-}
-
-export interface RazorpayPayment {
-  id: string;
-  orderId: string;
-  amount: number;
-  currency: string;
-  status: "created" | "authorized" | "captured" | "refunded" | "failed";
-  method: string;
-  description: string;
-  notes: any;
-  createdAt: number;
-}
-
-// Shipping Gateway Types
-export interface ShiprocketConfig {
-  email: string;
-  password: string;
-  channelId: string;
-  token?: string;
-  tokenExpiry?: number;
-}
-
-export interface ShiprocketOrderRequest {
-  order_id: string;
-  order_date: string;
-  pickup_location: string;
-  billing_customer_name: string;
-  billing_last_name: string;
-  billing_address: string;
-  billing_city: string;
-  billing_pincode: string;
-  billing_state: string;
-  billing_country: string;
-  billing_email: string;
-  billing_phone: string;
-  shipping_is_billing: boolean;
-  shipping_customer_name?: string;
-  shipping_last_name?: string;
-  shipping_address?: string;
-  shipping_city?: string;
-  shipping_pincode?: string;
-  shipping_state?: string;
-  shipping_country?: string;
-  shipping_email?: string;
-  shipping_phone?: string;
-  order_items: Array<{
-    name: string;
-    sku: string;
-    units: number;
-    selling_price: string;
-    discount?: string;
-    tax?: string;
-    hsn?: string;
-  }>;
-  payment_method: "Prepaid" | "COD";
-  shipping_charges: number;
-  giftwrap_charges?: number;
-  transaction_charges?: number;
-  total_discount?: number;
-  sub_total: number;
-  length: number;
-  breadth: number;
-  height: number;
-  weight: number;
-}
-
-export interface ShiprocketServiceabilityRequest {
-  pickup_postcode: string;
-  delivery_postcode: string;
-  weight: number;
-  cod: 0 | 1;
-}
-
-export interface ShiprocketRateCalculation {
-  courier_company_id: number;
-  courier_name: string;
-  freight_charge: number;
-  cod_charges: number;
-  other_charges: number;
-  total_charge: number;
-  etd: string;
-}
-
-// Seller Types
-export interface SellerProfile {
+/**
+ * Address Interface
+ */
+export interface Address {
   id: string;
   userId: string;
-  businessName?: string;
-  storeName?: string; // Custom store name for display
-  storeStatus: "live" | "maintenance" | "offline"; // Store operational status
-  storeDescription?: string;
-  businessType?: "individual" | "company" | "partnership";
-  gstNumber?: string;
-  panNumber?: string;
-  businessAddress?: Address;
-  bankDetails?: {
-    accountNumber: string;
-    ifscCode: string;
-    accountHolderName: string;
-    bankName: string;
-  };
-  isActive: boolean;
-  isVerified: boolean;
-  awayMode: boolean; // For temporarily stopping sales
-  awayMessage?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
-// Enhanced Seller Shop Configuration
-export interface SellerShop {
-  id: string;
-  sellerId: string;
-  storeName: string;
-  storeSlug: string;
-  description: string;
-  storeImage?: string;
-  coverImage?: string;
-  pickupAddresses: PickupAddress[];
-  defaultPickupAddressId?: string;
-  isActive: boolean;
-  isVerified: boolean;
-  seo: {
-    title: string;
-    description: string;
-    keywords: string[];
-    og_image?: string;
-  };
-  socialMedia?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-    whatsapp?: string;
-  };
-  businessInfo: {
-    businessName?: string;
-    businessType?: "individual" | "company" | "partnership";
-    gstNumber?: string;
-    panNumber?: string;
-    bankDetails?: {
-      accountNumber: string;
-      ifscCode: string;
-      accountHolderName: string;
-      bankName: string;
-      branchName?: string;
-    };
-  };
-  settings: {
-    freeShippingThreshold?: number;
-    enableCOD: boolean;
-    processingTime: number; // in days
-    returnPolicy: string;
-    shippingPolicy: string;
-  };
-  stats: {
-    totalProducts: number;
-    activeProducts: number;
-    totalOrders: number;
-    totalRevenue: number;
-    rating: number;
-    reviewCount: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PickupAddress {
-  id: string;
-  label: string; // e.g., "Main Warehouse", "Store Location"
   name: string;
   phone: string;
-  addressLine1: string;
-  addressLine2?: string;
+
+  line1: string;
+  line2?: string;
   city: string;
   state: string;
   pincode: string;
   country: string;
+
   isDefault: boolean;
-  createdAt: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Enhanced Product Types for Sellers
-export interface SellerProduct {
+/**
+ * Cart Item Interface
+ */
+export interface CartItem {
   id: string;
-  sellerId: string;
-  slug: string; // with "buy-" prefix
-  name: string;
-  description: string;
-  shortDescription?: string;
-
-  // Pricing
-  price: number;
-  compareAtPrice?: number;
-  cost?: number;
-
-  // Inventory
-  sku: string;
-  quantity: number;
-  lowStockThreshold: number;
-
-  // Category (only leaf categories allowed)
-  categoryId: string;
-  categorySlug: string;
-  tags: string[];
-
-  // Media
-  images: ProductMediaImage[];
-  videos: ProductMediaVideo[];
-
-  // Pickup & Shipping
-  pickupAddressId: string;
-  weight: number;
-  weightUnit: "kg" | "g" | "lb" | "oz";
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-    unit: "cm" | "in";
-  };
-  freeShipping: boolean;
-  shippingMethod: "seller" | "shiprocket" | "pickup";
-
-  // Condition & Features
-  condition: "new" | "used-mint" | "used-good" | "used-fair" | "damaged";
-  returnable: boolean;
-  returnPeriod?: number; // days
-  features: string[];
-  specifications: { [key: string]: string };
-
-  // SEO
-  seo: {
-    title: string;
-    description: string;
-    keywords: string[];
-    slug: string; // Auto-generated with "buy-" prefix
-  };
-
-  // Dates
-  startDate: string;
-  expirationDate?: string; // null means permanent
-
-  // Status
-  status: "active" | "draft" | "archived" | "expired";
-
-  // Timestamps
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ProductMediaImage {
-  id: string;
-  url: string;
-  alt: string;
-  order: number;
-  storage_path: string; // seller/products/{slug}/img1-img5
-  whatsappEdit?: {
-    originalUrl: string;
-    editedUrl: string;
-    frameData?: any; // 800x800 frame data
-  };
-}
-
-export interface ProductMediaVideo {
-  id: string;
-  url: string;
-  title: string;
-  thumbnail?: string;
-  duration?: number;
-  order: number;
-  storage_path: string; // seller/products/{slug}/v1 or v2
-}
-
-// Seller Coupon System (WooCommerce-style with Advanced Types)
-export interface SellerCoupon {
-  id: string;
-  sellerId: string;
-  code: string;
-  name: string;
-  description?: string;
-  type:
-    | "percentage"
-    | "fixed"
-    | "free_shipping"
-    | "bogo"
-    | "cart_discount"
-    | "buy_x_get_y_cheapest"
-    | "buy_x_get_y_percentage"
-    | "tiered_discount"
-    | "bundle_discount";
-  value: number;
-
-  // Usage Restrictions
-  minimumAmount?: number;
-  maximumAmount?: number;
-  maxUses?: number;
-  maxUsesPerUser?: number;
-  usedCount: number;
-
-  // Advanced Discount Configuration
-  advancedConfig?: {
-    // For Buy X Get Y types
-    buyQuantity?: number;
-    getQuantity?: number;
-    getDiscountType?: "free" | "percentage" | "fixed";
-    getDiscountValue?: number;
-    applyToLowest?: boolean;
-    repeatOffer?: boolean;
-
-    // For Tiered Discounts
-    tiers?: Array<{
-      minQuantity: number;
-      maxQuantity?: number;
-      discountType: "percentage" | "fixed";
-      discountValue: number;
-    }>;
-
-    // For Bundle Discounts
-    bundleProducts?: Array<{
-      productId: string;
-      quantity: number;
-    }>;
-    bundleDiscountType?: "percentage" | "fixed";
-    bundleDiscountValue?: number;
-
-    // Maximum discount limit
-    maxDiscountAmount?: number;
-  };
-
-  // Dates
-  startDate: string;
-  endDate: string;
-  isPermanent: boolean;
-
-  // Applicability
-  applicableProducts?: string[];
-  applicableCategories?: string[];
-  excludeProducts?: string[];
-  excludeCategories?: string[];
-
-  // Restrictions
-  restrictions: {
-    firstTimeOnly?: boolean;
-    newCustomersOnly?: boolean;
-    existingCustomersOnly?: boolean;
-    minQuantity?: number;
-    maxQuantity?: number;
-    allowedPaymentMethods?: ("cod" | "prepaid")[];
-    allowedUserEmails?: string[];
-    excludedUserEmails?: string[];
-  };
-
-  // Stacking
-  combinable: boolean;
-  priority: number;
-
-  // Status
-  status: "active" | "inactive" | "expired" | "scheduled";
-
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Seller Sale System
-export interface SellerSale {
-  id: string;
-  sellerId: string;
-  name: string;
-  description?: string;
-  discountType: "percentage" | "fixed";
-  discountValue: number;
-
-  // Applicability
-  applyTo: "all_products" | "specific_products" | "specific_categories";
-  productIds?: string[];
-  categoryIds?: string[];
-
-  // Shipping
-  enableFreeShipping: boolean;
-
-  // Dates
-  startDate: string;
-  endDate?: string;
-  isPermanent: boolean;
-
-  // Status
-  status: "active" | "inactive" | "scheduled" | "expired";
-
-  // Stats
-  stats: {
-    ordersCount: number;
-    revenue: number;
-    productsAffected: number;
-  };
-
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Seller Orders
-export interface SellerOrder {
-  id: string;
-  orderNumber: string;
-  sellerId: string;
-  userId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-
-  // Items
-  items: SellerOrderItem[];
-
-  // Pricing
-  subtotal: number;
-  discount: number;
-  shipping: number;
-  tax: number;
-  total: number;
-
-  // Coupon Used
-  couponId?: string;
-  couponCode?: string;
-  couponDiscount?: number;
-
-  // Sale Applied
-  saleId?: string;
-  saleDiscount?: number;
-
-  // Addresses
-  shippingAddress: Address;
-  billingAddress: Address;
-  pickupAddress: PickupAddress;
-
-  // Payment
-  paymentStatus: "pending" | "paid" | "failed" | "refunded";
-  paymentMethod: "razorpay" | "cod";
-  paymentId?: string;
-
-  // Order Status
-  status:
-    | "pending"
-    | "approved"
-    | "rejected"
-    | "processing"
-    | "shipped"
-    | "delivered"
-    | "cancelled"
-    | "refunded";
-  autoApprovedAt?: string;
-  approvedAt?: string;
-  rejectedAt?: string;
-  rejectionReason?: string;
-
-  // Shipping
-  shippingMethod: "seller" | "shiprocket";
-  trackingNumber?: string;
-  shiprocketOrderId?: string;
-  shippingLabel?: string;
-
-  // Transaction Snapshot (immutable copy)
-  transactionSnapshot: {
-    products: SellerOrderItem[];
-    pricing: {
-      subtotal: number;
-      discount: number;
-      shipping: number;
-      tax: number;
-      total: number;
-    };
-    coupon?: {
-      code: string;
-      discount: number;
-      type: string;
-    };
-    sale?: {
-      name: string;
-      discount: number;
-    };
-    timestamp: string;
-  };
-
-  // Notes
-  sellerNotes?: string;
-  customerNotes?: string;
-  internalNotes?: string;
-
-  // Timestamps
-  createdAt: string;
-  updatedAt: string;
-  deliveredAt?: string;
-}
-
-export interface SellerOrderItem {
-  id: string;
+  userId?: string; // null for guest cart
   productId: string;
+
+  // Product details
   productName: string;
-  productSlug: string;
   productImage: string;
-  sku: string;
   price: number;
+
   quantity: number;
-  total: number;
+  variant?: string;
 
-  // Product snapshot at time of order
-  snapshot: {
-    name: string;
-    description: string;
-    image: string;
-    price: number;
-    sku: string;
-    condition: string;
-  };
+  shopId: string;
+  shopName: string;
+
+  addedAt: Date;
 }
 
-// Shipments
-export interface SellerShipment {
+/**
+ * Return Status
+ */
+export type ReturnStatus =
+  | "requested"
+  | "approved"
+  | "rejected"
+  | "item-received"
+  | "refund-processed"
+  | "completed"
+  | "escalated";
+
+/**
+ * Return Reason
+ */
+export type ReturnReason =
+  | "defective"
+  | "wrong-item"
+  | "not-as-described"
+  | "damaged"
+  | "changed-mind"
+  | "other";
+
+/**
+ * Return Interface
+ */
+export interface Return {
   id: string;
-  sellerId: string;
   orderId: string;
-  orderNumber: string;
+  orderItemId: string;
+  customerId: string;
+  shopId: string;
 
-  // Shipping details
-  carrier: string;
-  trackingNumber: string;
-  shiprocketOrderId?: string;
-  shiprocketShipmentId?: string;
-
-  // Addresses
-  fromAddress: PickupAddress;
-  toAddress: Address;
-
-  // Package details
-  weight: number;
-  dimensions: {
-    length: number;
-    width: number;
-    height: number;
-    unit: "cm" | "in";
-  };
-
-  // Status
-  status:
-    | "pending"
-    | "pickup_scheduled"
-    | "in_transit"
-    | "out_for_delivery"
-    | "delivered"
-    | "failed"
-    | "returned";
-
-  // Tracking
-  trackingHistory: ShipmentTrackingEvent[];
-
-  // Labels & Documents
-  shippingLabel?: string;
-  invoiceUrl?: string;
-  manifestUrl?: string;
-
-  // Timestamps
-  createdAt: string;
-  updatedAt: string;
-  shippedAt?: string;
-  deliveredAt?: string;
-}
-
-export interface ShipmentTrackingEvent {
-  status: string;
-  location?: string;
+  // Reason
+  reason: ReturnReason;
   description: string;
-  timestamp: string;
-}
-
-// Seller Alerts/Notifications
-export interface SellerAlert {
-  id: string;
-  sellerId: string;
-  type:
-    | "new_order"
-    | "pending_approval"
-    | "pending_shipment"
-    | "low_stock"
-    | "order_delivered"
-    | "return_request"
-    | "review"
-    | "system";
-  title: string;
-  message: string;
-  severity: "info" | "warning" | "error" | "success";
-
-  // Related entities
-  orderId?: string;
-  productId?: string;
-  shipmentId?: string;
-
-  // Actions
-  actionUrl?: string;
-  actionLabel?: string;
+  media?: string[]; // Images/videos
 
   // Status
-  isRead: boolean;
-  readAt?: string;
+  status: ReturnStatus;
 
-  createdAt: string;
+  // Refund
+  refundAmount?: number;
+  refundMethod?: string;
+  refundTransactionId?: string;
+  refundedAt?: Date;
+
+  // Admin intervention
+  requiresAdminIntervention: boolean;
+  adminNotes?: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface SellerAnalytics {
-  totalRevenue: number;
-  totalOrders: number;
-  totalCustomers: number;
-  averageOrderValue: number;
-  topSellingProducts: Array<{
-    productId: string;
-    name: string;
-    sales: number;
-    revenue: number;
-  }>;
-  monthlyStats: Array<{
-    month: string;
-    revenue: number;
-    orders: number;
-  }>;
-  recentOrders: Order[];
+/**
+ * Support Ticket Status
+ */
+export type SupportTicketStatus =
+  | "open"
+  | "in-progress"
+  | "resolved"
+  | "closed"
+  | "escalated";
+
+/**
+ * Support Ticket Category
+ */
+export type SupportTicketCategory =
+  | "order-issue"
+  | "return-refund"
+  | "product-question"
+  | "account"
+  | "payment"
+  | "other";
+
+/**
+ * Support Ticket Priority
+ */
+export type SupportTicketPriority = "low" | "medium" | "high" | "urgent";
+
+/**
+ * Support Ticket Interface
+ */
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  shopId?: string; // If related to specific shop
+  orderId?: string; // If related to specific order
+
+  category: SupportTicketCategory;
+  priority: SupportTicketPriority;
+
+  subject: string;
+  description: string;
+  attachments?: string[];
+
+  status: SupportTicketStatus;
+
+  assignedTo?: string; // Support staff/admin ID
+
+  createdAt: Date;
+  updatedAt: Date;
+  resolvedAt?: Date;
+}
+
+/**
+ * Support Ticket Message Interface
+ */
+export interface SupportTicketMessage {
+  id: string;
+  ticketId: string;
+  senderId: string;
+  senderRole: UserRole;
+
+  message: string;
+  attachments?: string[];
+
+  isInternal: boolean; // Internal note visible only to staff
+
+  createdAt: Date;
+}
+
+/**
+ * Pagination Response
+ */
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+/**
+ * API Response
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: {
+    message: string;
+    code?: string;
+    details?: any;
+  };
+  meta?: Record<string, any>;
+}
+
+/**
+ * Filter Option
+ */
+export interface FilterOption {
+  label: string;
+  value: string;
+  count?: number;
+}
+
+/**
+ * Sort Option
+ */
+export interface SortOption {
+  label: string;
+  value: string;
+  order: "asc" | "desc";
 }

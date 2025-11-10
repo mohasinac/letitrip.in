@@ -1,91 +1,118 @@
 {
-  "name": "HobbiesSpot - Premium Beyblade Store",
-  "short_name": "HobbiesSpot",
-  "description": "Your premium destination for authentic Beyblades, collectibles, and accessories",
+  "name": "Let It Rip - Collectibles India",
+  "short_name": "Let It Rip",
+  "description": "India's trusted seller of authentic imported collectibles - Beyblades, Pokemon TCG, Yu-Gi-Oh TCG, Transformers, Hot Wheels, stickers & more! We handle all customs - you pay zero import duties!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0095f6",
+  "theme_color": "#2563eb",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle", "business"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "categories": ["shopping", "ecommerce"],
-  "shortcuts": [
-    {
-      "name": "Shop Products",
-      "short_name": "Shop",
-      "description": "Browse all products",
-      "url": "/products",
-      "icons": [{ "src": "/icons/shop-icon.png", "sizes": "192x192" }]
     },
     {
-      "name": "My Orders",
-      "short_name": "Orders",
-      "description": "View your orders",
-      "url": "/account/orders",
-      "icons": [{ "src": "/icons/orders-icon.png", "sizes": "192x192" }]
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
   "screenshots": [
     {
-      "src": "/screenshots/home.png",
-      "sizes": "1280x720",
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
       "type": "image/png",
-      "label": "Home Screen"
+      "form_factor": "narrow",
+      "label": "Homepage"
     },
     {
-      "src": "/screenshots/products.png",
-      "sizes": "1280x720",
+      "src": "/screenshots/mobile-products.png",
+      "sizes": "390x844",
       "type": "image/png",
-      "label": "Products Page"
+      "form_factor": "narrow",
+      "label": "Product Listings"
+    },
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Homepage - Desktop"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Categories",
+      "short_name": "Categories",
+      "description": "Explore product categories",
+      "url": "/categories",
+      "icons": [
+        {
+          "src": "/icons/categories.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "View Shops",
+      "short_name": "Shops",
+      "description": "Browse seller shops",
+      "url": "/shops",
+      "icons": [
+        {
+          "src": "/icons/shops.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "description": "Track your orders",
+      "url": "/user/orders",
+      "icons": [
+        {
+          "src": "/icons/orders.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Shopping Cart",
+      "short_name": "Cart",
+      "description": "View cart",
+      "url": "/cart",
+      "icons": [
+        {
+          "src": "/icons/cart.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

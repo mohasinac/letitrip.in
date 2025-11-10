@@ -1,686 +1,751 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Search,
-  SlidersHorizontal,
-  Grid,
-  List,
-  ChevronDown,
   ChevronRight,
+  ChevronLeft,
+  Grid as GridIcon,
+  List,
   Loader2,
-  Package,
+  Tag,
+  Home,
+  Search,
+  Filter,
 } from "lucide-react";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import WishlistButton from "@/components/wishlist/WishlistButton";
-import toast from "react-hot-toast";
-import { getProductImageUrl } from "@/utils/product";
+import { ProductCard } from "@/components/cards/ProductCard";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { PRODUCT_FILTERS } from "@/constants/filters";
+import { categoriesService } from "@/services/categories.service";
+import { productsService } from "@/services/products.service";
+import { useCart } from "@/hooks/useCart";
+import { useIsMobile } from "@/hooks/useMobile";
+import type { Category, Product } from "@/types";
 
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  compareAtPrice?: number;
-  images: Array<{ url: string; alt: string }>;
-  category: string;
-  rating?: number;
-  reviewCount?: number;
-  quantity: number;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  parentIds?: string[];
-  children?: Category[];
-}
-
-export default function CategoryDetailPage({
-  params,
-}: {
+interface PageProps {
   params: Promise<{ slug: string }>;
-}) {
+}
+
+export default function CategoryDetailPage({ params }: PageProps) {
+  const { slug } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { formatPrice } = useCurrency();
+  const { addItem } = useCart();
+  const subcategoriesScrollRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const [category, setCategory] = useState<Category | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [breadcrumb, setBreadcrumb] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
+  const [filteredSubcategories, setFilteredSubcategories] = useState<
+    Category[]
+  >([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(false);
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [slug, setSlug] = useState<string>("");
-
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams?.get("search") || ""
-  );
-  const [sortBy, setSortBy] = useState(
-    searchParams?.get("sort") || "relevance"
-  );
-  const [minPrice, setMinPrice] = useState(searchParams?.get("minPrice") || "");
-  const [maxPrice, setMaxPrice] = useState(searchParams?.get("maxPrice") || "");
-  const [inStockOnly, setInStockOnly] = useState(
-    searchParams?.get("inStock") === "true"
-  );
   const [showFilters, setShowFilters] = useState(false);
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Unwrap params promise
-  useEffect(() => {
-    params.then((resolvedParams) => {
-      setSlug(resolvedParams.slug);
-    });
-  }, [params]);
+  const [subcategorySearch, setSubcategorySearch] = useState("");
+  const [subcategorySort, setSubcategorySort] = useState<
+    "alphabetical" | "productCount"
+  >("alphabetical");
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
   useEffect(() => {
-    if (slug) {
-      fetchCategoryData();
-    }
+    loadCategory();
   }, [slug]);
 
   useEffect(() => {
     if (category) {
-      fetchProducts();
+      loadProducts();
     }
-  }, [category, searchQuery, sortBy, minPrice, maxPrice, inStockOnly, page]);
+  }, [category, sortBy, sortOrder, filterValues]);
 
-  const fetchCategoryData = async () => {
-    try {
-      setLoading(true);
-      // Fetch category info
-      const response = await fetch(`/api/categories/${slug}`);
+  useEffect(() => {
+    // Filter and sort subcategories
+    let filtered = [...subcategories];
 
-      if (!response.ok) {
-        throw new Error("Category not found");
-      }
-
-      const data = await response.json();
-      setCategory(data.category);
-      setSubcategories(data.subcategories || []);
-    } catch (error: any) {
-      console.error("Error fetching category:", error);
-      toast.error("Failed to load category");
-      router.push("/categories");
-    } finally {
-      setLoading(false);
+    if (subcategorySearch.trim()) {
+      const query = subcategorySearch.toLowerCase();
+      filtered = filtered.filter((cat) =>
+        cat.name.toLowerCase().includes(query)
+      );
     }
-  };
 
-  const fetchProducts = async () => {
-    try {
-      if (page === 1) {
-        setLoading(true);
+    filtered.sort((a, b) => {
+      if (subcategorySort === "alphabetical") {
+        return a.name.localeCompare(b.name);
       } else {
-        setLoadingMore(true);
-      }
-
-      const params = new URLSearchParams({
-        category: category!.id,
-        page: page.toString(),
-        limit: "20",
-        ...(searchQuery && { search: searchQuery }),
-        ...(sortBy && { sort: sortBy }),
-        ...(minPrice && { minPrice }),
-        ...(maxPrice && { maxPrice }),
-        ...(inStockOnly && { inStock: "true" }),
-      });
-
-      const response = await fetch(`/api/products?${params}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-
-      const data = await response.json();
-
-      if (page === 1) {
-        setProducts(data.products);
-      } else {
-        setProducts((prev) => [...prev, ...data.products]);
-      }
-
-      setHasMore(data.hasMore);
-    } catch (error: any) {
-      console.error("Error fetching products:", error);
-      toast.error("Failed to load products");
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
-
-  const handleLoadMore = () => {
-    setPage((prev) => prev + 1);
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setPage(1);
-    updateURL({ search: query });
-  };
-
-  const handleSortChange = (sort: string) => {
-    setSortBy(sort);
-    setPage(1);
-    updateURL({ sort });
-  };
-
-  const handleClearFilters = () => {
-    setSearchQuery("");
-    setSortBy("relevance");
-    setMinPrice("");
-    setMaxPrice("");
-    setInStockOnly(false);
-    setPage(1);
-    router.push(`/categories/${slug}`);
-  };
-
-  const updateURL = (params: Record<string, string>) => {
-    const current = new URLSearchParams(searchParams?.toString());
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        current.set(key, value);
-      } else {
-        current.delete(key);
+        return b.productCount - a.productCount;
       }
     });
-    router.push(`/categories/${slug}?${current.toString()}`);
+
+    setFilteredSubcategories(filtered);
+  }, [subcategories, subcategorySearch, subcategorySort]);
+
+  const loadCategory = async () => {
+    setLoading(true);
+    try {
+      // Load category details
+      const categoryData = await categoriesService.getBySlug(slug);
+      setCategory(categoryData);
+
+      // Check if we have a path in URL (user followed link)
+      const pathParam = searchParams.get("path");
+      if (pathParam) {
+        // Use the path from URL
+        const pathSlugs = pathParam.split(",");
+        const pathCategories: Category[] = [];
+
+        for (const pathSlug of pathSlugs) {
+          try {
+            const cat = await categoriesService.getBySlug(pathSlug);
+            pathCategories.push(cat);
+          } catch (err) {
+            console.error("Failed to load path category:", pathSlug);
+          }
+        }
+
+        setBreadcrumb(pathCategories);
+      } else {
+        // Load default breadcrumb (nearest parent path)
+        const breadcrumbData = await categoriesService.getBreadcrumb(
+          categoryData.id
+        );
+        setBreadcrumb(breadcrumbData);
+      }
+
+      // Load subcategories
+      const subcats = await categoriesService.list({
+        parentId: categoryData.id,
+        isActive: true,
+      });
+      setSubcategories(subcats);
+    } catch (error) {
+      console.error("Failed to load category:", error);
+      setCategory(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading && page === 1) {
+  const loadProducts = async () => {
+    if (!category) return;
+
+    setProductsLoading(true);
+    try {
+      const response = await productsService.list({
+        categoryId: category.id,
+        search: searchQuery || undefined,
+        ...filterValues,
+        sortBy: sortBy as any,
+        sortOrder,
+        status: "published" as any,
+        limit: 100,
+      });
+      setProducts(response.data || []);
+      setTotalProducts(
+        response.pagination?.total || response.data?.length || 0
+      );
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      setProducts([]);
+      setTotalProducts(0);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  const handleResetFilters = () => {
+    setFilterValues({});
+    setSearchQuery("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
+  };
+
+  const handleAddToCart = async (
+    productId: string,
+    productDetails?: {
+      name: string;
+      price: number;
+      image: string;
+      shopId: string;
+      shopName: string;
+    }
+  ) => {
+    try {
+      if (!productDetails) {
+        const product = products.find((p) => p.id === productId);
+        if (!product) {
+          throw new Error("Product not found");
+        }
+        productDetails = {
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0] || "",
+          shopId: product.shopId,
+          shopName: product.shopId,
+        };
+      }
+
+      await addItem(productId, 1, undefined, productDetails);
+      alert("Added to cart!");
+    } catch (error: any) {
+      alert(error.message || "Failed to add to cart");
+    }
+  };
+
+  const scrollSubcategories = (direction: "left" | "right") => {
+    if (subcategoriesScrollRef.current) {
+      const scrollAmount = 300;
+      const newScrollLeft =
+        subcategoriesScrollRef.current.scrollLeft +
+        (direction === "left" ? -scrollAmount : scrollAmount);
+      subcategoriesScrollRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: "smooth",
+      });
+
+      setTimeout(() => {
+        if (subcategoriesScrollRef.current) {
+          setShowLeftArrow(subcategoriesScrollRef.current.scrollLeft > 0);
+          setShowRightArrow(
+            subcategoriesScrollRef.current.scrollLeft <
+              subcategoriesScrollRef.current.scrollWidth -
+                subcategoriesScrollRef.current.clientWidth
+          );
+        }
+      }, 300);
+    }
+  };
+
+  const buildCategoryPath = (targetSlug: string): string => {
+    // Build path including current breadcrumb
+    const pathSlugs = [...breadcrumb.map((c) => c.slug), slug];
+    return pathSlugs.join(",");
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
       </div>
     );
   }
 
   if (!category) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Category not found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The category you're looking for doesn't exist.
+          </p>
+          <button
+            onClick={() => router.push("/categories")}
+            className="text-blue-600 hover:underline"
+          >
+            Browse all categories
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  const activeFiltersCount = [
-    searchQuery,
-    minPrice,
-    maxPrice,
-    inStockOnly,
-    sortBy !== "relevance",
-  ].filter(Boolean).length;
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
-          <Link
-            href="/"
-            className="hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            Home
-          </Link>
-          <ChevronRight className="w-4 h-4" />
-          <Link
-            href="/categories"
-            className="hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            Categories
-          </Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-900 dark:text-white">{category.name}</span>
-        </nav>
+    <div className="min-h-screen bg-gray-50">
+      {/* Banner Section */}
+      {category.banner && (
+        <div className="relative h-64 w-full bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">
+          <img
+            src={category.banner}
+            alt={category.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+      )}
 
+      <div className="max-w-7xl mx-auto px-4">
         {/* Category Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {category.name}
-          </h1>
-          {category.description && (
-            <p className="text-gray-600 dark:text-gray-400">
-              {category.description}
-            </p>
-          )}
+        <div className={`relative ${category.banner ? "-mt-16" : "pt-8"} mb-8`}>
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-6">
+              {/* Profile Image */}
+              {category.image && (
+                <div
+                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${
+                    category.banner
+                      ? "-mt-12 border-4 border-white shadow-lg"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div className="flex-1">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                  <Link
+                    href="/"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    <Home className="w-4 h-4" />
+                  </Link>
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <Link
+                    href="/categories"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Categories
+                  </Link>
+                  {breadcrumb.map((cat) => (
+                    <div key={cat.id} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <Link
+                        href={`/categories/${cat.slug}`}
+                        className="hover:text-blue-600 transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                    </div>
+                  ))}
+                </nav>
+
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {category.name}
+                </h1>
+                {category.description && (
+                  <p className="text-gray-600">
+                    {category.description.replace(/<[^>]*>/g, "")}
+                  </p>
+                )}
+              </div>
+
+              <div className="text-right">
+                <div className="text-3xl font-bold text-blue-600">
+                  {category.productCount}
+                </div>
+                <div className="text-sm text-gray-500">Products</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Subcategories */}
-        {subcategories.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Subcategories
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {subcategories.map((subcat) => (
-                <Link
-                  key={subcat.id}
-                  href={`/categories/${subcat.slug}`}
-                  className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow text-center group"
+        {/* Products Section */}
+        <div className="pb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Products</h2>
+          </div>
+
+          {/* Search & Controls */}
+          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1">
+                <input
+                  type="search"
+                  placeholder="Search products in this category..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && loadProducts()}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Sort */}
+              <div className="flex gap-2">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <div className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {subcat.name}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+                  <option value="createdAt">Newest</option>
+                  <option value="price">Price</option>
+                  <option value="rating">Rating</option>
+                  <option value="sales">Popular</option>
+                </select>
 
-        {/* Filters and Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search in this category..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="relevance">Relevance</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="newest">Newest First</option>
-              <option value="popular">Most Popular</option>
-            </select>
-
-            {/* View Mode */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-blue-600 text-white"
-                    : "border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "list"
-                    ? "bg-blue-600 text-white"
-                    : "border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Filters Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <SlidersHorizontal className="w-5 h-5" />
-              <span>Filters</span>
-              {activeFiltersCount > 0 && (
-                <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-          </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Min Price
-                  </label>
-                  <input
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => {
-                      setMinPrice(e.target.value);
-                      setPage(1);
-                    }}
-                    placeholder="0"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Max Price
-                  </label>
-                  <input
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => {
-                      setMaxPrice(e.target.value);
-                      setPage(1);
-                    }}
-                    placeholder="Any"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div className="flex items-end">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={inStockOnly}
-                      onChange={(e) => {
-                        setInStockOnly(e.target.checked);
-                        setPage(1);
-                      }}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      In Stock Only
-                    </span>
-                  </label>
-                </div>
-              </div>
-              {activeFiltersCount > 0 && (
-                <button
-                  onClick={handleClearFilters}
-                  className="mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Clear all filters
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Products Grid */}
-        {products.length === 0 ? (
-          <div className="text-center py-16">
-            <Package className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-              No products found
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Try adjusting your filters or search query
-            </p>
-            {activeFiltersCount > 0 && (
-              <button
-                onClick={handleClearFilters}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                Clear all filters
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-              Showing {products.length} product
-              {products.length !== 1 ? "s" : ""}
-            </div>
-
-            {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    formatPrice={formatPrice}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4 mb-8">
-                {products.map((product) => (
-                  <ProductListItem
-                    key={product.id}
-                    product={product}
-                    formatPrice={formatPrice}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Load More */}
-            {hasMore && (
-              <div className="text-center">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
-                >
-                  {loadingMore ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    <>Load More</>
-                  )}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ProductCard({
-  product,
-  formatPrice,
-}: {
-  product: Product;
-  formatPrice: (price: number) => string;
-}) {
-  const hasDiscount =
-    product.compareAtPrice && product.compareAtPrice > product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(
-        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
-          100
-      )
-    : 0;
-  const isOutOfStock = product.quantity === 0;
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all group">
-      <Link
-        href={`/products/${product.slug}`}
-        className="block relative h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden"
-      >
-        <Image
-          src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
-        />
-        {hasDiscount && (
-          <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded">
-            -{discountPercent}% OFF
-          </span>
-        )}
-        {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="px-3 py-1 bg-gray-900 text-white text-sm font-semibold rounded">
-              Out of Stock
-            </span>
-          </div>
-        )}
-      </Link>
-      <div className="p-4">
-        <Link href={`/products/${product.slug}`} className="block mb-2">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            {product.name}
-          </h3>
-        </Link>
-        {product.rating && (
-          <div className="flex items-center gap-1 mb-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <span
-                  key={i}
-                  className={
-                    i < Math.floor(product.rating!)
-                      ? "text-yellow-400"
-                      : "text-gray-300"
+                <select
+                  value={sortOrder}
+                  onChange={(e) =>
+                    setSortOrder(e.target.value as "asc" | "desc")
                   }
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  ★
-                </span>
-              ))}
-            </div>
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              ({product.reviewCount || 0})
-            </span>
-          </div>
-        )}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-xl font-bold text-gray-900 dark:text-white">
-            {formatPrice(product.price)}
-          </span>
-          {hasDiscount && (
-            <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-              {formatPrice(product.compareAtPrice!)}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/products/${product.slug}`}
-            className="flex-1 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-          >
-            View Details
-          </Link>
-          <WishlistButton
-            product={{
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
-              slug: product.slug,
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
+                  <option value="desc">High to Low</option>
+                  <option value="asc">Low to High</option>
+                </select>
 
-function ProductListItem({
-  product,
-  formatPrice,
-}: {
-  product: Product;
-  formatPrice: (price: number) => string;
-}) {
-  const hasDiscount =
-    product.compareAtPrice && product.compareAtPrice > product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(
-        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
-          100
-      )
-    : 0;
-  const isOutOfStock = product.quantity === 0;
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all group">
-      <div className="flex items-center gap-4">
-        <Link
-          href={`/products/${product.slug}`}
-          className="relative w-32 h-32 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden"
-        >
-          <Image
-            src={getProductImageUrl(product, 0, "/assets/placeholder.png")}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
-          />
-          {hasDiscount && (
-            <span className="absolute top-1 left-1 px-2 py-0.5 bg-red-600 text-white text-xs font-semibold rounded">
-              -{discountPercent}%
-            </span>
-          )}
-          {isOutOfStock && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="px-2 py-1 bg-gray-900 text-white text-xs font-semibold rounded">
-                Out of Stock
-              </span>
-            </div>
-          )}
-        </Link>
-
-        <div className="flex-1">
-          <Link href={`/products/${product.slug}`}>
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              {product.name}
-            </h3>
-          </Link>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-            {product.description}
-          </p>
-          {product.rating && (
-            <div className="flex items-center gap-1 mb-2">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className={`text-sm ${
-                      i < Math.floor(product.rating!)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
+                {/* View Toggle */}
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`px-3 py-2 ${
+                      viewMode === "grid"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-600"
                     }`}
                   >
-                    ★
-                  </span>
-                ))}
+                    <GridIcon className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`px-3 py-2 ${
+                      viewMode === "list"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-600"
+                    }`}
+                  >
+                    <List className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                ({product.reviewCount || 0} reviews)
-              </span>
+
+              {/* Filter Toggle (Mobile) */}
+              {isMobile && (
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Filter className="w-5 h-5" />
+                  Filters
+                  {Object.keys(filterValues).length > 0 && (
+                    <span className="bg-white text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {Object.keys(filterValues).length}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
-          )}
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {formatPrice(product.price)}
-            </span>
-            {hasDiscount && (
-              <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                {formatPrice(product.compareAtPrice!)}
-              </span>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Desktop Sidebar - Always Visible */}
+            {!isMobile && (
+              <UnifiedFilterSidebar
+                sections={PRODUCT_FILTERS}
+                values={filterValues}
+                onChange={(key, value) => {
+                  setFilterValues((prev) => ({ ...prev, [key]: value }));
+                }}
+                onApply={() => {}}
+                onReset={() => {
+                  setFilterValues({});
+                }}
+                isOpen={true}
+                onClose={() => {}}
+                searchable={true}
+                mobile={false}
+                resultCount={totalProducts}
+                isLoading={productsLoading}
+              />
             )}
+
+            {/* Mobile Filter Drawer */}
+            {isMobile && (
+              <UnifiedFilterSidebar
+                sections={PRODUCT_FILTERS}
+                values={filterValues}
+                onChange={(key, value) => {
+                  setFilterValues((prev) => ({ ...prev, [key]: value }));
+                }}
+                onApply={() => {
+                  setShowFilters(false);
+                }}
+                onReset={() => {
+                  setFilterValues({});
+                }}
+                isOpen={showFilters}
+                onClose={() => setShowFilters(false)}
+                searchable={true}
+                mobile={true}
+                resultCount={totalProducts}
+                isLoading={productsLoading}
+              />
+            )}
+
+            {/* Products Grid/List */}
+            <div className="flex-1">
+              {productsLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                </div>
+              ) : products.length === 0 ? (
+                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                  <p className="text-gray-600 text-lg">
+                    {Object.keys(filterValues).length > 0
+                      ? "No products found matching your filters"
+                      : "No products found in this category"}
+                  </p>
+                  {Object.keys(filterValues).length > 0 && (
+                    <button
+                      onClick={handleResetFilters}
+                      className="mt-4 text-blue-600 hover:underline"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {products.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          id={product.id}
+                          name={product.name}
+                          slug={product.slug}
+                          price={product.price}
+                          originalPrice={product.originalPrice}
+                          image={product.images?.[0] || ""}
+                          rating={product.rating}
+                          reviewCount={product.reviewCount}
+                          shopName={product.shopId}
+                          shopSlug={product.shopId}
+                          shopId={product.shopId}
+                          inStock={product.stockCount > 0}
+                          isFeatured={product.isFeatured}
+                          condition={product.condition}
+                          onAddToCart={handleAddToCart}
+                          showShopName={true}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Product
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Price
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Stock
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Rating
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {products.map((product) => (
+                            <tr key={product.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <img
+                                    src={product.images?.[0] || ""}
+                                    alt={product.name}
+                                    className="w-12 h-12 rounded object-cover"
+                                  />
+                                  <div>
+                                    <div className="font-medium text-gray-900">
+                                      {product.name}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                      {product.condition}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="font-medium">
+                                  ₹{product.price.toLocaleString()}
+                                </div>
+                                {product.originalPrice &&
+                                  product.originalPrice > product.price && (
+                                    <div className="text-sm text-gray-500 line-through">
+                                      ₹{product.originalPrice.toLocaleString()}
+                                    </div>
+                                  )}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`px-2 py-1 text-xs rounded ${
+                                    product.stockCount > 0
+                                      ? "bg-green-100 text-green-700"
+                                      : "bg-red-100 text-red-700"
+                                  }`}
+                                >
+                                  {product.stockCount > 0
+                                    ? `${product.stockCount} in stock`
+                                    : "Out of stock"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                {product.rating > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-yellow-500">★</span>
+                                    <span className="font-medium">
+                                      {product.rating.toFixed(1)}
+                                    </span>
+                                    <span className="text-sm text-gray-500">
+                                      ({product.reviewCount})
+                                    </span>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-right space-x-2">
+                                <button
+                                  onClick={() =>
+                                    router.push(`/products/${product.slug}`)
+                                  }
+                                  className="text-blue-600 hover:underline text-sm"
+                                >
+                                  View
+                                </button>
+                                {product.stockCount > 0 && (
+                                  <button
+                                    onClick={() => handleAddToCart(product.id)}
+                                    className="text-blue-600 hover:underline text-sm"
+                                  >
+                                    Add to Cart
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Link
-            href={`/products/${product.slug}`}
-            className="px-6 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap"
-          >
-            View Details
-          </Link>
-          <WishlistButton
-            product={{
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: getProductImageUrl(product, 0, "/assets/placeholder.png"),
-              slug: product.slug,
-            }}
-          />
-        </div>
+        {/* Subcategories Section - Bottom Horizontal Scroll */}
+        {subcategories.length > 0 && (
+          <div className="mt-12 mb-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Explore Subcategories
+              </h2>
+
+              {/* Search and Sort Controls */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="search"
+                    placeholder="Search subcategories..."
+                    value={subcategorySearch}
+                    onChange={(e) => setSubcategorySearch(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <select
+                  value={subcategorySort}
+                  onChange={(e) => setSubcategorySort(e.target.value as any)}
+                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="alphabetical">Alphabetical</option>
+                  <option value="productCount">Product Count</option>
+                </select>
+              </div>
+
+              {/* Horizontal Scroll Container */}
+              <div className="relative">
+                {/* Left Arrow */}
+                {showLeftArrow && (
+                  <button
+                    onClick={() => scrollSubcategories("left")}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50"
+                    aria-label="Scroll left"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-gray-700" />
+                  </button>
+                )}
+
+                {/* Subcategories Horizontal List */}
+                <div
+                  ref={subcategoriesScrollRef}
+                  className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 px-1"
+                  onScroll={(e) => {
+                    const target = e.target as HTMLDivElement;
+                    setShowLeftArrow(target.scrollLeft > 0);
+                    setShowRightArrow(
+                      target.scrollLeft <
+                        target.scrollWidth - target.clientWidth
+                    );
+                  }}
+                >
+                  {filteredSubcategories.length === 0 ? (
+                    <div className="w-full text-center py-8 text-gray-500">
+                      No subcategories found
+                    </div>
+                  ) : (
+                    filteredSubcategories.map((subcat) => (
+                      <Link
+                        key={subcat.id}
+                        href={`/categories/${
+                          subcat.slug
+                        }?path=${buildCategoryPath(subcat.slug)}`}
+                        className="flex-shrink-0 w-40 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all p-3 group"
+                      >
+                        {subcat.image && (
+                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white">
+                            <img
+                              src={subcat.image}
+                              alt={subcat.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )}
+                        <h3 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors mb-1 line-clamp-2">
+                          {subcat.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Tag className="w-3 h-3" />
+                          <span>{subcat.productCount} items</span>
+                        </div>
+                        <div className="mt-2 flex items-center justify-end">
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                        </div>
+                      </Link>
+                    ))
+                  )}
+                </div>
+
+                {/* Right Arrow */}
+                {showRightArrow && (
+                  <button
+                    onClick={() => scrollSubcategories("right")}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50"
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight className="w-5 h-5 text-gray-700" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

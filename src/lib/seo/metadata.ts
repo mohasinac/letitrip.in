@@ -1,215 +1,239 @@
-/**
- * SEO Metadata Utilities
- * Generate consistent metadata for all pages
- */
+import { Metadata } from "next";
 
-export interface SEOMetadata {
-  title: string;
-  description: string;
-  canonical?: string;
-  ogTitle?: string;
-  ogDescription?: string;
-  ogImage?: string;
-  ogType?: string;
-  twitterCard?: string;
-  twitterTitle?: string;
-  twitterDescription?: string;
-  twitterImage?: string;
-  keywords?: string[];
-  author?: string;
-  robots?: string;
-  viewport?: string;
-  charset?: string;
-}
+/**
+ * Base metadata configuration for the site
+ */
+export const siteConfig = {
+  name: "Let It Rip",
+  description:
+    "India's trusted seller of authentic imported collectibles - Beyblades, Pokemon TCG, Yu-Gi-Oh TCG, Transformers, Hot Wheels, stickers & more! In-stock items ship in 3-7 days. We handle all customs - you pay zero import duties!",
+  url: "https://letitrip.in",
+  ogImage: "https://letitrip.in/og-image.jpg",
+  links: {
+    twitter: "https://twitter.com/letitrip",
+    facebook: "https://facebook.com/letitrip",
+    instagram: "https://instagram.com/letitrip",
+  },
+};
+
+/**
+ * Default metadata for all pages
+ */
+export const defaultMetadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: [
+    // Product categories - Collectibles focus
+    "beyblades India",
+    "Pokemon TCG India",
+    "Yu-Gi-Oh TCG India",
+    "Transformers India",
+    "Hot Wheels India",
+    "collectible stickers India",
+    "trading cards India",
+    "imported collectibles India",
+    "anime collectibles India",
+    "authentic beyblades",
+    "Pokemon cards India",
+    "Yu-Gi-Oh cards India",
+    "Transformers toys India",
+    "die-cast cars India",
+    "crafts supplies India",
+    // Value propositions
+    "no customs charges India",
+    "fast delivery India",
+    "COD on collectibles",
+    "authentic imported collectibles",
+    "beyblade online India",
+    "Pokemon TCG online India",
+    // Country-specific
+    "Japan collectibles India",
+    "USA collectibles India",
+    "authentic Japanese beyblades",
+  ],
+  authors: [{ name: "Let It Rip" }],
+  creator: "Let It Rip",
+  publisher: "Let It Rip",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+    creator: "@letitrip",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
+};
 
 /**
  * Generate metadata for a page
  */
-export function generateMetadata(params: {
+export function generateMetadata({
+  title,
+  description,
+  keywords,
+  image,
+  path = "",
+  noIndex = false,
+}: {
   title: string;
   description: string;
-  path?: string;
-  image?: string;
   keywords?: string[];
-  type?: "website" | "article" | "product";
-}): SEOMetadata {
-  const {
-    title,
-    description,
-    path,
-    image,
-    keywords,
-    type = "website",
-  } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com";
+  image?: string;
+  path?: string;
+  noIndex?: boolean;
+}): Metadata {
+  const url = `${siteConfig.url}${path}`;
+  const ogImage = image || `${siteConfig.url}/og-image.jpg`;
 
   return {
-    title,
+    title: `${title} - ${siteConfig.name}`,
     description,
-    keywords: keywords || [],
-    canonical: path ? `${baseUrl}${path}` : baseUrl,
-    ogTitle: title,
-    ogDescription: description,
-    ogImage: image,
-    ogType: type,
-    twitterCard: "summary_large_image",
-    twitterTitle: title,
-    twitterDescription: description,
-    twitterImage: image,
-    robots: "index, follow",
-    author: "HobbiesSpot",
-    viewport: "width=device-width, initial-scale=1.0",
-    charset: "utf-8",
+    keywords: keywords || defaultMetadata.keywords,
+    authors: [{ name: siteConfig.name }],
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: `${title} - ${siteConfig.name}`,
+      description,
+      url,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: "en_IN",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} - ${siteConfig.name}`,
+      description,
+      images: [ogImage],
+    },
+    robots: noIndex
+      ? {
+          index: false,
+          follow: false,
+        }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+          },
+        },
   };
 }
 
 /**
- * Generate schema.org structured data for categories
+ * Generate product metadata
  */
-export function generateCategorySchema(params: {
-  id: string;
-  name: string;
-  description?: string;
-  image?: string;
-  url: string;
-  parentName?: string;
-}): Record<string, any> {
-  const { id, name, description, image, url, parentName } = params;
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Category",
-    "@id": id,
-    name,
-    description,
-    image,
-    url,
-    ...(parentName && { parent: { "@type": "Category", name: parentName } }),
-  };
-}
-
-/**
- * Generate schema.org structured data for products
- */
-export function generateProductSchema(params: {
-  name: string;
-  description?: string;
-  image?: string;
-  price?: number;
+export function generateProductMetadata({
+  title,
+  description,
+  image,
+  price,
+  currency = "INR",
+  availability = "in stock",
+  condition = "new",
+  canonical,
+}: {
+  title: string;
+  description: string;
+  image: string;
+  price: number;
   currency?: string;
   availability?: string;
-  category?: string;
-  rating?: number;
-  reviews?: number;
-  url: string;
-}): Record<string, any> {
-  const {
-    name,
+  condition?: string;
+  canonical?: string;
+}): Metadata {
+  return {
+    title,
     description,
-    image,
-    price,
-    currency = "USD",
-    availability = "InStock",
-    category,
-    rating,
-    reviews,
-    url,
-  } = params;
-
-  const schema: any = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name,
-    url,
-    description,
-    image,
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      images: [image],
+      url: canonical,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+    alternates: canonical
+      ? {
+          canonical,
+        }
+      : undefined,
+    // Product-specific metadata
+    other: {
+      "product:price:amount": price.toString(),
+      "product:price:currency": currency,
+      "product:availability": availability,
+      "product:condition": condition,
+    },
   };
-
-  if (price && currency) {
-    schema.offers = {
-      "@type": "Offer",
-      price,
-      priceCurrency: currency,
-      availability: `https://schema.org/${availability}`,
-      url,
-    };
-  }
-
-  if (category) {
-    schema.category = category;
-  }
-
-  if (rating && reviews) {
-    schema.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: rating,
-      reviewCount: reviews,
-    };
-  }
-
-  return schema;
 }
 
 /**
- * Generate schema.org structured data for organization
+ * Generate breadcrumb list for structured data
  */
-export function generateOrganizationSchema(params: {
-  name: string;
-  description?: string;
-  logo?: string;
-  sameAs?: string[];
-  address?: {
-    streetAddress?: string;
-    addressLocality?: string;
-    addressRegion?: string;
-    postalCode?: string;
-    addressCountry?: string;
-  };
-  contactPoint?: {
-    telephone?: string;
-    email?: string;
-  };
-}): Record<string, any> {
-  const { name, description, logo, sameAs, address, contactPoint } = params;
-
-  const schema: any = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name,
-    url: process.env.NEXT_PUBLIC_APP_URL || "https://hobbiesspot.com",
-  };
-
-  if (description) schema.description = description;
-  if (logo) schema.logo = logo;
-  if (sameAs && sameAs.length > 0) schema.sameAs = sameAs;
-
-  if (address) {
-    schema.address = {
-      "@type": "PostalAddress",
-      ...address,
-    };
-  }
-
-  if (contactPoint) {
-    schema.contactPoint = {
-      "@type": "ContactPoint",
-      contactType: "Customer Service",
-      ...contactPoint,
-    };
-  }
-
-  return schema;
-}
-
-/**
- * Generate schema.org breadcrumb schema
- */
-export function generateBreadcrumbSchema(
-  items: Array<{
-    name: string;
-    url: string;
-  }>,
-): Record<string, any> {
+export function generateBreadcrumbList(
+  items: Array<{ name: string; url: string }>,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -217,15 +241,7 @@ export function generateBreadcrumbSchema(
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url,
+      item: `${siteConfig.url}${item.url}`,
     })),
   };
 }
-
-export default {
-  generateMetadata,
-  generateCategorySchema,
-  generateProductSchema,
-  generateOrganizationSchema,
-  generateBreadcrumbSchema,
-};

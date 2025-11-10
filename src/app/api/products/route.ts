@@ -1,146 +1,173 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/database/admin";
+import { getCurrentUser } from "../lib/session";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import {
+  getProductsQuery,
+  userOwnsShop,
+  UserRole,
+} from "@/app/api/lib/firebase/queries";
 
-/**
- * GET /api/products - Public product listing API
- * Query params: search, category, minPrice, maxPrice, sort, inStock, page, limit
- */
+// GET /api/products - List all products (role-based)
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    
-    // Extract query parameters
-    const search = searchParams.get("search") || "";
-    const category = searchParams.get("category") || "";
-    const minPrice = searchParams.get("minPrice");
-    const maxPrice = searchParams.get("maxPrice");
-    const sort = searchParams.get("sort") || "relevance";
-    const inStockOnly = searchParams.get("inStock") === "true";
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const user = await getCurrentUser(request);
 
-    const adminDb = getAdminDb();
-    let query = adminDb.collection("products").where("status", "==", "active");
-
-    // Category filter
-    if (category) {
-      query = query.where("category", "==", category);
-    }
-
-    // Stock filter - Try to use Firestore query, fallback to in-memory if index not ready
-    let useInMemoryStockFilter = false;
-    if (inStockOnly) {
-      try {
-        query = query.where("quantity", ">", 0);
-      } catch (error: any) {
-        console.warn("Stock filter index not ready, using in-memory filtering");
-        useInMemoryStockFilter = true;
-      }
-    }
-
-    // Price range filter (we'll filter this in memory after fetch)
-    // Firestore doesn't support multiple range queries on different fields
-
-    // Fetch products
-    let snapshot;
-    try {
-      snapshot = await query.get();
-    } catch (error: any) {
-      // If query fails due to missing index, fall back to simpler query
-      if (error.code === 9 || error.message?.includes("index")) {
-        console.warn("Composite index not ready, using fallback query");
-        query = adminDb.collection("products").where("status", "==", "active");
-        if (category) {
-          query = query.where("category", "==", category);
-        }
-        snapshot = await query.get();
-        useInMemoryStockFilter = inStockOnly;
-      } else {
-        throw error;
-      }
-    }
-    
-    let products = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as any[];
-
-    // Apply in-memory stock filter if needed
-    if (useInMemoryStockFilter && inStockOnly) {
-      products = products.filter((product) => {
-        const stock = product.quantity ?? product.stock ?? 0;
-        return stock > 0;
-      });
-    }
-
-    // Apply search filter (in memory)
-    if (search) {
-      const searchLower = search.toLowerCase();
-      products = products.filter(
-        (product) =>
-          product.name?.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower) ||
-          product.tags?.some((tag: string) =>
-            tag.toLowerCase().includes(searchLower)
-          ) ||
-          product.sku?.toLowerCase().includes(searchLower)
+    if (!user?.email) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
-    // Apply price range filter (in memory)
+    const { searchParams } = new URL(request.url);
+    const shopId = searchParams.get("shopId") || searchParams.get("shop_id");
+    const categoryId =
+      searchParams.get("categoryId") || searchParams.get("category_id");
+    const status = searchParams.get("status");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const isFeatured = searchParams.get("isFeatured");
+    const slug = searchParams.get("slug");
+    const limit = parseInt(searchParams.get("limit") || "50");
+
+    const role = (user.role || "user") as UserRole;
+    const userId = user.id;
+
+    // Build query based on role
+    const query = getProductsQuery(
+      role,
+      role === "seller" ? shopId || userId : undefined,
+    );
+
+    // Apply filters
+    const filters: any[] = [];
+    if (shopId)
+      filters.push({ field: "shop_id", operator: "==", value: shopId });
+    if (categoryId)
+      filters.push({ field: "category_id", operator: "==", value: categoryId });
+    if (status)
+      filters.push({ field: "status", operator: "==", value: status });
+    if (isFeatured === "true")
+      filters.push({ field: "is_featured", operator: "==", value: true });
+    if (slug) filters.push({ field: "slug", operator: "==", value: slug });
+
+    let productsQuery = query;
+    for (const filter of filters) {
+      productsQuery = productsQuery.where(
+        filter.field,
+        filter.operator as any,
+        filter.value,
+      );
+    }
+
+    const snapshot = await productsQuery.limit(limit).get();
+    let products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
     if (minPrice) {
       const min = parseFloat(minPrice);
-      products = products.filter((product) => product.price >= min);
+      products = products.filter((p: any) => (p.price ?? 0) >= min);
     }
     if (maxPrice) {
       const max = parseFloat(maxPrice);
-      products = products.filter((product) => product.price <= max);
+      products = products.filter((p: any) => (p.price ?? 0) <= max);
     }
-
-    // Apply sorting
-    switch (sort) {
-      case "price-low":
-        products.sort((a, b) => (a.price || 0) - (b.price || 0));
-        break;
-      case "price-high":
-        products.sort((a, b) => (b.price || 0) - (a.price || 0));
-        break;
-      case "newest":
-        products.sort(
-          (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime()
-        );
-        break;
-      case "popular":
-        products.sort(
-          (a, b) => (b.reviewCount || 0) - (a.reviewCount || 0)
-        );
-        break;
-      default:
-        // relevance (default order)
-        break;
-    }
-
-    // Pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedProducts = products.slice(startIndex, endIndex);
-    const hasMore = endIndex < products.length;
 
     return NextResponse.json({
       success: true,
-      products: paginatedProducts,
-      total: products.length,
-      page,
-      limit,
-      hasMore,
+      data: products,
+      count: products.length,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to fetch products" },
-      { status: 500 }
+      { success: false, error: "Failed to fetch products" },
+      { status: 500 },
+    );
+  }
+}
+
+// POST /api/products - Create new product
+export async function POST(request: NextRequest) {
+  try {
+    const user = await getCurrentUser(request);
+    if (!user?.email) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const body = await request.json();
+    // Accept both camelCase and snake_case from client
+    const shop_id = body.shop_id || body.shopId;
+    const name = body.name;
+    const slug = body.slug;
+    const description = body.description || "";
+    const price = Number(body.price);
+    const category_id = body.category_id || body.categoryId;
+    const images = body.images || [];
+    const status = body.status || "draft";
+    const stock_quantity = body.stock_quantity ?? body.stockCount ?? null;
+    const is_featured = body.is_featured ?? body.isFeatured ?? false;
+
+    if (!shop_id || !name || !slug || !price || !category_id) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Validate user owns the shop
+    const ownsShop = await userOwnsShop(shop_id, user.id);
+    if (!ownsShop) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You do not have permission to add products to this shop",
+        },
+        { status: 403 },
+      );
+    }
+
+    // Check if slug is unique (global for now)
+    const existingSlug = await Collections.products()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+    if (!existingSlug.empty) {
+      return NextResponse.json(
+        { success: false, error: "Product slug already exists" },
+        { status: 400 },
+      );
+    }
+
+    const now = new Date().toISOString();
+    const productData = {
+      shop_id,
+      name,
+      slug,
+      description,
+      price: Number(price),
+      category_id,
+      images,
+      status,
+      stock_quantity: stock_quantity !== null ? Number(stock_quantity) : null,
+      is_featured,
+      created_at: now,
+      updated_at: now,
+    };
+
+    const docRef = await Collections.products().add(productData);
+
+    return NextResponse.json(
+      { success: true, data: { id: docRef.id, ...productData } },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create product" },
+      { status: 500 },
     );
   }
 }

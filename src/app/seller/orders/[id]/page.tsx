@@ -1,964 +1,576 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { ordersService } from "@/services/orders.service";
 import {
   ArrowLeft,
+  Package,
+  Truck,
   CheckCircle,
   XCircle,
-  Printer,
-  Truck,
-  ShoppingBag,
+  Download,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
   CreditCard,
-  Package,
-  CheckCircle2,
-  X,
+  FileText,
 } from "lucide-react";
-import RoleGuard from "@/components/features/auth/RoleGuard";
-import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
-import { SELLER_ROUTES } from "@/constants/routes";
-import { useAuth } from "@/contexts/AuthContext";
-import { apiGet, apiPost } from "@/lib/api/seller";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  UnifiedCard,
-  CardContent,
-  UnifiedButton,
-  UnifiedBadge,
-  UnifiedModal,
-  UnifiedAlert,
-  UnifiedTextarea,
-} from "@/components/ui/unified";
-import { Timeline, TimelineEvent } from "@/components/ui/unified/Timeline";
 
-interface OrderItem {
-  id: string;
-  productId: string;
-  name: string;
-  slug: string;
-  image: string;
-  sku: string;
-  price: number;
-  quantity: number;
-  total: number;
-}
-
-interface Address {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-  isDefault?: boolean;
-}
-
-interface CouponSnapshot {
-  code: string;
-  name: string;
-  type: string;
-  value: number;
-  discountAmount: number;
-}
-
-interface SaleSnapshot {
-  name: string;
-  discountType: string;
-  discountValue: number;
-  discountAmount: number;
-}
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  sellerId: string;
-  userId: string;
-  status: string;
-  paymentStatus: string;
-  paymentMethod: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  shippingAddress: Address;
-  billingAddress: Address;
-  items: OrderItem[];
-  subtotal: number;
-  couponDiscount: number;
-  saleDiscount: number;
-  shippingCharges: number;
-  tax: number;
-  total: number;
-  couponSnapshot?: CouponSnapshot;
-  saleSnapshot?: SaleSnapshot;
-  notes?: string;
-  internalNotes?: string;
-  rejectionReason?: string;
-  createdAt: string;
-  updatedAt: string;
-  approvedAt?: string;
-  rejectedAt?: string;
-  shippedAt?: string;
-  deliveredAt?: string;
-  cancelledAt?: string;
-}
-
-export default function OrderDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const unwrappedParams = React.use(params);
-  const orderId = unwrappedParams.id;
-
-  useBreadcrumbTracker([
-    { label: "Orders", href: SELLER_ROUTES.ORDERS },
-    { label: `Order #${orderId.slice(0, 8)}`, href: "", active: true },
-  ]);
+export default function SellerOrderDetailPage() {
+  const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
-  const [order, setOrder] = useState<Order | null>(null);
+  const orderId = params.id as string;
+
+  const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [alert, setAlert] = useState<{
-    show: boolean;
-    message: string;
-    variant: "success" | "error" | "info" | "warning";
-  }>({
-    show: false,
-    message: "",
-    variant: "success",
+  const [updating, setUpdating] = useState(false);
+  const [showShippingForm, setShowShippingForm] = useState(false);
+  const [shippingData, setShippingData] = useState({
+    trackingNumber: "",
+    shippingProvider: "",
+    estimatedDelivery: "",
   });
 
-  // Action dialogs
-  const [approveDialog, setApproveDialog] = useState(false);
-  const [rejectDialog, setRejectDialog] = useState(false);
-  const [cancelDialog, setCancelDialog] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [cancelReason, setCancelReason] = useState("");
-
-  // Fetch order details
   useEffect(() => {
-    if (user) {
-      fetchOrderDetails();
-    }
-  }, [user, orderId]);
+    loadOrder();
+  }, [orderId]);
 
-  const fetchOrderDetails = async () => {
+  const loadOrder = async () => {
     try {
       setLoading(true);
-      const response = (await apiGet(`/api/seller/orders/${orderId}`)) as any;
-      if (response.success) {
-        setOrder(response.data);
-      } else {
-        setAlert({
-          show: true,
-          message: response.error || "Failed to fetch order details",
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching order:", error);
-      setAlert({
-        show: true,
-        message: "Failed to load order details",
-        variant: "error",
-      });
+      const data: any = await ordersService.getById(orderId);
+      setOrder(data);
+    } catch (error: any) {
+      console.error("Failed to load order:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Generate invoice
-  const handleGenerateInvoice = async () => {
+  const handleUpdateStatus = async (status: string) => {
     try {
-      setLoading(true);
-      const response = (await apiPost(
-        `/api/seller/orders/${orderId}/invoice`,
-        {}
-      )) as any;
-
-      if (response.success) {
-        const invoiceWindow = window.open("", "_blank");
-        if (invoiceWindow) {
-          invoiceWindow.document.write(response.data.invoiceHtml);
-          invoiceWindow.document.close();
-        }
-
-        setAlert({
-          show: true,
-          message: `Invoice ${response.data.invoiceNumber} generated successfully!`,
-          variant: "success",
-        });
-      } else {
-        setAlert({
-          show: true,
-          message: response.error || "Failed to generate invoice",
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error generating invoice:", error);
-      setAlert({
-        show: true,
-        message: "Failed to generate invoice",
-        variant: "error",
-      });
+      setUpdating(true);
+      await ordersService.updateStatus(orderId, { status: status as any });
+      await loadOrder();
+    } catch (error: any) {
+      console.error("Failed to update status:", error);
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
   };
 
-  // Approve order
-  const handleApprove = async () => {
+  const handleAddShipping = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      setActionLoading(true);
-      const response = (await apiPost(
-        `/api/seller/orders/${orderId}/approve`,
-        {}
-      )) as any;
-      if (response.success) {
-        setOrder(response.data);
-        setApproveDialog(false);
-        setAlert({
-          show: true,
-          message: "Order approved successfully!",
-          variant: "success",
-        });
-      } else {
-        setAlert({
-          show: true,
-          message: response.error || "Failed to approve order",
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error approving order:", error);
-      setAlert({
-        show: true,
-        message: "Failed to approve order",
-        variant: "error",
+      setUpdating(true);
+      await ordersService.createShipment(orderId, {
+        trackingNumber: shippingData.trackingNumber,
+        shippingProvider: shippingData.shippingProvider,
+        estimatedDelivery: shippingData.estimatedDelivery
+          ? new Date(shippingData.estimatedDelivery)
+          : undefined,
       });
+      setShowShippingForm(false);
+      setShippingData({
+        trackingNumber: "",
+        shippingProvider: "",
+        estimatedDelivery: "",
+      });
+      await loadOrder();
+    } catch (error: any) {
+      console.error("Failed to add shipping:", error);
     } finally {
-      setActionLoading(false);
+      setUpdating(false);
     }
   };
 
-  // Reject order
-  const handleReject = async () => {
-    if (!rejectionReason.trim()) {
-      setAlert({
-        show: true,
-        message: "Please provide a reason for rejection",
-        variant: "error",
-      });
-      return;
-    }
-
+  const handleDownloadInvoice = async () => {
     try {
-      setActionLoading(true);
-      const response = (await apiPost(`/api/seller/orders/${orderId}/reject`, {
-        reason: rejectionReason,
-      })) as any;
-      if (response.success) {
-        setOrder(response.data);
-        setRejectDialog(false);
-        setRejectionReason("");
-        setAlert({
-          show: true,
-          message: "Order rejected",
-          variant: "info",
-        });
-      } else {
-        setAlert({
-          show: true,
-          message: response.error || "Failed to reject order",
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error rejecting order:", error);
-      setAlert({
-        show: true,
-        message: "Failed to reject order",
-        variant: "error",
-      });
-    } finally {
-      setActionLoading(false);
+      const blob = await ordersService.downloadInvoice(orderId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `invoice-${order?.orderNumber || orderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error("Failed to download invoice:", error);
     }
   };
 
-  // Cancel order
-  const handleCancel = async () => {
-    if (!cancelReason.trim()) {
-      setAlert({
-        show: true,
-        message: "Please provide a reason for cancellation",
-        variant: "error",
-      });
-      return;
-    }
-
-    try {
-      setActionLoading(true);
-      const response = (await apiPost(`/api/seller/orders/${orderId}/cancel`, {
-        reason: cancelReason,
-      })) as any;
-      if (response.success) {
-        setOrder(response.data);
-        setCancelDialog(false);
-        setCancelReason("");
-        setAlert({
-          show: true,
-          message: "Order cancelled",
-          variant: "info",
-        });
-      } else {
-        setAlert({
-          show: true,
-          message: response.error || "Failed to cancel order",
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Error cancelling order:", error);
-      setAlert({
-        show: true,
-        message: "Failed to cancel order",
-        variant: "error",
-      });
-    } finally {
-      setActionLoading(false);
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(amount);
   };
 
-  // Get status badge variant
-  const getStatusVariant = (
-    status: string
-  ): "success" | "error" | "warning" | "info" => {
-    const variants: Record<string, "success" | "error" | "warning" | "info"> = {
-      pending: "warning",
-      processing: "info",
-      approved: "success",
-      rejected: "error",
-      shipped: "info",
-      delivered: "success",
-      cancelled: "error",
-      refunded: "warning",
-    };
-    return variants[status] || "info";
-  };
-
-  const getPaymentStatusVariant = (status: string) => {
-    const variants: Record<string, "success" | "error" | "warning"> = {
-      paid: "success",
-      pending: "warning",
-      failed: "error",
-      refunded: "warning",
-    };
-    return variants[status] || "warning";
-  };
-
-  // Build timeline
-  const buildTimeline = (): TimelineEvent[] => {
-    if (!order) return [];
-
-    const events: TimelineEvent[] = [];
-
-    // Order placed
-    events.push({
-      title: "Order Placed",
-      description: `Order #${order.orderNumber} was created`,
-      timestamp: order.createdAt,
-      icon: <ShoppingBag className="w-3 h-3" />,
-      color: "primary",
-    });
-
-    // Payment
-    if (order.paymentStatus === "paid") {
-      events.push({
-        title: "Payment Received",
-        description: `Payment via ${order.paymentMethod}`,
-        timestamp: order.createdAt,
-        icon: <CreditCard className="w-3 h-3" />,
-        color: "success",
-      });
-    } else {
-      events.push({
-        title: "Payment Pending",
-        description: `Awaiting ${order.paymentMethod} payment`,
-        timestamp: order.createdAt,
-        icon: <CreditCard className="w-3 h-3" />,
-        color: "warning",
-      });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "shipped":
+        return "bg-blue-100 text-blue-800";
+      case "processing":
+        return "bg-purple-100 text-purple-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-yellow-100 text-yellow-800";
     }
-
-    // Approved
-    if (order.approvedAt) {
-      events.push({
-        title: "Order Approved",
-        description: "Order approved and ready for processing",
-        timestamp: order.approvedAt,
-        icon: <CheckCircle className="w-3 h-3" />,
-        color: "success",
-      });
-    }
-
-    // Rejected
-    if (order.rejectedAt) {
-      events.push({
-        title: "Order Rejected",
-        description: order.rejectionReason || "Order was rejected",
-        timestamp: order.rejectedAt,
-        icon: <XCircle className="w-3 h-3" />,
-        color: "error",
-      });
-    }
-
-    // Shipped
-    if (order.shippedAt) {
-      events.push({
-        title: "Order Shipped",
-        description: "Order has been shipped",
-        timestamp: order.shippedAt,
-        icon: <Truck className="w-3 h-3" />,
-        color: "info",
-      });
-    }
-
-    // Delivered
-    if (order.deliveredAt) {
-      events.push({
-        title: "Order Delivered",
-        description: "Order successfully delivered",
-        timestamp: order.deliveredAt,
-        icon: <CheckCircle2 className="w-3 h-3" />,
-        color: "success",
-      });
-    }
-
-    // Cancelled
-    if (order.cancelledAt) {
-      events.push({
-        title: "Order Cancelled",
-        description: order.rejectionReason || "Order was cancelled",
-        timestamp: order.cancelledAt,
-        icon: <X className="w-3 h-3" />,
-        color: "error",
-      });
-    }
-
-    return events;
   };
 
   if (loading) {
     return (
-      <RoleGuard requiredRole="seller">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="flex justify-center items-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+      <AuthGuard requireAuth allowedRoles={["seller"]}>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         </div>
-      </RoleGuard>
+      </AuthGuard>
     );
   }
 
   if (!order) {
     return (
-      <RoleGuard requiredRole="seller">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-semibold text-textSecondary mb-4">
-              Order not found
+      <AuthGuard requireAuth allowedRoles={["seller"]}>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Order Not Found
             </h2>
-            <Link href={SELLER_ROUTES.ORDERS}>
-              <UnifiedButton variant="outline" icon={<ArrowLeft />}>
-                Back to Orders
-              </UnifiedButton>
-            </Link>
+            <p className="text-gray-600 mb-4">
+              The order you're looking for doesn't exist or you don't have
+              access to it.
+            </p>
+            <button
+              onClick={() => router.push("/seller/orders")}
+              className="text-indigo-600 hover:text-indigo-900"
+            >
+              Back to Orders
+            </button>
           </div>
         </div>
-      </RoleGuard>
+      </AuthGuard>
     );
   }
 
-  const timeline = buildTimeline();
-
   return (
-    <RoleGuard requiredRole="seller">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Alert */}
-        {alert.show && (
+    <AuthGuard requireAuth allowedRoles={["seller"]}>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
           <div className="mb-6">
-            <UnifiedAlert
-              variant={alert.variant}
-              onClose={() => setAlert({ ...alert, show: false })}
+            <button
+              onClick={() => router.push("/seller/orders")}
+              className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
             >
-              {alert.message}
-            </UnifiedAlert>
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Link href={SELLER_ROUTES.ORDERS}>
-              <UnifiedButton variant="outline" size="sm" icon={<ArrowLeft />}>
-                Back
-              </UnifiedButton>
-            </Link>
-            <h1 className="text-3xl font-bold text-text">
-              Order #{order.orderNumber}
-            </h1>
-            <UnifiedBadge variant={getStatusVariant(order.status)}>
-              {order.status.toUpperCase()}
-            </UnifiedBadge>
-            <UnifiedBadge
-              variant={getPaymentStatusVariant(order.paymentStatus)}
-            >
-              Payment: {order.paymentStatus.toUpperCase()}
-            </UnifiedBadge>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3">
-            {order.status === "pending" && (
-              <>
-                <UnifiedButton
-                  variant="success"
-                  icon={<CheckCircle />}
-                  onClick={() => setApproveDialog(true)}
-                >
-                  Approve Order
-                </UnifiedButton>
-                <UnifiedButton
-                  variant="destructive"
-                  icon={<XCircle />}
-                  onClick={() => setRejectDialog(true)}
-                >
-                  Reject Order
-                </UnifiedButton>
-              </>
-            )}
-
-            {order.status === "processing" && (
-              <UnifiedButton
-                variant="primary"
-                icon={<Truck />}
-                onClick={() => {
-                  setAlert({
-                    show: true,
-                    message: "Shipment feature coming soon!",
-                    variant: "info",
-                  });
-                }}
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Orders
+            </button>
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Order #{order.orderNumber || order.id}
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Placed on {new Date(order.createdAt).toLocaleString()}
+                </p>
+              </div>
+              <span
+                className={`px-4 py-2 text-sm font-semibold rounded-full ${getStatusColor(
+                  order.status
+                )}`}
               >
-                Initiate Shipment
-              </UnifiedButton>
-            )}
-
-            {!["delivered", "cancelled", "rejected"].includes(order.status) && (
-              <UnifiedButton
-                variant="destructive"
-                icon={<X />}
-                onClick={() => setCancelDialog(true)}
-              >
-                Cancel Order
-              </UnifiedButton>
-            )}
-
-            <UnifiedButton
-              variant="outline"
-              icon={<Printer />}
-              onClick={handleGenerateInvoice}
-              disabled={loading}
-            >
-              {loading ? "Generating..." : "Generate Invoice"}
-            </UnifiedButton>
+                {order.status}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Order Items */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-xl font-semibold text-text mb-4">
-                  Order Items
-                </h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-3 px-2 text-sm font-semibold text-text">
-                          Product
-                        </th>
-                        <th className="text-left py-3 px-2 text-sm font-semibold text-text">
-                          SKU
-                        </th>
-                        <th className="text-right py-3 px-2 text-sm font-semibold text-text">
-                          Price
-                        </th>
-                        <th className="text-center py-3 px-2 text-sm font-semibold text-text">
-                          Qty
-                        </th>
-                        <th className="text-right py-3 px-2 text-sm font-semibold text-text">
-                          Total
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {order.items.map((item) => (
-                        <tr key={item.id} className="border-b border-border">
-                          <td className="py-3 px-2">
-                            <div className="flex items-center gap-3">
-                              <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
-                                <Image
-                                  src={item.image}
-                                  alt={item.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-text">
-                                  {item.name}
-                                </p>
-                                <p className="text-xs text-textSecondary">
-                                  {item.slug}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-3 px-2">
-                            <p className="text-sm text-textSecondary">
-                              {item.sku}
-                            </p>
-                          </td>
-                          <td className="py-3 px-2 text-right">
-                            <p className="text-sm text-text">
-                              ₹{item.price.toLocaleString()}
-                            </p>
-                          </td>
-                          <td className="py-3 px-2 text-center">
-                            <p className="text-sm text-text">{item.quantity}</p>
-                          </td>
-                          <td className="py-3 px-2 text-right">
-                            <p className="text-sm font-semibold text-text">
-                              ₹{item.total.toLocaleString()}
-                            </p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Order Items */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4">Order Items</h2>
+                <div className="space-y-4">
+                  {order.items?.map((item: any) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 pb-4 border-b last:border-b-0"
+                    >
+                      {item.productImage && (
+                        <img
+                          src={item.productImage}
+                          alt={item.productName}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900">
+                          {item.productName}
+                        </h3>
+                        {item.variant && (
+                          <p className="text-sm text-gray-600">
+                            Variant: {item.variant}
+                          </p>
+                        )}
+                        {item.sku && (
+                          <p className="text-sm text-gray-500">
+                            SKU: {item.sku}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">
+                          {formatCurrency(item.price)} × {item.quantity}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Total: {formatCurrency(item.total)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </UnifiedCard>
 
-            {/* Pricing Breakdown */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-xl font-semibold text-text mb-4">
-                  Pricing Breakdown
-                </h2>
+                {/* Order Summary */}
+                <div className="mt-6 pt-6 border-t space-y-2">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(order.subtotal)}</span>
+                  </div>
+                  {order.discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Discount</span>
+                      <span>-{formatCurrency(order.discount)}</span>
+                    </div>
+                  )}
+                  {order.couponCode && (
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Coupon: {order.couponCode}</span>
+                      <span>-{formatCurrency(order.couponDiscount || 0)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-gray-600">
+                    <span>Shipping</span>
+                    <span>{formatCurrency(order.shipping)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Tax</span>
+                    <span>{formatCurrency(order.tax)}</span>
+                  </div>
+                  <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
+                    <span>Total</span>
+                    <span>{formatCurrency(order.total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping Information */}
+              {order.trackingNumber && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center">
+                    <Truck className="w-5 h-5 mr-2" />
+                    Shipping Information
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Tracking Number</p>
+                      <p className="font-semibold font-mono">
+                        {order.trackingNumber}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Shipping Provider</p>
+                      <p className="font-semibold">{order.shippingProvider}</p>
+                    </div>
+                    {order.estimatedDelivery && (
+                      <div>
+                        <p className="text-sm text-gray-600">
+                          Estimated Delivery
+                        </p>
+                        <p className="font-semibold">
+                          {new Date(
+                            order.estimatedDelivery
+                          ).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                    {order.deliveredAt && (
+                      <div>
+                        <p className="text-sm text-gray-600">Delivered On</p>
+                        <p className="font-semibold">
+                          {new Date(order.deliveredAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Customer Notes */}
+              {order.customerNotes && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center">
+                    <FileText className="w-5 h-5 mr-2" />
+                    Customer Notes
+                  </h2>
+                  <p className="text-gray-700">{order.customerNotes}</p>
+                </div>
+              )}
+
+              {/* Internal Notes */}
+              {order.internalNotes && (
+                <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-6">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center text-yellow-800">
+                    <FileText className="w-5 h-5 mr-2" />
+                    Internal Notes
+                  </h2>
+                  <p className="text-yellow-900">{order.internalNotes}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Customer Information */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4">Customer</h2>
                 <div className="space-y-3">
-                  <div className="flex justify-between py-2">
-                    <span className="text-text">Subtotal</span>
-                    <span className="text-text">
-                      ₹{order.subtotal.toLocaleString()}
+                  <div className="flex items-center text-gray-700">
+                    <Mail className="w-5 h-5 mr-3 text-gray-400" />
+                    <span className="text-sm break-all">
+                      {order.customerEmail || "N/A"}
                     </span>
                   </div>
-
-                  {order.couponDiscount > 0 && order.couponSnapshot && (
-                    <div className="flex justify-between py-2 text-success">
-                      <div>
-                        <p className="text-success">Coupon Discount</p>
-                        <p className="text-xs text-textSecondary">
-                          {order.couponSnapshot.code} -{" "}
-                          {order.couponSnapshot.name}
-                        </p>
-                      </div>
-                      <span className="text-success">
-                        -₹{order.couponDiscount.toLocaleString()}
+                  {order.shippingAddress?.phone && (
+                    <div className="flex items-center text-gray-700">
+                      <Phone className="w-5 h-5 mr-3 text-gray-400" />
+                      <span className="text-sm">
+                        {order.shippingAddress.phone}
                       </span>
                     </div>
                   )}
-
-                  {order.saleDiscount > 0 && order.saleSnapshot && (
-                    <div className="flex justify-between py-2 text-success">
-                      <div>
-                        <p className="text-success">Sale Discount</p>
-                        <p className="text-xs text-textSecondary">
-                          {order.saleSnapshot.name}
-                        </p>
-                      </div>
-                      <span className="text-success">
-                        -₹{order.saleDiscount.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between py-2">
-                    <span className="text-text">Shipping Charges</span>
-                    <span className="text-text">
-                      {order.shippingCharges > 0
-                        ? `₹${order.shippingCharges.toLocaleString()}`
-                        : "FREE"}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between py-2">
-                    <span className="text-text">Tax</span>
-                    <span className="text-text">
-                      ₹{order.tax.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="border-t border-border my-4"></div>
-
-                  <div className="flex justify-between py-2">
-                    <span className="text-xl font-bold text-text">Total</span>
-                    <span className="text-xl font-bold text-primary">
-                      ₹{order.total.toLocaleString()}
-                    </span>
-                  </div>
                 </div>
-              </CardContent>
-            </UnifiedCard>
+              </div>
 
-            {/* Timeline */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-xl font-semibold text-text mb-6">
-                  Order Timeline
-                </h2>
-                <Timeline
-                  events={timeline}
-                  variant="default"
-                  showTimestamps={true}
-                  timestampPosition="alternate"
-                />
-              </CardContent>
-            </UnifiedCard>
-          </div>
-
-          {/* Right Column - 1/3 width */}
-          <div className="space-y-6">
-            {/* Customer Info */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-lg font-semibold text-text mb-3">
-                  Customer Information
-                </h2>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-text">
-                    {order.customerName}
-                  </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.customerEmail}
-                  </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.customerPhone}
-                  </p>
-                </div>
-              </CardContent>
-            </UnifiedCard>
-
-            {/* Shipping Address */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-lg font-semibold text-text mb-3">
+              {/* Shipping Address */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <MapPin className="w-5 h-5 mr-2" />
                   Shipping Address
                 </h2>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-text">
-                    {order.shippingAddress.fullName}
-                  </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.shippingAddress.phone}
-                  </p>
-                  <p className="text-sm text-textSecondary mt-2">
-                    {order.shippingAddress.addressLine1}
-                  </p>
-                  {order.shippingAddress.addressLine2 && (
-                    <p className="text-sm text-textSecondary">
-                      {order.shippingAddress.addressLine2}
-                    </p>
+                <div className="text-gray-700 space-y-1">
+                  <p className="font-medium">{order.shippingAddress.name}</p>
+                  <p className="text-sm">{order.shippingAddress.line1}</p>
+                  {order.shippingAddress.line2 && (
+                    <p className="text-sm">{order.shippingAddress.line2}</p>
                   )}
-                  <p className="text-sm text-textSecondary">
+                  <p className="text-sm">
                     {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
                     {order.shippingAddress.pincode}
                   </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.shippingAddress.country}
-                  </p>
-                </div>
-              </CardContent>
-            </UnifiedCard>
-
-            {/* Billing Address */}
-            <UnifiedCard>
-              <CardContent>
-                <h2 className="text-lg font-semibold text-text mb-3">
-                  Billing Address
-                </h2>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-text">
-                    {order.billingAddress.fullName}
-                  </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.billingAddress.phone}
-                  </p>
-                  <p className="text-sm text-textSecondary mt-2">
-                    {order.billingAddress.addressLine1}
-                  </p>
-                  {order.billingAddress.addressLine2 && (
-                    <p className="text-sm text-textSecondary">
-                      {order.billingAddress.addressLine2}
+                  <p className="text-sm">{order.shippingAddress.country}</p>
+                  {order.shippingAddress.phone && (
+                    <p className="text-sm mt-2">
+                      Phone: {order.shippingAddress.phone}
                     </p>
                   )}
-                  <p className="text-sm text-textSecondary">
-                    {order.billingAddress.city}, {order.billingAddress.state}{" "}
-                    {order.billingAddress.pincode}
-                  </p>
-                  <p className="text-sm text-textSecondary">
-                    {order.billingAddress.country}
-                  </p>
                 </div>
-              </CardContent>
-            </UnifiedCard>
+              </div>
 
-            {/* Notes */}
-            {order.notes && (
-              <UnifiedCard>
-                <CardContent>
-                  <h2 className="text-lg font-semibold text-text mb-3">
-                    Order Notes
-                  </h2>
-                  <p className="text-sm text-textSecondary">{order.notes}</p>
-                </CardContent>
-              </UnifiedCard>
-            )}
+              {/* Payment Information */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Payment
+                </h2>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Method</span>
+                    <span className="font-medium uppercase">
+                      {order.paymentMethod}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status</span>
+                    <span
+                      className={`font-medium ${
+                        order.paymentStatus === "paid"
+                          ? "text-green-600"
+                          : order.paymentStatus === "failed"
+                          ? "text-red-600"
+                          : "text-yellow-600"
+                      }`}
+                    >
+                      {order.paymentStatus}
+                    </span>
+                  </div>
+                  {order.paymentId && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Payment ID</span>
+                      <span className="font-mono text-xs">
+                        {order.paymentId}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            {order.internalNotes && (
-              <UnifiedCard>
-                <CardContent>
-                  <h2 className="text-lg font-semibold text-text mb-3">
-                    Internal Notes
+              {/* Actions */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4">Actions</h2>
+                <div className="space-y-3">
+                  {order.status === "pending" && (
+                    <button
+                      onClick={() => handleUpdateStatus("processing")}
+                      disabled={updating}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      <Package className="w-5 h-5 mr-2" />
+                      Start Processing
+                    </button>
+                  )}
+
+                  {order.status === "processing" && !order.trackingNumber && (
+                    <button
+                      onClick={() => setShowShippingForm(!showShippingForm)}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                    >
+                      <Truck className="w-5 h-5 mr-2" />
+                      Add Shipping Info
+                    </button>
+                  )}
+
+                  {order.status === "shipped" && (
+                    <button
+                      onClick={() => handleUpdateStatus("delivered")}
+                      disabled={updating}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                    >
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Mark as Delivered
+                    </button>
+                  )}
+
+                  <button
+                    onClick={handleDownloadInvoice}
+                    className="w-full flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Download Invoice
+                  </button>
+
+                  {order.status === "pending" && (
+                    <button
+                      onClick={() => handleUpdateStatus("cancelled")}
+                      disabled={updating}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                    >
+                      <XCircle className="w-5 h-5 mr-2" />
+                      Cancel Order
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Shipping Form */}
+              {showShippingForm && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Add Shipping Information
                   </h2>
-                  <p className="text-sm text-textSecondary">
-                    {order.internalNotes}
-                  </p>
-                </CardContent>
-              </UnifiedCard>
-            )}
+                  <form onSubmit={handleAddShipping} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tracking Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={shippingData.trackingNumber}
+                        onChange={(e) =>
+                          setShippingData((prev) => ({
+                            ...prev,
+                            trackingNumber: e.target.value,
+                          }))
+                        }
+                        required
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter tracking number"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Shipping Provider *
+                      </label>
+                      <select
+                        value={shippingData.shippingProvider}
+                        onChange={(e) =>
+                          setShippingData((prev) => ({
+                            ...prev,
+                            shippingProvider: e.target.value,
+                          }))
+                        }
+                        required
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select provider</option>
+                        <option value="BlueDart">BlueDart</option>
+                        <option value="Delhivery">Delhivery</option>
+                        <option value="DTDC">DTDC</option>
+                        <option value="FedEx">FedEx</option>
+                        <option value="India Post">India Post</option>
+                        <option value="Professional Courier">
+                          Professional Courier
+                        </option>
+                        <option value="Trackon">Trackon</option>
+                        <option value="Xpressbees">Xpressbees</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Estimated Delivery
+                      </label>
+                      <input
+                        type="date"
+                        value={shippingData.estimatedDelivery}
+                        onChange={(e) =>
+                          setShippingData((prev) => ({
+                            ...prev,
+                            estimatedDelivery: e.target.value,
+                          }))
+                        }
+                        min={new Date().toISOString().split("T")[0]}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={updating}
+                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {updating ? "Adding..." : "Add Shipping"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowShippingForm(false)}
+                        className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Approve Dialog */}
-        <UnifiedModal
-          open={approveDialog}
-          onClose={() => setApproveDialog(false)}
-          title="Approve Order"
-        >
-          <div className="space-y-4">
-            <p className="text-textSecondary">
-              Are you sure you want to approve order #{order.orderNumber}? This
-              will move the order to processing status.
-            </p>
-            <div className="flex justify-end gap-3">
-              <UnifiedButton
-                variant="outline"
-                onClick={() => setApproveDialog(false)}
-                disabled={actionLoading}
-              >
-                Cancel
-              </UnifiedButton>
-              <UnifiedButton
-                variant="success"
-                onClick={handleApprove}
-                disabled={actionLoading}
-              >
-                {actionLoading ? "Approving..." : "Approve"}
-              </UnifiedButton>
-            </div>
-          </div>
-        </UnifiedModal>
-
-        {/* Reject Dialog */}
-        <UnifiedModal
-          open={rejectDialog}
-          onClose={() => setRejectDialog(false)}
-          title="Reject Order"
-        >
-          <div className="space-y-4">
-            <p className="text-textSecondary">
-              Please provide a reason for rejecting order #{order.orderNumber}
-            </p>
-            <UnifiedTextarea
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Explain why you're rejecting this order..."
-              rows={4}
-            />
-            <div className="flex justify-end gap-3">
-              <UnifiedButton
-                variant="outline"
-                onClick={() => setRejectDialog(false)}
-                disabled={actionLoading}
-              >
-                Cancel
-              </UnifiedButton>
-              <UnifiedButton
-                variant="destructive"
-                onClick={handleReject}
-                disabled={actionLoading}
-              >
-                {actionLoading ? "Rejecting..." : "Reject Order"}
-              </UnifiedButton>
-            </div>
-          </div>
-        </UnifiedModal>
-
-        {/* Cancel Dialog */}
-        <UnifiedModal
-          open={cancelDialog}
-          onClose={() => setCancelDialog(false)}
-          title="Cancel Order"
-        >
-          <div className="space-y-4">
-            <p className="text-textSecondary">
-              Please provide a reason for cancelling order #{order.orderNumber}
-            </p>
-            <UnifiedTextarea
-              value={cancelReason}
-              onChange={(e) => setCancelReason(e.target.value)}
-              placeholder="Explain why you're cancelling this order..."
-              rows={4}
-            />
-            <div className="flex justify-end gap-3">
-              <UnifiedButton
-                variant="outline"
-                onClick={() => setCancelDialog(false)}
-                disabled={actionLoading}
-              >
-                Cancel
-              </UnifiedButton>
-              <UnifiedButton
-                variant="destructive"
-                onClick={handleCancel}
-                disabled={actionLoading}
-              >
-                {actionLoading ? "Cancelling..." : "Cancel Order"}
-              </UnifiedButton>
-            </div>
-          </div>
-        </UnifiedModal>
       </div>
-    </RoleGuard>
+    </AuthGuard>
   );
 }

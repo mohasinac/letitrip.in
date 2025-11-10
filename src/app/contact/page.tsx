@@ -1,357 +1,333 @@
 "use client";
 
 import { useState } from "react";
-import {
-  UnifiedCard,
-  CardContent,
-  PrimaryButton,
-  UnifiedInput,
-  UnifiedTextarea,
-  UnifiedSelect,
-} from "@/components/ui/unified";
-import { CheckCircle, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { apiClient } from "@/lib/api/client";
-import toast from "react-hot-toast";
-import { useBreadcrumbTracker } from "@/hooks/useBreadcrumbTracker";
+import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
+import { apiService } from "@/services/api.service";
+import { SUPPORT_ROUTES } from "@/constants/api-routes";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   });
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  // Add breadcrumb
-  useBreadcrumbTracker([
-    {
-      label: "Contact",
-      href: "/contact",
-      active: true,
-    },
-  ]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name as string]: value,
-    }));
-  };
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setSuccess(false);
     setLoading(true);
 
     try {
-      // Submit to contact API
-      await apiClient.post("/contact", formData);
+      await apiService.post(SUPPORT_ROUTES.CREATE_TICKET, {
+        ...formData,
+        category: "general",
+        priority: "medium",
+      });
 
-      setSent(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      toast.success("Message sent successfully!");
-    } catch (error: any) {
-      console.error("Contact form error:", error);
-      toast.error(error.message || "Failed to send message. Please try again.");
+      setSuccess(true);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (err: any) {
+      setError(err.message || "Failed to submit. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  if (sent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center py-8">
-        <div className="container max-w-2xl px-4">
-          <UnifiedCard className="rounded-xl">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl font-semibold mb-3">Message Sent!</h2>
-              <p className="text-muted-foreground mb-6">
-                Thank you for contacting us. We'll get back to you within 24
-                hours.
-              </p>
-              <PrimaryButton
-                size="lg"
-                onClick={() => setSent(false)}
-                className="px-8"
-              >
-                Send Another Message
-              </PrimaryButton>
-            </CardContent>
-          </UnifiedCard>
-        </div>
-      </div>
-    );
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary to-primary/80 py-12 md:py-16 text-white">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Get in Touch
-            </h1>
-            <p className="text-lg max-w-2xl mx-auto opacity-90">
-              Have questions? We'd love to hear from you. Send us a message and
-              we'll respond as soon as possible.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Get in Touch
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Have questions or need help? We're here to assist you. Send us a
+            message and we'll respond as soon as possible.
+          </p>
         </div>
-      </div>
 
-      <div className="py-12">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <UnifiedCard className="rounded-xl">
-              <CardContent className="p-6">
-                <h2 className="text-3xl font-semibold mb-6">
-                  Send us a Message
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <UnifiedInput
-                      label="Full Name"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                    />
-                    <UnifiedInput
-                      label="Email"
-                      name="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <UnifiedSelect
-                    label="Subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="order">Order Support</option>
-                    <option value="product">Product Question</option>
-                    <option value="auction">Auction Inquiry</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="feedback">Feedback</option>
-                  </UnifiedSelect>
-
-                  <UnifiedTextarea
-                    label="Message"
-                    name="message"
-                    required
-                    rows={6}
-                    placeholder="Tell us how we can help you..."
-                    value={formData.message}
-                    onChange={handleChange}
-                  />
-
-                  <PrimaryButton
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Sending..." : "Send Message"}
-                  </PrimaryButton>
-                </form>
-              </CardContent>
-            </UnifiedCard>
-
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl font-semibold mb-6">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Contact Info */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Contact Information
               </h2>
 
-              <div className="space-y-4 mt-6">
-                {/* Address */}
-                <UnifiedCard className="rounded-xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                        <MapPin className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-1">
-                          Our Office
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          123 Business Park, 2nd Floor
-                          <br />
-                          Andheri East, Mumbai - 400069
-                          <br />
-                          Maharashtra, India
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </UnifiedCard>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
+                    <p className="text-gray-600">support@letitrip.in</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      We'll respond within 24 hours
+                    </p>
+                  </div>
+                </div>
 
-                {/* Phone */}
-                <UnifiedCard className="rounded-xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                        <Phone className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-1">
-                          Phone Support
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          <a
-                            href="tel:+919876543210"
-                            className="text-primary hover:underline"
-                          >
-                            +91 98765 43210
-                          </a>
-                          <br />
-                          Mon-Sat, 9 AM - 6 PM IST
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </UnifiedCard>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
+                    <p className="text-gray-600">+91 (800) 123-4567</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Mon-Fri, 9am-6pm IST
+                    </p>
+                  </div>
+                </div>
 
-                {/* Email */}
-                <UnifiedCard className="rounded-xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                        <Mail className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-1">Email Us</h3>
-                        <p className="text-sm text-muted-foreground">
-                          <a
-                            href="mailto:support@hobbiesspot.com"
-                            className="text-primary hover:underline"
-                          >
-                            support@hobbiesspot.com
-                          </a>
-                          <br />
-                          <a
-                            href="mailto:hello@hobbiesspot.com"
-                            className="text-primary hover:underline"
-                          >
-                            hello@hobbiesspot.com
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </UnifiedCard>
-
-                {/* Business Hours */}
-                <UnifiedCard className="rounded-xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                        <Clock className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="w-full">
-                        <h3 className="text-lg font-semibold mb-2">
-                          Business Hours
-                        </h3>
-                        <div className="space-y-1">
-                          <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">
-                              Monday - Friday
-                            </span>
-                            <span className="text-sm font-medium">
-                              9:00 AM - 6:00 PM
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">
-                              Saturday
-                            </span>
-                            <span className="text-sm font-medium">
-                              10:00 AM - 4:00 PM
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">
-                              Sunday
-                            </span>
-                            <span className="text-sm font-medium text-red-500">
-                              Closed
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-3">
-                          All times are in Indian Standard Time (IST)
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </UnifiedCard>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      Address
+                    </h3>
+                    <p className="text-gray-600">
+                      123 Market Street
+                      <br />
+                      Mumbai, Maharashtra 400001
+                      <br />
+                      India
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* FAQ Quick Links */}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
+              <h3 className="text-xl font-bold mb-4">Quick Help</h3>
+              <p className="mb-4 opacity-90">
+                Looking for answers? Check out our frequently asked questions.
+              </p>
+              <a
+                href="/faq"
+                className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              >
+                View FAQ
+              </a>
+            </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Send us a Message
+            </h2>
+
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-green-900">
+                    Message sent successfully!
+                  </p>
+                  <p className="text-sm text-green-700 mt-1">
+                    We'll get back to you soon.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-900 font-semibold">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Your Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Phone Number (Optional)
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="subject"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Subject <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  required
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="How can we help you?"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={6}
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  placeholder="Tell us more about your inquiry..."
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Message
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
-      </div>
 
-      {/* FAQ Section */}
-      <div className="py-12 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="text-4xl font-bold text-center mb-8">
-            Frequently Asked Questions
+        {/* Additional Help Section */}
+        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+            Other Ways to Reach Us
           </h2>
-          <div className="max-w-3xl mx-auto space-y-3">
-            {[
-              {
-                question: "How long does shipping take?",
-                answer:
-                  "We offer free shipping on orders above ₹1000. Standard delivery takes 3-5 business days, while express delivery takes 1-2 business days.",
-              },
-              {
-                question: "Do you sell authentic products?",
-                answer:
-                  "Yes, we guarantee 100% authentic products. We work directly with authorized distributors and provide certificates of authenticity where applicable.",
-              },
-              {
-                question: "How do auctions work?",
-                answer:
-                  "Our live auctions allow you to bid on rare and exclusive items. You can place bids during the auction period, and the highest bidder wins when the auction ends.",
-              },
-              {
-                question: "What is your return policy?",
-                answer:
-                  "We offer easy returns within 7 days of delivery for unopened items in original condition. For auction items, returns are subject to specific terms mentioned in the auction.",
-              },
-              {
-                question: "How can I track my order?",
-                answer:
-                  "Once your order ships, you'll receive a tracking number via email and SMS. You can also check your order status in your account dashboard.",
-              },
-            ].map((faq, index) => (
-              <UnifiedCard
-                key={index}
-                className="rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gray-50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 mb-2">For Sellers</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Questions about selling on our platform?
+              </p>
+              <a
+                href="/seller/dashboard"
+                className="text-blue-600 font-semibold hover:underline text-sm"
               >
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
-                </CardContent>
-              </UnifiedCard>
-            ))}
+                Seller Dashboard →
+              </a>
+            </div>
+
+            <div className="text-center p-6 bg-gray-50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Support Tickets
+              </h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Track your existing support requests
+              </p>
+              <a
+                href="/user/tickets"
+                className="text-blue-600 font-semibold hover:underline text-sm"
+              >
+                View Tickets →
+              </a>
+            </div>
+
+            <div className="text-center p-6 bg-gray-50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 mb-2">Help Center</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Browse our documentation and guides
+              </p>
+              <a
+                href="/guide"
+                className="text-blue-600 font-semibold hover:underline text-sm"
+              >
+                View Guides →
+              </a>
+            </div>
           </div>
         </div>
       </div>

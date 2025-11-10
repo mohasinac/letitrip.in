@@ -1,0 +1,59 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    
+    "auction-bids": {
+      "$auctionId": {
+        ".read": true,
+        ".write": "auth != null",
+        ".indexOn": ["timestamp", "amount", "userId"]
+      }
+    },
+    
+    "auction-status": {
+      "$auctionId": {
+        ".read": true,
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'seller')"
+      }
+    },
+    
+    "active-users": {
+      "$auctionId": {
+        ".read": true,
+        ".write": "auth != null",
+        "$userId": {
+          ".read": true,
+          ".write": "auth != null && auth.uid == $userId"
+        }
+      }
+    },
+    
+    "notifications": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp", "read"]
+      }
+    },
+    
+    "error-logs": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      ".write": "auth != null",
+      "$logId": {
+        ".indexOn": ["timestamp", "level", "userId"]
+      }
+    },
+    
+    "analytics": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'seller')",
+      ".write": "auth != null",
+      "page-views": {
+        ".indexOn": ["timestamp", "page", "userId"]
+      },
+      "events": {
+        ".indexOn": ["timestamp", "eventType", "userId"]
+      }
+    }
+  }
+}

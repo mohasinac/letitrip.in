@@ -1,198 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
-// This is a mock implementation. In production, replace with actual database calls.
-// For now, we'll use in-memory storage that persists during the server session.
-
-interface HeroBannerSlide {
-  id: string;
-  title: string;
-  description?: string;
-  backgroundImage?: string;
-  backgroundVideo?: string;
-  backgroundColor?: string;
-  theme: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    gradient: string;
-    textPrimary: string;
-    textSecondary: string;
-    overlay: string;
-    cardBackground: string;
-    borderColor: string;
-  };
-  featuredProductIds: string[];
-  seoMeta?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    metaKeywords?: string[];
-    ogImage?: string;
-    ogTitle?: string;
-    ogDescription?: string;
-  };
-  isActive: boolean;
-  displayOrder: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// In-memory storage (replace with actual database)
-let heroSlides: HeroBannerSlide[] = [];
-
-// Initialize with default data
-const DEFAULT_SLIDES: HeroBannerSlide[] = [
-  {
-    id: "classic-plastic",
-    title: "Classic Plastic Generation",
-    description: "Discover the original Beyblades that started the legend",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?auto=format&fit=crop&w=1920&q=80",
-    backgroundColor: "#1a1a1a",
-    theme: {
-      primary: "#4A90E2",
-      secondary: "#7BB3F0",
-      accent: "#2E5BBA",
-      gradient: "linear-gradient(135deg, #4A90E2 0%, #7BB3F0 100%)",
-      textPrimary: "#FFFFFF",
-      textSecondary: "#E3F2FD",
-      overlay: "rgba(74, 144, 226, 0.15)",
-      cardBackground: "rgba(255, 255, 255, 0.95)",
-      borderColor: "rgba(74, 144, 226, 0.3)",
-    },
-    featuredProductIds: ["dragoon-gt", "valkyrie-x", "spriggan-burst"],
-    isActive: true,
-    displayOrder: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "metal-fight",
-    title: "Metal Fight Series",
-    description: "Experience the power of metal-based Beyblades",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1920&q=80",
-    backgroundColor: "#1a1a1a",
-    theme: {
-      primary: "#757575",
-      secondary: "#BDBDBD",
-      accent: "#424242",
-      gradient: "linear-gradient(135deg, #757575 0%, #BDBDBD 100%)",
-      textPrimary: "#FFFFFF",
-      textSecondary: "#F5F5F5",
-      overlay: "rgba(117, 117, 117, 0.15)",
-      cardBackground: "rgba(255, 255, 255, 0.95)",
-      borderColor: "rgba(117, 117, 117, 0.3)",
-    },
-    featuredProductIds: ["storm-pegasus", "rock-leone", "flame-sagittario"],
-    isActive: true,
-    displayOrder: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-// Initialize
-if (heroSlides.length === 0) {
-  heroSlides = DEFAULT_SLIDES;
-}
-
-export async function GET() {
+// GET /api/admin/hero-slides - List hero slides
+export async function GET(req: NextRequest) {
   try {
-    const activeSlides = heroSlides
-      .filter((slide) => slide.isActive)
-      .sort((a, b) => a.displayOrder - b.displayOrder);
+    const db = getFirestoreAdmin();
 
-    return NextResponse.json({
-      success: true,
-      data: activeSlides,
-    });
+    // Get all hero slides ordered by position
+    const snapshot = await db
+      .collection(COLLECTIONS.HERO_SLIDES)
+      .orderBy("position", "asc")
+      .get();
+
+    const slides = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return NextResponse.json({ slides });
   } catch (error) {
     console.error("Error fetching hero slides:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch hero slides" },
+      { error: "Failed to fetch hero slides" },
       { status: 500 },
     );
   }
 }
 
-export async function POST(request: NextRequest) {
+// POST /api/admin/hero-slides - Create hero slide
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const newSlide: HeroBannerSlide = {
-      ...body,
-      id: body.id || Date.now().toString(),
-      createdAt: body.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    const db = getFirestoreAdmin();
+    const body = await req.json();
+
+    // Validate required fields
+    if (!body.title || !body.image_url) {
+      return NextResponse.json(
+        { error: "Title and image are required" },
+        { status: 400 },
+      );
+    }
+
+    // Get max position
+    const maxSnapshot = await db
+      .collection(COLLECTIONS.HERO_SLIDES)
+      .orderBy("position", "desc")
+      .limit(1)
+      .get();
+
+    const maxPosition = maxSnapshot.empty
+      ? 0
+      : maxSnapshot.docs[0].data().position;
+
+    // Create slide
+    const slideData = {
+      title: body.title,
+      subtitle: body.subtitle || "",
+      description: body.description || "",
+      image_url: body.image_url,
+      link_url: body.link_url || "",
+      cta_text: body.cta_text || "Shop Now",
+      position: maxPosition + 1,
+      is_active: body.is_active ?? true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    heroSlides.push(newSlide);
+    const docRef = await db.collection(COLLECTIONS.HERO_SLIDES).add(slideData);
 
     return NextResponse.json(
-      { success: true, data: newSlide },
+      {
+        id: docRef.id,
+        ...slideData,
+      },
       { status: 201 },
     );
   } catch (error) {
     console.error("Error creating hero slide:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to create hero slide" },
-      { status: 500 },
-    );
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { id } = body;
-
-    const index = heroSlides.findIndex((slide) => slide.id === id);
-    if (index === -1) {
-      return NextResponse.json(
-        { success: false, error: "Hero slide not found" },
-        { status: 404 },
-      );
-    }
-
-    const updatedSlide = {
-      ...heroSlides[index],
-      ...body,
-      id, // Preserve ID
-      createdAt: heroSlides[index].createdAt, // Preserve creation date
-      updatedAt: new Date().toISOString(),
-    };
-
-    heroSlides[index] = updatedSlide;
-
-    return NextResponse.json({ success: true, data: updatedSlide });
-  } catch (error) {
-    console.error("Error updating hero slide:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update hero slide" },
-      { status: 500 },
-    );
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { id } = body;
-
-    const index = heroSlides.findIndex((slide) => slide.id === id);
-    if (index === -1) {
-      return NextResponse.json(
-        { success: false, error: "Hero slide not found" },
-        { status: 404 },
-      );
-    }
-
-    heroSlides.splice(index, 1);
-
-    return NextResponse.json({ success: true, data: { id } });
-  } catch (error) {
-    console.error("Error deleting hero slide:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete hero slide" },
+      { error: "Failed to create hero slide" },
       { status: 500 },
     );
   }

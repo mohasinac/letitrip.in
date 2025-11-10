@@ -1,0 +1,300 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { Collections } from '../../lib/firebase/collections';
+import { getCurrentUser } from '../../lib/session';
+import { z } from 'zod';
+import crypto from 'crypto';
+
+const ShopOrderSchema = z.object({
+  shopId: z.string(),
+  shopName: z.string(),
+  items: z.array(z.any()),
+  couponCode: z.string().optional(),
+});
+
+const CreateOrderSchema = z.object({
+  shippingAddressId: z.string().min(1, 'Shipping address is required'),
+  billingAddressId: z.string().optional(),
+  paymentMethod: z.enum(['razorpay', 'cod']),
+  shopOrders: z.array(ShopOrderSchema),
+  notes: z.string().optional(),
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const validation = CreateOrderSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+
+    const { shippingAddressId, billingAddressId, paymentMethod, shopOrders, notes } =
+      validation.data;
+
+    if (!shopOrders || shopOrders.length === 0) {
+      return NextResponse.json(
+        { error: 'No shop orders provided' },
+        { status: 400 }
+      );
+    }
+
+    // Validate all items across all shop orders
+    const allItems = shopOrders.flatMap((shop: any) => shop.items);
+    const productIds = allItems.map((item: any) => item.productId);
+    const productSnapshots = await Promise.all(
+      productIds.map((id: string) => Collections.products().doc(id).get())
+    );
+
+    const products = productSnapshots.map((snap: any) => ({
+      id: snap.id,
+      ...snap.data(),
+    }));
+
+    for (const item of allItems) {
+      const product = products.find((p: any) => p.id === item.productId);
+      if (!product) {
+        return NextResponse.json(
+          { error: `Product ${item.productName} not found` },
+          { status: 400 }
+        );
+      }
+
+      if (product.stock_count < item.quantity) {
+        return NextResponse.json(
+          { error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available` },
+          { status: 400 }
+        );
+      }
+
+      if (product.status !== 'active') {
+        return NextResponse.json(
+          { error: `Product ${product.name} is no longer available` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Fetch addresses
+    const shippingAddressDoc = await Collections.addresses().doc(shippingAddressId).get();
+    if (!shippingAddressDoc.exists) {
+      return NextResponse.json(
+        { error: 'Shipping address not found' },
+        { status: 400 }
+      );
+    }
+
+    const shippingAddress = shippingAddressDoc.data();
+    if (shippingAddress?.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Invalid shipping address' },
+        { status: 403 }
+      );
+    }
+
+    let billingAddress = shippingAddress;
+    if (billingAddressId && billingAddressId !== shippingAddressId) {
+      const billingAddressDoc = await Collections.addresses().doc(billingAddressId).get();
+      if (!billingAddressDoc.exists) {
+        return NextResponse.json(
+          { error: 'Billing address not found' },
+          { status: 400 }
+        );
+      }
+
+      const billingData = billingAddressDoc.data();
+      if (billingData?.user_id !== user.id) {
+        return NextResponse.json(
+          { error: 'Invalid billing address' },
+          { status: 403 }
+        );
+      }
+      billingAddress = billingData;
+    }
+
+    // Calculate totals
+    let subtotal = 0;
+    const orderItems = cartItems.map((item: any) => {
+      const product = products.find((p: any) => p.id === item.product_id);
+      const itemSubtotal = product.price * item.quantity;
+      subtotal += itemSubtotal;
+
+      return {
+        product_id: item.product_id,
+        product_name: product.name,
+        product_image: product.images?.[0] || null,
+        variant: item.variant || null,
+        quantity: item.quantity,
+        price: product.price,
+        subtotal: itemSubtotal,
+        shop_id: product.shop_id,
+      };
+    });
+
+    let discount = 0;
+    let couponData = null;
+
+    if (couponCode) {
+      const couponSnapshot = await Collections.coupons()
+        .where('code', '==', couponCode.toUpperCase())
+        .limit(1)
+        .get();
+
+      if (!couponSnapshot.empty) {
+        const coupon: any = { id: couponSnapshot.docs[0].id, ...couponSnapshot.docs[0].data() };
+
+        // Validate coupon
+        const now = new Date();
+        const validFrom = coupon.valid_from?.toDate();
+        const validUntil = coupon.valid_until?.toDate();
+
+        if (
+          coupon.status === 'active' &&
+          (!validFrom || now >= validFrom) &&
+          (!validUntil || now <= validUntil) &&
+          subtotal >= (coupon.min_purchase || 0) &&
+          (coupon.usage_limit === null || coupon.used_count < coupon.usage_limit)
+        ) {
+          // Calculate discount
+          if (coupon.discount_type === 'percentage') {
+            discount = (subtotal * coupon.discount_value) / 100;
+            if (coupon.max_discount) {
+              discount = Math.min(discount, coupon.max_discount);
+            }
+          } else if (coupon.discount_type === 'flat') {
+            discount = Math.min(coupon.discount_value, subtotal);
+          }
+
+          couponData = {
+            code: coupon.code,
+            discount_type: coupon.discount_type,
+            discount_value: coupon.discount_value,
+            discount_amount: discount,
+          };
+        }
+      }
+    }
+
+    const shipping = subtotal >= 5000 ? 0 : 100;
+    const tax = subtotal * 0.18; // 18% GST
+    const total = subtotal + shipping + tax - discount;
+
+    // Create order
+    const orderId = `ORD-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+    
+    const orderData = {
+      order_id: orderId,
+      user_id: user.id,
+      user_email: user.email,
+      user_name: user.name || user.email,
+      items: orderItems,
+      subtotal,
+      discount,
+      shipping,
+      tax,
+      total,
+      coupon: couponData,
+      shipping_address: {
+        id: shippingAddressId,
+        name: shippingAddress?.name,
+        phone: shippingAddress?.phone,
+        line1: shippingAddress?.line1,
+        line2: shippingAddress?.line2,
+        city: shippingAddress?.city,
+        state: shippingAddress?.state,
+        postal_code: shippingAddress?.postal_code,
+        country: shippingAddress?.country || 'India',
+      },
+      billing_address: {
+        id: billingAddressId || shippingAddressId,
+        name: billingAddress?.name,
+        phone: billingAddress?.phone,
+        line1: billingAddress?.line1,
+        line2: billingAddress?.line2,
+        city: billingAddress?.city,
+        state: billingAddress?.state,
+        postal_code: billingAddress?.postal_code,
+        country: billingAddress?.country || 'India',
+      },
+      payment_method: paymentMethod,
+      payment_status: paymentMethod === 'cod' ? 'pending' : 'awaiting',
+      order_status: 'pending',
+      notes: notes || null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    const orderRef = await Collections.orders().add(orderData);
+
+    // If COD, clear cart and update stock immediately
+    if (paymentMethod === 'cod') {
+      // Update stock
+      const batch = Collections.products().firestore.batch();
+      for (const item of cartItems) {
+        const product = products.find((p: any) => p.id === item.product_id);
+        const productRef = Collections.products().doc(item.product_id);
+        batch.update(productRef, {
+          stock_count: product.stock_count - item.quantity,
+          updated_at: new Date(),
+        });
+      }
+
+      // Clear cart
+      for (const item of cartItems) {
+        batch.delete(Collections.cart().doc(item.id));
+      }
+
+      // Update coupon usage
+      if (couponData) {
+        const couponSnapshot = await Collections.coupons()
+          .where('code', '==', couponData.code)
+          .limit(1)
+          .get();
+        
+        if (!couponSnapshot.empty) {
+          const couponDoc = couponSnapshot.docs[0];
+          batch.update(couponDoc.ref, {
+            used_count: (couponDoc.data().used_count || 0) + 1,
+            updated_at: new Date(),
+          });
+        }
+      }
+
+      await batch.commit();
+    }
+
+    // Generate Razorpay order if not COD
+    let razorpayOrderId = null;
+    if (paymentMethod === 'razorpay') {
+      // In production, integrate with Razorpay SDK
+      // For now, just generate a mock order ID
+      razorpayOrderId = `razorpay_order_${crypto.randomBytes(8).toString('hex')}`;
+      
+      await orderRef.update({
+        razorpay_order_id: razorpayOrderId,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      order_id: orderRef.id,
+      order_number: orderId,
+      razorpay_order_id: razorpayOrderId,
+      amount: Math.round(total * 100), // Amount in paise for Razorpay
+      currency: 'INR',
+    });
+  } catch (error: any) {
+    console.error('Create order error:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to create order' },
+      { status: 500 }
+    );
+  }
+}
