@@ -166,12 +166,12 @@ export default function WonAuctionsPage() {
             <p className="text-gray-600 mb-6">
               Keep bidding on auctions to win amazing items!
             </p>
-            <a
+            <Link
               href="/auctions"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Browse Auctions
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="space-y-4">

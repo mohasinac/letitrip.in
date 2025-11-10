@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Heart, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
@@ -178,12 +179,12 @@ export default function WatchlistPage() {
               Start watching auctions to keep track of items you're interested
               in
             </p>
-            <a
+            <Link
               href="/auctions"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Browse Auctions
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

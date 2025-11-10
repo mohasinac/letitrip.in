@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
@@ -681,7 +682,7 @@ export default function ShippingPolicyPage() {
           <strong>Phone:</strong> +91-XXXX-XXXXXX (Mon-Sat, 10 AM - 7 PM IST)
         </li>
         <li>
-          <strong>Track Order:</strong> <a href="/user/orders">My Orders</a>
+          <strong>Track Order:</strong> <Link href="/user/orders">My Orders</Link>
         </li>
       </ul>
 

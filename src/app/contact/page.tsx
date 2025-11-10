@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
 import { apiService } from "@/services/api.service";
 import { SUPPORT_ROUTES } from "@/constants/api-routes";
@@ -308,12 +309,12 @@ export default function ContactPage() {
               <p className="text-gray-600 text-sm mb-3">
                 Track your existing support requests
               </p>
-              <a
+              <Link
                 href="/user/tickets"
                 className="text-blue-600 font-semibold hover:underline text-sm"
               >
                 View Tickets →
-              </a>
+              </Link>
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-xl">
