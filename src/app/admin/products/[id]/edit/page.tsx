@@ -19,7 +19,7 @@ import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
 import { shopsService } from "@/services/shops.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
-import { MediaUploader } from "@/components/common/MediaUploader";
+import MediaUploader from "@/components/media/MediaUploader";
 import SlugInput from "@/components/common/SlugInput";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type {

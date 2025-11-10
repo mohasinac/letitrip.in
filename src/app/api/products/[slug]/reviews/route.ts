@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
-import {
-  withRedisRateLimit,
-  RATE_LIMITS,
-} from "@/app/api/lib/rate-limiter-redis";
+import { apiRateLimiter, strictRateLimiter } from "@/lib/rate-limiter";
 
 // GET /api/products/[slug]/reviews
 export async function GET(
@@ -56,81 +53,84 @@ export async function POST(
   req: NextRequest,
   context: { params: Promise<{ slug: string }> },
 ) {
-  return withRedisRateLimit(
-    req,
-    async (request: NextRequest) => {
-      try {
-        const user = await getCurrentUser(request);
-        if (!user?.id)
-          return NextResponse.json(
-            { success: false, error: "Unauthorized" },
-            { status: 401 },
-          );
+  // Rate limiting
+  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  if (!strictRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { success: false, error: "Too many review submissions. Please try again later." },
+      { status: 429 }
+    );
+  }
 
-        const { slug } = await context.params;
-        const body = await request.json();
-        const rating = Number(body?.rating);
-        const title: string | undefined = body?.title?.toString();
-        const comment: string = (body?.comment || "").toString();
-        const media: string[] = Array.isArray(body?.media)
-          ? body.media.slice(0, 5)
-          : [];
+  try {
+    const user = await getCurrentUser(req);
+    if (!user?.id)
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
 
-        if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
-          return NextResponse.json(
-            { success: false, error: "Rating must be 1-5" },
-            { status: 400 },
-          );
-        }
-        if (!comment || comment.length < 5) {
-          return NextResponse.json(
-            { success: false, error: "Comment must be at least 5 characters" },
-            { status: 400 },
-          );
-        }
+    const { slug } = await context.params;
+    const body = await req.json();
+    const rating = Number(body?.rating);
+    const title: string | undefined = body?.title?.toString();
+    const comment: string = (body?.comment || "").toString();
+    const media: string[] = Array.isArray(body?.media)
+      ? body.media.slice(0, 5)
+      : [];
 
-        // Resolve product
-        const prodSnap = await Collections.products()
-          .where("slug", "==", slug)
-          .limit(1)
-          .get();
-        if (prodSnap.empty)
-          return NextResponse.json(
-            { success: false, error: "Product not found" },
-            { status: 404 },
-          );
-        const prodDoc = prodSnap.docs[0];
-        const product = prodDoc.data() as any;
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+      return NextResponse.json(
+        { success: false, error: "Rating must be 1-5" },
+        { status: 400 },
+      );
+    }
+    if (!comment || comment.length < 5) {
+      return NextResponse.json(
+        { success: false, error: "Comment must be at least 5 characters" },
+        { status: 400 },
+      );
+    }
 
-        // Optional: verify purchase (placeholder - implement orders check later)
-        const verified_purchase = false;
+    // Resolve product
+    const prodSnap = await Collections.products()
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+    if (prodSnap.empty)
+      return NextResponse.json(
+        { success: false, error: "Product not found" },
+        { status: 404 },
+      );
+    const prodDoc = prodSnap.docs[0];
+    const product = prodDoc.data() as any;
 
-        // Create review
-        const docRef = await Collections.reviews().add({
-          product_id: prodDoc.id,
-          shop_id: product.shop_id || null,
-          user_id: user.id,
-          user_name: user.name || "",
-          rating,
-          title: title || null,
-          comment,
-          media,
-          status: "pending", // moderation pipeline
-          verified_purchase,
-          helpful_count: 0,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
+    // Optional: verify purchase (placeholder - implement orders check later)
+    const verified_purchase = false;
 
-        return NextResponse.json({ success: true, id: docRef.id });
-      } catch (error) {
-        console.error("Create review error:", error);
-        return NextResponse.json(
-          { success: false, error: "Failed to create review" },
-          { status: 500 },
-        );
-      }
-    },
-    RATE_LIMITS.API,
-  );
+    // Create review
+    const docRef = await Collections.reviews().add({
+      product_id: prodDoc.id,
+      shop_id: product.shop_id || null,
+      user_id: user.id,
+      user_name: user.name || "",
+      rating,
+      title: title || null,
+      comment,
+      media,
+      status: "pending", // moderation pipeline
+      verified_purchase,
+      helpful_count: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    return NextResponse.json({ success: true, id: docRef.id });
+  } catch (error) {
+    console.error("Create review error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create review" },
+      { status: 500 }
+    );
+  }
 }

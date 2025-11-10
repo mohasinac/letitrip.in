@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { apiRateLimiter } from "@/lib/rate-limiter";
 import {
   getSessionToken,
   verifySession,
@@ -52,5 +52,14 @@ async function logoutHandler(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return withRedisRateLimit(req, logoutHandler, RATE_LIMITS.API);
+  // Rate limiting
+  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  if (!apiRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+  
+  return logoutHandler(req);
 }

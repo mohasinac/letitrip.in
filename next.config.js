@@ -2,8 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   
-  // Performance optimizations
-  swcMinify: true, // Use SWC for faster minification
+  // Note: swcMinify is enabled by default in Next.js 15+
   
   // Reduce module count by optimizing imports
   modularizeImports: {

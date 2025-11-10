@@ -5,7 +5,7 @@ import {
   setSessionCookie,
   clearSessionCookie,
 } from "../../lib/session";
-import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { authRateLimiter } from "@/lib/rate-limiter";
 import bcrypt from "bcryptjs";
 
 interface RegisterRequestBody {
@@ -195,5 +195,14 @@ async function registerHandler(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return withRedisRateLimit(req, registerHandler, RATE_LIMITS.AUTH);
+  // Rate limiting
+  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  if (!authRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { error: "Too many registration attempts. Please try again later." },
+      { status: 429 }
+    );
+  }
+  
+  return registerHandler(req);
 }

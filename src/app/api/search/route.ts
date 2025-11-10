@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  withRedisRateLimit,
-  RATE_LIMITS,
-} from "@/app/api/lib/rate-limiter-redis";
+import { apiRateLimiter } from "@/lib/rate-limiter";
 
 // Utility: safely get number from query
 function toNumber(value: string | null, fallback: number): number {
@@ -26,11 +23,17 @@ async function resolveCategorySlug(
 }
 
 export async function GET(req: NextRequest) {
-  return withRedisRateLimit(
-    req,
-    async (request: NextRequest) => {
-      try {
-        const { searchParams } = new URL(request.url);
+  // Rate limiting
+  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  if (!apiRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { success: false, error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
+  try {
+    const { searchParams } = new URL(req.url);
 
         const type = (searchParams.get("type") || "products").toLowerCase(); // products | auctions
         const q = (searchParams.get("q") || "").trim().toLowerCase();
@@ -224,9 +227,6 @@ export async function GET(req: NextRequest) {
           { status: 500 },
         );
       }
-    },
-    RATE_LIMITS.SEARCH,
-  );
 }
 
 function itDate(v: any): number | null {

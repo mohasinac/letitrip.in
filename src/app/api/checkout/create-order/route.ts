@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
-import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { strictRateLimiter } from "@/lib/rate-limiter";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -346,5 +346,14 @@ async function createOrderHandler(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  return withRedisRateLimit(request, createOrderHandler, RATE_LIMITS.PAYMENT);
+  // Rate limiting - strict for payment operations
+  const identifier = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  if (!strictRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { error: "Too many order creation attempts. Please try again later." },
+      { status: 429 }
+    );
+  }
+  
+  return createOrderHandler(request);
 }

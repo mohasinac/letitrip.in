@@ -132,7 +132,7 @@ export default function TestWorkflowPage() {
     }
   };
 
-  const handleInitializeAuctions = async () {
+  const handleInitializeAuctions = async () => {
     if (!testUserId || !shopId) {
       showMessage("error", "Please create a shop first");
       return;
@@ -178,7 +178,7 @@ export default function TestWorkflowPage() {
     }
   };
 
-  const handleInitializeTickets = async () {
+  const handleInitializeTickets = async () => {
     if (!testUserId) {
       showMessage("error", "Please enter a test user ID");
       return;
@@ -199,7 +199,7 @@ export default function TestWorkflowPage() {
     }
   };
 
-  const handleInitializeCategories = async () {
+  const handleInitializeCategories = async () => {
     setLoading(true);
     try {
       await testDataService.generateTestCategories();
@@ -226,7 +226,10 @@ export default function TestWorkflowPage() {
       const deleted = await testDataService.cleanupTestData();
       showMessage(
         "success",
-        `Cleanup complete! Deleted: ${Object.values(deleted).reduce((a, b) => a + b, 0)} items`
+        `Cleanup complete! Deleted: ${Object.values(deleted).reduce(
+          (a, b) => a + b,
+          0
+        )} items`
       );
       setShopId("");
       await loadStatus();
@@ -242,7 +245,10 @@ export default function TestWorkflowPage() {
     try {
       await testDataService.executeWorkflow(workflowType, { testUserId });
       setWorkflowStatus((prev) => ({ ...prev, [workflowType]: "success" }));
-      showMessage("success", `${workflowType} workflow completed successfully!`);
+      showMessage(
+        "success",
+        `${workflowType} workflow completed successfully!`
+      );
     } catch (error: any) {
       setWorkflowStatus((prev) => ({ ...prev, [workflowType]: "error" }));
       showMessage("error", error.message || `${workflowType} workflow failed`);
@@ -250,9 +256,17 @@ export default function TestWorkflowPage() {
   };
 
   const workflows = [
-    { id: "product-purchase", label: "Product Purchase Flow", icon: ShoppingBag },
+    {
+      id: "product-purchase",
+      label: "Product Purchase Flow",
+      icon: ShoppingBag,
+    },
     { id: "auction-bidding", label: "Auction Bidding Flow", icon: Gavel },
-    { id: "seller-fulfillment", label: "Seller Fulfillment Flow", icon: Package },
+    {
+      id: "seller-fulfillment",
+      label: "Seller Fulfillment Flow",
+      icon: Package,
+    },
     { id: "support-ticket", label: "Support Ticket Flow", icon: MessageSquare },
     { id: "review-moderation", label: "Review Moderation Flow", icon: Star },
   ];
@@ -326,8 +340,18 @@ export default function TestWorkflowPage() {
                 icon: MessageSquare,
                 color: "red",
               },
-              { label: "Shops", value: stats.shops, icon: Store, color: "indigo" },
-              { label: "Coupons", value: stats.coupons, icon: Tag, color: "pink" },
+              {
+                label: "Shops",
+                value: stats.shops,
+                icon: Store,
+                color: "indigo",
+              },
+              {
+                label: "Coupons",
+                value: stats.coupons,
+                icon: Tag,
+                color: "pink",
+              },
               {
                 label: "Categories",
                 value: stats.categories,
@@ -571,7 +595,9 @@ export default function TestWorkflowPage() {
                       <button
                         key={workflow.id}
                         onClick={() => handleExecuteWorkflow(workflow.id)}
-                        disabled={loading || !testUserId || status === "running"}
+                        disabled={
+                          loading || !testUserId || status === "running"
+                        }
                         className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="flex items-center gap-2 text-gray-700">

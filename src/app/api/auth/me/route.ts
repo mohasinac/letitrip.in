@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
+import { apiRateLimiter } from "@/lib/rate-limiter";
 import { getSessionToken, verifySession } from "../../lib/session";
 import { adminDb } from "../../lib/firebase/config";
 
@@ -72,5 +72,14 @@ async function meHandler(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  return withRedisRateLimit(req, meHandler, RATE_LIMITS.API);
+  // Rate limiting
+  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  if (!apiRateLimiter.check(identifier)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+  
+  return meHandler(req);
 }
