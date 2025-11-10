@@ -36,7 +36,7 @@ export default function TicketDetailsPage() {
 
   useEffect(() => {
     fetchTicket();
-  }, [params.id]);
+  }, [ticketId]);
 
   const fetchTicket = async () => {
     setIsLoading(true);
@@ -44,7 +44,7 @@ export default function TicketDetailsPage() {
 
     try {
       const response: any = await apiService.get(
-        SUPPORT_ROUTES.TICKET_BY_ID(params.id)
+        SUPPORT_ROUTES.TICKET_BY_ID(ticketId)
       );
       setTicket(response.data);
     } catch (err: any) {
@@ -65,7 +65,7 @@ export default function TicketDetailsPage() {
     setIsSubmitting(true);
 
     try {
-      await apiService.post(SUPPORT_ROUTES.REPLY(params.id), {
+      await apiService.post(SUPPORT_ROUTES.REPLY(ticketId), {
         message: replyMessage,
       });
 
@@ -169,7 +169,7 @@ export default function TicketDetailsPage() {
               </div>
             </div>
             <div className="text-sm text-gray-500">
-              <p>Ticket #{params.id.slice(0, 8)}</p>
+              <p>Ticket #{ticketId.slice(0, 8)}</p>
               <p>Created {new Date(ticket.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
