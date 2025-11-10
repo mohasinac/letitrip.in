@@ -272,7 +272,7 @@ AuctionModerationPage
 
 1. **Flag Functionality**: Currently shows alert instead of API call
 
-   - **TODO**: Implement `/api/admin/auctions/:id/flag` endpoint
+   - **TODO**: Implement `/admin/auctions/:id/flag` endpoint
    - **Workaround**: Admin can manually note flagged auctions
 
 2. **Toast Notifications**: Uses alerts for feedback

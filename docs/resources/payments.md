@@ -261,7 +261,7 @@ sequenceDiagram
 | `/api/payments/verify`      | POST   | Verify payment   | System      |
 | `/api/payments/[id]/refund` | POST   | Issue refund     | Admin       |
 | `/api/user/payments`        | GET    | User's payments  | User        |
-| `/api/admin/payments`       | GET    | All payments     | Admin       |
+| `/admin/payments`           | GET    | All payments     | Admin       |
 | `/api/webhooks/razorpay`    | POST   | Razorpay webhook | Gateway     |
 | `/api/webhooks/paypal`      | POST   | PayPal webhook   | Gateway     |
 

@@ -32,10 +32,10 @@
 
 #### Admin Payment Endpoints
 
-**File**: `src/app/api/admin/payments/route.ts`
+**File**: `src/app/admin/payments/route.ts`
 
 ```
-GET /api/admin/payments
+GET /admin/payments
 - List all payment transactions
 - Filters: status, gateway, dateRange
 - Pagination support
@@ -44,30 +44,30 @@ GET /api/admin/payments
 
 #### Admin Payout Endpoints
 
-**File**: `src/app/api/admin/payouts/route.ts`
+**File**: `src/app/admin/payouts/route.ts`
 
 ```
-GET /api/admin/payouts
+GET /admin/payouts
 - List all seller payout requests
 - Filters: status, dateRange
 - Pagination support
 - Admin authentication required
 ```
 
-**File**: `src/app/api/admin/payouts/[id]/process/route.ts`
+**File**: `src/app/admin/payouts/[id]/process/route.ts`
 
 ```
-POST /api/admin/payouts/:id/process
+POST /admin/payouts/:id/process
 - Process a pending payout
 - Updates status to 'processing'
 - Tracks processedBy and processedAt
 - Admin authentication required
 ```
 
-**File**: `src/app/api/admin/payouts/[id]/reject/route.ts`
+**File**: `src/app/admin/payouts/[id]/reject/route.ts`
 
 ```
-POST /api/admin/payouts/:id/reject
+POST /admin/payouts/:id/reject
 - Reject a pending payout
 - Requires rejection reason
 - Updates status to 'rejected'
@@ -207,7 +207,7 @@ Service Layer (ordersService, returnsService, etc.)
   ↓ (uses apiService)
 apiService (adds /api prefix, handles auth)
   ↓ (makes HTTP requests)
-API Routes (/api/admin/*, /api/seller/*)
+API Routes (/admin/*, /api/seller/*)
   ↓ (uses auth helpers, Firestore)
 Backend (Firebase, business logic)
 ```
@@ -314,10 +314,10 @@ export async function GET(request: NextRequest) {
 
 - ✅ **API Endpoints**
 
-  - [x] `/api/admin/payments` - Created (GET)
-  - [x] `/api/admin/payouts` - Created (GET)
-  - [x] `/api/admin/payouts/[id]/process` - Created (POST)
-  - [x] `/api/admin/payouts/[id]/reject` - Created (POST)
+  - [x] `/admin/payments` - Created (GET)
+  - [x] `/admin/payouts` - Created (GET)
+  - [x] `/admin/payouts/[id]/process` - Created (POST)
+  - [x] `/admin/payouts/[id]/reject` - Created (POST)
   - [x] `/api/seller/orders` - Created (GET)
 
 - ✅ **Skeleton Pages**

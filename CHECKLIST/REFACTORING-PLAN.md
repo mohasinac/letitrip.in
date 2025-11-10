@@ -198,21 +198,21 @@ interface ResourceListWrapperProps {
 export const REVIEW_ROUTES = {
   LIST: "/api/reviews",
   BY_ID: (id: string) => `/api/reviews/${id}`,
-  MODERATE: (id: string) => `/api/admin/reviews/${id}/moderate`,
+  MODERATE: (id: string) => `/admin/reviews/${id}/moderate`,
   RESPOND: (id: string) => `/api/reviews/${id}/respond`,
   // ... more
 };
 
 export const PAYMENT_ROUTES = {
-  LIST: "/api/admin/payments",
-  BY_ID: (id: string) => `/api/admin/payments/${id}`,
-  REFUND: (id: string) => `/api/admin/payments/${id}/refund`,
+  LIST: "/admin/payments",
+  BY_ID: (id: string) => `/admin/payments/${id}`,
+  REFUND: (id: string) => `/admin/payments/${id}/refund`,
   // ... more
 };
 
 export const PAYOUT_ROUTES = {
-  LIST: "/api/admin/payouts",
-  PROCESS: (id: string) => `/api/admin/payouts/${id}/process`,
+  LIST: "/admin/payouts",
+  PROCESS: (id: string) => `/admin/payouts/${id}/process`,
   // ... more
 };
 ```

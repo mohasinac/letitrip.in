@@ -35,7 +35,7 @@ class TestDataService {
   }
 
   private randomPrice(min: number = 100, max: number = 10000): number {
-    return Math.floor(Math.random() * (max - min + 1) / 100) * 100 + min;
+    return Math.floor((Math.random() * (max - min + 1)) / 100) * 100 + min;
   }
 
   private generateSKU(): string {
@@ -43,7 +43,9 @@ class TestDataService {
   }
 
   private generateSlug(name: string): string {
-    return `${this.PREFIX}${name.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
+    return `${this.PREFIX}${name
+      .toLowerCase()
+      .replace(/\s+/g, "-")}-${Date.now()}`;
   }
 
   // Product generators
@@ -71,7 +73,9 @@ class TestDataService {
   async generateTestProducts(count: number, userId: string, shopId: string) {
     const products = [];
     for (let i = 0; i < count; i++) {
-      const name = `${this.PREFIX}${this.randomFromArray(this.productNames)} ${i + 1}`;
+      const name = `${this.PREFIX}${this.randomFromArray(this.productNames)} ${
+        i + 1
+      }`;
       const price = this.randomPrice(500, 5000);
       const product = {
         name,
@@ -87,15 +91,22 @@ class TestDataService {
         sellerId: userId,
         status: this.randomFromArray(["draft", "published"]),
         isFeatured: Math.random() > 0.7,
-        images: [`https://via.placeholder.com/400x400?text=${encodeURIComponent(name)}`],
+        images: [
+          `https://via.placeholder.com/400x400?text=${encodeURIComponent(
+            name
+          )}`,
+        ],
         brand: `${this.PREFIX}Brand`,
       };
       products.push(product);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/products", {
-      products,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/products",
+      {
+        products,
+      }
+    );
     return response.data;
   }
 
@@ -116,7 +127,9 @@ class TestDataService {
   async generateTestAuctions(count: number, userId: string, shopId: string) {
     const auctions = [];
     for (let i = 0; i < count; i++) {
-      const name = `${this.PREFIX}${this.randomFromArray(this.auctionNames)} ${i + 1}`;
+      const name = `${this.PREFIX}${this.randomFromArray(this.auctionNames)} ${
+        i + 1
+      }`;
       const startingBid = this.randomPrice(1000, 5000);
       const auction = {
         name,
@@ -126,22 +139,33 @@ class TestDataService {
         reservePrice: startingBid + this.randomInt(500, 2000),
         bidIncrement: this.randomInt(100, 500),
         buyNowPrice: startingBid + this.randomInt(3000, 5000),
-        startTime: new Date(Date.now() + this.randomInt(1, 24) * 60 * 60 * 1000).toISOString(),
-        endTime: new Date(Date.now() + this.randomInt(48, 168) * 60 * 60 * 1000).toISOString(),
+        startTime: new Date(
+          Date.now() + this.randomInt(1, 24) * 60 * 60 * 1000
+        ).toISOString(),
+        endTime: new Date(
+          Date.now() + this.randomInt(48, 168) * 60 * 60 * 1000
+        ).toISOString(),
         categoryId: "test-category",
         shopId,
         sellerId: userId,
         status: this.randomFromArray(["draft", "scheduled", "active"]),
         isFeatured: Math.random() > 0.8,
-        images: [`https://via.placeholder.com/400x400?text=${encodeURIComponent(name)}`],
+        images: [
+          `https://via.placeholder.com/400x400?text=${encodeURIComponent(
+            name
+          )}`,
+        ],
         auctionType: this.randomFromArray(["regular", "reverse", "silent"]),
       };
       auctions.push(auction);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/auctions", {
-      auctions,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/auctions",
+      {
+        auctions,
+      }
+    );
     return response.data;
   }
 
@@ -157,7 +181,12 @@ class TestDataService {
         subtotal: totalAmount - 100,
         shippingCost: 50,
         tax: 50,
-        status: this.randomFromArray(["pending", "confirmed", "shipped", "delivered"]),
+        status: this.randomFromArray([
+          "pending",
+          "confirmed",
+          "shipped",
+          "delivered",
+        ]),
         paymentStatus: this.randomFromArray(["pending", "paid", "failed"]),
         paymentMethod: this.randomFromArray(["cod", "card", "upi"]),
         items: [
@@ -172,7 +201,7 @@ class TestDataService {
       orders.push(order);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/orders", {
+    const response: any = await apiService.post("/admin/test-workflow/orders", {
       orders,
     });
     return response.data;
@@ -204,9 +233,12 @@ class TestDataService {
       reviews.push(review);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/reviews", {
-      reviews,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/reviews",
+      {
+        reviews,
+      }
+    );
     return response.data;
   }
 
@@ -226,7 +258,9 @@ class TestDataService {
     for (let i = 0; i < count; i++) {
       const ticket = {
         subject: `${this.PREFIX}${this.randomFromArray(this.ticketSubjects)}`,
-        description: `This is a test support ticket created for testing purposes. Ticket number ${i + 1}.`,
+        description: `This is a test support ticket created for testing purposes. Ticket number ${
+          i + 1
+        }.`,
         category: this.randomFromArray([
           "order-issue",
           "return-refund",
@@ -240,9 +274,12 @@ class TestDataService {
       tickets.push(ticket);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/tickets", {
-      tickets,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/tickets",
+      {
+        tickets,
+      }
+    );
     return response.data;
   }
 
@@ -252,7 +289,8 @@ class TestDataService {
     const shop = {
       name: shopName,
       slug: this.generateSlug(shopName),
-      description: "This is a test shop created for development and testing purposes.",
+      description:
+        "This is a test shop created for development and testing purposes.",
       ownerId: userId,
       email: `testshop${Date.now()}@example.com`,
       phone: "+919876543210",
@@ -265,7 +303,10 @@ class TestDataService {
       banner: "https://via.placeholder.com/1200x300?text=TEST+SHOP+BANNER",
     };
 
-    const response: any = await apiService.post("/api/admin/test-workflow/shop", shop);
+    const response: any = await apiService.post(
+      "/admin/test-workflow/shop",
+      shop
+    );
     return response.data;
   }
 
@@ -298,9 +339,12 @@ class TestDataService {
       },
     ];
 
-    const response: any = await apiService.post("/api/admin/test-workflow/categories", {
-      categories,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/categories",
+      {
+        categories,
+      }
+    );
     return response.data;
   }
 
@@ -318,37 +362,48 @@ class TestDataService {
         usageLimit: this.randomInt(10, 100),
         usageCount: 0,
         validFrom: new Date().toISOString(),
-        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        validUntil: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         shopId,
         isActive: true,
       };
       coupons.push(coupon);
     }
 
-    const response: any = await apiService.post("/api/admin/test-workflow/coupons", {
-      coupons,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/coupons",
+      {
+        coupons,
+      }
+    );
     return response.data;
   }
 
   // Cleanup test data
   async cleanupTestData(): Promise<TestDataCounts> {
-    const response: any = await apiService.post("/api/admin/test-workflow/cleanup", {});
+    const response: any = await apiService.post(
+      "/admin/test-workflow/cleanup",
+      {}
+    );
     return response.data;
   }
 
   // Get test data status
   async getTestDataStatus(): Promise<TestDataCounts> {
-    const response: any = await apiService.get("/api/admin/test-workflow/status");
+    const response: any = await apiService.get("/admin/test-workflow/status");
     return response.data;
   }
 
   // Execute complete workflow
   async executeWorkflow(workflowType: string, params: any = {}) {
-    const response: any = await apiService.post("/api/admin/test-workflow/execute", {
-      workflowType,
-      params,
-    });
+    const response: any = await apiService.post(
+      "/admin/test-workflow/execute",
+      {
+        workflowType,
+        params,
+      }
+    );
     return response.data;
   }
 }

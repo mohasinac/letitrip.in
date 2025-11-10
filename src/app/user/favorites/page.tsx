@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Heart, Trash2, ShoppingCart } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { favoritesService } from "@/services/favorites.service";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -20,10 +20,8 @@ export default function FavoritesPage() {
   const loadFavorites = async () => {
     try {
       setLoading(true);
-      const data = (await apiService.get("/favorites")) as {
-        favorites: any[];
-      };
-      setFavorites(data.favorites || []);
+      const data = await favoritesService.list();
+      setFavorites(data || []);
     } catch (error) {
       console.error("Failed to load favorites:", error);
     } finally {
@@ -35,7 +33,7 @@ export default function FavoritesPage() {
     if (!removingId) return;
 
     try {
-      await apiService.delete(`/favorites/${removingId}`);
+      await favoritesService.remove(removingId);
       setFavorites(favorites.filter((f) => f.id !== removingId));
       setRemovingId(null);
     } catch (error) {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { supportService } from "@/services/support.service";
 import { SUPPORT_ROUTES } from "@/constants/api-routes";
 
 export default function ContactPage() {
@@ -25,11 +25,11 @@ export default function ContactPage() {
     setLoading(true);
 
     try {
-      await apiService.post(SUPPORT_ROUTES.CREATE_TICKET, {
+      await supportService.createTicket({
         ...formData,
         category: "general",
         priority: "medium",
-      });
+      } as any);
 
       setSuccess(true);
       setFormData({

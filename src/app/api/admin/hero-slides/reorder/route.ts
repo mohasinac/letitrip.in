@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
-// POST /api/admin/hero-slides/reorder - Reorder slides
+// POST /admin/hero-slides/reorder - Reorder slides
 export async function POST(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     if (!Array.isArray(body.slides)) {
       return NextResponse.json(
         { error: "Invalid slides array" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
           position: index + 1,
           updated_at: new Date().toISOString(),
         });
-      },
+      }
     );
 
     await batch.commit();
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     console.error("Error reordering hero slides:", error);
     return NextResponse.json(
       { error: "Failed to reorder hero slides" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

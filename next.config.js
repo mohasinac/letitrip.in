@@ -28,6 +28,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "storage.googleapis.com",
       },
+      {
+        hostname: "images.unsplash.com",
+        protocol: "https",
+      },
+      {
+        hostname: "via.placeholder.com",
+        protocol: "https",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },

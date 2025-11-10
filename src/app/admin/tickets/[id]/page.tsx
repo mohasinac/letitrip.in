@@ -38,7 +38,7 @@ export default function AdminTicketDetailsPage() {
 
   useEffect(() => {
     fetchTicket();
-  }, [params.id]);
+  }, [ticketId]);
 
   const fetchTicket = async () => {
     setIsLoading(true);
@@ -46,7 +46,7 @@ export default function AdminTicketDetailsPage() {
 
     try {
       const response: any = await apiService.get(
-        ADMIN_ROUTES.TICKET_BY_ID(params.id)
+        ADMIN_ROUTES.TICKET_BY_ID(ticketId)
       );
       setTicket(response.data);
     } catch (err: any) {
@@ -67,7 +67,7 @@ export default function AdminTicketDetailsPage() {
     setIsSubmitting(true);
 
     try {
-      await apiService.post(ADMIN_ROUTES.TICKET_REPLY(params.id), {
+      await apiService.post(ADMIN_ROUTES.TICKET_REPLY(ticketId), {
         message: replyMessage,
         isInternal,
       });
@@ -86,7 +86,7 @@ export default function AdminTicketDetailsPage() {
   const handleStatusChange = async (newStatus: string) => {
     setIsUpdating(true);
     try {
-      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(params.id), {
+      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(ticketId), {
         status: newStatus,
       });
       await fetchTicket();
@@ -101,7 +101,7 @@ export default function AdminTicketDetailsPage() {
   const handlePriorityChange = async (newPriority: string) => {
     setIsUpdating(true);
     try {
-      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(params.id), {
+      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(ticketId), {
         priority: newPriority,
       });
       await fetchTicket();
@@ -326,7 +326,7 @@ export default function AdminTicketDetailsPage() {
                 <div>
                   <span className="text-gray-600">ID:</span>
                   <span className="ml-2 font-mono text-gray-900">
-                    {params.id.slice(0, 8)}...
+                    {ticketId.slice(0, 8)}...
                   </span>
                 </div>
                 <div>

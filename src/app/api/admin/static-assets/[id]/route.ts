@@ -5,10 +5,10 @@ import {
   deleteAsset,
 } from "@/app/api/lib/static-assets-server.service";
 
-// GET /api/admin/static-assets/[id] - Get single asset
+// GET /admin/static-assets/[id] - Get single asset
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -20,7 +20,7 @@ export async function GET(
     if (!asset) {
       return NextResponse.json(
         { success: false, error: "Asset not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -32,15 +32,15 @@ export async function GET(
     console.error("Error fetching asset:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch asset" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PATCH /api/admin/static-assets/[id] - Update asset metadata
+// PATCH /admin/static-assets/[id] - Update asset metadata
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -62,15 +62,15 @@ export async function PATCH(
     console.error("Error updating asset:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update asset" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// DELETE /api/admin/static-assets/[id] - Delete asset
+// DELETE /admin/static-assets/[id] - Delete asset
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -85,7 +85,7 @@ export async function DELETE(
     console.error("Error deleting asset:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete asset" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

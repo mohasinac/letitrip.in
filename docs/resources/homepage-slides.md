@@ -442,7 +442,7 @@ sequenceDiagram
 | `/api/hero-slides/[id]`       | GET    | Get slide          | Admin  |
 | `/api/hero-slides/[id]`       | PATCH  | Update slide       | Admin  |
 | `/api/hero-slides/[id]`       | DELETE | Delete slide       | Admin  |
-| `/api/admin/hero-slides`      | GET    | All slides (admin) | Admin  |
+| `/admin/hero-slides`          | GET    | All slides (admin) | Admin  |
 | `/api/hero-slides/[id]/click` | POST   | Track click        | Public |
 
 ### Service Methods

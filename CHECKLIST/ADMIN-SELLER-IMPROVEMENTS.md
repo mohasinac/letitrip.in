@@ -973,7 +973,7 @@
 1. Check `ADMIN_MENU_ITEMS` in `src/constants/navigation.ts`
 2. Create page in `src/app/admin/[feature]/page.tsx`
 3. Create service in `src/services/[feature].service.ts` (if needed)
-4. Add API route in `src/app/api/admin/[feature]/route.ts` (if needed)
+4. Add API route in `src/app/admin/[feature]/route.ts` (if needed)
 5. Create components in `src/components/admin/[Feature]/`
 6. Add TypeScript types in `src/types/`
 7. Test thoroughly

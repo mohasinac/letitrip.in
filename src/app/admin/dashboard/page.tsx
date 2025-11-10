@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { analyticsService } from "@/services/analytics.service";
 import Link from "next/link";
 import {
   Users,
@@ -62,14 +63,35 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const response = await fetch("/api/admin/dashboard");
-
-        if (!response.ok) {
-          throw new Error("Failed to load dashboard stats");
-        }
-
-        const data = await response.json();
-        setStats(data.stats);
+        const data = await analyticsService.getOverview();
+        
+        // Map analytics data to dashboard stats format
+        setStats({
+          overview: {
+            totalUsers: (data as any).totalUsers || data.totalCustomers || 0,
+            totalSellers: (data as any).totalSellers || 0,
+            totalShops: (data as any).totalShops || 0,
+            totalProducts: data.totalProducts || 0,
+            totalOrders: data.totalOrders || 0,
+            totalRevenue: data.totalRevenue || 0,
+            activeAuctions: (data as any).activeAuctions || 0,
+            totalCoupons: (data as any).totalCoupons || 0,
+          },
+          trends: (data as any).trends || {
+            users: { value: 0, isPositive: true },
+            shops: { value: 0, isPositive: true },
+            products: { value: 0, isPositive: true },
+            orders: { value: data.ordersGrowth || 0, isPositive: (data.ordersGrowth || 0) >= 0 },
+            revenue: { value: data.revenueGrowth || 0, isPositive: (data.revenueGrowth || 0) >= 0 },
+          },
+          recentActivity: (data as any).recentActivity || [],
+          pendingActions: (data as any).pendingActions || {
+            pendingShops: 0,
+            pendingProducts: 0,
+            pendingReturns: 0,
+            openTickets: 0,
+          },
+        });
       } catch (error) {
         console.error("Failed to load stats:", error);
 

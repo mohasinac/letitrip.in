@@ -787,8 +787,8 @@ graph LR
 | `/api/categories/slug/[slug]`   | GET    | Get by slug           | Public |
 | `/api/categories/tree`          | GET    | Get full tree         | Public |
 | `/api/categories/[id]/children` | GET    | Get child categories  | Public |
-| `/api/admin/categories`         | GET    | List all (admin view) | Admin  |
-| `/api/admin/categories/bulk`    | POST   | Bulk update           | Admin  |
+| `/admin/categories`             | GET    | List all (admin view) | Admin  |
+| `/admin/categories/bulk`        | POST   | Bulk update           | Admin  |
 
 ### Service Methods
 

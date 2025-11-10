@@ -71,8 +71,8 @@
 
 These pages are ready but need backend API routes:
 
-1. `/api/admin/payments/*` - Payment transaction endpoints
-2. `/api/admin/payouts/*` - Payout processing endpoints
+1. `/admin/payments/*` - Payment transaction endpoints
+2. `/admin/payouts/*` - Payout processing endpoints
 3. `/api/seller/orders` - Seller-specific orders endpoint
 
 ## 📋 Still Need to Create

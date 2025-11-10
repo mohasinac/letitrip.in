@@ -66,7 +66,7 @@ const DEFAULT_SETTINGS = {
   updatedBy: "system",
 };
 
-// POST /api/admin/homepage/reset - Reset to default settings
+// POST /admin/homepage/reset - Reset to default settings
 export async function POST(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     console.error("Error resetting homepage settings:", error);
     return NextResponse.json(
       { error: "Failed to reset homepage settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

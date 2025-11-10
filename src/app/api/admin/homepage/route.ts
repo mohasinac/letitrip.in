@@ -114,7 +114,7 @@ const DEFAULT_SETTINGS: HomepageSettings = {
   updatedAt: new Date().toISOString(),
 };
 
-// GET /api/admin/homepage - Get homepage configuration
+// GET /admin/homepage - Get homepage configuration
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -152,12 +152,12 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching homepage settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch homepage settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PATCH /api/admin/homepage - Update homepage configuration
+// PATCH /admin/homepage - Update homepage configuration
 export async function PATCH(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -167,7 +167,7 @@ export async function PATCH(req: NextRequest) {
     if (!body.settings) {
       return NextResponse.json(
         { error: "Settings object is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -191,7 +191,7 @@ export async function PATCH(req: NextRequest) {
     console.error("Error updating homepage settings:", error);
     return NextResponse.json(
       { error: "Failed to update homepage settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -9,6 +9,7 @@ import AnalyticsOverview from "@/components/seller/AnalyticsOverview";
 import SalesChart from "@/components/seller/SalesChart";
 import TopProducts from "@/components/seller/TopProducts";
 import { Calendar } from "lucide-react";
+import { analyticsService } from "@/services/analytics.service";
 
 interface AnalyticsData {
   revenue: { total: number; average: number; trend: number };
@@ -69,21 +70,41 @@ export default function AnalyticsPage() {
         setLoading(true);
         setError(null);
 
-        const params = new URLSearchParams();
-        if (selectedShopId) {
-          params.append("shop_id", selectedShopId);
-        }
-        params.append("start_date", startDate.toISOString());
-        params.append("end_date", endDate.toISOString());
-
-        const response = await fetch(`/api/analytics?${params.toString()}`);
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Failed to fetch analytics");
-        }
-
-        setAnalytics(result.data);
+        const data = await analyticsService.getOverview({
+          shopId: selectedShopId || undefined,
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+        });
+        
+        // Map analytics overview to detailed analytics format
+        setAnalytics({
+          revenue: { 
+            total: data.totalRevenue || 0, 
+            average: data.averageOrderValue || 0, 
+            trend: data.revenueGrowth || 0 
+          },
+          orders: {
+            total: data.totalOrders || 0,
+            pending: (data as any).pendingOrders || 0,
+            completed: (data as any).completedOrders || 0,
+            cancelled: (data as any).cancelledOrders || 0,
+          },
+          products: { 
+            total: data.totalProducts || 0, 
+            active: (data as any).activeProducts || 0, 
+            outOfStock: (data as any).outOfStockProducts || 0 
+          },
+          customers: { 
+            total: data.totalCustomers || 0, 
+            new: (data as any).newCustomers || 0, 
+            returning: (data as any).returningCustomers || 0 
+          },
+          conversionRate: data.conversionRate || 0,
+          averageOrderValue: data.averageOrderValue || 0,
+          salesOverTime: (data as any).salesOverTime || [],
+          topProducts: (data as any).topProducts || [],
+          revenueByCategory: (data as any).revenueByCategory || [],
+        });
       } catch (err) {
         console.error("Error fetching analytics:", err);
         setError(

@@ -689,8 +689,8 @@ sequenceDiagram
 | `/api/orders/[id]/cancel` | POST   | Cancel order       | Owner/Admin        |
 | `/api/user/orders`        | GET    | Customer orders    | User               |
 | `/api/seller/orders`      | GET    | Seller orders      | Seller             |
-| `/api/admin/orders`       | GET    | All orders (admin) | Admin              |
-| `/api/admin/orders/bulk`  | POST   | Bulk update        | Admin              |
+| `/admin/orders`           | GET    | All orders (admin) | Admin              |
+| `/admin/orders/bulk`      | POST   | Bulk update        | Admin              |
 
 ---
 

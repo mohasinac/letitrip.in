@@ -265,7 +265,7 @@ Updated `CHECKLIST/DETAILED-IMPLEMENTATION-CHECKLIST.md`:
 
 ### Priority 1: Test Workflow API Routes (HIGH)
 
-Create 11 API routes in `/src/app/api/admin/test-workflow/`:
+Create 11 API routes in `/src/app/admin/test-workflow/`:
 
 1. **POST /products/route.ts**
 

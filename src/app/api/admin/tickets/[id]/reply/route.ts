@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/app/api/lib/session";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 /**
- * POST /api/admin/tickets/[id]/reply
+ * POST /admin/tickets/[id]/reply
  * Admin reply to support ticket
  */
 export async function POST(

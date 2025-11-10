@@ -45,11 +45,11 @@
 
 ## File Naming Conventions
 
-| Layer          | Pattern               | Example                                    |
-| -------------- | --------------------- | ------------------------------------------ |
-| Client Service | `*-client.service.ts` | `static-assets-client.service.ts`          |
-| Server Service | `*-server.service.ts` | `static-assets-server.service.ts`          |
-| API Route      | `route.ts`            | `src/app/api/admin/static-assets/route.ts` |
+| Layer          | Pattern               | Example                                |
+| -------------- | --------------------- | -------------------------------------- |
+| Client Service | `*-client.service.ts` | `static-assets-client.service.ts`      |
+| Server Service | `*-server.service.ts` | `static-assets-server.service.ts`      |
+| API Route      | `route.ts`            | `src/app/admin/static-assets/route.ts` |
 
 ## Upload Flow (2-Step Pattern)
 
@@ -65,7 +65,7 @@
 
 ```typescript
 // Client Service
-const response = await apiService.post('/api/admin/static-assets/upload-url', {
+const response = await apiService.post('/admin/static-assets/upload-url', {
   fileName: 'image.png',
   contentType: 'image/png',
   type: 'icon',
@@ -112,7 +112,7 @@ await fetch(uploadUrl, {
 
 ```typescript
 // Client Service
-const asset = await apiService.post("/api/admin/static-assets/confirm-upload", {
+const asset = await apiService.post("/admin/static-assets/confirm-upload", {
   assetId,
   name: file.name,
   type,
@@ -219,8 +219,8 @@ import { apiService } from "@/services/api.service";
 export async function uploadAsset(file: File, type: string) {
   // 1. Request signed URL
   const { uploadUrl, assetId } = await apiService.post(
-    "/api/admin/static-assets/upload-url",
-    { fileName: file.name, contentType: file.type, type },
+    "/admin/static-assets/upload-url",
+    { fileName: file.name, contentType: file.type, type }
   );
 
   // 2. Upload directly to Firebase
@@ -228,8 +228,8 @@ export async function uploadAsset(file: File, type: string) {
 
   // 3. Confirm and save metadata
   const { asset } = await apiService.post(
-    "/api/admin/static-assets/confirm-upload",
-    { assetId, name: file.name, type, size: file.size },
+    "/admin/static-assets/confirm-upload",
+    { assetId, name: file.name, type, size: file.size }
   );
 
   return asset;

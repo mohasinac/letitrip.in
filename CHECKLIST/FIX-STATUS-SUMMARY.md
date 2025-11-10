@@ -349,27 +349,27 @@ async getSellerOrders(params?: any) {
 
 ### 3. Missing Backend API Endpoints
 
-#### `/api/admin/payments`
+#### `/admin/payments`
 
 - GET - List payments with filters
 - Returns: { payments: [], pagination: {}, stats: {} }
 
-#### `/api/admin/payments/export`
+#### `/admin/payments/export`
 
 - GET - Export payments to CSV
 - Returns: { csv: string }
 
-#### `/api/admin/payouts`
+#### `/admin/payouts`
 
 - GET - List payout requests
 - Returns: { payouts: [], pagination: {}, stats: {} }
 
-#### `/api/admin/payouts/[id]/process`
+#### `/admin/payouts/[id]/process`
 
 - POST - Process payout
 - Returns: { success: true }
 
-#### `/api/admin/payouts/[id]/reject`
+#### `/admin/payouts/[id]/reject`
 
 - POST - Reject payout
 - Body: { reason: string }

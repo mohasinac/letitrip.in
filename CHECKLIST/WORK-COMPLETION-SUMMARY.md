@@ -230,11 +230,11 @@ All pages follow consistent architecture:
 
 These pages are ready but need API routes:
 
-1. `/api/admin/payments` - Payment endpoints
-2. `/api/admin/payments/export` - Export functionality
-3. `/api/admin/payouts` - Payout endpoints
-4. `/api/admin/payouts/[id]/process` - Process payout
-5. `/api/admin/payouts/[id]/reject` - Reject payout
+1. `/admin/payments` - Payment endpoints
+2. `/admin/payments/export` - Export functionality
+3. `/admin/payouts` - Payout endpoints
+4. `/admin/payouts/[id]/process` - Process payout
+5. `/admin/payouts/[id]/reject` - Reject payout
 6. `/api/seller/orders` - Seller-specific orders
 
 ---

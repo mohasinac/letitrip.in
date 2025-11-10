@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Star, Image as ImageIcon } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { reviewsService } from "@/services/reviews.service";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
@@ -51,7 +51,7 @@ export default function ReviewForm({
       await uploadMultipleMedia(
         files.map((f) => f.file),
         "review",
-        productId,
+        productId
       );
     } catch (err) {
       console.error("Upload error:", err);
@@ -79,13 +79,13 @@ export default function ReviewForm({
     setError("");
 
     try {
-      await apiService.post("/reviews", {
-        product_id: productId,
-        order_id: orderId,
+      await reviewsService.create({
+        productId,
+        orderItemId: orderId,
         rating,
         title: title.trim(),
         comment: comment.trim(),
-        images: getUploadedUrls(),
+        media: getUploadedUrls(),
       });
 
       // Success! Clear tracking
@@ -110,7 +110,7 @@ export default function ReviewForm({
   const handleCancelClick = async () => {
     if (hasUploadedMedia) {
       const confirmed = window.confirm(
-        "You have uploaded media. Cancel and delete?",
+        "You have uploaded media. Cancel and delete?"
       );
       if (!confirmed) return;
       await cleanupUploadedMedia();

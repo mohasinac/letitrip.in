@@ -98,9 +98,9 @@
 
 #### API Integration
 
-- `GET /api/admin/tickets/[id]` - Fetch ticket details
-- `PATCH /api/admin/tickets/[id]` - Update ticket
-- `POST /api/admin/tickets/[id]/reply` - Add admin reply
+- `GET /admin/tickets/[id]` - Fetch ticket details
+- `PATCH /admin/tickets/[id]` - Update ticket
+- `POST /admin/tickets/[id]/reply` - Add admin reply
 
 **Impact**: Admin ticket management is now complete and production-ready!
 

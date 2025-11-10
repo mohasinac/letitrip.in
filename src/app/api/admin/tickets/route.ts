@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/app/api/lib/session";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 /**
- * GET /api/admin/tickets
+ * GET /admin/tickets
  * List all support tickets (admin only)
  */
 export async function GET(request: NextRequest) {

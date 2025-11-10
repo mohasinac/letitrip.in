@@ -1015,8 +1015,8 @@ ALLOWED TRANSITIONS:
 | `/api/products/[id]`        | DELETE | Delete product            | Seller/Admin |
 | `/api/products/slug/[slug]` | GET    | Get by slug               | Public       |
 | `/api/seller/products`      | GET    | List seller's products    | Seller       |
-| `/api/admin/products`       | GET    | List all products (admin) | Admin        |
-| `/api/admin/products/bulk`  | POST   | Bulk update products      | Admin        |
+| `/admin/products`           | GET    | List all products (admin) | Admin        |
+| `/admin/products/bulk`      | POST   | Bulk update products      | Admin        |
 
 ### Service Methods
 

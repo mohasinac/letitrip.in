@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
-import { apiService } from "@/services/api.service";
+import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { MediaFile } from "@/types/media";
@@ -68,7 +68,7 @@ export default function CreateHeroSlidePage() {
 
     try {
       setLoading(true);
-      await apiService.post("/admin/hero-slides", formData);
+      await heroSlidesService.createHeroSlide(formData as any);
 
       // Success! Clear tracking
       clearTracking();

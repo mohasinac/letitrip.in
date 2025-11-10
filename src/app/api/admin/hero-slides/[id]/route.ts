@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
-// GET /api/admin/hero-slides/[id] - Get hero slide
+// GET /admin/hero-slides/[id] - Get hero slide
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -15,7 +15,7 @@ export async function GET(
     if (!doc.exists) {
       return NextResponse.json(
         { error: "Hero slide not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -27,15 +27,15 @@ export async function GET(
     console.error("Error fetching hero slide:", error);
     return NextResponse.json(
       { error: "Failed to fetch hero slide" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PATCH /api/admin/hero-slides/[id] - Update hero slide
+// PATCH /admin/hero-slides/[id] - Update hero slide
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -47,7 +47,7 @@ export async function PATCH(
     if (!doc.exists) {
       return NextResponse.json(
         { error: "Hero slide not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -79,15 +79,15 @@ export async function PATCH(
     console.error("Error updating hero slide:", error);
     return NextResponse.json(
       { error: "Failed to update hero slide" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// DELETE /api/admin/hero-slides/[id] - Delete hero slide
+// DELETE /admin/hero-slides/[id] - Delete hero slide
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -98,7 +98,7 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { error: "Hero slide not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -110,7 +110,7 @@ export async function DELETE(
     console.error("Error deleting hero slide:", error);
     return NextResponse.json(
       { error: "Failed to delete hero slide" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

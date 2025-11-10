@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/app/api/lib/session";
 import { UserRole } from "@/types";
 
 /**
- * GET /api/admin/users
+ * GET /admin/users
  * List all users (admin only)
  */
 export async function GET(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         (user: any) =>
           user.email?.toLowerCase().includes(searchLower) ||
           user.name?.toLowerCase().includes(searchLower) ||
-          user.phone?.includes(search),
+          user.phone?.includes(search)
       );
     }
 
@@ -74,13 +74,13 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch users",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 /**
- * PATCH /api/admin/users
+ * PATCH /admin/users
  * Bulk update users (admin only)
  */
 export async function PATCH(request: NextRequest) {
@@ -91,7 +91,7 @@ export async function PATCH(request: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -101,7 +101,7 @@ export async function PATCH(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { success: false, error: "User ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -138,7 +138,7 @@ export async function PATCH(request: NextRequest) {
     if (Object.keys(allowedUpdates).length === 0) {
       return NextResponse.json(
         { success: false, error: "No valid updates provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -162,7 +162,7 @@ export async function PATCH(request: NextRequest) {
         success: false,
         error: "Failed to update user",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

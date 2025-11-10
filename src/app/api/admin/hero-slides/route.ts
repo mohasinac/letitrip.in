@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
-// GET /api/admin/hero-slides - List hero slides
+// GET /admin/hero-slides - List hero slides
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -23,12 +23,12 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching hero slides:", error);
     return NextResponse.json(
       { error: "Failed to fetch hero slides" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// POST /api/admin/hero-slides - Create hero slide
+// POST /admin/hero-slides - Create hero slide
 export async function POST(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (!body.title || !body.image_url) {
       return NextResponse.json(
         { error: "Title and image are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -74,13 +74,13 @@ export async function POST(req: NextRequest) {
         id: docRef.id,
         ...slideData,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating hero slide:", error);
     return NextResponse.json(
       { error: "Failed to create hero slide" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

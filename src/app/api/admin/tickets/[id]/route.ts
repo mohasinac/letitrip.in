@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/app/api/lib/session";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 /**
- * GET /api/admin/tickets/[id]
+ * GET /admin/tickets/[id]
  * Get ticket details (admin can see all tickets)
  */
 export async function GET(
@@ -58,7 +58,8 @@ export async function GET(
         ...ticketData,
         createdAt: ticketData?.createdAt?.toDate?.() || ticketData?.createdAt,
         updatedAt: ticketData?.updatedAt?.toDate?.() || ticketData?.updatedAt,
-        resolvedAt: ticketData?.resolvedAt?.toDate?.() || ticketData?.resolvedAt,
+        resolvedAt:
+          ticketData?.resolvedAt?.toDate?.() || ticketData?.resolvedAt,
         messages,
         user: userData
           ? {
@@ -76,7 +77,7 @@ export async function GET(
 }
 
 /**
- * PATCH /api/admin/tickets/[id]
+ * PATCH /admin/tickets/[id]
  * Update ticket (assign, change status, etc.)
  */
 export async function PATCH(

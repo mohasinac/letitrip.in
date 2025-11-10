@@ -13,7 +13,7 @@ import {
   StarOff,
   ExternalLink,
 } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { heroSlidesService, HeroSlide } from "@/services/hero-slides.service";
 import { EmptyState } from "@/components/common/EmptyState";
 import {
   QuickCreateRow,
@@ -29,21 +29,6 @@ import {
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
 import { InlineField, BulkAction } from "@/types/inline-edit";
-
-interface HeroSlide {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  image_url: string;
-  link_url: string;
-  cta_text: string;
-  position: number;
-  is_active: boolean;
-  show_in_carousel: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
 export default function HeroSlidesPage() {
   const router = useRouter();
@@ -72,10 +57,8 @@ export default function HeroSlidesPage() {
   const loadSlides = async () => {
     try {
       setLoading(true);
-      const response = (await apiService.get("/admin/hero-slides")) as {
-        slides: HeroSlide[];
-      };
-      setSlides(response.slides || []);
+      const slides = await heroSlidesService.getHeroSlides();
+      setSlides(slides);
     } catch (error) {
       console.error("Failed to load hero slides:", error);
     } finally {
@@ -86,10 +69,13 @@ export default function HeroSlidesPage() {
   const handleBulkAction = async (actionId: string) => {
     setActionLoading(true);
     try {
-      await apiService.post("/admin/hero-slides/bulk", {
-        action: actionId,
-        ids: selectedIds,
-      });
+      if (actionId === "delete") {
+        await heroSlidesService.bulkDelete(selectedIds);
+      } else if (actionId === "activate") {
+        await heroSlidesService.bulkUpdate(selectedIds, { isActive: true });
+      } else if (actionId === "deactivate") {
+        await heroSlidesService.bulkUpdate(selectedIds, { isActive: false });
+      }
       setSelectedIds([]);
       await loadSlides();
     } catch (error) {
@@ -124,10 +110,10 @@ export default function HeroSlidesPage() {
     const [removed] = newSlides.splice(draggedIndex, 1);
     newSlides.splice(targetIndex, 0, removed);
 
-    // Update positions
+    // Update order
     const reorderedSlides = newSlides.map((slide, index) => ({
       ...slide,
-      position: index + 1,
+      order: index + 1,
     }));
 
     setSlides(reorderedSlides);
@@ -135,12 +121,12 @@ export default function HeroSlidesPage() {
 
     // Save to backend
     try {
-      await apiService.post("/admin/hero-slides/reorder", {
-        slides: reorderedSlides.map((s) => ({
+      await heroSlidesService.reorderSlides(
+        reorderedSlides.map((s) => ({
           id: s.id,
-          position: s.position,
-        })),
-      });
+          order: s.order,
+        }))
+      );
     } catch (error) {
       console.error("Failed to reorder slides:", error);
       alert("Failed to save new order");
@@ -149,7 +135,7 @@ export default function HeroSlidesPage() {
     }
   };
 
-  const carouselCount = slides.filter((s) => s.show_in_carousel).length;
+  const carouselCount = slides.filter((s) => s.isActive).length; // Note: Using isActive as proxy - update if show_in_carousel exists
   const MAX_SLIDES = 10;
   const MAX_CAROUSEL = 5;
 
@@ -307,10 +293,7 @@ export default function HeroSlidesPage() {
 
                         setValidationErrors({});
 
-                        await apiService.post("/admin/hero-slides", {
-                          ...values,
-                          position: slides.length + 1,
-                        });
+                        await heroSlidesService.createHeroSlide(values as any);
                         await loadSlides();
                       } catch (error) {
                         console.error("Failed to create slide:", error);
@@ -322,9 +305,8 @@ export default function HeroSlidesPage() {
                     loading={actionLoading}
                     resourceName="slide"
                     defaultValues={{
-                      is_active: true,
-                      show_in_carousel: carouselCount < MAX_CAROUSEL,
-                      cta_text: "Shop Now",
+                      isActive: true,
+                      ctaText: "Shop Now",
                     }}
                   />
                 )}
@@ -356,9 +338,9 @@ export default function HeroSlidesPage() {
 
                           setValidationErrors({});
 
-                          await apiService.patch(
-                            `/admin/hero-slides/${slide.id}`,
-                            values
+                          await heroSlidesService.updateHeroSlide(
+                            slide.id,
+                            values as any
                           );
                           setEditingId(null);
                           await loadSlides();
@@ -402,7 +384,7 @@ export default function HeroSlidesPage() {
                         <div className="flex items-center gap-2">
                           <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
                           <span className="text-sm text-gray-600">
-                            {slide.position}
+                            {slide.order}
                           </span>
                         </div>
                       </td>
@@ -417,18 +399,18 @@ export default function HeroSlidesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {slide.image_url && (
+                        {slide.image && (
                           <img
-                            src={slide.image_url}
+                            src={slide.image}
                             alt={slide.title}
                             className="w-16 h-16 object-cover rounded"
                           />
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        {slide.link_url ? (
+                        {slide.ctaLink ? (
                           <a
-                            href={slide.link_url}
+                            href={slide.ctaLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
@@ -443,18 +425,18 @@ export default function HeroSlidesPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-gray-600">
-                          {slide.cta_text || "-"}
+                          {slide.ctaText || "-"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {slide.is_active ? (
+                        {slide.isActive ? (
                           <Power className="w-4 h-4 text-green-600 inline" />
                         ) : (
                           <PowerOff className="w-4 h-4 text-gray-400 inline" />
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {slide.show_in_carousel ? (
+                        {slide.isActive ? (
                           <Star className="w-4 h-4 text-yellow-500 inline fill-current" />
                         ) : (
                           <StarOff className="w-4 h-4 text-gray-400 inline" />

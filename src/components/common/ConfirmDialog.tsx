@@ -8,6 +8,7 @@ export interface ConfirmDialogProps {
   onConfirm: () => void | Promise<void>;
   title: string;
   description?: string;
+  children?: React.ReactNode; // Support custom content
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: "danger" | "warning" | "info";
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
+  children, // Add children destructuring
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "danger",
@@ -106,6 +108,9 @@ export function ConfirmDialog({
               {description}
             </p>
           )}
+
+          {/* Custom Content */}
+          {children}
 
           {/* Actions */}
           <div className="flex gap-3">

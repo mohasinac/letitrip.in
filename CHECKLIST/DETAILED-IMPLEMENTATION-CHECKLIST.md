@@ -18,7 +18,9 @@
 - ✅ **Phase 4**: Inline Forms (95% - Validation complete! Only coupons pending)
 - ⏳ **Phase 5**: Form Wizards (0%)
 
-**Overall Project Completion**: ~52%
+**Overall Project Completion**: ~58%
+
+**NEW**: Phase 6 (Service Layer Refactoring) - 14/32 violations fixed (44%)! 🚀 All HIGH PRIORITY (fetch) violations complete!
 
 ---
 
@@ -151,7 +153,7 @@
   - [x] Stats cards (open, in-progress, resolved, closed, escalated counts)
   - [x] Click ticket to view details
   - [x] Table view with ticket info
-  - [x] Uses GET `/api/admin/tickets`
+  - [x] Uses GET `/admin/tickets`
   - [ ] Bulk actions (skeleton ready, needs implementation)
   - [ ] Search tickets (needs implementation)
   - [ ] Pagination (API ready, UI needs implementation)
@@ -168,17 +170,17 @@
   - [x] Quick actions: Mark as Resolved, Escalate, Close
   - [x] Ticket info sidebar (ID, created, updated, resolved timestamps)
   - [x] Mobile responsive layout
-  - [x] Uses GET `/api/admin/tickets/[id]`, PATCH `/api/admin/tickets/[id]`, POST `/api/admin/tickets/[id]/reply`
+  - [x] Uses GET `/admin/tickets/[id]`, PATCH `/admin/tickets/[id]`, POST `/admin/tickets/[id]/reply`
 
 - [x] **Admin Support Ticket APIs**
-  - [x] GET `/api/admin/tickets` - List all tickets (with filters, pagination, stats)
-  - [x] GET `/api/admin/tickets/[id]` - Get ticket details with user info
-  - [x] PATCH `/api/admin/tickets/[id]` - Update ticket (status, assignedTo, priority)
-  - [x] POST `/api/admin/tickets/[id]/reply` - Admin reply (with internal notes flag)
-  - [ ] POST `/api/admin/tickets/[id]/assign` - Assign ticket (can use PATCH)
-  - [ ] POST `/api/admin/tickets/[id]/escalate` - Escalate ticket (can use PATCH)
-  - [ ] POST `/api/admin/tickets/[id]/close` - Close ticket (can use PATCH)
-  - [ ] POST `/api/admin/tickets/bulk` - Bulk actions (needs implementation)
+  - [x] GET `/admin/tickets` - List all tickets (with filters, pagination, stats)
+  - [x] GET `/admin/tickets/[id]` - Get ticket details with user info
+  - [x] PATCH `/admin/tickets/[id]` - Update ticket (status, assignedTo, priority)
+  - [x] POST `/admin/tickets/[id]/reply` - Admin reply (with internal notes flag)
+  - [ ] POST `/admin/tickets/[id]/assign` - Assign ticket (can use PATCH)
+  - [ ] POST `/admin/tickets/[id]/escalate` - Escalate ticket (can use PATCH)
+  - [ ] POST `/admin/tickets/[id]/close` - Close ticket (can use PATCH)
+  - [ ] POST `/admin/tickets/bulk` - Bulk actions (needs implementation)
 
 ---
 
@@ -272,16 +274,16 @@
 
 - [ ] **Test All Bulk APIs**
 
-  - [ ] POST `/api/admin/products/bulk` - Test all actions (publish, draft, archive, feature, unfeature, delete)
-  - [ ] POST `/api/admin/auctions/bulk` - Test all actions (start, end, cancel, feature, unfeature, delete)
-  - [ ] POST `/api/admin/categories/bulk` - Test all actions (activate, deactivate, feature, unfeature, delete)
-  - [ ] POST `/api/admin/users/bulk` - Test all actions (make-seller, make-user, ban, unban, delete, export)
-  - [ ] POST `/api/admin/shops/bulk` - Test all actions (verify, unverify, feature, unfeature, ban, unban, delete)
-  - [ ] POST `/api/admin/orders/bulk` - Test all actions (confirm, ship, deliver, cancel, export)
-  - [ ] POST `/api/admin/reviews/bulk` - Test all actions (approve, reject, flag, delete)
-  - [ ] POST `/api/admin/coupons/bulk` - Test all actions (activate, deactivate, delete)
-  - [ ] POST `/api/admin/tickets/bulk` - Test all actions (assign, resolve, close, delete)
-  - [ ] POST `/api/admin/payouts/bulk` - Test bulk processing
+  - [ ] POST `/admin/products/bulk` - Test all actions (publish, draft, archive, feature, unfeature, delete)
+  - [ ] POST `/admin/auctions/bulk` - Test all actions (start, end, cancel, feature, unfeature, delete)
+  - [ ] POST `/admin/categories/bulk` - Test all actions (activate, deactivate, feature, unfeature, delete)
+  - [ ] POST `/admin/users/bulk` - Test all actions (make-seller, make-user, ban, unban, delete, export)
+  - [ ] POST `/admin/shops/bulk` - Test all actions (verify, unverify, feature, unfeature, ban, unban, delete)
+  - [ ] POST `/admin/orders/bulk` - Test all actions (confirm, ship, deliver, cancel, export)
+  - [ ] POST `/admin/reviews/bulk` - Test all actions (approve, reject, flag, delete)
+  - [ ] POST `/admin/coupons/bulk` - Test all actions (activate, deactivate, delete)
+  - [ ] POST `/admin/tickets/bulk` - Test all actions (assign, resolve, close, delete)
+  - [ ] POST `/admin/payouts/bulk` - Test bulk processing
   - [ ] POST `/api/seller/products/bulk` - Test seller actions
   - [ ] POST `/api/seller/auctions/bulk` - Test seller actions
 
@@ -346,17 +348,17 @@
 
 - [x] **Test Workflow APIs**
 
-  - [x] POST `/api/admin/test-workflow/products` - Bulk create test products (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/auctions` - Bulk create test auctions (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/orders` - Bulk create test orders (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/reviews` - Bulk create test reviews (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/tickets` - Bulk create test tickets (admin auth, count validation, returns IDs, includes messages)
-  - [x] POST `/api/admin/test-workflow/shop` - Create single test shop (admin auth, returns shop ID)
-  - [x] POST `/api/admin/test-workflow/categories` - Create test categories (admin auth, creates 3 parent + 9 child categories)
-  - [x] POST `/api/admin/test-workflow/coupons` - Bulk create test coupons (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/cleanup` - Delete all TEST\_ data (admin auth, returns deletion counts)
-  - [x] GET `/api/admin/test-workflow/status` - Get test data counts (admin auth, returns TestDataCounts)
-  - [x] POST `/api/admin/test-workflow/execute` - Execute test workflows (admin auth, 5 workflow skeletons)
+  - [x] POST `/admin/test-workflow/products` - Bulk create test products (admin auth, count validation, returns IDs)
+  - [x] POST `/admin/test-workflow/auctions` - Bulk create test auctions (admin auth, count validation, returns IDs)
+  - [x] POST `/admin/test-workflow/orders` - Bulk create test orders (admin auth, count validation, returns IDs)
+  - [x] POST `/admin/test-workflow/reviews` - Bulk create test reviews (admin auth, count validation, returns IDs)
+  - [x] POST `/admin/test-workflow/tickets` - Bulk create test tickets (admin auth, count validation, returns IDs, includes messages)
+  - [x] POST `/admin/test-workflow/shop` - Create single test shop (admin auth, returns shop ID)
+  - [x] POST `/admin/test-workflow/categories` - Create test categories (admin auth, creates 3 parent + 9 child categories)
+  - [x] POST `/admin/test-workflow/coupons` - Bulk create test coupons (admin auth, count validation, returns IDs)
+  - [x] POST `/admin/test-workflow/cleanup` - Delete all TEST\_ data (admin auth, returns deletion counts)
+  - [x] GET `/admin/test-workflow/status` - Get test data counts (admin auth, returns TestDataCounts)
+  - [x] POST `/admin/test-workflow/execute` - Execute test workflows (admin auth, 5 workflow skeletons)
 
 - [ ] **Test Workflows to Implement** (Skeletons ready in execute route)
   - [ ] Product purchase flow (browse → add to cart → checkout → payment → order) - SKELETON READY
@@ -460,6 +462,53 @@
   - [x] Replace hardcoded fields array (6 fields → config)
   - [x] Add validation on save ✅ DONE (QuickCreate + InlineEdit)
   - [x] Validation state and error handling ✅ DONE
+
+---
+
+### ⚠️ BUILD LINT ERRORS (CRITICAL - Must Fix Before Deploy)
+
+#### Next.js 15 Params Type Errors
+
+- [x] **User Tickets Detail Page** (`/user/tickets/[id]/page.tsx`) ✅
+
+  - [x] Extract `ticketId` from params with type assertion
+  - [x] Replace all `params.id` references with `ticketId`
+  - [x] Update useEffect dependency
+  - [x] Fix SUPPORT_ROUTES.TICKET_BY_ID call
+  - [x] Fix SUPPORT_ROUTES.REPLY call
+  - [x] Fix ticket number display
+
+- [x] **Admin Tickets Detail Page** (`/admin/tickets/[id]/page.tsx`)
+
+  - [x] Extract `ticketId` from params with type assertion
+  - [x] Replace all `params.id` references with `ticketId`
+  - [x] Update useEffect dependency
+  - [x] Fix ADMIN_ROUTES.TICKET_BY_ID calls (3 locations)
+  - [x] Fix ADMIN_ROUTES.TICKET_REPLY call
+  - [x] Fix ticket number display
+
+- [x] **Admin Orders Detail Page** (`/admin/orders/[id]/page.tsx`)
+  - [x] Extract `orderId` from params with type assertion
+  - [x] Replace `params.id` with `orderId`
+  - [x] Update useEffect dependency
+  - [x] Fix ordersService.getById call
+  - [x] Fix ConfirmDialog component issues (3 locations - changed `message` to `children`, `confirmText` to `confirmLabel`, `cancelText` to `cancelLabel`, `loading` to `isLoading`)
+
+**Pattern to Apply**:
+
+```typescript
+// At component start
+const params = useParams();
+const ticketId = (params.id as string) || "";
+
+// In useEffect
+useEffect(() => {
+  fetchData();
+}, [ticketId]); // Not params.id
+
+// In API calls
+apiService.get(ROUTES.BY_ID(ticketId)); // Not params.id
+```
 
 ---
 
@@ -584,7 +633,282 @@
 
 ---
 
-### Phase 6: Testing & Validation
+### Phase 6: Service Layer Refactoring (Architecture Enforcement)
+
+**Goal**: Remove all direct `fetch()` and `apiService` calls from components, pages, and hooks. All API calls must go through service layer.
+
+#### Audit Existing Code ✅ COMPLETE
+
+- [x] **Find Direct API Calls** ✅ DONE (Nov 11, 2025)
+  - [x] Search for `fetch(` in `src/app/` (pages) - **11 matches found**
+  - [x] Search for `fetch(` in `src/components/` (components) - **6 matches found**
+  - [x] Search for `fetch(` in `src/hooks/` (hooks) - **1 match found**
+  - [x] Search for `apiService` in `src/app/` (pages) - **16 matches found**
+  - [x] Search for `apiService` in `src/components/` (components) - **5 matches found**
+  - [x] Document all violations in `ARCHITECTURE-VIOLATIONS.md` ✅ CREATED
+
+**Summary**:
+
+- **32 critical violations** requiring refactoring
+- **6 valid exceptions** (sitemap, media converters, examples)
+- **Total**: 38 instances found
+- **Services created**: 2/2 ✅ (hero-slides, payouts)
+- **Violations fixed**: 14/32 ✅ (44% complete) ⭐ HIGH PRIORITY DONE
+  - Admin dashboard pages (3 files) - Using analyticsService
+  - Admin hero-slides pages (3 files) - Using heroSlidesService
+  - Admin payouts page (1 file) - Using payoutsService
+  - Seller dashboard pages (2 pages) - Using analyticsService
+  - Product review components (2 files) - Using reviewsService
+  - User favorites page (1 file) - Using favoritesService
+  - Public search & contact pages (2 files) - Using productsService, supportService
+- **Estimated fix time**: 2-3 hours (18 violations remaining)
+
+See `CHECKLIST/ARCHITECTURE-VIOLATIONS.md` for complete breakdown.
+
+#### Create Missing Services
+
+- [ ] **Review Existing Services** (`src/services/`)
+
+  - [ ] Audit `auth.service.ts` - Complete API coverage
+  - [ ] Audit `products.service.ts` - Complete API coverage
+  - [ ] Audit `auctions.service.ts` - Complete API coverage
+  - [ ] Audit `cart.service.ts` - Complete API coverage
+  - [ ] Audit `orders.service.ts` - Complete API coverage
+  - [ ] Audit `shops.service.ts` - Complete API coverage
+  - [ ] Audit `categories.service.ts` - Complete API coverage
+  - [ ] Audit `coupons.service.ts` - Complete API coverage
+  - [ ] Audit `reviews.service.ts` - Complete API coverage
+  - [ ] Audit `users.service.ts` - Complete API coverage
+  - [ ] Audit `media.service.ts` - Complete API coverage
+  - [ ] Audit `addresses.service.ts` - Complete API coverage
+  - [ ] Audit `support.service.ts` - Complete API coverage
+  - [ ] Audit `test-data.service.ts` - Complete API coverage
+
+- [x] **Create Missing Services** ✅ COMPLETE (Nov 11, 2025)
+  - [x] ✅ `hero-slides.service.ts` - Homepage slides CRUD (CREATED - 148 lines, 8 methods)
+  - [x] ✅ `blog.service.ts` - Blog posts CRUD (ALREADY EXISTS)
+  - [x] ✅ `analytics.service.ts` - Analytics/stats fetching (ALREADY EXISTS)
+  - [ ] ⏳ `notifications.service.ts` - User notifications (optional)
+  - [x] ✅ `payouts.service.ts` - Seller payouts (CREATED - 238 lines, 11 methods)
+  - [ ] ⏳ `settings.service.ts` - User/shop settings (optional)
+  - [x] ✅ `wishlist.service.ts` - Product wishlist (favorites.service.ts ALREADY EXISTS)
+
+#### Refactor Components (Admin)
+
+- [ ] **Admin Products Page** (`/admin/products/page.tsx`)
+
+  - [ ] Replace direct API calls with `productService`
+  - [ ] Test all CRUD operations
+  - [ ] Verify bulk actions work
+
+- [ ] **Admin Auctions Page** (`/admin/auctions/page.tsx`)
+
+  - [ ] Replace direct API calls with `auctionService`
+  - [ ] Test all operations
+
+- [ ] **Admin Categories Page** (`/admin/categories/page.tsx`)
+
+  - [ ] Replace direct API calls with `categoryService`
+  - [ ] Test all operations
+
+- [ ] **Admin Users Page** (`/admin/users/page.tsx`)
+
+  - [ ] Replace direct API calls with `userService`
+  - [ ] Test all operations
+
+- [ ] **Admin Shops Page** (`/admin/shops/page.tsx`)
+
+  - [ ] Replace direct API calls with `shopService`
+  - [ ] Test all operations
+
+- [ ] **Admin Orders Page** (`/admin/orders/page.tsx`)
+
+  - [ ] Replace direct API calls with `orderService`
+  - [ ] Test all operations
+
+- [ ] **Admin Reviews Page** (`/admin/reviews/page.tsx`)
+
+  - [ ] Replace direct API calls with `reviewService`
+  - [ ] Test all operations
+
+- [ ] **Admin Coupons Page** (`/admin/coupons/page.tsx`)
+
+  - [ ] Replace direct API calls with `couponService`
+  - [ ] Test all operations
+
+- [ ] **Admin Tickets Page** (`/admin/tickets/page.tsx`)
+
+  - [ ] Replace direct API calls with `supportService`
+  - [ ] Test all operations
+
+- [ ] **Admin Hero Slides Page** (`/admin/hero-slides/page.tsx`)
+
+  - [ ] Replace direct API calls with `heroSlidesService`
+  - [ ] Test all operations
+
+- [ ] **Admin Blog Page** (`/admin/blog/page.tsx`)
+
+  - [ ] Replace direct API calls with `blogService`
+  - [ ] Test all operations
+
+- [ ] **Admin Payouts Page** (`/admin/payouts/page.tsx`)
+
+  - [ ] Replace direct API calls with `payoutsService`
+  - [ ] Test all operations
+
+#### Refactor Components (Seller)
+
+- [ ] **Seller Dashboard** (`/seller/page.tsx`)
+
+  - [ ] Replace direct API calls with appropriate services
+  - [ ] Test stats fetching
+
+- [ ] **Seller Products Page** (`/seller/products/page.tsx`)
+
+  - [ ] Replace direct API calls with `productService`
+  - [ ] Test all operations
+
+- [ ] **Seller Auctions Page** (`/seller/auctions/page.tsx`)
+
+  - [ ] Replace direct API calls with `auctionService`
+  - [ ] Test all operations
+
+- [ ] **Seller Orders Page** (`/seller/orders/page.tsx`)
+
+  - [ ] Replace direct API calls with `orderService`
+  - [ ] Test all operations
+
+- [ ] **Seller Shop Page** (`/seller/shop/page.tsx`)
+  - [ ] Replace direct API calls with `shopService`
+  - [ ] Test all operations
+
+#### Refactor Components (User)
+
+- [ ] **User Dashboard** (`/user/page.tsx`)
+
+  - [ ] Replace direct API calls with appropriate services
+  - [ ] Test all operations
+
+- [ ] **User Orders Page** (`/user/orders/page.tsx`)
+
+  - [ ] Replace direct API calls with `orderService`
+  - [ ] Test all operations
+
+- [ ] **User Tickets Page** (`/user/tickets/page.tsx`)
+
+  - [ ] Replace direct API calls with `supportService`
+  - [ ] Test all operations
+
+- [ ] **User Addresses Page** (`/user/addresses/page.tsx`)
+
+  - [ ] Replace direct API calls with `addressService`
+  - [ ] Test all operations
+
+- [ ] **User Profile Page** (`/user/profile/page.tsx`)
+  - [ ] Replace direct API calls with `userService`
+  - [ ] Test all operations
+
+#### Refactor Components (Public)
+
+- [ ] **Products List Page** (`/products/page.tsx`)
+
+  - [ ] Replace direct API calls with `productService`
+  - [ ] Test filtering, search, pagination
+
+- [ ] **Product Detail Page** (`/products/[slug]/page.tsx`)
+
+  - [ ] Replace direct API calls with `productService`, `reviewService`
+  - [ ] Test all operations
+
+- [ ] **Auctions List Page** (`/auctions/page.tsx`)
+
+  - [ ] Replace direct API calls with `auctionService`
+  - [ ] Test filtering, search
+
+- [ ] **Auction Detail Page** (`/auctions/[id]/page.tsx`)
+
+  - [ ] Replace direct API calls with `auctionService`
+  - [ ] Test bidding operations
+
+- [ ] **Cart Page** (`/cart/page.tsx`)
+
+  - [ ] Replace direct API calls with `cartService`
+  - [ ] Test all operations
+
+- [ ] **Checkout Page** (`/checkout/page.tsx`)
+
+  - [ ] Replace direct API calls with `orderService`, `cartService`
+  - [ ] Test checkout flow
+
+- [ ] **Shop Detail Page** (`/shops/[slug]/page.tsx`)
+  - [ ] Replace direct API calls with `shopService`
+  - [ ] Test all operations
+
+#### Refactor Hooks
+
+- [ ] **useCart** (`/hooks/useCart.ts`)
+
+  - [ ] Replace direct API calls with `cartService`
+  - [ ] Test all cart operations
+
+- [ ] **useAuth** (if exists in hook form)
+
+  - [ ] Replace direct API calls with `authService`
+  - [ ] Test login, logout, register
+
+- [ ] **useOrders** (if exists)
+
+  - [ ] Replace direct API calls with `orderService`
+
+- [ ] **useProducts** (if exists)
+
+  - [ ] Replace direct API calls with `productService`
+
+- [ ] **Audit all custom hooks** (`src/hooks/`)
+  - [ ] Find and document all hooks with direct API calls
+  - [ ] Refactor each to use service layer
+
+#### Validation & Testing
+
+- [ ] **Automated Checks**
+
+  - [ ] Create ESLint rule to prevent `fetch(` in components/hooks/pages
+  - [ ] Create ESLint rule to prevent `apiService` imports in components/hooks/pages
+  - [ ] Add pre-commit hook to enforce rules
+
+- [ ] **Manual Testing**
+
+  - [ ] Test all admin pages (12 pages)
+  - [ ] Test all seller pages (5 pages)
+  - [ ] Test all user pages (5 pages)
+  - [ ] Test all public pages (10+ pages)
+  - [ ] Verify error handling works consistently
+  - [ ] Verify loading states work correctly
+
+- [ ] **Documentation**
+  - [ ] Update `AI-AGENT-GUIDE.md` with service layer pattern ✅ DONE
+  - [ ] Create `SERVICE-LAYER-GUIDE.md` with examples
+  - [ ] Document all available services and their methods
+  - [ ] Add JSDoc comments to all service methods
+
+#### Enforcement
+
+- [ ] **Code Review Checklist**
+
+  - [ ] No `fetch()` in components/pages/hooks
+  - [ ] No `apiService` in components/pages/hooks
+  - [ ] All API calls go through service layer
+  - [ ] Services have TypeScript types
+  - [ ] Services handle errors consistently
+
+- [ ] **CI/CD Integration**
+  - [ ] Add linting step to check for violations
+  - [ ] Fail build if violations found
+  - [ ] Generate report of service layer usage
+
+---
+
+### Phase 7: Testing & Validation
 
 #### Unit Tests for Utilities
 

@@ -6,7 +6,7 @@ import {
   getDownloadUrl,
 } from "@/app/api/lib/static-assets-server.service";
 
-// GET /api/admin/static-assets - List all static assets
+// GET /admin/static-assets - List all static assets
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -28,12 +28,12 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching static assets:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assets" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// POST /api/admin/static-assets - Create asset metadata (legacy endpoint, use /upload-url + /confirm-upload instead)
+// POST /admin/static-assets - Create asset metadata (legacy endpoint, use /upload-url + /confirm-upload instead)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     if (!id || !name || !type || !url || !storagePath) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating asset:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create asset" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

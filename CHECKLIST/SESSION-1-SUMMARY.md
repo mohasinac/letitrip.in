@@ -29,10 +29,10 @@ Implement complete support ticket system for users and admins as per Phase 1B of
 
 ### 3. Admin Ticket Management (75% Complete)
 
-- `GET /api/admin/tickets` - List all tickets with stats
-- `GET /api/admin/tickets/[id]` - Get any ticket (admin access)
-- `PATCH /api/admin/tickets/[id]` - Update ticket
-- `POST /api/admin/tickets/[id]/reply` - Admin reply with internal notes
+- `GET /admin/tickets` - List all tickets with stats
+- `GET /admin/tickets/[id]` - Get any ticket (admin access)
+- `PATCH /admin/tickets/[id]` - Update ticket
+- `POST /admin/tickets/[id]/reply` - Admin reply with internal notes
 - **Admin Tickets Page**: Stats dashboard, filtering, table view
 
 ---
@@ -45,9 +45,9 @@ Implement complete support ticket system for users and admins as per Phase 1B of
 2. `src/app/api/support/tickets/route.ts`
 3. `src/app/api/support/tickets/[id]/route.ts`
 4. `src/app/api/support/tickets/[id]/reply/route.ts`
-5. `src/app/api/admin/tickets/route.ts`
-6. `src/app/api/admin/tickets/[id]/route.ts`
-7. `src/app/api/admin/tickets/[id]/reply/route.ts`
+5. `src/app/admin/tickets/route.ts`
+6. `src/app/admin/tickets/[id]/route.ts`
+7. `src/app/admin/tickets/[id]/reply/route.ts`
 
 ### Pages (3)
 

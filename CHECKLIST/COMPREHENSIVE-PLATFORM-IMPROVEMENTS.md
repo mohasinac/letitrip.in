@@ -210,14 +210,14 @@ This checklist tracks major improvements across the entire platform including:
 
 ### 4.2 APIs to Fix
 
-- [ ] `/api/admin/products/bulk` - Products bulk actions
-- [ ] `/api/admin/auctions/bulk` - Auctions bulk actions
-- [ ] `/api/admin/categories/bulk` - Categories bulk actions
-- [ ] `/api/admin/users/bulk` - Users bulk actions
-- [ ] `/api/admin/shops/bulk` - Shops bulk actions
-- [ ] `/api/admin/orders/bulk` - Orders bulk actions
-- [ ] `/api/admin/reviews/bulk` - Reviews bulk actions
-- [ ] `/api/admin/coupons/bulk` - Coupons bulk actions
+- [ ] `/admin/products/bulk` - Products bulk actions
+- [ ] `/admin/auctions/bulk` - Auctions bulk actions
+- [ ] `/admin/categories/bulk` - Categories bulk actions
+- [ ] `/admin/users/bulk` - Users bulk actions
+- [ ] `/admin/shops/bulk` - Shops bulk actions
+- [ ] `/admin/orders/bulk` - Orders bulk actions
+- [ ] `/admin/reviews/bulk` - Reviews bulk actions
+- [ ] `/admin/coupons/bulk` - Coupons bulk actions
 - [ ] `/api/seller/products/bulk` - Seller products bulk
 - [ ] `/api/seller/auctions/bulk` - Seller auctions bulk
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { analyticsService } from "@/services/analytics.service";
 import Link from "next/link";
 import {
   Users,
@@ -33,14 +34,17 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const response = await fetch("/api/admin/dashboard");
-
-        if (!response.ok) {
-          throw new Error("Failed to load dashboard stats");
-        }
-
-        const data = await response.json();
-        setStats(data.stats);
+        const data = await analyticsService.getOverview();
+        setStats({
+          totalUsers: (data as any).totalUsers || data.totalCustomers || 0,
+          totalSellers: (data as any).totalSellers || 0,
+          totalShops: (data as any).totalShops || 0,
+          totalCategories: (data as any).totalCategories || 0,
+          totalProducts: data.totalProducts || 0,
+          totalOrders: data.totalOrders || 0,
+          activeUsers: (data as any).activeUsers || 0,
+          pendingOrders: (data as any).pendingOrders || 0,
+        });
       } catch (error) {
         console.error("Failed to load stats:", error);
 

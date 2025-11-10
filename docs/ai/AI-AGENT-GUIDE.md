@@ -75,7 +75,166 @@ STATE: Context + Hooks pattern
 
 ## Key Patterns to Follow
 
-### 1. Component Patterns
+### 1. Service Layer Pattern (CRITICAL)
+
+**NEVER call APIs directly from components, pages, or hooks. ALWAYS use the service layer.**
+
+```typescript
+// ❌ WRONG: Direct fetch in component
+export default function ProductPage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // DON'T DO THIS
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(setProducts);
+  }, []);
+}
+
+// ❌ WRONG: Direct apiService in component
+import { apiService } from '@/services/api.service';
+
+export default function ProductPage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // DON'T DO THIS
+    apiService.get('/api/products').then(setProducts);
+  }, []);
+}
+
+// ✅ CORRECT: Use service layer
+import { productService } from '@/services/products.service';
+
+export default function ProductPage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    productService.getProducts().then(setProducts);
+  }, []);
+}
+```
+
+**Service Layer Benefits**:
+- Centralized business logic
+- Consistent error handling
+- Type safety for all requests/responses
+- Easier testing and mocking
+- Single source of truth for API calls
+- Authentication headers automatically added
+
+**Creating a New Service**:
+
+```typescript
+// src/services/feature.service.ts
+import { apiService } from './api.service';
+import { Feature, FeatureFilters } from '@/types/feature';
+
+class FeatureService {
+  private readonly BASE_PATH = '/api/features';
+
+  async getFeatures(filters?: FeatureFilters): Promise<Feature[]> {
+    const params = new URLSearchParams();
+    if (filters?.status) params.set('status', filters.status);
+    if (filters?.category) params.set('category', filters.category);
+
+    const url = params.toString()
+      ? `${this.BASE_PATH}?${params}`
+      : this.BASE_PATH;
+
+    const response = await apiService.get<{ features: Feature[] }>(url);
+    return response.features;
+  }
+
+  async getFeatureById(id: string): Promise<Feature> {
+    const response = await apiService.get<{ feature: Feature }>(
+      `${this.BASE_PATH}/${id}`
+    );
+    return response.feature;
+  }
+
+  async createFeature(data: Partial<Feature>): Promise<Feature> {
+    const response = await apiService.post<{ feature: Feature }>(
+      this.BASE_PATH,
+      data
+    );
+    return response.feature;
+  }
+
+  async updateFeature(id: string, data: Partial<Feature>): Promise<Feature> {
+    const response = await apiService.patch<{ feature: Feature }>(
+      `${this.BASE_PATH}/${id}`,
+      data
+    );
+    return response.feature;
+  }
+
+  async deleteFeature(id: string): Promise<void> {
+    await apiService.delete(`${this.BASE_PATH}/${id}`);
+  }
+}
+
+export const featureService = new FeatureService();
+```
+
+**Using Services in Custom Hooks**:
+
+```typescript
+// ✅ CORRECT: Service layer in hooks
+import { useState, useEffect } from 'react';
+import { productService } from '@/services/products.service';
+
+export function useProducts(filters?) {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productService.getProducts(filters);
+        setProducts(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [filters]);
+
+  return { products, loading, error };
+}
+```
+
+**Error Handling in Services**:
+
+All services inherit error handling from `apiService`, which:
+- Automatically retries on network errors
+- Parses error responses
+- Throws typed errors
+- Logs errors to console (dev) or tracking service (prod)
+
+**Available Services** (always check before creating new ones):
+- `authService` - Authentication (login, register, logout)
+- `productService` - Product CRUD and search
+- `auctionService` - Auction operations and bidding
+- `cartService` - Shopping cart management
+- `orderService` - Order processing
+- `shopService` - Shop/vendor operations
+- `categoryService` - Category management
+- `couponService` - Discount codes
+- `reviewService` - Product reviews
+- `userService` - User profile management
+- `mediaService` - File uploads (images, videos)
+- `addressService` - User addresses
+- `supportService` - Support tickets
+- `testDataService` - Test data generation (admin only)
+
+### 2. Component Patterns
 
 ```typescript
 // Client Components (interactive)
@@ -89,22 +248,6 @@ import { useState } from "react";
 components / feature - name / ComponentName.tsx; // Main component
 SubComponent.tsx; // Related components
 ````
-
-### 2. Service Layer Pattern
-
-```typescript
-// ALWAYS use existing services - found in src/services/
-import { productService } from "@/services/products.service";
-
-// Services handle:
-// - API calls
-// - Error handling
-// - Type safety
-// - Authentication headers
-
-// Example usage:
-const products = await productService.getProducts(filters);
-```
 
 ### 3. API Route Pattern
 
@@ -148,7 +291,7 @@ Firebase Backend
 export async function uploadAsset(file: File, type: string, category?: string) {
   // Step 1: Get signed URL from API
   const { uploadUrl, assetId, storagePath } = await apiService.post(
-    "/api/admin/static-assets/upload-url",
+    "/admin/static-assets/upload-url",
     { fileName: file.name, contentType: file.type, type, category }
   );
 
@@ -157,7 +300,7 @@ export async function uploadAsset(file: File, type: string, category?: string) {
 
   // Step 3: Confirm and save metadata
   const { asset } = await apiService.post(
-    "/api/admin/static-assets/confirm-upload",
+    "/admin/static-assets/confirm-upload",
     { assetId, name: file.name, type, storagePath, size: file.size }
   );
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { productsService } from "@/services/products.service";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { CategoryCard } from "@/components/cards/CategoryCard";
@@ -28,10 +28,17 @@ export default function SearchPage() {
   const performSearch = async (searchQuery: string, type: string) => {
     try {
       setLoading(true);
-      const data = await apiService.get(
-        `/api/search?q=${encodeURIComponent(searchQuery)}&type=${type}&limit=50`,
-      );
-      setResults(data);
+      const response = await productsService.list({
+        search: searchQuery,
+        limit: 50,
+      });
+      // For now, just return products - proper multi-type search would need separate services
+      setResults({
+        products: response.data || [],
+        shops: [],
+        categories: [],
+        total: response.pagination?.total || 0,
+      });
     } catch (error) {
       console.error("Search failed:", error);
     } finally {

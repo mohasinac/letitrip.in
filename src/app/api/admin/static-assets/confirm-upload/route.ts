@@ -4,7 +4,7 @@ import {
   getDownloadUrl,
 } from "@/app/api/lib/static-assets-server.service";
 
-// POST /api/admin/static-assets/confirm-upload - Confirm upload completion
+// POST /admin/static-assets/confirm-upload - Confirm upload completion
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (!assetId || !name || !type || !storagePath) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     console.error("Error confirming upload:", error);
     return NextResponse.json(
       { success: false, error: "Failed to confirm upload" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -43,9 +43,9 @@
 - ✅ AuthGuard with admin role requirement
 - ✅ Loading and error states
 - ✅ API integration
-  - GET `/api/admin/tickets/[id]` for ticket details
-  - PATCH `/api/admin/tickets/[id]` for updates
-  - POST `/api/admin/tickets/[id]/reply` for admin replies
+  - GET `/admin/tickets/[id]` for ticket details
+  - PATCH `/admin/tickets/[id]` for updates
+  - POST `/admin/tickets/[id]/reply` for admin replies
 
 **Impact**: Phase 1B (Support Tickets) is now **100% COMPLETE**
 

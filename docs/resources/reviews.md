@@ -454,8 +454,8 @@ sequenceDiagram
 | `/api/reviews/[id]/helpful` | POST   | Mark helpful        | User        |
 | `/api/reviews/[id]/report`  | POST   | Report review       | User        |
 | `/api/user/reviews`         | GET    | User's reviews      | User        |
-| `/api/admin/reviews`        | GET    | All reviews (admin) | Admin       |
-| `/api/admin/reviews/bulk`   | POST   | Bulk approve/reject | Admin       |
+| `/admin/reviews`            | GET    | All reviews (admin) | Admin       |
+| `/admin/reviews/bulk`       | POST   | Bulk approve/reject | Admin       |
 
 ---
 

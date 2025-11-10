@@ -17,6 +17,7 @@ import {
 import { StatsCard } from "@/components/common/StatsCard";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { analyticsService } from "@/services/analytics.service";
 
 interface DashboardData {
   stats: {
@@ -71,14 +72,42 @@ export default function SellerDashboardPage() {
 
     try {
       // API will automatically use the user's primary shop from session
-      const response = await fetch(`/api/seller/dashboard`);
-
-      if (!response.ok) {
-        throw new Error("Failed to load dashboard data");
-      }
-
-      const dashboardData = await response.json();
-      setData(dashboardData);
+      const analyticsData = await analyticsService.getOverview();
+      
+      // Map analytics data to seller dashboard format
+      setData({
+        stats: {
+          shops: { 
+            total: (analyticsData as any).totalShops || 1, 
+            active: (analyticsData as any).activeShops || 1 
+          },
+          products: { 
+            total: analyticsData.totalProducts || 0, 
+            active: (analyticsData as any).activeProducts || 0 
+          },
+          orders: { 
+            pending: (analyticsData as any).pendingOrders || 0, 
+            total: analyticsData.totalOrders || 0 
+          },
+          revenue: { 
+            thisMonth: analyticsData.totalRevenue || 0, 
+            lastMonth: (analyticsData as any).lastMonthRevenue || 0 
+          },
+        },
+        recentOrders: (analyticsData as any).recentOrders || [],
+        topProducts: (analyticsData as any).topProducts || [],
+        shopPerformance: (analyticsData as any).shopPerformance || {
+          averageRating: 0,
+          totalRatings: 0,
+          orderFulfillment: 0,
+          responseTime: "N/A",
+        },
+        alerts: (analyticsData as any).alerts || {
+          lowStock: 0,
+          pendingShipment: 0,
+          newReviews: 0,
+        },
+      });
     } catch (err) {
       console.error("Error loading dashboard:", err);
       setError(err instanceof Error ? err.message : "Failed to load dashboard");

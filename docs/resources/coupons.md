@@ -506,7 +506,7 @@ sequenceDiagram
 | `/api/seller/coupons`      | POST   | Create coupon       | Seller/Admin |
 | `/api/seller/coupons/[id]` | PATCH  | Update coupon       | Seller/Admin |
 | `/api/seller/coupons/[id]` | DELETE | Delete coupon       | Seller/Admin |
-| `/api/admin/coupons`       | GET    | All coupons (admin) | Admin        |
+| `/admin/coupons`           | GET    | All coupons (admin) | Admin        |
 
 ---
 

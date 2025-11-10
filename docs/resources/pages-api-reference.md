@@ -521,8 +521,8 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Platform overview and analytics  
 **APIs Required**:
 
-- ✅ `GET /api/admin/dashboard` - Dashboard stats
-- ✅ `GET /api/admin/analytics/dashboard` - Analytics overview
+- ✅ `GET /admin/dashboard` - Dashboard stats
+- ✅ `GET /admin/analytics/dashboard` - Analytics overview
 
 ---
 
@@ -531,11 +531,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage all users  
 **APIs Required**:
 
-- ✅ `GET /api/admin/users` - List users
-- ✅ `GET /api/admin/users/[id]` - Get user
-- ✅ `PATCH /api/admin/users/[id]` - Update user
-- ✅ `DELETE /api/admin/users/[id]` - Delete user
-- ⚠️ `POST /api/admin/users/bulk` - Bulk actions
+- ✅ `GET /admin/users` - List users
+- ✅ `GET /admin/users/[id]` - Get user
+- ✅ `PATCH /admin/users/[id]` - Update user
+- ✅ `DELETE /admin/users/[id]` - Delete user
+- ⚠️ `POST /admin/users/bulk` - Bulk actions
 
 **Bulk Actions**: make-seller, make-user, ban, unban, delete, export
 
@@ -546,10 +546,10 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage all products  
 **APIs Required**:
 
-- ✅ `GET /api/admin/products` - List all products
-- ✅ `PATCH /api/admin/products/[id]` - Update product
-- ✅ `DELETE /api/admin/products/[id]` - Delete product
-- ⚠️ `POST /api/admin/products/bulk` - Bulk actions
+- ✅ `GET /admin/products` - List all products
+- ✅ `PATCH /admin/products/[id]` - Update product
+- ✅ `DELETE /admin/products/[id]` - Delete product
+- ⚠️ `POST /admin/products/bulk` - Bulk actions
 
 **Bulk Actions**: approve, reject, feature, unfeature, delete
 
@@ -560,10 +560,10 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage all auctions  
 **APIs Required**:
 
-- ✅ `GET /api/admin/auctions` - List all auctions
-- ✅ `PATCH /api/admin/auctions/[id]` - Update auction
-- ✅ `DELETE /api/admin/auctions/[id]` - Delete auction
-- ⚠️ `POST /api/admin/auctions/bulk` - Bulk actions
+- ✅ `GET /admin/auctions` - List all auctions
+- ✅ `PATCH /admin/auctions/[id]` - Update auction
+- ✅ `DELETE /admin/auctions/[id]` - Delete auction
+- ⚠️ `POST /admin/auctions/bulk` - Bulk actions
 
 ---
 
@@ -572,10 +572,10 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage all orders  
 **APIs Required**:
 
-- ✅ `GET /api/admin/orders` - List all orders
-- ✅ `GET /api/admin/orders/[id]` - Get order
-- ✅ `PATCH /api/admin/orders/[id]` - Update order
-- ⚠️ `POST /api/admin/orders/bulk` - Bulk actions
+- ✅ `GET /admin/orders` - List all orders
+- ✅ `GET /admin/orders/[id]` - Get order
+- ✅ `PATCH /admin/orders/[id]` - Update order
+- ⚠️ `POST /admin/orders/bulk` - Bulk actions
 
 ---
 
@@ -584,10 +584,10 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage all shops  
 **APIs Required**:
 
-- ✅ `GET /api/admin/shops` - List all shops
-- ✅ `PATCH /api/admin/shops/[id]` - Update shop
-- ✅ `DELETE /api/admin/shops/[id]` - Delete shop
-- ⚠️ `POST /api/admin/shops/bulk` - Bulk actions
+- ✅ `GET /admin/shops` - List all shops
+- ✅ `PATCH /admin/shops/[id]` - Update shop
+- ✅ `DELETE /admin/shops/[id]` - Delete shop
+- ⚠️ `POST /admin/shops/bulk` - Bulk actions
 
 **Bulk Actions**: verify, unverify, feature, unfeature, ban, unban, delete
 
@@ -598,11 +598,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage categories  
 **APIs Required**:
 
-- ✅ `GET /api/admin/categories` - List categories
-- ✅ `POST /api/admin/categories` - Create category
-- ✅ `PATCH /api/admin/categories/[id]` - Update category
-- ✅ `DELETE /api/admin/categories/[id]` - Delete category
-- ⚠️ `POST /api/admin/categories/bulk` - Bulk actions
+- ✅ `GET /admin/categories` - List categories
+- ✅ `POST /admin/categories` - Create category
+- ✅ `PATCH /admin/categories/[id]` - Update category
+- ✅ `DELETE /admin/categories/[id]` - Delete category
+- ⚠️ `POST /admin/categories/bulk` - Bulk actions
 
 ---
 
@@ -611,10 +611,10 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Moderate product/shop reviews  
 **APIs Required**:
 
-- ✅ `GET /api/admin/reviews` - List reviews
-- ✅ `PATCH /api/admin/reviews/[id]` - Update review (approve/reject/flag)
-- ✅ `DELETE /api/admin/reviews/[id]` - Delete review
-- ⚠️ `POST /api/admin/reviews/bulk` - Bulk actions
+- ✅ `GET /admin/reviews` - List reviews
+- ✅ `PATCH /admin/reviews/[id]` - Update review (approve/reject/flag)
+- ✅ `DELETE /admin/reviews/[id]` - Delete review
+- ⚠️ `POST /admin/reviews/bulk` - Bulk actions
 
 ---
 
@@ -623,13 +623,13 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage support tickets  
 **APIs Required**:
 
-- ⚠️ `GET /api/admin/tickets` - List all tickets
-- ⚠️ `GET /api/admin/tickets/[id]` - Get ticket
-- ⚠️ `POST /api/admin/tickets/[id]/assign` - Assign ticket
-- ⚠️ `POST /api/admin/tickets/[id]/reply` - Reply to ticket
-- ⚠️ `POST /api/admin/tickets/[id]/escalate` - Escalate ticket
-- ⚠️ `POST /api/admin/tickets/[id]/close` - Close ticket
-- ⚠️ `POST /api/admin/tickets/bulk` - Bulk actions
+- ⚠️ `GET /admin/tickets` - List all tickets
+- ⚠️ `GET /admin/tickets/[id]` - Get ticket
+- ⚠️ `POST /admin/tickets/[id]/assign` - Assign ticket
+- ⚠️ `POST /admin/tickets/[id]/reply` - Reply to ticket
+- ⚠️ `POST /admin/tickets/[id]/escalate` - Escalate ticket
+- ⚠️ `POST /admin/tickets/[id]/close` - Close ticket
+- ⚠️ `POST /admin/tickets/bulk` - Bulk actions
 
 **Status**: ⚠️ Basic structure exists, needs full implementation
 
@@ -640,11 +640,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage platform-wide coupons  
 **APIs Required**:
 
-- ✅ `GET /api/admin/coupons` - List coupons
-- ✅ `POST /api/admin/coupons` - Create coupon
-- ✅ `PATCH /api/admin/coupons/[id]` - Update coupon
-- ✅ `DELETE /api/admin/coupons/[id]` - Delete coupon
-- ⚠️ `POST /api/admin/coupons/bulk` - Bulk actions
+- ✅ `GET /admin/coupons` - List coupons
+- ✅ `POST /admin/coupons` - Create coupon
+- ✅ `PATCH /admin/coupons/[id]` - Update coupon
+- ✅ `DELETE /admin/coupons/[id]` - Delete coupon
+- ⚠️ `POST /admin/coupons/bulk` - Bulk actions
 
 ---
 
@@ -653,11 +653,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Process seller payouts  
 **APIs Required**:
 
-- ✅ `GET /api/admin/payouts` - List payout requests
-- ✅ `GET /api/admin/payouts/pending` - Pending payouts
-- ✅ `POST /api/admin/payouts/process` - Process payout
-- ✅ `PATCH /api/admin/payouts/[id]` - Update payout
-- ⚠️ `POST /api/admin/payouts/bulk` - Bulk process
+- ✅ `GET /admin/payouts` - List payout requests
+- ✅ `GET /admin/payouts/pending` - Pending payouts
+- ✅ `POST /admin/payouts/process` - Process payout
+- ✅ `PATCH /admin/payouts/[id]` - Update payout
+- ⚠️ `POST /admin/payouts/bulk` - Bulk process
 
 ---
 
@@ -666,11 +666,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage homepage hero sliders  
 **APIs Required**:
 
-- ✅ `GET /api/admin/hero-slides` - List slides
-- ✅ `POST /api/admin/hero-slides` - Create slide
-- ✅ `PATCH /api/admin/hero-slides/[id]` - Update slide
-- ✅ `DELETE /api/admin/hero-slides/[id]` - Delete slide
-- ⚠️ `POST /api/admin/hero-slides/bulk` - Bulk actions
+- ✅ `GET /admin/hero-slides` - List slides
+- ✅ `POST /admin/hero-slides` - Create slide
+- ✅ `PATCH /admin/hero-slides/[id]` - Update slide
+- ✅ `DELETE /admin/hero-slides/[id]` - Delete slide
+- ⚠️ `POST /admin/hero-slides/bulk` - Bulk actions
 
 ---
 
@@ -679,11 +679,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage blog posts  
 **APIs Required**:
 
-- ✅ `GET /api/admin/blog` - List posts
-- ✅ `POST /api/admin/blog` - Create post
-- ✅ `PATCH /api/admin/blog/[id]` - Update post
-- ✅ `DELETE /api/admin/blog/[id]` - Delete post
-- ⚠️ `POST /api/admin/blog/bulk` - Bulk actions
+- ✅ `GET /admin/blog` - List posts
+- ✅ `POST /admin/blog` - Create post
+- ✅ `PATCH /admin/blog/[id]` - Update post
+- ✅ `DELETE /admin/blog/[id]` - Delete post
+- ⚠️ `POST /admin/blog/bulk` - Bulk actions
 
 ---
 
@@ -692,11 +692,11 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Manage product returns  
 **APIs Required**:
 
-- ✅ `GET /api/admin/returns` - List returns
-- ✅ `GET /api/admin/returns/[id]` - Get return details
-- ✅ `POST /api/admin/returns/[id]/approve` - Approve return
-- ✅ `POST /api/admin/returns/[id]/reject` - Reject return
-- ⚠️ `POST /api/admin/returns/bulk` - Bulk actions
+- ✅ `GET /admin/returns` - List returns
+- ✅ `GET /admin/returns/[id]` - Get return details
+- ✅ `POST /admin/returns/[id]/approve` - Approve return
+- ✅ `POST /admin/returns/[id]/reject` - Reject return
+- ⚠️ `POST /admin/returns/bulk` - Bulk actions
 
 ---
 
@@ -705,9 +705,9 @@ curl -H "Authorization: Bearer TOKEN" \
 **Purpose**: Initialize/remove test data for testing  
 **APIs Required**:
 
-- 🔨 `POST /api/admin/test-workflow/initialize` - Create test data
-- 🔨 `POST /api/admin/test-workflow/cleanup` - Remove test data
-- 🔨 `GET /api/admin/test-workflow/status` - Get test data status
+- 🔨 `POST /admin/test-workflow/initialize` - Create test data
+- 🔨 `POST /admin/test-workflow/cleanup` - Remove test data
+- 🔨 `GET /admin/test-workflow/status` - Get test data status
 
 **Status**: 🔨 To be created
 

@@ -756,8 +756,8 @@ graph TD
 | `/api/shops/[id]`        | DELETE | Delete shop        | Owner/Admin  |
 | `/api/shops/slug/[slug]` | GET    | Get by slug        | Public       |
 | `/api/seller/shops`      | GET    | Get seller's shops | Seller       |
-| `/api/admin/shops`       | GET    | List all (admin)   | Admin        |
-| `/api/admin/shops/bulk`  | POST   | Bulk update        | Admin        |
+| `/admin/shops`           | GET    | List all (admin)   | Admin        |
+| `/admin/shops/bulk`      | POST   | Bulk update        | Admin        |
 
 ### Service Methods
 

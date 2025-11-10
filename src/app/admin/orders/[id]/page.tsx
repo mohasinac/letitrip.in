@@ -34,12 +34,12 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     loadOrder();
-  }, [params.id]);
+  }, [orderId]);
 
   const loadOrder = async () => {
     try {
       setLoading(true);
-      const data = await ordersService.getById(params.id);
+      const data = await ordersService.getById(orderId);
       setOrder(data);
     } catch (err: any) {
       setError(err.message || "Failed to load order");
@@ -568,129 +568,126 @@ export default function OrderDetailPage() {
 
       {/* Update Status Dialog */}
       <ConfirmDialog
-        open={showStatusDialog}
+        isOpen={showStatusDialog}
         onClose={() => setShowStatusDialog(false)}
         onConfirm={handleStatusUpdate}
         title="Update Order Status"
-        message={
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Status
-              </label>
-              <select
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="processing">Processing</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="refunded">Refunded</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Internal Notes (Optional)
-              </label>
-              <textarea
-                value={internalNotes}
-                onChange={(e) => setInternalNotes(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                placeholder="Add any internal notes about this status change..."
-              />
-            </div>
+        confirmLabel="Update Status"
+        cancelLabel="Cancel"
+        isLoading={saving}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              New Status
+            </label>
+            <select
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="refunded">Refunded</option>
+            </select>
           </div>
-        }
-        confirmText="Update Status"
-        cancelText="Cancel"
-        loading={saving}
-      />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Internal Notes (Optional)
+            </label>
+            <textarea
+              value={internalNotes}
+              onChange={(e) => setInternalNotes(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              placeholder="Add any internal notes about this status change..."
+            />
+          </div>
+        </div>
+      </ConfirmDialog>
 
       {/* Create Shipment Dialog */}
       <ConfirmDialog
-        open={showShipmentDialog}
+        isOpen={showShipmentDialog}
         onClose={() => setShowShipmentDialog(false)}
         onConfirm={handleCreateShipment}
         title="Create Shipment"
-        message={
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tracking Number *
-              </label>
-              <input
-                type="text"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Enter tracking number"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Shipping Provider *
-              </label>
-              <input
-                type="text"
-                value={shippingProvider}
-                onChange={(e) => setShippingProvider(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="e.g., India Post, Delhivery, Blue Dart"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Estimated Delivery (Optional)
-              </label>
-              <input
-                type="date"
-                value={estimatedDelivery}
-                onChange={(e) => setEstimatedDelivery(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
+        confirmLabel="Create Shipment"
+        cancelLabel="Cancel"
+        isLoading={saving}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tracking Number *
+            </label>
+            <input
+              type="text"
+              value={trackingNumber}
+              onChange={(e) => setTrackingNumber(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter tracking number"
+            />
           </div>
-        }
-        confirmText="Create Shipment"
-        cancelText="Cancel"
-        loading={saving}
-      />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Shipping Provider *
+            </label>
+            <input
+              type="text"
+              value={shippingProvider}
+              onChange={(e) => setShippingProvider(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="e.g., India Post, Delhivery, Blue Dart"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Estimated Delivery (Optional)
+            </label>
+            <input
+              type="date"
+              value={estimatedDelivery}
+              onChange={(e) => setEstimatedDelivery(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+      </ConfirmDialog>
 
       {/* Cancel Order Dialog */}
       <ConfirmDialog
-        open={showCancelDialog}
+        isOpen={showCancelDialog}
         onClose={() => setShowCancelDialog(false)}
         onConfirm={handleCancelOrder}
         title="Cancel Order"
-        message={
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Are you sure you want to cancel this order? This action cannot be
-              undone.
-            </p>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cancellation Reason *
-              </label>
-              <textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                placeholder="Explain why this order is being cancelled..."
-              />
-            </div>
+        confirmLabel="Cancel Order"
+        cancelLabel="Back"
+        isLoading={saving}
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Are you sure you want to cancel this order? This action cannot be
+            undone.
+          </p>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Cancellation Reason *
+            </label>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              placeholder="Explain why this order is being cancelled..."
+            />
           </div>
-        }
-        confirmText="Cancel Order"
-        cancelText="Back"
-        loading={saving}
-      />
+        </div>
+      </ConfirmDialog>
     </div>
   );
 }

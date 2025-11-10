@@ -8,7 +8,7 @@ import {
   BulkActionBar,
   TableCheckbox,
 } from "@/components/common/inline-edit";
-import { apiService } from "@/services/api.service";
+import { payoutsService } from "@/services/payouts.service";
 import { PAYOUT_FILTERS } from "@/constants/filters";
 // TODO: Add toast notifications when library is configured
 import { Eye, Download, CheckCircle, XCircle } from "lucide-react";
@@ -58,16 +58,28 @@ export default function AdminPayoutsPage() {
   const loadPayouts = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
+      const response = await payoutsService.getPayouts({
         ...filterValues,
-        page: currentPage.toString(),
-        limit: "20",
+        page: currentPage,
+        limit: 20,
       });
-      const response: any = await apiService.get(`/admin/payouts?${params}`);
-      setPayouts(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalPayouts(response.pagination?.total || 0);
-      setStats(response.stats || stats);
+      setPayouts(response.payouts || []);
+      setTotalPages(Math.ceil(response.total / response.limit));
+      setTotalPayouts(response.total);
+
+      // Load stats
+      const statsData = await payoutsService.getPayoutStats();
+      setStats({
+        total:
+          statsData.totalCompleted +
+          statsData.totalPending +
+          statsData.totalProcessing +
+          statsData.totalFailed,
+        pending: statsData.totalPending,
+        processed: statsData.totalCompleted,
+        rejected: statsData.totalFailed,
+        totalAmount: statsData.completedAmount,
+      });
     } catch (error: any) {
       // toast.error(error.message || "Failed to load payouts");
     } finally {
@@ -79,7 +91,10 @@ export default function AdminPayoutsPage() {
     if (!confirm("Process this payout?")) return;
 
     try {
-      await apiService.post(`/admin/payouts/${id}/process`, {});
+      const transactionId = prompt("Enter transaction ID:");
+      if (!transactionId) return;
+
+      await payoutsService.processPayout(id, transactionId);
       // toast.success("Payout processed");
       loadPayouts();
     } catch (error: any) {
@@ -92,7 +107,7 @@ export default function AdminPayoutsPage() {
     if (!reason) return;
 
     try {
-      await apiService.post(`/admin/payouts/${id}/reject`, { reason });
+      await payoutsService.cancelPayout(id, reason);
       // toast.success("Payout rejected");
       loadPayouts();
     } catch (error: any) {
@@ -109,12 +124,10 @@ export default function AdminPayoutsPage() {
     if (!confirm(`Process ${selectedPayouts.size} payouts?`)) return;
 
     try {
-      await Promise.all(
-        Array.from(selectedPayouts).map((id) =>
-          apiService.post(`/admin/payouts/${id}/process`, {})
-        )
+      const result = await payoutsService.bulkProcess(
+        Array.from(selectedPayouts)
       );
-      // toast.success(`${selectedPayouts.size} payouts processed`);
+      // toast.success(`${result.success} payouts processed, ${result.failed} failed`);
       setSelectedPayouts(new Set());
       loadPayouts();
     } catch (error: any) {

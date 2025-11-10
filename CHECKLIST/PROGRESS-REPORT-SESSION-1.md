@@ -128,7 +128,7 @@ Successfully implemented **80% of Phase 1B: Support Tickets Enhancement** in a s
 
 ### 3. Admin Ticket Management (70% Complete)
 
-#### **GET `/api/admin/tickets`** - List All Tickets (Admin)
+#### **GET `/admin/tickets`** - List All Tickets (Admin)
 
 - ✅ Admin role check
 - ✅ Fetch all tickets (no ownership filter)
@@ -140,7 +140,7 @@ Successfully implemented **80% of Phase 1B: Support Tickets Enhancement** in a s
 - ✅ Sort by createdAt (desc)
 - ✅ Comprehensive response with stats
 
-#### **GET `/api/admin/tickets/[id]`** - Get Ticket (Admin)
+#### **GET `/admin/tickets/[id]`** - Get Ticket (Admin)
 
 - ✅ Admin role check
 - ✅ Fetch any ticket (no ownership restriction)
@@ -149,7 +149,7 @@ Successfully implemented **80% of Phase 1B: Support Tickets Enhancement** in a s
 - ✅ Timestamp conversion
 - ✅ Complete ticket data
 
-#### **PATCH `/api/admin/tickets/[id]`** - Update Ticket
+#### **PATCH `/admin/tickets/[id]`** - Update Ticket
 
 - ✅ Admin role check
 - ✅ Update status, assignedTo, priority
@@ -157,7 +157,7 @@ Successfully implemented **80% of Phase 1B: Support Tickets Enhancement** in a s
 - ✅ Update timestamp
 - ✅ Flexible update (only provided fields)
 
-#### **POST `/api/admin/tickets/[id]/reply`** - Admin Reply
+#### **POST `/admin/tickets/[id]/reply`** - Admin Reply
 
 - ✅ Admin role check
 - ✅ Message validation
@@ -284,9 +284,9 @@ support_tickets/
 2. `src/app/api/support/tickets/route.ts` - List tickets API
 3. `src/app/api/support/tickets/[id]/route.ts` - Get ticket details API
 4. `src/app/api/support/tickets/[id]/reply/route.ts` - Reply to ticket API
-5. `src/app/api/admin/tickets/route.ts` - Admin list tickets API
-6. `src/app/api/admin/tickets/[id]/route.ts` - Admin get/update ticket API
-7. `src/app/api/admin/tickets/[id]/reply/route.ts` - Admin reply API
+5. `src/app/admin/tickets/route.ts` - Admin list tickets API
+6. `src/app/admin/tickets/[id]/route.ts` - Admin get/update ticket API
+7. `src/app/admin/tickets/[id]/reply/route.ts` - Admin reply API
 8. `src/app/user/tickets/page.tsx` - User tickets list page
 9. `src/app/user/tickets/[id]/page.tsx` - User ticket details page
 10. `src/app/admin/tickets/page.tsx` - Admin tickets management page

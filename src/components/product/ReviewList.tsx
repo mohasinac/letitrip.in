@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
-import { apiService } from "@/services/api.service";
+import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
 
 interface Review {
@@ -38,7 +38,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"recent" | "helpful" | "rating">(
-    "recent",
+    "recent"
   );
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
@@ -49,31 +49,34 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const loadReviews = async () => {
     setLoading(true);
     try {
-      const response: any = await apiService.get(
-        `/api/reviews?product_id=${productId}&limit=20`,
-      );
+      const response = await reviewsService.list({
+        productId,
+        rating: filterRating || undefined,
+        sortBy:
+          sortBy === "helpful"
+            ? "helpfulCount"
+            : sortBy === "rating"
+            ? "rating"
+            : "createdAt",
+        sortOrder: "desc",
+        limit: 20,
+      });
 
-      let reviewsList = response.reviews || [];
+      setReviews(response.data as any);
 
-      // Apply rating filter
-      if (filterRating) {
-        reviewsList = reviewsList.filter(
-          (r: Review) => r.rating === filterRating,
-        );
-      }
-
-      // Apply sort
-      if (sortBy === "helpful") {
-        reviewsList.sort(
-          (a: Review, b: Review) => b.helpful_count - a.helpful_count,
-        );
-      } else if (sortBy === "rating") {
-        reviewsList.sort((a: Review, b: Review) => b.rating - a.rating);
-      }
-      // "recent" is default from API (orderBy created_at desc)
-
-      setReviews(reviewsList);
-      setStats(response.stats);
+      // Load stats
+      const statsData = await reviewsService.getSummary({ productId });
+      setStats({
+        totalReviews: statsData.totalReviews,
+        averageRating: statsData.averageRating,
+        ratingDistribution: statsData.ratingDistribution.reduce(
+          (acc: any, item: any) => {
+            acc[item.rating] = item.count;
+            return acc;
+          },
+          {}
+        ),
+      });
     } catch (error) {
       console.error("Failed to load reviews:", error);
     } finally {
@@ -83,13 +86,13 @@ export default function ReviewList({ productId }: ReviewListProps) {
 
   const handleMarkHelpful = async (reviewId: string) => {
     try {
-      await apiService.post(`/reviews/${reviewId}/helpful`, {});
+      const result = await reviewsService.markHelpful(reviewId);
 
       // Update local state
       setReviews(
         reviews.map((r) =>
-          r.id === reviewId ? { ...r, helpful_count: r.helpful_count + 1 } : r,
-        ),
+          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r
+        )
       );
     } catch (error: any) {
       console.error("Failed to mark as helpful:", error);
