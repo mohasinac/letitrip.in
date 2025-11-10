@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { memoryCache } from "@/lib/memory-cache";
 
 interface CacheEntry {
   data: any;
@@ -6,25 +7,8 @@ interface CacheEntry {
   etag: string;
 }
 
-// In-memory cache store (consider using Redis in production)
-const cacheStore = new Map<string, CacheEntry>();
-
-// Cleanup old entries every 10 minutes
-setInterval(
-  () => {
-    const now = Date.now();
-    cacheStore.forEach((entry, key) => {
-      if (now - entry.timestamp > 3600000) {
-        // 1 hour default TTL
-        cacheStore.delete(key);
-      }
-    });
-  },
-  10 * 60 * 1000,
-);
-
 interface CacheConfig {
-  ttl?: number; // Time to live in milliseconds
+  ttl?: number; // Time to live in seconds
   key?: string; // Custom cache key
   revalidate?: number; // Next.js revalidation time
 }
@@ -42,7 +26,7 @@ function generateETag(data: any): string {
 
 export function cache(config: CacheConfig = {}) {
   const {
-    ttl = 300000, // 5 minutes default
+    ttl = 300, // 5 minutes default (in seconds)
     key: customKey,
   } = config;
 
@@ -51,14 +35,8 @@ export function cache(config: CacheConfig = {}) {
       const url = new URL(req.url);
       const cacheKey = customKey || `cache:${url.pathname}${url.search}`;
 
-      const cached = cacheStore.get(cacheKey);
+      const cached = memoryCache.get(cacheKey) as CacheEntry | null;
       if (!cached) return null;
-
-      const now = Date.now();
-      if (now - cached.timestamp > ttl) {
-        cacheStore.delete(cacheKey);
-        return null;
-      }
 
       // Check ETag
       const ifNoneMatch = req.headers.get("if-none-match");
@@ -74,25 +52,25 @@ export function cache(config: CacheConfig = {}) {
       const cacheKey = customKey || `cache:${url.pathname}${url.search}`;
 
       const etag = generateETag(data);
-      cacheStore.set(cacheKey, {
+      const entry: CacheEntry = {
         data,
         timestamp: Date.now(),
         etag,
-      });
+      };
+      
+      memoryCache.set(cacheKey, entry, ttl);
     },
 
     invalidate: (pattern?: string): void => {
       if (!pattern) {
-        cacheStore.clear();
+        memoryCache.clear();
         return;
       }
 
-      const regex = new RegExp(pattern);
-      cacheStore.forEach((_, key) => {
-        if (regex.test(key)) {
-          cacheStore.delete(key);
-        }
-      });
+      // Pattern-based invalidation not supported in FREE cache
+      // Clear all cache instead
+      console.warn('[Cache] Pattern-based invalidation not supported, clearing all cache');
+      memoryCache.clear();
     },
   };
 }

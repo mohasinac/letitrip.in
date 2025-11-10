@@ -9,12 +9,6 @@
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    // Initialize Sentry for error monitoring
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      const { initSentry } = await import("./src/lib/sentry");
-      initSentry();
-    }
-
     // Import and initialize server-side services
     const { initializeServer } = await import("./src/lib/server-init");
     initializeServer();
