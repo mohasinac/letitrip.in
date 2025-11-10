@@ -35,6 +35,11 @@ import type { Shop } from "@/types";
 import { SHOP_FILTERS } from "@/constants/filters";
 import { getShopBulkActions } from "@/constants/bulk-actions";
 import { useIsMobile } from "@/hooks/useMobile";
+import {
+  SHOP_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 
 export default function AdminShopsPage() {
   const { user, isAdmin } = useAuth();
@@ -92,25 +97,10 @@ export default function AdminShopsPage() {
     }
   };
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    { key: "name", label: "Name", type: "text", required: true },
-    {
-      key: "isVerified",
-      label: "Verified",
-      type: "checkbox",
-    },
-    {
-      key: "isFeatured",
-      label: "Featured",
-      type: "checkbox",
-    },
-    {
-      key: "showOnHomepage",
-      label: "Show on Homepage",
-      type: "checkbox",
-    },
-  ];
+  // Fields configuration for inline edit - using centralized config
+  const fields: InlineField[] = toInlineFields(
+    getFieldsForContext(SHOP_FIELDS, "table")
+  );
 
   // Bulk actions configuration
   const bulkActions = getShopBulkActions(selectedIds.length);

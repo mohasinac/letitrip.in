@@ -28,6 +28,11 @@ import {
 } from "@/components/common/inline-edit";
 import { getCategoryBulkActions } from "@/constants/bulk-actions";
 import { categoriesService } from "@/services/categories.service";
+import {
+  CATEGORY_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 
 interface Category {
   id: string;
@@ -65,29 +70,29 @@ export default function CategoriesPage() {
     }
   }, [user, isAdmin]);
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    { key: "image", label: "Image", type: "image", required: false },
-    { key: "name", label: "Name", type: "text", required: true },
-    {
-      key: "parent_id",
-      label: "Parent",
-      type: "select",
-      required: false,
-      options: [
-        { value: "", label: "None (Root Category)" },
-        ...categories
-          .filter((c) => c.id !== editingId) // Prevent self-parent
-          .map((c) => ({
-            value: c.id,
-            label: c.name,
-          })),
-      ],
-    },
-    { key: "is_featured", label: "Featured", type: "checkbox" },
-    { key: "show_on_homepage", label: "Show on Homepage", type: "checkbox" },
-    { key: "is_active", label: "Active", type: "checkbox" },
-  ];
+  // Fields configuration for inline edit - using centralized config
+  const baseFields = toInlineFields(
+    getFieldsForContext(CATEGORY_FIELDS, "table")
+  );
+
+  // Update parent category options dynamically
+  const fields: InlineField[] = baseFields.map((field) => {
+    if (field.key === "parentId") {
+      return {
+        ...field,
+        options: [
+          { value: "", label: "None (Root Category)" },
+          ...categories
+            .filter((c) => c.id !== editingId) // Prevent self-parent
+            .map((c) => ({
+              value: c.id,
+              label: c.name,
+            })),
+        ],
+      };
+    }
+    return field;
+  });
 
   // Bulk actions configuration
   const bulkActions = getCategoryBulkActions(selectedIds.length);

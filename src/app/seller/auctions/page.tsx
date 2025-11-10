@@ -30,6 +30,11 @@ import {
 } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { getAuctionBulkActions } from "@/constants/bulk-actions";
+import {
+  AUCTION_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
@@ -72,44 +77,10 @@ export default function SellerAuctionsPage() {
     }
   };
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    { key: "images", label: "Image", type: "image", required: false },
-    { key: "name", label: "Auction Name", type: "text", required: true },
-    {
-      key: "startingBid",
-      label: "Starting Bid (₹)",
-      type: "number",
-      required: true,
-      min: 0,
-      step: 1,
-    },
-    {
-      key: "startTime",
-      label: "Start Time",
-      type: "date",
-      required: true,
-    },
-    {
-      key: "endTime",
-      label: "End Time",
-      type: "date",
-      required: true,
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "select",
-      required: true,
-      options: [
-        { value: "draft", label: "Draft" },
-        { value: "scheduled", label: "Scheduled" },
-        { value: "live", label: "Live" },
-        { value: "ended", label: "Ended" },
-        { value: "cancelled", label: "Cancelled" },
-      ],
-    },
-  ];
+  // Fields configuration for inline edit (using centralized config)
+  const fields: InlineField[] = toInlineFields(
+    getFieldsForContext(AUCTION_FIELDS, "table")
+  );
 
   // Bulk actions configuration
   const bulkActions = getAuctionBulkActions(selectedIds.length);

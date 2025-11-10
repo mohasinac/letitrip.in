@@ -22,6 +22,11 @@ import {
   TableCheckbox,
 } from "@/components/common/inline-edit";
 import { getHeroSlideBulkActions } from "@/constants/bulk-actions";
+import {
+  HERO_SLIDE_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 import { InlineField, BulkAction } from "@/types/inline-edit";
 
 interface HeroSlide {
@@ -48,51 +53,10 @@ export default function HeroSlidesPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [draggedSlide, setDraggedSlide] = useState<string | null>(null);
 
-  // Field configuration for inline edit and quick create
-  const fields: InlineField[] = [
-    {
-      key: "title",
-      type: "text",
-      label: "Title",
-      required: true,
-      placeholder: "Main headline",
-    },
-    {
-      key: "subtitle",
-      type: "text",
-      label: "Subtitle",
-      placeholder: "Secondary text",
-    },
-    {
-      key: "image_url",
-      type: "image",
-      label: "Image",
-      required: true,
-      placeholder: "shop",
-    },
-    {
-      key: "link_url",
-      type: "url",
-      label: "Link URL",
-      placeholder: "https://...",
-    },
-    {
-      key: "cta_text",
-      type: "text",
-      label: "CTA Text",
-      placeholder: "Shop Now",
-    },
-    {
-      key: "is_active",
-      type: "checkbox",
-      label: "Active",
-    },
-    {
-      key: "show_in_carousel",
-      type: "checkbox",
-      label: "Show in Carousel",
-    },
-  ];
+  // Field configuration for inline edit and quick create (using centralized config)
+  const fields: InlineField[] = toInlineFields(
+    getFieldsForContext(HERO_SLIDE_FIELDS, "table")
+  );
 
   // Bulk actions configuration
   const bulkActions = getHeroSlideBulkActions(selectedIds.length);

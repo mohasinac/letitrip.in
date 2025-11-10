@@ -28,16 +28,17 @@
 
 ### Phase 1A: Documentation & Infrastructure (DONE)
 
-- [x] **Field Configuration System** (`src/constants/form-fields.ts`)
+- [x] **Field Configuration System** (`src/constants/form-fields.ts`) - NOW ACTUALLY CREATED!
 
-  - [x] Product fields (12 fields: name, SKU, price, stock, category, status, image, description, brand, weight, salePrice, lowStockThreshold)
-  - [x] Auction fields (11 fields: name, startingBid, reservePrice, bidIncrement, buyNowPrice, startTime, endTime, status, image, category, type)
-  - [x] Category fields (12 fields: name, slug, parent, description, image, icon, displayOrder, featured, homepage, active, metaTitle, metaDescription)
-  - [x] Shop fields (13 fields: name, slug, description, logo, banner, location, email, phone, address, verified, featured, homepage, banned)
-  - [x] User fields, Order fields, Coupon fields
-  - [x] Hero Slide fields, Blog Post fields, Review fields, Support Ticket fields
-  - [x] Built-in validators (required, min, max, minLength, maxLength, email, url, phone, pattern)
-  - [x] Custom validator support
+  - [x] Product fields (12 fields: name, sku, price, compareAtPrice, stockCount, lowStockThreshold, category, status, description, brand, weight, isFeatured)
+  - [x] Auction fields (11 fields: title, startingBid, reservePrice, bidIncrement, buyoutPrice, startDate, endDate, status, category, description, isFeatured)
+  - [x] Category fields (11 fields: name, slug, parentId, description, icon, displayOrder, isFeatured, showOnHomepage, isActive, metaTitle, metaDescription)
+  - [x] Shop fields (11 fields: name, slug, description, location, email, phone, address, isVerified, isFeatured, showOnHomepage, isBanned)
+  - [x] User fields (5 fields: name, email, phone, role, isBanned)
+  - [x] Coupon fields (8 fields: code, discountType, discountValue, minPurchase, maxDiscount, usageLimit, expiresAt, isActive)
+  - [x] Helper functions (getFieldsForContext, getFieldsForWizardStep, getFieldsByGroup, toInlineField, toInlineFields)
+  - [x] TypeScript interfaces (FormField, FieldValidator, FieldOption, FieldType, ValidatorType)
+  - [x] Context flags (showInTable, showInQuickCreate, showInWizard, wizardStep, group)
 
 - [x] **Validation Utilities** (`src/lib/validation.ts`)
 
@@ -329,12 +330,12 @@
 
 - [x] **Test Data Service** (`src/services/test-data.service.ts`)
 
-  - [x] `generateTestProducts(count, userId, shopId)` - Create test products with TEST_ prefix
-  - [x] `generateTestAuctions(count, userId, shopId)` - Create test auctions with TEST_ prefix
-  - [x] `generateTestOrders(count, userId)` - Create test orders with TEST_ORD_ prefix
+  - [x] `generateTestProducts(count, userId, shopId)` - Create test products with TEST\_ prefix
+  - [x] `generateTestAuctions(count, userId, shopId)` - Create test auctions with TEST\_ prefix
+  - [x] `generateTestOrders(count, userId)` - Create test orders with TEST*ORD* prefix
   - [x] `generateTestReviews(count, userId, productId)` - Create test reviews
-  - [x] `generateTestTickets(count, userId)` - Create support tickets with TEST_ prefix
-  - [x] `generateTestShop(userId)` - Create shop for seller with TEST_SHOP_ prefix
+  - [x] `generateTestTickets(count, userId)` - Create support tickets with TEST\_ prefix
+  - [x] `generateTestShop(userId)` - Create shop for seller with TEST*SHOP* prefix
   - [x] `generateTestCategories()` - Create 3 test category tree
   - [x] `generateTestCoupons(count, shopId)` - Create coupons with TEST_COUP prefix
   - [x] `cleanupTestData()` - Delete all TEST\_ prefixed resources
@@ -353,7 +354,7 @@
   - [x] POST `/api/admin/test-workflow/shop` - Create single test shop (admin auth, returns shop ID)
   - [x] POST `/api/admin/test-workflow/categories` - Create test categories (admin auth, creates 3 parent + 9 child categories)
   - [x] POST `/api/admin/test-workflow/coupons` - Bulk create test coupons (admin auth, count validation, returns IDs)
-  - [x] POST `/api/admin/test-workflow/cleanup` - Delete all TEST_ data (admin auth, returns deletion counts)
+  - [x] POST `/api/admin/test-workflow/cleanup` - Delete all TEST\_ data (admin auth, returns deletion counts)
   - [x] GET `/api/admin/test-workflow/status` - Get test data counts (admin auth, returns TestDataCounts)
   - [x] POST `/api/admin/test-workflow/execute` - Execute test workflows (admin auth, 5 workflow skeletons)
 
@@ -370,14 +371,29 @@
 
 ### Phase 4: Update Inline Forms with Field Configs
 
+#### Form Validation Utility
+
+- [x] **Create Validation Utility** (`src/lib/form-validation.ts`) ✅ COMPLETE
+  - [x] `validateField(value, field)` - Validate single field (272 lines total)
+  - [x] `validateForm(values, fields)` - Validate entire form
+  - [x] `validateFields(values, fields, fieldKeys)` - Validate specific fields
+  - [x] `getFirstError(errors)` - Get first error message
+  - [x] `formatErrors(errors)` - Format errors for display
+  - [x] `sanitizeInput(value)` - XSS prevention
+  - [x] `validateAndSanitize(value, field)` - Combined validation + sanitization
+  - [x] Supports all 10 validator types (required, email, url, phone, min, max, minLength, maxLength, pattern, custom)
+  - [x] User-friendly error messages
+  - [x] Type-safe with TypeScript
+
 #### Admin Products Page
 
-- [ ] **Replace inline fields with config** (`/admin/products/page.tsx`)
-  - [ ] Import `PRODUCT_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array with config
-  - [ ] Add field validation on save
-  - [ ] Show validation errors inline
-  - [ ] Test create/edit/delete
+- [x] **Replace inline fields with config** (`/admin/products/page.tsx`)
+  - [x] Import `PRODUCT_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array with config
+  - [x] Using `getFieldsForContext()` and `toInlineFields()` helpers
+  - [ ] Add field validation on save (TODO)
+  - [ ] Show validation errors inline (TODO)
+  - [ ] Test create/edit/delete (TODO)
 
 #### Admin Auctions Page
 
@@ -389,27 +405,28 @@
 
 #### Admin Categories Page
 
-- [ ] **Replace inline fields with config** (`/admin/categories/page.tsx`)
-  - [ ] Import `CATEGORY_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/admin/categories/page.tsx`)
+  - [x] Import `CATEGORY_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array with config
+  - [x] Dynamic parent category options
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 #### Admin Shops Page
 
-- [ ] **Replace inline fields with config** (`/admin/shops/page.tsx`)
-  - [ ] Import `SHOP_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/admin/shops/page.tsx`)
+  - [x] Import `SHOP_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array with config
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 #### Admin Users Page
 
-- [ ] **Replace inline fields with config** (`/admin/users/page.tsx`)
-  - [ ] Import `USER_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/admin/users/page.tsx`)
+  - [x] Import `USER_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array with config
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 #### Admin Coupons Page
 
@@ -421,27 +438,28 @@
 
 #### Admin Hero Slides Page
 
-- [ ] **Replace inline fields with config** (`/admin/hero-slides/page.tsx`)
-  - [ ] Import `HERO_SLIDE_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/admin/hero-slides/page.tsx`)
+  - [x] Created `HERO_SLIDE_FIELDS` in form-fields.ts (8 fields)
+  - [x] Import `HERO_SLIDE_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array (7 fields → 8 fields from config)
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 #### Seller Products Page
 
-- [ ] **Replace inline fields with config** (`/seller/products/page.tsx`)
-  - [ ] Import `PRODUCT_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/seller/products/page.tsx`)
+  - [x] Import `PRODUCT_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array (6 fields → config with dynamic categories)
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 #### Seller Auctions Page
 
-- [ ] **Replace inline fields with config** (`/seller/auctions/page.tsx`)
-  - [ ] Import `AUCTION_FIELDS` from `@/constants/form-fields`
-  - [ ] Replace hardcoded fields array
-  - [ ] Add validation on save
-  - [ ] Show errors inline
+- [x] **Replace inline fields with config** (`/seller/auctions/page.tsx`)
+  - [x] Import `AUCTION_FIELDS` from `@/constants/form-fields`
+  - [x] Replace hardcoded fields array (6 fields → config)
+  - [ ] Add validation on save (TODO)
+  - [ ] Show errors inline (TODO)
 
 ---
 

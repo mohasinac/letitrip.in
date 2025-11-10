@@ -100,36 +100,10 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    { key: "name", label: "Name", type: "text", required: true },
-    {
-      key: "price",
-      label: "Price (₹)",
-      type: "number",
-      required: true,
-      min: 0,
-    },
-    {
-      key: "stockCount",
-      label: "Stock",
-      type: "number",
-      required: true,
-      min: 0,
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "select",
-      required: true,
-      options: [
-        { value: "draft", label: "Draft" },
-        { value: "published", label: "Published" },
-        { value: "archived", label: "Archived" },
-        { value: "out-of-stock", label: "Out of Stock" },
-      ],
-    },
-  ];
+  // Fields configuration for inline edit - using centralized config
+  const fields: InlineField[] = toInlineFields(
+    getFieldsForContext(PRODUCT_FIELDS, "table")
+  );
 
   // Bulk actions configuration
   const bulkActions = getProductBulkActions(selectedIds.length);

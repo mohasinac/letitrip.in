@@ -26,6 +26,11 @@ import {
 } from "@/components/common/inline-edit";
 import { getUserBulkActions } from "@/constants/bulk-actions";
 import { apiService } from "@/services/api.service";
+import {
+  USER_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 
 interface User {
   id: string;
@@ -98,25 +103,10 @@ export default function AdminUsersPage() {
     }
   }, [currentUser, isAdmin, roleFilter, statusFilter]);
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    {
-      key: "role",
-      label: "Role",
-      type: "select",
-      required: true,
-      options: [
-        { value: "user", label: "User" },
-        { value: "seller", label: "Seller" },
-        { value: "admin", label: "Admin" },
-      ],
-    },
-    {
-      key: "is_banned",
-      label: "Banned",
-      type: "checkbox",
-    },
-  ];
+  // Fields configuration for inline edit - using centralized config
+  const fields: InlineField[] = toInlineFields(
+    getFieldsForContext(USER_FIELDS, "table")
+  );
 
   // Bulk actions configuration
   const bulkActions = getUserBulkActions(selectedIds.length);

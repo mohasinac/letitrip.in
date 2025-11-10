@@ -27,6 +27,11 @@ import { productsService } from "@/services/products.service";
 import { apiService } from "@/services/api.service";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { getProductBulkActions } from "@/constants/bulk-actions";
+import {
+  PRODUCT_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { Product } from "@/types";
 import { API_ROUTES } from "@/constants/api-routes";
@@ -91,44 +96,20 @@ export default function ProductsPage() {
     }
   };
 
-  // Fields configuration for inline edit
-  const fields: InlineField[] = [
-    { key: "images", label: "Image", type: "image", required: false },
-    { key: "name", label: "Product Name", type: "text", required: true },
-    {
-      key: "price",
-      label: "Price (₹)",
-      type: "number",
-      required: true,
-      min: 0,
-      step: 0.01,
-    },
-    {
-      key: "stockCount",
-      label: "Stock",
-      type: "number",
-      required: true,
-      min: 0,
-    },
-    {
-      key: "categoryId",
-      label: "Category",
-      type: "select",
-      required: true,
-      options: categories.map((cat) => ({ value: cat.id, label: cat.name })),
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "select",
-      required: true,
-      options: [
-        { value: "draft", label: "Draft" },
-        { value: "published", label: "Published" },
-        { value: "archived", label: "Archived" },
-      ],
-    },
-  ];
+  // Fields configuration for inline edit (using centralized config)
+  const baseFields = toInlineFields(
+    getFieldsForContext(PRODUCT_FIELDS, "table")
+  );
+  const fields: InlineField[] = baseFields.map((field) => {
+    // Add dynamic category options
+    if (field.key === "category") {
+      return {
+        ...field,
+        options: categories.map((cat) => ({ value: cat.id, label: cat.name })),
+      };
+    }
+    return field;
+  });
 
   // Bulk actions configuration
   const bulkActions = getProductBulkActions(selectedIds.length);

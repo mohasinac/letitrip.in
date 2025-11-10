@@ -815,6 +815,91 @@ export const COUPON_FIELDS: FormField[] = [
   },
 ];
 
+// ==================== HERO SLIDE FIELDS ====================
+
+export const HERO_SLIDE_FIELDS: FormField[] = [
+  {
+    key: "title",
+    label: "Title",
+    type: "text",
+    placeholder: "Main headline",
+    required: true,
+    showInTable: true,
+    showInQuickCreate: true,
+    group: "content",
+  },
+  {
+    key: "subtitle",
+    label: "Subtitle",
+    type: "text",
+    placeholder: "Secondary text",
+    showInTable: false,
+    showInQuickCreate: true,
+    group: "content",
+  },
+  {
+    key: "image_url",
+    label: "Image",
+    type: "image",
+    placeholder: "shop",
+    required: true,
+    showInTable: true,
+    showInQuickCreate: true,
+    group: "media",
+  },
+  {
+    key: "link_url",
+    label: "Link URL",
+    type: "url",
+    placeholder: "https://...",
+    showInTable: false,
+    showInQuickCreate: true,
+    validators: [
+      { type: "url", message: "Must be a valid URL" },
+    ],
+    group: "content",
+  },
+  {
+    key: "cta_text",
+    label: "CTA Text",
+    type: "text",
+    placeholder: "Shop Now",
+    showInTable: false,
+    showInQuickCreate: true,
+    group: "content",
+  },
+  {
+    key: "display_order",
+    label: "Display Order",
+    type: "number",
+    placeholder: "0",
+    min: 0,
+    defaultValue: 0,
+    helpText: "Lower numbers appear first",
+    showInTable: true,
+    showInQuickCreate: false,
+    group: "settings",
+  },
+  {
+    key: "is_active",
+    label: "Active",
+    type: "checkbox",
+    defaultValue: true,
+    showInTable: true,
+    showInQuickCreate: true,
+    group: "settings",
+  },
+  {
+    key: "show_in_carousel",
+    label: "Show in Carousel",
+    type: "checkbox",
+    defaultValue: true,
+    showInTable: true,
+    showInQuickCreate: false,
+    group: "settings",
+  },
+];
+
 // ==================== HELPER FUNCTIONS ====================
 
 /**
