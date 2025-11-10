@@ -5,7 +5,7 @@ import {
   setSessionCookie,
   clearSessionCookie,
 } from "../../lib/session";
-import { authRateLimiter } from "@/lib/rate-limiter";
+import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import bcrypt from "bcryptjs";
 
 interface RegisterRequestBody {

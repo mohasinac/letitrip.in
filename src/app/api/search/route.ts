@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { apiRateLimiter } from "@/lib/rate-limiter";
+import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 
 // Utility: safely get number from query
 function toNumber(value: string | null, fallback: number): number {

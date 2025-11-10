@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { resolveShopSlug } from "@/lib/shop-slug-resolver";
+import { resolveShopSlug } from "@/app/api/lib/utils/shop-slug-resolver";
 
 /**
  * Validate Coupon Code Uniqueness

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
-import { strictRateLimiter } from "@/lib/rate-limiter";
+import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { z } from "zod";
 import crypto from "crypto";
 

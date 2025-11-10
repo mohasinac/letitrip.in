@@ -18,10 +18,40 @@
         "group": ["**/firebase/app", "@/app/api/lib/firebase/app"],
         "importNames": ["auth"],
         "message": "❌ Firebase Auth must be used server-side only. Authentication is handled via API routes. Only Realtime Database (for bidding) is allowed on client."
+      }, {
+        "group": ["firebase/firestore"],
+        "message": "❌ Firestore must be used server-side only (via firebase-admin). ALL database operations go through API routes. Use feature services (e.g., productsService) instead."
+      }, {
+        "group": ["firebase/storage"],
+        "message": "❌ Firebase Storage must be used server-side only. ALL file uploads go through API routes. Use mediaService.upload() instead."
+      }, {
+        "group": ["firebase/auth"],
+        "message": "❌ Firebase Auth SDK must be used server-side only. Use authService (which calls API routes) instead."
       }],
       "paths": [{
         "name": "@/services/api.service",
         "message": "❌ Direct apiService imports not allowed in components/pages/hooks. Use feature-specific services (e.g., productsService, authService)."
+      }, {
+        "name": "@/lib/socket-server",
+        "message": "❌ socket-server is server-side only. Moved to @/app/api/lib/utils/socket-server."
+      }, {
+        "name": "@/lib/auction-scheduler",
+        "message": "❌ auction-scheduler is server-side only. Moved to @/app/api/lib/utils/auction-scheduler."
+      }, {
+        "name": "@/lib/rate-limiter",
+        "message": "❌ rate-limiter is server-side only. Moved to @/app/api/lib/utils/rate-limiter."
+      }, {
+        "name": "@/lib/memory-cache",
+        "message": "❌ memory-cache is server-side only. Moved to @/app/api/lib/utils/memory-cache."
+      }, {
+        "name": "@/lib/discord-notifier",
+        "message": "❌ discord-notifier is server-side only. Moved to @/app/api/lib/utils/discord-notifier."
+      }, {
+        "name": "@/lib/shop-slug-resolver",
+        "message": "❌ shop-slug-resolver is server-side only. Moved to @/app/api/lib/utils/shop-slug-resolver."
+      }, {
+        "name": "@/lib/server-init",
+        "message": "❌ server-init is server-side only. Moved to @/app/api/lib/utils/server-init."
       }]
     }],
 

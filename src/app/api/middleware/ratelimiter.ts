@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiRateLimiter, authRateLimiter, strictRateLimiter } from "@/lib/rate-limiter";
+import { apiRateLimiter, authRateLimiter, strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 
 interface RateLimitConfig {
   maxRequests?: number;

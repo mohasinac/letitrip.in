@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { memoryCache } from "@/lib/memory-cache";
+import { memoryCache } from "@/app/api/lib/utils/memory-cache";
 
 interface CacheEntry {
   data: any;

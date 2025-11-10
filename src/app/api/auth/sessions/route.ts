@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiRateLimiter } from "@/lib/rate-limiter";
+import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { requireAuth, AuthenticatedRequest } from "../../middleware/auth";
 import {
   getUserSessions,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { manualProcessAuctions } from "@/lib/auction-scheduler";
+import { manualProcessAuctions } from "@/app/api/lib/utils/auction-scheduler";
 import { getCurrentUser } from "../../lib/session";
 
 /**
