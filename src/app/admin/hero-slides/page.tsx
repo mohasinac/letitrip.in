@@ -239,15 +239,19 @@ export default function HeroSlidesPage() {
       )}
 
       {/* Bulk Action Bar */}
-      <BulkActionBar
-        selectedCount={selectedIds.length}
-        actions={bulkActions}
-        onAction={handleBulkAction}
-        onClearSelection={() => setSelectedIds([])}
-        loading={actionLoading}
-        resourceName="slide"
-        totalCount={slides.length}
-      />
+      {selectedIds.length > 0 && (
+        <div className="sticky top-16 z-10 mb-4">
+          <BulkActionBar
+            selectedCount={selectedIds.length}
+            actions={bulkActions}
+            onAction={handleBulkAction}
+            onClearSelection={() => setSelectedIds([])}
+            loading={actionLoading}
+            resourceName="slide"
+            totalCount={slides.length}
+          />
+        </div>
+      )}
 
       {/* Slides Table */}
       {slides.length === 0 && !loading ? (

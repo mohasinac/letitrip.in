@@ -38,6 +38,7 @@ import {
 import type { Product, ProductStatus } from "@/types";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
+import { PRODUCT_FIELDS, getFieldsForContext, toInlineFields } from "@/constants/form-fields";
 
 export default function AdminProductsPage() {
   const { user, isAdmin } = useAuth();
@@ -325,6 +326,20 @@ export default function AdminProductsPage() {
           Filters {showFilters ? "▲" : "▼"}
         </button>
       </div>
+
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="sticky top-16 z-10 mb-4">
+          <BulkActionBar
+            selectedCount={selectedIds.length}
+            actions={bulkActions}
+            onAction={handleBulkAction}
+            onClearSelection={() => setSelectedIds([])}
+            loading={actionLoading}
+            resourceName="product"
+          />
+        </div>
+      )}
 
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
@@ -711,18 +726,6 @@ export default function AdminProductsPage() {
           />
         )}
       </div>
-
-      {/* Bulk Action Bar */}
-      {selectedIds.length > 0 && (
-        <BulkActionBar
-          selectedCount={selectedIds.length}
-          actions={bulkActions}
-          onAction={handleBulkAction}
-          onClearSelection={() => setSelectedIds([])}
-          loading={actionLoading}
-          resourceName="product"
-        />
-      )}
 
       {/* Delete Confirmation */}
       <ConfirmDialog

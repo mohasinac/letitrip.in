@@ -188,33 +188,15 @@ export default function AdminReviewsPage() {
 
             {/* Bulk Action Bar */}
             {selectedReviews.size > 0 && (
-              <div className="mb-4 bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  {selectedReviews.size} reviews selected
-                </span>
-                <div className="flex gap-2">
-                  {bulkActions.map((action) => (
-                    <button
-                      key={action.id}
-                      onClick={() => handleBulkAction(action.id)}
-                      className={`px-4 py-2 rounded-lg ${
-                        action.variant === "danger"
-                          ? "bg-red-600 text-white hover:bg-red-700"
-                          : action.variant === "success"
-                          ? "bg-green-600 text-white hover:bg-green-700"
-                          : "bg-indigo-600 text-white hover:bg-indigo-700"
-                      }`}
-                    >
-                      {action.label}
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => setSelectedReviews(new Set())}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                  >
-                    Clear
-                  </button>
-                </div>
+              <div className="sticky top-16 z-10 mb-4">
+                <BulkActionBar
+                  selectedCount={selectedReviews.size}
+                  actions={bulkActions}
+                  onAction={handleBulkAction}
+                  onClearSelection={() => setSelectedReviews(new Set())}
+                  loading={false}
+                  resourceName="review"
+                />
               </div>
             )}
 

@@ -200,24 +200,21 @@ export default function AdminPayoutsPage() {
 
             {/* Bulk Action Bar */}
             {selectedPayouts.size > 0 && (
-              <div className="mb-4 bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  {selectedPayouts.size} payouts selected
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleBulkProcess}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    Process Selected
-                  </button>
-                  <button
-                    onClick={() => setSelectedPayouts(new Set())}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                  >
-                    Clear
-                  </button>
-                </div>
+              <div className="sticky top-16 z-10 mb-4">
+                <BulkActionBar
+                  selectedCount={selectedPayouts.size}
+                  actions={[
+                    {
+                      id: "process",
+                      label: "Process Selected",
+                      variant: "success",
+                    },
+                  ]}
+                  onAction={handleBulkProcess}
+                  onClearSelection={() => setSelectedPayouts(new Set())}
+                  loading={false}
+                  resourceName="payout"
+                />
               </div>
             )}
 

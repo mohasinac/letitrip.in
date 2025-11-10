@@ -370,6 +370,20 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
+        {/* Bulk Action Bar */}
+        {selectedIds.length > 0 && (
+          <div className="sticky top-16 z-10 mb-4">
+            <BulkActionBar
+              selectedCount={selectedIds.length}
+              actions={bulkActions}
+              onAction={handleBulkAction}
+              onClearSelection={() => setSelectedIds([])}
+              loading={actionLoading}
+              resourceName="user"
+            />
+          </div>
+        )}
+
         {/* Users Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
@@ -648,18 +662,6 @@ export default function AdminUsersPage() {
             </table>
           </div>
         </div>
-
-        {/* Bulk Action Bar */}
-        {selectedIds.length > 0 && (
-          <BulkActionBar
-            selectedCount={selectedIds.length}
-            actions={bulkActions}
-            onAction={handleBulkAction}
-            onClearSelection={() => setSelectedIds([])}
-            loading={actionLoading}
-            resourceName="user"
-          />
-        )}
       </div>
 
       {/* Ban Dialog */}

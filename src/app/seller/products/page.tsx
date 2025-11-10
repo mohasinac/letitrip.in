@@ -310,6 +310,20 @@ export default function ProductsPage() {
               </div>
             )}
 
+            {/* Bulk Action Bar */}
+            {selectedIds.length > 0 && (
+              <div className="sticky top-16 z-10 mb-4">
+                <BulkActionBar
+                  selectedCount={selectedIds.length}
+                  actions={bulkActions}
+                  onAction={handleBulkAction}
+                  onClearSelection={() => setSelectedIds([])}
+                  loading={actionLoading}
+                  resourceName="product"
+                />
+              </div>
+            )}
+
             {/* Table View */}
             {!loading && view === "table" && (
               <div className="rounded-lg border border-gray-200 bg-white">
@@ -575,18 +589,6 @@ export default function ProductsPage() {
                   </table>
                 </div>
               </div>
-            )}
-
-            {/* Bulk Action Bar */}
-            {selectedIds.length > 0 && (
-              <BulkActionBar
-                selectedCount={selectedIds.length}
-                actions={bulkActions}
-                onAction={handleBulkAction}
-                onClearSelection={() => setSelectedIds([])}
-                loading={actionLoading}
-                resourceName="product"
-              />
             )}
 
             {/* Delete Confirmation */}

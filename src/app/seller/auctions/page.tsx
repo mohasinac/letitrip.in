@@ -338,6 +338,20 @@ export default function SellerAuctionsPage() {
           />
         ) : (
           <>
+            {/* Bulk Action Bar */}
+            {selectedIds.length > 0 && (
+              <div className="sticky top-16 z-10 mb-4">
+                <BulkActionBar
+                  selectedCount={selectedIds.length}
+                  actions={bulkActions}
+                  onAction={handleBulkAction}
+                  onClearSelection={() => setSelectedIds([])}
+                  loading={actionLoading}
+                  resourceName="auction"
+                />
+              </div>
+            )}
+
             {/* Table View */}
             {view === "table" && (
               <div className="rounded-lg border border-gray-200 bg-white">
@@ -652,18 +666,6 @@ export default function SellerAuctionsPage() {
               </div>
             )}
           </>
-        )}
-
-        {/* Bulk Action Bar */}
-        {selectedIds.length > 0 && (
-          <BulkActionBar
-            selectedCount={selectedIds.length}
-            actions={bulkActions}
-            onAction={handleBulkAction}
-            onClearSelection={() => setSelectedIds([])}
-            loading={actionLoading}
-            resourceName="auction"
-          />
         )}
 
         {/* Delete Confirmation */}
