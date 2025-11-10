@@ -85,16 +85,33 @@
   - **Impact**: Reduced complexity, better type safety
 
 - ✅ **`/user/settings`** - Service layer refactoring
+
   - **Before**: Direct `fetch("/api/user/profile", { method: "PATCH" })`
   - **After**: Uses `authService.updateProfile()`
   - **Changes**: Replaced fetch with service method call, removed manual JSON handling
   - **Lines changed**: ~20 lines refactored to ~5 lines
   - **Impact**: Cleaner code, consistent with service layer architecture
 
+- ✅ **`HeroCarousel` component** - Service layer refactoring
+
+  - **Before**: Direct `fetch("/api/homepage/hero-slides")`
+  - **After**: Uses `homepageService.getHeroSlides()`
+  - **Changes**: Created new homepageService, replaced fetch with service call
+  - **Lines changed**: ~10 lines refactored
+  - **Impact**: New service created, cleaner component code
+
+- ✅ **`SpecialEventBanner` component** - Service layer refactoring
+  - **Before**: Direct `fetch("/api/homepage/banner")`
+  - **After**: Uses `homepageService.getBanner()`
+  - **Changes**: Used homepageService, replaced fetch with service call
+  - **Lines changed**: ~10 lines refactored
+  - **Impact**: Consistent with service layer, reusable service methods
+
 #### 5. **Phase 4 Progress Update**
 
-- ✅ Updated Phase 4 status: **10% → 50%** (1/10 → 5/10 tasks)
-- ✅ Phase 4 Overall Progress: **82% → 88%** (50/61 → 54/61 tasks)
+- ✅ Updated Phase 4 status: **10% → 70%** (1/10 → 7/10 tasks)
+- ✅ Phase 4 Overall Progress: **82% → 90%** (50/61 → 56/61 tasks)
+- ✅ Created new homepageService for hero slides and banners
 
 ---
 
@@ -159,7 +176,7 @@ Only **ONE** page was actually missing and needed to be created:
 2. `src/services/homepage.service.ts` - **NEW** (~50 lines)
    - Service for hero slides and banners
 
-### Modified (5 files)
+### Modified (7 files)
 
 1. `src/app/user/won-auctions/page.tsx` - Refactored to use auctionsService
 2. `src/app/user/watchlist/page.tsx` - Refactored to use auctionsService
@@ -168,6 +185,8 @@ Only **ONE** page was actually missing and needed to be created:
 5. `src/components/layout/HeroCarousel.tsx` - Refactored to use homepageService
 6. `src/components/layout/SpecialEventBanner.tsx` - Refactored to use homepageService
 7. `CHECKLIST/ADMIN-SELLER-IMPROVEMENTS.md` - Progress tracking updates
+8. `src/components/layout/SpecialEventBanner.tsx` - Refactored to use homepageService
+9. `CHECKLIST/ADMIN-SELLER-IMPROVEMENTS.md` - Progress tracking updates
 
 ---
 
