@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { apiService } from "@/services/api.service";
@@ -24,12 +24,10 @@ const categoryLabels = {
   other: "Other",
 };
 
-export default function AdminTicketDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function AdminTicketDetailsPage() {
   const router = useRouter();
+  const params = useParams();
+  const ticketId = (params.id as string) || "";
   const [ticket, setTicket] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");

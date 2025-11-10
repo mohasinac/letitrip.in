@@ -28,7 +28,7 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
           isCurrent: session.sessionId === req.session!.sessionId,
         })),
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("Get sessions error:", error);
@@ -41,7 +41,7 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -60,7 +60,7 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
       await deleteAllUserSessions(req.session.userId);
       return NextResponse.json(
         { message: "All sessions deleted successfully" },
-        { status: 200 },
+        { status: 200 }
       );
     }
 
@@ -68,7 +68,7 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
     if (!sessionId) {
       return NextResponse.json(
         { error: "Session ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -79,7 +79,7 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
     if (!sessionToDelete) {
       return NextResponse.json(
         { error: "Session not found or does not belong to user" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -87,7 +87,7 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
 
     return NextResponse.json(
       { message: "Session deleted successfully" },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("Delete session error:", error);
@@ -100,33 +100,39 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function GET(req: NextRequest) {
   // Rate limiting
-  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  const identifier =
+    req.headers.get("x-forwarded-for") ||
+    req.headers.get("x-real-ip") ||
+    "unknown";
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
       { status: 429 }
     );
   }
-  
+
   return requireAuth(req, getSessionsHandler);
 }
 
 export async function DELETE(req: NextRequest) {
   // Rate limiting
-  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  const identifier =
+    req.headers.get("x-forwarded-for") ||
+    req.headers.get("x-real-ip") ||
+    "unknown";
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
       { status: 429 }
     );
   }
-  
+
   return requireAuth(req, deleteSessionHandler);
 }

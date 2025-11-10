@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { apiService } from "@/services/api.service";
@@ -21,12 +21,9 @@ interface HeroSlide {
   is_active: boolean;
 }
 
-export default function EditHeroSlidePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditHeroSlidePage() {
   const router = useRouter();
+  const params = useParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -65,7 +62,7 @@ export default function EditHeroSlidePage({
     try {
       setLoading(true);
       const data = (await apiService.get(
-        `/admin/hero-slides/${params.id}`,
+        `/admin/hero-slides/${params.id}`
       )) as HeroSlide;
       setFormData(data);
     } catch (error) {

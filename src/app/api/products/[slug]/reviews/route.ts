@@ -6,7 +6,7 @@ import { apiRateLimiter, strictRateLimiter } from "@/lib/rate-limiter";
 // GET /api/products/[slug]/reviews
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -22,7 +22,7 @@ export async function GET(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const productId = prodSnap.docs[0].id;
 
@@ -43,7 +43,7 @@ export async function GET(
     console.error("Product reviews error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load reviews" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -51,13 +51,19 @@ export async function GET(
 // POST /api/products/[slug]/reviews
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ slug: string }> },
+  context: { params: Promise<{ slug: string }> }
 ) {
   // Rate limiting
-  const identifier = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  const identifier =
+    req.headers.get("x-forwarded-for") ||
+    req.headers.get("x-real-ip") ||
+    "unknown";
   if (!strictRateLimiter.check(identifier)) {
     return NextResponse.json(
-      { success: false, error: "Too many review submissions. Please try again later." },
+      {
+        success: false,
+        error: "Too many review submissions. Please try again later.",
+      },
       { status: 429 }
     );
   }
@@ -67,7 +73,7 @@ export async function POST(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
 
     const { slug } = await context.params;
@@ -82,13 +88,13 @@ export async function POST(
     if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
       return NextResponse.json(
         { success: false, error: "Rating must be 1-5" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     if (!comment || comment.length < 5) {
       return NextResponse.json(
         { success: false, error: "Comment must be at least 5 characters" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -100,7 +106,7 @@ export async function POST(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const prodDoc = prodSnap.docs[0];
     const product = prodDoc.data() as any;

@@ -3,23 +3,27 @@
 ## Issues Fixed
 
 ### 1. Next.js Config ✅
+
 - **Issue**: `swcMinify` deprecated in Next.js 15
 - **Fix**: Removed `swcMinify: true` (enabled by default now)
 - **File**: `next.config.js`
 
 ### 2. Deprecated Type Definitions ✅
+
 - **Issue**: `@types/bcryptjs` and `@types/cookie` are stub definitions
 - **Fix**: Removed from package.json
-- **Packages removed**: 
+- **Packages removed**:
   - `@types/bcryptjs`
   - `@types/cookie`
 
 ### 3. Missing Dependencies ✅
+
 - **Issue**: `react-hook-form` and `@hookform/resolvers` missing
 - **Fix**: Installed both packages
 - **Command**: `npm install react-hook-form @hookform/resolvers`
 
 ### 4. MediaUploader Import Paths ✅
+
 - **Issue**: Importing from wrong path `@/components/common/MediaUploader`
 - **Fix**: Changed to `@/components/media/MediaUploader`
 - **Files Fixed**:
@@ -27,6 +31,7 @@
   - `src/app/admin/shops/[id]/edit/page.tsx`
 
 ### 5. Redis Rate Limiter (In Progress) 🔄
+
 - **Issue**: Using deprecated `rate-limiter-redis.ts` (requires ioredis)
 - **Fix**: Replace with FREE tier `@/lib/rate-limiter`
 - **Files to update** (9 files):
@@ -41,12 +46,14 @@
   - 🔄 `src/app/api/health/redis/route.ts` (delete or update)
 
 ### 6. Sentry Integration 🔄
+
 - **Issue**: Using deprecated `@sentry/nextjs` (not installed)
 - **Fix**: Use FREE tier `@/lib/firebase-error-logger`
 - **Files to update**:
   - `src/app/api/test/sentry/route.ts` (delete or update to test firebase logger)
 
 ### 7. Test Workflow Syntax Error 🔄
+
 - **Issue**: Build reports syntax error at line 135
 - **Status**: Code appears correct, may be false positive
 - **Action**: Will verify after fixing other issues
@@ -75,6 +82,7 @@ npm run build
 ## Pattern for Rate Limiter Replacement
 
 ### Old Pattern (Redis):
+
 ```typescript
 import { withRedisRateLimit, RATE_LIMITS } from "../../lib/rate-limiter-redis";
 
@@ -84,18 +92,19 @@ export async function POST(req: NextRequest) {
 ```
 
 ### New Pattern (Memory):
+
 ```typescript
 import { authRateLimiter } from "@/lib/rate-limiter";
 
 export async function POST(req: NextRequest) {
-  const identifier = req.headers.get('x-forwarded-for') || 'unknown';
+  const identifier = req.headers.get("x-forwarded-for") || "unknown";
   if (!authRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many attempts. Try again later." },
       { status: 429 }
     );
   }
-  
+
   return handler(req);
 }
 ```
@@ -103,6 +112,7 @@ export async function POST(req: NextRequest) {
 ## Available Rate Limiters
 
 From `@/lib/rate-limiter`:
+
 - `apiRateLimiter` - 200 req/min (general API)
 - `authRateLimiter` - 5 req/min (auth endpoints)
 - `strictRateLimiter` - 10 req/min (sensitive ops)
@@ -118,6 +128,7 @@ From `@/lib/rate-limiter`:
 ## Build Status
 
 ❌ **FAILED** - Remaining issues:
+
 - Redis rate limiter imports (8 files)
 - Sentry import (1 file)
 - Possible syntax error in test-workflow

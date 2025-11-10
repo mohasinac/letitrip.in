@@ -1,19 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { ordersService } from "@/services/orders.service";
 import type { Order, OrderStatus } from "@/types";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import Link from "next/link";
 
-export default function OrderDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function OrderDetailPage() {
   const router = useRouter();
+  const params = useParams();
+  const orderId = (params.id as string) || "";
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -222,11 +220,11 @@ export default function OrderDetailPage({
   }
 
   const canUpdateStatus = !["cancelled", "delivered", "refunded"].includes(
-    order.status,
+    order.status
   );
   const canShip = order.status === "confirmed" || order.status === "processing";
   const canCancel = !["shipped", "delivered", "cancelled", "refunded"].includes(
-    order.status,
+    order.status
   );
 
   return (

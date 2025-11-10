@@ -33,7 +33,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -48,7 +48,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!shopOrders || shopOrders.length === 0) {
       return NextResponse.json(
         { error: "No shop orders provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -59,7 +59,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!shippingAddressDoc.exists) {
       return NextResponse.json(
         { error: "Shipping address not found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -67,7 +67,7 @@ async function createOrderHandler(request: NextRequest) {
     if (shippingAddress?.user_id !== user.id) {
       return NextResponse.json(
         { error: "Invalid shipping address" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -79,7 +79,7 @@ async function createOrderHandler(request: NextRequest) {
       if (!billingAddressDoc.exists) {
         return NextResponse.json(
           { error: "Billing address not found" },
-          { status: 400 },
+          { status: 400 }
         );
       }
 
@@ -87,7 +87,7 @@ async function createOrderHandler(request: NextRequest) {
       if (billingData?.user_id !== user.id) {
         return NextResponse.json(
           { error: "Invalid billing address" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       billingAddress = billingData;
@@ -105,7 +105,7 @@ async function createOrderHandler(request: NextRequest) {
       // Validate products
       const productIds = items.map((item: any) => item.productId);
       const productSnapshots = await Promise.all(
-        productIds.map((id: string) => Collections.products().doc(id).get()),
+        productIds.map((id: string) => Collections.products().doc(id).get())
       );
 
       const products = productSnapshots.map((snap: any) => ({
@@ -119,7 +119,7 @@ async function createOrderHandler(request: NextRequest) {
         if (!product) {
           return NextResponse.json(
             { error: `Product ${item.productName} not found` },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -128,14 +128,14 @@ async function createOrderHandler(request: NextRequest) {
             {
               error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available`,
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
         if (product.status !== "active") {
           return NextResponse.json(
             { error: `Product ${product.name} is no longer available` },
-            { status: 400 },
+            { status: 400 }
           );
         }
       }
@@ -191,7 +191,7 @@ async function createOrderHandler(request: NextRequest) {
             // Calculate discount
             if (coupon.discount_type === "percentage") {
               discount = Math.round(
-                (shopSubtotal * coupon.discount_value) / 100,
+                (shopSubtotal * coupon.discount_value) / 100
               );
               if (coupon.max_discount) {
                 discount = Math.min(discount, coupon.max_discount);
@@ -223,7 +223,10 @@ async function createOrderHandler(request: NextRequest) {
       grandTotal += shopTotal;
 
       // Create order for this shop
-      const orderId = `ORD-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+      const orderId = `ORD-${Date.now()}-${crypto
+        .randomBytes(4)
+        .toString("hex")
+        .toUpperCase()}`;
 
       const orderData = {
         order_id: orderId,
@@ -317,7 +320,9 @@ async function createOrderHandler(request: NextRequest) {
     let razorpayOrderId = null;
     if (paymentMethod === "razorpay") {
       // In production, integrate with Razorpay SDK
-      razorpayOrderId = `razorpay_order_${crypto.randomBytes(8).toString("hex")}`;
+      razorpayOrderId = `razorpay_order_${crypto
+        .randomBytes(8)
+        .toString("hex")}`;
 
       // Update all orders with Razorpay order ID
       const razorpayBatch = Collections.orders().firestore.batch();
@@ -340,20 +345,23 @@ async function createOrderHandler(request: NextRequest) {
     console.error("Create order error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
   // Rate limiting - strict for payment operations
-  const identifier = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const identifier =
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
   if (!strictRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many order creation attempts. Please try again later." },
       { status: 429 }
     );
   }
-  
+
   return createOrderHandler(request);
 }
