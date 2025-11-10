@@ -608,6 +608,87 @@ export const PAYOUT_FILTERS: FilterSection[] = [
   },
 ];
 
+/**
+ * Blog Post Filters Configuration
+ */
+export const BLOG_FILTERS: FilterSection[] = [
+  {
+    title: "Status",
+    fields: [
+      {
+        key: "status",
+        label: "Status",
+        type: "checkbox",
+        options: [
+          { label: "Published", value: "published" },
+          { label: "Draft", value: "draft" },
+          { label: "Archived", value: "archived" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Visibility",
+    fields: [
+      {
+        key: "isFeatured",
+        label: "Featured Posts",
+        type: "checkbox",
+        options: [{ label: "Featured only", value: "true" }],
+      },
+      {
+        key: "showOnHomepage",
+        label: "Homepage Posts",
+        type: "checkbox",
+        options: [{ label: "Show on homepage", value: "true" }],
+      },
+    ],
+  },
+  {
+    title: "Category",
+    fields: [
+      {
+        key: "category",
+        label: "Category",
+        type: "multiselect",
+        options: [
+          { label: "News", value: "news" },
+          { label: "Guides", value: "guides" },
+          { label: "Updates", value: "updates" },
+          { label: "Tips", value: "tips" },
+          { label: "Events", value: "events" },
+        ],
+      },
+    ],
+    collapsible: true,
+  },
+  {
+    title: "Sort By",
+    fields: [
+      {
+        key: "sortBy",
+        label: "Sort By",
+        type: "radio",
+        options: [
+          { label: "Publish Date", value: "publishedAt" },
+          { label: "Views", value: "views" },
+          { label: "Likes", value: "likes" },
+          { label: "Created Date", value: "createdAt" },
+        ],
+      },
+      {
+        key: "sortOrder",
+        label: "Order",
+        type: "radio",
+        options: [
+          { label: "Descending", value: "desc" },
+          { label: "Ascending", value: "asc" },
+        ],
+      },
+    ],
+  },
+];
+
 export const FILTERS = {
   PRODUCT: PRODUCT_FILTERS,
   SHOP: SHOP_FILTERS,
@@ -621,6 +702,7 @@ export const FILTERS = {
   TICKET: TICKET_FILTERS,
   PAYMENT: PAYMENT_FILTERS,
   PAYOUT: PAYOUT_FILTERS,
+  BLOG: BLOG_FILTERS,
 } as const;
 
 export type FilterType = keyof typeof FILTERS;

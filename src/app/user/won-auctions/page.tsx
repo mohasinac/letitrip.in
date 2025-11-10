@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Trophy, AlertCircle, Loader2, Package, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { auctionsService } from "@/services/auctions.service";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -44,18 +45,12 @@ export default function WonAuctionsPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("/api/auctions/won");
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to load won auctions");
-      }
-
-      setAuctions(result.data || []);
+      const data = await auctionsService.getWonAuctions();
+      setAuctions(data || []);
     } catch (error) {
       console.error("Failed to load won auctions:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load won auctions",
+        error instanceof Error ? error.message : "Failed to load won auctions"
       );
     } finally {
       setLoading(false);
@@ -103,13 +98,13 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctions.reduce(
     (sum, auction) => sum + auction.currentBid,
-    0,
+    0
   );
   const pendingPayment = auctions.filter(
-    (a) => !a.order_id || a.order_status === "pending",
+    (a) => !a.order_id || a.order_status === "pending"
   );
   const completedOrders = auctions.filter(
-    (a) => a.order_id && a.order_status === "completed",
+    (a) => a.order_id && a.order_status === "completed"
   );
 
   return (

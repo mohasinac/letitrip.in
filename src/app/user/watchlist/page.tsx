@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Heart, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { auctionsService } from "@/services/auctions.service";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatCurrency } from "@/lib/formatters";
@@ -52,36 +53,12 @@ export default function WatchlistPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch watchlist
-      const response = await fetch("/api/auctions/watchlist");
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to load watchlist");
-      }
-
-      const watchlistData = result.data || [];
-      setWatchlist(watchlistData);
-
-      // Fetch auction details for each watchlist item
-      if (watchlistData.length > 0) {
-        const auctionPromises = watchlistData.map((item: WatchlistItem) =>
-          fetch(`/api/auctions/${item.auction_id}`).then((res) => res.json()),
-        );
-
-        const auctionResults = await Promise.allSettled(auctionPromises);
-        const auctionData = auctionResults
-          .filter(
-            (result) => result.status === "fulfilled" && result.value.success,
-          )
-          .map((result: any) => result.value.data);
-
-        setAuctions(auctionData);
-      }
+      const data = await auctionsService.getWatchlist();
+      setAuctions(data || []);
     } catch (error) {
       console.error("Failed to load watchlist:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load watchlist",
+        error instanceof Error ? error.message : "Failed to load watchlist"
       );
     } finally {
       setLoading(false);
@@ -90,20 +67,9 @@ export default function WatchlistPage() {
 
   const handleRemoveFromWatchlist = async (auctionId: string) => {
     try {
-      const response = await fetch("/api/auctions/watchlist", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ auction_id: auctionId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove from watchlist");
-      }
+      await auctionsService.toggleWatch(auctionId);
 
       // Remove from local state
-      setWatchlist((prev) =>
-        prev.filter((item) => item.auction_id !== auctionId),
-      );
       setAuctions((prev) => prev.filter((auction) => auction.id !== auctionId));
     } catch (error) {
       console.error("Failed to remove from watchlist:", error);

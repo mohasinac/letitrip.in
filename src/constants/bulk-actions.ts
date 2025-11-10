@@ -404,6 +404,64 @@ export function getTicketBulkActions(selectedCount: number): BulkAction[] {
 }
 
 /**
+ * Get bulk actions for blog posts (admin)
+ */
+export function getBlogBulkActions(selectedCount: number): BulkAction[] {
+  return [
+    {
+      id: "publish",
+      label: "Publish",
+      variant: "success",
+      confirm: false,
+    },
+    {
+      id: "draft",
+      label: "Set as Draft",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "archive",
+      label: "Archive",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "feature",
+      label: "Feature",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "unfeature",
+      label: "Unfeature",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "homepage",
+      label: "Add to Homepage",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "remove-homepage",
+      label: "Remove from Homepage",
+      variant: "default",
+      confirm: false,
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      variant: "danger",
+      confirm: true,
+      confirmTitle: "Delete Blog Posts",
+      confirmMessage: `Are you sure you want to delete ${selectedCount} blog post${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+    },
+  ];
+}
+
+/**
  * Common bulk action builder for generic resources
  */
 export function getGenericBulkActions(

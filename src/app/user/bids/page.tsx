@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Gavel, AlertCircle, Loader2, TrendingUp, Trophy } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { auctionsService } from "@/services/auctions.service";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import Link from "next/link";
 import Image from "next/image";
@@ -52,19 +53,12 @@ export default function MyBidsPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch user's bids
-      const response = await fetch("/api/auctions/my-bids");
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to load bids");
-      }
-
-      const bidsData = result.data || [];
+      // Fetch user's bids with auction details
+      const bidsData = await auctionsService.getMyBids();
 
       // Group bids by auction and get latest bid per auction
-      const auctionBidsMap = new Map<string, Bid>();
-      bidsData.forEach((bid: Bid) => {
+      const auctionBidsMap = new Map<string, any>();
+      bidsData.forEach((bid: any) => {
         const existing = auctionBidsMap.get(bid.auction_id);
         if (
           !existing ||
@@ -76,39 +70,24 @@ export default function MyBidsPage() {
 
       const latestBids = Array.from(auctionBidsMap.values());
 
-      // Fetch auction details for each bid
-      if (latestBids.length > 0) {
-        const auctionPromises = latestBids.map((bid) =>
-          fetch(`/api/auctions/${bid.auction_id}`).then((res) => res.json()),
-        );
+      // Enhance with winning/outbid status
+      const bidsWithStatus = latestBids.map((bid: any) => ({
+        ...bid,
+        isWinning:
+          bid.auction?.highest_bidder_id === user?.uid &&
+          bid.auction?.status === "live",
+        isOutbid:
+          bid.auction?.highest_bidder_id !== user?.uid &&
+          bid.auction?.status === "live",
+      }));
 
-        const auctionResults = await Promise.allSettled(auctionPromises);
-        const bidsWithAuctions = latestBids.map((bid, index) => {
-          const result = auctionResults[index];
-          if (result.status === "fulfilled" && result.value.success) {
-            const auction = result.value.data;
-            return {
-              ...bid,
-              auction,
-              isWinning:
-                auction.highest_bidder_id === user?.uid &&
-                auction.status === "live",
-              isOutbid:
-                auction.highest_bidder_id !== user?.uid &&
-                auction.status === "live",
-            };
-          }
-          return bid;
-        });
+      // Sort by created_at descending
+      bidsWithStatus.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
 
-        // Sort by created_at descending
-        bidsWithAuctions.sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        );
-
-        setBids(bidsWithAuctions);
-      }
+      setBids(bidsWithStatus);
     } catch (error) {
       console.error("Failed to load bids:", error);
       setError(error instanceof Error ? error.message : "Failed to load bids");
@@ -290,7 +269,7 @@ export default function MyBidsPage() {
                           <div className="text-gray-500 mb-1">Current Bid</div>
                           <div className="font-semibold text-gray-900">
                             {formatCurrency(
-                              bid.auction?.currentBid || bid.amount,
+                              bid.auction?.currentBid || bid.amount
                             )}
                           </div>
                         </div>

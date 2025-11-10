@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { homepageService } from "@/services/homepage.service";
 
 export default function SpecialEventBanner() {
   const [isVisible, setIsVisible] = useState(true);
@@ -18,8 +19,7 @@ export default function SpecialEventBanner() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch("/api/homepage/banner");
-        const data = await response.json();
+        const data = await homepageService.getBanner();
         setBannerSettings(data);
       } catch (error) {
         console.error("Failed to load banner settings:", error);

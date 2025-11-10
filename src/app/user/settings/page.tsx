@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Mail, Phone, MapPin, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { authService } from "@/services/auth.service";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -39,22 +40,10 @@ export default function SettingsPage() {
     setSuccess(false);
 
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-        }),
+      await authService.updateProfile({
+        name: formData.name,
+        email: formData.email,
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update profile");
-      }
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

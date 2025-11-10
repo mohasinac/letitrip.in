@@ -4,17 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface HeroSlide {
-  id: string;
-  image: string;
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  ctaLink: string;
-  order: number;
-  enabled: boolean;
-}
+import { homepageService, type HeroSlide } from "@/services/homepage.service";
 
 // Default slides for demo - would come from API
 const DEFAULT_SLIDES: HeroSlide[] = [
@@ -62,10 +52,9 @@ export default function HeroCarousel() {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const response = await fetch("/api/homepage/hero-slides");
-        const data = await response.json();
-        if (data.slides && data.slides.length > 0) {
-          setSlides(data.slides);
+        const slides = await homepageService.getHeroSlides();
+        if (slides && slides.length > 0) {
+          setSlides(slides);
         }
       } catch (error) {
         console.error("Error fetching hero slides:", error);
@@ -98,7 +87,7 @@ export default function HeroCarousel() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlide(
-      (prev) => (prev - 1 + enabledSlides.length) % enabledSlides.length,
+      (prev) => (prev - 1 + enabledSlides.length) % enabledSlides.length
     );
     setTimeout(() => setIsTransitioning(false), 500);
   }, [enabledSlides.length, isTransitioning]);

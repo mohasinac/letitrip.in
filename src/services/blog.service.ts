@@ -53,7 +53,9 @@ interface CreateBlogPostData {
   publishedAt?: Date;
 }
 
-interface UpdateBlogPostData extends Partial<CreateBlogPostData> {}
+interface UpdateBlogPostData extends Partial<Omit<CreateBlogPostData, "status">> {
+  status?: "draft" | "published" | "archived";
+}
 
 class BlogService {
   // List blog posts (role-filtered)
