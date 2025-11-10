@@ -38,7 +38,11 @@ import {
 import type { Product, ProductStatus } from "@/types";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
-import { PRODUCT_FIELDS, getFieldsForContext, toInlineFields } from "@/constants/form-fields";
+import {
+  PRODUCT_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
 
 export default function AdminProductsPage() {
   const { user, isAdmin } = useAuth();
@@ -347,327 +351,338 @@ export default function AdminProductsPage() {
           {/* Grid View */}
           {view === "grid" && (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              <div className="aspect-square bg-gray-100 relative">
-                {product.images[0] ? (
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
-                    <Package size={48} />
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-square bg-gray-100 relative">
+                    {product.images[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        <Package size={48} />
+                      </div>
+                    )}
+                    {product.isFeatured && (
+                      <div className="absolute top-2 right-2">
+                        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
+                          Featured
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {product.isFeatured && (
-                  <div className="absolute top-2 right-2">
-                    <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
-                      Featured
-                    </span>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 truncate">
+                          {product.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          SKU: {product.sku || "N/A"}
+                        </p>
+                      </div>
+                      <StatusBadge status={product.status} />
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatPrice(product.price)}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Stock: {product.stockCount}
+                      </p>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2 text-sm">
+                      <span className="text-gray-500">
+                        ⭐ {product.rating.toFixed(1)}
+                      </span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-gray-500">
+                        {product.salesCount} sales
+                      </span>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        href={`/admin/products/${product.slug}/edit`}
+                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/products/${product.slug}`}
+                        target="_blank"
+                        className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 truncate">
-                      SKU: {product.sku || "N/A"}
-                    </p>
-                  </div>
-                  <StatusBadge status={product.status} />
                 </div>
-                <div className="mt-2">
-                  <p className="text-lg font-semibold text-gray-900">
-                    {formatPrice(product.price)}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Stock: {product.stockCount}
-                  </p>
-                </div>
-                <div className="mt-3 flex items-center gap-2 text-sm">
-                  <span className="text-gray-500">
-                    ⭐ {product.rating.toFixed(1)}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-500">
-                    {product.salesCount} sales
-                  </span>
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Link
-                    href={`/admin/products/${product.slug}/edit`}
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Edit
-                  </Link>
-                  <Link
-                    href={`/products/${product.slug}`}
-                    target="_blank"
-                    className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700"
-                  >
-                    View
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
             </div>
           )}
 
           {/* Table View */}
           {view === "table" && (
             <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="w-12 px-6 py-3">
-                    <TableCheckbox
-                      checked={
-                        selectedIds.length === products.length &&
-                        products.length > 0
-                      }
-                      indeterminate={
-                        selectedIds.length > 0 &&
-                        selectedIds.length < products.length
-                      }
-                      onChange={(checked) => {
-                        setSelectedIds(
-                          checked ? products.map((p) => p.id) : []
-                        );
-                      }}
-                      aria-label="Select all products"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stats
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {/* Product Rows */}
-                {products.map((product) => {
-                  const isEditing = editingId === product.id;
-
-                  if (isEditing) {
-                    return (
-                      <InlineEditRow
-                        key={product.id}
-                        fields={fields}
-                        initialValues={{
-                          name: product.name,
-                          price: product.price,
-                          stockCount: product.stockCount,
-                          status: product.status,
-                        }}
-                        onSave={async (values) => {
-                          try {
-                            await productsService.update(product.slug, values);
-                            await loadProducts();
-                            setEditingId(null);
-                          } catch (error) {
-                            console.error("Failed to update product:", error);
-                            throw error;
-                          }
-                        }}
-                        onCancel={() => setEditingId(null)}
-                        resourceName="product"
-                      />
-                    );
-                  }
-
-                  return (
-                    <tr
-                      key={product.id}
-                      className="hover:bg-gray-50"
-                      onDoubleClick={() => setEditingId(product.id)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="w-12 px-6 py-3">
                         <TableCheckbox
-                          checked={selectedIds.includes(product.id)}
+                          checked={
+                            selectedIds.length === products.length &&
+                            products.length > 0
+                          }
+                          indeterminate={
+                            selectedIds.length > 0 &&
+                            selectedIds.length < products.length
+                          }
                           onChange={(checked) => {
-                            setSelectedIds((prev) =>
-                              checked
-                                ? [...prev, product.id]
-                                : prev.filter((id) => id !== product.id)
+                            setSelectedIds(
+                              checked ? products.map((p) => p.id) : []
                             );
                           }}
-                          aria-label={`Select ${product.name}`}
+                          aria-label="Select all products"
                         />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center overflow-hidden">
-                            {product.images[0] ? (
-                              <img
-                                src={product.images[0]}
-                                alt={product.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <Package className="h-6 w-6 text-gray-400" />
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium text-gray-900 truncate max-w-xs">
-                              {product.name}
-                            </div>
-                            <div className="text-sm text-gray-500 truncate">
-                              {product.sku || "No SKU"}
-                            </div>
-                            {product.isFeatured && (
-                              <span className="inline-block mt-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                                Featured
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {formatPrice(product.price)}
-                        </div>
-                        {product.originalPrice &&
-                          product.originalPrice > product.price && (
-                            <div className="text-xs text-gray-500 line-through">
-                              {formatPrice(product.originalPrice)}
-                            </div>
-                          )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`text-sm font-medium ${
-                            product.stockCount === 0
-                              ? "text-red-600"
-                              : product.stockCount < product.lowStockThreshold
-                              ? "text-yellow-600"
-                              : "text-green-600"
-                          }`}
-                        >
-                          {product.stockCount}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={product.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        <div>⭐ {product.rating.toFixed(1)}</div>
-                        <div className="text-xs text-gray-500">
-                          {product.salesCount} sales
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/products/${product.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                            title="View"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                          <Link
-                            href={`/admin/products/${product.slug}/edit`}
-                            className="rounded p-1.5 text-purple-600 hover:bg-purple-50"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => setDeleteSlug(product.slug)}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Product
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Price
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stock
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stats
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {/* Product Rows */}
+                    {products.map((product) => {
+                      const isEditing = editingId === product.id;
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="border-t border-gray-200 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing{" "}
-                  <span className="font-medium">
-                    {(currentPage - 1) * limit + 1}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-medium">
-                    {Math.min(currentPage * limit, totalProducts)}
-                  </span>{" "}
-                  of <span className="font-medium">{totalProducts}</span>{" "}
-                  results
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="inline-flex items-center px-4 py-1.5 text-sm font-medium text-gray-700">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
+                      if (isEditing) {
+                        return (
+                          <InlineEditRow
+                            key={product.id}
+                            fields={fields}
+                            initialValues={{
+                              name: product.name,
+                              price: product.price,
+                              stockCount: product.stockCount,
+                              status: product.status,
+                            }}
+                            onSave={async (values) => {
+                              try {
+                                await productsService.update(
+                                  product.slug,
+                                  values
+                                );
+                                await loadProducts();
+                                setEditingId(null);
+                              } catch (error) {
+                                console.error(
+                                  "Failed to update product:",
+                                  error
+                                );
+                                throw error;
+                              }
+                            }}
+                            onCancel={() => setEditingId(null)}
+                            resourceName="product"
+                          />
+                        );
+                      }
+
+                      return (
+                        <tr
+                          key={product.id}
+                          className="hover:bg-gray-50"
+                          onDoubleClick={() => setEditingId(product.id)}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <TableCheckbox
+                              checked={selectedIds.includes(product.id)}
+                              onChange={(checked) => {
+                                setSelectedIds((prev) =>
+                                  checked
+                                    ? [...prev, product.id]
+                                    : prev.filter((id) => id !== product.id)
+                                );
+                              }}
+                              aria-label={`Select ${product.name}`}
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center overflow-hidden">
+                                {product.images[0] ? (
+                                  <img
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <Package className="h-6 w-6 text-gray-400" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-medium text-gray-900 truncate max-w-xs">
+                                  {product.name}
+                                </div>
+                                <div className="text-sm text-gray-500 truncate">
+                                  {product.sku || "No SKU"}
+                                </div>
+                                {product.isFeatured && (
+                                  <span className="inline-block mt-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                                    Featured
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {formatPrice(product.price)}
+                            </div>
+                            {product.originalPrice &&
+                              product.originalPrice > product.price && (
+                                <div className="text-xs text-gray-500 line-through">
+                                  {formatPrice(product.originalPrice)}
+                                </div>
+                              )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`text-sm font-medium ${
+                                product.stockCount === 0
+                                  ? "text-red-600"
+                                  : product.stockCount <
+                                    product.lowStockThreshold
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {product.stockCount}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <StatusBadge status={product.status} />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <div>⭐ {product.rating.toFixed(1)}</div>
+                            <div className="text-xs text-gray-500">
+                              {product.salesCount} sales
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <div className="flex items-center justify-end gap-2">
+                              <Link
+                                href={`/products/${product.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                                title="View"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                              <Link
+                                href={`/admin/products/${product.slug}/edit`}
+                                className="rounded p-1.5 text-purple-600 hover:bg-purple-50"
+                                title="Edit"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Link>
+                              <button
+                                onClick={() => setDeleteSlug(product.slug)}
+                                className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          )}
 
-          {/* Empty State */}
-          {products.length === 0 && !loading && (
-            <div className="text-center py-12">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                {searchQuery || Object.keys(filterValues).length > 0
-                  ? "No products found"
-                  : "No products yet"}
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {searchQuery || Object.keys(filterValues).length > 0
-                  ? "Try adjusting your filters"
-                  : "Products from sellers will appear here"}
-              </p>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="border-t border-gray-200 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                      Showing{" "}
+                      <span className="font-medium">
+                        {(currentPage - 1) * limit + 1}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-medium">
+                        {Math.min(currentPage * limit, totalProducts)}
+                      </span>{" "}
+                      of <span className="font-medium">{totalProducts}</span>{" "}
+                      results
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(1, p - 1))
+                        }
+                        disabled={currentPage === 1}
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <span className="inline-flex items-center px-4 py-1.5 text-sm font-medium text-gray-700">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {products.length === 0 && !loading && (
+                <div className="text-center py-12">
+                  <Package className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">
+                    {searchQuery || Object.keys(filterValues).length > 0
+                      ? "No products found"
+                      : "No products yet"}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {searchQuery || Object.keys(filterValues).length > 0
+                      ? "Try adjusting your filters"
+                      : "Products from sellers will appear here"}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
