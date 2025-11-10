@@ -25,13 +25,19 @@ export function InlineEditRow({
     setValues((prev) => ({ ...prev, [key]: value }));
     setTouched((prev) => ({ ...prev, [key]: true }));
 
-    // Clear error when value changes
-    if (errors[key]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[key];
-        return newErrors;
-      });
+    // Validate field on change for immediate feedback
+    const field = fields.find((f) => f.key === key);
+    if (field) {
+      const error = validateField(field);
+      if (error) {
+        setErrors((prev) => ({ ...prev, [key]: error }));
+      } else {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[key];
+          return newErrors;
+        });
+      }
     }
   };
 
@@ -46,9 +52,9 @@ export function InlineEditRow({
       return `${field.label} is required`;
     }
 
-    // Custom validation
+    // Custom validation (pass entire form data for cross-field validation)
     if (field.validate) {
-      return field.validate(value);
+      return field.validate(value, values);
     }
 
     // Number validation
