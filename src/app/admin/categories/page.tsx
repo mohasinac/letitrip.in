@@ -33,6 +33,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 
 interface Category {
   id: string;
@@ -63,6 +64,9 @@ export default function CategoriesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -411,6 +415,23 @@ export default function CategoriesPage() {
                   fields={fields}
                   onSave={async (values) => {
                     try {
+                      // Validate form fields
+                      const fieldsToValidate = getFieldsForContext(
+                        CATEGORY_FIELDS,
+                        "table"
+                      );
+                      const { isValid, errors } = validateForm(
+                        values,
+                        fieldsToValidate
+                      );
+
+                      if (!isValid) {
+                        setValidationErrors(errors);
+                        throw new Error("Please fix validation errors");
+                      }
+
+                      setValidationErrors({});
+
                       await categoriesService.create({
                         name: values.name,
                         slug: values.name.toLowerCase().replace(/\s+/g, "-"),
@@ -459,6 +480,23 @@ export default function CategoriesPage() {
                         }}
                         onSave={async (values) => {
                           try {
+                            // Validate form fields
+                            const fieldsToValidate = getFieldsForContext(
+                              CATEGORY_FIELDS,
+                              "table"
+                            );
+                            const { isValid, errors } = validateForm(
+                              values,
+                              fieldsToValidate
+                            );
+
+                            if (!isValid) {
+                              setValidationErrors(errors);
+                              throw new Error("Please fix validation errors");
+                            }
+
+                            setValidationErrors({});
+
                             await categoriesService.update(category.slug, {
                               name: values.name,
                               parentId: values.parent_id || null,

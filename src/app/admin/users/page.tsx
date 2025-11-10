@@ -31,6 +31,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 
 interface User {
   id: string;
@@ -70,6 +71,9 @@ export default function AdminUsersPage() {
   // Inline edit states
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Load users
   const loadUsers = async () => {
@@ -450,6 +454,23 @@ export default function AdminUsersPage() {
                           }}
                           onSave={async (values) => {
                             try {
+                              // Validate form fields
+                              const fieldsToValidate = getFieldsForContext(
+                                USER_FIELDS,
+                                "table"
+                              );
+                              const { isValid, errors } = validateForm(
+                                values,
+                                fieldsToValidate
+                              );
+
+                              if (!isValid) {
+                                setValidationErrors(errors);
+                                throw new Error("Please fix validation errors");
+                              }
+
+                              setValidationErrors({});
+
                               await updateUser(user.id, values);
                               await loadUsers();
                               setEditingId(null);

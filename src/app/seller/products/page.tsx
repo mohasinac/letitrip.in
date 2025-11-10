@@ -32,6 +32,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { Product } from "@/types";
 import { API_ROUTES } from "@/constants/api-routes";
@@ -53,6 +54,9 @@ export default function ProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [categories, setCategories] = useState<
     Array<{ id: string; name: string }>
   >([]);
@@ -356,6 +360,23 @@ export default function ProductsPage() {
                         fields={fields}
                         onSave={async (values) => {
                           try {
+                            // Validate form fields
+                            const fieldsToValidate = getFieldsForContext(
+                              PRODUCT_FIELDS,
+                              "table"
+                            );
+                            const { isValid, errors } = validateForm(
+                              values,
+                              fieldsToValidate
+                            );
+
+                            if (!isValid) {
+                              setValidationErrors(errors);
+                              throw new Error("Please fix validation errors");
+                            }
+
+                            setValidationErrors({});
+
                             // Create product via API directly since service requires more fields
                             await apiService.post("/api/seller/products", {
                               name: values.name,
@@ -405,6 +426,25 @@ export default function ProductsPage() {
                               }}
                               onSave={async (values) => {
                                 try {
+                                  // Validate form fields
+                                  const fieldsToValidate = getFieldsForContext(
+                                    PRODUCT_FIELDS,
+                                    "table"
+                                  );
+                                  const { isValid, errors } = validateForm(
+                                    values,
+                                    fieldsToValidate
+                                  );
+
+                                  if (!isValid) {
+                                    setValidationErrors(errors);
+                                    throw new Error(
+                                      "Please fix validation errors"
+                                    );
+                                  }
+
+                                  setValidationErrors({});
+
                                   await apiService.patch(
                                     `/api/products/${product.slug}`,
                                     {

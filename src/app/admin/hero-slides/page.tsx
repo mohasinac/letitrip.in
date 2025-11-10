@@ -27,6 +27,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 import { InlineField, BulkAction } from "@/types/inline-edit";
 
 interface HeroSlide {
@@ -52,6 +53,9 @@ export default function HeroSlidesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [draggedSlide, setDraggedSlide] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Field configuration for inline edit and quick create (using centralized config)
   const fields: InlineField[] = toInlineFields(
@@ -286,6 +290,23 @@ export default function HeroSlidesPage() {
                     onSave={async (values) => {
                       setActionLoading(true);
                       try {
+                        // Validate form fields
+                        const fieldsToValidate = getFieldsForContext(
+                          HERO_SLIDE_FIELDS,
+                          "table"
+                        );
+                        const { isValid, errors } = validateForm(
+                          values,
+                          fieldsToValidate
+                        );
+
+                        if (!isValid) {
+                          setValidationErrors(errors);
+                          throw new Error("Please fix validation errors");
+                        }
+
+                        setValidationErrors({});
+
                         await apiService.post("/admin/hero-slides", {
                           ...values,
                           position: slides.length + 1,
@@ -318,6 +339,23 @@ export default function HeroSlidesPage() {
                       onSave={async (values) => {
                         setActionLoading(true);
                         try {
+                          // Validate form fields
+                          const fieldsToValidate = getFieldsForContext(
+                            HERO_SLIDE_FIELDS,
+                            "table"
+                          );
+                          const { isValid, errors } = validateForm(
+                            values,
+                            fieldsToValidate
+                          );
+
+                          if (!isValid) {
+                            setValidationErrors(errors);
+                            throw new Error("Please fix validation errors");
+                          }
+
+                          setValidationErrors({});
+
                           await apiService.patch(
                             `/admin/hero-slides/${slide.id}`,
                             values

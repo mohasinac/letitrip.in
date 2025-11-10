@@ -35,6 +35,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
@@ -57,6 +58,9 @@ export default function SellerAuctionsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     loadAuctions();
@@ -374,6 +378,23 @@ export default function SellerAuctionsPage() {
                         fields={fields}
                         onSave={async (values) => {
                           try {
+                            // Validate form fields
+                            const fieldsToValidate = getFieldsForContext(
+                              AUCTION_FIELDS,
+                              "table"
+                            );
+                            const { isValid, errors } = validateForm(
+                              values,
+                              fieldsToValidate
+                            );
+
+                            if (!isValid) {
+                              setValidationErrors(errors);
+                              throw new Error("Please fix validation errors");
+                            }
+
+                            setValidationErrors({});
+
                             await apiService.post("/api/seller/auctions", {
                               name: values.name,
                               startingBid: values.startingBid,
@@ -418,6 +439,25 @@ export default function SellerAuctionsPage() {
                               }}
                               onSave={async (values) => {
                                 try {
+                                  // Validate form fields
+                                  const fieldsToValidate = getFieldsForContext(
+                                    AUCTION_FIELDS,
+                                    "table"
+                                  );
+                                  const { isValid, errors } = validateForm(
+                                    values,
+                                    fieldsToValidate
+                                  );
+
+                                  if (!isValid) {
+                                    setValidationErrors(errors);
+                                    throw new Error(
+                                      "Please fix validation errors"
+                                    );
+                                  }
+
+                                  setValidationErrors({});
+
                                   await apiService.patch(
                                     `/api/auctions/${auction.id}`,
                                     {

@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "node --max-old-space-size=4096 server.js",
     "dev:next": "next dev",
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "start:next": "next start",
     "lint": "next lint",

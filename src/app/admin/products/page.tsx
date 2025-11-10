@@ -43,6 +43,7 @@ import {
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 
 export default function AdminProductsPage() {
   const { user, isAdmin } = useAuth();
@@ -68,6 +69,9 @@ export default function AdminProductsPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -489,6 +493,25 @@ export default function AdminProductsPage() {
                             }}
                             onSave={async (values) => {
                               try {
+                                // Validate form fields
+                                const fieldsToValidate = getFieldsForContext(
+                                  PRODUCT_FIELDS,
+                                  "table"
+                                );
+                                const { isValid, errors } = validateForm(
+                                  values,
+                                  fieldsToValidate
+                                );
+
+                                if (!isValid) {
+                                  setValidationErrors(errors);
+                                  throw new Error(
+                                    "Please fix validation errors"
+                                  );
+                                }
+
+                                setValidationErrors({});
+
                                 await productsService.update(
                                   product.slug,
                                   values
