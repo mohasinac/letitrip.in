@@ -126,6 +126,15 @@ class CouponsService {
     return apiService.post<ValidateCouponResponse>("/coupons/validate", data);
   }
 
+  // Check if coupon code is available (for form validation)
+  async validateCode(code: string, shopId?: string): Promise<{ available: boolean; message?: string }> {
+    const params = new URLSearchParams();
+    params.append("code", code);
+    if (shopId) params.append("shop_id", shopId);
+    
+    return apiService.get<{ available: boolean; message?: string }>(`/coupons/validate-code?${params.toString()}`);
+  }
+
   // Get public coupons (featured/active)
   async getPublic(shopId?: string): Promise<Coupon[]> {
     const params = new URLSearchParams();

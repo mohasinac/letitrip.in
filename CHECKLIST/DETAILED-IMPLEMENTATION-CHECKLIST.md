@@ -20,7 +20,7 @@
 
 **Overall Project Completion**: ~58%
 
-**NEW**: Phase 6 (Service Layer Refactoring) - 14/32 violations fixed (44%)! 🚀 All HIGH PRIORITY (fetch) violations complete!
+**NEW**: Phase 6 (Service Layer Refactoring) - 15/32 violations fixed (47%)! 🎉 ALL direct fetch() violations COMPLETE!
 
 ---
 
@@ -653,15 +653,16 @@ apiService.get(ROUTES.BY_ID(ticketId)); // Not params.id
 - **6 valid exceptions** (sitemap, media converters, examples)
 - **Total**: 38 instances found
 - **Services created**: 2/2 ✅ (hero-slides, payouts)
-- **Violations fixed**: 14/32 ✅ (44% complete) ⭐ HIGH PRIORITY DONE
+- **Violations fixed**: 15/32 ✅ (47% complete) 🎉 ALL DIRECT FETCH() COMPLETE!
   - Admin dashboard pages (3 files) - Using analyticsService
+  - Admin categories edit (1 file) - Using categoriesService
   - Admin hero-slides pages (3 files) - Using heroSlidesService
   - Admin payouts page (1 file) - Using payoutsService
   - Seller dashboard pages (2 pages) - Using analyticsService
   - Product review components (2 files) - Using reviewsService
   - User favorites page (1 file) - Using favoritesService
   - Public search & contact pages (2 files) - Using productsService, supportService
-- **Estimated fix time**: 2-3 hours (18 violations remaining)
+- **Estimated fix time**: 2-3 hours (17 violations remaining - only apiService imports left)
 
 See `CHECKLIST/ARCHITECTURE-VIOLATIONS.md` for complete breakdown.
 

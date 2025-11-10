@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import CategoryForm from "@/components/admin/CategoryForm";
+import { categoriesService } from "@/services/categories.service";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -38,27 +39,12 @@ export default function EditCategoryPage() {
       if (!slug) return;
 
       try {
-        const response = await fetch(`/api/categories?slug=${slug}`);
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Failed to load category");
-        }
-
-        // Find the category with matching slug
-        const foundCategory = result.data?.find(
-          (cat: Category) => cat.slug === slug,
-        );
-
-        if (!foundCategory) {
-          throw new Error("Category not found");
-        }
-
-        setCategory(foundCategory);
+        const categoryData = await categoriesService.getBySlug(slug);
+        setCategory(categoryData as any);
       } catch (err) {
         console.error("Failed to load category:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load category",
+          err instanceof Error ? err.message : "Failed to load category"
         );
       } finally {
         setLoading(false);

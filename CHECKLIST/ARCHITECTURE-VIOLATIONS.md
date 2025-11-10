@@ -17,7 +17,7 @@
 3. ✅ `seller/analytics/page.tsx` (Line 79) - Analytics data **DONE**
 4. ✅ `admin/page.tsx` (Line 36) - Dashboard stats **DONE**
 5. ✅ `admin/dashboard/page.tsx` (Line 65) - Dashboard stats **DONE**
-6. ❌ `admin/categories/[slug]/edit/page.tsx` (Line 41) - Load category
+6. ✅ `admin/categories/[slug]/edit/page.tsx` (Line 41) - Load category **DONE**
 7. ✅ `admin/users/page.tsx` (Lines 88, 179) - List & create users **DONE**
 
 #### Components (`src/components/`) - 6 violations
@@ -97,7 +97,7 @@ These need additional methods:
 6. [x] ✅ `admin/hero-slides/page.tsx` → Use `heroSlidesService` (DONE)
 7. [x] ✅ `admin/hero-slides/create/page.tsx` → Use `heroSlidesService` (DONE)
 8. [x] ✅ `admin/hero-slides/[id]/edit/page.tsx` → Already compliant (no direct API calls)
-9. `admin/categories/[slug]/edit/page.tsx` → Use `categoryService.getBySlug()`
+9. [x] ✅ `admin/categories/[slug]/edit/page.tsx` → Use `categoriesService.getBySlug()` (DONE)
 10. [x] ✅ `admin/payouts/page.tsx` → Use `payoutsService` (DONE)
 
 #### Seller Pages (4 files)
@@ -174,18 +174,19 @@ These are acceptable direct API calls:
 **Critical**: 32  
 **Exceptions**: 6  
 **Services Created**: 2/2 ✅ (hero-slides, payouts)
-**Fixed**: 14 ✅ (44% complete)
+**Fixed**: 15 ✅ (47% complete) 🎉 ALL HIGH PRIORITY FETCH VIOLATIONS COMPLETE!
 
 - Admin dashboard pages (3 pages) ⭐ HIGH PRIORITY
+- Admin categories edit (1 page) ⭐ HIGH PRIORITY
 - Admin hero-slides (3 pages)
 - Admin payouts (1 page)
 - Seller dashboard pages (2 pages) ⭐ HIGH PRIORITY
 - Product reviews (2 components)
 - User favorites (1 page)
 - Public search & contact (2 pages)
-  **Remaining**: 18
+  **Remaining**: 17
 
-**Estimated Time**: 2-4 hours remaining (44% complete)
+**Estimated Time**: 2-3 hours remaining (47% complete - all direct fetch() done!)
 
 ---
 

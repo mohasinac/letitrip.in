@@ -11,6 +11,7 @@ import CategorySelector, {
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { categoriesService } from "@/services/categories.service";
 
 interface CategoryFormProps {
   initialData?: {

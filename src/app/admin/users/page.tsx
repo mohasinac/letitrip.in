@@ -147,12 +147,16 @@ export default function AdminUsersPage() {
 
       // Use appropriate usersService method based on action
       if (actionId === "ban") {
-        await Promise.all(selectedIds.map(id => usersService.ban(id, { isBanned: true })));
+        await Promise.all(
+          selectedIds.map((id) => usersService.ban(id, { isBanned: true }))
+        );
       } else if (actionId === "unban") {
-        await Promise.all(selectedIds.map(id => usersService.ban(id, { isBanned: false })));
+        await Promise.all(
+          selectedIds.map((id) => usersService.ban(id, { isBanned: false }))
+        );
       }
       // Note: delete action not supported by usersService yet
-      
+
       await loadUsers();
       setSelectedIds([]);
     } catch (error) {
@@ -171,7 +175,7 @@ export default function AdminUsersPage() {
       await usersService.update(userId, updates);
       await loadUsers();
       return; // Exit early after using service
-      
+
       const response = await fetch("/admin/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

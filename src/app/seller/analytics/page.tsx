@@ -72,16 +72,16 @@ export default function AnalyticsPage() {
 
         const data = await analyticsService.getOverview({
           shopId: selectedShopId || undefined,
-          startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0],
+          startDate: startDate.toISOString().split("T")[0],
+          endDate: endDate.toISOString().split("T")[0],
         });
-        
+
         // Map analytics overview to detailed analytics format
         setAnalytics({
-          revenue: { 
-            total: data.totalRevenue || 0, 
-            average: data.averageOrderValue || 0, 
-            trend: data.revenueGrowth || 0 
+          revenue: {
+            total: data.totalRevenue || 0,
+            average: data.averageOrderValue || 0,
+            trend: data.revenueGrowth || 0,
           },
           orders: {
             total: data.totalOrders || 0,
@@ -89,15 +89,15 @@ export default function AnalyticsPage() {
             completed: (data as any).completedOrders || 0,
             cancelled: (data as any).cancelledOrders || 0,
           },
-          products: { 
-            total: data.totalProducts || 0, 
-            active: (data as any).activeProducts || 0, 
-            outOfStock: (data as any).outOfStockProducts || 0 
+          products: {
+            total: data.totalProducts || 0,
+            active: (data as any).activeProducts || 0,
+            outOfStock: (data as any).outOfStockProducts || 0,
           },
-          customers: { 
-            total: data.totalCustomers || 0, 
-            new: (data as any).newCustomers || 0, 
-            returning: (data as any).returningCustomers || 0 
+          customers: {
+            total: data.totalCustomers || 0,
+            new: (data as any).newCustomers || 0,
+            returning: (data as any).returningCustomers || 0,
           },
           conversionRate: data.conversionRate || 0,
           averageOrderValue: data.averageOrderValue || 0,
@@ -108,7 +108,7 @@ export default function AnalyticsPage() {
       } catch (err) {
         console.error("Error fetching analytics:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load analytics",
+          err instanceof Error ? err.message : "Failed to load analytics"
         );
       } finally {
         setLoading(false);

@@ -6,6 +6,7 @@ import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import type { Auction, AuctionStatus } from "@/types";
+import { auctionsService } from "@/services/auctions.service";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
@@ -66,12 +67,7 @@ export default function AuctionForm({
     setSlugError("");
 
     try {
-      const response = await fetch(
-        `/api/auctions/validate-slug?slug=${encodeURIComponent(slug)}&shop_id=${
-          formData.shopId
-        }`,
-      );
-      const data = await response.json();
+      const data = await auctionsService.validateSlug(slug, formData.shopId);
 
       if (!data.available) {
         setSlugError("This URL is already taken");

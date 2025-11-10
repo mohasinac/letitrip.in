@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
     const loadStats = async () => {
       try {
         const data = await analyticsService.getOverview();
-        
+
         // Map analytics data to dashboard stats format
         setStats({
           overview: {
@@ -81,8 +81,14 @@ export default function AdminDashboardPage() {
             users: { value: 0, isPositive: true },
             shops: { value: 0, isPositive: true },
             products: { value: 0, isPositive: true },
-            orders: { value: data.ordersGrowth || 0, isPositive: (data.ordersGrowth || 0) >= 0 },
-            revenue: { value: data.revenueGrowth || 0, isPositive: (data.revenueGrowth || 0) >= 0 },
+            orders: {
+              value: data.ordersGrowth || 0,
+              isPositive: (data.ordersGrowth || 0) >= 0,
+            },
+            revenue: {
+              value: data.revenueGrowth || 0,
+              isPositive: (data.revenueGrowth || 0) >= 0,
+            },
           },
           recentActivity: (data as any).recentActivity || [],
           pendingActions: (data as any).pendingActions || {

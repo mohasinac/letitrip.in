@@ -5,6 +5,7 @@ import { Loader2, Plus, X } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import TagInput from "@/components/common/TagInput";
 import type { Coupon, CouponType } from "@/types";
+import { couponsService } from "@/services/coupons.service";
 
 interface CouponFormProps {
   mode: "create" | "edit";
@@ -97,12 +98,7 @@ export default function CouponForm({
     setCodeError("");
 
     try {
-      const response = await fetch(
-        `/api/coupons/validate-code?code=${encodeURIComponent(code)}&shop_id=${
-          formData.shopId
-        }`,
-      );
-      const data = await response.json();
+      const data = await couponsService.validateCode(code, formData.shopId);
 
       if (!data.available) {
         setCodeError("This coupon code is already in use");

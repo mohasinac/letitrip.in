@@ -74,6 +74,20 @@ class AuctionsService {
     return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
   }
 
+  // Validate slug availability (for form validation)
+  async validateSlug(
+    slug: string,
+    shopId?: string,
+  ): Promise<{ available: boolean; message?: string }> {
+    const params = new URLSearchParams();
+    params.append("slug", slug);
+    if (shopId) params.append("shop_id", shopId);
+
+    return apiService.get<{ available: boolean; message?: string }>(
+      `/auctions/validate-slug?${params.toString()}`,
+    );
+  }
+
   // Get auction bids
   async getBids(
     id: string,
