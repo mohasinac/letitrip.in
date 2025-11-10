@@ -41,7 +41,7 @@ curl http://localhost:3000/api/homepage/hero-slides
     {
       "id": "slide1",
       "imageUrl": "https://...",
-      "title": "Welcome to JustForView",
+      "title": "Welcome to Letitrip",
       "subtitle": "Best Auction Platform",
       "buttonText": "Shop Now",
       "buttonUrl": "/products",

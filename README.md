@@ -1,6 +1,8 @@
-# JustForView.in - Auction Platform
+# Letitrip.in - Auction & E-commerce Platform
 
-Modern, scalable auction and e-commerce platform built for the Indian market with Next.js 14+, TypeScript, Firebase, and Socket.IO.
+Modern, scalable auction and e-commerce platform built for the Indian market with Next.js 15+, TypeScript, Firebase, and Socket.IO.
+
+**Repository**: https://github.com/mohasinac/letitrip.in
 
 ## 🚀 Features
 
@@ -41,7 +43,7 @@ Modern, scalable auction and e-commerce platform built for the Indian market wit
 ## 📁 Project Structure
 
 ```
-justforview.in/
+letitrip.in/
 ├── src/
 │   ├── app/                           # Next.js App Router (Pages & Routes)
 │   │   ├── api/                       # API Routes
@@ -136,17 +138,20 @@ Fill in your Firebase and Sentry credentials:
 
 ```env
 # Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project-id.iam.gserviceaccount.com
+FIREBASE_PROJECT_ID=letitrip-in-app
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
+FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
 
 # Firebase Client SDK (Frontend)
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
 
 # Sentry (Error Tracking)
 NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
@@ -426,8 +431,8 @@ const config = {
 Edit `src/app/api/middleware/logger.ts`:
 
 ```typescript
-level: (process.env.LOG_LEVEL || "debug", // Log level
-  logger.add(new winston.transports.Console()));
+level: process.env.LOG_LEVEL || "debug", // Log level
+  logger.add(new winston.transports.Console());
 ```
 
 ### Auction Settings
@@ -650,7 +655,7 @@ firebase deploy
 
 ## 📧 Support
 
-- **Email**: support@justforview.in
+- **Email**: support@letitrip.in
 - **Issues**: Open a GitHub issue for bugs or feature requests
 - **Documentation**: Check `AI-AGENT-GUIDE.md` for development help
 

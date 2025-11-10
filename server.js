@@ -54,7 +54,7 @@ app.prepare().then(() => {
     console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
-║  🚀 JustForView.in Server Ready                            ║
+║  🚀 Letitrip.in Server Ready                               ║
 ║                                                            ║
 ║  ➤ Local:    http://${hostname}:${port}                           ║
 ║  ➤ Network:  Use your network IP                          ║

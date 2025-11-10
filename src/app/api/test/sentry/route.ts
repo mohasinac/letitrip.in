@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     // Test 4: Set user context
     Sentry.setUser({
       id: "test-user-123",
-      email: "test@justforview.in",
+      email: "test@letitrip.in",
       username: "Test User",
     });
 

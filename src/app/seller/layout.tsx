@@ -4,10 +4,10 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Seller Dashboard - JustForView.in",
-    default: "Seller Dashboard - JustForView.in",
+    template: "%s | Seller Dashboard - Letitrip",
+    default: "Seller Dashboard - Letitrip",
   },
-  description: "Manage your shop, products, orders, and more on JustForView.in",
+  description: "Manage your shop, products, orders, and more on Letitrip",
 };
 
 export default function SellerLayout({

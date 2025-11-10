@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import ReviewsListClient from "./ReviewsListClient";
 
 export const metadata: Metadata = {
-  title: "Customer Reviews | JustForView.in",
+  title: "Customer Reviews | Letitrip",
   description:
-    "Read authentic customer reviews and ratings for products on JustForView.in. Verified purchases and honest feedback.",
+    "Read authentic customer reviews and ratings for products on Letitrip. Verified purchases and honest feedback.",
 };
 
 export default function ReviewsPage() {

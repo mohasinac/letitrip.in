@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import BlogListClient from "./BlogListClient";
 
 export const metadata: Metadata = {
-  title: "Blog | JustForView.in",
+  title: "Blog | Letitrip",
   description:
-    "Read the latest articles, guides, and updates about collectibles, auctions, and more from JustForView.in",
+    "Read the latest articles, guides, and updates about collectibles, auctions, and more from Letitrip",
 };
 
 export default function BlogPage() {

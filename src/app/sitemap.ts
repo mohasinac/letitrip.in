@@ -4,7 +4,7 @@ import { MetadataRoute } from "next";
 async function fetchProducts() {
   try {
     const res = await fetch(
-      "https://justforview.in/api/products?status=active&limit=1000",
+      "https://letitrip.in/api/products?status=active&limit=1000",
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       },
@@ -21,7 +21,7 @@ async function fetchProducts() {
 async function fetchCategories() {
   try {
     const res = await fetch(
-      "https://justforview.in/api/categories?limit=1000",
+      "https://letitrip.in/api/categories?limit=1000",
       {
         next: { revalidate: 3600 },
       },
@@ -38,7 +38,7 @@ async function fetchCategories() {
 async function fetchShops() {
   try {
     const res = await fetch(
-      "https://justforview.in/api/shops?status=active&limit=1000",
+      "https://letitrip.in/api/shops?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
       },
@@ -55,7 +55,7 @@ async function fetchShops() {
 async function fetchAuctions() {
   try {
     const res = await fetch(
-      "https://justforview.in/api/auctions?status=active&limit=1000",
+      "https://letitrip.in/api/auctions?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
       },
@@ -70,7 +70,7 @@ async function fetchAuctions() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://justforview.in";
+  const baseUrl = "https://letitrip.in";
   const currentDate = new Date();
 
   // Static pages with their priorities and change frequencies

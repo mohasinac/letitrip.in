@@ -45,7 +45,7 @@ export default function CheckoutPage() {
   const [shippingAddressId, setShippingAddressId] = useState("");
   const [billingAddressId, setBillingAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "razorpay",
+    "razorpay"
   );
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [notes, setNotes] = useState("");
@@ -80,7 +80,7 @@ export default function CheckoutPage() {
     return shopGroups.reduce((sum, shop) => {
       const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
-        0,
+        0
       );
       const discount = shop.coupon?.discountAmount || 0;
       const shipping = subtotal >= 5000 ? 0 : 100;
@@ -140,7 +140,7 @@ export default function CheckoutPage() {
 
     const subtotal = shop.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
-      0,
+      0
     );
     const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
@@ -184,7 +184,7 @@ export default function CheckoutPage() {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "test_key",
           amount: result.amount,
           currency: result.currency,
-          name: "JustForView",
+          name: "Letitrip",
           description: `${result.orders.length} order(s) - Total ₹${result.total}`,
           order_id: result.razorpay_order_id,
           handler: async function (response: any) {
@@ -198,7 +198,7 @@ export default function CheckoutPage() {
 
               // Redirect to first order (or create a multi-order success page)
               router.push(
-                `/user/orders/${orderIds[0]}?success=true&multi=true`,
+                `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
               alert(error.message || "Payment verification failed");
@@ -272,8 +272,8 @@ export default function CheckoutPage() {
                         isCompleted
                           ? "bg-green-500 text-white"
                           : isCurrent
-                            ? "bg-primary text-white"
-                            : "bg-gray-200 text-gray-400"
+                          ? "bg-primary text-white"
+                          : "bg-gray-200 text-gray-400"
                       }`}
                     >
                       {isCompleted ? (
@@ -429,7 +429,7 @@ export default function CheckoutPage() {
                 {shopGroups.map((shop) => {
                   const subtotal = shop.items.reduce(
                     (sum, item) => sum + item.price * item.quantity,
-                    0,
+                    0
                   );
                   const discount =
                     shopCoupons[shop.shopId]?.discountAmount || 0;

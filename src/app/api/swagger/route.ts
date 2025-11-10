@@ -9,7 +9,7 @@ export async function GET() {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "justforview.in API",
+        title: "Letitrip API",
         version: "1.0.0",
         description:
           "Unified API (role-based) for shops, products, categories, coupons, orders, returns, auctions, media.",

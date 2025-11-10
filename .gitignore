@@ -26,22 +26,31 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.local
+.env.production
+.env.production.new
 .env
 !.env.example
 
+# Firebase
+*firebase*adminsdk*.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
 # vercel
 .vercel
-vercel.json
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.env.production
-.env.production.new
-.env.production.example
-.env.example
-logs/api.log
-logs/combined.log
-logs/combined.log
-logs/api.log
+
+# logs
+logs/
+*.log
+
+# GitHub Copilot
 .github/copilot-instructions.md
+.env.example
+.env.local.example
