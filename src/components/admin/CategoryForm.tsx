@@ -77,20 +77,17 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await fetch("/api/categories");
-        const result = await response.json();
-        if (result.success && result.data) {
-          const transformed = result.data.map((cat: any) => ({
-            id: cat.id,
-            name: cat.name,
-            slug: cat.slug,
-            parent_id: cat.parent_id,
-            level: 0,
-            has_children: false,
-            is_active: cat.is_active,
-          }));
-          setCategories(transformed);
-        }
+        const data = await categoriesService.list();
+        const transformed = data.map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          parent_id: cat.parent_id,
+          level: 0,
+          has_children: false,
+          is_active: cat.is_active,
+        }));
+        setCategories(transformed);
       } catch (error) {
         console.error("Failed to load categories:", error);
       }
@@ -122,23 +119,13 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     try {
       setLoading(true);
 
-      const url =
-        mode === "create"
-          ? "/api/categories"
-          : `/api/categories/${initialData?.slug}`;
-
-      const method = mode === "create" ? "POST" : "PATCH";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to save category");
+      if (mode === "create") {
+        await categoriesService.create(formData as any);
+      } else {
+        await categoriesService.update(
+          initialData?.slug || "",
+          formData as any
+        );
       }
 
       // Success! Clear tracking

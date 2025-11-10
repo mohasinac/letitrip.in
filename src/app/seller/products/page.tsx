@@ -24,7 +24,7 @@ import {
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { productsService } from "@/services/products.service";
-import { apiService } from "@/services/api.service";
+import { categoriesService } from "@/services/categories.service";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { getProductBulkActions } from "@/constants/bulk-actions";
 import {
@@ -35,7 +35,6 @@ import {
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { Product } from "@/types";
-import { API_ROUTES } from "@/constants/api-routes";
 
 export default function ProductsPage() {
   const isMobile = useIsMobile();
@@ -87,14 +86,10 @@ export default function ProductsPage() {
 
   const loadCategories = async () => {
     try {
-      const response = await apiService.get<{ success: boolean; data: any[] }>(
-        API_ROUTES.CATEGORY.LIST
+      const categories = await categoriesService.list({ isActive: true });
+      setCategories(
+        categories.map((cat) => ({ id: cat.id, name: cat.name }))
       );
-      if (response.success && response.data) {
-        setCategories(
-          response.data.map((cat: any) => ({ id: cat.id, name: cat.name }))
-        );
-      }
     } catch (error) {
       console.error("Failed to load categories:", error);
     }
@@ -122,13 +117,10 @@ export default function ProductsPage() {
   const handleBulkAction = async (actionId: string, input?: any) => {
     try {
       setActionLoading(true);
-      const response = await apiService.post<{ success: boolean }>(
-        "/api/seller/products/bulk",
-        {
-          action: actionId,
-          ids: selectedIds,
-          input,
-        }
+      const response = await productsService.bulkAction(
+        actionId,
+        selectedIds,
+        input
       );
 
       if (response.success) {
@@ -377,18 +369,14 @@ export default function ProductsPage() {
 
                             setValidationErrors({});
 
-                            // Create product via API directly since service requires more fields
-                            await apiService.post("/api/seller/products", {
+                            // Create product using service
+                            await productsService.quickCreate({
                               name: values.name,
                               price: values.price,
                               stockCount: values.stockCount,
                               categoryId: values.categoryId,
                               status: values.status,
                               images: values.images ? [values.images] : [],
-                              description: "", // Required field
-                              slug: values.name
-                                .toLowerCase()
-                                .replace(/\s+/g, "-"),
                             });
                             await loadProducts();
                           } catch (error) {
@@ -445,15 +433,12 @@ export default function ProductsPage() {
 
                                   setValidationErrors({});
 
-                                  await apiService.patch(
-                                    `/api/products/${product.slug}`,
-                                    {
-                                      ...values,
-                                      images: values.images
-                                        ? [values.images]
-                                        : product.images,
-                                    }
-                                  );
+                                  await productsService.quickUpdate(product.slug, {
+                                    ...values,
+                                    images: values.images
+                                      ? [values.images]
+                                      : product.images,
+                                  });
                                   await loadProducts();
                                   setEditingId(null);
                                 } catch (error) {

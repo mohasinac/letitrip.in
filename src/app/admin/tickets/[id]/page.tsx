@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { apiService } from "@/services/api.service";
-import { ADMIN_ROUTES } from "@/constants/api-routes";
+import { supportService } from "@/services/support.service";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -45,10 +44,8 @@ export default function AdminTicketDetailsPage() {
     setError("");
 
     try {
-      const response: any = await apiService.get(
-        ADMIN_ROUTES.TICKET_BY_ID(ticketId)
-      );
-      setTicket(response.data);
+      const response = await supportService.getTicket(ticketId);
+      setTicket(response);
     } catch (err: any) {
       console.error("Error fetching ticket:", err);
       setError(err.message || "Failed to load ticket");
@@ -67,7 +64,7 @@ export default function AdminTicketDetailsPage() {
     setIsSubmitting(true);
 
     try {
-      await apiService.post(ADMIN_ROUTES.TICKET_REPLY(ticketId), {
+      await supportService.replyToTicket(ticketId, {
         message: replyMessage,
         isInternal,
       });
@@ -86,8 +83,8 @@ export default function AdminTicketDetailsPage() {
   const handleStatusChange = async (newStatus: string) => {
     setIsUpdating(true);
     try {
-      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(ticketId), {
-        status: newStatus,
+      await supportService.updateTicket(ticketId, {
+        status: newStatus as any,
       });
       await fetchTicket();
     } catch (err: any) {
@@ -101,8 +98,8 @@ export default function AdminTicketDetailsPage() {
   const handlePriorityChange = async (newPriority: string) => {
     setIsUpdating(true);
     try {
-      await apiService.patch(ADMIN_ROUTES.TICKET_BY_ID(ticketId), {
-        priority: newPriority,
+      await supportService.updateTicket(ticketId, {
+        priority: newPriority as any,
       });
       await fetchTicket();
     } catch (err: any) {

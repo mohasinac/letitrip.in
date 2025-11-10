@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { apiService } from "@/services/api.service";
-import { SUPPORT_ROUTES } from "@/constants/api-routes";
+import { supportService } from "@/services/support.service";
 import type { SupportTicket } from "@/types";
 
 const statusColors = {
@@ -44,14 +43,10 @@ export default function UserTicketsPage() {
     setError("");
 
     try {
-      const params: any = {};
-      if (filter.status) params.status = filter.status;
-      if (filter.category) params.category = filter.category;
-
-      const response: any = await apiService.get(
-        SUPPORT_ROUTES.TICKETS,
-        params
-      );
+      const response = await supportService.listTickets({
+        status: filter.status as any,
+        category: filter.category as any,
+      });
       setTickets(response.data || []);
     } catch (err: any) {
       console.error("Error fetching tickets:", err);

@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { apiService } from "@/services/api.service";
-import { ADMIN_ROUTES } from "@/constants/api-routes";
+import { supportService } from "@/services/support.service";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -33,14 +32,13 @@ export default function AdminTicketsPage() {
   const fetchTickets = async () => {
     setIsLoading(true);
     try {
-      const params: any = {};
-      if (filter.status) params.status = filter.status;
-      if (filter.category) params.category = filter.category;
-      if (filter.priority) params.priority = filter.priority;
-
-      const response: any = await apiService.get(ADMIN_ROUTES.TICKETS, params);
+      const response = await supportService.listTickets({
+        status: filter.status as any,
+        category: filter.category as any,
+        priority: filter.priority as any,
+      });
       setTickets(response.data || []);
-      setStats(response.stats || {});
+      setStats((response as any).stats || {});
     } catch (err: any) {
       console.error("Error fetching admin tickets:", err);
     } finally {

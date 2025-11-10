@@ -11,8 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { apiService } from "@/services/api.service";
-import { USER_ROUTES } from "@/constants/api-routes";
+import { addressService } from "@/services/address.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { FormModal } from "@/components/common/FormModal";
 
@@ -57,9 +56,7 @@ function AddressesContent() {
   const loadAddresses = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get<{ addresses: Address[] }>(
-        USER_ROUTES.ADDRESSES
-      );
+      const data = await addressService.getAll();
       setAddresses(data.addresses || []);
     } catch (error) {
       console.error("Failed to load addresses:", error);
@@ -104,12 +101,9 @@ function AddressesContent() {
 
     try {
       if (editingAddress) {
-        await apiService.patch(
-          USER_ROUTES.ADDRESS_BY_ID(editingAddress.id),
-          formData
-        );
+        await addressService.update(editingAddress.id, formData);
       } else {
-        await apiService.post(USER_ROUTES.ADDRESSES, formData);
+        await addressService.create(formData as any);
       }
       setShowAddressForm(false);
       loadAddresses();
@@ -123,7 +117,7 @@ function AddressesContent() {
     if (!deleteId) return;
 
     try {
-      await apiService.delete(USER_ROUTES.ADDRESS_BY_ID(deleteId));
+      await addressService.delete(deleteId);
       setDeleteId(null);
       loadAddresses();
     } catch (error) {
@@ -134,9 +128,7 @@ function AddressesContent() {
 
   const handleSetDefault = async (id: string) => {
     try {
-      await apiService.patch(USER_ROUTES.ADDRESS_BY_ID(id), {
-        isDefault: true,
-      });
+      await addressService.setDefault(id);
       loadAddresses();
     } catch (error) {
       console.error("Failed to set default address:", error);

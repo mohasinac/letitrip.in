@@ -174,6 +174,40 @@ class ProductsService {
     const res = await apiService.get<any>(endpoint);
     return res.data || res.products || res;
   }
+
+  // Bulk actions for seller dashboard
+  async bulkAction(
+    action: string,
+    ids: string[],
+    input?: any
+  ): Promise<{ success: boolean }> {
+    return apiService.post("/api/seller/products/bulk", {
+      action,
+      ids,
+      input,
+    });
+  }
+
+  // Quick create for inline editing (minimal fields)
+  async quickCreate(data: {
+    name: string;
+    price: number;
+    stockCount: number;
+    categoryId: string;
+    status?: string;
+    images?: string[];
+  }): Promise<Product> {
+    return apiService.post("/api/seller/products", {
+      ...data,
+      description: "", // Required field with default
+      slug: data.name.toLowerCase().replace(/\s+/g, "-"),
+    });
+  }
+
+  // Quick update for inline editing (any fields)
+  async quickUpdate(slug: string, data: any): Promise<Product> {
+    return apiService.patch(`/api/products/${slug}`, data);
+  }
 }
 
 export const productsService = new ProductsService();

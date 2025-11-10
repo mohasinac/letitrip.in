@@ -11,14 +11,7 @@ import {
   Store,
   FolderTree,
 } from "lucide-react";
-import { apiService } from "@/services/api.service";
-
-interface SearchResult {
-  products: any[];
-  shops: any[];
-  categories: any[];
-  total: number;
-}
+import { searchService, SearchResult } from "@/services/search.service";
 
 export default function SearchBar() {
   const router = useRouter();
@@ -78,9 +71,7 @@ export default function SearchBar() {
   const performSearch = async (searchQuery: string) => {
     try {
       setLoading(true);
-      const data = (await apiService.get(
-        `/api/search?q=${encodeURIComponent(searchQuery)}`,
-      )) as SearchResult;
+      const data = await searchService.quickSearch(searchQuery);
       setResults(data);
       setShowResults(true);
     } catch (error) {

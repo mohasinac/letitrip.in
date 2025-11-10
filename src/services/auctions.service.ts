@@ -77,14 +77,14 @@ class AuctionsService {
   // Validate slug availability (for form validation)
   async validateSlug(
     slug: string,
-    shopId?: string,
+    shopId?: string
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
     params.append("slug", slug);
     if (shopId) params.append("shop_id", shopId);
 
     return apiService.get<{ available: boolean; message?: string }>(
-      `/auctions/validate-slug?${params.toString()}`,
+      `/auctions/validate-slug?${params.toString()}`
     );
   }
 
@@ -92,7 +92,7 @@ class AuctionsService {
   async getBids(
     id: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<PaginatedResponse<Bid>> {
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
@@ -115,7 +115,7 @@ class AuctionsService {
   async setFeatured(
     id: string,
     isFeatured: boolean,
-    priority?: number,
+    priority?: number
   ): Promise<Auction> {
     return apiService.patch<Auction>(`/auctions/${id}/feature`, {
       isFeatured,
@@ -187,6 +187,38 @@ class AuctionsService {
   // Get user's won auctions
   async getWonAuctions(): Promise<Auction[]> {
     return apiService.get<Auction[]>("/auctions/won");
+  }
+
+  // Bulk actions for seller dashboard
+  async bulkAction(
+    action: string,
+    ids: string[]
+  ): Promise<{ success: boolean }> {
+    return apiService.post("/api/seller/auctions/bulk", {
+      action,
+      ids,
+    });
+  }
+
+  // Quick create for inline editing (minimal fields)
+  async quickCreate(data: {
+    name: string;
+    startingBid: number;
+    startTime: Date | string;
+    endTime: Date | string;
+    status?: string;
+    images?: string[];
+  }): Promise<Auction> {
+    return apiService.post("/api/seller/auctions", {
+      ...data,
+      description: "", // Required field with default
+      slug: data.name.toLowerCase().replace(/\s+/g, "-"),
+    });
+  }
+
+  // Quick update for inline editing (any fields)
+  async quickUpdate(id: string, data: any): Promise<Auction> {
+    return apiService.patch(`/api/auctions/${id}`, data);
   }
 }
 

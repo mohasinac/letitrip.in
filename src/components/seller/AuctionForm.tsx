@@ -268,7 +268,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={3}
@@ -293,7 +293,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={2}

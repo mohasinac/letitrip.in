@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { apiService } from "@/services/api.service";
-import { SUPPORT_ROUTES } from "@/constants/api-routes";
+import { supportService } from "@/services/support.service";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -43,10 +42,8 @@ export default function TicketDetailsPage() {
     setError("");
 
     try {
-      const response: any = await apiService.get(
-        SUPPORT_ROUTES.TICKET_BY_ID(ticketId)
-      );
-      setTicket(response.data);
+      const response = await supportService.getTicket(ticketId);
+      setTicket(response);
     } catch (err: any) {
       console.error("Error fetching ticket:", err);
       setError(err.message || "Failed to load ticket");
@@ -65,7 +62,7 @@ export default function TicketDetailsPage() {
     setIsSubmitting(true);
 
     try {
-      await apiService.post(SUPPORT_ROUTES.REPLY(ticketId), {
+      await supportService.replyToTicket(ticketId, {
         message: replyMessage,
       });
 

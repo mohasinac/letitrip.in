@@ -38,7 +38,6 @@ import {
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
-import { apiService } from "@/services/api.service";
 import type { Auction, AuctionStatus } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -93,13 +92,7 @@ export default function SellerAuctionsPage() {
   const handleBulkAction = async (actionId: string) => {
     try {
       setActionLoading(true);
-      const response = await apiService.post<{ success: boolean }>(
-        "/api/seller/auctions/bulk",
-        {
-          action: actionId,
-          ids: selectedIds,
-        }
-      );
+      const response = await auctionsService.bulkAction(actionId, selectedIds);
 
       if (response.success) {
         await loadAuctions();
@@ -395,17 +388,13 @@ export default function SellerAuctionsPage() {
 
                             setValidationErrors({});
 
-                            await apiService.post("/api/seller/auctions", {
+                            await auctionsService.quickCreate({
                               name: values.name,
                               startingBid: values.startingBid,
                               startTime: values.startTime,
                               endTime: values.endTime,
                               status: values.status,
                               images: values.images ? [values.images] : [],
-                              description: "",
-                              slug: values.name
-                                .toLowerCase()
-                                .replace(/\s+/g, "-"),
                             });
                             await loadAuctions();
                           } catch (error) {
@@ -458,15 +447,12 @@ export default function SellerAuctionsPage() {
 
                                   setValidationErrors({});
 
-                                  await apiService.patch(
-                                    `/api/auctions/${auction.id}`,
-                                    {
-                                      ...values,
-                                      images: values.images
-                                        ? [values.images]
-                                        : auction.images,
-                                    }
-                                  );
+                                  await auctionsService.quickUpdate(auction.id, {
+                                    ...values,
+                                    images: values.images
+                                      ? [values.images]
+                                      : auction.images,
+                                  });
                                   await loadAuctions();
                                   setEditingId(null);
                                 } catch (error) {

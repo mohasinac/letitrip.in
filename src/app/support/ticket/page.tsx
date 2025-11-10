@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiService } from "@/services/api.service";
-import { SUPPORT_ROUTES } from "@/constants/api-routes";
+import { supportService } from "@/services/support.service";
 
 export default function SupportTicketPage() {
   const router = useRouter();
@@ -34,7 +33,7 @@ export default function SupportTicketPage() {
     setIsSubmitting(true);
 
     try {
-      await apiService.post(SUPPORT_ROUTES.CREATE_TICKET, formData);
+      await supportService.createTicket(formData as any);
       // Redirect to tickets list
       router.push("/user/tickets");
     } catch (err: any) {
