@@ -48,6 +48,9 @@
     "monitor:prod": "node scripts/monitor-production.js",
     "setup:vercel": "powershell -ExecutionPolicy Bypass -File scripts/setup-vercel-env.ps1",
     "setup:firebase-rules": "firebase deploy --only firestore:rules,firestore:indexes,storage,database",
+    "deploy:prod": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1",
+    "deploy:prod:skip-env": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1 -SkipEnvUpdate",
+    "deploy:prod:force": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1 -Force",
     "test:bulk-actions": "node scripts/test-bulk-actions.js",
     "test:bulk-actions:integration": "node --experimental-modules scripts/test-bulk-actions-integration.mjs"
   },
