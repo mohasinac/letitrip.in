@@ -19,6 +19,7 @@ npm run sync:env:bulk
 ```
 
 This will:
+
 - Read all 50 variables from `.env.local`
 - Set them one by one in Vercel production
 - Show progress for each variable
@@ -35,30 +36,32 @@ This will:
 
 ### Environment Variable Sync
 
-| Command | Description |
-|---------|-------------|
-| `npm run sync:env:bulk` | Bulk set all variables from `.env.local` |
-| `npm run sync:env:bulk:dry-run` | Preview what variables will be set |
-| `npm run sync:env` | Alternative sync method |
-| `npm run sync:env:production` | Sync from `.env.production` |
+| Command                         | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `npm run sync:env:bulk`         | Bulk set all variables from `.env.local` |
+| `npm run sync:env:bulk:dry-run` | Preview what variables will be set       |
+| `npm run sync:env`              | Alternative sync method                  |
+| `npm run sync:env:production`   | Sync from `.env.production`              |
 
 ### Deployment Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run deploy:prod` | Full deployment (updates env + deploys) |
-| `npm run deploy:prod:skip-env` | Deploy without updating env vars |
-| `npm run deploy:prod:force` | Force deploy even if env update fails |
+| Command                        | Description                             |
+| ------------------------------ | --------------------------------------- |
+| `npm run deploy:prod`          | Full deployment (updates env + deploys) |
+| `npm run deploy:prod:skip-env` | Deploy without updating env vars        |
+| `npm run deploy:prod:force`    | Force deploy even if env update fails   |
 
 ## Your Current Setup
 
 ### ✅ What's Already Done
 
 1. **Project Linked to Vercel** ✓
+
    - Project: `letitrip-in`
    - Scope: Mohasin Ahamed Chinnapattan's projects
 
 2. **First Deployment Successful** ✓
+
    - URL: https://letitrip-4y8ljbwnj-mohasin-ahamed-chinnapattans-projects.vercel.app
    - Status: Live
 
@@ -114,11 +117,13 @@ Visit your production URL and test that everything works with the new environmen
 You have three environment files:
 
 1. **`.env.local`** (50 variables)
+
    - Local development configuration
    - Most complete set of variables
    - **Use this for Vercel production**
 
 2. **`.env.production`** (21 variables)
+
    - Production-specific configuration
    - Subset of variables
    - Used for reference
@@ -157,12 +162,14 @@ You have three environment files:
 ## Recommended Approach
 
 **Use `.env.local` for Vercel** because it has:
+
 - ✅ Complete Firebase configuration (Admin + Client)
 - ✅ All payment gateway credentials
 - ✅ All service integrations
 - ✅ Complete feature set
 
 **Then update production-specific values manually:**
+
 - `NEXT_PUBLIC_API_URL` → `https://letitrip.in/api`
 - `NEXT_PUBLIC_SITE_URL` → `https://letitrip.in`
 - `NEXTAUTH_URL` → `https://letitrip.in`
@@ -194,6 +201,7 @@ vercel env pull            # Download env vars
 ### Issue: Environment variables not setting
 
 **Solution:** Use the bulk setter:
+
 ```powershell
 npm run sync:env:bulk
 ```
@@ -201,6 +209,7 @@ npm run sync:env:bulk
 ### Issue: Deployment fails
 
 **Check these:**
+
 1. Run `npm run build` locally first
 2. Check for TypeScript errors
 3. Verify all required env vars are set
@@ -210,6 +219,7 @@ npm run sync:env:bulk
 **Likely cause:** Missing environment variables
 
 **Solution:**
+
 1. Compare local vs production env vars
 2. Set missing vars in Vercel dashboard
 3. Redeploy
@@ -217,16 +227,19 @@ npm run sync:env:bulk
 ## Next Steps
 
 1. **Right Now:**
+
    ```powershell
    npm run sync:env:bulk
    ```
 
 2. **After env vars are set:**
+
    ```powershell
    npm run deploy:prod:skip-env
    ```
 
 3. **Verify deployment:**
+
    - Visit your production URL
    - Test key features
    - Check browser console for errors
