@@ -11,11 +11,16 @@ const { execSync } = require('child_process');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const envFile = args[0] || '.env.local';
 const isDryRun = args.includes('--dry-run');
 const useProduction = args.includes('--env=production');
 
-const sourceFile = useProduction ? '.env.production' : envFile;
+// Determine source file
+let sourceFile = '.env.local';
+if (useProduction) {
+  sourceFile = '.env.production';
+} else if (args.length > 0 && !args[0].startsWith('--')) {
+  sourceFile = args[0];
+}
 
 console.log('============================================');
 console.log('Vercel Environment Variables Sync');
@@ -24,6 +29,7 @@ console.log('============================================\n');
 // Check if file exists
 if (!fs.existsSync(sourceFile)) {
   console.error(`❌ Error: ${sourceFile} not found!`);
+  console.error(`Available: .env.local, .env.production`);
   process.exit(1);
 }
 

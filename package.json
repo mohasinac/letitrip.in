@@ -51,6 +51,8 @@
     "sync:env": "node scripts/sync-env-to-vercel.js",
     "sync:env:production": "node scripts/sync-env-to-vercel.js --env=production",
     "sync:env:dry-run": "node scripts/sync-env-to-vercel.js --dry-run",
+    "sync:env:bulk": "node scripts/bulk-set-vercel-env.js",
+    "sync:env:bulk:dry-run": "node scripts/bulk-set-vercel-env.js --dry-run",
     "deploy:prod": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1",
     "deploy:prod:local": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1 -UseLocal",
     "deploy:prod:skip-env": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-vercel-prod.ps1 -SkipEnvUpdate",
