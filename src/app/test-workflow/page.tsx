@@ -20,6 +20,7 @@ import {
   Users,
   Sparkles,
   Home,
+  Image,
 } from "lucide-react";
 
 interface TestDataCounts {
@@ -32,6 +33,7 @@ interface TestDataCounts {
   shops: number;
   coupons: number;
   categories: number;
+  heroSlides: number;
   featuredProducts: number;
   featuredAuctions: number;
   featuredShops: number;
@@ -127,6 +129,7 @@ export default function TestWorkflowPage() {
     shops: 0,
     coupons: 0,
     categories: 0,
+    heroSlides: 0,
     featuredProducts: 0,
     featuredAuctions: 0,
     featuredShops: 0,
@@ -550,6 +553,12 @@ export default function TestWorkflowPage() {
               value: stats.coupons,
               icon: Tag,
               color: "pink",
+            },
+            {
+              label: "Hero Slides",
+              value: stats.heroSlides,
+              icon: Image,
+              color: "purple",
             },
             {
               label: "Featured",

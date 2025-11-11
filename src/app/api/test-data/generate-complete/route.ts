@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       orders: 0,
       tickets: 0,
       coupons: 0,
+      heroSlides: 0,
       featuredProducts: 0,
       featuredAuctions: 0,
       featuredShops: 0,
@@ -427,6 +428,81 @@ export async function POST(req: NextRequest) {
         await db.collection("coupons").add(couponData);
         stats.coupons++;
       }
+    }
+
+    // Step 10: Generate Hero Slides
+    const heroSlides = [];
+    const slideCategories = [
+      {
+        title: "Summer Sale",
+        subtitle: "Up to 50% off on fashion",
+        link: "/products?category=fashion",
+        cta: "Shop Now",
+      },
+      {
+        title: "New Arrivals",
+        subtitle: "Check out our latest products",
+        link: "/products?sort=newest",
+        cta: "Explore",
+      },
+      {
+        title: "Hot Auctions",
+        subtitle: "Bid on exclusive items today",
+        link: "/auctions",
+        cta: "View Auctions",
+      },
+      {
+        title: "Featured Shops",
+        subtitle: "Discover trusted sellers",
+        link: "/shops",
+        cta: "Browse Shops",
+      },
+      {
+        title: "Electronics Deal",
+        subtitle: "Best prices on gadgets",
+        link: "/products?category=electronics",
+        cta: "Shop Now",
+      },
+      {
+        title: "Home & Kitchen",
+        subtitle: "Transform your living space",
+        link: "/products?category=home-kitchen",
+        cta: "Learn More",
+      },
+      {
+        title: "Flash Sale",
+        subtitle: "Limited time offers ending soon",
+        link: "/products?featured=true",
+        cta: "Grab Now",
+      },
+      {
+        title: "Clearance Sale",
+        subtitle: "Huge discounts on select items",
+        link: "/products?discount=high",
+        cta: "Shop Now",
+      },
+    ];
+
+    for (let i = 0; i < Math.min(8, slideCategories.length); i++) {
+      const slide = slideCategories[i];
+      const heroSlideData = {
+        id: `${PREFIX}hero_slide_${i + 1}`,
+        title: slide.title,
+        subtitle: slide.subtitle,
+        image_url: `https://source.unsplash.com/1920x600/?${slide.title
+          .toLowerCase()
+          .replace(/\s+/g, "-")},banner&sig=${i}`,
+        link_url: slide.link,
+        cta_text: slide.cta,
+        position: i + 1,
+        is_active: Math.random() < 0.8, // 80% active
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      await db.collection("hero_slides").add(heroSlideData);
+      heroSlides.push(heroSlideData);
+      stats.heroSlides++;
     }
 
     return NextResponse.json({ success: true, stats });

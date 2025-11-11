@@ -16,6 +16,7 @@ export async function GET() {
       orders: 0,
       tickets: 0,
       coupons: 0,
+      heroSlides: 0,
       featuredProducts: 0,
       featuredAuctions: 0,
       featuredShops: 0,
@@ -142,6 +143,15 @@ export async function GET() {
       .count()
       .get();
     stats.coupons = couponsSnapshot.data().count;
+
+    // Count test hero slides
+    const heroSlidesSnapshot = await db
+      .collection("hero_slides")
+      .where("id", ">=", PREFIX)
+      .where("id", "<", PREFIX + "\uf8ff")
+      .count()
+      .get();
+    stats.heroSlides = heroSlidesSnapshot.data().count;
 
     return NextResponse.json({ success: true, stats });
   } catch (error: any) {

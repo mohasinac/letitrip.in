@@ -16,6 +16,7 @@ export async function POST() {
       orders: 0,
       tickets: 0,
       coupons: 0,
+      heroSlides: 0,
       bids: 0,
     };
 
@@ -27,6 +28,7 @@ export async function POST() {
       "orders",
       "support_tickets",
       "coupons",
+      "hero_slides",
       "auctions",
       "products",
       "shops",
@@ -71,6 +73,23 @@ export async function POST() {
       });
       await batch.commit();
       stats.users += userSnapshot.docs.length;
+    }
+
+    // Also delete hero slides by id pattern
+    const heroSlidesSnapshot = await db
+      .collection("hero_slides")
+      .where("id", ">=", PREFIX)
+      .where("id", "<", PREFIX + "\uf8ff")
+      .limit(500)
+      .get();
+
+    if (heroSlidesSnapshot.docs.length > 0) {
+      const batch = db.batch();
+      heroSlidesSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      stats.heroSlides = heroSlidesSnapshot.docs.length;
     }
 
     return NextResponse.json({ success: true, deleted: stats });
