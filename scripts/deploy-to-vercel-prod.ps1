@@ -3,7 +3,8 @@
 
 param(
     [switch]$SkipEnvUpdate = $false,
-    [switch]$Force = $false
+    [switch]$Force = $false,
+    [switch]$UseLocal = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -50,11 +51,26 @@ if (-not $SkipEnvUpdate) {
     Write-Host "============================================" -ForegroundColor Cyan
     Write-Host ""
 
-    # Read .env.production file
-    $envFile = ".env.production"
+    # Determine which env file to use
+    if ($UseLocal) {
+        $envFile = ".env.local"
+        Write-Host "Using .env.local file (fallback mode)" -ForegroundColor Yellow
+    } else {
+        $envFile = ".env.production"
+        Write-Host "Using .env.production file" -ForegroundColor Yellow
+    }
+
     if (-not (Test-Path $envFile)) {
         Write-Host "Error: $envFile not found!" -ForegroundColor Red
-        exit 1
+        
+        # Try fallback to .env.local if production file doesn't exist
+        if ($envFile -eq ".env.production" -and (Test-Path ".env.local")) {
+            Write-Host "Falling back to .env.local..." -ForegroundColor Yellow
+            $envFile = ".env.local"
+            $UseLocal = $true
+        } else {
+            exit 1
+        }
     }
 
     Write-Host "Reading environment variables from $envFile..." -ForegroundColor Yellow
@@ -88,22 +104,9 @@ if (-not $SkipEnvUpdate) {
     Write-Host "Found $($envVars.Count) environment variables" -ForegroundColor Green
     Write-Host ""
 
-    # Remove all existing production environment variables
-    Write-Host "Removing existing production environment variables..." -ForegroundColor Yellow
-    try {
-        $existingVars = vercel env ls production --json 2>$null | ConvertFrom-Json
-        if ($existingVars -and $existingVars.envs) {
-            foreach ($envVar in $existingVars.envs) {
-                Write-Host "  Removing: $($envVar.key)" -ForegroundColor DarkGray
-                vercel env rm $envVar.key production --yes 2>$null | Out-Null
-            }
-        }
-        Write-Host "Success: Existing variables removed" -ForegroundColor Green
-    } catch {
-        Write-Host "Warning: Could not remove existing variables" -ForegroundColor Yellow
-    }
-    Write-Host ""
-
+    # Create a temporary file to store environment variables
+    $tempEnvFile = [System.IO.Path]::GetTempFileName()
+    
     # Add new environment variables
     Write-Host "Adding environment variables to Vercel production..." -ForegroundColor Yellow
     $successCount = 0
@@ -121,19 +124,28 @@ if (-not $SkipEnvUpdate) {
         Write-Host "  Setting: $key" -ForegroundColor White
         
         try {
-            # Use echo to pipe value to vercel env add
-            $value | vercel env add $key production 2>$null | Out-Null
+            # Write value to temp file
+            $value | Out-File -FilePath $tempEnvFile -Encoding UTF8 -NoNewline
+            
+            # Use Get-Content and pipe to vercel env add
+            $result = Get-Content $tempEnvFile -Raw | vercel env add $key production 2>&1
+            
             if ($LASTEXITCODE -eq 0) {
                 $successCount++
                 Write-Host "    Success" -ForegroundColor Green
             } else {
                 $failCount++
-                Write-Host "    Failed" -ForegroundColor Red
+                Write-Host "    Failed: $result" -ForegroundColor Red
             }
         } catch {
             $failCount++
             Write-Host "    Error: $_" -ForegroundColor Red
         }
+    }
+
+    # Clean up temp file
+    if (Test-Path $tempEnvFile) {
+        Remove-Item $tempEnvFile -Force
     }
 
     Write-Host ""
@@ -147,9 +159,34 @@ if (-not $SkipEnvUpdate) {
     Write-Host ""
 
     if ($failCount -gt 0 -and -not $Force) {
-        $continue = Read-Host "Some environment variables failed to update. Continue with deployment? (y/N)"
+        Write-Host ""
+        Write-Host "==================================================" -ForegroundColor Yellow
+        Write-Host "Environment variables failed to update via CLI." -ForegroundColor Yellow
+        Write-Host "==================================================" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Option 1: Set variables manually via Vercel Dashboard" -ForegroundColor Cyan
+        Write-Host "  1. Go to: https://vercel.com/dashboard" -ForegroundColor White
+        Write-Host "  2. Select your project: letitrip-in" -ForegroundColor White
+        Write-Host "  3. Go to: Settings -> Environment Variables" -ForegroundColor White
+        Write-Host "  4. Copy variables from: $envFile" -ForegroundColor White
+        Write-Host ""
+        Write-Host "Option 2: Try with .env.local file" -ForegroundColor Cyan
+        Write-Host "  Run: .\scripts\deploy-to-vercel-prod.ps1 -UseLocal" -ForegroundColor White
+        Write-Host ""
+        Write-Host "Option 3: Pull from .env.local and push to Vercel" -ForegroundColor Cyan
+        Write-Host "  This script can read from .env.local instead" -ForegroundColor White
+        Write-Host ""
+        
+        $continue = Read-Host "Continue with deployment anyway? (y/N)"
         if ($continue -ne "y" -and $continue -ne "Y") {
             Write-Host "Deployment cancelled." -ForegroundColor Yellow
+            Write-Host ""
+            Write-Host "To set environment variables manually:" -ForegroundColor Cyan
+            Write-Host "  1. Open Vercel Dashboard" -ForegroundColor White
+            Write-Host "  2. Go to Project Settings -> Environment Variables" -ForegroundColor White
+            Write-Host "  3. Add each variable from $envFile" -ForegroundColor White
+            Write-Host "  4. Run deployment again with: npm run deploy:prod:skip-env" -ForegroundColor White
+            Write-Host ""
             exit 1
         }
     }
@@ -177,10 +214,19 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host ""
     Write-Host "Your application is now live in production!" -ForegroundColor Green
     Write-Host ""
+    
+    if ($successCount -eq 0 -and -not $SkipEnvUpdate) {
+        Write-Host "WARNING: Environment variables were not updated!" -ForegroundColor Yellow
+        Write-Host "Please set them manually in Vercel Dashboard:" -ForegroundColor Yellow
+        Write-Host "  https://vercel.com/dashboard -> Project Settings -> Environment Variables" -ForegroundColor White
+        Write-Host ""
+    }
+    
     Write-Host "Next steps:" -ForegroundColor Cyan
     Write-Host "  1. Visit your production URL" -ForegroundColor White
     Write-Host "  2. Check the Vercel dashboard for deployment details" -ForegroundColor White
-    Write-Host "  3. Monitor logs for any issues" -ForegroundColor White
+    Write-Host "  3. Verify environment variables in Settings" -ForegroundColor White
+    Write-Host "  4. Monitor logs for any issues" -ForegroundColor White
     Write-Host ""
 } else {
     Write-Host ""

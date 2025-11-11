@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
-import { apiRateLimiter, strictRateLimiter } from "@/lib/rate-limiter";
+import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 
 // GET /api/products/[slug]/reviews
 export async function GET(
