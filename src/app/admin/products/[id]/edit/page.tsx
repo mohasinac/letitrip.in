@@ -111,12 +111,12 @@ export default function AdminEditProductPage() {
 
       const [productData, categoriesData, shopsData] = await Promise.all([
         productsService.getById(productId),
-        categoriesService.list({ limit: 1000 }),
-        shopsService.list({ limit: 1000 }),
+        categoriesService.list({}),
+        shopsService.list({}),
       ]);
 
       setProduct(productData);
-      setCategories(categoriesData.data || []);
+      setCategories(categoriesData || []);
       setShops(shopsData.data || []);
 
       // Populate form
@@ -441,7 +441,7 @@ export default function AdminEditProductPage() {
                 )}
                 <MediaUploader
                   onFilesAdded={handleImageUpload}
-                  accept="image/*"
+                  accept="image"
                   maxFiles={10}
                   files={[]}
                 />
@@ -1004,7 +1004,7 @@ export default function AdminEditProductPage() {
         onClose={() => setShowDeleteDialog(false)}
         variant="danger"
         confirmLabel="Delete Product"
-        loading={deleting}
+        isLoading={deleting}
       />
     </form>
   );

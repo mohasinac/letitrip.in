@@ -140,13 +140,13 @@ export default function AdminEditShopPage() {
         email: shopData.email || "",
         phone: shopData.phone || "",
         location: shopData.location || "",
-        address: shopData.address || {
-          line1: "",
-          line2: "",
-          city: "",
-          state: "",
-          pincode: "",
-          country: "India",
+        address: {
+          line1: shopData.address?.line1 || "",
+          line2: shopData.address?.line2 || "",
+          city: shopData.address?.city || "",
+          state: shopData.address?.state || "",
+          pincode: shopData.address?.pincode || "",
+          country: shopData.address?.country || "India",
         },
         website: shopData.website || "",
         facebook: shopData.facebook || "",
@@ -156,12 +156,12 @@ export default function AdminEditShopPage() {
         pan: shopData.pan || "",
         returnPolicy: shopData.returnPolicy || "",
         shippingPolicy: shopData.shippingPolicy || "",
-        bankDetails: shopData.bankDetails || {
-          accountHolderName: "",
-          accountNumber: "",
-          ifscCode: "",
-          bankName: "",
-          branchName: "",
+        bankDetails: {
+          accountHolderName: shopData.bankDetails?.accountHolderName || "",
+          accountNumber: shopData.bankDetails?.accountNumber || "",
+          ifscCode: shopData.bankDetails?.ifscCode || "",
+          bankName: shopData.bankDetails?.bankName || "",
+          branchName: shopData.bankDetails?.branchName || "",
         },
         upiId: shopData.upiId || "",
       });
@@ -1000,7 +1000,7 @@ export default function AdminEditShopPage() {
                 )}
                 <MediaUploader
                   onFilesAdded={handleLogoUpload}
-                  accept="image/*"
+                  accept="image"
                   maxFiles={1}
                   files={[]}
                 />
@@ -1022,7 +1022,7 @@ export default function AdminEditShopPage() {
                 )}
                 <MediaUploader
                   onFilesAdded={handleBannerUpload}
-                  accept="image/*"
+                  accept="image"
                   maxFiles={1}
                   files={[]}
                 />
