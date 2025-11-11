@@ -3,16 +3,18 @@ import { notFound } from "next/navigation";
 import BlogPostClient from "./BlogPostClient";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
   return {
     title: `Blog Post | Letitrip`,
     description: "Read our latest blog post",
   };
 }
 
-export default function BlogPostPage({ params }: Props) {
-  return <BlogPostClient slug={params.slug} />;
+export default async function BlogPostPage({ params }: Props) {
+  const { slug } = await params;
+  return <BlogPostClient slug={slug} />;
 }

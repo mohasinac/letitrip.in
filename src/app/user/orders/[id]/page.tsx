@@ -18,9 +18,9 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import type { Order } from "@/types";
 
 interface OrderPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function OrderDetailPage({ params }: OrderPageProps) {
@@ -28,17 +28,25 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
   const { user } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [orderId, setOrderId] = useState<string | null>(null);
+
+  // Unwrap async params
+  useEffect(() => {
+    params.then((p) => setOrderId(p.id));
+  }, [params]);
 
   useEffect(() => {
-    if (user) {
+    if (user && orderId) {
       loadOrder();
     }
-  }, [user, params.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, orderId]);
 
   const loadOrder = async () => {
+    if (!orderId) return;
     try {
       setLoading(true);
-      const data = await ordersService.getById(params.id);
+      const data = await ordersService.getById(orderId);
       setOrder(data);
     } catch (error) {
       console.error("Failed to load order:", error);
@@ -49,18 +57,20 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
   };
 
   const handleDownloadInvoice = async () => {
+    if (!orderId) return;
     try {
-      await ordersService.downloadInvoice(params.id);
+      await ordersService.downloadInvoice(orderId);
     } catch (error) {
       console.error("Failed to download invoice:", error);
     }
   };
 
   const handleCancelOrder = async () => {
+    if (!orderId) return;
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
     try {
-      await ordersService.cancel(params.id, {
+      await ordersService.cancel(orderId, {
         reason: "Customer requested cancellation",
       });
       await loadOrder();

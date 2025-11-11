@@ -10,7 +10,7 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     // Import and initialize server-side services
-    const { initializeServer } = await import("./src/lib/server-init");
+    const { initializeServer } = await import("./src/app/api/lib/utils/server-init");
     initializeServer();
   }
 }
