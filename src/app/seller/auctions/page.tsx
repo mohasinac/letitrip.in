@@ -447,12 +447,15 @@ export default function SellerAuctionsPage() {
 
                                   setValidationErrors({});
 
-                                  await auctionsService.quickUpdate(auction.id, {
-                                    ...values,
-                                    images: values.images
-                                      ? [values.images]
-                                      : auction.images,
-                                  });
+                                  await auctionsService.quickUpdate(
+                                    auction.id,
+                                    {
+                                      ...values,
+                                      images: values.images
+                                        ? [values.images]
+                                        : auction.images,
+                                    }
+                                  );
                                   await loadAuctions();
                                   setEditingId(null);
                                 } catch (error) {

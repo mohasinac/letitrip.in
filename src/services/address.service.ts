@@ -11,14 +11,14 @@ class AddressService {
   }
 
   async create(
-    data: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">,
+    data: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">
   ): Promise<Address> {
     return apiService.post<Address>("/user/addresses", data);
   }
 
   async update(
     id: string,
-    data: Partial<Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">>,
+    data: Partial<Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">>
   ): Promise<Address> {
     return apiService.patch<Address>(`/user/addresses/${id}`, data);
   }

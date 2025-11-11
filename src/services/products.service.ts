@@ -113,7 +113,7 @@ class ProductsService {
   // Get product variants (same leaf category)
   async getVariants(slug: string): Promise<Product[]> {
     const res = await apiService.get<any>(
-      `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`,
+      `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
     );
     return res.data || [];
   }

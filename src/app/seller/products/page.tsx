@@ -87,9 +87,7 @@ export default function ProductsPage() {
   const loadCategories = async () => {
     try {
       const categories = await categoriesService.list({ isActive: true });
-      setCategories(
-        categories.map((cat) => ({ id: cat.id, name: cat.name }))
-      );
+      setCategories(categories.map((cat) => ({ id: cat.id, name: cat.name })));
     } catch (error) {
       console.error("Failed to load categories:", error);
     }
@@ -433,12 +431,15 @@ export default function ProductsPage() {
 
                                   setValidationErrors({});
 
-                                  await productsService.quickUpdate(product.slug, {
-                                    ...values,
-                                    images: values.images
-                                      ? [values.images]
-                                      : product.images,
-                                  });
+                                  await productsService.quickUpdate(
+                                    product.slug,
+                                    {
+                                      ...values,
+                                      images: values.images
+                                        ? [values.images]
+                                        : product.images,
+                                    }
+                                  );
                                   await loadProducts();
                                   setEditingId(null);
                                 } catch (error) {

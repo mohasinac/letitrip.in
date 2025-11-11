@@ -26,7 +26,9 @@
     "load:test": "node scripts/load-test.js",
     "monitor:prod": "node scripts/monitor-production.js",
     "setup:vercel": "powershell -ExecutionPolicy Bypass -File scripts/setup-vercel-env.ps1",
-    "setup:firebase-rules": "firebase deploy --only firestore:rules,firestore:indexes,storage,database"
+    "setup:firebase-rules": "firebase deploy --only firestore:rules,firestore:indexes,storage,database",
+    "test:bulk-actions": "node scripts/test-bulk-actions.js",
+    "test:bulk-actions:integration": "node --experimental-modules scripts/test-bulk-actions-integration.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

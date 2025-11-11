@@ -23,7 +23,7 @@ Our ESLint configuration enforces architectural patterns to maintain code qualit
 import { apiService } from "@/services/api.service";
 
 async function loadProducts() {
-  const response = await apiService.get('/api/products');
+  const response = await apiService.get("/api/products");
   return response.data;
 }
 
@@ -37,13 +37,15 @@ async function loadProducts() {
 ```
 
 **Error Message**:
+
 ```
-❌ Direct apiService imports not allowed in components/pages/hooks. 
-Use feature-specific services instead (e.g., productsService, authService). 
+❌ Direct apiService imports not allowed in components/pages/hooks.
+Use feature-specific services instead (e.g., productsService, authService).
 See docs/ai/AI-AGENT-GUIDE.md for architecture.
 ```
 
 **Why?**
+
 - Centralizes business logic in services
 - Makes API changes easier (change once in service)
 - Provides type safety
@@ -71,13 +73,15 @@ await authService.login({ email, password });
 ```
 
 **Error Message**:
+
 ```
-❌ Firebase Auth must be used server-side only. 
-Authentication is handled via API routes. 
+❌ Firebase Auth must be used server-side only.
+Authentication is handled via API routes.
 Only Realtime Database (for bidding) is allowed on client.
 ```
 
 **Why?**
+
 - Security: Auth tokens handled server-side only
 - Session management via HTTP-only cookies
 - Prevents token exposure in client bundle
@@ -95,8 +99,8 @@ Only Realtime Database (for bidding) is allowed on client.
 
 ```typescript
 // ❌ WRONG - Hardcoded API route
-const response = await fetch('/api/products');
-const response = await apiService.get('/api/products');
+const response = await fetch("/api/products");
+const response = await apiService.get("/api/products");
 
 // ❌ WRONG - Template literal with hardcoded route
 const response = await fetch(`/api/products/${id}`);
@@ -109,13 +113,15 @@ const response = await fetch(PRODUCT_ROUTES.BY_ID(id));
 ```
 
 **Error Message**:
+
 ```
-❌ Hardcoded API routes not allowed. 
-Use API route constants from @/constants/api-routes instead. 
+❌ Hardcoded API routes not allowed.
+Use API route constants from @/constants/api-routes instead.
 Example: Use PRODUCT_ROUTES.LIST instead of '/api/products'.
 ```
 
 **Why?**
+
 - Single source of truth for API routes
 - Easy to refactor routes (change once in constants)
 - Prevents typos in route URLs
@@ -231,35 +237,42 @@ src/
 Import these instead of `apiService`:
 
 ### Core Services
+
 - `authService` - Authentication & sessions
 - `usersService` - User management
 - `addressService` - User addresses
 
 ### Products & Inventory
+
 - `productsService` - Product CRUD & search
 - `categoriesService` - Category management
 - `reviewsService` - Product reviews
 
 ### Shopping
+
 - `cartService` - Shopping cart
 - `ordersService` - Order management
 - `couponsService` - Coupon validation
 
 ### Auctions
+
 - `auctionsService` - Auction CRUD & bidding
 - `firebase-realtime` - Real-time bid updates (client-side OK)
 
 ### Sellers
+
 - `shopsService` - Shop management
 - `analyticsService` - Dashboard stats
 - `payoutsService` - Payout management
 
 ### Support & Content
+
 - `supportService` - Support tickets
 - `blogService` - Blog posts
 - `heroSlidesService` - Homepage slides
 
 ### Search & Discovery
+
 - `searchService` - Product search
 - `favoritesService` - Wishlist/favorites
 
@@ -278,12 +291,12 @@ import {
 } from "@/constants/api-routes";
 
 // ✅ Static routes
-PRODUCT_ROUTES.LIST              // '/api/products'
-AUTH_ROUTES.LOGIN                // '/api/auth/login'
+PRODUCT_ROUTES.LIST; // '/api/products'
+AUTH_ROUTES.LOGIN; // '/api/auth/login'
 
 // ✅ Dynamic routes (functions)
-PRODUCT_ROUTES.BY_SLUG(slug)     // `/api/products/${slug}`
-ORDER_ROUTES.BY_ID(id)           // `/api/orders/${id}`
+PRODUCT_ROUTES.BY_SLUG(slug); // `/api/products/${slug}`
+ORDER_ROUTES.BY_ID(id); // `/api/orders/${id}`
 ```
 
 ---
@@ -291,16 +304,19 @@ ORDER_ROUTES.BY_ID(id)           // `/api/orders/${id}`
 ## 🔍 Checking for Violations
 
 ### Run ESLint
+
 ```bash
 npm run lint
 ```
 
 ### Auto-fix what's possible
+
 ```bash
 npm run lint -- --fix
 ```
 
 ### Check specific files
+
 ```bash
 npx eslint src/app/products/page.tsx
 ```
@@ -318,6 +334,7 @@ When creating a new service:
 5. **Use in components**: Import the service, not `apiService`
 
 **Example**:
+
 ```typescript
 // src/services/notifications.service.ts
 import { apiService } from "./api.service";
@@ -326,7 +343,7 @@ class NotificationsService {
   async list() {
     return apiService.get("/api/notifications");
   }
-  
+
   async markRead(id: string) {
     return apiService.patch(`/api/notifications/${id}`, { read: true });
   }
@@ -340,6 +357,7 @@ export const notificationsService = new NotificationsService();
 ## 🎓 Best Practices
 
 ### DO ✅
+
 - Use feature-specific services in components/pages/hooks
 - Use API route constants from `@/constants/api-routes`
 - Keep client-side Firebase usage to Realtime DB only (bidding)
@@ -347,6 +365,7 @@ export const notificationsService = new NotificationsService();
 - Create new services for new features
 
 ### DON'T ❌
+
 - Import `apiService` directly in components/pages/hooks
 - Use hardcoded API route strings like `'/api/products'`
 - Use Firebase Auth on client-side
@@ -360,6 +379,7 @@ export const notificationsService = new NotificationsService();
 ### Error: "Direct apiService imports not allowed"
 
 **Solution**: Import the feature-specific service instead:
+
 ```typescript
 // Change this:
 import { apiService } from "@/services/api.service";
@@ -371,9 +391,10 @@ import { productsService } from "@/services/products.service";
 ### Error: "Hardcoded API routes not allowed"
 
 **Solution**: Use constants:
+
 ```typescript
 // Change this:
-await fetch('/api/products');
+await fetch("/api/products");
 
 // To this:
 import { PRODUCT_ROUTES } from "@/constants/api-routes";
@@ -383,6 +404,7 @@ await fetch(PRODUCT_ROUTES.LIST);
 ### Error: "Firebase Auth must be used server-side only"
 
 **Solution**: Use authService:
+
 ```typescript
 // Change this:
 import { auth } from "@/app/api/lib/firebase/app";
@@ -412,4 +434,3 @@ Following these rules ensures:
 - ✅ **Performance** - Optimized client bundle size
 - ✅ **Consistency** - Same patterns everywhere
 - ✅ **Developer Experience** - Clear error messages
-

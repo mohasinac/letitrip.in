@@ -12,28 +12,33 @@
 **File**: `src/app/api/lib/firebase/app.ts`
 
 **Removed**:
+
 - ❌ Firebase Auth client-side initialization (`getAuth`)
 - ❌ `auth` export
 
 **Kept**:
+
 - ✅ Firebase Realtime Database (`database`) - Required for auction bidding
 - ✅ Firebase Analytics (`analytics`) - Required for error logging
 
 ### Rationale
 
 **Why Remove Auth?**
+
 - 🔒 **Security**: All authentication handled server-side via API routes
 - 🔒 **Sessions**: HTTP-only cookies prevent token theft
 - 💰 **Cost**: No client-side Auth SDK reduces bundle size
 - 🎯 **Consistency**: All auth flows through `authService`
 
 **Why Keep Realtime Database?**
+
 - ⚡ **Real-time Bidding**: WebSocket connections for live auction updates
 - 💰 **FREE Tier**: Vercel FREE doesn't support persistent WebSockets
 - 🎯 **Performance**: Client-side subscriptions reduce latency
 - ✅ **Security**: Realtime DB has security rules, only read bidding data
 
 **Why Keep Analytics?**
+
 - 📊 **Error Tracking**: Firebase Analytics is free Sentry alternative
 - 📊 **Performance**: Tracks metrics without paid services
 - 📊 **Integration**: Works with error logger and Discord notifications
@@ -41,6 +46,7 @@
 ### Migration Guide
 
 **Before** (Removed Pattern):
+
 ```typescript
 // ❌ NO LONGER AVAILABLE
 import { auth } from "@/app/api/lib/firebase/app";
@@ -50,6 +56,7 @@ await signInWithEmailAndPassword(auth, email, password);
 ```
 
 **After** (Correct Pattern):
+
 ```typescript
 // ✅ USE THIS
 import { authService } from "@/services/auth.service";
@@ -60,6 +67,7 @@ await authService.login({ email, password });
 ### Files Using Client Firebase
 
 **✅ Allowed**:
+
 1. `src/lib/firebase-realtime.ts` - Auction bidding (uses `database`)
 2. `src/lib/firebase-error-logger.ts` - Error tracking (uses `analytics`)
 
@@ -74,6 +82,7 @@ await authService.login({ email, password });
 **File**: `.eslintrc.json`
 
 #### 1. No Direct `apiService` Imports
+
 ```json
 "no-restricted-imports": ["error", {
   "patterns": [{
@@ -86,18 +95,21 @@ await authService.login({ email, password });
 **Enforces**: Use feature-specific services (e.g., `productsService`, not `apiService`)
 
 **Example Violation**:
+
 ```typescript
 // ❌ ERROR
 import { apiService } from "@/services/api.service";
 ```
 
 **Fix**:
+
 ```typescript
 // ✅ CORRECT
 import { productsService } from "@/services/products.service";
 ```
 
 #### 2. No Client-Side Firebase Auth
+
 ```json
 {
   "group": ["**/firebase/app", "@/app/api/lib/firebase/app"],
@@ -109,12 +121,14 @@ import { productsService } from "@/services/products.service";
 **Enforces**: No `auth` imports from client Firebase config
 
 **Example Violation**:
+
 ```typescript
 // ❌ ERROR
 import { auth } from "@/app/api/lib/firebase/app";
 ```
 
 **Allowed**:
+
 ```typescript
 // ✅ CORRECT - Realtime DB for bidding is OK
 import { database } from "@/app/api/lib/firebase/app";
@@ -123,11 +137,13 @@ import { database } from "@/app/api/lib/firebase/app";
 #### 3. Code Quality Rules
 
 **No Console.log**:
+
 ```json
 "no-console": ["warn", { "allow": ["warn", "error", "info"] }]
 ```
 
 **No Unused Variables**:
+
 ```json
 "no-unused-vars": ["warn", {
   "argsIgnorePattern": "^_",
@@ -136,11 +152,13 @@ import { database } from "@/app/api/lib/firebase/app";
 ```
 
 **Prefer Const**:
+
 ```json
 "prefer-const": "warn"
 ```
 
 **No Var**:
+
 ```json
 "no-var": "error"
 ```
@@ -152,6 +170,7 @@ import { database } from "@/app/api/lib/firebase/app";
 **Status**: ✅ **Working correctly**
 
 **Sample Output**:
+
 ```
 ./src/app/admin/auctions/moderation/page.tsx
 8:3  Warning: 'TableCheckbox' is defined but never used.
@@ -170,6 +189,7 @@ import { database } from "@/app/api/lib/firebase/app";
 **Path**: `docs/ESLINT-ARCHITECTURE-RULES.md`
 
 **Contents**:
+
 - 📖 Complete rule explanations
 - ✅ Correct usage examples
 - ❌ Violation examples
@@ -178,6 +198,7 @@ import { database } from "@/app/api/lib/firebase/app";
 - 🚀 API route constants guide
 
 **Sections**:
+
 1. Overview & Purpose
 2. Restricted Patterns (with examples)
 3. Code Quality Rules
@@ -193,21 +214,25 @@ import { database } from "@/app/api/lib/firebase/app";
 ## 📊 Impact Summary
 
 ### Security Improvements
+
 - 🔒 **No Client Auth** - All authentication server-side only
 - 🔒 **HTTP-only Cookies** - Tokens never exposed to JavaScript
 - 🔒 **Reduced Attack Surface** - Smaller client bundle
 
 ### Maintainability Improvements
+
 - ✅ **Enforced Patterns** - ESLint prevents violations automatically
 - ✅ **Clear Errors** - Helpful messages guide developers
 - ✅ **Documented** - Complete guide for all rules
 
 ### Developer Experience
+
 - 🎯 **IDE Integration** - ESLint shows errors in editor
 - 🎯 **Pre-commit** - Catches violations before push
 - 🎯 **Documentation** - Easy to understand and follow
 
 ### Cost Optimization
+
 - 💰 **Smaller Bundle** - No client-side Auth SDK (~50KB saved)
 - 💰 **FREE Tier** - Firebase Realtime DB is free
 - 💰 **No Sentry** - Firebase Analytics for error tracking
@@ -227,6 +252,7 @@ import { database } from "@/app/api/lib/firebase/app";
 ### Quick Reference
 
 **DO** ✅:
+
 ```typescript
 // Services
 import { productsService } from "@/services/products.service";
@@ -240,6 +266,7 @@ import { database } from "@/app/api/lib/firebase/app";
 ```
 
 **DON'T** ❌:
+
 ```typescript
 // Direct apiService
 import { apiService } from "@/services/api.service";
@@ -248,7 +275,7 @@ import { apiService } from "@/services/api.service";
 import { auth } from "@/app/api/lib/firebase/app";
 
 // Hardcoded routes
-fetch('/api/products')
+fetch("/api/products");
 ```
 
 ---
@@ -256,18 +283,21 @@ fetch('/api/products')
 ## 📈 Metrics
 
 ### Files Changed
+
 - ✅ `src/app/api/lib/firebase/app.ts` - Cleaned up
 - ✅ `.eslintrc.json` - Added 5 new rules
 - ✅ `docs/ESLINT-ARCHITECTURE-RULES.md` - Created (300+ lines)
 - ✅ `CHECKLIST/ARCHITECTURE-VIOLATIONS.md` - Updated
 
 ### Lines of Code
+
 - **Firebase Config**: -7 lines (removed Auth)
 - **ESLint Config**: +40 lines (added rules)
 - **Documentation**: +300 lines (new guide)
 - **Total**: +333 lines
 
 ### Rules Active
+
 - ✅ 2 Architecture rules (apiService, Firebase Auth)
 - ✅ 4 Code quality rules (console, unused vars, const, var)
 - ✅ Total: 6 new ESLint rules enforcing best practices
@@ -277,6 +307,7 @@ fetch('/api/products')
 ## 🎯 Success Criteria
 
 ### Firebase Cleanup
+
 - [x] ✅ Removed client-side Firebase Auth
 - [x] ✅ Kept Realtime Database for bidding
 - [x] ✅ Kept Analytics for error logging
@@ -284,6 +315,7 @@ fetch('/api/products')
 - [x] ✅ No breaking changes
 
 ### ESLint Rules
+
 - [x] ✅ Prevents direct apiService imports
 - [x] ✅ Prevents client-side Firebase Auth
 - [x] ✅ Works with `npm run lint`
@@ -291,6 +323,7 @@ fetch('/api/products')
 - [x] ✅ Documented thoroughly
 
 ### Documentation
+
 - [x] ✅ Complete ESLint rules guide
 - [x] ✅ Examples for correct usage
 - [x] ✅ Examples for violations
@@ -302,12 +335,14 @@ fetch('/api/products')
 ## 🚀 Next Steps (Optional)
 
 ### Potential Enhancements
+
 1. ⏳ Add pre-commit hook to run lint automatically
 2. ⏳ Add ESLint plugin for custom rules (if needed)
 3. ⏳ Create ESLint rule for API route constants (advanced)
 4. ⏳ Add Husky for Git hooks enforcement
 
 ### Future Considerations
+
 1. ⏳ Monitor Firebase Realtime DB usage (should stay free)
 2. ⏳ Consider Firebase App Check for bidding security
 3. ⏳ Add service method JSDoc for better autocomplete
@@ -324,6 +359,7 @@ All three tasks completed successfully:
 3. ✅ **Documentation** - Complete guide for developers
 
 **Result**: The application now has:
+
 - 🔒 **Better Security** - No client-side auth
 - ✅ **Enforced Patterns** - ESLint catches violations
 - 📖 **Clear Guidelines** - Documentation for all rules
@@ -331,4 +367,3 @@ All three tasks completed successfully:
 - 🎯 **Developer-Friendly** - Clear errors and examples
 
 **Phase 6 Status**: ✅ **100% COMPLETE + Security Hardened**
-

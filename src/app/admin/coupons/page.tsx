@@ -7,10 +7,18 @@ import {
   UnifiedFilterSidebar,
   BulkActionBar,
   TableCheckbox,
+  InlineEditRow,
+  QuickCreateRow,
 } from "@/components/common/inline-edit";
 import { COUPON_FILTERS } from "@/constants/filters";
 import { getCouponBulkActions } from "@/constants/bulk-actions";
 import { couponsService } from "@/services/coupons.service";
+import {
+  COUPON_FIELDS,
+  getFieldsForContext,
+  toInlineFields,
+} from "@/constants/form-fields";
+import { validateForm } from "@/lib/form-validation";
 // TODO: Add toast notifications when library is configured
 import { Eye, Edit, Trash2, Plus, Copy } from "lucide-react";
 
@@ -25,6 +33,10 @@ export default function AdminCouponsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCoupons, setTotalCoupons] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Get inline fields for table context
+  const fields = toInlineFields(getFieldsForContext(COUPON_FIELDS, "table"));
 
   useEffect(() => {
     loadCoupons();
@@ -245,19 +257,19 @@ export default function AdminCouponsPage() {
                         Code
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Description
+                        Discount Type
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Discount
+                        Discount Value
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Usage
+                        Usage Limit
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Valid Until
+                        Expires At
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Status
+                        Active
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                         Actions
@@ -265,91 +277,143 @@ export default function AdminCouponsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {coupons.map((coupon) => (
-                      <tr key={coupon.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4">
-                          <TableCheckbox
-                            checked={selectedCoupons.has(coupon.id)}
-                            onChange={(checked) => {
-                              const newSelected = new Set(selectedCoupons);
-                              if (checked) {
-                                newSelected.add(coupon.id);
-                              } else {
-                                newSelected.delete(coupon.id);
-                              }
-                              setSelectedCoupons(newSelected);
+                    {/* Quick Create Row */}
+                    <QuickCreateRow
+                      fields={fields}
+                      onSave={async (values) => {
+                        try {
+                          await couponsService.create(values as any);
+                          loadCoupons();
+                        } catch (error: any) {
+                          throw error;
+                        }
+                      }}
+                      resourceName="coupon"
+                    />
+                    {coupons.map((coupon) => {
+                      const isEditing = editingId === coupon.id;
+
+                      if (isEditing) {
+                        return (
+                          <InlineEditRow
+                            key={coupon.id}
+                            fields={fields}
+                            initialValues={{
+                              code: coupon.code,
+                              discountType: coupon.type,
+                              discountValue: coupon.value,
+                              usageLimit: coupon.maxUses,
+                              expiresAt: coupon.validTo,
+                              isActive: coupon.isActive,
                             }}
+                            onSave={async (values) => {
+                              try {
+                                await couponsService.update(
+                                  coupon.id,
+                                  values as any
+                                );
+                                setEditingId(null);
+                                loadCoupons();
+                              } catch (error: any) {
+                                throw error;
+                              }
+                            }}
+                            onCancel={() => {
+                              setEditingId(null);
+                            }}
+                            resourceName="coupon"
                           />
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold">
-                              {coupon.code}
-                            </span>
-                            <button
-                              onClick={() => handleCopyCode(coupon.code)}
-                              className="text-gray-400 hover:text-gray-600"
+                        );
+                      }
+
+                      return (
+                        <tr key={coupon.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <TableCheckbox
+                              checked={selectedCoupons.has(coupon.id)}
+                              onChange={(checked) => {
+                                const newSelected = new Set(selectedCoupons);
+                                if (checked) {
+                                  newSelected.add(coupon.id);
+                                } else {
+                                  newSelected.delete(coupon.id);
+                                }
+                                setSelectedCoupons(newSelected);
+                              }}
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-bold">
+                                {coupon.code}
+                              </span>
+                              <button
+                                onClick={() => handleCopyCode(coupon.code)}
+                                className="text-gray-400 hover:text-gray-600"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {coupon.type === "percentage"
+                              ? "Percentage"
+                              : "Fixed Amount"}
+                          </td>
+                          <td className="px-6 py-4 text-sm font-semibold text-green-600">
+                            {formatDiscount(coupon)}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {coupon.usageCount || 0} / {coupon.maxUses || "∞"}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {new Date(coupon.validTo).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                coupon.isActive &&
+                                new Date(coupon.validTo) > new Date()
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
                             >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm max-w-xs truncate">
-                          {coupon.description}
-                        </td>
-                        <td className="px-6 py-4 text-sm font-semibold text-green-600">
-                          {formatDiscount(coupon)}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          {coupon.usageCount || 0} / {coupon.maxUses || "∞"}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          {new Date(coupon.validTo).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              coupon.isActive &&
+                              {coupon.isActive &&
                               new Date(coupon.validTo) > new Date()
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {coupon.isActive &&
-                            new Date(coupon.validTo) > new Date()
-                              ? "Active"
-                              : "Inactive"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm space-x-2">
-                          <button
-                            onClick={() =>
-                              router.push(`/admin/coupons/${coupon.id}`)
-                            }
-                            className="text-indigo-600 hover:text-indigo-900"
-                            title="View"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() =>
-                              router.push(`/admin/coupons/${coupon.id}/edit`)
-                            }
-                            className="text-green-600 hover:text-green-900"
-                            title="Edit"
-                          >
-                            <Edit className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(coupon.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                                ? "Active"
+                                : "Inactive"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  router.push(`/admin/coupons/${coupon.id}`)
+                                }
+                                className="text-indigo-600 hover:text-indigo-900"
+                                title="View"
+                              >
+                                <Eye className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={() => setEditingId(coupon.id)}
+                                className="text-green-600 hover:text-green-900"
+                                title="Edit"
+                              >
+                                <Edit className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(coupon.id)}
+                                className="text-red-600 hover:text-red-900"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}

@@ -1,24 +1,24 @@
 /**
  * Firebase Client-Side Configuration
- * 
+ *
  * 🔒 SECURITY POLICY: Minimal Client-Side Firebase
  * ================================================
- * 
+ *
  * ALLOWED on Client:
  * ✅ Realtime Database - Real-time auction bidding only
  * ✅ Analytics - Error tracking and metrics
- * 
+ *
  * FORBIDDEN on Client (Server-side only):
  * ❌ Firestore - ALL database operations via API routes
  * ❌ Storage - ALL file uploads via API routes
  * ❌ Auth - ALL authentication via API routes
- * 
+ *
  * WHY?
  * - Security: Firestore/Storage rules can be bypassed
  * - Cost: Client SDKs are larger (~150KB vs ~10KB for Realtime DB)
  * - Control: Server-side validation prevents abuse
  * - Vercel FREE: No WebSocket support for Socket.IO (use Realtime DB)
- * 
+ *
  * IMPORTANT: ESLint rules enforce this policy
  */
 
@@ -44,10 +44,10 @@ let analytics: Analytics | null = null;
 // Only initialize on client-side
 if (typeof window !== "undefined" && getApps().length === 0) {
   app = initializeApp(firebaseConfig);
-  
+
   // Realtime Database for auction bidding (WebSocket alternative)
   database = getDatabase(app);
-  
+
   // Analytics for error logging and performance metrics
   analytics = getAnalytics(app);
 }
