@@ -25,7 +25,7 @@ export interface InlineField {
   label: string;
   required?: boolean;
   options?: SelectOption[];
-  validate?: (value: any, formData?: Record<string, any>) => string | null;
+  validate?: (_value: any, _formData?: Record<string, any>) => string | null;
   placeholder?: string;
   disabled?: boolean;
   min?: number;
@@ -58,7 +58,7 @@ export interface InlineEditConfig {
 export interface InlineEditRowProps {
   fields: InlineField[];
   initialValues: Record<string, any>;
-  onSave: (values: Record<string, any>) => Promise<void>;
+  onSave: (_values: Record<string, any>) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
   resourceName?: string;
@@ -66,7 +66,7 @@ export interface InlineEditRowProps {
 
 export interface QuickCreateRowProps {
   fields: InlineField[];
-  onSave: (values: Record<string, any>) => Promise<void>;
+  onSave: (_values: Record<string, any>) => Promise<void>;
   loading?: boolean;
   resourceName?: string;
   defaultValues?: Record<string, any>;
@@ -75,7 +75,7 @@ export interface QuickCreateRowProps {
 export interface BulkActionBarProps {
   selectedCount: number;
   actions: BulkAction[];
-  onAction: (actionId: string, input?: any) => Promise<void>;
+  onAction: (_actionId: string, _input?: any) => Promise<void>;
   onClearSelection: () => void;
   loading?: boolean;
   resourceName?: string;
@@ -84,7 +84,7 @@ export interface BulkActionBarProps {
 
 export interface InlineImageUploadProps {
   value?: string;
-  onChange: (url: string) => void;
+  onChange: (_url: string) => void;
   onRemove?: () => void;
   accept?: string;
   size?: number; // Size in pixels (default: 64)
@@ -112,7 +112,7 @@ export interface BulkOperationResult {
 
 export interface TableCheckboxProps {
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange: (_checked: boolean) => void;
   indeterminate?: boolean;
   disabled?: boolean;
   label?: string;

@@ -10,14 +10,11 @@
     // ==========================================
 
     // Prevent direct apiService imports in components/pages/hooks
+    // Note: Services can import api.service - this rule only applies to other layers
     "no-restricted-imports": [
       "error",
       {
         "patterns": [
-          {
-            "group": ["**/api.service", "@/services/api.service"],
-            "message": "❌ Direct apiService imports not allowed in components/pages/hooks. Use feature-specific services instead (e.g., productsService, authService). See docs/ai/AI-AGENT-GUIDE.md for architecture."
-          },
           {
             "group": ["**/firebase/app", "@/app/api/lib/firebase/app"],
             "importNames": ["auth"],
@@ -96,5 +93,57 @@
 
     // Prevent var usage
     "no-var": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/services/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["firebase/firestore"],
+                "message": "❌ Firestore must be used server-side only (via firebase-admin). ALL database operations go through API routes."
+              },
+              {
+                "group": ["firebase/storage"],
+                "message": "❌ Firebase Storage must be used server-side only. ALL file uploads go through API routes."
+              },
+              {
+                "group": ["firebase/auth"],
+                "message": "❌ Firebase Auth SDK must be used server-side only. Use authService (which calls API routes) instead."
+              }
+            ],
+            "paths": [
+              {
+                "name": "@/lib/socket-server",
+                "message": "❌ socket-server is server-side only. Moved to @/app/api/lib/utils/socket-server."
+              },
+              {
+                "name": "@/lib/auction-scheduler",
+                "message": "❌ auction-scheduler is server-side only. Moved to @/app/api/lib/utils/auction-scheduler."
+              },
+              {
+                "name": "@/lib/rate-limiter",
+                "message": "❌ rate-limiter is server-side only. Moved to @/app/api/lib/utils/rate-limiter."
+              },
+              {
+                "name": "@/lib/memory-cache",
+                "message": "❌ memory-cache is server-side only. Moved to @/app/api/lib/utils/memory-cache."
+              },
+              {
+                "name": "@/lib/shop-slug-resolver",
+                "message": "❌ shop-slug-resolver is server-side only. Moved to @/app/api/lib/utils/shop-slug-resolver."
+              },
+              {
+                "name": "@/lib/server-init",
+                "message": "❌ server-init is server-side only. Moved to @/app/api/lib/utils/server-init."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

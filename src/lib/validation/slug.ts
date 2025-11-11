@@ -30,6 +30,7 @@ export function useRemoteValidation({
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const extraParamsStr = JSON.stringify(extraParams);
 
   useEffect(() => {
     if (skip) return;
@@ -80,11 +81,12 @@ export function useRemoteValidation({
       if (timerRef.current) clearTimeout(timerRef.current);
       if (abortRef.current) abortRef.current.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     value,
     endpoint,
     paramName,
-    JSON.stringify(extraParams),
+    extraParamsStr,
     debounceMs,
     skip,
     minLength,

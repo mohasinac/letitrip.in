@@ -4,12 +4,12 @@ import { getFirestoreAdmin } from "../../../../lib/firebase/admin";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await requireRole(request, ["admin"]);
 
-    const { id } = params;
+    const { id } = await params;
     const db = getFirestoreAdmin();
     const payoutRef = db.collection("payouts").doc(id);
     const payoutDoc = await payoutRef.get();

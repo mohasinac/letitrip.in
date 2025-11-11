@@ -95,7 +95,7 @@ export async function PATCH(
 // DELETE /api/cart/[itemId] - Remove cart item
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { itemId: string } },
+  { params }: { params: Promise<{ itemId: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -107,8 +107,9 @@ export async function DELETE(
       );
     }
 
+    const { itemId } = await params;
     // Get cart item
-    const itemDoc = await Collections.cart().doc(params.itemId).get();
+    const itemDoc = await Collections.cart().doc(itemId).get();
 
     if (!itemDoc.exists) {
       return NextResponse.json(

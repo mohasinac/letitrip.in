@@ -83,7 +83,7 @@ export const validators = {
 
   custom: (
     value: any,
-    validator: (val: any) => boolean,
+    validator: (_val: any) => boolean,
     message: string,
   ): string | null => {
     if (value && !validator(value)) {
@@ -504,10 +504,12 @@ export function validateBulkAction(
   return { valid: true };
 }
 
-export default {
+const inlineEditSchemas = {
   validators,
   validationSchemas,
   getValidationSchema,
   validateFormData,
   validateBulkAction,
 };
+
+export default inlineEditSchemas;

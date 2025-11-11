@@ -5,7 +5,8 @@
 
 import { apiService } from "./api.service";
 
-interface TestDataConfig {
+// Unused but kept for future expansion
+interface _TestDataConfig {
   count: number;
   userId: string;
   shopId?: string;
@@ -253,7 +254,7 @@ class TestDataService {
     "Order cancellation",
   ];
 
-  async generateTestTickets(count: number, userId: string) {
+  async generateTestTickets(count: number, _userId: string) {
     const tickets = [];
     for (let i = 0; i < count; i++) {
       const ticket = {

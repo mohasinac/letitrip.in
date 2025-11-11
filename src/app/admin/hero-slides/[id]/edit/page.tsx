@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
-import { apiService } from "@/services/api.service";
+import { heroSlidesService } from "@/services/hero-slides.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
@@ -61,9 +61,18 @@ export default function EditHeroSlidePage() {
   const loadSlide = async () => {
     try {
       setLoading(true);
-      const data = (await apiService.get(
-        `/admin/hero-slides/${params.id}`
-      )) as HeroSlide;
+      const slide = await heroSlidesService.getHeroSlideById(params.id as string);
+      // Transform from service format to form format
+      const data: HeroSlide = {
+        id: slide.id,
+        title: slide.title,
+        subtitle: slide.subtitle || "",
+        description: slide.description || "",
+        image_url: slide.image,
+        link_url: slide.ctaLink,
+        cta_text: slide.ctaText,
+        is_active: slide.isActive,
+      };
       setFormData(data);
     } catch (error) {
       console.error("Failed to load slide:", error);
@@ -96,7 +105,17 @@ export default function EditHeroSlidePage() {
 
     try {
       setSaving(true);
-      await apiService.patch(`/admin/hero-slides/${params.id}`, formData);
+      // Transform to service format
+      await heroSlidesService.updateHeroSlide(params.id as string, {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        description: formData.description,
+        image: formData.image_url,
+        ctaText: formData.cta_text,
+        ctaLink: formData.link_url,
+        order: 0,
+        isActive: formData.is_active,
+      });
 
       // Success! Clear tracking
       clearTracking();
@@ -127,7 +146,7 @@ export default function EditHeroSlidePage() {
 
   const handleDelete = async () => {
     try {
-      await apiService.delete(`/admin/hero-slides/${params.id}`);
+      await heroSlidesService.deleteHeroSlide(params.id as string);
       router.push("/admin/hero-slides");
     } catch (error) {
       console.error("Failed to delete slide:", error);
