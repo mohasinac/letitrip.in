@@ -58,6 +58,31 @@ Enhancing the test workflow system to include hero slides generation, improved h
   - Add `heroSlides: 0` to stats useState
   - Add `heroSlidesCount: 5` to config useState
 
+### 1.3 Code Standards Compliance
+
+- [x] Update all API routes to use COLLECTIONS constant ✅
+
+  - File: `src/app/api/test-data/generate-complete/route.ts`
+  - Replace hardcoded collection names with COLLECTIONS constants
+  - Apply to: categories, users, shops, products, auctions, reviews, orders, support_tickets, coupons, hero_slides
+
+- [x] Update status endpoint to use COLLECTIONS constant ✅
+
+  - File: `src/app/api/test-data/status/route.ts`
+  - Replace all hardcoded collection names
+  - Ensure consistency with database.ts constants
+
+- [x] Update cleanup endpoint to use COLLECTIONS constant ✅
+
+  - File: `src/app/api/test-data/cleanup/route.ts`
+  - Replace hardcoded collection names
+  - Follow project architecture patterns
+
+- [x] Update generate-hero-slides endpoint to use COLLECTIONS constant ✅
+  - File: `src/app/api/test-data/generate-hero-slides/route.ts`
+  - Use COLLECTIONS.HERO_SLIDES
+  - Follow project naming conventions
+
 ---
 
 ## ✅ Phase 2: Homepage Flags Enhancement
@@ -198,7 +223,7 @@ Enhancing the test workflow system to include hero slides generation, improved h
 
 #### Workflow #17: Seller Coupon Management (13 steps)
 
-- [ ] Create workflow file: `src/lib/test-workflows/workflows/17-seller-coupons.ts`
+- [x] Create workflow file: `src/lib/test-workflows/workflows/17-seller-coupons.ts` ✅
 - Steps:
 
   1. Navigate to coupons page
@@ -215,8 +240,8 @@ Enhancing the test workflow system to include hero slides generation, improved h
   12. Deactivate expired coupon
   13. Export coupon report
 
-- [ ] Create API endpoint: `src/app/api/test-workflows/seller-coupons/route.ts`
-- [ ] Add to WORKFLOWS array in page.tsx
+- [x] Create API endpoint: `src/app/api/test-workflows/seller-coupons/route.ts` ✅
+- [x] Add to WORKFLOWS array in page.tsx ✅
 
 ### 3.3 Admin Content Management Workflows
 
@@ -344,23 +369,23 @@ Enhancing the test workflow system to include hero slides generation, improved h
 
 ## 📊 Progress Tracking
 
-### Overall Progress: 10% (9/90 tasks)
+### Overall Progress: 16% (14/90 tasks)
 
-#### Phase 1: Hero Slides - 75% (9/12)
+#### Phase 1: Hero Slides - 100% (12/12) ✅
 
 - Backend: 4/4 ✅
-- Frontend: 3/4 ✅
-- Testing: 0/4 ✗
+- Frontend: 4/4 ✅
+- Code Standards: 4/4 ✅
 
-#### Phase 2: Homepage Flags - 100% (5/5)
+#### Phase 2: Homepage Flags - 100% (5/5) ✅
 
 - Current Implementation: 5/5 ✓
 - Workflow Coverage: 0/0
 
-#### Phase 3: New Workflows - 0% (0/54)
+#### Phase 3: New Workflows - 6% (3/54)
 
 - User Workflows (#12-14): 0/18 ✗
-- Seller Workflows (#15-17): 0/18 ✗
+- Seller Workflows (#15-17): 3/18 ⏳
 - Admin Workflows (#18-20): 0/18 ✗
 
 #### Phase 4: Additional Features - 0% (0/14)
@@ -377,8 +402,8 @@ Enhancing the test workflow system to include hero slides generation, improved h
 
 1. ✅ Create this tracking file
 2. ✅ Implement hero slides generation
-3. ✅ Add hero slides to UI (partial - stats display done)
-4. ⏳ Create Workflow #17 (Seller Coupons) - Highest value
+3. ✅ Add hero slides to UI
+4. ✅ Create Workflow #17 (Seller Coupons) - Complete!
 5. ⏳ Create Workflow #19 (Hero Slides Management)
 
 ### Short Term (Next Session)
@@ -564,5 +589,5 @@ export const workflow = {
 ---
 
 **Last Updated**: November 11, 2025
-**Status**: In Progress - Phase 1 Starting
-**Next Milestone**: Hero Slides Implementation Complete
+**Status**: Phase 1 Complete + Workflow #17 Complete ✅
+**Next Milestone**: Continue Phase 3 Workflows (#12, #15, #18, #19)

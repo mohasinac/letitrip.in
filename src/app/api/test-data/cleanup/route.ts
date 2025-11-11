@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 const PREFIX = "TEST_";
 
@@ -60,7 +61,7 @@ export async function POST() {
 
     // Also delete by email pattern for users
     const userSnapshot = await db
-      .collection("users")
+      .collection(COLLECTIONS.USERS)
       .where("email", ">=", PREFIX)
       .where("email", "<", PREFIX + "\uf8ff")
       .limit(500)
@@ -77,7 +78,7 @@ export async function POST() {
 
     // Also delete hero slides by id pattern
     const heroSlidesSnapshot = await db
-      .collection("hero_slides")
+      .collection(COLLECTIONS.HERO_SLIDES)
       .where("id", ">=", PREFIX)
       .where("id", "<", PREFIX + "\uf8ff")
       .limit(500)

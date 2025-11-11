@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 const PREFIX = "TEST_";
 
@@ -25,7 +26,7 @@ export async function GET() {
 
     // Count test users
     const usersSnapshot = await db
-      .collection("users")
+      .collection(COLLECTIONS.USERS)
       .where("email", ">=", PREFIX)
       .where("email", "<", PREFIX + "\uf8ff")
       .count()
@@ -34,7 +35,7 @@ export async function GET() {
 
     // Count test shops
     const shopsSnapshot = await db
-      .collection("shops")
+      .collection(COLLECTIONS.SHOPS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .count()
@@ -43,7 +44,7 @@ export async function GET() {
 
     // Count featured shops
     const featuredShopsSnapshot = await db
-      .collection("shops")
+      .collection(COLLECTIONS.SHOPS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .where("is_featured", "==", true)
@@ -53,7 +54,7 @@ export async function GET() {
 
     // Count test categories
     const categoriesSnapshot = await db
-      .collection("categories")
+      .collection(COLLECTIONS.CATEGORIES)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .count()
@@ -62,7 +63,7 @@ export async function GET() {
 
     // Count test products
     const productsSnapshot = await db
-      .collection("products")
+      .collection(COLLECTIONS.PRODUCTS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .count()
@@ -71,7 +72,7 @@ export async function GET() {
 
     // Count featured products
     const featuredProductsSnapshot = await db
-      .collection("products")
+      .collection(COLLECTIONS.PRODUCTS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .where("is_featured", "==", true)
@@ -81,7 +82,7 @@ export async function GET() {
 
     // Count test auctions
     const auctionsSnapshot = await db
-      .collection("auctions")
+      .collection(COLLECTIONS.AUCTIONS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .count()
@@ -90,7 +91,7 @@ export async function GET() {
 
     // Count featured auctions
     const featuredAuctionsSnapshot = await db
-      .collection("auctions")
+      .collection(COLLECTIONS.AUCTIONS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .where("is_featured", "==", true)
@@ -100,7 +101,7 @@ export async function GET() {
 
     // Count homepage items (auctions)
     const homepageAuctionsSnapshot = await db
-      .collection("auctions")
+      .collection(COLLECTIONS.AUCTIONS)
       .where("name", ">=", PREFIX)
       .where("name", "<", PREFIX + "\uf8ff")
       .where("show_on_homepage", "==", true)
@@ -110,7 +111,7 @@ export async function GET() {
 
     // Count test reviews
     const reviewsSnapshot = await db
-      .collection("reviews")
+      .collection(COLLECTIONS.REVIEWS)
       .where("title", ">=", PREFIX)
       .where("title", "<", PREFIX + "\uf8ff")
       .count()
@@ -119,7 +120,7 @@ export async function GET() {
 
     // Count test orders
     const ordersSnapshot = await db
-      .collection("orders")
+      .collection(COLLECTIONS.ORDERS)
       .where("order_number", ">=", PREFIX)
       .where("order_number", "<", PREFIX + "\uf8ff")
       .count()
@@ -128,7 +129,7 @@ export async function GET() {
 
     // Count test tickets
     const ticketsSnapshot = await db
-      .collection("support_tickets")
+      .collection(COLLECTIONS.SUPPORT_TICKETS)
       .where("subject", ">=", PREFIX)
       .where("subject", "<", PREFIX + "\uf8ff")
       .count()
@@ -137,7 +138,7 @@ export async function GET() {
 
     // Count test coupons
     const couponsSnapshot = await db
-      .collection("coupons")
+      .collection(COLLECTIONS.COUPONS)
       .where("code", ">=", PREFIX)
       .where("code", "<", PREFIX + "\uf8ff")
       .count()
@@ -146,7 +147,7 @@ export async function GET() {
 
     // Count test hero slides
     const heroSlidesSnapshot = await db
-      .collection("hero_slides")
+      .collection(COLLECTIONS.HERO_SLIDES)
       .where("id", ">=", PREFIX)
       .where("id", "<", PREFIX + "\uf8ff")
       .count()

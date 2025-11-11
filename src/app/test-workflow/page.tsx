@@ -98,6 +98,14 @@ const WORKFLOWS = [
     icon: "🔍",
     role: "User",
   },
+  {
+    id: "seller-coupons",
+    name: "Seller Coupon Management",
+    description: "Create and manage discount coupons",
+    steps: 13,
+    icon: "🎫",
+    role: "Seller",
+  },
 ];
 
 const DEFAULT_WORKFLOW_CONFIG = {

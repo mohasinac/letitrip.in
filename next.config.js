@@ -36,6 +36,7 @@ const nextConfig = {
         hostname: "via.placeholder.com",
         protocol: "https",
       },
+      { hostname: "source.unsplash.com", protocol: "https" },
     ],
     formats: ["image/avif", "image/webp"],
   },

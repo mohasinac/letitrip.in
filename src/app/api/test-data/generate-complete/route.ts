@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 import { faker } from "@faker-js/faker";
 
 const PREFIX = "TEST_";
@@ -76,7 +77,9 @@ export async function POST(req: NextRequest) {
         updated_at: new Date().toISOString(),
       };
 
-      const docRef = await db.collection("categories").add(categoryData);
+      const docRef = await db
+        .collection(COLLECTIONS.CATEGORIES)
+        .add(categoryData);
       categories.push({ id: docRef.id, ...categoryData });
       stats.categories++;
     }
@@ -101,7 +104,7 @@ export async function POST(req: NextRequest) {
         },
       };
 
-      const docRef = await db.collection("users").add(userData);
+      const docRef = await db.collection(COLLECTIONS.USERS).add(userData);
       users.push({ id: docRef.id, ...userData });
       stats.users++;
     }
@@ -145,7 +148,7 @@ export async function POST(req: NextRequest) {
         if (shopData.is_featured) stats.featuredShops++;
         if (shopData.show_on_homepage) stats.homepageItems++;
 
-        const docRef = await db.collection("shops").add(shopData);
+        const docRef = await db.collection(COLLECTIONS.SHOPS).add(shopData);
         shops.push({ id: docRef.id, ...shopData });
         stats.shops++;
       }
@@ -206,7 +209,9 @@ export async function POST(req: NextRequest) {
 
         if (productData.is_featured) stats.featuredProducts++;
 
-        const docRef = await db.collection("products").add(productData);
+        const docRef = await db
+          .collection(COLLECTIONS.PRODUCTS)
+          .add(productData);
         products.push({ id: docRef.id, ...productData });
         stats.products++;
       }
@@ -277,7 +282,9 @@ export async function POST(req: NextRequest) {
         if (auctionData.is_featured) stats.featuredAuctions++;
         if (auctionData.show_on_homepage) stats.homepageItems++;
 
-        const docRef = await db.collection("auctions").add(auctionData);
+        const docRef = await db
+          .collection(COLLECTIONS.AUCTIONS)
+          .add(auctionData);
         auctions.push({ id: docRef.id, ...auctionData });
         stats.auctions++;
       }
@@ -304,7 +311,7 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         };
 
-        await db.collection("reviews").add(reviewData);
+        await db.collection(COLLECTIONS.REVIEWS).add(reviewData);
         stats.reviews++;
       }
     }
@@ -364,7 +371,7 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         };
 
-        await db.collection("orders").add(orderData);
+        await db.collection(COLLECTIONS.ORDERS).add(orderData);
         stats.orders++;
       }
     }
@@ -397,7 +404,7 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         };
 
-        await db.collection("support_tickets").add(ticketData);
+        await db.collection(COLLECTIONS.SUPPORT_TICKETS).add(ticketData);
         stats.tickets++;
       }
     }
@@ -425,7 +432,7 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         };
 
-        await db.collection("coupons").add(couponData);
+        await db.collection(COLLECTIONS.COUPONS).add(couponData);
         stats.coupons++;
       }
     }
@@ -500,7 +507,7 @@ export async function POST(req: NextRequest) {
         updated_at: new Date().toISOString(),
       };
 
-      await db.collection("hero_slides").add(heroSlideData);
+      await db.collection(COLLECTIONS.HERO_SLIDES).add(heroSlideData);
       heroSlides.push(heroSlideData);
       stats.heroSlides++;
     }
