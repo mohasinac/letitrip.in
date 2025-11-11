@@ -37,6 +37,35 @@ export const TEST_CONFIG = {
     ELECTRONICS_ID: "cat-electronics",
     FASHION_ID: "cat-fashion",
     HOME_ID: "cat-home",
+    PARENT_CATEGORY_ID: "cat-parent-test",
+    CHILD_CATEGORY_ID: "cat-child-test",
+  },
+
+  // Brand IDs
+  BRANDS: {
+    TEST_BRAND_ID: "brand-test-001",
+    FEATURED_BRAND_ID: "brand-featured-001",
+  },
+
+  // Coupon Codes
+  COUPONS: {
+    TEST_COUPON_CODE: "TEST10",
+    SELLER_COUPON_CODE: "SELLER20",
+  },
+
+  // Order IDs (can be null for dynamic selection)
+  ORDERS: {
+    TEST_ORDER_ID: null as string | null,
+  },
+
+  // Ticket IDs
+  TICKETS: {
+    TEST_TICKET_ID: null as string | null,
+  },
+
+  // Review IDs
+  REVIEWS: {
+    TEST_REVIEW_ID: null as string | null,
   },
 
   // Test Data
@@ -69,6 +98,96 @@ export const TEST_CONFIG = {
     LOG_VERBOSE: true,
     CONTINUE_ON_ERROR: false,
     SKIP_OPTIONAL_STEPS: false,
+  },
+
+  // Field Names (for form validation and consistency)
+  FIELD_NAMES: {
+    // Product fields
+    PRODUCT_NAME: "name",
+    PRODUCT_SLUG: "slug",
+    PRODUCT_PRICE: "price",
+    PRODUCT_STOCK: "stock",
+    PRODUCT_DESCRIPTION: "description",
+    PRODUCT_CATEGORY: "categoryId",
+    PRODUCT_BRAND: "brandId",
+    PRODUCT_SKU: "sku",
+    PRODUCT_WEIGHT: "weight",
+    PRODUCT_STATUS: "status",
+    PRODUCT_CONDITION: "condition",
+
+    // Category fields
+    CATEGORY_NAME: "name",
+    CATEGORY_SLUG: "slug",
+    CATEGORY_DESCRIPTION: "description",
+    CATEGORY_PARENT: "parentId",
+    CATEGORY_ORDER: "displayOrder",
+    CATEGORY_STATUS: "status",
+    CATEGORY_IMAGE: "imageUrl",
+
+    // Shop fields
+    SHOP_NAME: "name",
+    SHOP_SLUG: "slug",
+    SHOP_DESCRIPTION: "description",
+    SHOP_OWNER: "ownerId",
+    SHOP_STATUS: "status",
+    SHOP_PHONE: "phone",
+    SHOP_EMAIL: "email",
+
+    // Order fields
+    ORDER_STATUS: "status",
+    ORDER_ITEMS: "items",
+    ORDER_TOTAL: "totalAmount",
+    ORDER_SHIPPING: "shippingAddress",
+    ORDER_PAYMENT: "paymentMethod",
+
+    // Auction fields
+    AUCTION_TITLE: "title",
+    AUCTION_START_PRICE: "startPrice",
+    AUCTION_RESERVE_PRICE: "reservePrice",
+    AUCTION_START_TIME: "startTime",
+    AUCTION_END_TIME: "endTime",
+    AUCTION_STATUS: "status",
+
+    // User fields
+    USER_EMAIL: "email",
+    USER_NAME: "name",
+    USER_PHONE: "phone",
+    USER_ROLE: "role",
+  },
+
+  // Status Values (for consistency across workflows)
+  STATUS_VALUES: {
+    PRODUCT: {
+      DRAFT: "draft",
+      ACTIVE: "active",
+      INACTIVE: "inactive",
+      OUT_OF_STOCK: "out_of_stock",
+    },
+    CATEGORY: {
+      ACTIVE: "active",
+      INACTIVE: "inactive",
+    },
+    ORDER: {
+      PENDING: "pending",
+      CONFIRMED: "confirmed",
+      PROCESSING: "processing",
+      SHIPPED: "shipped",
+      DELIVERED: "delivered",
+      CANCELLED: "cancelled",
+    },
+    AUCTION: {
+      DRAFT: "draft",
+      SCHEDULED: "scheduled",
+      ACTIVE: "active",
+      ENDED: "ended",
+      CANCELLED: "cancelled",
+    },
+    TICKET: {
+      OPEN: "open",
+      IN_PROGRESS: "in_progress",
+      RESOLVED: "resolved",
+      CLOSED: "closed",
+    },
   },
 };
 

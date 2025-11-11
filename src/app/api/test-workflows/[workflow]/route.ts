@@ -7,6 +7,10 @@ import {
   ReviewsRatingsWorkflow,
   AdvancedBrowsingWorkflow,
   AdvancedAuctionWorkflow,
+  SellerProductCreationWorkflow,
+  AdminCategoryCreationWorkflow,
+  SellerInlineOperationsWorkflow,
+  AdminInlineEditsWorkflow,
   updateTestConfig,
 } from "@/lib/test-workflows";
 
@@ -18,14 +22,18 @@ const WORKFLOW_MAP: Record<string, any> = {
   "reviews-ratings": ReviewsRatingsWorkflow,
   "advanced-browsing": AdvancedBrowsingWorkflow,
   "advanced-auction": AdvancedAuctionWorkflow,
+  "seller-product-creation": SellerProductCreationWorkflow,
+  "admin-category-creation": AdminCategoryCreationWorkflow,
+  "seller-inline-operations": SellerInlineOperationsWorkflow,
+  "admin-inline-edits": AdminInlineEditsWorkflow,
 };
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { workflow: string } }
+  { params }: { params: Promise<{ workflow: string }> }
 ) {
   try {
-    const { workflow } = params;
+    const { workflow } = await params;
     const body = await request.json();
 
     // Update configuration if provided

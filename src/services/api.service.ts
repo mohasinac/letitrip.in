@@ -8,9 +8,16 @@ class ApiService {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {},
+    options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+    // Handle server-side requests (when baseUrl is relative)
+    let url = `${this.baseUrl}${endpoint}`;
+
+    // In server-side context, convert to absolute URL
+    if (typeof window === "undefined" && !url.startsWith("http")) {
+      const host = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      url = `${host}${url}`;
+    }
 
     const config: RequestInit = {
       ...options,
@@ -27,7 +34,7 @@ class ApiService {
       if (response.status === 429) {
         const retryAfter = response.headers.get("Retry-After");
         throw new Error(
-          `Too many requests. Please try again in ${retryAfter} seconds.`,
+          `Too many requests. Please try again in ${retryAfter} seconds.`
         );
       }
 
@@ -38,7 +45,7 @@ class ApiService {
         if (typeof window !== "undefined") {
           localStorage.removeItem("user");
         }
-        
+
         // Create error with status code for better handling
         const error = new Error("Unauthorized. Please log in again.") as any;
         error.status = 401;
@@ -81,7 +88,7 @@ class ApiService {
   async post<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -93,7 +100,7 @@ class ApiService {
   async put<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -105,7 +112,7 @@ class ApiService {
   async patch<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -117,7 +124,7 @@ class ApiService {
   async delete<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,

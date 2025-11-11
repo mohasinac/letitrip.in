@@ -4,7 +4,7 @@ import { getFirestoreAdmin } from "../../../lib/firebase/admin";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -12,8 +12,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressDoc = await db.collection("addresses").doc(params.id).get();
+    const addressDoc = await db.collection("addresses").doc(id).get();
 
     if (!addressDoc.exists) {
       return NextResponse.json({ error: "Address not found" }, { status: 404 });
@@ -39,7 +40,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -47,8 +48,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressRef = db.collection("addresses").doc(params.id);
+    const addressRef = db.collection("addresses").doc(id);
     const addressDoc = await addressRef.get();
 
     if (!addressDoc.exists) {
@@ -74,7 +76,7 @@ export async function PATCH(
 
       const batch = db.batch();
       defaultAddresses.docs.forEach((doc) => {
-        if (doc.id !== params.id) {
+        if (doc.id !== id) {
           batch.update(doc.ref, { isDefault: false });
         }
       });
@@ -104,7 +106,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -112,8 +114,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressRef = db.collection("addresses").doc(params.id);
+    const addressRef = db.collection("addresses").doc(id);
     const addressDoc = await addressRef.get();
 
     if (!addressDoc.exists) {

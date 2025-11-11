@@ -51,7 +51,7 @@ export default function SubNavbar() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -59,7 +59,7 @@ export default function SubNavbar() {
   };
 
   return (
-    <div className="bg-white border-b shadow-sm">
+    <div className="bg-white border-b shadow-sm sticky top-[52px] z-40">
       <div className="container mx-auto px-4">
         {/* Desktop Version */}
         <div className="hidden lg:flex items-center gap-8 py-3">
@@ -102,7 +102,7 @@ export default function SubNavbar() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth,
+                target.scrollLeft < target.scrollWidth - target.clientWidth
               );
             }}
           >
