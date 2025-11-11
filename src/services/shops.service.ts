@@ -37,6 +37,8 @@ interface CreateShopData {
   pan?: string;
   returnPolicy?: string;
   shippingPolicy?: string;
+  showOnHomepage?: boolean;
+  isFeatured?: boolean;
 }
 
 interface UpdateShopData extends Partial<CreateShopData> {
@@ -164,7 +166,7 @@ class ShopsService {
   // Get products for a shop (supports pagination & basic filters)
   async getShopProducts(
     slug: string,
-    options?: { page?: number; limit?: number; filters?: Record<string, any> },
+    options?: { page?: number; limit?: number; filters?: Record<string, any> }
   ): Promise<PaginatedResponse<Product>> {
     const params = new URLSearchParams();
     if (options?.page) params.append("page", String(options.page));
@@ -198,7 +200,7 @@ class ShopsService {
   async getShopReviews(
     slug: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<any> {
     const params = new URLSearchParams();
     if (page) params.append("page", String(page));
@@ -233,7 +235,7 @@ class ShopsService {
   // Get featured shops
   async getFeatured(): Promise<Shop[]> {
     const res = await apiService.get<any>(
-      "/shops?featured=true&verified=true&limit=100",
+      "/shops?featured=true&verified=true&limit=100"
     );
     return res.shops || res.data || res;
   }
@@ -241,7 +243,7 @@ class ShopsService {
   // Get homepage shops
   async getHomepage(): Promise<Shop[]> {
     const res = await apiService.get<any>(
-      "/shops?featured=true&verified=true&limit=20",
+      "/shops?featured=true&verified=true&limit=20"
     );
     return res.shops || res.data || res;
   }

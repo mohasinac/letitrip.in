@@ -197,6 +197,8 @@ export class SellerProductCreationWorkflow extends BaseWorkflow {
             { name: "Warranty", value: "1 Year" },
           ],
           tags: ["high-quality", "durable", "easy-to-use", "value"],
+          isFeatured: true,
+          showOnHomepage: true,
         }
       );
 
@@ -324,6 +326,14 @@ export class SellerProductCreationWorkflow extends BaseWorkflow {
 
         if (productStatus !== "published") {
           throw new Error("Product is not published");
+        }
+
+        // Verify featured and homepage flags
+        if (!product.isFeatured) {
+          throw new Error("Product isFeatured flag not set correctly");
+        }
+        if (!product.showOnHomepage) {
+          throw new Error("Product showOnHomepage flag not set correctly");
         }
 
         // Verify product appears in shop's products

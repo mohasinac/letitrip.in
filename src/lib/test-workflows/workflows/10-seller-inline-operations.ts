@@ -109,6 +109,7 @@ export class SellerInlineOperationsWorkflow extends BaseWorkflow {
               pincode: "400001",
               country: "India",
             },
+            showOnHomepage: true,
           });
         }
 

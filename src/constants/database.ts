@@ -71,6 +71,9 @@ export const COLLECTIONS = {
   // Homepage Management Collections
   HERO_SLIDES: "hero_slides",
   FEATURED_SECTIONS: "featured_sections",
+
+  // Content Management Collections
+  BLOG_POSTS: "blog_posts",
 } as const;
 
 /**

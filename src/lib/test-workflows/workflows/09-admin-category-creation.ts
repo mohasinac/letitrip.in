@@ -90,7 +90,7 @@ export class AdminCategoryCreationWorkflow extends BaseWorkflow {
         parentId: null,
         sortOrder: 999,
         isFeatured: false,
-        showOnHomepage: false,
+        showOnHomepage: true,
         isActive: true,
         commissionRate: 10,
       });
@@ -349,6 +349,9 @@ export class AdminCategoryCreationWorkflow extends BaseWorkflow {
         }
         if (!parent.hasChildren || parent.childCount !== 2) {
           throw new Error("Parent childCount incorrect");
+        }
+        if (!parent.showOnHomepage) {
+          throw new Error("Parent showOnHomepage flag not set correctly");
         }
 
         // Verify child1

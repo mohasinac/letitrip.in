@@ -106,6 +106,70 @@ const WORKFLOWS = [
     icon: "🎫",
     role: "Seller",
   },
+  {
+    id: "user-profile",
+    name: "User Profile Management",
+    description: "Update profile and manage addresses",
+    steps: 12,
+    icon: "👤",
+    role: "User",
+  },
+  {
+    id: "wishlist-favorites",
+    name: "Wishlist & Favorites",
+    description: "Add and manage favorite products",
+    steps: 10,
+    icon: "❤️",
+    role: "User",
+  },
+  {
+    id: "bidding-history",
+    name: "Bidding History & Watchlist",
+    description: "Track bids and manage auction watchlist",
+    steps: 12,
+    icon: "📜",
+    role: "User",
+  },
+  {
+    id: "seller-dashboard",
+    name: "Seller Dashboard & Analytics",
+    description: "View metrics and export reports",
+    steps: 12,
+    icon: "📊",
+    role: "Seller",
+  },
+  {
+    id: "seller-returns",
+    name: "Seller Returns Management",
+    description: "Process returns and refunds",
+    steps: 11,
+    icon: "↩️",
+    role: "Seller",
+  },
+  {
+    id: "admin-blog",
+    name: "Admin Blog Management",
+    description: "Create and manage blog posts",
+    steps: 14,
+    icon: "📝",
+    role: "Admin",
+  },
+  {
+    id: "admin-hero-slides",
+    name: "Admin Hero Slides Management",
+    description: "Manage homepage carousel slides",
+    steps: 12,
+    icon: "🎠",
+    role: "Admin",
+  },
+  {
+    id: "admin-returns",
+    name: "Admin Returns & Refunds",
+    description: "Manage returns and process refunds",
+    steps: 13,
+    icon: "🔄",
+    role: "Admin",
+  },
 ];
 
 const DEFAULT_WORKFLOW_CONFIG = {
@@ -165,6 +229,7 @@ export default function TestWorkflowPage() {
     couponsPerShop: 3,
     featuredPercentage: 30,
     homepagePercentage: 20,
+    heroSlidesCount: 5,
   });
 
   // Status messages
@@ -751,6 +816,25 @@ export default function TestWorkflowPage() {
                     setConfig({
                       ...config,
                       homepagePercentage: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hero Slides Count
+                </label>
+                <input
+                  type="number"
+                  min="3"
+                  max="10"
+                  value={config.heroSlidesCount}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      heroSlidesCount: parseInt(e.target.value) || 5,
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
