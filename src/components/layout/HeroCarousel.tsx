@@ -10,7 +10,7 @@ import { homepageService, type HeroSlide } from "@/services/homepage.service";
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: "1",
-    image: "/hero-slide-1.jpg",
+    image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1920&h=600&fit=crop",
     title: "India's #1 Collectibles Store",
     subtitle: "Authentic Beyblades, Pokemon TCG, Yu-Gi-Oh & More",
     ctaText: "Shop Now",
@@ -20,7 +20,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   },
   {
     id: "2",
-    image: "/hero-slide-2.jpg",
+    image: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=1920&h=600&fit=crop",
     title: "Live Auctions Every Day",
     subtitle: "Bid on Rare & Limited Edition Items",
     ctaText: "View Auctions",
@@ -30,7 +30,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   },
   {
     id: "3",
-    image: "/hero-slide-3.jpg",
+    image: "https://images.unsplash.com/photo-1606663889134-b1dedb5ed8b7?w=1920&h=600&fit=crop",
     title: "100% Authentic Products",
     subtitle: "Zero Customs Charges • Fast India Delivery",
     ctaText: "Learn More",
