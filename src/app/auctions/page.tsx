@@ -150,9 +150,15 @@ function AuctionsContent() {
     );
   };
 
-  const getTimeRemaining = (endTime: Date) => {
+  const getTimeRemaining = (endTime: Date | null | undefined) => {
+    if (!endTime) return "Ended";
+
     const now = new Date();
     const end = new Date(endTime);
+
+    // Check if date is valid
+    if (isNaN(end.getTime())) return "Ended";
+
     const diff = end.getTime() - now.getTime();
 
     if (diff <= 0) return "Ended";

@@ -69,7 +69,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.id !== data.id),
+            (shopAuctionsData.data || []).filter((a) => a.id !== data.id)
           );
         } catch (error) {
           console.error("Failed to load shop:", error);
@@ -83,7 +83,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.id !== data.id),
+          (similarData.data || []).filter((a) => a.id !== data.id)
         );
       } catch (error) {
         console.error("Failed to load similar auctions:", error);
@@ -167,10 +167,14 @@ export default function AuctionDetailPage() {
   };
 
   const getTimeRemaining = () => {
-    if (!auction) return "";
+    if (!auction || !auction.endTime) return "";
 
     const now = new Date();
     const end = new Date(auction.endTime);
+
+    // Check if date is valid
+    if (isNaN(end.getTime())) return "Auction ended";
+
     const diff = end.getTime() - now.getTime();
 
     if (diff <= 0) return "Auction ended";

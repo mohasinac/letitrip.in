@@ -215,6 +215,8 @@ export default function TestWorkflowPage() {
   const [workflowConfig, setWorkflowConfig] = useState(DEFAULT_WORKFLOW_CONFIG);
   const [showWorkflowConfig, setShowWorkflowConfig] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
+  const [testingPublicAPIs, setTestingPublicAPIs] = useState(false);
+  const [publicAPIResults, setPublicAPIResults] = useState<any>(null);
 
   // Configuration
   const [config, setConfig] = useState({
@@ -435,6 +437,35 @@ export default function TestWorkflowPage() {
   };
 
   // Workflow execution functions
+  const testPublicAPIs = async () => {
+    setTestingPublicAPIs(true);
+    setPublicAPIResults(null);
+
+    try {
+      addLog("Testing public API access...");
+
+      const response = await fetch("/api/test-workflows/public-access");
+      const data = await response.json();
+
+      setPublicAPIResults(data);
+
+      if (data.success) {
+        addLog(
+          `✓ Public API Test Complete: ${data.summary.passed}/${data.summary.total} passed`
+        );
+        showMessage("success", data.message);
+      } else {
+        addLog(`✗ Public API Test Failed: ${data.error}`);
+        showMessage("error", data.error);
+      }
+    } catch (error: any) {
+      addLog(`✗ Error testing public APIs: ${error.message}`);
+      showMessage("error", error.message || "Failed to test public APIs");
+    } finally {
+      setTestingPublicAPIs(false);
+    }
+  };
+
   const runWorkflow = async (workflowId: string) => {
     setWorkflows((prev) => ({
       ...prev,
@@ -1050,6 +1081,102 @@ export default function TestWorkflowPage() {
         {/* Workflows Tab */}
         {activeTab === "workflows" && (
           <div>
+            {/* Public API Test Panel */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200 p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    🌐 Public API Access Test
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Verify that public pages work without authentication
+                  </p>
+                </div>
+                <button
+                  onClick={testPublicAPIs}
+                  disabled={testingPublicAPIs}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+                >
+                  {testingPublicAPIs ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-5 w-5" />
+                      Test Public APIs
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {publicAPIResults && (
+                <div className="mt-4 p-4 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">
+                      Test Results:
+                    </h3>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        publicAPIResults.summary.passed ===
+                        publicAPIResults.summary.total
+                          ? "bg-green-100 text-green-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {publicAPIResults.summary.passRate} Pass Rate
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {publicAPIResults.results.map((result: any, i: number) => (
+                      <div
+                        key={i}
+                        className={`flex items-center justify-between p-3 rounded ${
+                          result.success
+                            ? "bg-green-50 border border-green-200"
+                            : "bg-red-50 border border-red-200"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {result.success ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <AlertCircle className="h-4 w-4 text-red-600" />
+                          )}
+                          <span className="font-medium text-sm">
+                            {result.description}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs">
+                          <span
+                            className={
+                              result.success ? "text-green-700" : "text-red-700"
+                            }
+                          >
+                            Status: {result.status}
+                          </span>
+                          <span className="text-gray-500">
+                            {result.duration}ms
+                          </span>
+                          {result.dataCount > 0 && (
+                            <span className="text-gray-500">
+                              {result.dataCount} items
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="mt-3 text-sm text-gray-600">
+                    {publicAPIResults.message}
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* Configuration Panel */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <div className="flex items-center justify-between mb-4">

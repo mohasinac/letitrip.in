@@ -47,10 +47,20 @@ export default function AuctionCard({
   showShopInfo = true,
   priority = false,
 }: AuctionCardProps) {
-  const endTime =
-    typeof auction.endTime === "string"
-      ? new Date(auction.endTime)
-      : auction.endTime;
+  // Convert endTime to Date object, handling various formats
+  let endTime: Date | null = null;
+  if (typeof auction.endTime === "string") {
+    endTime = new Date(auction.endTime);
+  } else if (auction.endTime instanceof Date) {
+    endTime = auction.endTime;
+  } else if (
+    auction.endTime &&
+    typeof auction.endTime === "object" &&
+    "toDate" in auction.endTime
+  ) {
+    // Handle Firestore Timestamp
+    endTime = (auction.endTime as any).toDate();
+  }
 
   const timeRemaining = getTimeRemaining(endTime);
   const currentBid = auction.currentBid || auction.startingBid;
@@ -197,8 +207,8 @@ export default function AuctionCard({
             isEnded
               ? "text-gray-500"
               : isEndingSoon
-                ? "text-red-600 font-semibold"
-                : "text-gray-700"
+              ? "text-red-600 font-semibold"
+              : "text-gray-700"
           }`}
         >
           <Clock size={14} />

@@ -3,6 +3,12 @@
  *
  * Central place for all test configuration values.
  * Update these constants based on your test environment.
+ *
+ * AUTHENTICATION NOTES:
+ * - Public APIs (products, shops, categories) work without authentication
+ * - Protected APIs (cart, orders, profiles) require valid session cookies
+ * - Workflow tests automatically skip auth-required steps if not authenticated
+ * - Set WORKFLOW_OPTIONS.REQUIRE_AUTH = true to enforce authentication
  */
 
 export const TEST_CONFIG = {
@@ -98,6 +104,36 @@ export const TEST_CONFIG = {
     LOG_VERBOSE: true,
     CONTINUE_ON_ERROR: false,
     SKIP_OPTIONAL_STEPS: false,
+    // Authentication behavior
+    REQUIRE_AUTH: false, // Set to true to fail on auth-required steps
+    SKIP_AUTH_STEPS: true, // Set to false to attempt auth-required steps
+    // Public API testing
+    TEST_PUBLIC_APIS: true, // Test public endpoints without auth
+    TEST_PROTECTED_APIS: false, // Test protected endpoints (requires auth)
+  },
+
+  // API Access Levels (for documentation)
+  API_ACCESS: {
+    PUBLIC: [
+      "/api/products (GET with status=published)",
+      "/api/shops (GET with verified=true)",
+      "/api/categories (GET)",
+      "/api/blog (GET with status=published)",
+      "/api/auctions (GET with status=active)",
+    ],
+    AUTHENTICATED: [
+      "/api/cart (all methods)",
+      "/api/orders (all methods)",
+      "/api/user/profile (all methods)",
+      "/api/user/addresses (all methods)",
+      "/api/support/tickets (all methods)",
+    ],
+    SELLER: [
+      "/api/seller/products (all methods)",
+      "/api/seller/orders (all methods)",
+      "/api/seller/shop (all methods)",
+    ],
+    ADMIN: ["/api/admin/* (all routes)", "/api/test-data/* (all routes)"],
   },
 
   // Field Names (for form validation and consistency)

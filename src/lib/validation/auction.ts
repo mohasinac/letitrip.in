@@ -41,7 +41,7 @@ export const createAuctionSchema = z
       .max(200, "Slug must not exceed 200 characters")
       .regex(
         slugRegex,
-        "Slug must contain only lowercase letters, numbers, and hyphens",
+        "Slug must contain only lowercase letters, numbers, and hyphens"
       )
       .trim(),
 
@@ -129,7 +129,7 @@ export const createAuctionSchema = z
         z.object({
           name: z.string().min(1).max(100),
           value: z.string().min(1).max(500),
-        }),
+        })
       )
       .optional(),
 
@@ -209,7 +209,7 @@ export const createAuctionSchema = z
     {
       message: "End time must be after start time",
       path: ["endTime"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -222,7 +222,7 @@ export const createAuctionSchema = z
     {
       message: "Reserve price must be greater than or equal to starting bid",
       path: ["reservePrice"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -234,7 +234,7 @@ export const createAuctionSchema = z
     {
       message: "Auction duration must be between 1 hour and 30 days",
       path: ["endTime"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -247,7 +247,7 @@ export const createAuctionSchema = z
     {
       message: "Return window must be specified if returns are accepted",
       path: ["returnWindowDays"],
-    },
+    }
   );
 
 /**
@@ -286,7 +286,7 @@ export const placeBidSchema = z
     {
       message: "Max auto-bid must be greater than current bid amount",
       path: ["maxAutoBid"],
-    },
+    }
   );
 
 /**
@@ -409,7 +409,7 @@ export function calculateEndTime(startTime: Date, durationHours: number): Date {
 /**
  * Utility: Calculate time remaining
  */
-export function getTimeRemaining(endTime: Date): {
+export function getTimeRemaining(endTime: Date | undefined | null): {
   totalMs: number;
   days: number;
   hours: number;
@@ -417,6 +417,18 @@ export function getTimeRemaining(endTime: Date): {
   seconds: number;
   isEnded: boolean;
 } {
+  // Handle null/undefined endTime
+  if (!endTime || !(endTime instanceof Date) || isNaN(endTime.getTime())) {
+    return {
+      totalMs: 0,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isEnded: true,
+    };
+  }
+
   const now = new Date();
   const totalMs = endTime.getTime() - now.getTime();
 
@@ -433,7 +445,7 @@ export function getTimeRemaining(endTime: Date): {
 
   const days = Math.floor(totalMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor(
-    (totalMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    (totalMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
   );
   const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((totalMs % (1000 * 60)) / 1000);
@@ -462,7 +474,7 @@ export function isEndingSoon(endTime: Date): boolean {
 export function isValidBidAmount(
   bidAmount: number,
   currentBid: number,
-  bidIncrement: number = 10,
+  bidIncrement: number = 10
 ): boolean {
   return bidAmount >= currentBid + bidIncrement;
 }
@@ -473,7 +485,7 @@ export function isValidBidAmount(
 export function getNextMinimumBid(
   currentBid: number,
   startingBid: number,
-  bidIncrement: number = 10,
+  bidIncrement: number = 10
 ): number {
   const base = currentBid > 0 ? currentBid : startingBid;
   return base + bidIncrement;
@@ -484,7 +496,7 @@ export function getNextMinimumBid(
  */
 export function canBid(
   startTime: Date,
-  endTime: Date,
+  endTime: Date
 ): {
   canBid: boolean;
   reason?: string;

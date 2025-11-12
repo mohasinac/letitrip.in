@@ -12,6 +12,8 @@ const nextConfig = {
   experimental: {
     // Enable optimized package imports for better tree-shaking
     optimizePackageImports: ["lucide-react", "recharts", "react-quill"],
+    // Enable instrumentation hook for server initialization
+    instrumentationHook: true,
   },
 
   // Image optimization
