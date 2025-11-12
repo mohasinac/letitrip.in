@@ -7,26 +7,45 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  */
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
 
-    // First, get the category by slug
-    const categoriesSnapshot = await Collections.categories()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
+    // Try to get category by ID first (if slug looks like an ID)
+    let category: any = null;
+    let categoryDoc: any = null;
 
-    if (categoriesSnapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Category not found" },
-        { status: 404 },
-      );
+    // Check if it's a document ID (longer alphanumeric string)
+    if (slug && slug.length > 15 && !slug.includes("-")) {
+      try {
+        const docSnapshot = await Collections.categories().doc(slug).get();
+        if (docSnapshot.exists) {
+          categoryDoc = docSnapshot;
+          category = { id: docSnapshot.id, ...docSnapshot.data() };
+        }
+      } catch (e) {
+        // Not a valid ID, try slug
+      }
     }
 
-    const categoryDoc = categoriesSnapshot.docs[0];
-    const category: any = { id: categoryDoc.id, ...categoryDoc.data() };
+    // If not found by ID, try by slug
+    if (!category) {
+      const categoriesSnapshot = await Collections.categories()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+
+      if (categoriesSnapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Category not found" },
+          { status: 404 }
+        );
+      }
+
+      categoryDoc = categoriesSnapshot.docs[0];
+      category = { id: categoryDoc.id, ...categoryDoc.data() };
+    }
 
     // Build hierarchy by traversing up the parent chain
     const hierarchy = [category];
@@ -55,7 +74,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch category hierarchy",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
