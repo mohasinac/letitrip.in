@@ -15,40 +15,54 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const page = parseInt(searchParams.get("page") || "1");
 
-    // Start with status filter (most common)
+    // Build query using composite indexes
     let query = db.collection(COLLECTION).where("status", "==", status);
 
-    // Apply only ONE additional filter to avoid composite index requirements
-    if (showOnHomepage === "true") {
-      query = query.where("showOnHomepage", "==", true) as any;
+    // Use composite indexes for better performance
+    if (showOnHomepage === "true" && category) {
+      // Index: status + showOnHomepage + category + publishedAt
+      query = query
+        .where("showOnHomepage", "==", true)
+        .where("category", "==", category)
+        .orderBy("publishedAt", "desc") as any;
+    } else if (showOnHomepage === "true") {
+      // Index: status + showOnHomepage + publishedAt
+      query = query
+        .where("showOnHomepage", "==", true)
+        .orderBy("publishedAt", "desc") as any;
     } else if (category) {
-      query = query.where("category", "==", category) as any;
+      // Index: status + category + publishedAt
+      query = query
+        .where("category", "==", category)
+        .orderBy("publishedAt", "desc") as any;
+    } else {
+      // Index: status + publishedAt
+      query = query.orderBy("publishedAt", "desc") as any;
     }
 
-    // Get all matching docs and sort/paginate in memory
-    const snapshot = await query.limit(limit * 10).get(); // Get more to allow filtering
+    // Apply pagination using offset
+    const offset = (page - 1) * limit;
+    query = query.limit(limit).offset(offset) as any;
 
-    let posts = snapshot.docs.map((doc) => ({
+    const snapshot = await query.get();
+
+    const posts = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Apply client-side filtering if needed
-    if (showOnHomepage === "true" && category) {
-      posts = posts.filter((p: any) => p.category === category);
+    // Get total count for pagination
+    let countQuery = db.collection(COLLECTION).where("status", "==", status);
+    if (showOnHomepage === "true") {
+      countQuery = countQuery.where("showOnHomepage", "==", true) as any;
     }
+    if (category) {
+      countQuery = countQuery.where("category", "==", category) as any;
+    }
+    const countSnapshot = await countQuery.count().get();
+    const total = countSnapshot.data().count;
 
-    // Sort by publishedAt in memory
-    posts.sort((a: any, b: any) => {
-      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-      return dateB - dateA;
-    });
-
-    // Apply pagination in memory
-    const total = posts.length;
-    const offset = (page - 1) * limit;
-    const paginatedPosts = posts.slice(offset, offset + limit);
+    const paginatedPosts = posts;
 
     return NextResponse.json({
       data: paginatedPosts,

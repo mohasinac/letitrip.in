@@ -155,7 +155,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
           {publishDate && (
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <Calendar className="w-3 h-3" />
-              <time dateTime={publishDate.toISOString()}>
+              <time dateTime={publishDate instanceof Date ? publishDate.toISOString() : String(publishDate)}>
                 {formatDate(publishDate)}
               </time>
             </div>

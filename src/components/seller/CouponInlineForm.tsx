@@ -28,10 +28,10 @@ export function CouponInlineForm({
     usageLimitPerUser: coupon?.usageLimitPerUser || 1,
     startDate: coupon?.startDate
       ? new Date(coupon.startDate).toISOString().split("T")[0]
-      : "",
+      : new Date().toISOString().split("T")[0],
     endDate: coupon?.endDate
       ? new Date(coupon.endDate).toISOString().split("T")[0]
-      : "",
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

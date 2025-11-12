@@ -20,18 +20,19 @@ import { Timestamp } from "firebase-admin/firestore";
 export async function processEndedAuctions() {
   try {
     const now = new Date();
+    const nowTimestamp = Timestamp.fromDate(now);
 
-    // Find all live auctions that have ended
+    // Get all live auctions that have ended (using composite index)
     const snapshot = await Collections.auctions()
       .where("status", "==", "live")
-      .where("end_time", "<=", Timestamp.fromDate(now))
+      .where("end_time", "<=", nowTimestamp)
       .get();
 
     console.log(
       `[Auction Scheduler] Found ${snapshot.size} auctions to process`,
     );
 
-    // Process each auction
+    // Process each ended auction
     const promises = snapshot.docs.map((doc) => closeAuction(doc.id));
     await Promise.allSettled(promises);
   } catch (error) {

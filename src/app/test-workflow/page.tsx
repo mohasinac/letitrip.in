@@ -655,7 +655,7 @@ export default function TestWorkflowPage() {
                 <stat.icon className={`h-5 w-5 text-${stat.color}-600`} />
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {stat.value}
+                {stat.value ?? 0}
               </div>
             </div>
           ))}

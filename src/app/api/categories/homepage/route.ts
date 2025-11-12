@@ -4,16 +4,14 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 // GET /api/categories/homepage
 export async function GET() {
   try {
-    // First get all categories where show_on_homepage is true
+    // Use composite index: show_on_homepage + sort_order
     const snap = await Collections.categories()
       .where("show_on_homepage", "==", true)
+      .orderBy("sort_order", "asc")
       .limit(100)
       .get();
     
-    // Sort in memory to avoid composite index requirement
-    const data = snap.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
+    const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     
     return NextResponse.json({ success: true, data });
   } catch (error) {

@@ -33,18 +33,43 @@ export async function GET(request: NextRequest) {
     // Build role-based query
     let query = getShopsQuery(role, userId);
 
-    // Apply ONE additional filter to avoid composite index requirements
-    if (filters.showOnHomepage === "true") {
-      query = query.where("show_on_homepage", "==", true);
-    } else if (filters.featured === "true") {
-      query = query.where("is_featured", "==", true);
-    } else if (filters.verified === "true" && user) {
-      query = query.where("is_verified", "==", true);
-    }
-
-    // Apply pagination
     const limit = filters.limit ? parseInt(filters.limit) : 20;
-    query = query.limit(limit * 2); // Get more to allow client-side filtering
+
+    // Use composite indexes for optimal performance
+    // Public users see only verified, non-banned shops
+    if (!user || role === UserRole.USER) {
+      if (filters.showOnHomepage === "true") {
+        // Index: is_banned + show_on_homepage + created_at
+        query = Collections.shops()
+          .where("is_banned", "==", false)
+          .where("show_on_homepage", "==", true)
+          .orderBy("created_at", "desc")
+          .limit(limit);
+      } else if (filters.featured === "true") {
+        // Index: is_featured + is_verified + created_at
+        query = Collections.shops()
+          .where("is_featured", "==", true)
+          .where("is_verified", "==", true)
+          .orderBy("created_at", "desc")
+          .limit(limit);
+      } else {
+        // Index: is_banned + is_verified + created_at
+        query = Collections.shops()
+          .where("is_banned", "==", false)
+          .where("is_verified", "==", true)
+          .orderBy("created_at", "desc")
+          .limit(limit);
+      }
+    } else {
+      // Authenticated users (sellers/admin) see more
+      if (filters.showOnHomepage === "true") {
+        query = query.where("show_on_homepage", "==", true).limit(limit);
+      } else if (filters.featured === "true") {
+        query = query.where("is_featured", "==", true).limit(limit);
+      } else {
+        query = query.limit(limit);
+      }
+    }
 
     // Execute query
     const snapshot = await query.get();
@@ -53,20 +78,6 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data(),
     }));
-
-    // Filter out banned shops in memory
-    shops = shops.filter((shop: any) => !shop.is_banned);
-
-    // Apply additional client-side filters
-    if (filters.featured === "true" && filters.showOnHomepage !== "true") {
-      shops = shops.filter((shop: any) => shop.is_featured === true);
-    }
-    if (filters.showOnHomepage === "true" && filters.featured === "true") {
-      shops = shops.filter((shop: any) => shop.is_featured === true);
-    }
-
-    // Limit to requested amount
-    shops = shops.slice(0, limit);
 
     // For sellers, also fetch public verified shops if needed
     if (role === UserRole.SELLER && filters.includePublic === "true") {
