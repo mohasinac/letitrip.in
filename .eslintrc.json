@@ -1,5 +1,12 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "react/no-unescaped-entities": "off",
     "@next/next/no-img-element": "warn",
@@ -78,8 +85,9 @@
       }
     ],
 
-    // Prevent unused variables
-    "no-unused-vars": [
+    // Prevent unused variables (TypeScript-aware)
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
       "warn",
       {
         "argsIgnorePattern": "^_",
@@ -92,9 +100,37 @@
     "prefer-const": "warn",
 
     // Prevent var usage
-    "no-var": "error"
+    "no-var": "error",
+
+    // ==========================================
+    // NEXT.JS 15+ SPECIFIC RULES
+    // ==========================================
+
+    // Disable explicit any - too strict for gradual typing
+    "@typescript-eslint/no-explicit-any": "off",
+
+    // Warn on floating promises (helps catch unawaited params)
+    "@typescript-eslint/no-floating-promises": "warn",
+
+    // Enforce that params must be awaited (Next.js 15+ requirement)
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ]
   },
   "overrides": [
+    {
+      "files": [
+        "src/app/**/\\[*\\]/page.tsx",
+        "src/app/api/**/\\[*\\]/route.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/await-thenable": "error"
+      }
+    },
     {
       "files": ["src/services/**/*.ts"],
       "rules": {
