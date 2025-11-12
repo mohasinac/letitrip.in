@@ -82,42 +82,47 @@ class UsersService {
 
   // Get current user profile
   async getMe(): Promise<User> {
-    return apiService.get<User>("/users/me");
+    const response = await apiService.get<{ user: User }>("/user/profile");
+    return response.user;
   }
 
   // Update current user profile
   async updateMe(data: UpdateUserData): Promise<User> {
-    return apiService.patch<User>("/users/me", data);
+    const response = await apiService.patch<{ user: User; message: string }>(
+      "/user/profile",
+      data
+    );
+    return response.user;
   }
 
-  // Change password
+  // Change password - Note: This endpoint needs to be created
   async changePassword(data: ChangePasswordData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>("/users/me/password", data);
+    return apiService.post<{ message: string }>("/user/password", data);
   }
 
-  // Send email verification OTP
+  // Send email verification OTP - Note: This endpoint needs to be created
   async sendEmailVerification(): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>("/users/me/verify-email", {});
+    return apiService.post<{ message: string }>("/user/verify-email", {});
   }
 
   // Verify email with OTP
   async verifyEmail(data: VerifyEmailData): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(
-      "/users/me/verify-email/confirm",
-      data,
+      "/user/verify-email/confirm",
+      data
     );
   }
 
   // Send mobile verification OTP
   async sendMobileVerification(): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>("/users/me/verify-mobile", {});
+    return apiService.post<{ message: string }>("/user/verify-mobile", {});
   }
 
   // Verify mobile with OTP
   async verifyMobile(data: VerifyMobileData): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(
-      "/users/me/verify-mobile/confirm",
-      data,
+      "/user/verify-mobile/confirm",
+      data
     );
   }
 

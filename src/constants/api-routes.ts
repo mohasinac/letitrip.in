@@ -1,7 +1,7 @@
 /**
  * API Route Constants
  * Centralized API endpoints for consistent route management across the application
- * 
+ *
  * IMPORTANT: These routes do NOT include the /api prefix!
  * The apiService automatically prepends /api to all routes.
  * For direct fetch() calls, prepend /api manually: fetch(`/api${API_ROUTES.AUTH.LOGIN}`)
@@ -66,7 +66,7 @@ export const CATEGORY_ROUTES = {
   BY_SLUG: (slug: string) => `/categories/${slug}`,
   TREE: "/categories/tree",
   PRODUCTS: (categoryId: string) => `/categories/${categoryId}/products`,
-  
+
   // Category management & utility routes
   LEAVES: "/categories/leaves",
   FEATURED: "/categories/featured",
@@ -74,7 +74,7 @@ export const CATEGORY_ROUTES = {
   SEARCH: "/categories/search",
   REORDER: "/categories/reorder",
   VALIDATE_SLUG: "/categories/validate-slug",
-  
+
   // Category relationships
   SUBCATEGORIES: (slug: string) => `/categories/${slug}/subcategories`,
   SIMILAR: (slug: string) => `/categories/${slug}/similar`,
