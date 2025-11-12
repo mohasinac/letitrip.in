@@ -33,7 +33,7 @@ export interface ProductCardProps {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;
@@ -192,13 +192,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Shop Name */}
         {showShopName && (
-          <Link
-            href={`/shops/${shopSlug}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-xs text-gray-500 hover:text-blue-600 transition-colors mb-2 block"
+          <span
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = `/shops/${shopSlug}`;
+            }}
+            className="text-xs text-gray-500 hover:text-blue-600 transition-colors mb-2 block cursor-pointer"
           >
             {shopName}
-          </Link>
+          </span>
         )}
 
         {/* Rating */}
