@@ -74,6 +74,10 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
 
+    if (snapshot.empty) {
+      console.log("[Shops API] No shops found for the given filters");
+    }
+
     let shops = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -113,18 +117,41 @@ export async function GET(request: NextRequest) {
       canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
     }
 
+    // Return consistent response format
     return NextResponse.json({
       success: true,
-      shops,
+      data: shops, // Use 'data' for consistency with other APIs
+      shops, // Keep for backward compatibility
       canCreateMore,
       total: shops.length,
+      pagination: {
+        page: 1,
+        limit,
+        total: shops.length,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching shops:", error);
+
+    // Better error handling with details
+    const errorMessage = error?.message || "Failed to fetch shops";
+    const errorDetails = error?.details || error?.stack || "";
+
+    console.error("Error details:", {
+      message: errorMessage,
+      details: errorDetails,
+      code: error?.code,
+    });
+
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch shops",
+        error: errorMessage,
+        details:
+          process.env.NODE_ENV === "development" ? errorDetails : undefined,
       },
       { status: 500 }
     );
