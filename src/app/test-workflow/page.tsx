@@ -241,6 +241,7 @@ export default function TestWorkflowPage() {
   } | null>(null);
 
   const [logs, setLogs] = useState<string[]>([]);
+  const [debugData, setDebugData] = useState<any>(null);
 
   useEffect(() => {
     loadStatus();
@@ -268,6 +269,30 @@ export default function TestWorkflowPage() {
   const showMessage = (type: "success" | "error" | "info", text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 5000);
+  };
+
+  const handleDebug = async () => {
+    setLoading(true);
+    try {
+      addLog("Fetching debug data...");
+      const response = await fetch("/api/test-data/debug");
+      const data = await response.json();
+
+      if (data.success) {
+        setDebugData(data.debug);
+        addLog("✓ Debug data loaded");
+        console.log("Debug Data:", data.debug);
+        showMessage("success", "Debug data loaded - check console and logs");
+      } else {
+        addLog(`✗ Debug failed: ${data.error}`);
+        showMessage("error", data.error);
+      }
+    } catch (error: any) {
+      addLog(`✗ Debug error: ${error.message}`);
+      showMessage("error", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGenerateComplete = async () => {
@@ -984,6 +1009,14 @@ export default function TestWorkflowPage() {
                   Refresh Status
                 </button>
                 <button
+                  onClick={handleDebug}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+                >
+                  <AlertCircle className="h-4 w-4" />
+                  Debug Data Check
+                </button>
+                <button
                   onClick={handleCleanup}
                   disabled={loading}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"
@@ -993,6 +1026,43 @@ export default function TestWorkflowPage() {
                 </button>
               </div>
             </div>
+
+            {/* Debug Data Display */}
+            {debugData && (
+              <div className="bg-white rounded-lg border border-blue-200 p-6">
+                <h2 className="text-xl font-bold text-blue-900 mb-4">
+                  Debug Results
+                </h2>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <span className="font-semibold">Prefix:</span>{" "}
+                    {debugData.prefix}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Counts:</span>
+                    <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
+                      {JSON.stringify(debugData.counts, null, 2)}
+                    </pre>
+                  </div>
+                  {debugData.errors.length > 0 && (
+                    <div>
+                      <span className="font-semibold text-red-600">
+                        Errors:
+                      </span>
+                      <pre className="mt-2 p-2 bg-red-50 rounded text-xs overflow-auto">
+                        {JSON.stringify(debugData.errors, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                  <div>
+                    <span className="font-semibold">Sample Data:</span>
+                    <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto max-h-64">
+                      {JSON.stringify(debugData.samples, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

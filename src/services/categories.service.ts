@@ -59,7 +59,7 @@ class CategoriesService {
   // Get category by ID
   async getById(id: string): Promise<Category> {
     const response = await apiService.get<{ success: boolean; data: Category }>(
-      `/categories/${id}`,
+      `/categories/${id}`
     );
     return response.data;
   }
@@ -67,7 +67,7 @@ class CategoriesService {
   // Get category by slug
   async getBySlug(slug: string): Promise<Category> {
     const response = await apiService.get<{ success: boolean; data: Category }>(
-      `/categories/${slug}`,
+      `/categories/${slug}`
     );
     return response.data;
   }
@@ -126,7 +126,7 @@ class CategoriesService {
     const response = await apiService.get<{
       success: boolean;
       data: Category[];
-    }>(`/categories/${id}/breadcrumb`);
+    }>(`/categories/${id}/hierarchy`);
     return response.data || [];
   }
 
@@ -159,7 +159,7 @@ class CategoriesService {
 
   // Reorder categories (admin only)
   async reorder(
-    orders: { id: string; sortOrder: number }[],
+    orders: { id: string; sortOrder: number }[]
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/categories/reorder", {
       orders,
@@ -174,7 +174,7 @@ class CategoriesService {
       limit?: number;
       includeSubcategories?: boolean;
       [key: string]: any;
-    },
+    }
   ): Promise<PaginatedResponse<Product>> {
     const params = new URLSearchParams();
     if (filters) {
@@ -213,7 +213,7 @@ class CategoriesService {
   // Get similar categories (siblings or related)
   async getSimilarCategories(
     slug: string,
-    limit?: number,
+    limit?: number
   ): Promise<Category[]> {
     const params = new URLSearchParams();
     if (limit) params.append("limit", String(limit));
