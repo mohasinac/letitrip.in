@@ -111,11 +111,19 @@ export async function POST(req: NextRequest) {
 
     // Step 3: Generate Shops
     const shops = [];
+    let shopIndex = 0;
     for (const user of users) {
       if (user.role !== "seller" && user.role !== "admin") continue;
 
       for (let i = 0; i < config.shopsPerUser; i++) {
         const shopName = `${PREFIX}${faker.company.name()} Shop`;
+
+        // Ensure first 3 shops are featured and on homepage
+        const shouldBeFeatured =
+          shopIndex < 3 || Math.random() < config.featuredPercentage / 100;
+        const shouldBeOnHomepage =
+          shopIndex < 3 || Math.random() < config.homepagePercentage / 100;
+
         const shopData: any = {
           owner_id: user.id,
           name: shopName,
@@ -137,9 +145,9 @@ export async function POST(req: NextRequest) {
           ),
           review_count: faker.number.int({ min: 0, max: 100 }),
           product_count: 0,
-          is_verified: Math.random() < 0.7,
-          is_featured: Math.random() < config.featuredPercentage / 100,
-          show_on_homepage: Math.random() < config.homepagePercentage / 100,
+          is_verified: true, // Always verify for featured shops
+          is_featured: shouldBeFeatured,
+          show_on_homepage: shouldBeOnHomepage,
           is_banned: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -147,6 +155,8 @@ export async function POST(req: NextRequest) {
 
         if (shopData.is_featured) stats.featuredShops++;
         if (shopData.show_on_homepage) stats.homepageItems++;
+
+        shopIndex++;
 
         const docRef = await db.collection(COLLECTIONS.SHOPS).add(shopData);
         shops.push({ id: docRef.id, ...shopData });
