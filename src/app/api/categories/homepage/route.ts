@@ -10,15 +10,15 @@ export async function GET() {
       .orderBy("sort_order", "asc")
       .limit(100)
       .get();
-    
+
     const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    
+
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error("Homepage categories error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load homepage categories" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

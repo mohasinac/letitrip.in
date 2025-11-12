@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       const userShopsQuery = Collections.shops().where(
         "owner_id",
         "==",
-        userId,
+        userId
       );
       const userShopsSnapshot = await userShopsQuery.get();
       canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch shops",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create shops",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
       const userShopsQuery = Collections.shops().where(
         "owner_id",
         "==",
-        userId,
+        userId
       );
       const userShopsSnapshot = await userShopsQuery.get();
 
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "You can only create 1 shop. Please contact admin for more.",
           },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: name, slug, description",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     const existingShopQuery = Collections.shops().where(
       "slug",
       "==",
-      data.slug,
+      data.slug
     );
     const existingShopSnapshot = await existingShopQuery.get();
 
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Shop slug already exists. Please choose a different slug.",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: "Failed to create shop",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

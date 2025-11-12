@@ -59,13 +59,15 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ## Fixed Issues
 
 ### 1. Unauthorized Errors on Public Pages
+
 - **Problem**: Homepage API routes required authentication
 - **Solution**: Made public routes (products, shops, categories, blog) work without authentication
-- **Files Changed**: 
+- **Files Changed**:
   - `src/app/api/products/route.ts`
   - `src/app/api/shops/route.ts`
 
 ### 2. Missing Query Errors
+
 - **Problem**: Firestore compound queries require composite indexes
 - **Solution**: Simplified queries to use single filters and sort/filter in memory
 - **Files Changed**:
@@ -75,6 +77,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
   - `src/app/api/lib/firebase/queries.ts`
 
 ### 3. toISOString Errors
+
 - **Problem**: Some date fields were undefined
 - **Solution**: These will be handled by proper null checks in the components
 

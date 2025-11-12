@@ -29,7 +29,7 @@ export async function processEndedAuctions() {
       .get();
 
     console.log(
-      `[Auction Scheduler] Found ${snapshot.size} auctions to process`,
+      `[Auction Scheduler] Found ${snapshot.size} auctions to process`
     );
 
     // Process each ended auction
@@ -38,7 +38,7 @@ export async function processEndedAuctions() {
   } catch (error) {
     console.error(
       "[Auction Scheduler] Error processing ended auctions:",
-      error,
+      error
     );
   }
 }
@@ -75,7 +75,7 @@ async function closeAuction(auctionId: string) {
       });
 
       console.log(
-        `[Auction Scheduler] Auction ${auctionId} ended with no bids`,
+        `[Auction Scheduler] Auction ${auctionId} ended with no bids`
       );
 
       // Notify seller (no winner)
@@ -96,7 +96,7 @@ async function closeAuction(auctionId: string) {
       });
 
       console.log(
-        `[Auction Scheduler] Auction ${auctionId} ended - reserve price not met`,
+        `[Auction Scheduler] Auction ${auctionId} ended - reserve price not met`
       );
 
       // Notify seller and highest bidder
@@ -113,7 +113,7 @@ async function closeAuction(auctionId: string) {
     });
 
     console.log(
-      `[Auction Scheduler] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`,
+      `[Auction Scheduler] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`
     );
 
     // Create order for winner
@@ -143,7 +143,7 @@ async function closeAuction(auctionId: string) {
   } catch (error) {
     console.error(
       `[Auction Scheduler] Error closing auction ${auctionId}:`,
-      error,
+      error
     );
   }
 }
@@ -154,7 +154,7 @@ async function closeAuction(auctionId: string) {
 async function createWinnerOrder(
   auction: any,
   winnerId: string,
-  finalBid: number,
+  finalBid: number
 ) {
   try {
     // Get winner details
@@ -182,7 +182,10 @@ async function createWinnerOrder(
     }
 
     // Create order
-    const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const orderId = `ORD-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)
+      .toUpperCase()}`;
 
     const orderData = {
       order_id: orderId,
@@ -235,7 +238,7 @@ async function createWinnerOrder(
     await Collections.orders().add(orderData);
 
     console.log(
-      `[Auction Scheduler] Created order ${orderId} for winner ${winnerId}`,
+      `[Auction Scheduler] Created order ${orderId} for winner ${winnerId}`
     );
   } catch (error) {
     console.error("[Auction Scheduler] Error creating winner order:", error);
@@ -261,7 +264,7 @@ async function updateInventory(productId: string) {
       });
 
       console.log(
-        `[Auction Scheduler] Updated inventory for product ${productId}: ${newStock} remaining`,
+        `[Auction Scheduler] Updated inventory for product ${productId}: ${newStock} remaining`
       );
     }
   } catch (error) {
@@ -275,7 +278,7 @@ async function updateInventory(productId: string) {
  */
 async function notifyWinner(auction: any, winnerId: string, finalBid: number) {
   console.log(
-    `[Notification] Winner ${winnerId}: You won auction "${auction.name}" for ₹${finalBid}`,
+    `[Notification] Winner ${winnerId}: You won auction "${auction.name}" for ₹${finalBid}`
   );
   // TODO: Send email/SMS to winner
   // - Congratulations message
@@ -285,7 +288,7 @@ async function notifyWinner(auction: any, winnerId: string, finalBid: number) {
 
 async function notifySeller(auction: any, winnerId: string, finalBid: number) {
   console.log(
-    `[Notification] Seller: Auction "${auction.name}" sold to user ${winnerId} for ₹${finalBid}`,
+    `[Notification] Seller: Auction "${auction.name}" sold to user ${winnerId} for ₹${finalBid}`
   );
   // TODO: Send email/SMS to seller
   // - Auction ended message
@@ -295,7 +298,7 @@ async function notifySeller(auction: any, winnerId: string, finalBid: number) {
 
 async function notifySellerNoWinner(auction: any) {
   console.log(
-    `[Notification] Seller: Auction "${auction.name}" ended with no bids`,
+    `[Notification] Seller: Auction "${auction.name}" ended with no bids`
   );
   // TODO: Send email to seller
   // - No bids received
@@ -305,10 +308,10 @@ async function notifySellerNoWinner(auction: any) {
 async function notifyReserveNotMet(
   auction: any,
   highestBidderId: string,
-  highestBid: number,
+  highestBid: number
 ) {
   console.log(
-    `[Notification] Auction "${auction.name}" ended - reserve price not met (highest: ₹${highestBid})`,
+    `[Notification] Auction "${auction.name}" ended - reserve price not met (highest: ₹${highestBid})`
   );
   // TODO: Send emails
   // - To seller: Reserve not met, option to accept highest bid or relist

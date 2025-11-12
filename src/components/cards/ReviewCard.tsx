@@ -114,7 +114,9 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
                 <Calendar className="w-3 h-3" />
-                <time dateTime={reviewDate ? reviewDate.toISOString() : undefined}>
+                <time
+                  dateTime={reviewDate ? reviewDate.toISOString() : undefined}
+                >
                   {reviewDate ? formatDate(reviewDate) : "N/A"}
                 </time>
               </div>

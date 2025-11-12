@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     // Build query based on role
     let query = getProductsQuery(
       role,
-      role === "seller" ? shopId || userId : undefined,
+      role === "seller" ? shopId || userId : undefined
     );
 
     // For non-authenticated users, force published status
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     if (!user?.email) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     if (!shop_id || !name || !slug || !price || !category_id) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "You do not have permission to add products to this shop",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
     if (!existingSlug.empty) {
       return NextResponse.json(
         { success: false, error: "Product slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -156,13 +156,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { id: docRef.id, ...productData } },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

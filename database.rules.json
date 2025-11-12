@@ -2,22 +2,25 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
-    
-    "auction-bids": {
+
+    "auctions": {
       "$auctionId": {
         ".read": true,
-        ".write": "auth != null",
-        ".indexOn": ["timestamp", "amount", "userId"]
+        "status": {
+          ".read": true,
+          ".write": "auth != null"
+        },
+        "bids": {
+          ".read": true,
+          ".write": "auth != null",
+          ".indexOn": ["timestamp", "amount", "userId"],
+          "$bidId": {
+            ".validate": "newData.hasChildren(['auctionId', 'userId', 'userName', 'amount', 'timestamp'])"
+          }
+        }
       }
     },
-    
-    "auction-status": {
-      "$auctionId": {
-        ".read": true,
-        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'seller')"
-      }
-    },
-    
+
     "active-users": {
       "$auctionId": {
         ".read": true,
@@ -28,7 +31,7 @@
         }
       }
     },
-    
+
     "notifications": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
@@ -36,7 +39,7 @@
         ".indexOn": ["timestamp", "read"]
       }
     },
-    
+
     "error-logs": {
       ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
       ".write": "auth != null",
@@ -44,7 +47,7 @@
         ".indexOn": ["timestamp", "level", "userId"]
       }
     },
-    
+
     "analytics": {
       ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'seller')",
       ".write": "auth != null",

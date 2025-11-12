@@ -10,12 +10,14 @@
 
 **Solution**: Modified API routes to allow public access for published content:
 
-- **`/api/products/route.ts`**: 
+- **`/api/products/route.ts`**:
+
   - Removed auth requirement for GET requests
   - Non-authenticated users see only published products
   - Simplified query filters to avoid composite index issues
 
 - **`/api/shops/route.ts`**:
+
   - Removed auth requirement for GET requests
   - Public users see only verified, non-banned shops
   - Applied memory-based filtering to avoid composite indexes
@@ -34,11 +36,12 @@
 **Solution**: Refactored queries to use single filters and sort/filter in memory:
 
 - **`/api/categories/homepage/route.ts`**:
+
   ```typescript
   // Before: Required composite index
   .where("show_on_homepage", "==", true)
   .orderBy("sort_order", "asc")
-  
+
   // After: Sort in memory
   .where("show_on_homepage", "==", true)
   // Then sort in JS
@@ -46,13 +49,14 @@
   ```
 
 - **`/api/blog/route.ts`**:
+
   ```typescript
   // Before: Multiple filters + orderBy
   .where("status", "==", status)
   .where("showOnHomepage", "==", true)
   .where("category", "==", category)
   .orderBy("publishedAt", "desc")
-  
+
   // After: Single primary filter, client-side filtering
   .where("status", "==", status)
   .where("showOnHomepage", "==", true)
@@ -60,12 +64,13 @@
   ```
 
 - **`/api/shops/route.ts`**:
+
   ```typescript
   // Before: Compound where clauses
   .where("is_verified", "==", true)
   .where("is_banned", "==", false)
   .where("is_featured", "==", true)
-  
+
   // After: One primary filter, rest in memory
   .where("is_verified", "==", true)
   // Filter banned and featured in JS
@@ -77,12 +82,14 @@
 
 **Root Cause**: `api.service.ts` needs `NEXT_PUBLIC_APP_URL` to convert `/api/products` → `http://localhost:3000/api/products` in SSR context.
 
-**Solution**: 
+**Solution**:
+
 - Added `NEXT_PUBLIC_APP_URL=http://localhost:3000` to `.env.local`
 - Created `PRODUCTION-ENV-SETUP.md` with deployment instructions
 - Updated Vercel sync script to include this variable
 
 **For Production Deployment**:
+
 ```bash
 # Set in Vercel
 vercel env add NEXT_PUBLIC_APP_URL production
@@ -95,7 +102,8 @@ vercel env add NEXT_PUBLIC_APP_URL production
 
 **Likely Cause**: Components trying to call `.toISOString()` on undefined date values.
 
-**Solution Required**: 
+**Solution Required**:
+
 - Need to add null checks in components that display dates
 - Example locations to check:
   - Blog card date display
@@ -103,6 +111,7 @@ vercel env add NEXT_PUBLIC_APP_URL production
   - Shop card date display
 
 **Recommended Fix Pattern**:
+
 ```typescript
 // Before
 <time>{new Date(publishedAt).toISOString()}</time>
@@ -116,16 +125,19 @@ vercel env add NEXT_PUBLIC_APP_URL production
 ### 5. 🔍 Login Issues (Needs Testing)
 
 **Current Status**: Authentication flow is properly structured:
+
 - Uses session-based auth with HTTP-only cookies
 - Stores user data in localStorage for quick access
 - Server validates session on each API call
 
 **Potential Issues**:
+
 1. **Session Cookie Path**: Make sure cookies work across all paths
 2. **CORS Issues**: Verify production domain matches cookie domain
 3. **Environment Variables**: Ensure all Firebase and session secrets are set
 
 **Testing Steps**:
+
 ```bash
 # 1. Start dev server
 npm run dev
@@ -148,6 +160,7 @@ curl http://localhost:3000/api/auth/me \
 ## Files Modified
 
 ### API Routes
+
 - ✅ `src/app/api/products/route.ts`
 - ✅ `src/app/api/shops/route.ts`
 - ✅ `src/app/api/categories/homepage/route.ts`
@@ -155,15 +168,18 @@ curl http://localhost:3000/api/auth/me \
 - ✅ `src/app/api/lib/firebase/queries.ts`
 
 ### Environment
+
 - ✅ `.env.local` (added NEXT_PUBLIC_APP_URL)
 
 ### Documentation
+
 - ✅ `PRODUCTION-ENV-SETUP.md` (new)
 - ✅ This file: Summary of all fixes
 
 ## Testing Checklist
 
 ### Local Development
+
 - [ ] Start server: `npm run dev`
 - [ ] Visit homepage: http://localhost:3000
 - [ ] Check browser console - should be NO errors
@@ -179,6 +195,7 @@ curl http://localhost:3000/api/auth/me \
   - [ ] Check user is authenticated in navbar
 
 ### Production Deployment
+
 - [ ] Set environment variables in Vercel:
   ```bash
   vercel env add NEXT_PUBLIC_APP_URL production
@@ -200,16 +217,19 @@ curl http://localhost:3000/api/auth/me \
 ## Next Steps
 
 1. **Fix Date Display Issues**:
+
    - Audit all components that display dates
    - Add null/undefined checks
    - Use proper date formatting
 
 2. **Create Firestore Indexes** (if needed in future):
+
    - Only create indexes if performance requires
    - Current memory-based filtering works for small datasets
    - Monitor query performance as data grows
 
 3. **Test Production Login**:
+
    - Deploy to staging/preview first
    - Test complete auth flow
    - Monitor error logs in Vercel
@@ -222,6 +242,7 @@ curl http://localhost:3000/api/auth/me \
 ## Performance Notes
 
 **Memory-based Filtering Impact**:
+
 - Current approach fetches 2-10x more documents than needed
 - Acceptable for small datasets (<1000 docs per collection)
 - Consider creating composite indexes if:
@@ -230,6 +251,7 @@ curl http://localhost:3000/api/auth/me \
   - User complaints about slow loading
 
 **Optimization Path**:
+
 1. Monitor performance (current approach is fine for MVP)
 2. If needed, create selective composite indexes:
    ```bash
@@ -243,6 +265,7 @@ curl http://localhost:3000/api/auth/me \
 ## Support
 
 If issues persist:
+
 1. Check browser console for specific error messages
 2. Check Vercel function logs for API errors
 3. Verify all environment variables are set

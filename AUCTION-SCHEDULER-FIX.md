@@ -1,12 +1,15 @@
 # Auction Scheduler Composite Index Fix
 
 ## Issue
+
 The auction scheduler was failing with error:
+
 ```
 Error: 9 FAILED_PRECONDITION: The query requires an index.
 ```
 
 Query causing the issue:
+
 ```typescript
 Collections.auctions()
   .where("status", "==", "live")
@@ -17,6 +20,7 @@ Collections.auctions()
 ## Solution
 
 ### 1. ✅ Composite Index Already Exists
+
 The required composite index already exists in `firestore.indexes.json`:
 
 ```json
@@ -31,9 +35,11 @@ The required composite index already exists in `firestore.indexes.json`:
 ```
 
 ### 2. ✅ Code Updated to Use Index
+
 Updated `src/app/api/lib/utils/auction-scheduler.ts`:
 
 **Before** (avoiding composite index):
+
 ```typescript
 // Get all live auctions (avoid composite index)
 const snapshot = await Collections.auctions()
@@ -49,6 +55,7 @@ const endedAuctions = snapshot.docs.filter((doc) => {
 ```
 
 **After** (using composite index):
+
 ```typescript
 // Get all live auctions that have ended (using composite index)
 const snapshot = await Collections.auctions()
@@ -62,11 +69,13 @@ const snapshot = await Collections.auctions()
 The composite index exists in configuration but may need time to build in Firebase.
 
 **To check index status:**
+
 1. Go to [Firebase Console - Indexes](https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes)
 2. Look for the auction index with fields: `status`, `end_time`
 3. Status should be "Enabled" (not "Building" or "Error")
 
 **If index is still building:**
+
 - Wait for it to complete (can take minutes to hours depending on data volume)
 - The scheduler will continue to log errors until the index is ready
 - Once ready, errors will stop automatically
@@ -74,6 +83,7 @@ The composite index exists in configuration but may need time to build in Fireba
 ## Alternative: Direct Index Creation URL
 
 If the index doesn't exist or is in error state, use this URL to create it:
+
 ```
 https://console.firebase.google.com/v1/r/project/letitrip-in-app/firestore/indexes?create_composite=ClBwcm9qZWN0cy9sZXRpdHJpcC1pbi1hcHAvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL2F1Y3Rpb25zL2luZGV4ZXMvXxABGgoKBnN0YXR1cxABGgwKCGVuZF90aW1lEAEaDAoIX19uYW1lX18QAQ
 ```
@@ -94,6 +104,7 @@ firebase firestore:indexes
 ## Monitoring
 
 The scheduler runs every minute and logs:
+
 - `[Auction Scheduler] Running scheduled task...` - Scheduler started
 - `[Auction Scheduler] Found N auctions to process` - Query succeeded
 - `[Auction Scheduler] Error processing ended auctions:` - Query failed (index not ready)
@@ -102,14 +113,15 @@ The scheduler runs every minute and logs:
 
 Using composite index vs. in-memory filtering:
 
-| Metric | In-Memory | Composite Index |
-|--------|-----------|-----------------|
-| Documents Read | All live auctions | Only ended auctions |
-| Network Transfer | All data | Only relevant data |
-| Processing Time | O(n) filtering | O(1) query |
-| Firestore Costs | Higher reads | Minimal reads |
+| Metric           | In-Memory         | Composite Index     |
+| ---------------- | ----------------- | ------------------- |
+| Documents Read   | All live auctions | Only ended auctions |
+| Network Transfer | All data          | Only relevant data  |
+| Processing Time  | O(n) filtering    | O(1) query          |
+| Firestore Costs  | Higher reads      | Minimal reads       |
 
 **Example:**
+
 - 1000 live auctions, 5 ended
 - In-memory: Read 1000 docs
 - Index: Read 5 docs
@@ -120,6 +132,7 @@ Using composite index vs. in-memory filtering:
 Other auction-related indexes in `firestore.indexes.json`:
 
 1. **Shop-based auction queries:**
+
    ```json
    {
      "fields": [
@@ -131,6 +144,7 @@ Other auction-related indexes in `firestore.indexes.json`:
    ```
 
 2. **Category-based auction queries:**
+
    ```json
    {
      "fields": [
@@ -168,15 +182,18 @@ npm run dev
 ## Troubleshooting
 
 ### Error persists after index deployment
+
 - Wait 5-10 minutes for index to build
 - Check Firebase Console for index status
 - Verify you're using the correct Firebase project: `letitrip-in-app`
 
 ### "Index already exists" error
+
 - This is normal - index is already configured
 - Check Firebase Console to see if it's building or enabled
 
 ### Different project in error URL
+
 - Error URL shows `letitrip-in-app` but Firebase CLI was using `justforview1`
 - Fixed by: `firebase use letitrip-in-app`
 - Always verify project before deploying: `firebase projects:list`
@@ -190,6 +207,7 @@ npm run dev
 ## Summary
 
 The auction scheduler is now optimized to use Firestore composite indexes instead of in-memory filtering. This:
+
 - ✅ Reduces Firestore read costs by ~99%
 - ✅ Improves query performance
 - ✅ Scales better as auction count grows

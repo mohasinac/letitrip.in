@@ -46,7 +46,7 @@ export function applyFilters(query: Query, filters: QueryFilter[]): Query {
     filteredQuery = filteredQuery.where(
       filter.field,
       filter.operator,
-      filter.value,
+      filter.value
     );
   }
 
@@ -59,7 +59,7 @@ export function applyFilters(query: Query, filters: QueryFilter[]): Query {
 export function applyPagination(
   query: Query,
   limit?: number,
-  startAfter?: any,
+  startAfter?: any
 ): Query {
   let paginatedQuery = query;
 
@@ -79,7 +79,7 @@ export function applyPagination(
  */
 export function applyOrdering(
   query: Query,
-  orderBy?: { field: string; direction?: OrderByDirection },
+  orderBy?: { field: string; direction?: OrderByDirection }
 ): Query {
   if (orderBy) {
     return query.orderBy(orderBy.field, orderBy.direction || "desc");
@@ -167,7 +167,7 @@ export function getProductsQuery(userRole: UserRole, shopId?: string) {
 export function getOrdersQuery(
   userRole: UserRole,
   userId?: string,
-  shopId?: string,
+  shopId?: string
 ) {
   const ordersRef = Collections.orders();
 
@@ -223,7 +223,7 @@ export function getAuctionsQuery(userRole: UserRole, shopId?: string) {
 export function getReturnsQuery(
   userRole: UserRole,
   userId?: string,
-  shopId?: string,
+  shopId?: string
 ) {
   const returnsRef = Collections.returns();
 
@@ -255,7 +255,7 @@ export function getReturnsQuery(
 export function getSupportTicketsQuery(
   userRole: UserRole,
   userId?: string,
-  shopId?: string,
+  shopId?: string
 ) {
   const ticketsRef = Collections.supportTickets();
 
@@ -288,7 +288,7 @@ export async function userOwnsResource(
   collectionName: string,
   resourceId: string,
   userId: string,
-  ownerField: string = "owner_id",
+  ownerField: string = "owner_id"
 ): Promise<boolean> {
   try {
     const { getDocumentById } = await import("./collections");
@@ -310,7 +310,7 @@ export async function userOwnsResource(
  */
 export async function userOwnsShop(
   shopId: string,
-  userId: string,
+  userId: string
 ): Promise<boolean> {
   return userOwnsResource("shops", shopId, userId, "owner_id");
 }

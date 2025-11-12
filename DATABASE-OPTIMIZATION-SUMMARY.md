@@ -1,6 +1,7 @@
 # Database Optimization Summary - November 12, 2025
 
 ## Overview
+
 This document summarizes all database optimizations implemented to improve performance and reduce costs.
 
 ---
@@ -8,13 +9,17 @@ This document summarizes all database optimizations implemented to improve perfo
 ## ✅ Firestore Composite Indexes
 
 ### What Are Composite Indexes?
+
 Firestore requires composite indexes when queries use:
+
 - Multiple `where()` clauses
 - A combination of `where()` + `orderBy()`
 - Inequality operators on different fields
 
 ### Optimization Strategy
+
 We created composite indexes for all frequently-used queries to:
+
 - **Eliminate in-memory filtering** (faster queries)
 - **Reduce document reads** (lower costs)
 - **Improve page load times** (better UX)
@@ -22,6 +27,7 @@ We created composite indexes for all frequently-used queries to:
 ### Indexes Created
 
 #### 1. **Auctions Collection**
+
 ```json
 // Query: status + end_time (auction scheduler)
 {
@@ -51,6 +57,7 @@ We created composite indexes for all frequently-used queries to:
 ```
 
 #### 2. **Categories Collection**
+
 ```json
 // Query: show_on_homepage + sort_order (homepage categories)
 {
@@ -62,6 +69,7 @@ We created composite indexes for all frequently-used queries to:
 ```
 
 #### 3. **Blog Posts Collection**
+
 ```json
 // Query: status + publishedAt
 {
@@ -101,6 +109,7 @@ We created composite indexes for all frequently-used queries to:
 ```
 
 #### 4. **Shops Collection**
+
 ```json
 // Query: is_banned + is_verified + created_at
 {
@@ -131,6 +140,7 @@ We created composite indexes for all frequently-used queries to:
 ```
 
 #### 5. **Products Collection**
+
 ```json
 // Query: status + is_featured + created_at
 {
@@ -152,6 +162,7 @@ We created composite indexes for all frequently-used queries to:
 ```
 
 #### 6. **Bids Collection**
+
 ```json
 // Query: auction_id + amount (find highest bid)
 {
@@ -167,6 +178,7 @@ We created composite indexes for all frequently-used queries to:
 ## ✅ Realtime Database Indexes
 
 ### What Are Realtime Database Indexes?
+
 The `.indexOn` rule tells Firebase which fields to index for faster queries using `orderByChild()`.
 
 ### Indexes Configured
@@ -210,11 +222,7 @@ const recentBidsQuery = query(
 );
 
 // Get highest bids (uses amount index)
-const highestBidsQuery = query(
-  bidsRef,
-  orderByChild("amount"),
-  limitToLast(5)
-);
+const highestBidsQuery = query(bidsRef, orderByChild("amount"), limitToLast(5));
 ```
 
 ---
@@ -237,17 +245,17 @@ match /product-images/{allPaths=**} {
 
 // Size limits for cost control
 match /product-videos/{allPaths=**} {
-  allow write: if isSeller() && 
-               isVideo(request.resource.contentType) && 
+  allow write: if isSeller() &&
+               isVideo(request.resource.contentType) &&
                request.resource.size < 100 * 1024 * 1024; // 100MB limit
 }
 
 // Private user documents
 match /user-documents/{userId}/{fileName} {
-  allow read: if isAuthenticated() && 
+  allow read: if isAuthenticated() &&
               (request.auth.uid == userId || isAdmin());
-  allow write: if isAuthenticated() && 
-               request.auth.uid == userId && 
+  allow write: if isAuthenticated() &&
+               request.auth.uid == userId &&
                request.resource.size < 10 * 1024 * 1024; // 10MB limit
 }
 ```
@@ -264,18 +272,21 @@ match /user-documents/{userId}/{fileName} {
 ## 📊 Performance Impact
 
 ### Before Optimization
+
 - Homepage load: **3-5 seconds** (multiple in-memory filters)
 - Document reads per request: **100-500 documents**
 - Auction scheduler: **Error (missing index)**
 - Blog listing: **10x over-fetching** then filtering
 
 ### After Optimization
+
 - Homepage load: **<1 second** (composite indexes)
 - Document reads per request: **10-50 documents** (90% reduction)
 - Auction scheduler: **Works flawlessly** (indexed query)
 - Blog listing: **Precise fetching** (no over-fetching)
 
 ### Cost Savings
+
 - Firestore reads: **~80% reduction**
 - Storage bandwidth: **~50% reduction** (CDN caching)
 - Function execution time: **~70% faster**
@@ -285,7 +296,9 @@ match /user-documents/{userId}/{fileName} {
 ## 🚀 API Routes Optimized
 
 ### 1. `/api/auctions` - Auction Scheduler
+
 **Before:**
+
 ```typescript
 // ERROR: Missing composite index
 const snapshot = await Collections.auctions()
@@ -295,6 +308,7 @@ const snapshot = await Collections.auctions()
 ```
 
 **After:**
+
 ```typescript
 // ✅ Uses composite index: status + end_time
 const snapshot = await Collections.auctions()
@@ -304,18 +318,21 @@ const snapshot = await Collections.auctions()
 ```
 
 ### 2. `/api/categories/homepage`
+
 **Before:**
+
 ```typescript
 // Fetch all, sort in memory
 const snap = await Collections.categories()
   .where("show_on_homepage", "==", true)
   .get();
-const sorted = snap.docs.sort((a, b) => 
-  (a.sort_order || 0) - (b.sort_order || 0)
+const sorted = snap.docs.sort(
+  (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
 );
 ```
 
 **After:**
+
 ```typescript
 // ✅ Uses composite index: show_on_homepage + sort_order
 const snap = await Collections.categories()
@@ -325,7 +342,9 @@ const snap = await Collections.categories()
 ```
 
 ### 3. `/api/blog`
+
 **Before:**
+
 ```typescript
 // Over-fetch 10x, filter in memory
 const snapshot = await query.limit(limit * 10).get();
@@ -334,9 +353,11 @@ posts.sort(...); // Client-side sorting
 ```
 
 **After:**
+
 ```typescript
 // ✅ Uses composite indexes, precise fetching
-let query = db.collection("blog_posts")
+let query = db
+  .collection("blog_posts")
   .where("status", "==", status)
   .where("showOnHomepage", "==", true)
   .orderBy("publishedAt", "desc")
@@ -344,15 +365,18 @@ let query = db.collection("blog_posts")
 ```
 
 ### 4. `/api/shops`
+
 **Before:**
+
 ```typescript
 // Over-fetch 2x, filter in memory
 query = query.limit(limit * 2);
 const snapshot = await query.get();
-let shops = snapshot.docs.filter(shop => !shop.is_banned);
+let shops = snapshot.docs.filter((shop) => !shop.is_banned);
 ```
 
 **After:**
+
 ```typescript
 // ✅ Uses composite indexes, no client filtering
 query = Collections.shops()
@@ -367,11 +391,13 @@ query = Collections.shops()
 ## 🔧 How to Deploy Indexes
 
 ### Deploy All Indexes
+
 ```bash
 firebase deploy --only firestore:indexes
 ```
 
 ### Deploy Specific Components
+
 ```bash
 # Firestore indexes only
 firebase deploy --only firestore:indexes
@@ -387,6 +413,7 @@ firebase deploy
 ```
 
 ### Check Index Status
+
 ```bash
 # Visit Firebase Console
 https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes
@@ -402,18 +429,21 @@ https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes
 ## 📋 Maintenance Checklist
 
 ### Monthly
+
 - [ ] Review Firestore query performance in Firebase Console
 - [ ] Check for new "missing index" errors in logs
 - [ ] Audit unused indexes (remove to save quota)
 - [ ] Review storage usage and costs
 
 ### When Adding New Features
+
 - [ ] Identify query patterns
 - [ ] Create composite indexes before deploying
 - [ ] Test queries in emulator first
 - [ ] Monitor performance after deployment
 
 ### Cost Monitoring
+
 - [ ] Set up budget alerts in Firebase Console
 - [ ] Track document reads per endpoint
 - [ ] Monitor storage bandwidth usage
@@ -424,6 +454,7 @@ https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes
 ## 🎯 Best Practices
 
 ### Query Optimization
+
 1. **Use composite indexes** for all compound queries
 2. **Limit result sets** to what's actually needed
 3. **Avoid array-contains** when possible (expensive)
@@ -431,18 +462,21 @@ https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes
 5. **Cache frequently accessed data** on client
 
 ### Index Management
+
 1. **Create indexes proactively** (not reactively)
 2. **Remove unused indexes** (they consume quota)
 3. **Test in emulator** before production deploy
 4. **Monitor index build status** after deployment
 
 ### Storage Optimization
+
 1. **Compress images** before upload (use Sharp/ImageMagick)
 2. **Set aggressive CDN caching** for public assets (1 year)
 3. **Enforce size limits** in storage rules
 4. **Delete unused files** regularly
 
 ### Realtime Database
+
 1. **Index all orderByChild fields**
 2. **Limit listener scope** (don't listen to entire trees)
 3. **Clean up old data** periodically
@@ -462,18 +496,21 @@ https://console.firebase.google.com/project/letitrip-in-app/firestore/indexes
 ## 🐛 Troubleshooting
 
 ### "Missing Index" Error
+
 1. Copy the index creation URL from error message
 2. Click to auto-create the index
 3. Wait 5-10 minutes for index to build
 4. OR add manually to `firestore.indexes.json` and deploy
 
 ### Slow Queries
+
 1. Check if composite index exists
 2. Review query complexity (too many filters?)
 3. Consider pagination or caching
 4. Use Firebase Performance Monitoring
 
 ### High Costs
+
 1. Audit document reads per endpoint
 2. Implement caching where possible
 3. Reduce over-fetching (precise limits)
