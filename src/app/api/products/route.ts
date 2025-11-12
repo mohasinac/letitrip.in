@@ -12,13 +12,6 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
 
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const shopId = searchParams.get("shopId") || searchParams.get("shop_id");
     const categoryId =
@@ -30,37 +23,39 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get("slug");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    const role = (user.role || "user") as UserRole;
-    const userId = user.id;
+    // For public requests, show only published products
+    const role = user?.role ? (user.role as UserRole) : UserRole.USER;
+    const userId = user?.id;
 
     // Build query based on role
-    const query = getProductsQuery(
+    let query = getProductsQuery(
       role,
       role === "seller" ? shopId || userId : undefined,
     );
 
-    // Apply filters
-    const filters: any[] = [];
-    if (shopId)
-      filters.push({ field: "shop_id", operator: "==", value: shopId });
-    if (categoryId)
-      filters.push({ field: "category_id", operator: "==", value: categoryId });
-    if (status)
-      filters.push({ field: "status", operator: "==", value: status });
-    if (isFeatured === "true")
-      filters.push({ field: "is_featured", operator: "==", value: true });
-    if (slug) filters.push({ field: "slug", operator: "==", value: slug });
-
-    let productsQuery = query;
-    for (const filter of filters) {
-      productsQuery = productsQuery.where(
-        filter.field,
-        filter.operator as any,
-        filter.value,
-      );
+    // For non-authenticated users, force published status
+    if (!user) {
+      query = query.where("status", "==", "published");
     }
 
-    const snapshot = await productsQuery.limit(limit).get();
+    // Apply filters one at a time to avoid composite index requirements
+    if (shopId) {
+      query = query.where("shop_id", "==", shopId);
+    }
+    if (categoryId) {
+      query = query.where("category_id", "==", categoryId);
+    }
+    if (status && user) {
+      query = query.where("status", "==", status);
+    }
+    if (isFeatured === "true") {
+      query = query.where("is_featured", "==", true);
+    }
+    if (slug) {
+      query = query.where("slug", "==", slug);
+    }
+
+    const snapshot = await query.limit(limit).get();
     let products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     if (minPrice) {

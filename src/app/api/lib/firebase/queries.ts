@@ -130,10 +130,9 @@ export function getShopsQuery(userRole: UserRole, userId?: string) {
 
     case UserRole.USER:
     default:
-      // Guest/User sees only public, verified shops
-      return shopsRef
-        .where("is_verified", "==", true)
-        .where("is_banned", "==", false);
+      // Guest/User sees only verified shops
+      // We'll filter out banned shops in the API route to avoid composite index
+      return shopsRef.where("is_verified", "==", true);
   }
 }
 
@@ -157,10 +156,8 @@ export function getProductsQuery(userRole: UserRole, shopId?: string) {
 
     case UserRole.USER:
     default:
-      // Guest/User sees only published products from verified shops
-      return productsRef
-        .where("status", "==", "published")
-        .where("is_deleted", "==", false);
+      // Guest/User sees only published products
+      return productsRef.where("status", "==", "published");
   }
 }
 
@@ -216,9 +213,7 @@ export function getAuctionsQuery(userRole: UserRole, shopId?: string) {
     case UserRole.USER:
     default:
       // Guest/User sees only active public auctions
-      return auctionsRef
-        .where("status", "==", "active")
-        .where("is_deleted", "==", false);
+      return auctionsRef.where("status", "==", "active");
   }
 }
 

@@ -15,43 +15,43 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const page = parseInt(searchParams.get("page") || "1");
 
+    // Start with status filter (most common)
     let query = db.collection(COLLECTION).where("status", "==", status);
 
-    if (category) {
+    // Apply only ONE additional filter to avoid composite index requirements
+    if (showOnHomepage === "true") {
+      query = query.where("showOnHomepage", "==", true) as any;
+    } else if (category) {
       query = query.where("category", "==", category) as any;
     }
 
-    if (showOnHomepage === "true") {
-      query = query.where("showOnHomepage", "==", true) as any;
-    }
+    // Get all matching docs and sort/paginate in memory
+    const snapshot = await query.limit(limit * 10).get(); // Get more to allow filtering
 
-    // Order by published date
-    query = query.orderBy("publishedAt", "desc") as any;
-
-    // Pagination
-    const offset = (page - 1) * limit;
-    query = query.limit(limit).offset(offset) as any;
-
-    const snapshot = await query.get();
-
-    const posts = snapshot.docs.map((doc) => ({
+    let posts = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Get total count (for pagination)
-    let countQuery = db.collection(COLLECTION).where("status", "==", status);
-    if (category) {
-      countQuery = countQuery.where("category", "==", category) as any;
+    // Apply client-side filtering if needed
+    if (showOnHomepage === "true" && category) {
+      posts = posts.filter((p: any) => p.category === category);
     }
-    if (showOnHomepage === "true") {
-      countQuery = countQuery.where("showOnHomepage", "==", true) as any;
-    }
-    const countSnapshot = await countQuery.count().get();
-    const total = countSnapshot.data().count;
+
+    // Sort by publishedAt in memory
+    posts.sort((a: any, b: any) => {
+      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    // Apply pagination in memory
+    const total = posts.length;
+    const offset = (page - 1) * limit;
+    const paginatedPosts = posts.slice(offset, offset + limit);
 
     return NextResponse.json({
-      data: posts,
+      data: paginatedPosts,
       pagination: {
         page,
         limit,

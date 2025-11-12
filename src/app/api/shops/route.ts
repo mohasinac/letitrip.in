@@ -27,43 +27,24 @@ export async function GET(request: NextRequest) {
       if (value) filters[key] = value;
     });
 
-    const role = (user?.role || "user") as UserRole;
+    const role = user?.role ? (user.role as UserRole) : UserRole.USER;
     const userId = user?.id;
 
     // Build role-based query
     let query = getShopsQuery(role, userId);
 
-    // Apply additional filters from search params
-    const queryFilters: any[] = [];
-
-    if (filters.verified === "true") {
-      queryFilters.push({ field: "is_verified", operator: "==", value: true });
-    }
-    if (filters.featured === "true") {
-      queryFilters.push({ field: "is_featured", operator: "==", value: true });
-    }
-    if (filters.search) {
-      // Note: Firestore doesn't support full-text search natively
-      // This is a simple startAt/endAt approach for name field
-      // Consider using Algolia or Firebase Extensions for better search
-      queryFilters.push({
-        field: "name",
-        operator: ">=",
-        value: filters.search,
-      });
-      queryFilters.push({
-        field: "name",
-        operator: "<=",
-        value: filters.search + "\uf8ff",
-      });
+    // Apply ONE additional filter to avoid composite index requirements
+    if (filters.showOnHomepage === "true") {
+      query = query.where("show_on_homepage", "==", true);
+    } else if (filters.featured === "true") {
+      query = query.where("is_featured", "==", true);
+    } else if (filters.verified === "true" && user) {
+      query = query.where("is_verified", "==", true);
     }
 
-    // Apply filters and pagination
-    query = buildQuery(query, {
-      filters: queryFilters,
-      orderBy: { field: "created_at", direction: "desc" },
-      limit: filters.limit ? parseInt(filters.limit) : 20,
-    });
+    // Apply pagination
+    const limit = filters.limit ? parseInt(filters.limit) : 20;
+    query = query.limit(limit * 2); // Get more to allow client-side filtering
 
     // Execute query
     const snapshot = await query.get();
@@ -72,6 +53,20 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Filter out banned shops in memory
+    shops = shops.filter((shop: any) => !shop.is_banned);
+
+    // Apply additional client-side filters
+    if (filters.featured === "true" && filters.showOnHomepage !== "true") {
+      shops = shops.filter((shop: any) => shop.is_featured === true);
+    }
+    if (filters.showOnHomepage === "true" && filters.featured === "true") {
+      shops = shops.filter((shop: any) => shop.is_featured === true);
+    }
+
+    // Limit to requested amount
+    shops = shops.slice(0, limit);
 
     // For sellers, also fetch public verified shops if needed
     if (role === UserRole.SELLER && filters.includePublic === "true") {
