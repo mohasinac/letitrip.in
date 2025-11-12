@@ -32,12 +32,13 @@ export function AddressSelector({
     try {
       setLoading(true);
       const data = await addressService.getAll();
-      setAddresses(data);
+      const addressList = data.addresses || [];
+      setAddresses(addressList);
 
       // Auto-select default or first address
-      if (!selectedId && data.length > 0) {
-        const defaultAddress = data.find((a: Address) => a.isDefault);
-        onSelect(defaultAddress?.id || data[0].id);
+      if (!selectedId && addressList.length > 0) {
+        const defaultAddress = addressList.find((a: Address) => a.isDefault);
+        onSelect(defaultAddress?.id || addressList[0].id);
       }
     } catch (error) {
       console.error("Failed to load addresses:", error);

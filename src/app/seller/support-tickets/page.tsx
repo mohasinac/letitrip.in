@@ -69,11 +69,10 @@ function SellerSupportTicketsContent() {
   const loadStats = async () => {
     try {
       const [totalRes, openRes, inProgressRes, resolvedRes] = await Promise.all(
-        [
-          supportService.getTicketCount({}),
-          supportService.getTicketCount({ status: "open" }),
-          supportService.getTicketCount({ status: "in_progress" }),
-          supportService.getTicketCount({ status: "resolved" }),
+        [      supportService.getTicketCount({}),
+      supportService.getTicketCount({ status: "open" }),
+      supportService.getTicketCount({ status: "in-progress" }),
+      supportService.getTicketCount({ status: "resolved" }),
         ]
       );
 
@@ -330,9 +329,7 @@ function SellerSupportTicketsContent() {
 
                       {/* Description */}
                       <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                        {ticket.description ||
-                          ticket.messages?.[0]?.message ||
-                          "No description"}
+                        {ticket.description || "No description"}
                       </p>
 
                       {/* Meta Info */}
@@ -343,11 +340,6 @@ function SellerSupportTicketsContent() {
                         </span>
                         {ticket.assignedTo && (
                           <span>Assigned to support agent</span>
-                        )}
-                        {ticket.lastReplyAt && (
-                          <span>
-                            Last reply {formatTimeAgo(ticket.lastReplyAt)}
-                          </span>
                         )}
                       </div>
                     </div>
@@ -362,12 +354,6 @@ function SellerSupportTicketsContent() {
                       >
                         {ticket.priority}
                       </span>
-                      {ticket.messageCount && ticket.messageCount > 0 && (
-                        <div className="flex items-center gap-1 text-xs text-gray-600">
-                          <MessageSquare className="h-3 w-3" />
-                          {ticket.messageCount} replies
-                        </div>
-                      )}
                     </div>
                   </div>
                 </Link>

@@ -14,22 +14,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { FormModal } from "@/components/common/FormModal";
-
-interface Address {
-  id: string;
-  userId: string;
-  name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  isDefault: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Address } from "@/types";
 
 function AddressesContent() {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -40,11 +25,11 @@ function AddressesContent() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
-    addressLine1: "",
-    addressLine2: "",
+    line1: "",
+    line2: "",
     city: "",
     state: "",
-    postalCode: "",
+    pincode: "",
     country: "India",
     isDefault: false,
   });
@@ -71,11 +56,11 @@ function AddressesContent() {
       setFormData({
         name: address.name,
         phone: address.phone,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2 || "",
+        line1: address.line1,
+        line2: address.line2 || "",
         city: address.city,
         state: address.state,
-        postalCode: address.postalCode,
+        pincode: address.pincode,
         country: address.country,
         isDefault: address.isDefault,
       });
@@ -84,11 +69,11 @@ function AddressesContent() {
       setFormData({
         name: "",
         phone: "",
-        addressLine1: "",
-        addressLine2: "",
+        line1: "",
+        line2: "",
         city: "",
         state: "",
-        postalCode: "",
+        pincode: "",
         country: "India",
         isDefault: addresses.length === 0,
       });
@@ -209,10 +194,10 @@ function AddressesContent() {
                 </div>
 
                 <div className="text-gray-700 space-y-1 mb-6">
-                  <p>{address.addressLine1}</p>
-                  {address.addressLine2 && <p>{address.addressLine2}</p>}
+                  <p>{address.line1}</p>
+                  {address.line2 && <p>{address.line2}</p>}
                   <p>
-                    {address.city}, {address.state} {address.postalCode}
+                    {address.city}, {address.state} {address.pincode}
                   </p>
                   <p>{address.country}</p>
                 </div>
@@ -290,9 +275,9 @@ function AddressesContent() {
               <input
                 type="text"
                 required
-                value={formData.addressLine1}
+                value={formData.line1}
                 onChange={(e) =>
-                  setFormData({ ...formData, addressLine1: e.target.value })
+                  setFormData({ ...formData, line1: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="House/Flat No., Street Name"
@@ -305,9 +290,9 @@ function AddressesContent() {
               </label>
               <input
                 type="text"
-                value={formData.addressLine2}
+                value={formData.line2}
                 onChange={(e) =>
-                  setFormData({ ...formData, addressLine2: e.target.value })
+                  setFormData({ ...formData, line2: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Landmark, Area"
@@ -354,9 +339,9 @@ function AddressesContent() {
                 <input
                   type="text"
                   required
-                  value={formData.postalCode}
+                  value={formData.pincode}
                   onChange={(e) =>
-                    setFormData({ ...formData, postalCode: e.target.value })
+                    setFormData({ ...formData, pincode: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />

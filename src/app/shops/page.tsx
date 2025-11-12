@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Search, Filter, Grid, List } from "lucide-react";
 import { ShopCard } from "@/components/cards/ShopCard";
@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { shopsService } from "@/services/shops.service";
 import type { Shop } from "@/types";
 
-export default function ShopsPage() {
+function ShopsContent() {
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
 
@@ -265,5 +265,19 @@ export default function ShopsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ShopsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
+      <ShopsContent />
+    </Suspense>
   );
 }

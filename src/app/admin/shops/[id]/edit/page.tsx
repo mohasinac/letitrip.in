@@ -1202,7 +1202,7 @@ export default function AdminEditShopPage() {
         onClose={() => setShowDeleteDialog(false)}
         variant="danger"
         confirmLabel="Delete Shop"
-        loading={deleting}
+        isLoading={deleting}
       />
 
       {/* Ban Confirmation */}
@@ -1219,7 +1219,7 @@ export default function AdminEditShopPage() {
           setShowBanDialog(false);
           setBanReason("");
         }}
-        variant={shop.isBanned ? "default" : "danger"}
+        variant={shop.isBanned ? "info" : "danger"}
         confirmLabel={shop.isBanned ? "Unban" : "Ban"}
       >
         {!shop.isBanned && (

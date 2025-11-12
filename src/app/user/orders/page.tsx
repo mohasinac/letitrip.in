@@ -10,6 +10,8 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { Order } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default function OrdersPage() {
   const router = useRouter();
   const { user } = useAuth();

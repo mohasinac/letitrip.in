@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader2, ImageIcon } from "lucide-react";
+import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { InlineImageUploadProps } from "@/types/inline-edit";
 import { mediaService } from "@/services/media.service";
 

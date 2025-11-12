@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Gavel,
@@ -23,7 +23,7 @@ import { auctionsService } from "@/services/auctions.service";
 import type { Auction, AuctionStatus } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 
-export default function AuctionsPage() {
+function AuctionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
@@ -523,5 +523,19 @@ export default function AuctionsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function AuctionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
+      <AuctionsContent />
+    </Suspense>
   );
 }

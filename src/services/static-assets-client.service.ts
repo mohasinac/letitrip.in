@@ -20,7 +20,7 @@ import { apiService } from "./api.service";
 export interface StaticAsset {
   id: string;
   name: string;
-  type: "payment-logo" | "icon" | "image" | "document";
+  type: "payment-logo" | "icon" | "image" | "video" | "document";
   url: string;
   storagePath: string;
   category?: string;

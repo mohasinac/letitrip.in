@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import { productsService } from "@/services/products.service";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShopCard } from "@/components/cards/ShopCard";
@@ -10,7 +10,7 @@ import { CategoryCard } from "@/components/cards/CategoryCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams?.get("q") || "";
   const [activeTab, setActiveTab] = useState<
@@ -124,7 +124,7 @@ export default function SearchPage() {
                   )}
                   <CardGrid>
                     {results.products.map((product: any) => (
-                      <ProductCard key={product.id} product={product} />
+                      <ProductCard key={product.id} {...product} />
                     ))}
                   </CardGrid>
                 </div>
@@ -141,7 +141,7 @@ export default function SearchPage() {
                   )}
                   <CardGrid>
                     {results.shops.map((shop: any) => (
-                      <ShopCard key={shop.id} shop={shop} />
+                      <ShopCard key={shop.id} {...shop} />
                     ))}
                   </CardGrid>
                 </div>
@@ -158,7 +158,7 @@ export default function SearchPage() {
                   )}
                   <CardGrid>
                     {results.categories.map((category: any) => (
-                      <CategoryCard key={category.id} category={category} />
+                      <CategoryCard key={category.id} {...category} />
                     ))}
                   </CardGrid>
                 </div>
@@ -176,5 +176,19 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

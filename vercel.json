@@ -4,7 +4,13 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "github": {
-    "silent": true
+    "silent": true,
+    "autoJobCancelation": true
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
   },
   "regions": ["bom1"],
   "functions": {

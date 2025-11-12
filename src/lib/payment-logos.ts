@@ -3,7 +3,7 @@
  * Handles loading payment logos from Firebase Storage or fallback
  */
 
-import { getPaymentLogoUrl } from "@/services/static-assets";
+import { getPaymentLogoUrl } from "@/services/static-assets-client.service";
 
 // Default fallback logos (base64 or text-based)
 const DEFAULT_LOGOS: Record<string, string> = {
@@ -62,7 +62,9 @@ export async function getPaymentLogo(paymentId: string): Promise<string> {
  */
 function getTextFallback(paymentId: string): string {
   const text = paymentId.charAt(0).toUpperCase() + paymentId.slice(1);
-  return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32"><rect width="48" height="32" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280" font-family="Arial,sans-serif" font-size="8" font-weight="600">${encodeURIComponent(text)}</text></svg>`;
+  return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32"><rect width="48" height="32" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280" font-family="Arial,sans-serif" font-size="8" font-weight="600">${encodeURIComponent(
+    text
+  )}</text></svg>`;
 }
 
 /**

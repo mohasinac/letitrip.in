@@ -191,6 +191,7 @@ function SupportTicketsContent() {
           {/* Filter Sidebar */}
           <div className="w-64 flex-shrink-0">
             <UnifiedFilterSidebar
+              isOpen={true}
               sections={TICKET_FILTERS}
               values={filterValues}
               onChange={(key: string, value: any) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
@@ -11,7 +11,7 @@ import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/types";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
@@ -449,5 +449,19 @@ export default function ProductsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }
