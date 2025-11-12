@@ -222,7 +222,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
       </div>
 
       {/* Reviews List */}
-      {reviews.length === 0 ? (
+      {!reviews || reviews.length === 0 ? (
         <EmptyState
           icon={<Star className="w-12 h-12" />}
           title="No reviews yet"
