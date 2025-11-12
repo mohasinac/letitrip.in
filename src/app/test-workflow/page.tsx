@@ -250,7 +250,9 @@ export default function TestWorkflowPage() {
     try {
       const response = await fetch("/api/test-data/status");
       const data = await response.json();
-      setStats(data);
+      if (data.success && data.stats) {
+        setStats(data.stats);
+      }
     } catch (error: any) {
       console.error("Failed to load status:", error);
     }
