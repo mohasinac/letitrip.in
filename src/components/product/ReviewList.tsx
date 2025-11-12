@@ -79,6 +79,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
       });
     } catch (error) {
       console.error("Failed to load reviews:", error);
+      setReviews([]);
+      setStats(null);
     } finally {
       setLoading(false);
     }

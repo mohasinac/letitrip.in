@@ -68,7 +68,8 @@ export default function ProductPage({ params }: ProductPageProps) {
       const data = await productsService.getVariants(slug);
       setVariants(data.slice(0, 12)); // Limit to 12 variants
     } catch (error) {
-      console.error("Failed to load variants:", error);
+      // Silently fail - variants are optional
+      setVariants([]);
     } finally {
       setVariantsLoading(false);
     }
@@ -80,7 +81,8 @@ export default function ProductPage({ params }: ProductPageProps) {
       const data = await productsService.getSellerProducts(slug, 12);
       setShopProducts(data);
     } catch (error) {
-      console.error("Failed to load shop products:", error);
+      // Silently fail - shop products are optional
+      setShopProducts([]);
     } finally {
       setShopProductsLoading(false);
     }
