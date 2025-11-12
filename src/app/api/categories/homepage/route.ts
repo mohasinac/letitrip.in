@@ -11,7 +11,27 @@ export async function GET() {
       .limit(100)
       .get();
 
-    const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const data = snap.docs.map((d) => {
+      const catData: any = d.data();
+      return {
+        id: d.id,
+        ...catData,
+        // Add camelCase aliases
+        parentId: catData.parent_id,
+        isFeatured: catData.is_featured,
+        showOnHomepage: catData.show_on_homepage,
+        isActive: catData.is_active,
+        productCount: catData.product_count || 0,
+        childCount: catData.child_count || 0,
+        hasChildren: catData.has_children || false,
+        sortOrder: catData.sort_order || 0,
+        metaTitle: catData.meta_title,
+        metaDescription: catData.meta_description,
+        commissionRate: catData.commission_rate || 0,
+        createdAt: catData.created_at,
+        updatedAt: catData.updated_at,
+      };
+    });
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

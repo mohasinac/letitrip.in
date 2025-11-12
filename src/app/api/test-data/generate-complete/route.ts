@@ -68,11 +68,17 @@ export async function POST(req: NextRequest) {
           .replace(/\s+/g, "-")}-${Date.now()}`,
         description: `Test category for ${name}`,
         parent_id: null,
+        path: name.toLowerCase().replace(/\s+/g, "-"),
+        level: 0,
+        has_children: false,
+        child_count: 0,
         is_active: true,
         is_featured: Math.random() < 0.3,
         show_on_homepage: Math.random() < config.homepagePercentage / 100,
         sort_order: categories.length,
+        product_count: 0,
         image: getUnsplashImage(name.toLowerCase(), categories.length),
+        commission_rate: 5,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -225,6 +231,21 @@ export async function POST(req: NextRequest) {
         products.push({ id: docRef.id, ...productData });
         stats.products++;
       }
+    }
+
+    // Update category product counts
+    const categoryProductCounts: { [key: string]: number } = {};
+    products.forEach((product) => {
+      if (product.category_id) {
+        categoryProductCounts[product.category_id] =
+          (categoryProductCounts[product.category_id] || 0) + 1;
+      }
+    });
+
+    for (const [categoryId, count] of Object.entries(categoryProductCounts)) {
+      await db.collection(COLLECTIONS.CATEGORIES).doc(categoryId).update({
+        product_count: count,
+      });
     }
 
     // Step 5: Generate Auctions
