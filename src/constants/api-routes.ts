@@ -79,7 +79,7 @@ export const CATEGORY_ROUTES = {
   SUBCATEGORIES: (slug: string) => `/categories/${slug}/subcategories`,
   SIMILAR: (slug: string) => `/categories/${slug}/similar`,
   HIERARCHY: (slug: string) => `/categories/${slug}/hierarchy`,
-  BREADCRUMB: (id: string) => `/categories/${id}/breadcrumb`,
+  BREADCRUMB: (id: string) => `/categories/${id}/hierarchy`, // Alias for HIERARCHY
 } as const;
 
 // Shop Routes
