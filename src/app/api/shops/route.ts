@@ -37,28 +37,43 @@ export async function GET(request: NextRequest) {
 
     // Use composite indexes for optimal performance
     // Public users see only verified, non-banned shops
+    // TEMPORARY: Remove orderBy to work without composite indexes while they build
+    const useCompositeIndexes = process.env.USE_COMPOSITE_INDEXES === "true";
+
     if (!user || role === UserRole.USER) {
       if (filters.showOnHomepage === "true") {
         // Index: is_banned + show_on_homepage + created_at
         query = Collections.shops()
           .where("is_banned", "==", false)
-          .where("show_on_homepage", "==", true)
-          .orderBy("created_at", "desc")
-          .limit(limit);
+          .where("show_on_homepage", "==", true);
+
+        if (useCompositeIndexes) {
+          query = query.orderBy("created_at", "desc");
+        }
+
+        query = query.limit(limit);
       } else if (filters.featured === "true") {
         // Index: is_featured + is_verified + created_at
         query = Collections.shops()
           .where("is_featured", "==", true)
-          .where("is_verified", "==", true)
-          .orderBy("created_at", "desc")
-          .limit(limit);
+          .where("is_verified", "==", true);
+
+        if (useCompositeIndexes) {
+          query = query.orderBy("created_at", "desc");
+        }
+
+        query = query.limit(limit);
       } else {
         // Index: is_banned + is_verified + created_at
         query = Collections.shops()
           .where("is_banned", "==", false)
-          .where("is_verified", "==", true)
-          .orderBy("created_at", "desc")
-          .limit(limit);
+          .where("is_verified", "==", true);
+
+        if (useCompositeIndexes) {
+          query = query.orderBy("created_at", "desc");
+        }
+
+        query = query.limit(limit);
       }
     } else {
       // Authenticated users (sellers/admin) see more
