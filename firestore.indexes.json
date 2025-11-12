@@ -662,6 +662,14 @@
         { "fieldPath": "name", "order": "ASCENDING" },
         { "fieldPath": "show_on_homepage", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category_id", "order": "ASCENDING" },
+        { "fieldPath": "slug", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
