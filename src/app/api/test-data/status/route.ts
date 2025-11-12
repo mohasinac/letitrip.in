@@ -164,33 +164,76 @@ export async function GET() {
     }
 
     // Count test auctions
-    const auctionsSnapshot = await db
-      .collection(COLLECTIONS.AUCTIONS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.auctions = auctionsSnapshot.data().count;
+    try {
+      const auctionsSnapshot = await db
+        .collection(COLLECTIONS.AUCTIONS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.auctions = auctionsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const auctionsSnapshot = await db
+          .collection(COLLECTIONS.AUCTIONS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.auctions = auctionsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count featured auctions
-    const featuredAuctionsSnapshot = await db
-      .collection(COLLECTIONS.AUCTIONS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .where("is_featured", "==", true)
-      .count()
-      .get();
-    stats.featuredAuctions = featuredAuctionsSnapshot.data().count;
+    try {
+      const featuredAuctionsSnapshot = await db
+        .collection(COLLECTIONS.AUCTIONS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .where("is_featured", "==", true)
+        .count()
+        .get();
+      stats.featuredAuctions = featuredAuctionsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const auctionsSnapshot = await db
+          .collection(COLLECTIONS.AUCTIONS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.featuredAuctions = auctionsSnapshot.docs.filter(
+          (doc) => doc.data().is_featured === true
+        ).length;
+      } else {
+        throw error;
+      }
+    }
 
     // Count homepage items (auctions)
-    const homepageAuctionsSnapshot = await db
-      .collection(COLLECTIONS.AUCTIONS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .where("show_on_homepage", "==", true)
-      .count()
-      .get();
-    stats.homepageItems = homepageAuctionsSnapshot.data().count;
+    try {
+      const homepageAuctionsSnapshot = await db
+        .collection(COLLECTIONS.AUCTIONS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .where("show_on_homepage", "==", true)
+        .count()
+        .get();
+      stats.homepageItems = homepageAuctionsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const auctionsSnapshot = await db
+          .collection(COLLECTIONS.AUCTIONS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.homepageItems = auctionsSnapshot.docs.filter(
+          (doc) => doc.data().show_on_homepage === true
+        ).length;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test reviews
     const reviewsSnapshot = await db
