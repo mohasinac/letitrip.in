@@ -56,7 +56,21 @@ export async function GET(request: NextRequest) {
     }
 
     const snapshot = await query.limit(limit).get();
-    let products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    let products = snapshot.docs.map((doc) => {
+      const data: any = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        // Add camelCase aliases for snake_case fields
+        shopId: data.shop_id,
+        categoryId: data.category_id,
+        stockCount: data.stock_count,
+        isFeatured: data.is_featured,
+        isDeleted: data.is_deleted,
+        originalPrice: data.original_price,
+        reviewCount: data.review_count,
+      };
+    });
 
     if (minPrice) {
       const min = parseFloat(minPrice);
