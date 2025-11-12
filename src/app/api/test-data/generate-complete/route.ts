@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
           price,
           original_price: price + faker.number.int({ min: 100, max: 5000 }),
           sku: `${PREFIX}SKU${Date.now()}${i}`,
-          stock_count: faker.number.int({ min: 0, max: 100 }),
+          stock_count: faker.number.int({ min: 10, max: 100 }),
           low_stock_threshold: 5,
           status: Math.random() < 0.8 ? "published" : "draft",
           is_featured: Math.random() < config.featuredPercentage / 100,

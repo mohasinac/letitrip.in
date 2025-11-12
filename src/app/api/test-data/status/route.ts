@@ -25,60 +25,143 @@ export async function GET() {
     };
 
     // Count test users
-    const usersSnapshot = await db
-      .collection(COLLECTIONS.USERS)
-      .where("email", ">=", PREFIX)
-      .where("email", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.users = usersSnapshot.data().count;
+    try {
+      const usersSnapshot = await db
+        .collection(COLLECTIONS.USERS)
+        .where("email", ">=", PREFIX)
+        .where("email", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.users = usersSnapshot.data().count;
+    } catch (error: any) {
+      // Fallback: If index not ready, fetch and count in-memory
+      if (error.message?.includes("index")) {
+        const usersSnapshot = await db
+          .collection(COLLECTIONS.USERS)
+          .where("email", ">=", PREFIX)
+          .where("email", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.users = usersSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test shops
-    const shopsSnapshot = await db
-      .collection(COLLECTIONS.SHOPS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.shops = shopsSnapshot.data().count;
+    try {
+      const shopsSnapshot = await db
+        .collection(COLLECTIONS.SHOPS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.shops = shopsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const shopsSnapshot = await db
+          .collection(COLLECTIONS.SHOPS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.shops = shopsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count featured shops
-    const featuredShopsSnapshot = await db
-      .collection(COLLECTIONS.SHOPS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .where("is_featured", "==", true)
-      .count()
-      .get();
-    stats.featuredShops = featuredShopsSnapshot.data().count;
+    try {
+      const featuredShopsSnapshot = await db
+        .collection(COLLECTIONS.SHOPS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .where("is_featured", "==", true)
+        .count()
+        .get();
+      stats.featuredShops = featuredShopsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const shopsSnapshot = await db
+          .collection(COLLECTIONS.SHOPS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.featuredShops = shopsSnapshot.docs.filter(
+          (doc) => doc.data().is_featured === true
+        ).length;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test categories
-    const categoriesSnapshot = await db
-      .collection(COLLECTIONS.CATEGORIES)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.categories = categoriesSnapshot.data().count;
+    try {
+      const categoriesSnapshot = await db
+        .collection(COLLECTIONS.CATEGORIES)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.categories = categoriesSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const categoriesSnapshot = await db
+          .collection(COLLECTIONS.CATEGORIES)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.categories = categoriesSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test products
-    const productsSnapshot = await db
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.products = productsSnapshot.data().count;
+    try {
+      const productsSnapshot = await db
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.products = productsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const productsSnapshot = await db
+          .collection(COLLECTIONS.PRODUCTS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.products = productsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count featured products
-    const featuredProductsSnapshot = await db
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("name", ">=", PREFIX)
-      .where("name", "<", PREFIX + "\uf8ff")
-      .where("is_featured", "==", true)
-      .count()
-      .get();
-    stats.featuredProducts = featuredProductsSnapshot.data().count;
+    try {
+      const featuredProductsSnapshot = await db
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("name", ">=", PREFIX)
+        .where("name", "<", PREFIX + "\uf8ff")
+        .where("is_featured", "==", true)
+        .count()
+        .get();
+      stats.featuredProducts = featuredProductsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const productsSnapshot = await db
+          .collection(COLLECTIONS.PRODUCTS)
+          .where("name", ">=", PREFIX)
+          .where("name", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.featuredProducts = productsSnapshot.docs.filter(
+          (doc) => doc.data().is_featured === true
+        ).length;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test auctions
     const auctionsSnapshot = await db
