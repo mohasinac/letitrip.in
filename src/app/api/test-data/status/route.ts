@@ -236,49 +236,114 @@ export async function GET() {
     }
 
     // Count test reviews
-    const reviewsSnapshot = await db
-      .collection(COLLECTIONS.REVIEWS)
-      .where("title", ">=", PREFIX)
-      .where("title", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.reviews = reviewsSnapshot.data().count;
+    try {
+      const reviewsSnapshot = await db
+        .collection(COLLECTIONS.REVIEWS)
+        .where("title", ">=", PREFIX)
+        .where("title", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.reviews = reviewsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const reviewsSnapshot = await db
+          .collection(COLLECTIONS.REVIEWS)
+          .where("title", ">=", PREFIX)
+          .where("title", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.reviews = reviewsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test orders
-    const ordersSnapshot = await db
-      .collection(COLLECTIONS.ORDERS)
-      .where("order_number", ">=", PREFIX)
-      .where("order_number", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.orders = ordersSnapshot.data().count;
+    try {
+      const ordersSnapshot = await db
+        .collection(COLLECTIONS.ORDERS)
+        .where("order_number", ">=", PREFIX)
+        .where("order_number", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.orders = ordersSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const ordersSnapshot = await db
+          .collection(COLLECTIONS.ORDERS)
+          .where("order_number", ">=", PREFIX)
+          .where("order_number", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.orders = ordersSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test tickets
-    const ticketsSnapshot = await db
-      .collection(COLLECTIONS.SUPPORT_TICKETS)
-      .where("subject", ">=", PREFIX)
-      .where("subject", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.tickets = ticketsSnapshot.data().count;
+    try {
+      const ticketsSnapshot = await db
+        .collection(COLLECTIONS.SUPPORT_TICKETS)
+        .where("subject", ">=", PREFIX)
+        .where("subject", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.tickets = ticketsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const ticketsSnapshot = await db
+          .collection(COLLECTIONS.SUPPORT_TICKETS)
+          .where("subject", ">=", PREFIX)
+          .where("subject", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.tickets = ticketsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test coupons
-    const couponsSnapshot = await db
-      .collection(COLLECTIONS.COUPONS)
-      .where("code", ">=", PREFIX)
-      .where("code", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.coupons = couponsSnapshot.data().count;
+    try {
+      const couponsSnapshot = await db
+        .collection(COLLECTIONS.COUPONS)
+        .where("code", ">=", PREFIX)
+        .where("code", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.coupons = couponsSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const couponsSnapshot = await db
+          .collection(COLLECTIONS.COUPONS)
+          .where("code", ">=", PREFIX)
+          .where("code", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.coupons = couponsSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     // Count test hero slides
-    const heroSlidesSnapshot = await db
-      .collection(COLLECTIONS.HERO_SLIDES)
-      .where("id", ">=", PREFIX)
-      .where("id", "<", PREFIX + "\uf8ff")
-      .count()
-      .get();
-    stats.heroSlides = heroSlidesSnapshot.data().count;
+    try {
+      const heroSlidesSnapshot = await db
+        .collection(COLLECTIONS.HERO_SLIDES)
+        .where("id", ">=", PREFIX)
+        .where("id", "<", PREFIX + "\uf8ff")
+        .count()
+        .get();
+      stats.heroSlides = heroSlidesSnapshot.data().count;
+    } catch (error: any) {
+      if (error.message?.includes("index")) {
+        const heroSlidesSnapshot = await db
+          .collection(COLLECTIONS.HERO_SLIDES)
+          .where("id", ">=", PREFIX)
+          .where("id", "<", PREFIX + "\uf8ff")
+          .get();
+        stats.heroSlides = heroSlidesSnapshot.size;
+      } else {
+        throw error;
+      }
+    }
 
     return NextResponse.json({ success: true, stats });
   } catch (error: any) {
