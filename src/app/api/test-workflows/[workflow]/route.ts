@@ -51,8 +51,10 @@ export async function POST(
       );
     }
 
-    // Run the workflow
-    const workflowInstance = new WorkflowClass();
+    // Run the workflow - pass context if provided
+    const workflowInstance = body.context
+      ? new WorkflowClass(body.context)
+      : new WorkflowClass();
     const result = await workflowInstance.run();
 
     return NextResponse.json(result);

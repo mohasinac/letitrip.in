@@ -220,6 +220,9 @@ export async function GET(req: NextRequest) {
         currentBid: data.current_bid,
         status: data.status,
         isFeatured: data.is_featured,
+        startTime: data.start_time,
+        endTime: data.end_time,
+        bidCount: data.bid_count || 0,
       };
 
       context.auctions.all.push(auction);

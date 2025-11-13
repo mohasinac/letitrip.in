@@ -40,6 +40,11 @@ interface WorkflowResult {
 class AuctionBiddingWorkflow {
   private results: TestResult[] = [];
   private testData: any = {};
+  private context: any = null;
+
+  constructor(context?: any) {
+    this.context = context;
+  }
 
   async executeStep(
     stepName: string,
@@ -84,32 +89,57 @@ class AuctionBiddingWorkflow {
 
     // Step 1: Browse live auctions
     await this.executeStep("Browse Live Auctions", async () => {
-      const auctions = await auctionsService.list({
-        status: "live",
-        limit: 10,
-        page: 1,
-      });
+      let auctions: any[] = [];
 
-      if (!auctions.data || auctions.data.length === 0) {
-        throw new Error("No live auctions found");
+      // Use context if available, otherwise query the database
+      if (this.context?.auctions?.live?.length > 0) {
+        auctions = this.context.auctions.live;
+        console.log(`📦 Using ${auctions.length} live auctions from context`);
+      } else {
+        // Fallback to API call
+        const auctionsResponse = await auctionsService.list({
+          status: "live",
+          limit: 10,
+          page: 1,
+        });
+        auctions = auctionsResponse.data || [];
+        console.log(`🌐 Fetched ${auctions.length} live auctions from API`);
       }
 
-      this.testData.auctions = auctions.data;
-      this.testData.selectedAuction = auctions.data[0];
+      if (auctions.length === 0) {
+        throw new Error(
+          "No live auctions found. Please generate test data with live auctions first."
+        );
+      }
+
+      this.testData.auctions = auctions;
+      this.testData.selectedAuction = auctions[0];
 
       return {
-        totalAuctions: auctions.data.length,
+        totalAuctions: auctions.length,
         selectedAuctionId: this.testData.selectedAuction.id,
         selectedAuctionName: this.testData.selectedAuction.name,
         currentBid: this.testData.selectedAuction.currentBid,
         startingBid: this.testData.selectedAuction.startingBid,
+        source: this.context?.auctions?.live?.length > 0 ? "context" : "api",
       };
     });
 
     // Step 2: View auction details
     await this.executeStep("View Auction Details", async () => {
       const auctionId = this.testData.selectedAuction.id;
-      const auction = await auctionsService.getById(auctionId);
+      let auction: any;
+
+      // Use context if available, otherwise query the database
+      if (this.testData.selectedAuction.endTime) {
+        // We already have full details from context
+        auction = this.testData.selectedAuction;
+        console.log(`📦 Using auction details from context`);
+      } else {
+        // Fallback to API call
+        auction = await auctionsService.getById(auctionId);
+        console.log(`🌐 Fetched auction details from API`);
+      }
 
       if (!auction) {
         throw new Error(`Auction ${auctionId} not found`);
