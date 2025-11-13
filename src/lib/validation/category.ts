@@ -14,6 +14,7 @@ const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
  * Create Category Schema
+ * Updated to support multi-parent hierarchy
  */
 export const createCategorySchema = z.object({
   // Basic Information
@@ -29,7 +30,7 @@ export const createCategorySchema = z.object({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 
@@ -39,7 +40,10 @@ export const createCategorySchema = z.object({
     .trim()
     .optional(),
 
-  // Hierarchy
+  // Multi-parent Hierarchy
+  parentIds: z.array(z.string()).default([]).optional(), // Multiple parents support
+
+  // Backward compatibility (deprecated)
   parentId: z.string().optional().nullable(), // null = root category
 
   // Display
@@ -87,20 +91,27 @@ export const updateCategorySchema = createCategorySchema.partial();
 
 /**
  * Move Category Schema (change parent)
+ * Updated to support multi-parent hierarchy
  */
 export const moveCategorySchema = z
   .object({
-    newParentId: z.string().optional().nullable(),
+    newParentIds: z.array(z.string()).optional(), // Multiple parents support
+    newParentId: z.string().optional().nullable(), // Backward compatibility
     sortOrder: z.number().int().min(0).optional(),
   })
   .refine(
     (data) => {
       // At least one field must be provided
-      return data.newParentId !== undefined || data.sortOrder !== undefined;
+      return (
+        data.newParentIds !== undefined ||
+        data.newParentId !== undefined ||
+        data.sortOrder !== undefined
+      );
     },
     {
-      message: "Either newParentId or sortOrder must be provided",
-    },
+      message:
+        "Either newParentIds, newParentId, or sortOrder must be provided",
+    }
   );
 
 /**
@@ -113,7 +124,7 @@ export const reorderCategoriesSchema = z.object({
       z.object({
         categoryId: z.string(),
         sortOrder: z.number().int().min(0),
-      }),
+      })
     )
     .min(1),
 });
@@ -247,7 +258,7 @@ export function getCategoryLevel(path: string): number {
  */
 export function buildCategoryPath(
   parentPath: string | null,
-  categoryId: string,
+  categoryId: string
 ): string {
   return parentPath ? `${parentPath}/${categoryId}` : categoryId;
 }

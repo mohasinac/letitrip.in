@@ -14,7 +14,8 @@ interface CreateCategoryData {
   name: string;
   slug: string;
   description?: string;
-  parentId?: string | null;
+  parentIds?: string[]; // Multiple parents support
+  parentId?: string | null; // Backward compatibility
   icon?: string;
   image?: string;
   color?: string;
@@ -121,12 +122,45 @@ class CategoriesService {
     return apiService.delete<{ message: string }>(`/categories/${slug}`);
   }
 
-  // Get category breadcrumb
-  async getBreadcrumb(id: string): Promise<Category[]> {
+  // Add parent to category (admin only)
+  async addParent(
+    slug: string,
+    parentId: string
+  ): Promise<{ message: string }> {
+    const response = await apiService.post<{
+      success: boolean;
+      message: string;
+    }>(`/categories/${slug}/add-parent`, { parentId });
+    return { message: response.message };
+  }
+
+  // Remove parent from category (admin only)
+  async removeParent(
+    slug: string,
+    parentId: string
+  ): Promise<{ message: string }> {
+    const response = await apiService.post<{
+      success: boolean;
+      message: string;
+    }>(`/categories/${slug}/remove-parent`, { parentId });
+    return { message: response.message };
+  }
+
+  // Get all parents of a category
+  async getParents(slug: string): Promise<Category[]> {
     const response = await apiService.get<{
       success: boolean;
       data: Category[];
-    }>(`/categories/${id}/hierarchy`);
+    }>(`/categories/${slug}/parents`);
+    return response.data || [];
+  }
+
+  // Get all direct children of a category
+  async getChildren(slug: string): Promise<Category[]> {
+    const response = await apiService.get<{
+      success: boolean;
+      data: Category[];
+    }>(`/categories/${slug}/children`);
     return response.data || [];
   }
 

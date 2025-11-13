@@ -543,7 +543,94 @@ export async function POST(req: NextRequest) {
       stats.heroSlides++;
     }
 
-    return NextResponse.json({ success: true, stats });
+    // Step 11: Build and return test data context for immediate use
+    const context = {
+      users: {
+        admin: users.filter((u: any) => u.role === "admin"),
+        sellers: users.filter((u: any) => u.role === "seller"),
+        customers: users.filter((u: any) => u.role === "user"),
+        all: users,
+      },
+      shops: {
+        verified: shops.filter((s: any) => s.is_verified),
+        unverified: shops.filter((s: any) => !s.is_verified),
+        featured: shops.filter((s: any) => s.is_featured),
+        all: shops,
+        byOwnerId: shops.reduce((acc: any, shop: any) => {
+          if (!acc[shop.owner_id]) acc[shop.owner_id] = [];
+          acc[shop.owner_id].push(shop);
+          return acc;
+        }, {}),
+      },
+      categories: {
+        root: categories.filter((c: any) => !c.parent_id),
+        children: categories.filter((c: any) => c.parent_id),
+        all: categories,
+        byParentId: categories.reduce((acc: any, cat: any) => {
+          if (cat.parent_id) {
+            if (!acc[cat.parent_id]) acc[cat.parent_id] = [];
+            acc[cat.parent_id].push(cat);
+          }
+          return acc;
+        }, {}),
+      },
+      products: {
+        published: products.filter((p: any) => p.status === "published"),
+        draft: products.filter((p: any) => p.status === "draft"),
+        featured: products.filter((p: any) => p.is_featured),
+        inStock: products.filter((p: any) => p.stock_count > 0),
+        all: products,
+        byShopId: products.reduce((acc: any, product: any) => {
+          if (!acc[product.shop_id]) acc[product.shop_id] = [];
+          acc[product.shop_id].push(product);
+          return acc;
+        }, {}),
+        byCategoryId: products.reduce((acc: any, product: any) => {
+          if (!acc[product.category_id]) acc[product.category_id] = [];
+          acc[product.category_id].push(product);
+          return acc;
+        }, {}),
+      },
+      auctions: {
+        live: auctions.filter((a: any) => a.status === "live"),
+        scheduled: auctions.filter((a: any) => a.status === "scheduled"),
+        draft: auctions.filter((a: any) => a.status === "draft"),
+        featured: auctions.filter((a: any) => a.is_featured),
+        all: auctions,
+        byShopId: auctions.reduce((acc: any, auction: any) => {
+          if (!acc[auction.shop_id]) acc[auction.shop_id] = [];
+          acc[auction.shop_id].push(auction);
+          return acc;
+        }, {}),
+      },
+      coupons: {
+        active: [], // Will be populated from DB
+        inactive: [],
+        all: [],
+        byShopId: {},
+      },
+      orders: {
+        pending: [],
+        confirmed: [],
+        shipped: [],
+        delivered: [],
+        all: [],
+        byUserId: {},
+        byShopId: {},
+      },
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        totalItems:
+          users.length +
+          shops.length +
+          categories.length +
+          products.length +
+          auctions.length,
+        prefix: PREFIX,
+      },
+    };
+
+    return NextResponse.json({ success: true, stats, context });
   } catch (error: any) {
     console.error("Error generating complete data:", error);
     return NextResponse.json(

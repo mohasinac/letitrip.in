@@ -188,7 +188,6 @@ const DEFAULT_WORKFLOW_CONFIG = {
 };
 
 export default function TestWorkflowPage() {
-  const [activeTab, setActiveTab] = useState<"data" | "workflows">("data");
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState<string | null>(null);
   const [stats, setStats] = useState<TestDataCounts>({
@@ -242,6 +241,9 @@ export default function TestWorkflowPage() {
 
   const [logs, setLogs] = useState<string[]>([]);
   const [debugData, setDebugData] = useState<any>(null);
+  const [testDataContext, setTestDataContext] = useState<any>(null);
+  const [workflowResults, setWorkflowResults] = useState<any[]>([]);
+  const [authError, setAuthError] = useState(false);
 
   useEffect(() => {
     loadStatus();
@@ -251,8 +253,19 @@ export default function TestWorkflowPage() {
     try {
       const response = await fetch("/api/test-data/status");
       const data = await response.json();
+
+      if (
+        response.status === 401 ||
+        response.status === 403 ||
+        data.error === "Unauthorized"
+      ) {
+        setAuthError(true);
+        return;
+      }
+
       if (data.success && data.stats) {
         setStats(data.stats);
+        setAuthError(false);
       }
     } catch (error: any) {
       console.error("Failed to load status:", error);
@@ -302,7 +315,8 @@ export default function TestWorkflowPage() {
           `- ${config.users} dummy users\n` +
           `- ${config.users * config.shopsPerUser} shops\n` +
           `- Categories, products, auctions, reviews, orders\n` +
-          `- Featured and homepage items\n\n` +
+          `- Featured and homepage items\n` +
+          `- Test data context for workflows\n\n` +
           `Continue?`
       )
     ) {
@@ -340,7 +354,48 @@ export default function TestWorkflowPage() {
       addLog(`✓ Set ${data.stats.featuredAuctions} featured auctions`);
       addLog(`✓ Set ${data.stats.homepageItems} homepage items`);
 
-      showMessage("success", "Complete dummy data generated successfully!");
+      // Store the context from generation
+      if (data.context) {
+        setTestDataContext(data.context);
+        addLog(
+          `✓ Context created: ${data.context.metadata.totalItems} items organized`
+        );
+        addLog(
+          `  - ${data.context.users.all.length} users (${data.context.users.admin.length} admin, ${data.context.users.sellers.length} sellers, ${data.context.users.customers.length} customers)`
+        );
+        addLog(
+          `  - ${data.context.shops.all.length} shops (${data.context.shops.verified.length} verified, ${data.context.shops.featured.length} featured)`
+        );
+        addLog(
+          `  - ${data.context.products.published.length} published products (${data.context.products.inStock.length} in stock)`
+        );
+        addLog(`  - ${data.context.auctions.live.length} live auctions`);
+      } else {
+        // Load context separately if not returned
+        addLog("Loading test data context...");
+        const contextRes = await fetch("/api/test-data/context");
+        const contextData = await contextRes.json();
+
+        if (contextData.success) {
+          setTestDataContext(contextData.context);
+          addLog(
+            `✓ Context loaded: ${contextData.context.metadata.totalItems} items organized`
+          );
+          addLog(`  - ${contextData.context.users.all.length} users`);
+          addLog(`  - ${contextData.context.shops.all.length} shops`);
+          addLog(
+            `  - ${contextData.context.products.published.length} published products`
+          );
+          addLog(
+            `  - ${contextData.context.auctions.live.length} live auctions`
+          );
+        }
+      }
+
+      showMessage(
+        "success",
+        "Complete dummy data generated successfully! Ready for workflows."
+      );
       await loadStatus();
     } catch (error: any) {
       addLog(`✗ Error: ${error.message}`);
@@ -504,11 +559,41 @@ export default function TestWorkflowPage() {
       },
     }));
 
+    addLog(`Starting workflow: ${workflowId}`);
+
     try {
+      // Use stored context if available, otherwise fetch from API
+      let context = testDataContext;
+
+      if (!context) {
+        addLog("Loading test data context...");
+        const contextRes = await fetch("/api/test-data/context");
+        const contextData = await contextRes.json();
+
+        if (
+          !contextData.success ||
+          contextData.context.metadata.totalItems === 0
+        ) {
+          throw new Error(
+            "No test data available. Please generate test data first."
+          );
+        }
+
+        context = contextData.context;
+        setTestDataContext(context);
+        addLog(`✓ Context loaded: ${context.metadata.totalItems} items`);
+      } else {
+        addLog(`✓ Using stored context: ${context.metadata.totalItems} items`);
+      }
+
+      // Execute workflow with shared context
       const response = await fetch(`/api/test-workflows/${workflowId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ config: workflowConfig }),
+        body: JSON.stringify({
+          config: workflowConfig,
+          context: context,
+        }),
       });
 
       const result = await response.json();
@@ -523,6 +608,21 @@ export default function TestWorkflowPage() {
           results: result,
         },
       }));
+
+      // Add to workflow results for combined display
+      setWorkflowResults((prev) => [
+        {
+          id: workflowId,
+          name: WORKFLOWS.find((w) => w.id === workflowId)?.name || workflowId,
+          status: result.finalStatus || "success",
+          timestamp: new Date().toISOString(),
+          result: result,
+        },
+        ...prev,
+      ]);
+
+      addLog(`✓ Workflow ${workflowId} completed: ${result.finalStatus}`);
+      showMessage("success", `Workflow ${workflowId} completed successfully!`);
     } catch (error: any) {
       setWorkflows((prev) => ({
         ...prev,
@@ -534,6 +634,89 @@ export default function TestWorkflowPage() {
           error: error.message,
         },
       }));
+
+      // Add failed workflow to results
+      setWorkflowResults((prev) => [
+        {
+          id: workflowId,
+          name: WORKFLOWS.find((w) => w.id === workflowId)?.name || workflowId,
+          status: "failed",
+          timestamp: new Date().toISOString(),
+          result: {
+            error: error.message,
+            message: error.message.includes("Unauthorized")
+              ? "Authentication required. Please ensure you're logged in as an admin."
+              : error.message,
+          },
+        },
+        ...prev,
+      ]);
+
+      addLog(`✗ Workflow ${workflowId} failed: ${error.message}`);
+      showMessage("error", error.message);
+    }
+  };
+
+  const runAllWorkflows = async () => {
+    if (!confirm("This will run all workflows sequentially. Continue?")) return;
+
+    setLoading(true);
+    setWorkflowResults([]); // Clear previous results
+    addLog("Starting batch workflow execution...");
+
+    for (const workflow of WORKFLOWS) {
+      await runWorkflow(workflow.id);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    setLoading(false);
+    addLog("✓ All workflows completed");
+    showMessage("success", "All workflows execution completed!");
+  };
+
+  const generateAndRunWorkflow = async (workflowId: string) => {
+    if (
+      !confirm(
+        "This will:\n1. Generate fresh test data\n2. Run the workflow\n3. Optionally cleanup after\n\nContinue?"
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setLogs([]);
+    addLog("Starting managed workflow execution...");
+
+    try {
+      const response = await fetch("/api/test-workflows/manager", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "generateAndRun",
+          workflowIds: [workflowId],
+          config,
+          cleanupBefore: true,
+          cleanupAfter: false,
+        }),
+      });
+
+      const result = await response.json();
+
+      result.results.steps.forEach((step: any) => {
+        addLog(`${step.success ? "✓" : "✗"} ${step.step}`);
+      });
+
+      if (result.success) {
+        showMessage("success", "Workflow completed successfully!");
+        await loadStatus();
+      } else {
+        showMessage("error", "Workflow failed. Check logs for details.");
+      }
+    } catch (error: any) {
+      addLog(`✗ Error: ${error.message}`);
+      showMessage("error", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -582,32 +765,6 @@ export default function TestWorkflowPage() {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab("data")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "data"
-                  ? "border-purple-500 text-purple-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              📦 Test Data Generation
-            </button>
-            <button
-              onClick={() => setActiveTab("workflows")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "workflows"
-                  ? "border-purple-500 text-purple-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              🔄 Workflow Execution
-            </button>
-          </nav>
-        </div>
-
         {/* Message Banner */}
         {message && (
           <div
@@ -627,6 +784,362 @@ export default function TestWorkflowPage() {
             <span>{message.text}</span>
           </div>
         )}
+
+        {/* Auth Error Banner */}
+        {authError && (
+          <div className="mb-6 p-6 bg-red-50 border-2 border-red-300 rounded-xl shadow-lg">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-red-100 rounded-lg">
+                <AlertCircle className="h-8 w-8 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-red-900 mb-2">
+                  🔒 Authentication Required
+                </h3>
+                <p className="text-sm text-red-800 mb-4">
+                  This page requires admin authentication. You're seeing an
+                  "Unauthorized" error because you're not logged in as an admin
+                  user.
+                </p>
+                <div className="bg-white p-4 rounded-lg border border-red-200 mb-4">
+                  <h4 className="font-semibold text-red-900 mb-2">
+                    To access this page:
+                  </h4>
+                  <ol className="list-decimal list-inside space-y-1 text-sm text-red-800">
+                    <li>
+                      Navigate to{" "}
+                      <code className="px-2 py-1 bg-red-100 rounded">
+                        /login
+                      </code>
+                    </li>
+                    <li>Login with an admin account</li>
+                    <li>Return to this page</li>
+                  </ol>
+                </div>
+                <div className="flex gap-3">
+                  <a
+                    href="/login"
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center gap-2 shadow-md"
+                  >
+                    Go to Login
+                  </a>
+                  <button
+                    onClick={loadStatus}
+                    className="px-6 py-3 bg-white border-2 border-red-300 text-red-700 rounded-lg hover:bg-red-50 font-medium flex items-center gap-2"
+                  >
+                    <RefreshCw className="h-5 w-5" />
+                    Retry
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Context Status & Quick Actions Panel */}
+        <div className="mb-6 bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 border-2 border-purple-300 rounded-xl shadow-lg overflow-hidden">
+          {testDataContext ? (
+            <>
+              {/* Context Active - Show Details & Quick Actions */}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-green-100 rounded-lg">
+                      <CheckCircle className="h-8 w-8 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">
+                        🎯 Test Data Context Ready
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Context loaded with{" "}
+                        {testDataContext.metadata.totalItems} organized items •
+                        Ready for workflow execution
+                      </p>
+
+                      {/* Context Stats Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                        <div className="bg-white rounded-lg p-3 border border-blue-200">
+                          <div className="text-2xl font-bold text-indigo-600">
+                            {testDataContext.users.all.length}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            Total Users
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {testDataContext.users.admin.length} admin •{" "}
+                            {testDataContext.users.sellers.length} sellers •{" "}
+                            {testDataContext.users.customers.length} customers
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 border border-purple-200">
+                          <div className="text-2xl font-bold text-purple-600">
+                            {testDataContext.shops.all.length}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            Total Shops
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {testDataContext.shops.verified.length} verified •{" "}
+                            {testDataContext.shops.featured.length} featured
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {testDataContext.products.published.length}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            Published Products
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {testDataContext.products.inStock.length} in stock •{" "}
+                            {testDataContext.products.featured.length} featured
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 border border-green-200">
+                          <div className="text-2xl font-bold text-green-600">
+                            {testDataContext.auctions.live.length}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            Live Auctions
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {testDataContext.auctions.scheduled.length}{" "}
+                            scheduled •{" "}
+                            {testDataContext.auctions.featured.length} featured
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setTestDataContext(null);
+                      showMessage(
+                        "info",
+                        "Context cleared. Will reload from database on next workflow run."
+                      );
+                    }}
+                    className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Clear Context
+                  </button>
+                </div>
+
+                {/* Workflow Results Display */}
+                {workflowResults.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        Recent Workflow Executions ({workflowResults.length})
+                      </h4>
+                      <button
+                        onClick={() => setWorkflowResults([])}
+                        className="text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        Clear Results
+                      </button>
+                    </div>
+
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {workflowResults.slice(0, 5).map((wr, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-3 rounded-lg border ${
+                            wr.status === "success"
+                              ? "bg-green-50 border-green-200"
+                              : wr.status === "partial"
+                              ? "bg-yellow-50 border-yellow-200"
+                              : "bg-red-50 border-red-200"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">
+                                {wr.status === "success"
+                                  ? "✅"
+                                  : wr.status === "partial"
+                                  ? "⚠️"
+                                  : "❌"}
+                              </span>
+                              <div>
+                                <div className="font-medium text-sm text-gray-900">
+                                  {wr.name}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {new Date(wr.timestamp).toLocaleTimeString()}
+                                </div>
+                              </div>
+                            </div>
+                            <span
+                              className={`text-xs px-2 py-1 rounded ${
+                                wr.status === "success"
+                                  ? "bg-green-100 text-green-800"
+                                  : wr.status === "partial"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {wr.status}
+                            </span>
+                          </div>
+
+                          {wr.result.summary && (
+                            <div className="text-xs text-gray-700 mt-2 pl-7">
+                              <div className="flex items-center gap-4">
+                                <span>✓ {wr.result.summary.passed} passed</span>
+                                <span>✗ {wr.result.summary.failed} failed</span>
+                                <span>
+                                  ⊘ {wr.result.summary.skipped} skipped
+                                </span>
+                                <span className="text-gray-500">
+                                  {wr.result.summary.duration}ms
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {wr.result.message && (
+                            <div className="text-xs text-gray-600 mt-1 pl-7">
+                              {wr.result.message}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {workflowResults.length > 5 && (
+                      <div className="mt-2 text-center text-xs text-gray-500">
+                        Showing 5 of {workflowResults.length} results
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Quick Action Buttons */}
+                <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-purple-200">
+                  <button
+                    onClick={runAllWorkflows}
+                    disabled={loading}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2 shadow-md"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Running All Workflows...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-5 w-5" />
+                        Run All {WORKFLOWS.length} Workflows
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={testPublicAPIs}
+                    disabled={testingPublicAPIs}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2 shadow-md"
+                  >
+                    {testingPublicAPIs ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Testing APIs...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-5 w-5" />
+                        Test Public APIs
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={async () => {
+                      addLog("Reloading test data context...");
+                      const contextRes = await fetch("/api/test-data/context");
+                      const contextData = await contextRes.json();
+                      if (contextData.success) {
+                        setTestDataContext(contextData.context);
+                        showMessage(
+                          "success",
+                          `Context reloaded: ${contextData.context.metadata.totalItems} items`
+                        );
+                      }
+                    }}
+                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium flex items-center gap-2"
+                  >
+                    <RefreshCw className="h-5 w-5" />
+                    Reload Context
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* No Context - Show Generate Prompt */}
+              <div className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <AlertCircle className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">
+                      No Test Data Context Available
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Generate test data first to create an organized context
+                      for workflows, or load existing test data.
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={handleGenerateComplete}
+                        disabled={loading}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2 shadow-md"
+                      >
+                        <Sparkles className="h-5 w-5" />
+                        {loading ? "Generating..." : "Generate Test Data"}
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          addLog("Loading existing test data context...");
+                          const contextRes = await fetch(
+                            "/api/test-data/context"
+                          );
+                          const contextData = await contextRes.json();
+                          if (
+                            contextData.success &&
+                            contextData.context.metadata.totalItems > 0
+                          ) {
+                            setTestDataContext(contextData.context);
+                            showMessage(
+                              "success",
+                              `Context loaded: ${contextData.context.metadata.totalItems} items`
+                            );
+                          } else {
+                            showMessage(
+                              "error",
+                              "No test data found. Please generate test data first."
+                            );
+                          }
+                        }}
+                        className="px-6 py-3 bg-white border-2 border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium flex items-center gap-2"
+                      >
+                        <Database className="h-5 w-5" />
+                        Load Existing Data
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
@@ -719,8 +1232,7 @@ export default function TestWorkflowPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Configuration Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Play className="h-5 w-5 text-green-600" />
@@ -1066,364 +1578,422 @@ export default function TestWorkflowPage() {
           </div>
         </div>
 
-        {/* Data Generation Tab */}
-        {activeTab === "data" && (
-          <>
-            {/* Features List */}
-            <div className="mt-8 bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                What Gets Generated:
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  {
-                    icon: Users,
-                    title: "Dummy Users",
-                    desc: "Complete user accounts with realistic data",
-                  },
-                  {
-                    icon: Store,
-                    title: "Shops",
-                    desc: "Verified and unverified shops with banners",
-                  },
-                  {
-                    icon: FolderTree,
-                    title: "Categories",
-                    desc: "Hierarchical category structure",
-                  },
-                  {
-                    icon: ShoppingBag,
-                    title: "Products",
-                    desc: "Products with Unsplash images, variants",
-                  },
-                  {
-                    icon: Gavel,
-                    title: "Auctions",
-                    desc: "Live and scheduled auctions with bids",
-                  },
-                  {
-                    icon: Star,
-                    title: "Reviews",
-                    desc: "Verified purchase reviews with ratings",
-                  },
-                  {
-                    icon: Package,
-                    title: "Orders",
-                    desc: "Orders in various states",
-                  },
-                  {
-                    icon: MessageSquare,
-                    title: "Support Tickets",
-                    desc: "Open and resolved tickets",
-                  },
-                  {
-                    icon: Tag,
-                    title: "Coupons",
-                    desc: "Active discount coupons",
-                  },
-                  {
-                    icon: Sparkles,
-                    title: "Featured Items",
-                    desc: "Featured products and auctions",
-                  },
-                  {
-                    icon: Home,
-                    title: "Homepage Items",
-                    desc: "Items marked for homepage display",
-                  },
-                ].map((feature) => (
-                  <div
-                    key={feature.title}
-                    className="flex gap-3 p-3 border border-gray-200 rounded-lg"
-                  >
-                    <feature.icon className="h-6 w-6 text-purple-600 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Workflows Tab */}
-        {activeTab === "workflows" && (
-          <div>
-            {/* Public API Test Panel */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200 p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
+        {/* Features List */}
+        <div className="mb-8 bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            What Gets Generated:
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                icon: Users,
+                title: "Dummy Users",
+                desc: "Complete user accounts with realistic data",
+              },
+              {
+                icon: Store,
+                title: "Shops",
+                desc: "Verified and unverified shops with banners",
+              },
+              {
+                icon: FolderTree,
+                title: "Categories",
+                desc: "Hierarchical category structure",
+              },
+              {
+                icon: ShoppingBag,
+                title: "Products",
+                desc: "Products with Unsplash images, variants",
+              },
+              {
+                icon: Gavel,
+                title: "Auctions",
+                desc: "Live and scheduled auctions with bids",
+              },
+              {
+                icon: Star,
+                title: "Reviews",
+                desc: "Verified purchase reviews with ratings",
+              },
+              {
+                icon: Package,
+                title: "Orders",
+                desc: "Orders in various states",
+              },
+              {
+                icon: MessageSquare,
+                title: "Support Tickets",
+                desc: "Open and resolved tickets",
+              },
+              {
+                icon: Tag,
+                title: "Coupons",
+                desc: "Active discount coupons",
+              },
+              {
+                icon: Sparkles,
+                title: "Featured Items",
+                desc: "Featured products and auctions",
+              },
+              {
+                icon: Home,
+                title: "Homepage Items",
+                desc: "Items marked for homepage display",
+              },
+            ].map((feature) => (
+              <div
+                key={feature.title}
+                className="flex gap-3 p-3 border border-gray-200 rounded-lg"
+              >
+                <feature.icon className="h-6 w-6 text-purple-600 flex-shrink-0" />
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-                    🌐 Public API Access Test
-                  </h2>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Verify that public pages work without authentication
-                  </p>
+                  <h3 className="font-medium text-gray-900">{feature.title}</h3>
+                  <p className="text-sm text-gray-600">{feature.desc}</p>
                 </div>
-                <button
-                  onClick={testPublicAPIs}
-                  disabled={testingPublicAPIs}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
-                >
-                  {testingPublicAPIs ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Testing...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-5 w-5" />
-                      Test Public APIs
-                    </>
-                  )}
-                </button>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {publicAPIResults && (
-                <div className="mt-4 p-4 bg-white rounded-lg border border-blue-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">
-                      Test Results:
-                    </h3>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        publicAPIResults.summary.passed ===
-                        publicAPIResults.summary.total
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
+        {/* Workflow Execution Section */}
+        <div>
+          {/* Public API Test Panel */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                  🌐 Public API Access Test
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Verify that public pages work without authentication
+                </p>
+              </div>
+              <button
+                onClick={testPublicAPIs}
+                disabled={testingPublicAPIs}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+              >
+                {testingPublicAPIs ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Testing...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-5 w-5" />
+                    Test Public APIs
+                  </>
+                )}
+              </button>
+            </div>
+
+            {publicAPIResults && (
+              <div className="mt-4 p-4 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900">Test Results:</h3>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      publicAPIResults.summary.passed ===
+                      publicAPIResults.summary.total
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {publicAPIResults.summary.passRate} Pass Rate
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {publicAPIResults.results.map((result: any, i: number) => (
+                    <div
+                      key={i}
+                      className={`flex items-center justify-between p-3 rounded ${
+                        result.success
+                          ? "bg-green-50 border border-green-200"
+                          : "bg-red-50 border border-red-200"
                       }`}
                     >
-                      {publicAPIResults.summary.passRate} Pass Rate
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {publicAPIResults.results.map((result: any, i: number) => (
-                      <div
-                        key={i}
-                        className={`flex items-center justify-between p-3 rounded ${
-                          result.success
-                            ? "bg-green-50 border border-green-200"
-                            : "bg-red-50 border border-red-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          {result.success ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="font-medium text-sm">
-                            {result.description}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-xs">
-                          <span
-                            className={
-                              result.success ? "text-green-700" : "text-red-700"
-                            }
-                          >
-                            Status: {result.status}
-                          </span>
-                          <span className="text-gray-500">
-                            {result.duration}ms
-                          </span>
-                          {result.dataCount > 0 && (
-                            <span className="text-gray-500">
-                              {result.dataCount} items
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <p className="mt-3 text-sm text-gray-600">
-                    {publicAPIResults.message}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Configuration Panel */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  Workflow Configuration
-                </h2>
-                <button
-                  onClick={() => setShowWorkflowConfig(!showWorkflowConfig)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-                >
-                  {showWorkflowConfig ? "Hide" : "Show"} Configuration
-                </button>
-              </div>
-
-              {showWorkflowConfig && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Customer ID
-                      </label>
-                      <input
-                        type="text"
-                        value={workflowConfig.USERS.CUSTOMER_ID}
-                        onChange={(e) =>
-                          setWorkflowConfig({
-                            ...workflowConfig,
-                            USERS: {
-                              ...workflowConfig.USERS,
-                              CUSTOMER_ID: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Seller ID
-                      </label>
-                      <input
-                        type="text"
-                        value={workflowConfig.USERS.SELLER_ID}
-                        onChange={(e) =>
-                          setWorkflowConfig({
-                            ...workflowConfig,
-                            USERS: {
-                              ...workflowConfig.USERS,
-                              SELLER_ID: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Workflow Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {WORKFLOWS.map((workflow) => {
-                const status = workflows[workflow.id];
-                return (
-                  <div
-                    key={workflow.id}
-                    className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="text-4xl">{workflow.icon}</div>
-                        {status && (
-                          <span className="text-2xl">
-                            {getStatusIcon(status.status)}
-                          </span>
+                      <div className="flex items-center gap-2">
+                        {result.success ? (
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-600" />
                         )}
-                      </div>
-
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {workflow.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        {workflow.description}
-                      </p>
-
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                        <span>{workflow.steps} steps</span>
-                        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
-                          {workflow.role}
+                        <span className="font-medium text-sm">
+                          {result.description}
                         </span>
                       </div>
-
-                      {status && status.status === "running" && (
-                        <div className="text-sm text-blue-600 animate-pulse mb-4">
-                          Running...
-                        </div>
-                      )}
-
-                      {status && status.progress > 0 && (
-                        <div className="mb-4">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className={`h-2 rounded-full transition-all ${getStatusColor(
-                                status.status
-                              )}`}
-                              style={{ width: `${status.progress}%` }}
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {status.currentStep}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => runWorkflow(workflow.id)}
-                          disabled={status?.status === "running"}
-                          className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                      <div className="flex items-center gap-3 text-xs">
+                        <span
+                          className={
+                            result.success ? "text-green-700" : "text-red-700"
+                          }
                         >
-                          {status?.status === "running" ? "Running..." : "Run"}
-                        </button>
-                        {status && (
-                          <button
-                            onClick={() => setSelectedWorkflow(workflow.id)}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                          >
-                            📊
-                          </button>
+                          Status: {result.status}
+                        </span>
+                        <span className="text-gray-500">
+                          {result.duration}ms
+                        </span>
+                        {result.dataCount > 0 && (
+                          <span className="text-gray-500">
+                            {result.dataCount} items
+                          </span>
                         )}
                       </div>
                     </div>
+                  ))}
+                </div>
 
-                    {status?.error && (
-                      <div className="px-6 py-3 bg-red-50 border-t border-red-200">
-                        <p className="text-sm text-red-600">{status.error}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                <p className="mt-3 text-sm text-gray-600">
+                  {publicAPIResults.message}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Configuration Panel */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                Workflow Configuration
+              </h2>
+              <button
+                onClick={() => setShowWorkflowConfig(!showWorkflowConfig)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                {showWorkflowConfig ? "Hide" : "Show"} Configuration
+              </button>
             </div>
 
-            {/* Results Modal */}
-            {selectedWorkflow && workflows[selectedWorkflow] && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
-                  <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-semibold text-gray-900">
-                        {workflows[selectedWorkflow].name} - Results
-                      </h3>
-                      <button
-                        onClick={() => setSelectedWorkflow(null)}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        ✕
-                      </button>
-                    </div>
+            {showWorkflowConfig && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Customer ID
+                    </label>
+                    <input
+                      type="text"
+                      value={workflowConfig.USERS.CUSTOMER_ID}
+                      onChange={(e) =>
+                        setWorkflowConfig({
+                          ...workflowConfig,
+                          USERS: {
+                            ...workflowConfig.USERS,
+                            CUSTOMER_ID: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
                   </div>
-                  <div className="p-6 overflow-y-auto max-h-[60vh]">
-                    <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm">
-                      {JSON.stringify(
-                        workflows[selectedWorkflow].results,
-                        null,
-                        2
-                      )}
-                    </pre>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Seller ID
+                    </label>
+                    <input
+                      type="text"
+                      value={workflowConfig.USERS.SELLER_ID}
+                      onChange={(e) =>
+                        setWorkflowConfig({
+                          ...workflowConfig,
+                          USERS: {
+                            ...workflowConfig.USERS,
+                            SELLER_ID: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
                   </div>
                 </div>
               </div>
             )}
           </div>
-        )}
+
+          {/* Batch Execution Panel */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                  🚀 Batch Workflow Execution
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Run all workflows sequentially with managed test data
+                </p>
+              </div>
+              <button
+                onClick={runAllWorkflows}
+                disabled={loading}
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Running...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-5 w-5" />
+                    Run All Workflows
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="bg-white rounded-lg p-4 border border-purple-200">
+              <h3 className="font-semibold text-gray-800 mb-3">
+                Execution Flow:
+              </h3>
+              <ol className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center gap-2">
+                  <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                    1
+                  </span>
+                  Load existing test data context
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                    2
+                  </span>
+                  Execute each workflow with shared context
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                    3
+                  </span>
+                  Generate comprehensive report
+                </li>
+              </ol>
+              <p className="mt-3 text-xs text-gray-500">
+                💡 Tip: Generate test data first, then run workflows to use that
+                data
+              </p>
+            </div>
+          </div>
+
+          {/* Workflow Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {WORKFLOWS.map((workflow) => {
+              const status = workflows[workflow.id];
+              return (
+                <div
+                  key={workflow.id}
+                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="text-4xl">{workflow.icon}</div>
+                      {status && (
+                        <span className="text-2xl">
+                          {getStatusIcon(status.status)}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {workflow.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {workflow.description}
+                    </p>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span>{workflow.steps} steps</span>
+                      <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                        {workflow.role}
+                      </span>
+                    </div>
+
+                    {status && status.status === "running" && (
+                      <div className="text-sm text-blue-600 animate-pulse mb-4">
+                        Running...
+                      </div>
+                    )}
+
+                    {status && status.progress > 0 && (
+                      <div className="mb-4">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${getStatusColor(
+                              status.status
+                            )}`}
+                            style={{ width: `${status.progress}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {status.currentStep}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => runWorkflow(workflow.id)}
+                        disabled={status?.status === "running"}
+                        className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                      >
+                        {status?.status === "running" ? "Running..." : "Run"}
+                      </button>
+                      <button
+                        onClick={() => generateAndRunWorkflow(workflow.id)}
+                        disabled={status?.status === "running" || loading}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                        title="Generate data and run"
+                      >
+                        🔄
+                      </button>
+                      {status && (
+                        <button
+                          onClick={() => setSelectedWorkflow(workflow.id)}
+                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                        >
+                          📊
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {status?.error && (
+                    <div className="px-6 py-3 bg-red-50 border-t border-red-200">
+                      <p className="text-sm text-red-600">{status.error}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Results Modal */}
+          {selectedWorkflow && workflows[selectedWorkflow] && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-semibold text-gray-900">
+                      {workflows[selectedWorkflow].name} - Results
+                    </h3>
+                    <button
+                      onClick={() => setSelectedWorkflow(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <div className="p-6 overflow-y-auto max-h-[60vh]">
+                  <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm">
+                    {JSON.stringify(
+                      workflows[selectedWorkflow].results,
+                      null,
+                      2
+                    )}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

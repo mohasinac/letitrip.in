@@ -13,6 +13,8 @@ export interface Category {
   name: string;
   slug: string;
   parent_id: string | null;
+  parentIds?: string[]; // Multi-parent support
+  childrenIds?: string[]; // Multi-children support
   level: number;
   has_children: boolean;
   is_active: boolean;
@@ -45,41 +47,53 @@ export default function CategorySelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   // Get selected category
   const selectedCategory = useMemo(
     () => categories.find((cat) => cat.id === value) || null,
-    [categories, value],
+    [categories, value]
   );
-
-  // Build category breadcrumb
+  // Build category breadcrumb (use first parent path for display)
   const breadcrumb = useMemo(() => {
     if (!selectedCategory) return [];
-
     const path: Category[] = [];
     let current: Category | undefined = selectedCategory;
-
     while (current) {
       path.unshift(current);
-      current = categories.find((cat) => cat.id === current!.parent_id);
+      // Use first parent for breadcrumb display
+      const currentParentIds: string[] =
+        current.parentIds || (current.parent_id ? [current.parent_id] : []);
+      current =
+        currentParentIds.length > 0
+          ? categories.find((cat) => cat.id === currentParentIds[0])
+          : undefined;
     }
-
     return path;
   }, [selectedCategory, categories]);
-
   // Build category tree
   const categoryTree = useMemo(() => {
     const tree: Map<string | null, Category[]> = new Map();
-
     categories.forEach((cat) => {
-      if (!tree.has(cat.parent_id)) {
-        tree.set(cat.parent_id, []);
-      }
-      tree.get(cat.parent_id)!.push(cat);
-    });
+      const parentIds = cat.parentIds || (cat.parent_id ? [cat.parent_id] : []);
 
+      // If no parents, it's a root category
+      if (parentIds.length === 0) {
+        if (!tree.has(null)) {
+          tree.set(null, []);
+        }
+        tree.get(null)!.push(cat);
+      } else {
+        // Add under each parent
+        parentIds.forEach((parentId) => {
+          if (!tree.has(parentId)) {
+            tree.set(parentId, []);
+          }
+          tree.get(parentId)!.push(cat);
+        });
+      }
+    });
     return tree;
   }, [categories]);
 
@@ -91,24 +105,26 @@ export default function CategorySelector({
     return categories.filter(
       (cat) =>
         cat.name.toLowerCase().includes(query) ||
-        cat.slug.toLowerCase().includes(query),
+        cat.slug.toLowerCase().includes(query)
     );
   }, [categories, searchQuery]);
-
-  // Get category path for search results
+  // Get category path for search results (use first parent path)
   const getCategoryPath = useCallback(
     (category: Category): string => {
       const path: string[] = [];
       let current: Category | undefined = category;
-
       while (current) {
         path.unshift(current.name);
-        current = categories.find((cat) => cat.id === current!.parent_id);
+        const currentParentIds: string[] =
+          current.parentIds || (current.parent_id ? [current.parent_id] : []);
+        current =
+          currentParentIds.length > 0
+            ? categories.find((cat) => cat.id === currentParentIds[0])
+            : undefined;
       }
-
       return path.join(" > ");
     },
-    [categories],
+    [categories]
   );
 
   // Toggle category expansion
@@ -138,7 +154,7 @@ export default function CategorySelector({
       setIsOpen(false);
       setSearchQuery("");
     },
-    [allowParentSelection, onChange, toggleExpand],
+    [allowParentSelection, onChange, toggleExpand]
   );
 
   // Handle clear
@@ -147,7 +163,7 @@ export default function CategorySelector({
       e.stopPropagation();
       onChange(null, null);
     },
-    [onChange],
+    [onChange]
   );
 
   // Render category tree recursively
@@ -249,7 +265,7 @@ export default function CategorySelector({
       showProductCount,
       handleSelect,
       toggleExpand,
-    ],
+    ]
   );
 
   return (

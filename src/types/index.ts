@@ -213,6 +213,7 @@ export interface Product {
 
 /**
  * Category Interface
+ * Supports multi-parent and multi-children hierarchy
  */
 export interface Category {
   id: string;
@@ -220,12 +221,17 @@ export interface Category {
   slug: string;
   description?: string;
 
-  // Hierarchy
-  parentId?: string | null;
-  path: string; // e.g., "electronics/phones/smartphones"
-  level: number;
+  // Multi-level Hierarchy
+  parentIds: string[]; // Multiple parent categories
+  childrenIds: string[]; // Multiple child categories
+  paths: string[]; // Multiple paths (one for each parent), e.g., ["electronics/phones", "accessories/mobile"]
+  level: number; // Minimum level in hierarchy
   hasChildren: boolean;
   childCount: number;
+
+  // Backward compatibility (kept for migration)
+  parentId?: string | null; // Deprecated: use parentIds[0]
+  path?: string; // Deprecated: use paths[0]
 
   // Display
   icon?: string;
