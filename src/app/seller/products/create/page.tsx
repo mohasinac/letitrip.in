@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
+import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { productsService } from "@/services/products.service";
 
 const STEPS = [
@@ -207,15 +208,13 @@ export default function CreateProductPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category *
               </label>
-              <input
-                type="text"
-                required
+              <CategorySelectorWithCreate
                 value={formData.categoryId}
-                onChange={(e) =>
-                  setFormData({ ...formData, categoryId: e.target.value })
+                onChange={(categoryId) =>
+                  setFormData({ ...formData, categoryId: categoryId || "" })
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="e.g., electronics"
+                placeholder="Select or create a category"
+                required
               />
             </div>
 

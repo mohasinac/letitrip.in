@@ -11,7 +11,8 @@ export type FieldType =
   | "date"
   | "textarea"
   | "url"
-  | "email";
+  | "email"
+  | "category-create"; // New type for category selector with create
 
 export interface SelectOption {
   value: string | number;

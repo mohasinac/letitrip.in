@@ -1,96 +1,109 @@
 import { apiService } from "./api.service";
-import type { CartItem } from "@/types";
+import {
+  CartBE,
+  AddToCartRequestBE,
+  UpdateCartItemRequestBE,
+} from "@/types/backend/cart.types";
+import {
+  CartFE,
+  CartItemFE,
+  AddToCartFormFE,
+  CartSummaryFE,
+} from "@/types/frontend/cart.types";
+import {
+  toFECart,
+  toFECartSummary,
+  toBEAddToCartRequest,
+  createEmptyCart,
+} from "@/types/transforms/cart.transforms";
 
-interface AddToCartData {
-  productId: string;
-  quantity: number;
-  variant?: string;
-}
-
-interface UpdateCartItemData {
-  quantity: number;
-}
-
-interface MergeGuestCartData {
-  guestCartItems: {
-    productId: string;
-    quantity: number;
-    variant?: string;
-  }[];
-}
-
-interface ApplyCouponData {
-  code: string;
-}
-
-interface CartSummary {
-  items: CartItem[];
-  subtotal: number;
-  discount: number;
-  shipping: number;
-  tax: number;
-  total: number;
-  couponCode?: string;
-  itemCount: number;
-}
-
+/**
+ * Cart Service - Updated with new type system
+ * All methods return FE types for UI, transform BE responses automatically
+ */
 class CartService {
-  // Get user cart
-  async get(): Promise<CartSummary> {
-    return apiService.get<CartSummary>("/cart");
+  /**
+   * Get user cart (returns UI-optimized cart)
+   */
+  async get(): Promise<CartFE> {
+    const cartBE = await apiService.get<CartBE>("/cart");
+    return toFECart(cartBE);
   }
 
-  // Add item to cart
-  async addItem(data: AddToCartData): Promise<CartItem> {
-    return apiService.post<CartItem>("/cart", data);
+  /**
+   * Add item to cart
+   */
+  async addItem(formData: AddToCartFormFE): Promise<CartFE> {
+    const request = toBEAddToCartRequest(formData);
+    const cartBE = await apiService.post<CartBE>("/cart", request);
+    return toFECart(cartBE);
   }
 
-  // Update cart item quantity
-  async updateItem(
-    itemId: string,
-    data: UpdateCartItemData,
-  ): Promise<CartItem> {
-    return apiService.patch<CartItem>(`/cart/${itemId}`, data);
+  /**
+   * Update cart item quantity
+   */
+  async updateItem(itemId: string, quantity: number): Promise<CartFE> {
+    const cartBE = await apiService.patch<CartBE>(`/cart/${itemId}`, {
+      quantity,
+    });
+    return toFECart(cartBE);
   }
 
-  // Remove item from cart
-  async removeItem(itemId: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/cart/${itemId}`);
+  /**
+   * Remove item from cart
+   */
+  async removeItem(itemId: string): Promise<CartFE> {
+    const cartBE = await apiService.delete<CartBE>(`/cart/${itemId}`);
+    return toFECart(cartBE);
   }
 
-  // Clear cart
+  /**
+   * Clear cart
+   */
   async clear(): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>("/cart");
   }
 
-  // Merge guest cart with user cart (on login)
-  async mergeGuestCart(data: MergeGuestCartData): Promise<CartSummary> {
-    return apiService.post<CartSummary>("/cart/merge", data);
+  /**
+   * Merge guest cart with user cart (on login)
+   */
+  async mergeGuestCart(guestItems: CartItemFE[]): Promise<CartFE> {
+    const cartBE = await apiService.post<CartBE>("/cart/merge", {
+      guestCartItems: guestItems,
+    });
+    return toFECart(cartBE);
   }
 
-  // Apply coupon to cart
-  async applyCoupon(data: ApplyCouponData): Promise<CartSummary> {
-    return apiService.post<CartSummary>("/cart/coupon", data);
+  /**
+   * Apply coupon to cart
+   */
+  async applyCoupon(code: string): Promise<CartFE> {
+    const cartBE = await apiService.post<CartBE>("/cart/coupon", { code });
+    return toFECart(cartBE);
   }
 
-  // Remove coupon from cart
-  async removeCoupon(): Promise<CartSummary> {
-    return apiService.delete<CartSummary>("/cart/coupon");
+  /**
+   * Remove coupon from cart
+   */
+  async removeCoupon(): Promise<CartFE> {
+    const cartBE = await apiService.delete<CartBE>("/cart/coupon");
+    return toFECart(cartBE);
   }
 
-  // Get cart item count
-  async getItemCount(): Promise<{ count: number }> {
-    return apiService.get<{ count: number }>("/cart/count");
+  /**
+   * Get cart item count
+   */
+  async getItemCount(): Promise<number> {
+    const result = await apiService.get<{ count: number }>("/cart/count");
+    return result.count;
   }
 
-  // Validate cart (check stock, prices)
+  /**
+   * Validate cart (check stock, prices)
+   */
   async validate(): Promise<{
     valid: boolean;
-    errors: Array<{
-      itemId: string;
-      productId: string;
-      error: string;
-    }>;
+    errors: Array<{ itemId: string; productId: string; error: string }>;
   }> {
     return apiService.get("/cart/validate");
   }
@@ -98,7 +111,7 @@ class CartService {
   // Local storage helpers for guest cart
   private readonly GUEST_CART_KEY = "guest_cart";
 
-  getGuestCart(): CartItem[] {
+  getGuestCart(): CartItemFE[] {
     if (typeof window === "undefined") return [];
 
     try {
@@ -109,30 +122,55 @@ class CartService {
     }
   }
 
-  setGuestCart(items: CartItem[]): void {
+  setGuestCart(items: CartItemFE[]): void {
     if (typeof window === "undefined") return;
 
     localStorage.setItem(this.GUEST_CART_KEY, JSON.stringify(items));
   }
 
-  addToGuestCart(item: Omit<CartItem, "id" | "addedAt">): void {
+  addToGuestCart(
+    item: Omit<
+      CartItemFE,
+      | "id"
+      | "addedAt"
+      | "formattedPrice"
+      | "formattedSubtotal"
+      | "formattedTotal"
+      | "isOutOfStock"
+      | "isLowStock"
+      | "canIncrement"
+      | "canDecrement"
+      | "hasDiscount"
+      | "addedTimeAgo"
+    >
+  ): void {
     const cart = this.getGuestCart();
 
     // Check if item already exists
     const existingIndex = cart.findIndex(
-      (i) => i.productId === item.productId && i.variant === item.variant,
+      (i) => i.productId === item.productId && i.variantId === item.variantId
     );
 
     if (existingIndex >= 0) {
       // Update quantity
       cart[existingIndex].quantity += item.quantity;
     } else {
-      // Add new item
+      // Add new item with computed fields
+      const now = new Date();
       cart.push({
         ...item,
         id: `guest_${Date.now()}_${Math.random()}`,
-        addedAt: new Date(),
-      });
+        addedAt: now,
+        formattedPrice: `₹${item.price}`,
+        formattedSubtotal: `₹${item.subtotal}`,
+        formattedTotal: `₹${item.total}`,
+        isOutOfStock: !item.isAvailable,
+        isLowStock: item.maxQuantity <= 5,
+        canIncrement: item.quantity < item.maxQuantity,
+        canDecrement: item.quantity > 1,
+        hasDiscount: item.discount > 0,
+        addedTimeAgo: "Just added",
+      } as CartItemFE);
     }
 
     this.setGuestCart(cart);
@@ -147,20 +185,27 @@ class CartService {
     shopId: string;
     shopName: string;
     quantity: number;
-    variant?: string;
+    variantId?: string;
   }): void {
-    const cartItem: Omit<CartItem, "id" | "addedAt"> = {
+    const subtotal = product.price * product.quantity;
+    this.addToGuestCart({
       productId: product.productId,
       productName: product.name,
+      productSlug: product.name.toLowerCase().replace(/\s+/g, "-"),
       productImage: product.image,
+      variantId: product.variantId || null,
+      variantName: null,
+      sku: "",
       price: product.price,
       quantity: product.quantity,
-      variant: product.variant,
+      maxQuantity: 100,
+      subtotal,
+      discount: 0,
+      total: subtotal,
       shopId: product.shopId,
       shopName: product.shopName,
-    };
-
-    this.addToGuestCart(cartItem);
+      isAvailable: true,
+    });
   }
 
   updateGuestCartItem(itemId: string, quantity: number): void {
@@ -195,10 +240,3 @@ class CartService {
 }
 
 export const cartService = new CartService();
-export type {
-  AddToCartData,
-  UpdateCartItemData,
-  MergeGuestCartData,
-  ApplyCouponData,
-  CartSummary,
-};

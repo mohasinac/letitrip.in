@@ -1,76 +1,36 @@
 import { apiService } from "./api.service";
+import {
+  OrderBE,
+  OrderFiltersBE,
+  CreateOrderRequestBE,
+  UpdateOrderStatusRequestBE,
+  CreateShipmentRequestBE,
+  CancelOrderRequestBE,
+} from "@/types/backend/order.types";
+import {
+  OrderFE,
+  OrderCardFE,
+  CreateOrderFormFE,
+  OrderStatsFE,
+} from "@/types/frontend/order.types";
+import {
+  toFEOrder,
+  toFEOrders,
+  toFEOrderCard,
+  toBECreateOrderRequest,
+  toBEUpdateOrderStatusRequest,
+  toBECreateShipmentRequest,
+} from "@/types/transforms/order.transforms";
 import type {
-  Order,
-  OrderStatus,
-  PaymentStatus,
-  PaginatedResponse,
-} from "@/types";
-
-interface OrderFilters {
-  shopId?: string;
-  customerId?: string;
-  status?: OrderStatus;
-  paymentStatus?: PaymentStatus;
-  minAmount?: number;
-  maxAmount?: number;
-  startDate?: string;
-  endDate?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: "createdAt" | "total" | "status";
-  sortOrder?: "asc" | "desc";
-}
-
-interface CreateOrderData {
-  items: {
-    productId: string;
-    quantity: number;
-    variant?: string;
-  }[];
-  shippingAddress: {
-    name: string;
-    phone: string;
-    line1: string;
-    line2?: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-  };
-  billingAddress?: {
-    name: string;
-    phone: string;
-    line1: string;
-    line2?: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-  };
-  paymentMethod: "razorpay" | "paypal" | "cod";
-  couponCode?: string;
-  customerNotes?: string;
-}
-
-interface UpdateOrderStatusData {
-  status: OrderStatus;
-  internalNotes?: string;
-}
-
-interface CreateShipmentData {
-  trackingNumber: string;
-  shippingProvider: string;
-  estimatedDelivery?: Date;
-}
-
-interface CancelOrderData {
-  reason: string;
-}
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 class OrdersService {
   // List orders (role-filtered)
-  async list(filters?: OrderFilters): Promise<PaginatedResponse<Order>> {
+  async list(
+    filters?: Partial<OrderFiltersBE>
+  ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -88,13 +48,24 @@ class OrdersService {
     const queryString = params.toString();
     const endpoint = queryString ? `/orders?${queryString}` : "/orders";
 
-    return apiService.get<PaginatedResponse<Order>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<OrderBE>>(
+      endpoint
+    );
+
+    return {
+      data: response.data.map(toFEOrderCard),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get seller's orders specifically
   async getSellerOrders(
-    filters?: OrderFilters
-  ): Promise<PaginatedResponse<Order>> {
+    filters?: Partial<OrderFiltersBE>
+  ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -114,51 +85,90 @@ class OrdersService {
       ? `/seller/orders?${queryString}`
       : "/seller/orders";
 
-    return apiService.get<PaginatedResponse<Order>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<OrderBE>>(
+      endpoint
+    );
+
+    return {
+      data: response.data.map(toFEOrderCard),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get order by ID
-  async getById(id: string): Promise<Order> {
-    return apiService.get<Order>(`/orders/${id}`);
+  async getById(id: string): Promise<OrderFE> {
+    const orderBE = await apiService.get<OrderBE>(`/orders/${id}`);
+    return toFEOrder(orderBE);
   }
 
   // Create order (customer checkout)
-  async create(data: CreateOrderData): Promise<Order> {
-    return apiService.post<Order>("/orders", data);
+  async create(formData: CreateOrderFormFE): Promise<OrderFE> {
+    const request = toBECreateOrderRequest(formData);
+    const orderBE = await apiService.post<OrderBE>("/orders", request);
+    return toFEOrder(orderBE);
   }
 
   // Update order status (seller/admin)
-  async updateStatus(id: string, data: UpdateOrderStatusData): Promise<Order> {
-    const payload: any = { status: data.status };
-    if (data.internalNotes) payload.notes = data.internalNotes;
-    return apiService.patch<Order>(`/orders/${id}`, payload);
+  async updateStatus(
+    id: string,
+    status: string,
+    internalNotes?: string
+  ): Promise<OrderFE> {
+    const request = toBEUpdateOrderStatusRequest(status, internalNotes);
+    const orderBE = await apiService.patch<OrderBE>(`/orders/${id}`, request);
+    return toFEOrder(orderBE);
   }
 
   // Create shipment (seller/admin)
-  async createShipment(id: string, data: CreateShipmentData): Promise<Order> {
-    const payload: any = {
-      carrier: data.shippingProvider,
-      tracking_number: data.trackingNumber,
-      eta: data.estimatedDelivery
-        ? data.estimatedDelivery.toISOString()
-        : undefined,
-    };
-    return apiService.post<Order>(`/orders/${id}/shipment`, payload);
+  async createShipment(
+    id: string,
+    trackingNumber: string,
+    shippingProvider: string,
+    estimatedDelivery?: Date
+  ): Promise<OrderFE> {
+    const request = toBECreateShipmentRequest(
+      trackingNumber,
+      shippingProvider,
+      estimatedDelivery
+    );
+    const orderBE = await apiService.post<OrderBE>(
+      `/orders/${id}/shipment`,
+      request
+    );
+    return toFEOrder(orderBE);
   }
 
   // Cancel order (user before shipping)
-  async cancel(id: string, data: CancelOrderData): Promise<Order> {
-    return apiService.post<Order>(`/orders/${id}/cancel`, data);
+  async cancel(id: string, reason: string): Promise<OrderFE> {
+    const orderBE = await apiService.post<OrderBE>(`/orders/${id}/cancel`, {
+      reason,
+    });
+    return toFEOrder(orderBE);
   }
 
   // Track shipment
-  async track(id: string): Promise<any> {
-    return apiService.get<any>(`/orders/${id}/track`);
+  async track(id: string): Promise<{
+    trackingNumber: string;
+    shippingProvider: string;
+    currentStatus: string;
+    estimatedDelivery: Date | null;
+    trackingUrl: string;
+    events: Array<{
+      status: string;
+      location: string;
+      timestamp: Date;
+      description: string;
+    }>;
+  }> {
+    return apiService.get(`/orders/${id}/track`);
   }
 
   // Download invoice
   async downloadInvoice(id: string): Promise<Blob> {
-    // Note: This might need special handling for blob response
     const response = await fetch(`/api/orders/${id}/invoice`, {
       method: "GET",
       headers: {
@@ -178,7 +188,7 @@ class OrdersService {
     shopId?: string;
     startDate?: string;
     endDate?: string;
-  }): Promise<any> {
+  }): Promise<OrderStatsFE> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -194,15 +204,8 @@ class OrdersService {
       ? `/orders/stats?${queryString}`
       : "/orders/stats";
 
-    return apiService.get<any>(endpoint);
+    return apiService.get<OrderStatsFE>(endpoint);
   }
 }
 
 export const ordersService = new OrdersService();
-export type {
-  OrderFilters,
-  CreateOrderData,
-  UpdateOrderStatusData,
-  CreateShipmentData,
-  CancelOrderData,
-};

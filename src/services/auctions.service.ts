@@ -1,72 +1,85 @@
 import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
-import type { Auction, AuctionStatus, Bid, PaginatedResponse } from "@/types";
-
-interface AuctionFilters {
-  shopId?: string;
-  status?: AuctionStatus;
-  search?: string;
-  minBid?: number;
-  maxBid?: number;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
-  endingSoon?: boolean; // Within 24 hours
-  page?: number;
-  limit?: number;
-  sortBy?: "endTime" | "currentBid" | "bidCount" | "createdAt";
-  sortOrder?: "asc" | "desc";
-}
-
-interface CreateAuctionData {
-  shopId: string;
-  name: string;
-  slug: string;
-  description: string;
-  startingBid: number;
-  reservePrice?: number;
-  startTime: Date;
-  endTime: Date;
-  status: AuctionStatus;
-}
-
-interface UpdateAuctionData extends Partial<CreateAuctionData> {
-  images?: string[];
-  videos?: string[];
-  isFeatured?: boolean;
-  featuredPriority?: number;
-}
-
-interface PlaceBidData {
-  bidAmount: number;
-  isAutoBid?: boolean;
-  maxAutoBid?: number;
-}
+import {
+  AuctionBE,
+  AuctionFiltersBE,
+  CreateAuctionRequestBE,
+  UpdateAuctionRequestBE,
+  BidBE,
+} from "@/types/backend/auction.types";
+import {
+  AuctionFE,
+  AuctionCardFE,
+  AuctionFormFE,
+  PlaceBidFormFE,
+  BidFE,
+} from "@/types/frontend/auction.types";
+import {
+  toFEAuction,
+  toFEAuctions,
+  toFEAuctionCard,
+  toFEBid,
+  toBECreateAuctionRequest,
+} from "@/types/transforms/auction.transforms";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 class AuctionsService {
   // List auctions (role-filtered)
-  async list(filters?: AuctionFilters): Promise<PaginatedResponse<Auction>> {
+  async list(
+    filters?: Partial<AuctionFiltersBE>
+  ): Promise<PaginatedResponseFE<AuctionCardFE>> {
     const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
-    return apiService.get<PaginatedResponse<Auction>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<AuctionBE>>(
+      endpoint
+    );
+
+    return {
+      data: response.data.map(toFEAuctionCard),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get auction by ID
-  async getById(id: string): Promise<Auction> {
-    return apiService.get<Auction>(AUCTION_ROUTES.BY_ID(id));
+  async getById(id: string): Promise<AuctionFE> {
+    const auctionBE = await apiService.get<AuctionBE>(AUCTION_ROUTES.BY_ID(id));
+    return toFEAuction(auctionBE);
   }
 
   // Get auction by slug
-  async getBySlug(slug: string): Promise<Auction> {
-    return apiService.get<Auction>(AUCTION_ROUTES.BY_SLUG(slug));
+  async getBySlug(slug: string): Promise<AuctionFE> {
+    const auctionBE = await apiService.get<AuctionBE>(
+      AUCTION_ROUTES.BY_SLUG(slug)
+    );
+    return toFEAuction(auctionBE);
   }
 
   // Create auction (seller/admin)
-  async create(data: CreateAuctionData): Promise<Auction> {
-    return apiService.post<Auction>(AUCTION_ROUTES.LIST, data);
+  async create(formData: AuctionFormFE): Promise<AuctionFE> {
+    const request = toBECreateAuctionRequest(formData);
+    const auctionBE = await apiService.post<AuctionBE>(
+      AUCTION_ROUTES.LIST,
+      request
+    );
+    return toFEAuction(auctionBE);
   }
 
   // Update auction (owner/admin)
-  async update(id: string, data: UpdateAuctionData): Promise<Auction> {
-    return apiService.patch<Auction>(AUCTION_ROUTES.BY_ID(id), data);
+  async update(
+    id: string,
+    formData: Partial<AuctionFormFE>
+  ): Promise<AuctionFE> {
+    const auctionBE = await apiService.patch<AuctionBE>(
+      AUCTION_ROUTES.BY_ID(id),
+      formData
+    );
+    return toFEAuction(auctionBE);
   }
 
   // Delete auction (owner/admin)
@@ -74,7 +87,7 @@ class AuctionsService {
     return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
   }
 
-  // Validate slug availability (for form validation)
+  // Validate slug availability
   async validateSlug(
     slug: string,
     shopId?: string
@@ -93,7 +106,7 @@ class AuctionsService {
     id: string,
     page?: number,
     limit?: number
-  ): Promise<PaginatedResponse<Bid>> {
+  ): Promise<PaginatedResponseFE<BidFE>> {
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
@@ -103,12 +116,26 @@ class AuctionsService {
       ? `/auctions/${id}/bid?${queryString}`
       : `/auctions/${id}/bid`;
 
-    return apiService.get<PaginatedResponse<Bid>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
+
+    return {
+      data: response.data.map((bid) => toFEBid(bid)),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Place bid (authenticated users)
-  async placeBid(id: string, data: PlaceBidData): Promise<Bid> {
-    return apiService.post<Bid>(`/auctions/${id}/bid`, data);
+  async placeBid(id: string, formData: PlaceBidFormFE): Promise<BidFE> {
+    const bidBE = await apiService.post<BidBE>(`/auctions/${id}/bid`, {
+      amount: formData.amount,
+      isAutoBid: formData.isAutoBid,
+      maxAutoBidAmount: formData.maxAutoBidAmount,
+    });
+    return toFEBid(bidBE);
   }
 
   // Set featured auction (admin only)
@@ -116,35 +143,40 @@ class AuctionsService {
     id: string,
     isFeatured: boolean,
     priority?: number
-  ): Promise<Auction> {
-    return apiService.patch<Auction>(`/auctions/${id}/feature`, {
-      isFeatured,
-      featuredPriority: priority,
-    });
+  ): Promise<AuctionFE> {
+    const auctionBE = await apiService.patch<AuctionBE>(
+      `/auctions/${id}/feature`,
+      {
+        isFeatured,
+        featuredPriority: priority,
+      }
+    );
+    return toFEAuction(auctionBE);
   }
 
   // Get live auctions
-  async getLive(): Promise<Auction[]> {
-    return apiService.get<Auction[]>("/auctions/live");
+  async getLive(): Promise<AuctionFE[]> {
+    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/live");
+    return toFEAuctions(auctionsBE);
   }
 
   // Get featured auctions
-  async getFeatured(): Promise<Auction[]> {
-    return apiService.get<Auction[]>("/auctions/featured");
+  async getFeatured(): Promise<AuctionFE[]> {
+    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/featured");
+    return toFEAuctions(auctionsBE);
   }
 
   // Get homepage auctions
-  async getHomepage(): Promise<Auction[]> {
+  async getHomepage(): Promise<AuctionCardFE[]> {
     const response = await this.list({
-      showOnHomepage: true,
-      status: "live",
+      status: "active" as any,
       limit: 20,
     });
-    return Array.isArray(response) ? response : (response as any).data || [];
+    return response.data;
   }
 
   // Get similar auctions
-  async getSimilar(id: string, limit?: number): Promise<Auction[]> {
+  async getSimilar(id: string, limit?: number): Promise<AuctionFE[]> {
     const params = new URLSearchParams();
     if (limit) params.append("limit", limit.toString());
 
@@ -153,11 +185,12 @@ class AuctionsService {
       ? `/auctions/${id}/similar?${queryString}`
       : `/auctions/${id}/similar`;
 
-    return apiService.get<Auction[]>(endpoint);
+    const auctionsBE = await apiService.get<AuctionBE[]>(endpoint);
+    return toFEAuctions(auctionsBE);
   }
 
   // Get seller's other auctions
-  async getSellerAuctions(id: string, limit?: number): Promise<Auction[]> {
+  async getSellerAuctions(id: string, limit?: number): Promise<AuctionFE[]> {
     const params = new URLSearchParams();
     if (limit) params.append("limit", limit.toString());
 
@@ -166,7 +199,8 @@ class AuctionsService {
       ? `/auctions/${id}/seller-items?${queryString}`
       : `/auctions/${id}/seller-items`;
 
-    return apiService.get<Auction[]>(endpoint);
+    const auctionsBE = await apiService.get<AuctionBE[]>(endpoint);
+    return toFEAuctions(auctionsBE);
   }
 
   // Watch/unwatch auction
@@ -175,18 +209,21 @@ class AuctionsService {
   }
 
   // Get user's watchlist
-  async getWatchlist(): Promise<Auction[]> {
-    return apiService.get<Auction[]>("/auctions/watchlist");
+  async getWatchlist(): Promise<AuctionFE[]> {
+    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/watchlist");
+    return toFEAuctions(auctionsBE);
   }
 
   // Get user's active bids
-  async getMyBids(): Promise<Bid[]> {
-    return apiService.get<Bid[]>("/auctions/my-bids");
+  async getMyBids(): Promise<BidFE[]> {
+    const bidsBE = await apiService.get<BidBE[]>("/auctions/my-bids");
+    return bidsBE.map((bid) => toFEBid(bid));
   }
 
   // Get user's won auctions
-  async getWonAuctions(): Promise<Auction[]> {
-    return apiService.get<Auction[]>("/auctions/won");
+  async getWonAuctions(): Promise<AuctionFE[]> {
+    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/won");
+    return toFEAuctions(auctionsBE);
   }
 
   // Bulk actions for seller dashboard
@@ -208,24 +245,26 @@ class AuctionsService {
     endTime: Date | string;
     status?: string;
     images?: string[];
-  }): Promise<Auction> {
-    return apiService.post("/api/seller/auctions", {
+  }): Promise<AuctionFE> {
+    const auctionBE = await apiService.post<AuctionBE>("/api/seller/auctions", {
       ...data,
-      description: "", // Required field with default
+      description: "",
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
     });
+    return toFEAuction(auctionBE);
   }
 
-  // Quick update for inline editing (any fields)
-  async quickUpdate(id: string, data: any): Promise<Auction> {
-    return apiService.patch(`/api/auctions/${id}`, data);
+  // Quick update for inline editing
+  async quickUpdate(
+    id: string,
+    data: Partial<UpdateAuctionFormFE>
+  ): Promise<AuctionFE> {
+    const auctionBE = await apiService.patch<AuctionBE>(
+      `/api/auctions/${id}`,
+      data
+    );
+    return toFEAuction(auctionBE);
   }
 }
 
 export const auctionsService = new AuctionsService();
-export type {
-  AuctionFilters,
-  CreateAuctionData,
-  UpdateAuctionData,
-  PlaceBidData,
-};

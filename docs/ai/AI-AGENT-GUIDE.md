@@ -75,7 +75,70 @@ STATE: Context + Hooks pattern
 
 ## Key Patterns to Follow
 
-### 1. Service Layer Pattern (CRITICAL)
+### 1. Type System Architecture (MANDATORY)
+
+**Strict TypeScript with Frontend/Backend type separation. Zero `any` types allowed.**
+
+#### Core Principles
+- **FE/BE Separation**: Frontend types for UI, Backend types for API
+- **Service Layer Transformation**: Convert between FE and BE types automatically
+- **No `any` Types**: Use explicit types everywhere
+- **Field-Level Validation**: Show errors below each input field
+- **Persistent Action Buttons**: Save/Create buttons always visible
+
+#### Type Directory Structure
+```
+src/types/
+  /frontend/       - UI-optimized types (ProductFE, UserFE, etc.)
+  /backend/        - API response types (ProductBE, UserBE, etc.)
+  /shared/         - Common types (enums, utilities, base interfaces)
+  /transforms/     - Conversion functions (toFE*, toBE*)
+```
+
+#### Usage Pattern
+```typescript
+// Backend type matches API response
+interface ProductBE {
+  id: string;
+  name: string;
+  price: number;
+  createdAt: Timestamp; // Firestore Timestamp
+}
+
+// Frontend type optimized for UI
+interface ProductFE {
+  id: string;
+  name: string;
+  price: number;
+  createdAt: Date;
+  formattedPrice: string; // "₹1,999"
+  discount?: number;
+  discountPercentage?: string; // "20%"
+  badges: string[]; // ["New", "Sale"]
+}
+
+// Transform in service layer
+async getProduct(id: string): Promise<ProductFE> {
+  const productBE = await apiService.get<ProductBE>(`/api/products/${id}`);
+  return toFEProduct(productBE); // BE → FE transformation
+}
+
+// Component uses FE type
+const ProductCard: React.FC<{ product: ProductFE }> = ({ product }) => (
+  <div>
+    <h3>{product.name}</h3>
+    <p>{product.formattedPrice}</p>
+    {product.badges.map(badge => <span key={badge}>{badge}</span>)}
+  </div>
+);
+```
+
+#### Documentation
+- **[TYPE-MIGRATION-GUIDE.md](../../TYPE-MIGRATION-GUIDE.md)** - Examples and best practices
+- **[TYPE-REFACTOR-PLAN.md](../../TYPE-REFACTOR-PLAN.md)** - Implementation roadmap
+- **[TYPE-SYSTEM-STATUS.md](../../TYPE-SYSTEM-STATUS.md)** - Current completion status
+
+### 2. Service Layer Pattern (CRITICAL)
 
 **NEVER call APIs directly from components, pages, or hooks. ALWAYS use the service layer.**
 

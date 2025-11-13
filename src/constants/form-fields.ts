@@ -1,6 +1,6 @@
 /**
  * Form Field Configurations for all entities
- * 
+ *
  * This file defines field configurations used across the application for:
  * - Inline editing tables
  * - Form wizards
@@ -8,33 +8,33 @@
  * - Validation rules
  */
 
-export type FieldType = 
-  | "text" 
-  | "textarea" 
-  | "number" 
-  | "email" 
-  | "url" 
-  | "tel" 
-  | "date" 
-  | "datetime-local" 
-  | "select" 
-  | "multiselect" 
-  | "checkbox" 
-  | "radio" 
-  | "file" 
-  | "image" 
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "email"
+  | "url"
+  | "tel"
+  | "date"
+  | "datetime-local"
+  | "select"
+  | "multiselect"
+  | "checkbox"
+  | "radio"
+  | "file"
+  | "image"
   | "richtext";
 
-export type ValidatorType = 
-  | "required" 
-  | "email" 
-  | "url" 
-  | "phone" 
-  | "min" 
-  | "max" 
-  | "minLength" 
-  | "maxLength" 
-  | "pattern" 
+export type ValidatorType =
+  | "required"
+  | "email"
+  | "url"
+  | "phone"
+  | "min"
+  | "max"
+  | "minLength"
+  | "maxLength"
+  | "pattern"
   | "custom";
 
 export interface FieldValidator {
@@ -157,7 +157,7 @@ export const PRODUCT_FIELDS: FormField[] = [
     group: "inventory",
   },
   {
-    key: "category",
+    key: "categoryId",
     label: "Category",
     type: "select",
     required: true,
@@ -854,9 +854,7 @@ export const HERO_SLIDE_FIELDS: FormField[] = [
     placeholder: "https://...",
     showInTable: false,
     showInQuickCreate: true,
-    validators: [
-      { type: "url", message: "Must be a valid URL" },
-    ],
+    validators: [{ type: "url", message: "Must be a valid URL" }],
     group: "content",
   },
   {
@@ -909,7 +907,9 @@ export function getFieldsForContext(
   fields: FormField[],
   context: "table" | "quickCreate" | "wizard"
 ): FormField[] {
-  const key = `showIn${context.charAt(0).toUpperCase() + context.slice(1)}` as keyof FormField;
+  const key = `showIn${
+    context.charAt(0).toUpperCase() + context.slice(1)
+  }` as keyof FormField;
   return fields.filter((field) => field[key] === true);
 }
 
@@ -920,13 +920,17 @@ export function getFieldsForWizardStep(
   fields: FormField[],
   step: number
 ): FormField[] {
-  return fields.filter((field) => field.wizardStep === step && field.showInWizard);
+  return fields.filter(
+    (field) => field.wizardStep === step && field.showInWizard
+  );
 }
 
 /**
  * Get fields grouped by group name
  */
-export function getFieldsByGroup(fields: FormField[]): Record<string, FormField[]> {
+export function getFieldsByGroup(
+  fields: FormField[]
+): Record<string, FormField[]> {
   return fields.reduce((groups, field) => {
     const group = field.group || "default";
     if (!groups[group]) {

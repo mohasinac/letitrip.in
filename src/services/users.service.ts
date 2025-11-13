@@ -1,49 +1,34 @@
 import { apiService } from "./api.service";
-import type { User, UserRole, PaginatedResponse } from "@/types";
-
-interface UserFilters {
-  role?: UserRole;
-  emailVerified?: boolean;
-  phoneVerified?: boolean;
-  search?: string;
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  limit?: number;
-}
-
-interface UpdateUserData {
-  name?: string;
-  phone?: string;
-  avatar?: string;
-}
-
-interface ChangePasswordData {
-  currentPassword: string;
-  newPassword: string;
-}
-
-interface VerifyEmailData {
-  otp: string;
-}
-
-interface VerifyMobileData {
-  otp: string;
-}
-
-interface BanUserData {
-  isBanned: boolean;
-  banReason?: string;
-}
-
-interface ChangeRoleData {
-  role: UserRole;
-  notes?: string;
-}
+import {
+  UserBE,
+  UserFiltersBE,
+  UpdateUserRequestBE,
+  BanUserRequestBE,
+  ChangeRoleRequestBE,
+} from "@/types/backend/user.types";
+import {
+  UserFE,
+  UserProfileFormFE,
+  ChangePasswordFormFE,
+  OTPVerificationFormFE,
+} from "@/types/frontend/user.types";
+import {
+  toFEUser,
+  toFEUsers,
+  toBEUpdateUserRequest,
+  toBEBanUserRequest,
+  toBEChangeRoleRequest,
+} from "@/types/transforms/user.transforms";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 class UsersService {
   // List users (admin only)
-  async list(filters?: UserFilters): Promise<PaginatedResponse<User>> {
+  async list(
+    filters?: Partial<UserFiltersBE>
+  ): Promise<PaginatedResponseFE<UserFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -57,60 +42,89 @@ class UsersService {
     const queryString = params.toString();
     const endpoint = queryString ? `/users?${queryString}` : "/users";
 
-    return apiService.get<PaginatedResponse<User>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<UserBE>>(
+      endpoint
+    );
+
+    return {
+      data: toFEUsers(response.data),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get user by ID (self/admin)
-  async getById(id: string): Promise<User> {
-    return apiService.get<User>(`/users/${id}`);
+  async getById(id: string): Promise<UserFE> {
+    const userBE = await apiService.get<UserBE>(`/users/${id}`);
+    return toFEUser(userBE);
   }
 
   // Update user (self/admin)
-  async update(id: string, data: UpdateUserData): Promise<User> {
-    return apiService.patch<User>(`/users/${id}`, data);
+  async update(id: string, formData: UserProfileFormFE): Promise<UserFE> {
+    const request = toBEUpdateUserRequest(formData);
+    const userBE = await apiService.patch<UserBE>(`/users/${id}`, request);
+    return toFEUser(userBE);
   }
 
   // Ban user (admin only)
-  async ban(id: string, data: BanUserData): Promise<User> {
-    return apiService.patch<User>(`/users/${id}/ban`, data);
+  async ban(
+    id: string,
+    isBanned: boolean,
+    banReason?: string
+  ): Promise<UserFE> {
+    const request = toBEBanUserRequest(isBanned, banReason);
+    const userBE = await apiService.patch<UserBE>(`/users/${id}/ban`, request);
+    return toFEUser(userBE);
   }
 
   // Change user role (admin only)
-  async changeRole(id: string, data: ChangeRoleData): Promise<User> {
-    return apiService.patch<User>(`/users/${id}/role`, data);
+  async changeRole(id: string, role: string, notes?: string): Promise<UserFE> {
+    const request = toBEChangeRoleRequest(role, notes);
+    const userBE = await apiService.patch<UserBE>(`/users/${id}/role`, request);
+    return toFEUser(userBE);
   }
 
   // Get current user profile
-  async getMe(): Promise<User> {
-    const response = await apiService.get<{ user: User }>("/user/profile");
-    return response.user;
+  async getMe(): Promise<UserFE> {
+    const response = await apiService.get<{ user: UserBE }>("/user/profile");
+    return toFEUser(response.user);
   }
 
   // Update current user profile
-  async updateMe(data: UpdateUserData): Promise<User> {
-    const response = await apiService.patch<{ user: User; message: string }>(
+  async updateMe(formData: UserProfileFormFE): Promise<UserFE> {
+    const request = toBEUpdateUserRequest(formData);
+    const response = await apiService.patch<{ user: UserBE; message: string }>(
       "/user/profile",
-      data
+      request
     );
-    return response.user;
+    return toFEUser(response.user);
   }
 
-  // Change password - Note: This endpoint needs to be created
-  async changePassword(data: ChangePasswordData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>("/user/password", data);
+  // Change password
+  async changePassword(
+    formData: ChangePasswordFormFE
+  ): Promise<{ message: string }> {
+    return apiService.post<{ message: string }>("/user/password", {
+      currentPassword: formData.currentPassword,
+      newPassword: formData.newPassword,
+    });
   }
 
-  // Send email verification OTP - Note: This endpoint needs to be created
+  // Send email verification OTP
   async sendEmailVerification(): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-email", {});
   }
 
   // Verify email with OTP
-  async verifyEmail(data: VerifyEmailData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>(
-      "/user/verify-email/confirm",
-      data
-    );
+  async verifyEmail(
+    formData: OTPVerificationFormFE
+  ): Promise<{ message: string }> {
+    return apiService.post<{ message: string }>("/user/verify-email/confirm", {
+      otp: formData.otp,
+    });
   }
 
   // Send mobile verification OTP
@@ -119,11 +133,12 @@ class UsersService {
   }
 
   // Verify mobile with OTP
-  async verifyMobile(data: VerifyMobileData): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>(
-      "/user/verify-mobile/confirm",
-      data
-    );
+  async verifyMobile(
+    formData: OTPVerificationFormFE
+  ): Promise<{ message: string }> {
+    return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
+      otp: formData.otp,
+    });
   }
 
   // Upload avatar
@@ -157,18 +172,19 @@ class UsersService {
   }
 
   // Get user statistics (admin only)
-  async getStats(): Promise<any> {
-    return apiService.get<any>("/users/stats");
+  async getStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    newUsersThisMonth: number;
+    usersByRole: Record<string, number>;
+  }> {
+    return apiService.get<{
+      totalUsers: number;
+      activeUsers: number;
+      newUsersThisMonth: number;
+      usersByRole: Record<string, number>;
+    }>("/users/stats");
   }
 }
 
 export const usersService = new UsersService();
-export type {
-  UserFilters,
-  UpdateUserData,
-  ChangePasswordData,
-  VerifyEmailData,
-  VerifyMobileData,
-  BanUserData,
-  ChangeRoleData,
-};

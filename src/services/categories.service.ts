@@ -1,38 +1,29 @@
 import { apiService } from "./api.service";
-import type { Category } from "@/types";
-import type { Product, PaginatedResponse } from "@/types";
-
-interface CategoryFilters {
-  parentId?: string | null;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
-  isActive?: boolean;
-  search?: string;
-}
-
-interface CreateCategoryData {
-  name: string;
-  slug: string;
-  description?: string;
-  parentIds?: string[]; // Multiple parents support
-  parentId?: string | null; // Backward compatibility
-  icon?: string;
-  image?: string;
-  color?: string;
-  sortOrder: number;
-  isFeatured: boolean;
-  showOnHomepage: boolean;
-  isActive: boolean;
-  metaTitle?: string;
-  metaDescription?: string;
-  commissionRate: number;
-}
-
-interface UpdateCategoryData extends Partial<CreateCategoryData> {}
-
-interface CategoryTree extends Category {
-  children?: CategoryTree[];
-}
+import {
+  CategoryBE,
+  CategoryFiltersBE,
+  CreateCategoryRequestBE,
+  UpdateCategoryRequestBE,
+} from "@/types/backend/category.types";
+import {
+  CategoryFE,
+  CategoryTreeNodeFE,
+  CategoryFormFE,
+  CategoryCardFE,
+} from "@/types/frontend/category.types";
+import {
+  toFECategory,
+  toFECategories,
+  toFECategoryTreeNode,
+  toBECreateCategoryRequest,
+} from "@/types/transforms/category.transforms";
+import type { ProductBE } from "@/types/backend/product.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { toFEProductCard } from "@/types/transforms/product.transforms";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 class CategoriesService {
   // List categories

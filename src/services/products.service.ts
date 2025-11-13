@@ -1,194 +1,235 @@
 import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
-import type {
-  Product,
-  ProductCondition,
-  ProductStatus,
-  ProductSpecification,
-  ProductVariant,
-  ProductDimensions,
-  PaginatedResponse,
-} from "@/types";
+import {
+  ProductBE,
+  ProductListItemBE,
+  CreateProductRequestBE,
+  UpdateProductRequestBE,
+  ProductFiltersBE,
+} from "@/types/backend/product.types";
+import {
+  ProductFE,
+  ProductCardFE,
+  ProductFormFE,
+  ProductFiltersFE,
+} from "@/types/frontend/product.types";
+import {
+  toFEProduct,
+  toFEProductCard,
+  toFEProducts,
+  toFEProductCards,
+  toBEProductCreate,
+  toBEProductUpdate,
+} from "@/types/transforms/product.transforms";
+import type { PaginatedResponse } from "@/types/shared/pagination.types";
 
-interface ProductFilters {
-  shopId?: string;
-  categoryId?: string;
-  search?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  condition?: ProductCondition;
-  brand?: string;
-  manufacturer?: string;
-  status?: ProductStatus;
-  inStock?: boolean;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
-  minRating?: number;
-  tags?: string[];
-  page?: number;
-  limit?: number;
-  sortBy?: "price" | "rating" | "sales" | "views" | "createdAt";
-  sortOrder?: "asc" | "desc";
-}
-
-interface CreateProductData {
-  shopId: string;
-  categoryId: string;
-  name: string;
-  slug: string;
-  description: string;
-  shortDescription?: string;
-  price: number;
-  originalPrice?: number;
-  costPrice?: number;
-  stockCount: number;
-  lowStockThreshold: number;
-  sku?: string;
-  condition: ProductCondition;
-  brand?: string;
-  manufacturer?: string;
-  countryOfOrigin: string;
-  specifications?: ProductSpecification[];
-  variants?: ProductVariant[];
-  dimensions?: ProductDimensions;
-  shippingClass?: "standard" | "express" | "heavy" | "fragile";
-  tags?: string[];
-  isReturnable: boolean;
-  returnWindowDays: number;
-  warranty?: string;
-  metaTitle?: string;
-  metaDescription?: string;
-  publishDate?: Date;
-  status: ProductStatus;
-}
-
-interface UpdateProductData extends Partial<CreateProductData> {
-  images?: string[];
-  videos?: string[];
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
-}
-
+/**
+ * Products Service - Reference Implementation
+ *
+ * This service uses the new type system with automatic FE/BE transformation.
+ * All methods return FE types for components, and accept FE types for forms.
+ */
 class ProductsService {
-  // List products (role-filtered)
-  async list(filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
-    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, filters);
-    return apiService.get<PaginatedResponse<Product>>(endpoint);
+  /**
+   * List products with filters (returns UI-optimized types)
+   */
+  async list(
+    filters?: ProductFiltersFE
+  ): Promise<{ products: ProductCardFE[]; pagination: any }> {
+    // Convert FE filters to BE filters - simplified mapping
+    const beFilters: Partial<ProductFiltersBE> = {
+      shopId: filters?.shopId,
+      categoryId: filters?.categoryId,
+      search: filters?.search,
+      priceMin: filters?.priceRange?.min,
+      priceMax: filters?.priceRange?.max,
+      status: filters?.status?.[0],
+      inStock: filters?.inStock,
+      isFeatured: filters?.isFeatured,
+      page: 1,
+      limit: 20,
+    };
+
+    const endpoint = buildUrl(PRODUCT_ROUTES.LIST, beFilters);
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
+
+    // Transform BE list items to FE cards
+    return {
+      products: toFEProductCards(response.data || []),
+      pagination: response.pagination,
+    };
   }
 
-  // Get product by ID
-  async getById(id: string): Promise<Product> {
-    return apiService.get<Product>(PRODUCT_ROUTES.BY_ID(id));
+  /**
+   * Get product by ID (returns full UI-optimized product)
+   */
+  async getById(id: string): Promise<ProductFE> {
+    const productBE = await apiService.get<ProductBE>(PRODUCT_ROUTES.BY_ID(id));
+    return toFEProduct(productBE);
   }
 
-  // Get product by slug
-  async getBySlug(slug: string): Promise<Product> {
-    const res = await apiService.get<any>(PRODUCT_ROUTES.BY_SLUG(slug));
-    return res.data ?? res; // tolerate both shapes
+  /**
+   * Get product by slug (returns full UI-optimized product)
+   */
+  async getBySlug(slug: string): Promise<ProductFE> {
+    const productBE = await apiService.get<ProductBE>(
+      PRODUCT_ROUTES.BY_SLUG(slug)
+    );
+    return toFEProduct(productBE);
   }
 
-  // Create product (seller/admin)
-  async create(data: CreateProductData): Promise<Product> {
-    const res = await apiService.post<any>(PRODUCT_ROUTES.LIST, data);
-    return res.data ?? res;
+  /**
+   * Create product (accepts form data, returns created product)
+   */
+  async create(formData: ProductFormFE): Promise<ProductFE> {
+    const createRequest = toBEProductCreate(formData);
+    const productBE = await apiService.post<ProductBE>(
+      PRODUCT_ROUTES.LIST,
+      createRequest
+    );
+    return toFEProduct(productBE);
   }
 
-  // Update product (owner/admin)
-  async update(slug: string, data: UpdateProductData): Promise<Product> {
-    const res = await apiService.patch<any>(PRODUCT_ROUTES.BY_SLUG(slug), data);
-    return res.data ?? res;
+  /**
+   * Update product (accepts partial form data)
+   */
+  async update(
+    slug: string,
+    formData: Partial<ProductFormFE>
+  ): Promise<ProductFE> {
+    const updateRequest = toBEProductUpdate(formData);
+    const productBE = await apiService.patch<ProductBE>(
+      PRODUCT_ROUTES.BY_SLUG(slug),
+      updateRequest
+    );
+    return toFEProduct(productBE);
   }
 
-  // Delete product (owner/admin)
+  /**
+   * Delete product
+   */
   async delete(slug: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(PRODUCT_ROUTES.BY_SLUG(slug));
   }
 
-  // Get product reviews
+  /**
+   * Get product reviews
+   */
   async getReviews(slug: string, page?: number, limit?: number): Promise<any> {
     const endpoint = buildUrl(PRODUCT_ROUTES.REVIEWS(slug), { page, limit });
     return apiService.get<any>(endpoint);
   }
 
-  // Get product variants (same leaf category)
-  async getVariants(slug: string): Promise<Product[]> {
-    const res = await apiService.get<any>(
+  /**
+   * Get product variants (returns FE types)
+   */
+  async getVariants(slug: string): Promise<ProductCardFE[]> {
+    const response = await apiService.get<ProductListItemBE[]>(
       `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
     );
-    return res.data || [];
+    return toFEProductCards(response);
   }
 
-  // Get similar products
-  async getSimilar(slug: string, limit?: number): Promise<Product[]> {
+  /**
+   * Get similar products (returns FE types)
+   */
+  async getSimilar(slug: string, limit?: number): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/similar`, {
       limit,
     });
-    const res = await apiService.get<any>(endpoint);
-    return res.data || [];
+    const response = await apiService.get<ProductListItemBE[]>(endpoint);
+    return toFEProductCards(response);
   }
 
-  // Get seller's other products
-  async getSellerProducts(slug: string, limit?: number): Promise<Product[]> {
+  /**
+   * Get seller's other products (returns FE types)
+   */
+  async getSellerProducts(
+    slug: string,
+    limit?: number
+  ): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
       limit,
     });
-    const res = await apiService.get<any>(endpoint);
-    return res.data || [];
+    const response = await apiService.get<ProductListItemBE[]>(endpoint);
+    return toFEProductCards(response);
   }
 
-  // Update product stock
-  async updateStock(slug: string, stockCount: number): Promise<Product> {
-    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), {
-      stockCount,
-    });
+  /**
+   * Update product stock
+   */
+  async updateStock(slug: string, stockCount: number): Promise<ProductFE> {
+    const productBE = await apiService.patch<ProductBE>(
+      PRODUCT_ROUTES.BY_SLUG(slug),
+      { stockCount }
+    );
+    return toFEProduct(productBE);
   }
 
-  // Update product status
-  async updateStatus(slug: string, status: ProductStatus): Promise<Product> {
-    return apiService.patch<Product>(PRODUCT_ROUTES.BY_SLUG(slug), { status });
+  /**
+   * Update product status
+   */
+  async updateStatus(slug: string, status: string): Promise<ProductFE> {
+    const productBE = await apiService.patch<ProductBE>(
+      PRODUCT_ROUTES.BY_SLUG(slug),
+      { status }
+    );
+    return toFEProduct(productBE);
   }
 
-  // Increment view count
+  /**
+   * Increment view count
+   */
   async incrementView(slug: string): Promise<void> {
     await apiService.post(`${PRODUCT_ROUTES.BY_SLUG(slug)}/view`, {});
   }
 
-  // Get featured products
-  async getFeatured(): Promise<Product[]> {
+  /**
+   * Get featured products (returns FE cards)
+   */
+  async getFeatured(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
       isFeatured: true,
       status: "published",
       limit: 100,
     });
-    const res = await apiService.get<any>(endpoint);
-    return res.data || res.products || res;
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
+    return toFEProductCards(response.data || []);
   }
 
-  // Get homepage products
-  async getHomepage(): Promise<Product[]> {
+  /**
+   * Get homepage products (returns FE cards)
+   */
+  async getHomepage(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
       isFeatured: true,
       status: "published",
       limit: 20,
     });
-    const res = await apiService.get<any>(endpoint);
-    return res.data || res.products || res;
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
+    return toFEProductCards(response.data || []);
   }
 
-  // Bulk actions for seller dashboard
+  /**
+   * Bulk actions for seller dashboard
+   */
   async bulkAction(
     action: string,
     ids: string[],
     input?: any
   ): Promise<{ success: boolean }> {
-    return apiService.post("/api/seller/products/bulk", {
-      action,
-      ids,
-      input,
-    });
+    return apiService.post("/api/seller/products/bulk", { action, ids, input });
   }
 
-  // Quick create for inline editing (minimal fields)
+  /**
+   * Quick create for inline editing
+   */
   async quickCreate(data: {
     name: string;
     price: number;
@@ -196,19 +237,25 @@ class ProductsService {
     categoryId: string;
     status?: string;
     images?: string[];
-  }): Promise<Product> {
-    return apiService.post("/api/seller/products", {
+  }): Promise<ProductFE> {
+    const productBE = await apiService.post<ProductBE>("/api/seller/products", {
       ...data,
-      description: "", // Required field with default
+      description: "",
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
     });
+    return toFEProduct(productBE);
   }
 
-  // Quick update for inline editing (any fields)
-  async quickUpdate(slug: string, data: any): Promise<Product> {
-    return apiService.patch(`/api/products/${slug}`, data);
+  /**
+   * Quick update for inline editing
+   */
+  async quickUpdate(slug: string, data: any): Promise<ProductFE> {
+    const productBE = await apiService.patch<ProductBE>(
+      `/api/products/${slug}`,
+      data
+    );
+    return toFEProduct(productBE);
   }
 }
 
 export const productsService = new ProductsService();
-export type { ProductFilters, CreateProductData, UpdateProductData };

@@ -98,11 +98,11 @@ export default function ProductsPage() {
     getFieldsForContext(PRODUCT_FIELDS, "table")
   );
   const fields: InlineField[] = baseFields.map((field) => {
-    // Add dynamic category options
-    if (field.key === "category") {
+    // Change categoryId field to use category-create type
+    if (field.key === "categoryId") {
       return {
         ...field,
-        options: categories.map((cat) => ({ value: cat.id, label: cat.name })),
+        type: "category-create" as any, // Use custom category selector with create
       };
     }
     return field;

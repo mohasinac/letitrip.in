@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Check, X, Loader2 } from "lucide-react";
 import { InlineEditRowProps, InlineField } from "@/types/inline-edit";
 import { InlineImageUpload } from "./InlineImageUpload";
+import InlineCategorySelectorWithCreate from "@/components/seller/InlineCategorySelectorWithCreate";
 
 export function InlineEditRow({
   fields,
@@ -262,6 +263,23 @@ export function InlineEditRow({
               accept={field.accept}
               disabled={field.disabled || loading}
               context={field.placeholder || "product"}
+            />
+            {showError && (
+              <span className="text-xs text-red-600" role="alert">
+                {error}
+              </span>
+            )}
+          </div>
+        );
+
+      case "category-create":
+        return (
+          <div className="flex flex-col gap-1 min-w-[200px]">
+            <InlineCategorySelectorWithCreate
+              value={value || ""}
+              onChange={(categoryId) => handleChange(field.key, categoryId)}
+              disabled={field.disabled || loading}
+              error={showError ? error : undefined}
             />
             {showError && (
               <span className="text-xs text-red-600" role="alert">
