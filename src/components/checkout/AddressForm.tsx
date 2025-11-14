@@ -6,17 +6,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X, Loader2 } from "lucide-react";
 import { addressService } from "@/services/address.service";
-import { Address } from "@/types";
+import type { AddressFE } from "@/types/frontend/address.types";
 
 const AddressSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().min(10, "Phone must be at least 10 digits"),
-  line1: z.string().min(5, "Address line 1 is required"),
-  line2: z.string().optional(),
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  phoneNumber: z.string().min(10, "Phone must be at least 10 digits"),
+  addressLine1: z.string().min(5, "Address line 1 is required"),
+  addressLine2: z.string(),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
-  pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
+  postalCode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
   country: z.string().min(2, "Country is required"),
+  addressType: z.enum(["home", "work", "other"]),
   isDefault: z.boolean(),
 });
 
@@ -41,6 +42,8 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
     defaultValues: {
       isDefault: false,
       country: "India",
+      addressType: "home",
+      addressLine2: "",
     },
   });
 
@@ -57,14 +60,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
       setFetchLoading(true);
       const address = await addressService.getById(addressId);
 
-      setValue("name", address.name);
-      setValue("phone", address.phone);
-      setValue("line1", address.line1);
-      setValue("line2", address.line2 || "");
+      setValue("fullName", address.fullName);
+      setValue("phoneNumber", address.phoneNumber);
+      setValue("addressLine1", address.addressLine1);
+      setValue("addressLine2", address.addressLine2 || "");
       setValue("city", address.city);
       setValue("state", address.state);
-      setValue("pincode", address.pincode);
+      setValue("postalCode", address.postalCode);
       setValue("country", address.country);
+      setValue("addressType", address.addressType);
       setValue("isDefault", address.isDefault);
     } catch (error) {
       console.error("Failed to load address:", error);
@@ -119,14 +123,14 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
                   Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
-                  {...register("name")}
+                  {...register("fullName")}
                   type="text"
                   className="input"
                   placeholder="John Doe"
                 />
-                {errors.name && (
+                {errors.fullName && (
                   <p className="text-sm text-red-600 mt-1">
-                    {errors.name.message}
+                    {errors.fullName.message}
                   </p>
                 )}
               </div>
@@ -136,14 +140,14 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
-                  {...register("phone")}
+                  {...register("phoneNumber")}
                   type="tel"
                   className="input"
                   placeholder="9876543210"
                 />
-                {errors.phone && (
+                {errors.phoneNumber && (
                   <p className="text-sm text-red-600 mt-1">
-                    {errors.phone.message}
+                    {errors.phoneNumber.message}
                   </p>
                 )}
               </div>
@@ -154,14 +158,14 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
                 Address Line 1 <span className="text-red-500">*</span>
               </label>
               <input
-                {...register("line1")}
+                {...register("addressLine1")}
                 type="text"
                 className="input"
                 placeholder="Flat, House no., Building, Company, Apartment"
               />
-              {errors.line1 && (
+              {errors.addressLine1 && (
                 <p className="text-sm text-red-600 mt-1">
-                  {errors.line1.message}
+                  {errors.addressLine1.message}
                 </p>
               )}
             </div>
@@ -171,7 +175,7 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
                 Address Line 2 (Optional)
               </label>
               <input
-                {...register("line2")}
+                {...register("addressLine2")}
                 type="text"
                 className="input"
                 placeholder="Area, Street, Sector, Village"
@@ -218,15 +222,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
                   Pincode <span className="text-red-500">*</span>
                 </label>
                 <input
-                  {...register("pincode")}
+                  {...register("postalCode")}
                   type="text"
                   className="input"
                   placeholder="400001"
                   maxLength={6}
                 />
-                {errors.pincode && (
+                {errors.postalCode && (
                   <p className="text-sm text-red-600 mt-1">
-                    {errors.pincode.message}
+                    {errors.postalCode.message}
                   </p>
                 )}
               </div>

@@ -11,7 +11,8 @@ import { ProductReviews } from "@/components/product/ProductReviews";
 import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
-import type { Product, Shop } from "@/types";
+import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 interface ProductPageProps {
   params: Promise<{
@@ -23,11 +24,11 @@ export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter();
   const { slug } = use(params);
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [variants, setVariants] = useState<Product[]>([]);
-  const [shopProducts, setShopProducts] = useState<Product[]>([]);
-  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<ProductFE | null>(null);
+  const [shop, setShop] = useState<ShopFE | null>(null);
+  const [variants, setVariants] = useState<ProductCardFE[]>([]);
+  const [shopProducts, setShopProducts] = useState<ProductCardFE[]>([]);
+  const [similarProducts, setSimilarProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [variantsLoading, setVariantsLoading] = useState(false);
   const [shopProductsLoading, setShopProductsLoading] = useState(false);
@@ -102,8 +103,11 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   // Prepare media for gallery
   const media = [
-    ...product.images.map((url) => ({ url, type: "image" as const })),
-    ...(product.videos || []).map((url) => ({ url, type: "video" as const })),
+    ...product.images.map((url: string) => ({ url, type: "image" as const })),
+    ...(product.videos || []).map((url: string) => ({
+      url,
+      type: "video" as const,
+    })),
   ];
 
   return (
@@ -139,7 +143,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     name: product.name,
                     slug: product.slug,
                     actualPrice: product.costPrice,
-                    originalPrice: product.originalPrice,
+                    originalPrice: product.originalPrice || undefined,
                     salePrice: product.price,
                     stock: product.stockCount,
                     rating: product.rating,
@@ -158,10 +162,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* Description & Specs */}
             <ProductDescription
               description={product.description}
-              specifications={product.specifications?.reduce((acc, spec) => {
-                acc[spec.name] = spec.value;
-                return acc;
-              }, {} as Record<string, string>)}
+              specifications={product.specifications}
             />
 
             {/* Variants Section */}

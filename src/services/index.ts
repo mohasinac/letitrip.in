@@ -35,9 +35,6 @@ export type {
 // Shops service
 export { shopsService } from "./shops.service";
 export type {
-  ShopFilters,
-  CreateShopData,
-  UpdateShopData,
   ShopVerificationData,
   ShopFeatureData,
   ShopBanData,
@@ -46,21 +43,9 @@ export type {
 
 // Products service
 export { productsService } from "./products.service";
-export type {
-  ProductFilters,
-  CreateProductData,
-  UpdateProductData,
-} from "./products.service";
 
 // Orders service
 export { ordersService } from "./orders.service";
-export type {
-  OrderFilters,
-  CreateOrderData,
-  UpdateOrderStatusData,
-  CreateShipmentData,
-  CancelOrderData,
-} from "./orders.service";
 
 // Coupons service
 export { couponsService } from "./coupons.service";
@@ -74,21 +59,9 @@ export type {
 
 // Categories service
 export { categoriesService } from "./categories.service";
-export type {
-  CategoryFilters,
-  CreateCategoryData,
-  UpdateCategoryData,
-  CategoryTree,
-} from "./categories.service";
 
 // Auctions service
 export { auctionsService } from "./auctions.service";
-export type {
-  AuctionFilters,
-  CreateAuctionData,
-  UpdateAuctionData,
-  PlaceBidData,
-} from "./auctions.service";
 
 // Returns service
 export { returnsService } from "./returns.service";
@@ -103,24 +76,10 @@ export type {
 
 // Reviews service
 export { reviewsService } from "./reviews.service";
-export type {
-  ReviewFilters,
-  CreateReviewData,
-  UpdateReviewData,
-  ModerateReviewData,
-} from "./reviews.service";
+export type { ModerateReviewData } from "./reviews.service";
 
 // Users service
 export { usersService } from "./users.service";
-export type {
-  UserFilters,
-  UpdateUserData,
-  ChangePasswordData,
-  VerifyEmailData,
-  VerifyMobileData,
-  BanUserData,
-  ChangeRoleData,
-} from "./users.service";
 
 // Analytics service
 export { analyticsService } from "./analytics.service";
@@ -143,13 +102,6 @@ export type {
 
 // Cart service
 export { cartService } from "./cart.service";
-export type {
-  AddToCartData,
-  UpdateCartItemData,
-  MergeGuestCartData,
-  ApplyCouponData,
-  CartSummary,
-} from "./cart.service";
 
 // Favorites service
 export { favoritesService } from "./favorites.service";

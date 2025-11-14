@@ -22,14 +22,17 @@ import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import MediaUploader from "@/components/media/MediaUploader";
 import SlugInput from "@/components/common/SlugInput";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type {
-  Product,
+import type { ProductFE, ProductFormFE } from "@/types/frontend/product.types";
+import type { CategoryFE } from "@/types/frontend/category.types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import {
   ProductStatus,
   ProductCondition,
-  ProductSpecification,
-  Category,
-  Shop,
-} from "@/types";
+  ShippingClass,
+} from "@/types/shared/common.types";
+
+// Helper type for specifications array in form
+type ProductSpecification = { name: string; value: string };
 
 export default function AdminEditProductPage() {
   const router = useRouter();
@@ -41,9 +44,9 @@ export default function AdminEditProductPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [product, setProduct] = useState<Product | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [product, setProduct] = useState<ProductFE | null>(null);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -72,7 +75,7 @@ export default function AdminEditProductPage() {
     status: "draft" as ProductStatus,
     isFeatured: false,
     showOnHomepage: false,
-    shippingClass: "standard" as "standard" | "express" | "heavy" | "fragile",
+    shippingClass: ShippingClass.STANDARD,
   });
 
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
@@ -146,10 +149,18 @@ export default function AdminEditProductPage() {
         status: productData.status,
         isFeatured: productData.isFeatured || false,
         showOnHomepage: productData.showOnHomepage || false,
-        shippingClass: productData.shippingClass || "standard",
+        shippingClass: (productData.shippingClass ||
+          "standard") as ShippingClass,
       });
 
-      setSpecifications(productData.specifications || []);
+      // Convert specifications from Record to array
+      const specsArray = productData.specifications
+        ? Object.entries(productData.specifications).map(([name, value]) => ({
+            name,
+            value,
+          }))
+        : [];
+      setSpecifications(specsArray);
     } catch (error) {
       console.error("Failed to load product:", error);
       setError(
@@ -208,9 +219,15 @@ export default function AdminEditProductPage() {
     try {
       setSaving(true);
 
+      // Convert specifications array to Record for API
+      const specsRecord = specifications.reduce((acc, spec) => {
+        acc[spec.name] = spec.value;
+        return acc;
+      }, {} as Record<string, string>);
+
       const updateData = {
         ...formData,
-        specifications,
+        specifications: specsRecord,
         images: product?.images || [],
         videos: product?.videos || [],
       };
@@ -975,7 +992,7 @@ export default function AdminEditProductPage() {
               <div className="flex justify-between">
                 <span className="text-gray-600">Rating:</span>
                 <span className="font-medium">
-                  ⭐ {product.rating.toFixed(1)}
+                  ⭐ {(product.rating || product.averageRating || 0).toFixed(1)}
                 </span>
               </div>
               <div className="flex justify-between">

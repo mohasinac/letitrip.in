@@ -4,7 +4,7 @@
 
 import { Timestamp } from "firebase/firestore";
 import { ShopBE, CreateShopRequestBE } from "../backend/shop.types";
-import { ShopFE, ShopFormFE } from "../frontend/shop.types";
+import { ShopFE, ShopFormFE, ShopCardFE } from "../frontend/shop.types";
 import { Status } from "../shared/common.types";
 
 function parseDate(date: Timestamp | string): Date {
@@ -40,6 +40,12 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
     isActive: shopBE.status === Status.PUBLISHED,
     hasProducts: shopBE.totalProducts > 0,
     badges,
+    productCount: shopBE.totalProducts, // Backwards compatibility
+    follower_count: 0, // Not in backend yet, placeholder
+    isFeatured: shopBE.metadata?.isFeatured || false,
+    showOnHomepage: shopBE.metadata?.showOnHomepage || false,
+    isBanned: shopBE.status === Status.ARCHIVED, // Using ARCHIVED for banned shops
+    banReason: shopBE.metadata?.banReason || null,
   };
 }
 
@@ -61,6 +67,33 @@ export function toBECreateShopRequest(
   };
 }
 
+export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
+  const badges: string[] = [];
+  if (shopBE.isVerified) badges.push("Verified");
+  if (shopBE.rating >= 4.5) badges.push("Top Rated");
+  if (shopBE.totalProducts >= 100) badges.push("Large Catalog");
+
+  return {
+    id: shopBE.id,
+    name: shopBE.name,
+    slug: shopBE.slug,
+    logo: shopBE.logo,
+    rating: shopBE.rating,
+    ratingDisplay:
+      shopBE.reviewCount > 0
+        ? `${shopBE.rating.toFixed(1)} (${shopBE.reviewCount})`
+        : "No reviews",
+    totalProducts: shopBE.totalProducts,
+    isVerified: shopBE.isVerified,
+    urlPath: `/shops/${shopBE.slug}`,
+    badges,
+  };
+}
+
 export function toFEShops(shopsBE: ShopBE[]): ShopFE[] {
   return shopsBE.map(toFEShop);
+}
+
+export function toFEShopCards(shopsBE: ShopBE[]): ShopCardFE[] {
+  return shopsBE.map(toFEShopCard);
 }

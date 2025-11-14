@@ -46,6 +46,14 @@ export interface ShopFE {
   isActive: boolean;
   hasProducts: boolean;
   badges: string[];
+
+  // Backwards compatibility aliases
+  productCount?: number; // Alias for totalProducts
+  follower_count?: number; // For admin pages
+  isFeatured?: boolean; // Derived from metadata
+  showOnHomepage?: boolean; // Derived from metadata
+  isBanned?: boolean; // status === 'banned'
+  banReason?: string | null; // From metadata
 }
 
 export interface ShopCardFE {

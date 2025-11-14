@@ -84,6 +84,9 @@ export function toFEBid(
       diffMins < 60 ? `${diffMins}m ago` : `${Math.floor(diffMins / 60)}h ago`,
     isHighest: bidBE.id === highestBidId,
     isYourBid: bidBE.userId === currentUserId,
+    // Backwards compatibility
+    bidTime: createdAt,
+    bidAmount: bidBE.amount,
   };
 }
 
@@ -196,6 +199,13 @@ export function toFEAuction(
     createdAt,
     updatedAt,
     metadata: auctionBE.metadata,
+    // Backwards compatibility aliases
+    currentBid: auctionBE.currentPrice,
+    name: auctionBE.productName,
+    images: [auctionBE.productImage],
+    description: auctionBE.productDescription,
+    isFeatured: (auctionBE.metadata as any)?.isFeatured || false,
+    bidCount: auctionBE.totalBids,
   };
 }
 
@@ -225,6 +235,18 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
     isActive: auctionBE.isActive,
     isEndingSoon: timeRemainingSeconds > 0 && timeRemainingSeconds < 3600,
     badges: auctionBE.status === AuctionStatus.ACTIVE ? ["Live"] : [],
+    // Backwards compatibility
+    slug: auctionBE.productSlug,
+    name: auctionBE.productName,
+    images: [auctionBE.productImage],
+    currentBid: auctionBE.currentPrice,
+    bidCount: auctionBE.totalBids,
+    // Admin fields not available in list response, will be undefined
+    startingBid: undefined,
+    reservePrice: undefined,
+    startTime: undefined,
+    shopId: undefined,
+    isFeatured: false,
   };
 }
 

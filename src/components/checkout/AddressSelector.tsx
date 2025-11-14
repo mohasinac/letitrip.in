@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, MapPin, Edit2, Trash2, Check } from "lucide-react";
 import { addressService } from "@/services/address.service";
-import { Address } from "@/types";
+import type { AddressFE } from "@/types/frontend/address.types";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 import { AddressForm } from "./AddressForm";
 
@@ -18,7 +18,7 @@ export function AddressSelector({
   onSelect,
   type,
 }: AddressSelectorProps) {
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [addresses, setAddresses] = useState<AddressFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -32,13 +32,12 @@ export function AddressSelector({
     try {
       setLoading(true);
       const data = await addressService.getAll();
-      const addressList = data.addresses || [];
-      setAddresses(addressList);
+      setAddresses(data);
 
       // Auto-select default or first address
-      if (!selectedId && addressList.length > 0) {
-        const defaultAddress = addressList.find((a: Address) => a.isDefault);
-        onSelect(defaultAddress?.id || addressList[0].id);
+      if (!selectedId && data.length > 0) {
+        const defaultAddress = data.find((a: AddressFE) => a.isDefault);
+        onSelect(defaultAddress?.id || data[0].id);
       }
     } catch (error) {
       console.error("Failed to load addresses:", error);
@@ -124,9 +123,11 @@ export function AddressSelector({
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h4 className="font-semibold text-gray-900">
-                      {address.name}
+                      {address.fullName}
                     </h4>
-                    <p className="text-sm text-gray-600">{address.phone}</p>
+                    <p className="text-sm text-gray-600">
+                      {address.phoneNumber}
+                    </p>
                   </div>
                   {address.isDefault && (
                     <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
@@ -136,10 +137,10 @@ export function AddressSelector({
                 </div>
 
                 <p className="text-sm text-gray-700">
-                  {address.line1}
-                  {address.line2 && `, ${address.line2}`}
+                  {address.addressLine1}
+                  {address.addressLine2 && `, ${address.addressLine2}`}
                   <br />
-                  {address.city}, {address.state} {address.pincode}
+                  {address.city}, {address.state} {address.postalCode}
                   <br />
                   {address.country || "India"}
                 </p>

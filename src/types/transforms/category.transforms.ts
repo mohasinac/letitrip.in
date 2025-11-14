@@ -3,6 +3,7 @@
  */
 
 import { Timestamp } from "firebase/firestore";
+import { Status } from "../shared/common.types";
 import {
   CategoryBE,
   CategoryTreeNodeBE,
@@ -21,6 +22,7 @@ function parseDate(date: Timestamp | string): Date {
 }
 
 export function toFECategory(categoryBE: CategoryBE): CategoryFE {
+  const metadata = categoryBE.metadata as any; // Cast for backwards compat access
   return {
     ...categoryBE,
     createdAt: parseDate(categoryBE.createdAt),
@@ -30,6 +32,13 @@ export function toFECategory(categoryBE: CategoryBE): CategoryFE {
     isRoot: categoryBE.level === 0,
     displayName: categoryBE.name,
     urlPath: `/categories/${categoryBE.slug}`,
+    banner: categoryBE.banner || null,
+    // Backwards compatibility
+    parentId: categoryBE.parentIds[0] || null,
+    isFeatured: metadata?.isFeatured || false,
+    showOnHomepage: metadata?.showOnHomepage || false,
+    isActive: categoryBE.status === Status.PUBLISHED,
+    sortOrder: categoryBE.order,
   };
 }
 

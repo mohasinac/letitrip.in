@@ -1,41 +1,19 @@
 import { apiService } from "./api.service";
-import type { Review, PaginatedResponse } from "@/types";
-
-interface ReviewFilters {
-  productId?: string;
-  shopId?: string;
-  auctionId?: string;
-  categoryId?: string;
-  userId?: string;
-  rating?: number;
-  minRating?: number;
-  verifiedPurchase?: boolean;
-  isApproved?: boolean;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
-  page?: number;
-  limit?: number;
-  sortBy?: "createdAt" | "rating" | "helpfulCount";
-  sortOrder?: "asc" | "desc";
-}
-
-interface CreateReviewData {
-  productId?: string;
-  shopId?: string;
-  auctionId?: string;
-  orderItemId?: string;
-  rating: number;
-  title?: string;
-  comment: string;
-  media?: string[];
-}
-
-interface UpdateReviewData {
-  rating?: number;
-  title?: string;
-  comment?: string;
-  media?: string[];
-}
+import { ReviewBE } from "@/types/backend/review.types";
+import {
+  ReviewFE,
+  ReviewFormFE,
+  ReviewStatsFE,
+} from "@/types/frontend/review.types";
+import {
+  toFEReview,
+  toFEReviews,
+  toBECreateReviewRequest,
+} from "@/types/transforms/review.transforms";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 interface ModerateReviewData {
   isApproved: boolean;
@@ -44,7 +22,9 @@ interface ModerateReviewData {
 
 class ReviewsService {
   // List reviews
-  async list(filters?: ReviewFilters): Promise<PaginatedResponse<Review>> {
+  async list(
+    filters?: Record<string, any>
+  ): Promise<PaginatedResponseFE<ReviewFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -58,22 +38,40 @@ class ReviewsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/reviews?${queryString}` : "/reviews";
 
-    return apiService.get<PaginatedResponse<Review>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<ReviewBE>>(
+      endpoint
+    );
+    return {
+      data: toFEReviews(response.data),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get review by ID
-  async getById(id: string): Promise<Review> {
-    return apiService.get<Review>(`/reviews/${id}`);
+  async getById(id: string): Promise<ReviewFE> {
+    const reviewBE = await apiService.get<ReviewBE>(`/reviews/${id}`);
+    return toFEReview(reviewBE);
   }
 
   // Create review (authenticated users after purchase)
-  async create(data: CreateReviewData): Promise<Review> {
-    return apiService.post<Review>("/reviews", data);
+  async create(formData: ReviewFormFE): Promise<ReviewFE> {
+    const request = toBECreateReviewRequest(formData);
+    const reviewBE = await apiService.post<ReviewBE>("/reviews", request);
+    return toFEReview(reviewBE);
   }
 
   // Update review (author only)
-  async update(id: string, data: UpdateReviewData): Promise<Review> {
-    return apiService.patch<Review>(`/reviews/${id}`, data);
+  async update(id: string, formData: Partial<ReviewFormFE>): Promise<ReviewFE> {
+    const request = toBECreateReviewRequest(formData as ReviewFormFE);
+    const reviewBE = await apiService.patch<ReviewBE>(
+      `/reviews/${id}`,
+      request
+    );
+    return toFEReview(reviewBE);
   }
 
   // Delete review (author/admin)
@@ -82,15 +80,19 @@ class ReviewsService {
   }
 
   // Moderate review (shop owner/admin)
-  async moderate(id: string, data: ModerateReviewData): Promise<Review> {
-    return apiService.patch<Review>(`/reviews/${id}/moderate`, data);
+  async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {
+    const reviewBE = await apiService.patch<ReviewBE>(
+      `/reviews/${id}/moderate`,
+      data
+    );
+    return toFEReview(reviewBE);
   }
 
   // Mark review as helpful
   async markHelpful(id: string): Promise<{ helpfulCount: number }> {
     return apiService.post<{ helpfulCount: number }>(
       `/reviews/${id}/helpful`,
-      {},
+      {}
     );
   }
 
@@ -142,7 +144,7 @@ class ReviewsService {
   // Check if user can review
   async canReview(
     productId?: string,
-    auctionId?: string,
+    auctionId?: string
   ): Promise<{ canReview: boolean; reason?: string }> {
     const params = new URLSearchParams();
     if (productId) params.append("productId", productId);
@@ -155,26 +157,21 @@ class ReviewsService {
   }
 
   // Get featured reviews
-  async getFeatured(): Promise<Review[]> {
-    const res = await apiService.get<any>(
-      "/reviews?isFeatured=true&isApproved=true&limit=100",
+  async getFeatured(): Promise<ReviewFE[]> {
+    const response = await apiService.get<{ data: ReviewBE[] }>(
+      "/reviews?isFeatured=true&isApproved=true&limit=100"
     );
-    return res.data || res.reviews || res;
+    return toFEReviews(response.data);
   }
 
   // Get homepage reviews
-  async getHomepage(): Promise<Review[]> {
-    const res = await apiService.get<any>(
-      "/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20",
+  async getHomepage(): Promise<ReviewFE[]> {
+    const response = await apiService.get<{ data: ReviewBE[] }>(
+      "/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20"
     );
-    return res.data || res.reviews || res;
+    return toFEReviews(response.data);
   }
 }
 
 export const reviewsService = new ReviewsService();
-export type {
-  ReviewFilters,
-  CreateReviewData,
-  UpdateReviewData,
-  ModerateReviewData,
-};
+export type { ModerateReviewData };

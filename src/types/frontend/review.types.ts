@@ -29,6 +29,11 @@ export interface ReviewFE {
   hasImages: boolean;
   helpfulnessScore: number;
   isYourReview: boolean;
+
+  // Backwards compatibility aliases
+  helpfulCount?: number; // Alias for helpful
+  verifiedPurchase?: boolean; // Alias for isVerifiedPurchase
+  media?: string[]; // Alias for images
 }
 
 export interface ReviewCardFE {
@@ -63,4 +68,16 @@ export interface ReviewStatsFE {
     2: { count: number; percentage: number };
     1: { count: number; percentage: number };
   };
+}
+
+export interface ReviewFiltersFE {
+  productId?: string;
+  shopId?: string;
+  userId?: string;
+  rating?: number;
+  isVerifiedPurchase?: boolean;
+  status?: "pending" | "approved" | "rejected";
+  sortBy?: "recent" | "helpful" | "rating-high" | "rating-low";
+  page?: number;
+  limit?: number;
 }

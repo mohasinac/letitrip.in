@@ -27,7 +27,9 @@ import {
   AuctionFilterValues,
 } from "@/components/filters/AuctionFilters";
 import { useCart } from "@/hooks/useCart";
-import type { Shop, Product, Auction } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
 interface ShopPageProps {
   params: Promise<{
@@ -42,9 +44,9 @@ export default function ShopPage({ params }: ShopPageProps) {
   const { addItem } = useCart();
   const { slug } = use(params);
 
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [shop, setShop] = useState<ShopFE | null>(null);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
   const [auctionsLoading, setAuctionsLoading] = useState(true);
@@ -97,34 +99,29 @@ export default function ShopPage({ params }: ShopPageProps) {
         shopId: slug,
         search: searchQuery || undefined,
         categoryId: productFilters.categories?.[0],
-        minPrice: productFilters.priceMin,
-        maxPrice: productFilters.priceMax,
-        condition: productFilters.condition?.[0] as any,
-        brand: productFilters.brands?.[0],
+        priceRange:
+          productFilters.priceMin || productFilters.priceMax
+            ? {
+                min: productFilters.priceMin || 0,
+                max: productFilters.priceMax || 999999,
+              }
+            : undefined,
         inStock:
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-              ? false
-              : undefined,
+            ? false
+            : undefined,
         isFeatured: productFilters.featured,
-        minRating: productFilters.rating,
-        status: "published" as any,
-        sortBy: sortBy as any,
-        sortOrder,
-        limit: 100,
+        rating: productFilters.rating,
       });
 
-      const productsData = data.data || [];
+      const productsData = data.products || [];
       setProducts(productsData);
 
-      // Extract brands
-      const brands = new Set<string>();
-      productsData.forEach((product) => {
-        if (product.brand) brands.add(product.brand);
-        if (product.manufacturer) brands.add(product.manufacturer);
-      });
-      setAvailableBrands(Array.from(brands).sort());
+      // TODO: Brand extraction requires full ProductFE, not ProductCardFE
+      // For now, set empty brands
+      setAvailableBrands([]);
     } catch (error) {
       console.error("Failed to load products:", error);
     } finally {
@@ -209,7 +206,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -432,7 +429,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                           name={product.name}
                           slug={product.slug}
                           price={product.price}
-                          originalPrice={product.originalPrice}
+                          originalPrice={product.originalPrice || undefined}
                           image={product.images?.[0] || ""}
                           rating={product.rating}
                           reviewCount={product.reviewCount}
@@ -625,15 +622,15 @@ export default function ShopPage({ params }: ShopPageProps) {
                         {auctions.map((auction) => (
                           <Link
                             key={auction.id}
-                            href={`/auctions/${auction.slug}`}
+                            href={`/auctions/${auction.productSlug}`}
                             className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                           >
                             {/* Auction Image */}
                             <div className="relative h-48 bg-gray-100">
-                              {auction.images?.[0] ? (
+                              {auction.productImage ? (
                                 <img
-                                  src={auction.images[0]}
-                                  alt={auction.name}
+                                  src={auction.productImage}
+                                  alt={auction.productName}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                                 />
                               ) : (
@@ -645,13 +642,13 @@ export default function ShopPage({ params }: ShopPageProps) {
                               <div className="absolute top-2 right-2">
                                 <span
                                   className={`px-2 py-1 rounded text-xs font-semibold ${
-                                    auction.status === "live"
+                                    auction.status === "active"
                                       ? "bg-green-500 text-white"
                                       : auction.status === "scheduled"
-                                        ? "bg-blue-500 text-white"
-                                        : auction.status === "ended"
-                                          ? "bg-gray-500 text-white"
-                                          : "bg-yellow-500 text-white"
+                                      ? "bg-blue-500 text-white"
+                                      : auction.status === "completed"
+                                      ? "bg-gray-500 text-white"
+                                      : "bg-yellow-500 text-white"
                                   }`}
                                 >
                                   {auction.status.toUpperCase()}
@@ -662,7 +659,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                             {/* Auction Info */}
                             <div className="p-4">
                               <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
-                                {auction.name}
+                                {auction.productName}
                               </h3>
 
                               <div className="space-y-2">
@@ -671,30 +668,24 @@ export default function ShopPage({ params }: ShopPageProps) {
                                     Current Bid:
                                   </span>
                                   <span className="text-lg font-bold text-purple-600">
-                                    ₹
-                                    {auction.currentBid?.toLocaleString() ||
-                                      auction.startingBid.toLocaleString()}
+                                    {auction.formattedCurrentPrice}
                                   </span>
                                 </div>
 
                                 <div className="flex justify-between items-center text-sm">
                                   <span className="text-gray-500">Bids:</span>
                                   <span className="font-medium text-gray-900">
-                                    {auction.bidCount || 0}
+                                    {auction.totalBids}
                                   </span>
                                 </div>
 
-                                {auction.status === "live" &&
-                                  auction.endTime && (
-                                    <div className="pt-2 border-t border-gray-200">
-                                      <span className="text-xs text-red-600 font-medium">
-                                        Ends:{" "}
-                                        {new Date(
-                                          auction.endTime,
-                                        ).toLocaleString()}
-                                      </span>
-                                    </div>
-                                  )}
+                                {auction.isActive && (
+                                  <div className="pt-2 border-t border-gray-200">
+                                    <span className="text-xs text-red-600 font-medium">
+                                      {auction.timeRemaining}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </Link>
@@ -705,27 +696,27 @@ export default function ShopPage({ params }: ShopPageProps) {
                         {auctions.map((auction) => (
                           <Link
                             key={auction.id}
-                            href={`/auctions/${auction.slug}`}
+                            href={`/auctions/${auction.productSlug}`}
                             className="group flex flex-col sm:flex-row gap-4 p-4 rounded-lg border border-gray-200 bg-white hover:border-purple-600 hover:shadow-lg transition-all"
                           >
                             {/* Image */}
-                            {auction.images?.[0] && (
+                            {auction.productImage && (
                               <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
                                 <img
-                                  src={auction.images[0]}
-                                  alt={auction.name}
+                                  src={auction.productImage}
+                                  alt={auction.productName}
                                   className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                                 <div className="absolute top-2 right-2">
                                   <span
                                     className={`px-2 py-1 rounded text-xs font-semibold ${
-                                      auction.status === "live"
+                                      auction.status === "active"
                                         ? "bg-green-500 text-white"
                                         : auction.status === "scheduled"
-                                          ? "bg-blue-500 text-white"
-                                          : auction.status === "ended"
-                                            ? "bg-gray-500 text-white"
-                                            : "bg-yellow-500 text-white"
+                                        ? "bg-blue-500 text-white"
+                                        : auction.status === "completed"
+                                        ? "bg-gray-500 text-white"
+                                        : "bg-yellow-500 text-white"
                                     }`}
                                   >
                                     {auction.status.toUpperCase()}
@@ -738,7 +729,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                             <div className="flex-1 flex flex-col justify-between">
                               <div>
                                 <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 group-hover:text-purple-600 transition-colors">
-                                  {auction.name}
+                                  {auction.productName}
                                 </h3>
 
                                 <div className="mt-3 flex flex-wrap gap-4">
@@ -747,9 +738,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       Current Bid
                                     </span>
                                     <p className="text-xl font-bold text-purple-600">
-                                      ₹
-                                      {auction.currentBid?.toLocaleString() ||
-                                        auction.startingBid.toLocaleString()}
+                                      {auction.formattedCurrentPrice}
                                     </p>
                                   </div>
                                   <div>
@@ -757,27 +746,24 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       Bids
                                     </span>
                                     <p className="text-lg font-semibold text-gray-900">
-                                      {auction.bidCount || 0}
+                                      {auction.totalBids}
                                     </p>
                                   </div>
-                                  {auction.status === "live" &&
-                                    auction.endTime && (
-                                      <div>
-                                        <span className="text-xs text-gray-600">
-                                          Ends
-                                        </span>
-                                        <p className="text-sm text-red-600 font-medium">
-                                          {new Date(
-                                            auction.endTime,
-                                          ).toLocaleString()}
-                                        </p>
-                                      </div>
-                                    )}
+                                  {auction.isActive && (
+                                    <div>
+                                      <span className="text-xs text-gray-600">
+                                        Time Left
+                                      </span>
+                                      <p className="text-sm text-red-600 font-medium">
+                                        {auction.timeRemaining}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
 
                               <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-700 transition-colors">
-                                {auction.status === "live"
+                                {auction.isActive
                                   ? "Place Bid"
                                   : "View Details"}
                               </button>
@@ -821,7 +807,7 @@ export default function ShopPage({ params }: ShopPageProps) {
               <p className="text-gray-600 mb-8">No description available.</p>
             )}
 
-            {/* Policies */}
+            {/* TODO: Add policies to ShopFE type 
             <div className="grid md:grid-cols-2 gap-6">
               {shop.shippingPolicy && (
                 <div>
@@ -840,9 +826,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                 </div>
               )}
             </div>
+            */}
 
             {/* Contact & Social */}
-            {(shop.email || shop.phone || shop.website) && (
+            {(shop.email || shop.phone) && (
               <div className="mt-8 pt-8 border-t">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Contact Information
@@ -850,6 +837,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                 <div className="space-y-2 text-gray-700">
                   {shop.email && <div>Email: {shop.email}</div>}
                   {shop.phone && <div>Phone: {shop.phone}</div>}
+                  {/* TODO: Add website to ShopFE type
                   {shop.website && (
                     <div>
                       Website:{" "}
@@ -863,6 +851,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                       </a>
                     </div>
                   )}
+                  */}
                 </div>
               </div>
             )}

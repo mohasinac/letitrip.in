@@ -148,6 +148,7 @@ export interface AuctionFiltersBE {
   type?: AuctionType | AuctionType[];
   status?: AuctionStatus | AuctionStatus[];
   sellerId?: string;
+  shopId?: string;
   minPrice?: number;
   maxPrice?: number;
   hasReserve?: boolean;
@@ -158,6 +159,8 @@ export interface AuctionFiltersBE {
   startBefore?: string; // ISO date
   endAfter?: string; // ISO date
   endBefore?: string; // ISO date
+  page?: number;
+  limit?: number;
 }
 
 /**

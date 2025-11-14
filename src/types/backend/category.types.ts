@@ -11,6 +11,7 @@ export interface CategoryBE {
   slug: string;
   description: string | null;
   image: string | null;
+  banner: string | null; // Banner/cover image for category pages
   icon: string | null;
   parentIds: string[]; // Multi-parent support
   level: number;
@@ -44,6 +45,7 @@ export interface CreateCategoryRequestBE {
   slug: string;
   description?: string;
   image?: string;
+  banner?: string;
   icon?: string;
   parentIds?: string[];
   order?: number;
@@ -55,6 +57,7 @@ export interface UpdateCategoryRequestBE {
   slug?: string;
   description?: string;
   image?: string;
+  banner?: string;
   icon?: string;
   parentIds?: string[];
   order?: number;

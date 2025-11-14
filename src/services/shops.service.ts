@@ -1,58 +1,18 @@
 import { apiService } from "./api.service";
-import type { Shop, PaginatedResponse, Product } from "@/types";
-
-interface ShopFilters {
-  verified?: boolean;
-  featured?: boolean;
-  showOnHomepage?: boolean;
-  banned?: boolean;
-  search?: string;
-  categories?: string[];
-  minRating?: number;
-  page?: number;
-  limit?: number;
-}
-
-interface CreateShopData {
-  name: string;
-  slug: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  location?: string;
-  address?: {
-    line1: string;
-    line2?: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-  };
-  categories?: string[];
-  website?: string;
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
-  gst?: string;
-  pan?: string;
-  returnPolicy?: string;
-  shippingPolicy?: string;
-  showOnHomepage?: boolean;
-  isFeatured?: boolean;
-}
-
-interface UpdateShopData extends Partial<CreateShopData> {
-  logo?: string;
-  banner?: string;
-  bankDetails?: {
-    accountHolderName: string;
-    accountNumber: string;
-    ifscCode: string;
-    bankName: string;
-    branchName?: string;
-  };
-  upiId?: string;
-}
+import { ShopBE } from "@/types/backend/shop.types";
+import { ShopFE, ShopCardFE, ShopFormFE } from "@/types/frontend/shop.types";
+import {
+  toFEShop,
+  toFEShopCard,
+  toBECreateShopRequest,
+} from "@/types/transforms/shop.transforms";
+import type { ProductBE } from "@/types/backend/product.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import { toFEProductCard } from "@/types/transforms/product.transforms";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 interface ShopVerificationData {
   isVerified: boolean;
@@ -77,7 +37,9 @@ interface ShopPaymentData {
 
 class ShopsService {
   // List shops (filtered by role)
-  async list(filters?: ShopFilters): Promise<PaginatedResponse<Shop>> {
+  async list(
+    filters?: Record<string, any>
+  ): Promise<PaginatedResponseFE<ShopCardFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -95,37 +57,38 @@ class ShopsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/shops?${queryString}` : "/shops";
 
-    const res = await apiService.get<any>(endpoint);
-    // Handle { success, shops } or { data } format
+    const response = await apiService.get<PaginatedResponseBE<ShopBE>>(
+      endpoint
+    );
+
     return {
-      data: res.shops || res.data || res,
-      pagination: res.pagination || {
-        page: 1,
-        limit: 20,
-        total: (res.shops || res.data || res).length,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false,
-      },
+      data: response.data.map(toFEShopCard),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
     };
   }
 
   // Get shop by slug
-  async getBySlug(slug: string): Promise<Shop> {
-    const res = await apiService.get<any>(`/shops/${slug}`);
-    return res.data ?? res.shop ?? res;
+  async getBySlug(slug: string): Promise<ShopFE> {
+    const shopBE = await apiService.get<ShopBE>(`/shops/${slug}`);
+    return toFEShop(shopBE);
   }
 
   // Create shop (seller/admin)
-  async create(data: CreateShopData): Promise<Shop> {
-    const res = await apiService.post<any>("/shops", data);
-    return res.data ?? res.shop ?? res;
+  async create(formData: ShopFormFE): Promise<ShopFE> {
+    const request = toBECreateShopRequest(formData);
+    const shopBE = await apiService.post<ShopBE>("/shops", request);
+    return toFEShop(shopBE);
   }
 
   // Update shop (owner/admin)
-  async update(slug: string, data: UpdateShopData): Promise<Shop> {
-    const res = await apiService.patch<any>(`/shops/${slug}`, data);
-    return res.data ?? res.shop ?? res;
+  async update(slug: string, formData: Partial<ShopFormFE>): Promise<ShopFE> {
+    const request = toBECreateShopRequest(formData as ShopFormFE);
+    const shopBE = await apiService.patch<ShopBE>(`/shops/${slug}`, request);
+    return toFEShop(shopBE);
   }
 
   // Delete shop (owner/admin)
@@ -134,18 +97,27 @@ class ShopsService {
   }
 
   // Verify shop (admin only)
-  async verify(slug: string, data: ShopVerificationData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${slug}/verify`, data);
+  async verify(slug: string, data: ShopVerificationData): Promise<ShopFE> {
+    const shopBE = await apiService.patch<ShopBE>(
+      `/shops/${slug}/verify`,
+      data
+    );
+    return toFEShop(shopBE);
   }
 
   // Ban/unban shop (admin only)
-  async ban(slug: string, data: ShopBanData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${slug}/ban`, data);
+  async ban(slug: string, data: ShopBanData): Promise<ShopFE> {
+    const shopBE = await apiService.patch<ShopBE>(`/shops/${slug}/ban`, data);
+    return toFEShop(shopBE);
   }
 
   // Set feature flags (admin only)
-  async setFeatureFlags(slug: string, data: ShopFeatureData): Promise<Shop> {
-    return apiService.patch<Shop>(`/shops/${slug}/feature`, data);
+  async setFeatureFlags(slug: string, data: ShopFeatureData): Promise<ShopFE> {
+    const shopBE = await apiService.patch<ShopBE>(
+      `/shops/${slug}/feature`,
+      data
+    );
+    return toFEShop(shopBE);
   }
 
   // Get shop payments (owner/admin)
@@ -167,7 +139,7 @@ class ShopsService {
   async getShopProducts(
     slug: string,
     options?: { page?: number; limit?: number; filters?: Record<string, any> }
-  ): Promise<PaginatedResponse<Product>> {
+  ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
     if (options?.page) params.append("page", String(options.page));
     if (options?.limit) params.append("limit", String(options.limit));
@@ -181,19 +153,18 @@ class ShopsService {
     const endpoint = qs
       ? `/shops/${slug}/products?${qs}`
       : `/shops/${slug}/products`;
-    const res = await apiService.get<any>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<ProductBE>>(
+      endpoint
+    );
 
     return {
-      data: res.products || res.data || res,
-      pagination: res.pagination || {
-        page: options?.page || 1,
-        limit: options?.limit || 20,
-        total: (res.products || res.data || res).length || 0,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false,
-      },
-    } as PaginatedResponse<Product>;
+      data: response.data.map(toFEProductCard),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get shop reviews (paginated)
@@ -228,32 +199,35 @@ class ShopsService {
   }
 
   // Get following shops list
-  async getFollowing(): Promise<{ shops: Shop[]; count: number }> {
-    return apiService.get<{ shops: Shop[]; count: number }>("/shops/following");
+  async getFollowing(): Promise<{ shops: ShopCardFE[]; count: number }> {
+    const response = await apiService.get<{ shops: ShopBE[]; count: number }>(
+      "/shops/following"
+    );
+    return {
+      shops: response.shops.map(toFEShopCard),
+      count: response.count,
+    };
   }
 
   // Get featured shops
-  async getFeatured(): Promise<Shop[]> {
-    const res = await apiService.get<any>(
+  async getFeatured(): Promise<ShopCardFE[]> {
+    const response = await apiService.get<{ data: ShopBE[] }>(
       "/shops?featured=true&verified=true&limit=100"
     );
-    return res.shops || res.data || res;
+    return response.data.map(toFEShopCard);
   }
 
   // Get homepage shops
-  async getHomepage(): Promise<Shop[]> {
-    const res = await apiService.get<any>(
+  async getHomepage(): Promise<ShopCardFE[]> {
+    const response = await apiService.get<{ data: ShopBE[] }>(
       "/shops?featured=true&verified=true&limit=20"
     );
-    return res.shops || res.data || res;
+    return response.data.map(toFEShopCard);
   }
 }
 
 export const shopsService = new ShopsService();
 export type {
-  ShopFilters,
-  CreateShopData,
-  UpdateShopData,
   ShopVerificationData,
   ShopFeatureData,
   ShopBanData,

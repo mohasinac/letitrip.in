@@ -14,23 +14,24 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { FormModal } from "@/components/common/FormModal";
-import { Address } from "@/types";
+import type { AddressFE } from "@/types/frontend/address.types";
 
 function AddressesContent() {
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [addresses, setAddresses] = useState<AddressFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [editingAddress, setEditingAddress] = useState<AddressFE | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    line1: "",
-    line2: "",
+    fullName: "",
+    phoneNumber: "",
+    addressLine1: "",
+    addressLine2: "",
     city: "",
     state: "",
-    pincode: "",
+    postalCode: "",
     country: "India",
+    addressType: "home" as "home" | "work" | "other",
     isDefault: false,
   });
 
@@ -42,7 +43,7 @@ function AddressesContent() {
     try {
       setLoading(true);
       const data = await addressService.getAll();
-      setAddresses(data.addresses || []);
+      setAddresses(data); // Service returns AddressFE[] directly
     } catch (error) {
       console.error("Failed to load addresses:", error);
     } finally {
@@ -50,31 +51,33 @@ function AddressesContent() {
     }
   };
 
-  const handleOpenForm = (address?: Address) => {
+  const handleOpenForm = (address?: AddressFE) => {
     if (address) {
       setEditingAddress(address);
       setFormData({
-        name: address.name,
-        phone: address.phone,
-        line1: address.line1,
-        line2: address.line2 || "",
+        fullName: address.fullName,
+        phoneNumber: address.phoneNumber,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2 || "",
         city: address.city,
         state: address.state,
-        pincode: address.pincode,
+        postalCode: address.postalCode,
         country: address.country,
+        addressType: address.addressType,
         isDefault: address.isDefault,
       });
     } else {
       setEditingAddress(null);
       setFormData({
-        name: "",
-        phone: "",
-        line1: "",
-        line2: "",
+        fullName: "",
+        phoneNumber: "",
+        addressLine1: "",
+        addressLine2: "",
         city: "",
         state: "",
-        pincode: "",
+        postalCode: "",
         country: "India",
+        addressType: "home",
         isDefault: addresses.length === 0,
       });
     }
@@ -188,16 +191,16 @@ function AddressesContent() {
 
                 <div className="mb-4">
                   <h3 className="text-lg font-bold text-gray-900">
-                    {address.name}
+                    {address.fullName}
                   </h3>
-                  <p className="text-gray-600">{address.phone}</p>
+                  <p className="text-gray-600">{address.phoneNumber}</p>
                 </div>
 
                 <div className="text-gray-700 space-y-1 mb-6">
-                  <p>{address.line1}</p>
-                  {address.line2 && <p>{address.line2}</p>}
+                  <p>{address.addressLine1}</p>
+                  {address.addressLine2 && <p>{address.addressLine2}</p>}
                   <p>
-                    {address.city}, {address.state} {address.pincode}
+                    {address.city}, {address.state} {address.postalCode}
                   </p>
                   <p>{address.country}</p>
                 </div>
@@ -243,9 +246,9 @@ function AddressesContent() {
               <input
                 type="text"
                 required
-                value={formData.name}
+                value={formData.fullName}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData({ ...formData, fullName: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="John Doe"
@@ -259,9 +262,9 @@ function AddressesContent() {
               <input
                 type="tel"
                 required
-                value={formData.phone}
+                value={formData.phoneNumber}
                 onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
+                  setFormData({ ...formData, phoneNumber: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="+91 98765 43210"
@@ -275,9 +278,9 @@ function AddressesContent() {
               <input
                 type="text"
                 required
-                value={formData.line1}
+                value={formData.addressLine1}
                 onChange={(e) =>
-                  setFormData({ ...formData, line1: e.target.value })
+                  setFormData({ ...formData, addressLine1: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="House/Flat No., Street Name"
@@ -290,9 +293,9 @@ function AddressesContent() {
               </label>
               <input
                 type="text"
-                value={formData.line2}
+                value={formData.addressLine2}
                 onChange={(e) =>
-                  setFormData({ ...formData, line2: e.target.value })
+                  setFormData({ ...formData, addressLine2: e.target.value })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Landmark, Area"
@@ -339,9 +342,9 @@ function AddressesContent() {
                 <input
                   type="text"
                   required
-                  value={formData.pincode}
+                  value={formData.postalCode}
                   onChange={(e) =>
-                    setFormData({ ...formData, pincode: e.target.value })
+                    setFormData({ ...formData, postalCode: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />

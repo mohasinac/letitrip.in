@@ -32,11 +32,10 @@ import {
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { getAuctionBulkActions } from "@/constants/bulk-actions";
-import {
-  auctionsService,
-  type AuctionFilters,
-} from "@/services/auctions.service";
-import type { Auction, AuctionStatus } from "@/types";
+import { auctionsService } from "@/services/auctions.service";
+import type { AuctionFE, AuctionCardFE } from "@/types/frontend/auction.types";
+import type { AuctionFiltersBE } from "@/types/backend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import {
@@ -50,14 +49,16 @@ export default function AdminAuctionsPage() {
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Filters
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [filterValues, setFilterValues] = useState<Partial<AuctionFiltersBE>>(
+    {}
+  );
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,20 +91,18 @@ export default function AdminAuctionsPage() {
       setLoading(true);
       setError(null);
 
-      const filters: AuctionFilters = {
+      const filters: Partial<AuctionFiltersBE> = {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
         ...filterValues,
-        sortBy: "endTime",
-        sortOrder: "asc",
       };
 
       const response = await auctionsService.list(filters);
 
       setAuctions(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalAuctions(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalAuctions(response.total || 0);
     } catch (error) {
       console.error("Failed to load auctions:", error);
       setError(
@@ -119,18 +118,18 @@ export default function AdminAuctionsPage() {
       // Load stats for each status
       const [liveRes, scheduledRes, endedRes, cancelledRes] = await Promise.all(
         [
-          auctionsService.list({ status: "live", limit: 1 }),
-          auctionsService.list({ status: "scheduled", limit: 1 }),
-          auctionsService.list({ status: "ended", limit: 1 }),
-          auctionsService.list({ status: "cancelled", limit: 1 }),
+          auctionsService.list({ status: AuctionStatus.ACTIVE, limit: 1 }),
+          auctionsService.list({ status: AuctionStatus.SCHEDULED, limit: 1 }),
+          auctionsService.list({ status: AuctionStatus.ENDED, limit: 1 }),
+          auctionsService.list({ status: AuctionStatus.CANCELLED, limit: 1 }),
         ]
       );
 
       setStats({
-        live: liveRes.pagination?.total || 0,
-        scheduled: scheduledRes.pagination?.total || 0,
-        ended: endedRes.pagination?.total || 0,
-        cancelled: cancelledRes.pagination?.total || 0,
+        live: liveRes.total || 0,
+        scheduled: scheduledRes.total || 0,
+        ended: endedRes.total || 0,
+        cancelled: cancelledRes.total || 0,
       });
     } catch (error) {
       console.error("Failed to load stats:", error);
@@ -212,14 +211,16 @@ export default function AdminAuctionsPage() {
       "Featured",
     ];
     const rows = auctions.map((a) => [
-      a.name,
+      a.name || a.productName,
       a.status,
-      a.currentBid || a.startingBid,
+      a.currentBid || a.startingBid || a.currentPrice,
       a.reservePrice || "",
-      new Date(a.startTime).toISOString(),
+      a.startTime
+        ? new Date(a.startTime).toISOString()
+        : new Date(a.endTime).toISOString(),
       new Date(a.endTime).toISOString(),
-      a.bidCount || 0,
-      a.shopId,
+      a.bidCount || a.totalBids || 0,
+      a.shopId || "",
       a.isFeatured ? "Yes" : "No",
     ]);
 
@@ -265,13 +266,13 @@ export default function AdminAuctionsPage() {
 
   const getStatusColor = (status: AuctionStatus) => {
     switch (status) {
-      case "live":
+      case AuctionStatus.ACTIVE:
         return "bg-green-100 text-green-800";
-      case "scheduled":
+      case AuctionStatus.SCHEDULED:
         return "bg-blue-100 text-blue-800";
-      case "ended":
+      case AuctionStatus.ENDED:
         return "bg-gray-100 text-gray-800";
-      case "cancelled":
+      case AuctionStatus.CANCELLED:
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -585,7 +586,9 @@ export default function AdminAuctionsPage() {
                           <td className="px-4 py-3">
                             <div className="text-sm font-medium text-gray-900">
                               {formatPrice(
-                                auction.currentBid || auction.startingBid
+                                auction.currentBid ||
+                                  auction.startingBid ||
+                                  auction.currentPrice
                               )}
                             </div>
                             {auction.reservePrice && (
@@ -596,9 +599,9 @@ export default function AdminAuctionsPage() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-sm text-gray-900">
-                              {auction.status === "live"
+                              {auction.status === AuctionStatus.ACTIVE
                                 ? formatTimeLeft(auction.endTime)
-                                : auction.status === "scheduled"
+                                : auction.status === AuctionStatus.SCHEDULED
                                 ? "Not started"
                                 : "Ended"}
                             </div>
@@ -715,12 +718,14 @@ export default function AdminAuctionsPage() {
                           <span className="text-gray-600">Current Bid</span>
                           <span className="font-bold text-gray-900">
                             {formatPrice(
-                              auction.currentBid || auction.startingBid
+                              auction.currentBid ||
+                                auction.startingBid ||
+                                auction.currentPrice
                             )}
                           </span>
                         </div>
 
-                        {auction.status === "live" && (
+                        {auction.status === AuctionStatus.ACTIVE && (
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-gray-600">Time Left</span>
                             <span className="font-medium text-primary">

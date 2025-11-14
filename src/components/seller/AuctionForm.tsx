@@ -5,23 +5,24 @@ import { Loader2, ImagePlus, X, Video } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import type { Auction, AuctionStatus } from "@/types";
+import type { AuctionFormFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 import { auctionsService } from "@/services/auctions.service";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
-  initialData?: Partial<Auction>;
+  initialData?: any; // TODO: Create proper ProductAuctionFormFE type
   shopId?: string;
-  onSubmit: (data: Partial<Auction>) => void;
+  onSubmit: (data: any) => void; // TODO: Create proper ProductAuctionFormFE type
   isSubmitting?: boolean;
 }
 
 const STATUS_OPTIONS: { value: AuctionStatus; label: string }[] = [
-  { value: "draft", label: "Draft" },
-  { value: "scheduled", label: "Scheduled" },
-  { value: "live", label: "Live" },
-  { value: "ended", label: "Ended" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: AuctionStatus.DRAFT, label: "Draft" },
+  { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
+  { value: AuctionStatus.ACTIVE, label: "Active" },
+  { value: AuctionStatus.ENDED, label: "Ended" },
+  { value: AuctionStatus.CANCELLED, label: "Cancelled" },
 ];
 
 export default function AuctionForm({
@@ -41,7 +42,7 @@ export default function AuctionForm({
     startTime: initialData?.startTime || new Date(),
     endTime:
       initialData?.endTime || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    status: (initialData?.status as AuctionStatus) || "draft",
+    status: (initialData?.status as AuctionStatus) || AuctionStatus.DRAFT,
     images: initialData?.images || [],
     videos: initialData?.videos || [],
   });
@@ -328,14 +329,15 @@ export default function AuctionForm({
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            {formData.status === "draft" &&
+            {formData.status === AuctionStatus.DRAFT &&
               "Draft auctions are not visible to buyers"}
-            {formData.status === "scheduled" &&
+            {formData.status === AuctionStatus.SCHEDULED &&
               "Auction will go live at the scheduled start time"}
-            {formData.status === "live" &&
+            {formData.status === AuctionStatus.ACTIVE &&
               "Auction is currently accepting bids"}
-            {formData.status === "ended" && "Auction has ended"}
-            {formData.status === "cancelled" && "Auction has been cancelled"}
+            {formData.status === AuctionStatus.ENDED && "Auction has ended"}
+            {formData.status === AuctionStatus.CANCELLED &&
+              "Auction has been cancelled"}
           </p>
         </div>
       </div>

@@ -50,6 +50,10 @@ export function toFEReview(
     hasImages: reviewBE.images.length > 0,
     helpfulnessScore: reviewBE.helpful - reviewBE.notHelpful,
     isYourReview: reviewBE.userId === currentUserId,
+    // Backwards compatibility
+    helpfulCount: reviewBE.helpful,
+    verifiedPurchase: reviewBE.isVerifiedPurchase,
+    media: reviewBE.images,
   };
 }
 

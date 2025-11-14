@@ -2,20 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { ReviewCard } from "@/components/cards/ReviewCard";
-import { reviewsService, type ReviewFilters } from "@/services/reviews.service";
-import type { Review } from "@/types";
+import { reviewsService } from "@/services/reviews.service";
+import type { ReviewFE, ReviewFiltersFE } from "@/types/frontend/review.types";
 import { Search, Filter, Star, ShieldCheck } from "lucide-react";
 
 export default function ReviewsListClient() {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<ReviewFilters>({
-    isApproved: true,
+  const [filters, setFilters] = useState<ReviewFiltersFE>({
+    status: "approved",
     page: 1,
     limit: 20,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    sortBy: "recent",
   });
   const [totalPages, setTotalPages] = useState(1);
 
@@ -35,7 +34,7 @@ export default function ReviewsListClient() {
         setTotalPages(1);
       } else {
         setReviews(response.data || []);
-        setTotalPages(response.pagination?.totalPages || 1);
+        setTotalPages(response.totalPages || 1);
       }
     } catch (err) {
       setError("Failed to load reviews. Please try again later.");
@@ -52,9 +51,9 @@ export default function ReviewsListClient() {
       setReviews((prev) =>
         prev.map((review) =>
           review.id === reviewId
-            ? { ...review, helpfulCount: review.helpfulCount + 1 }
-            : review,
-        ),
+            ? { ...review, helpful: (review.helpful || 0) + 1 }
+            : review
+        )
       );
     } catch (err) {
       console.error("Error marking review as helpful:", err);
@@ -72,15 +71,15 @@ export default function ReviewsListClient() {
   const handleVerifiedFilter = () => {
     setFilters((prev) => ({
       ...prev,
-      verifiedPurchase: !prev.verifiedPurchase,
+      isVerifiedPurchase: !prev.isVerifiedPurchase,
       page: 1,
     }));
   };
 
-  const handleSortChange = (sortBy: string) => {
+  const handleSortChange = (sortBy: ReviewFiltersFE["sortBy"]) => {
     setFilters((prev) => ({
       ...prev,
-      sortBy: sortBy as any,
+      sortBy,
       page: 1,
     }));
   };
@@ -183,14 +182,14 @@ export default function ReviewsListClient() {
               <button
                 onClick={handleVerifiedFilter}
                 className={`w-full flex items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
-                  filters.verifiedPurchase
+                  filters.isVerifiedPurchase
                     ? "border-green-500 bg-green-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <ShieldCheck
                   className={`w-5 h-5 ${
-                    filters.verifiedPurchase
+                    filters.isVerifiedPurchase
                       ? "text-green-600"
                       : "text-gray-400"
                   }`}
@@ -208,11 +207,13 @@ export default function ReviewsListClient() {
               </h3>
               <select
                 value={filters.sortBy}
-                onChange={(e) => handleSortChange(e.target.value)}
+                onChange={(e) =>
+                  handleSortChange(e.target.value as ReviewFiltersFE["sortBy"])
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="createdAt">Most Recent</option>
-                <option value="helpfulCount">Most Helpful</option>
+                <option value="recent">Most Recent</option>
+                <option value="helpful">Most Helpful</option>
                 <option value="rating">Highest Rating</option>
               </select>
             </div>
@@ -222,7 +223,7 @@ export default function ReviewsListClient() {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {/* Active Filters */}
-          {(filters.rating || filters.verifiedPurchase) && (
+          {(filters.rating || filters.isVerifiedPurchase) && (
             <div className="flex items-center gap-2 mb-6 p-4 bg-white rounded-lg">
               <span className="text-sm text-gray-600">Active filters:</span>
               {filters.rating && (
@@ -235,7 +236,7 @@ export default function ReviewsListClient() {
                   <span className="ml-1">×</span>
                 </button>
               )}
-              {filters.verifiedPurchase && (
+              {filters.isVerifiedPurchase && (
                 <button
                   onClick={handleVerifiedFilter}
                   className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200"
@@ -292,14 +293,14 @@ export default function ReviewsListClient() {
                     id={review.id}
                     userId={review.userId}
                     userName="User" // Would come from user data
-                    productId={review.productId}
+                    productId={review.productId || undefined}
                     productName="Product" // Would come from product data
                     rating={review.rating}
-                    title={review.title}
+                    title={review.title || undefined}
                     comment={review.comment}
-                    media={review.media}
-                    verifiedPurchase={review.verifiedPurchase}
-                    helpfulCount={review.helpfulCount}
+                    media={review.images}
+                    verifiedPurchase={review.isVerifiedPurchase}
+                    helpfulCount={review.helpful}
                     createdAt={review.createdAt}
                     onMarkHelpful={handleMarkHelpful}
                     showProduct={true}
@@ -352,19 +353,18 @@ export default function ReviewsListClient() {
                 No reviews found
               </h3>
               <p className="text-gray-600 mb-4">
-                {filters.rating || filters.verifiedPurchase
+                {filters.rating || filters.isVerifiedPurchase
                   ? "Try adjusting your filters"
                   : "Be the first to leave a review!"}
               </p>
-              {(filters.rating || filters.verifiedPurchase) && (
+              {(filters.rating || filters.isVerifiedPurchase) && (
                 <button
                   onClick={() =>
                     setFilters({
-                      isApproved: true,
+                      status: "approved",
                       page: 1,
                       limit: 20,
-                      sortBy: "createdAt",
-                      sortOrder: "desc",
+                      sortBy: "recent",
                     })
                   }
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

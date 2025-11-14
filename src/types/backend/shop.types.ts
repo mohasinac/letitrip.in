@@ -44,6 +44,9 @@ export interface ShopBE {
     freeShippingAbove: number | null;
   };
 
+  // Metadata
+  metadata?: Record<string, any>;
+
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

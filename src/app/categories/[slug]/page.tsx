@@ -21,7 +21,7 @@ import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
-import type { Category, Product } from "@/types";
+import type { CategoryFE, ProductCardFE } from "@/types";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -35,13 +35,13 @@ export default function CategoryDetailPage({ params }: PageProps) {
   const subcategoriesScrollRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  const [category, setCategory] = useState<Category | null>(null);
-  const [breadcrumb, setBreadcrumb] = useState<Category[]>([]);
-  const [subcategories, setSubcategories] = useState<Category[]>([]);
+  const [category, setCategory] = useState<CategoryFE | null>(null);
+  const [breadcrumb, setBreadcrumb] = useState<CategoryFE[]>([]);
+  const [subcategories, setSubcategories] = useState<CategoryFE[]>([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState<
-    Category[]
+    CategoryFE[]
   >([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(false);
@@ -104,7 +104,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
       if (pathParam) {
         // Use the path from URL
         const pathSlugs = pathParam.split(",");
-        const pathCategories: Category[] = [];
+        const pathCategories: CategoryFE[] = [];
 
         for (const pathSlug of pathSlugs) {
           try {
@@ -117,11 +117,10 @@ export default function CategoryDetailPage({ params }: PageProps) {
 
         setBreadcrumb(pathCategories);
       } else {
-        // Load default breadcrumb (nearest parent path)
-        const breadcrumbData = await categoriesService.getBreadcrumb(
-          categoryData.id
-        );
-        setBreadcrumb(breadcrumbData);
+        // TODO: Load default breadcrumb (getBreadcrumb method not implemented yet)
+        // const breadcrumbData = await categoriesService.getBreadcrumb(categoryData.id);
+        // setBreadcrumb(breadcrumbData);
+        setBreadcrumb([]);
       }
 
       // Load subcategories
@@ -145,16 +144,14 @@ export default function CategoryDetailPage({ params }: PageProps) {
     try {
       const response = await productsService.list({
         categoryId: category.id,
-        search: searchQuery || undefined,
+        search: searchQuery,
         ...filterValues,
         sortBy: sortBy as any,
-        sortOrder,
-        status: "published" as any,
         limit: 100,
       });
-      setProducts(response.data || []);
+      setProducts(response.products || []);
       setTotalProducts(
-        response.pagination?.total || response.data?.length || 0
+        response.pagination?.total || response.products?.length || 0
       );
     } catch (error) {
       console.error("Failed to load products:", error);
@@ -515,7 +512,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
                           name={product.name}
                           slug={product.slug}
                           price={product.price}
-                          originalPrice={product.originalPrice}
+                          originalPrice={product.originalPrice || undefined}
                           image={product.images?.[0] || ""}
                           rating={product.rating}
                           reviewCount={product.reviewCount}

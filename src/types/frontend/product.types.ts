@@ -107,12 +107,20 @@ export interface ProductFE {
   // UI-specific fields
   isNew?: boolean; // Created within last 30 days
   isTrending?: boolean; // High sales velocity
-  isFavorited?: boolean; // User has favorited
+  isFavorited?: boolean; // User has in cart
   isInCart?: boolean; // User has in cart
   cartQuantity?: number; // Quantity in cart
 
   // Badges (for UI display)
   badges: ProductBadge[];
+
+  // Backwards compatibility aliases (for legacy code migration)
+  costPrice?: number; // Alias for compareAtPrice
+  originalPrice?: number | null; // Alias for compareAtPrice
+  rating?: number; // Alias for averageRating
+  shortDescription?: string; // For admin pages (use description)
+  warranty?: string | null; // For admin pages
+  showOnHomepage?: boolean; // Derived from metadata
 }
 
 /**
@@ -147,6 +155,13 @@ export interface ProductCardFE {
   isFeatured: boolean;
   isFavorited?: boolean;
   badges: ProductBadge[];
+
+  // Backwards compatibility aliases (for legacy code migration)
+  images: string[]; // Array with primaryImage as first element
+  originalPrice: number | null; // Alias for compareAtPrice
+  rating: number; // Alias for averageRating
+  stockCount: number; // Actual stock number (0 if out-of-stock)
+  condition: ProductCondition; // Product condition
 }
 
 /**
@@ -200,28 +215,28 @@ export interface ProductFormFE {
  * Product Filters FE (for search/filter UI)
  */
 export interface ProductFiltersFE {
-  search: string;
-  categoryId: string;
-  categoryIds: string[];
-  shopId: string;
-  status: ProductStatus[];
-  condition: ProductCondition | null;
-  priceRange: {
+  search?: string;
+  categoryId?: string;
+  categoryIds?: string[];
+  shopId?: string;
+  status?: ProductStatus[];
+  condition?: ProductCondition | null;
+  priceRange?: {
     min: number;
     max: number;
   };
-  inStock: boolean;
-  isFeatured: boolean;
-  rating: number; // Minimum rating
-  sortBy:
+  inStock?: boolean;
+  isFeatured?: boolean;
+  rating?: number; // Minimum rating
+  sortBy?:
     | "relevance"
     | "price-asc"
     | "price-desc"
     | "newest"
     | "popular"
     | "rating";
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
 }
 
 /**

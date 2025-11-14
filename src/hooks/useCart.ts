@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { cartService, CartSummary } from "@/services/cart.service";
+import { cartService } from "@/services/cart.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { CartItem } from "@/types";
+import type { CartItemFE, CartFE } from "@/types";
 
 export function useCart() {
   const { user } = useAuth();
-  const [cart, setCart] = useState<CartSummary | null>(null);
+  const [cart, setCart] = useState<CartFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMerging, setIsMerging] = useState(false);
@@ -27,24 +27,43 @@ export function useCart() {
         // Guest user - load from localStorage
         const guestItems = cartService.getGuestCart();
 
-        // Calculate guest cart summary
+        // For guest cart, create a minimal CartFE-like structure
+        // TODO: Transform guest items to full CartItemFE objects
         const subtotal = guestItems.reduce(
           (sum, item) => sum + item.price * item.quantity,
-          0,
+          0
         );
-        const shipping = subtotal > 5000 ? 0 : 100;
         const tax = subtotal * 0.18;
-        const total = subtotal + shipping + tax;
+        const total = subtotal + tax;
 
+        // Create a minimal CartFE object for guest users
         setCart({
-          items: guestItems,
-          subtotal,
-          shipping,
-          tax,
-          discount: 0,
-          total,
+          id: "guest",
+          userId: "guest",
+          items: guestItems as any as CartItemFE[], // Guest items are simplified
           itemCount: guestItems.reduce((sum, item) => sum + item.quantity, 0),
-        });
+          subtotal,
+          discount: 0,
+          tax,
+          total,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          expiresAt: null,
+          formattedSubtotal: `₹${subtotal.toLocaleString("en-IN")}`,
+          formattedDiscount: "₹0",
+          formattedTax: `₹${tax.toLocaleString("en-IN")}`,
+          formattedTotal: `₹${total.toLocaleString("en-IN")}`,
+          isEmpty: guestItems.length === 0,
+          hasItems: guestItems.length > 0,
+          hasUnavailableItems: false,
+          hasDiscount: false,
+          itemsByShop: new Map(),
+          shopIds: [],
+          canCheckout: guestItems.length > 0,
+          validationErrors: [],
+          validationWarnings: [],
+          expiresIn: null,
+        } as CartFE);
       }
     } catch (err: any) {
       console.error("Failed to load cart:", err);
@@ -66,12 +85,16 @@ export function useCart() {
         image: string;
         shopId: string;
         shopName: string;
-      },
+      }
     ) => {
       try {
         if (user) {
           // Authenticated user
-          await cartService.addItem({ productId, quantity, variant });
+          await cartService.addItem({
+            productId,
+            quantity,
+            variantId: variant,
+          });
           await loadCart();
         } else {
           // Guest user - add to localStorage
@@ -82,7 +105,7 @@ export function useCart() {
           cartService.addToGuestCartWithDetails({
             productId,
             quantity,
-            variant,
+            variantId: variant,
             ...productDetails,
           });
 
@@ -93,7 +116,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Update item quantity
@@ -102,7 +125,7 @@ export function useCart() {
       try {
         if (user) {
           // Authenticated user
-          await cartService.updateItem(itemId, { quantity });
+          await cartService.updateItem(itemId, quantity);
           await loadCart();
         } else {
           // Guest user
@@ -114,7 +137,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Remove item
@@ -135,7 +158,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Clear cart
@@ -164,17 +187,16 @@ export function useCart() {
           throw new Error("Please login to apply coupons");
         }
 
-        const result = await cartService.applyCoupon({ code });
+        const result = await cartService.applyCoupon(code);
 
         // Update cart with new totals
         if (cart) {
           setCart({
             ...cart,
             discount: result.discount,
-            shipping: result.shipping,
             tax: result.tax,
             total: result.total,
-            couponCode: result.couponCode,
+            // Note: shipping and couponCode not in CartSummaryFE yet
           });
         }
 
@@ -184,7 +206,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, cart],
+    [user, cart]
   );
 
   // Remove coupon
@@ -201,10 +223,9 @@ export function useCart() {
         setCart({
           ...cart,
           discount: 0,
-          shipping: result.shipping,
           tax: result.tax,
           total: result.total,
-          couponCode: undefined,
+          // Note: shipping and couponCode not in CartSummaryFE yet
         });
       }
     } catch (err: any) {
@@ -225,13 +246,14 @@ export function useCart() {
       setMergeSuccess(false);
       setError(null);
 
-      await cartService.mergeGuestCart({
-        guestCartItems: guestItems.map((item) => ({
+      // API accepts minimal item data, type signature is misleading
+      await cartService.mergeGuestCart(
+        guestItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
-          variant: item.variant,
-        })),
-      });
+          variantId: item.variantId,
+        })) as any as CartItemFE[]
+      );
 
       // Clear guest cart after merge
       cartService.clearGuestCart();

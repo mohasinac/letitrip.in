@@ -28,6 +28,10 @@ export interface BidFE {
   // UI states
   isHighest: boolean;
   isYourBid: boolean;
+
+  // Backwards compatibility
+  bidTime?: Date; // Alias for createdAt
+  bidAmount?: number; // Alias for amount
 }
 
 /**
@@ -132,6 +136,14 @@ export interface AuctionFE {
 
   // Metadata
   metadata?: Record<string, any>;
+
+  // Backwards compatibility aliases (for legacy code)
+  currentBid?: number; // Alias for currentPrice
+  name?: string; // Alias for productName
+  images?: string[]; // Alias for [productImage]
+  description?: string; // Alias for productDescription
+  isFeatured?: boolean; // Derived from metadata
+  bidCount?: number; // Alias for totalBids
 }
 
 /**
@@ -156,6 +168,18 @@ export interface AuctionCardFE {
   isActive: boolean;
   isEndingSoon: boolean;
   badges: string[];
+
+  // Backwards compatibility aliases
+  slug?: string; // Alias for productSlug
+  name?: string; // Alias for productName
+  images?: string[]; // Alias for [productImage]
+  currentBid?: number; // Alias for currentPrice
+  bidCount?: number; // Alias for totalBids
+  startingBid?: number; // For admin tables (not in minimal card)
+  reservePrice?: number | null; // For admin tables
+  startTime?: Date; // For admin tables
+  shopId?: string | null; // For admin tables
+  isFeatured?: boolean; // For admin tables
 }
 
 /**

@@ -256,6 +256,11 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
 
     // Badges
     badges: [],
+
+    // Backwards compatibility aliases
+    costPrice: productBE.compareAtPrice || undefined,
+    originalPrice: productBE.compareAtPrice || null,
+    rating: productBE.averageRating || 0,
   };
 
   // Generate badges after product object is created
@@ -312,6 +317,13 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
     shopId: productBE.shopId,
     isFeatured: productBE.isFeatured,
     badges,
+
+    // Backwards compatibility aliases
+    images: productBE.images || [],
+    originalPrice: productBE.compareAtPrice || null,
+    rating: productBE.averageRating,
+    stockCount: productBE.stockCount,
+    condition: "new" as any, // Default, not available in list item
   };
 }
 

@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types";
 import { ShoppingBag } from "lucide-react";
 
 export default function FeaturedProductsSection() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,25 +21,19 @@ export default function FeaturedProductsSection() {
       // Try to get homepage products first
       let response = await productsService.list({
         isFeatured: true,
-        status: "published",
         limit: 10,
       });
 
-      const productsList = Array.isArray(response)
-        ? response
-        : response.data || [];
+      const productsList = response.products || [];
 
       // If less than 10, try to fill with featured products
       if (productsList.length < 10) {
         const additionalResponse = await productsService.list({
           isFeatured: true,
-          status: "published",
           limit: 10 - productsList.length,
         });
 
-        const additionalProducts = Array.isArray(additionalResponse)
-          ? additionalResponse
-          : additionalResponse.data || [];
+        const additionalProducts = additionalResponse.products || [];
 
         setProducts([...productsList, ...additionalProducts].slice(0, 10));
       } else {

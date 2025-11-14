@@ -17,7 +17,13 @@ import {
 import Link from "next/link";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
-import type { Auction, Bid, Shop } from "@/types";
+import type {
+  AuctionFE,
+  AuctionCardFE,
+  BidFE,
+} from "@/types/frontend/auction.types";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -28,11 +34,11 @@ export default function AuctionDetailPage() {
   const { user } = useAuth();
   const slug = params.slug as string;
 
-  const [auction, setAuction] = useState<Auction | null>(null);
-  const [bids, setBids] = useState<Bid[]>([]);
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [similarAuctions, setSimilarAuctions] = useState<Auction[]>([]);
-  const [shopAuctions, setShopAuctions] = useState<Auction[]>([]);
+  const [auction, setAuction] = useState<AuctionFE | null>(null);
+  const [bids, setBids] = useState<BidFE[]>([]);
+  const [shop, setShop] = useState<ShopFE | null>(null);
+  const [similarAuctions, setSimilarAuctions] = useState<AuctionCardFE[]>([]);
+  const [shopAuctions, setShopAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [bidAmount, setBidAmount] = useState("");
   const [isPlacingBid, setIsPlacingBid] = useState(false);
@@ -65,7 +71,7 @@ export default function AuctionDetailPage() {
           // Load other auctions from this shop
           const shopAuctionsData = await auctionsService.list({
             shopId: data.shopId,
-            status: "live",
+            status: AuctionStatus.ACTIVE,
             limit: 6,
           });
           setShopAuctions(
@@ -79,7 +85,7 @@ export default function AuctionDetailPage() {
       // Load similar auctions (same category or status)
       try {
         const similarData = await auctionsService.list({
-          status: "live",
+          status: AuctionStatus.ACTIVE,
           limit: 6,
         });
         setSimilarAuctions(
@@ -90,8 +96,9 @@ export default function AuctionDetailPage() {
       }
 
       // Set default bid amount (current bid + minimum increment)
-      const minIncrement = Math.max(100, data.currentBid * 0.05); // 5% or ₹100
-      setBidAmount(Math.ceil(data.currentBid + minIncrement).toString());
+      const currentBidValue = data.currentBid || data.currentPrice;
+      const minIncrement = Math.max(100, currentBidValue * 0.05); // 5% or ₹100
+      setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
     } catch (error) {
       console.error("Failed to load auction:", error);
     } finally {
@@ -108,7 +115,8 @@ export default function AuctionDetailPage() {
     if (!auction) return;
 
     const amount = parseFloat(bidAmount);
-    if (isNaN(amount) || amount <= auction.currentBid) {
+    const currentBidValue = auction.currentBid || auction.currentPrice;
+    if (isNaN(amount) || amount <= currentBidValue) {
       setBidError("Bid must be higher than current bid");
       return;
     }
@@ -117,7 +125,7 @@ export default function AuctionDetailPage() {
       setIsPlacingBid(true);
       setBidError("");
 
-      await auctionsService.placeBid(auction.id, { bidAmount: amount });
+      await auctionsService.placeBid(auction.id, { amount, isAutoBid: false });
 
       // Reload auction and bids
       await loadAuction();
@@ -221,8 +229,8 @@ export default function AuctionDetailPage() {
     );
   }
 
-  const isLive = auction.status === "live";
-  const hasEnded = auction.status === "ended";
+  const isLive = auction.status === AuctionStatus.ACTIVE;
+  const hasEnded = auction.status === AuctionStatus.ENDED;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -290,7 +298,9 @@ export default function AuctionDetailPage() {
             </h2>
             <div
               className="prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: auction.description }}
+              dangerouslySetInnerHTML={{
+                __html: auction.description || auction.productDescription,
+              }}
             />
           </div>
 
@@ -298,7 +308,7 @@ export default function AuctionDetailPage() {
           <div className="rounded-lg border border-gray-200 bg-white p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Bid History ({auction.bidCount})
+              Bid History ({auction.bidCount || auction.totalBids})
             </h2>
             {bids.length === 0 ? (
               <p className="text-sm text-gray-600">No bids yet</p>
@@ -320,7 +330,7 @@ export default function AuctionDetailPage() {
                           User #{bid.userId.slice(-6)}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(bid.bidTime), {
+                          {formatDistanceToNow(bid.bidTime || bid.createdAt, {
                             addSuffix: true,
                           })}
                         </p>
@@ -328,7 +338,7 @@ export default function AuctionDetailPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-gray-900">
-                        ₹{bid.bidAmount.toLocaleString()}
+                        ₹{(bid.bidAmount || bid.amount).toLocaleString()}
                       </p>
                       {idx === 0 && (
                         <p className="text-xs text-green-600">Winning bid</p>
@@ -366,7 +376,7 @@ export default function AuctionDetailPage() {
                       {a.name}
                     </h3>
                     <p className="text-sm font-semibold text-primary mt-1">
-                      ₹{a.currentBid.toLocaleString()}
+                      ₹{(a.currentBid || a.currentPrice).toLocaleString()}
                     </p>
                   </Link>
                 ))}
@@ -395,7 +405,7 @@ export default function AuctionDetailPage() {
                           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       )}
-                      {a.status === "live" && (
+                      {a.status === AuctionStatus.ACTIVE && (
                         <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
                           Live
                         </div>
@@ -405,10 +415,11 @@ export default function AuctionDetailPage() {
                       {a.name}
                     </h3>
                     <p className="text-sm font-semibold text-primary mt-1">
-                      ₹{a.currentBid.toLocaleString()}
+                      ₹{(a.currentBid || a.currentPrice).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {a.bidCount} {a.bidCount === 1 ? "bid" : "bids"}
+                      {a.bidCount || a.totalBids}{" "}
+                      {(a.bidCount || a.totalBids) === 1 ? "bid" : "bids"}
                     </p>
                   </Link>
                 ))}
@@ -447,10 +458,11 @@ export default function AuctionDetailPage() {
             <div className="border-t border-b border-gray-200 py-4">
               <p className="text-sm text-gray-600">Current Bid</p>
               <p className="text-3xl font-bold text-primary">
-                ₹{auction.currentBid.toLocaleString()}
+                ₹{(auction.currentBid || auction.currentPrice).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600 mt-1">
-                {auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"}
+                {auction.bidCount || auction.totalBids}{" "}
+                {(auction.bidCount || auction.totalBids) === 1 ? "bid" : "bids"}
               </p>
             </div>
 
@@ -482,7 +494,7 @@ export default function AuctionDetailPage() {
                       setBidError("");
                     }}
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg font-semibold focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    min={auction.currentBid + 1}
+                    min={(auction.currentBid || auction.currentPrice) + 1}
                     step="100"
                   />
                   {bidError && (
@@ -541,14 +553,15 @@ export default function AuctionDetailPage() {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Starting Bid:</span>
                 <span className="font-medium text-gray-900">
-                  ₹{auction.startingBid.toLocaleString()}
+                  ₹{auction.startingPrice.toLocaleString()}
                 </span>
               </div>
               {auction.reservePrice && auction.reservePrice > 0 && (
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Reserve Price:</span>
                   <span className="font-medium text-gray-900">
-                    {auction.currentBid >= auction.reservePrice ? (
+                    {(auction.currentBid || auction.currentPrice) >=
+                    auction.reservePrice ? (
                       <span className="text-green-600">Met</span>
                     ) : (
                       <span className="text-red-600">Not Met</span>

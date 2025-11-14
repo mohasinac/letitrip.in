@@ -10,6 +10,7 @@ export interface CategoryFE {
   slug: string;
   description: string | null;
   image: string | null;
+  banner: string | null; // Banner/cover image for category pages
   icon: string | null;
   parentIds: string[];
   level: number;
@@ -31,6 +32,13 @@ export interface CategoryFE {
   isRoot: boolean;
   displayName: string;
   urlPath: string;
+
+  // Backwards compatibility aliases
+  parentId?: string | null; // First parent or null (for single-parent legacy code)
+  isFeatured?: boolean; // Derived from metadata or default false
+  showOnHomepage?: boolean; // Derived from metadata or default false
+  isActive?: boolean; // status === 'published'
+  sortOrder?: number; // Alias for order
 }
 
 export interface CategoryTreeNodeFE {
@@ -63,8 +71,16 @@ export interface CategoryFormFE {
   slug: string;
   description: string;
   image: string | null;
+  banner?: string | null;
   icon: string | null;
   parentIds: string[];
   order: number;
   metadata?: Record<string, any>;
+
+  // Backwards compatibility (optional for legacy forms)
+  parentId?: string | null; // Can be used instead of parentIds
+  isFeatured?: boolean;
+  showOnHomepage?: boolean;
+  isActive?: boolean;
+  sortOrder?: number; // Alias for order
 }

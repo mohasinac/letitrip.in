@@ -26,7 +26,8 @@ import MediaUploader from "@/components/media/MediaUploader";
 import SlugInput from "@/components/common/SlugInput";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import type { Shop, Product } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 export default function AdminEditShopPage() {
   const router = useRouter();
@@ -38,8 +39,8 @@ export default function AdminEditShopPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [shopProducts, setShopProducts] = useState<Product[]>([]);
+  const [shop, setShop] = useState<ShopFE | null>(null);
+  const [shopProducts, setShopProducts] = useState<ProductCardFE[]>([]);
   const [shopStats, setShopStats] = useState<any>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBanDialog, setShowBanDialog] = useState(false);
@@ -88,7 +89,7 @@ export default function AdminEditShopPage() {
     clearTracking: clearLogoTracking,
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
-      setShop((prev) => (prev ? { ...prev, logo: url } : null));
+      setShop((prev: ShopFE | null) => (prev ? { ...prev, logo: url } : null));
     },
   });
 
@@ -98,7 +99,9 @@ export default function AdminEditShopPage() {
     clearTracking: clearBannerTracking,
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
-      setShop((prev) => (prev ? { ...prev, banner: url } : null));
+      setShop((prev: ShopFE | null) =>
+        prev ? { ...prev, banner: url } : null
+      );
     },
   });
 
@@ -132,38 +135,39 @@ export default function AdminEditShopPage() {
         console.log("Stats not available");
       }
 
-      // Populate form
+      // Populate form with available fields from ShopFE
+      // TODO: Add missing fields to ShopBE/ShopFE: location, website, social links, gst, pan, policies, bankDetails, upiId
       setFormData({
         name: shopData.name,
         slug: shopData.slug,
         description: shopData.description || "",
         email: shopData.email || "",
         phone: shopData.phone || "",
-        location: shopData.location || "",
+        location: "", // Not in ShopFE yet
         address: {
-          line1: shopData.address?.line1 || "",
-          line2: shopData.address?.line2 || "",
-          city: shopData.address?.city || "",
-          state: shopData.address?.state || "",
-          pincode: shopData.address?.pincode || "",
-          country: shopData.address?.country || "India",
+          line1: shopData.address || "",
+          line2: "",
+          city: shopData.city || "",
+          state: shopData.state || "",
+          pincode: shopData.postalCode || "",
+          country: "India",
         },
-        website: shopData.website || "",
-        facebook: shopData.facebook || "",
-        instagram: shopData.instagram || "",
-        twitter: shopData.twitter || "",
-        gst: shopData.gst || "",
-        pan: shopData.pan || "",
-        returnPolicy: shopData.returnPolicy || "",
-        shippingPolicy: shopData.shippingPolicy || "",
+        website: "", // Not in ShopFE yet
+        facebook: "", // Not in ShopFE yet
+        instagram: "", // Not in ShopFE yet
+        twitter: "", // Not in ShopFE yet
+        gst: "", // Not in ShopFE yet
+        pan: "", // Not in ShopFE yet
+        returnPolicy: "", // Not in ShopFE yet
+        shippingPolicy: "", // Not in ShopFE yet
         bankDetails: {
-          accountHolderName: shopData.bankDetails?.accountHolderName || "",
-          accountNumber: shopData.bankDetails?.accountNumber || "",
-          ifscCode: shopData.bankDetails?.ifscCode || "",
-          bankName: shopData.bankDetails?.bankName || "",
-          branchName: shopData.bankDetails?.branchName || "",
-        },
-        upiId: shopData.upiId || "",
+          accountHolderName: "",
+          accountNumber: "",
+          ifscCode: "",
+          bankName: "",
+          branchName: "",
+        }, // Not in ShopFE yet
+        upiId: "", // Not in ShopFE yet
       });
     } catch (error) {
       console.error("Failed to load shop:", error);
@@ -191,10 +195,19 @@ export default function AdminEditShopPage() {
     try {
       setSaving(true);
 
+      // Convert formData to ShopFormFE shape
       const updateData = {
-        ...formData,
-        logo: shop?.logo,
-        banner: shop?.banner,
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        logo: shop?.logo || null,
+        banner: shop?.banner || null,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address.line1, // ShopFormFE expects string not object
+        city: formData.address.city,
+        state: formData.address.state,
+        postalCode: formData.address.pincode,
       };
 
       await shopsService.update(shop!.slug, updateData);
@@ -228,7 +241,7 @@ export default function AdminEditShopPage() {
     try {
       await shopsService.setFeatureFlags(shop.slug, {
         isFeatured: !shop.isFeatured,
-        showOnHomepage: shop.showOnHomepage,
+        showOnHomepage: shop.showOnHomepage || false,
       });
       await loadShopData();
     } catch (error) {
