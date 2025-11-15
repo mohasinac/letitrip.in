@@ -18,6 +18,11 @@ const db = admin.firestore();
  * Runs every minute
  * Optimized with batch processing and resource limits
  */
+// Get service account from config or use default
+const serviceAccount =
+  functions.config().service_account?.email ||
+  "letitrip-in-app@appspot.gserviceaccount.com";
+
 export const processAuctions = functions
   .region("asia-south1") // Mumbai region
   .runWith({
@@ -25,6 +30,7 @@ export const processAuctions = functions
     memory: "1GB",
     minInstances: 0, // Cold start OK for FREE tier
     maxInstances: 3, // Limit concurrent executions to control costs
+    serviceAccount,
   })
   .pubsub.schedule("every 1 minutes")
   .timeZone("Asia/Kolkata")
@@ -41,7 +47,7 @@ export const processAuctions = functions
       // Log performance metrics
       if (duration > 8000) {
         console.warn(
-          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`
+          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`,
         );
       }
 
@@ -80,7 +86,7 @@ export const triggerAuctionProcessing = functions
     if (!context.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
-        "User must be authenticated"
+        "User must be authenticated",
       );
     }
 
@@ -91,7 +97,7 @@ export const triggerAuctionProcessing = functions
     if (!user || user.role !== "admin") {
       throw new functions.https.HttpsError(
         "permission-denied",
-        "Admin access required"
+        "Admin access required",
       );
     }
 
@@ -109,7 +115,7 @@ export const triggerAuctionProcessing = functions
       console.error("[Auction Cron] Error in manual trigger:", error);
       throw new functions.https.HttpsError(
         "internal",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   });
@@ -135,7 +141,7 @@ async function processEndedAuctions(): Promise<{
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return { processed: 0, successful: 0, failed: 0 };
+    return {processed: 0, successful: 0, failed: 0};
   }
 
   // Process each ended auction in batches
@@ -147,7 +153,7 @@ async function processEndedAuctions(): Promise<{
   const failed = results.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`
+    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`,
   );
 
   // Log failures
@@ -155,7 +161,7 @@ async function processEndedAuctions(): Promise<{
     if (result.status === "rejected") {
       console.error(
         `[Auction Cron] Failed to process auction ${snapshot.docs[index].id}:`,
-        result.reason
+        result.reason,
       );
     }
   });
@@ -217,7 +223,7 @@ async function closeAuction(auctionId: string): Promise<void> {
     });
 
     console.log(
-      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`
+      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`,
     );
 
     // TODO: Notify seller and highest bidder
@@ -233,7 +239,7 @@ async function closeAuction(auctionId: string): Promise<void> {
   });
 
   console.log(
-    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`
+    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`,
   );
 
   // Create order for winner
@@ -267,7 +273,7 @@ async function createWinnerOrder(
   auction: Record<string, unknown>,
   auctionId: string,
   winnerId: string,
-  finalBid: number
+  finalBid: number,
 ): Promise<void> {
   try {
     // Get winner details
@@ -352,7 +358,7 @@ async function createWinnerOrder(
     await db.collection("orders").add(orderData);
 
     console.log(
-      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`
+      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`,
     );
   } catch (error) {
     console.error("[Auction Cron] Error creating winner order:", error);
@@ -378,7 +384,7 @@ async function updateInventory(productId: string): Promise<void> {
       });
 
       console.log(
-        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`
+        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`,
       );
     }
   } catch (error) {

@@ -3,6 +3,7 @@
   "description": "Firebase Functions for JustForView.in",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
+    "lintfix": "eslint --fix .",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
