@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
 import {
   formatCurrency,
@@ -105,11 +105,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        <Image
+        <OptimizedImage
           src={image}
           alt={name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          quality={85}
+          objectFit="cover"
+          className="group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
 

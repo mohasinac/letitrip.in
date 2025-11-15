@@ -679,7 +679,9 @@ export default function ShippingPolicyPage() {
           <a href="/support/ticket">Create Ticket</a>
         </li>
         <li>
-          <strong>Phone:</strong> +91-XXXX-XXXXXX (Mon-Sat, 10 AM - 7 PM IST)
+          <strong>Phone:</strong>{" "}
+          {process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-9876543210"} (Mon-Sat,
+          10 AM - 7 PM IST)
         </li>
         <li>
           <strong>Track Order:</strong>{" "}

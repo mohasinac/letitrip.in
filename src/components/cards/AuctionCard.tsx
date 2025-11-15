@@ -8,7 +8,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
 import { Clock, Gavel, Eye, Heart, ExternalLink } from "lucide-react";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
@@ -87,12 +87,14 @@ export default function AuctionCard({
       {/* Image Section */}
       <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
         {hasImage ? (
-          <Image
+          <OptimizedImage
             src={auction.images[0]}
             alt={auction.name}
             fill
+            quality={85}
+            objectFit="cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-200"
+            className="group-hover:scale-105 transition-transform duration-200"
             priority={priority}
           />
         ) : (
@@ -154,11 +156,12 @@ export default function AuctionCard({
         {showShopInfo && auction.shop && (
           <div className="flex items-center gap-2 mb-2">
             {auction.shop.logo && (
-              <Image
+              <OptimizedImage
                 src={auction.shop.logo}
                 alt={auction.shop.name}
                 width={20}
                 height={20}
+                quality={90}
                 className="rounded-full"
               />
             )}

@@ -1,65 +1,79 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../lib/session";
+import { withCache } from "@/app/api/middleware/cache";
 
 // GET /api/categories - List categories (public)
 // POST /api/categories - Create category (admin only)
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const isFeatured = searchParams.get("isFeatured");
-    const showOnHomepage = searchParams.get("showOnHomepage");
-    const parentId = searchParams.get("parentId");
+  return withCache(
+    request,
+    async (req: NextRequest) => {
+      try {
+        const { searchParams } = new URL(req.url);
+        const isFeatured = searchParams.get("isFeatured");
+        const showOnHomepage = searchParams.get("showOnHomepage");
+        const parentId = searchParams.get("parentId");
 
-    let query: FirebaseFirestore.Query = Collections.categories();
+        let query: FirebaseFirestore.Query = Collections.categories();
 
-    if (isFeatured !== null) {
-      query = query.where("is_featured", "==", isFeatured === "true");
+        if (isFeatured !== null) {
+          query = query.where("is_featured", "==", isFeatured === "true");
+        }
+        if (showOnHomepage !== null) {
+          query = query.where(
+            "show_on_homepage",
+            "==",
+            showOnHomepage === "true"
+          );
+        }
+        if (parentId !== null) {
+          query = query.where(
+            "parent_id",
+            "==",
+            parentId === "null" ? null : parentId
+          );
+        }
+
+        const snapshot = await query.limit(200).get();
+        const categories = snapshot.docs.map((d) => {
+          const data: any = d.data();
+          return {
+            id: d.id,
+            ...data,
+            // Add camelCase aliases for frontend compatibility with multi-parent support
+            parentIds:
+              data.parent_ids || (data.parent_id ? [data.parent_id] : []),
+            childrenIds: data.children_ids || [],
+            parentId: data.parent_id, // Backward compatibility
+            isFeatured: data.is_featured,
+            showOnHomepage: data.show_on_homepage,
+            isActive: data.is_active,
+            productCount: data.product_count || 0,
+            childCount: data.child_count || 0,
+            hasChildren: data.has_children || false,
+            sortOrder: data.sort_order || 0,
+            metaTitle: data.meta_title,
+            metaDescription: data.meta_description,
+            commissionRate: data.commission_rate || 0,
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+          };
+        });
+
+        return NextResponse.json({ success: true, data: categories });
+      } catch (error) {
+        console.error("Error listing categories:", error);
+        return NextResponse.json(
+          { success: false, error: "Failed to list categories" },
+          { status: 500 }
+        );
+      }
+    },
+    {
+      ttl: 300,
     }
-    if (showOnHomepage !== null) {
-      query = query.where("show_on_homepage", "==", showOnHomepage === "true");
-    }
-    if (parentId !== null) {
-      query = query.where(
-        "parent_id",
-        "==",
-        parentId === "null" ? null : parentId
-      );
-    }
-
-    const snapshot = await query.limit(200).get();
-    const categories = snapshot.docs.map((d) => {
-      const data: any = d.data();
-      return {
-        id: d.id,
-        ...data,
-        // Add camelCase aliases for frontend compatibility with multi-parent support
-        parentIds: data.parent_ids || (data.parent_id ? [data.parent_id] : []),
-        childrenIds: data.children_ids || [],
-        parentId: data.parent_id, // Backward compatibility
-        isFeatured: data.is_featured,
-        showOnHomepage: data.show_on_homepage,
-        isActive: data.is_active,
-        productCount: data.product_count || 0,
-        childCount: data.child_count || 0,
-        hasChildren: data.has_children || false,
-        sortOrder: data.sort_order || 0,
-        metaTitle: data.meta_title,
-        metaDescription: data.meta_description,
-        commissionRate: data.commission_rate || 0,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      };
-    });
-
-    return NextResponse.json({ success: true, data: categories });
-  } catch (error) {
-    console.error("Error listing categories:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to list categories" },
-      { status: 500 }
-    );
-  }
+  );
 }
 
 export async function POST(request: NextRequest) {

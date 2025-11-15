@@ -24,7 +24,7 @@ export function generateOrganizationSchema() {
     contactPoint: [
       {
         "@type": "ContactPoint",
-        telephone: "+91-XXXX-XXXXXX",
+        telephone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-9876543210",
         contactType: "customer service",
         areaServed: "IN",
         availableLanguage: ["English", "Hindi"],
@@ -156,7 +156,7 @@ export function generateProductSchema({
  * FAQ schema for FAQ pages
  */
 export function generateFAQSchema(
-  faqs: Array<{ question: string; answer: string }>,
+  faqs: Array<{ question: string; answer: string }>
 ) {
   return {
     "@context": "https://schema.org",
@@ -176,7 +176,7 @@ export function generateFAQSchema(
  * Breadcrumb schema
  */
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>,
+  items: Array<{ name: string; url: string }>
 ) {
   return {
     "@context": "https://schema.org",
@@ -205,7 +205,7 @@ export function generateLocalBusinessSchema() {
     url: siteConfig.url,
     logo: `${siteConfig.url}/logo.png`,
     image: `${siteConfig.url}/og-image.jpg`,
-    telephone: "+91-XXXX-XXXXXX",
+    telephone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-9876543210",
     email: "support@letitrip.com",
     address: {
       "@type": "PostalAddress",
@@ -247,7 +247,7 @@ export function generateItemListSchema(
     url: string;
     image: string;
     price: number;
-  }>,
+  }>
 ) {
   return {
     "@context": "https://schema.org",

@@ -36,6 +36,19 @@
           "value": "nosniff"
         }
       ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=60, stale-while-revalidate=300"
+        }
+      ]
     }
-  ]
+  ],
+  "images": {
+    "domains": ["firebasestorage.googleapis.com"],
+    "formats": ["image/avif", "image/webp"]
+  }
 }

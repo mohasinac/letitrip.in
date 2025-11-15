@@ -549,10 +549,16 @@ export default function RefundPolicyPage() {
           <a href="/support/ticket">Create Ticket</a>
         </li>
         <li>
-          <strong>Phone:</strong> +91-XXXX-XXXXXX (Mon-Sat, 10 AM - 7 PM IST)
+          <strong>Phone:</strong>{" "}
+          {process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-9876543210"} (Mon-Sat,
+          10 AM - 7 PM IST)
         </li>
         <li>
-          <strong>WhatsApp:</strong> +91-XXXX-XXXXXX (Quick queries)
+          <strong>WhatsApp:</strong>{" "}
+          {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||
+            process.env.NEXT_PUBLIC_CONTACT_PHONE ||
+            "+91-9876543210"}{" "}
+          (Quick queries)
         </li>
       </ul>
 

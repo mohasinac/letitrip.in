@@ -1,9 +1,46 @@
-// API Service - Base HTTP client
+// API Service - Base HTTP client with request deduplication
 class ApiService {
   private baseUrl: string;
+  private pendingRequests: Map<string, Promise<any>>;
 
   constructor(baseUrl: string = "/api") {
     this.baseUrl = baseUrl;
+    this.pendingRequests = new Map();
+  }
+
+  /**
+   * Generate a unique cache key for a request
+   * Combines URL, method, and body to create a unique identifier
+   */
+  private getCacheKey(url: string, method: string, body?: string): string {
+    return `${method}:${url}${body ? `:${body}` : ""}`;
+  }
+
+  /**
+   * Check if there's a pending request for the same endpoint
+   * If yes, return the existing promise to avoid duplicate requests
+   */
+  private async deduplicateRequest<T>(
+    cacheKey: string,
+    requestFn: () => Promise<T>
+  ): Promise<T> {
+    // Check if there's already a pending request
+    if (this.pendingRequests.has(cacheKey)) {
+      console.log(`[API] Deduplicating request: ${cacheKey}`);
+      return this.pendingRequests.get(cacheKey) as Promise<T>;
+    }
+
+    // Create new request
+    const requestPromise = requestFn()
+      .finally(() => {
+        // Remove from pending requests when complete
+        this.pendingRequests.delete(cacheKey);
+      });
+
+    // Store in pending requests
+    this.pendingRequests.set(cacheKey, requestPromise);
+
+    return requestPromise;
   }
 
   private async request<T>(
@@ -79,10 +116,17 @@ class ApiService {
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: "GET",
-    });
+    // Create cache key for deduplication
+    const url = `${this.baseUrl}${endpoint}`;
+    const cacheKey = this.getCacheKey(url, "GET");
+
+    // Deduplicate GET requests (safe since GET is idempotent)
+    return this.deduplicateRequest(cacheKey, () =>
+      this.request<T>(endpoint, {
+        ...options,
+        method: "GET",
+      })
+    );
   }
 
   async post<T>(
@@ -90,11 +134,21 @@ class ApiService {
     data?: any,
     options?: RequestInit
   ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: "POST",
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    // For POST requests, include body in cache key for idempotent operations
+    // This allows deduplication of identical POST requests (e.g., search queries)
+    const url = `${this.baseUrl}${endpoint}`;
+    const body = data ? JSON.stringify(data) : undefined;
+    const cacheKey = this.getCacheKey(url, "POST", body);
+
+    // Only deduplicate if the POST is likely idempotent (same data)
+    // This prevents duplicate submissions of forms/searches
+    return this.deduplicateRequest(cacheKey, () =>
+      this.request<T>(endpoint, {
+        ...options,
+        method: "POST",
+        body,
+      })
+    );
   }
 
   async put<T>(

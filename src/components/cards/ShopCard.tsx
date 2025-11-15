@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { Star, MapPin, BadgeCheck, ShoppingBag } from "lucide-react";
 import { formatCompactNumber } from "@/lib/formatters";
 
@@ -67,11 +67,12 @@ export const ShopCard: React.FC<ShopCardProps> = ({
       {/* Banner */}
       {showBanner && banner && !compact && (
         <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">
-          <Image
+          <OptimizedImage
             src={banner}
             alt={`${name} banner`}
             fill
-            className="object-cover"
+            quality={85}
+            objectFit="cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
           {isFeatured && (
@@ -103,11 +104,12 @@ export const ShopCard: React.FC<ShopCardProps> = ({
             }`}
           >
             {logo ? (
-              <Image
+              <OptimizedImage
                 src={logo}
                 alt={name}
                 width={compact ? 64 : 80}
                 height={compact ? 64 : 80}
+                quality={90}
                 className="object-cover"
               />
             ) : (
