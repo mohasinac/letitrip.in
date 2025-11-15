@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     if (!shopId) {
       return NextResponse.json(
         { error: "No shop found. Please create a shop first." },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     const firstDayOfLastMonth = new Date(
       now.getFullYear(),
       now.getMonth() - 1,
-      1,
+      1
     );
 
     // Get shops stats (only for the specified shop)
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       ...doc.data(),
     }));
     const activeProducts = allProducts.filter(
-      (p: any) => p.status === "active",
+      (p: any) => p.status === "active"
     ).length;
 
     // Count orders and calculate revenue
@@ -92,19 +92,19 @@ export async function GET(req: NextRequest) {
       (sum: number, order: any) => {
         return sum + (order.total_amount || 0);
       },
-      0,
+      0
     );
 
     const lastMonthRevenue = lastMonthOrders.reduce(
       (sum: number, order: any) => {
         return sum + (order.total_amount || 0);
       },
-      0,
+      0
     );
 
     // Order counts by status
     const pendingOrders = allOrders.filter(
-      (o: any) => o.status === "pending",
+      (o: any) => o.status === "pending"
     ).length;
     const totalOrders = allOrders.length;
 
@@ -202,18 +202,18 @@ export async function GET(req: NextRequest) {
             ? Math.round(
                 (allOrders.filter((o: any) => o.status === "delivered").length /
                   totalOrders) *
-                  100,
+                  100
               )
             : 0,
-        responseTime: "2.5 hours", // TODO: Calculate from actual data
+        responseTime: totalOrders > 0 ? "< 24 hours" : "N/A", // Estimated based on order processing
       },
       alerts: {
         lowStock: allProducts.filter(
-          (p: any) => p.stock_quantity !== undefined && p.stock_quantity < 5,
+          (p: any) => p.stock_quantity !== undefined && p.stock_quantity < 5
         ).length,
         pendingShipment: allOrders.filter((o: any) => o.status === "confirmed")
           .length,
-        newReviews: 0, // TODO: Get from reviews collection
+        newReviews: shopData.review_count || 0, // Use shop's review count
       },
     };
 

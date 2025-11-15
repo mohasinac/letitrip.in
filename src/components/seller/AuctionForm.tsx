@@ -5,15 +5,15 @@ import { Loader2, ImagePlus, X, Video } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import type { AuctionFormFE } from "@/types/frontend/auction.types";
+import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { auctionsService } from "@/services/auctions.service";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
-  initialData?: any; // TODO: Create proper ProductAuctionFormFE type
+  initialData?: Partial<ProductAuctionFormFE>;
   shopId?: string;
-  onSubmit: (data: any) => void; // TODO: Create proper ProductAuctionFormFE type
+  onSubmit: (data: ProductAuctionFormFE) => void;
   isSubmitting?: boolean;
 }
 

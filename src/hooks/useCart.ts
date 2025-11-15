@@ -8,12 +8,53 @@ import type { CartItemFE, CartFE } from "@/types";
 export function useCart() {
   const { user } = useAuth();
   const [cart, setCart] = useState<CartFE | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMerging, setIsMerging] = useState(false);
   const [mergeSuccess, setMergeSuccess] = useState(false);
 
-  // Load cart (authenticated or guest)
+  // Transform guest cart items to full CartItemFE objects
+  const transformGuestItems = useCallback(
+    (items: CartItemFE[]): CartItemFE[] => {
+      const now = new Date();
+      return items.map((item) => {
+        const subtotal = item.price * item.quantity;
+        const discount = item.discount || 0;
+        const total = subtotal - discount;
+
+        return {
+          ...item,
+          // Ensure all required fields are present
+          id: item.id || `guest_${Date.now()}_${Math.random()}`,
+          productSlug:
+            item.productSlug ||
+            item.productName.toLowerCase().replace(/\s+/g, "-"),
+          variantId: item.variantId || null,
+          variantName: item.variantName || null,
+          sku: item.sku || "",
+          maxQuantity: item.maxQuantity || 100,
+          subtotal,
+          discount,
+          total,
+          isAvailable: item.isAvailable !== false,
+          addedAt: item.addedAt || now,
+          // Computed fields
+          formattedPrice: `₹${item.price.toLocaleString("en-IN")}`,
+          formattedSubtotal: `₹${subtotal.toLocaleString("en-IN")}`,
+          formattedTotal: `₹${total.toLocaleString("en-IN")}`,
+          isOutOfStock: item.isAvailable === false,
+          isLowStock: (item.maxQuantity || 100) <= 5,
+          canIncrement: item.quantity < (item.maxQuantity || 100),
+          canDecrement: item.quantity > 1,
+          hasDiscount: discount > 0,
+          addedTimeAgo: item.addedTimeAgo || "Recently added",
+        };
+      });
+    },
+    []
+  );
+
+  // Load cart data
   const loadCart = useCallback(async () => {
     try {
       setLoading(true);
@@ -26,11 +67,11 @@ export function useCart() {
       } else {
         // Guest user - load from localStorage
         const guestItems = cartService.getGuestCart();
+        const transformedItems = transformGuestItems(guestItems);
 
         // For guest cart, create a minimal CartFE-like structure
-        // TODO: Transform guest items to full CartItemFE objects
-        const subtotal = guestItems.reduce(
-          (sum, item) => sum + item.price * item.quantity,
+        const subtotal = transformedItems.reduce(
+          (sum, item) => sum + item.total,
           0
         );
         const tax = subtotal * 0.18;
@@ -40,8 +81,11 @@ export function useCart() {
         setCart({
           id: "guest",
           userId: "guest",
-          items: guestItems as any as CartItemFE[], // Guest items are simplified
-          itemCount: guestItems.reduce((sum, item) => sum + item.quantity, 0),
+          items: transformedItems,
+          itemCount: transformedItems.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          ),
           subtotal,
           discount: 0,
           tax,
@@ -53,13 +97,13 @@ export function useCart() {
           formattedDiscount: "₹0",
           formattedTax: `₹${tax.toLocaleString("en-IN")}`,
           formattedTotal: `₹${total.toLocaleString("en-IN")}`,
-          isEmpty: guestItems.length === 0,
-          hasItems: guestItems.length > 0,
+          isEmpty: transformedItems.length === 0,
+          hasItems: transformedItems.length > 0,
           hasUnavailableItems: false,
           hasDiscount: false,
           itemsByShop: new Map(),
           shopIds: [],
-          canCheckout: guestItems.length > 0,
+          canCheckout: transformedItems.length > 0,
           validationErrors: [],
           validationWarnings: [],
           expiresIn: null,
@@ -71,7 +115,7 @@ export function useCart() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, transformGuestItems]);
 
   // Add item to cart (with optional product details for guest users)
   const addItem = useCallback(

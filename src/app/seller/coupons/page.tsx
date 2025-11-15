@@ -18,6 +18,7 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
 import type { CouponFE } from "@/types/frontend/coupon.types";
+import { toast } from "@/components/admin/Toast";
 
 export default function CouponsPage() {
   const { user } = useAuth();
@@ -52,7 +53,7 @@ export default function CouponsPage() {
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    // TODO: Show toast notification
+    toast.success("Coupon code copied to clipboard");
   };
 
   const handleDelete = async (code: string) => {
@@ -61,10 +62,10 @@ export default function CouponsPage() {
     try {
       await couponsService.delete(code);
       setCoupons(coupons.filter((c) => c.code !== code));
-      // TODO: Show success toast
+      toast.success("Coupon deleted successfully");
     } catch (err) {
       console.error("Error deleting coupon:", err);
-      // TODO: Show error toast
+      toast.error("Failed to delete coupon");
     }
   };
 

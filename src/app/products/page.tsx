@@ -88,7 +88,7 @@ function ProductsContent() {
           price: product.price,
           image: product.images?.[0] || "",
           shopId: product.shopId,
-          shopName: product.shopId, // TODO: Get actual shop name from shop service
+          shopName: product.shop?.name || "Unknown Shop",
         };
       }
 

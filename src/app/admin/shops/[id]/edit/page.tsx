@@ -136,14 +136,15 @@ export default function AdminEditShopPage() {
       }
 
       // Populate form with available fields from ShopFE
-      // TODO: Add missing fields to ShopBE/ShopFE: location, website, social links, gst, pan, policies, bankDetails, upiId
       setFormData({
         name: shopData.name,
         slug: shopData.slug,
         description: shopData.description || "",
         email: shopData.email || "",
         phone: shopData.phone || "",
-        location: "", // Not in ShopFE yet
+        location: `${shopData.city || ""}, ${shopData.state || ""}`
+          .trim()
+          .replace(/^,|,$/g, ""),
         address: {
           line1: shopData.address || "",
           line2: "",
@@ -152,22 +153,22 @@ export default function AdminEditShopPage() {
           pincode: shopData.postalCode || "",
           country: "India",
         },
-        website: "", // Not in ShopFE yet
-        facebook: "", // Not in ShopFE yet
-        instagram: "", // Not in ShopFE yet
-        twitter: "", // Not in ShopFE yet
-        gst: "", // Not in ShopFE yet
-        pan: "", // Not in ShopFE yet
-        returnPolicy: "", // Not in ShopFE yet
-        shippingPolicy: "", // Not in ShopFE yet
+        website: shopData.website || "",
+        facebook: shopData.socialLinks?.facebook || "",
+        instagram: shopData.socialLinks?.instagram || "",
+        twitter: shopData.socialLinks?.twitter || "",
+        gst: shopData.gst || "",
+        pan: shopData.pan || "",
+        returnPolicy: shopData.policies?.returnPolicy || "",
+        shippingPolicy: shopData.policies?.shippingPolicy || "",
         bankDetails: {
-          accountHolderName: "",
-          accountNumber: "",
-          ifscCode: "",
-          bankName: "",
-          branchName: "",
-        }, // Not in ShopFE yet
-        upiId: "", // Not in ShopFE yet
+          accountHolderName: shopData.bankDetails?.accountHolderName || "",
+          accountNumber: shopData.bankDetails?.accountNumber || "",
+          ifscCode: shopData.bankDetails?.ifscCode || "",
+          bankName: shopData.bankDetails?.bankName || "",
+          branchName: shopData.bankDetails?.branchName || "",
+        },
+        upiId: shopData.upiId || "",
       });
     } catch (error) {
       console.error("Failed to load shop:", error);

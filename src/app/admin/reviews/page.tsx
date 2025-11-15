@@ -13,7 +13,7 @@ import {
 import { REVIEW_FILTERS } from "@/constants/filters";
 import { getReviewBulkActions } from "@/constants/bulk-actions";
 import { reviewsService } from "@/services/reviews.service";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { Star, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 
 export default function AdminReviewsPage() {
@@ -52,7 +52,7 @@ export default function AdminReviewsPage() {
 
   const handleBulkAction = async (actionId: string) => {
     if (selectedReviews.size === 0) {
-      // toast.error("Please select reviews first");
+      toast.error("Please select reviews first");
       return;
     }
 
@@ -66,7 +66,7 @@ export default function AdminReviewsPage() {
               reviewsService.moderate(id, { isApproved: true })
             )
           );
-          // toast.success(`${reviewIds.length} reviews approved`);
+          toast.success(`${reviewIds.length} reviews approved`);
           break;
         case "reject":
           await Promise.all(
@@ -77,7 +77,7 @@ export default function AdminReviewsPage() {
               })
             )
           );
-          // toast.success(`${reviewIds.length} reviews rejected`);
+          toast.success(`${reviewIds.length} reviews rejected`);
           break;
         case "flag":
           await Promise.all(
@@ -88,28 +88,28 @@ export default function AdminReviewsPage() {
               })
             )
           );
-          // toast.success(`${reviewIds.length} reviews flagged`);
+          toast.success(`${reviewIds.length} reviews flagged`);
           break;
         case "delete":
           await Promise.all(reviewIds.map((id) => reviewsService.delete(id)));
-          // toast.success(`${reviewIds.length} reviews deleted`);
+          toast.success(`${reviewIds.length} reviews deleted`);
           break;
       }
 
       setSelectedReviews(new Set());
       loadReviews();
     } catch (error: any) {
-      // toast.error(error.message || "Bulk action failed");
+      toast.error(error.message || "Bulk action failed");
     }
   };
 
   const handleModerate = async (id: string, status: string) => {
     try {
       await reviewsService.moderate(id, { isApproved: status === "approved" });
-      // toast.success(`Review ${status}`);
+      toast.success(`Review ${status}`);
       loadReviews();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to moderate review");
+      toast.error(error.message || "Failed to moderate review");
     }
   };
 

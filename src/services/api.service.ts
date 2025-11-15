@@ -1,11 +1,17 @@
+import { trackSlowAPI, trackAPIError, trackCacheHit } from "@/lib/analytics";
+
 // API Service - Base HTTP client with request deduplication
 class ApiService {
   private baseUrl: string;
   private pendingRequests: Map<string, Promise<any>>;
+  private cacheHits: Map<string, number>;
+  private cacheMisses: Map<string, number>;
 
   constructor(baseUrl: string = "/api") {
     this.baseUrl = baseUrl;
     this.pendingRequests = new Map();
+    this.cacheHits = new Map();
+    this.cacheMisses = new Map();
   }
 
   /**
@@ -27,15 +33,23 @@ class ApiService {
     // Check if there's already a pending request
     if (this.pendingRequests.has(cacheKey)) {
       console.log(`[API] Deduplicating request: ${cacheKey}`);
+      // Track cache hit
+      const hits = this.cacheHits.get(cacheKey) || 0;
+      this.cacheHits.set(cacheKey, hits + 1);
+      trackCacheHit(cacheKey, true);
       return this.pendingRequests.get(cacheKey) as Promise<T>;
     }
 
+    // Track cache miss
+    const misses = this.cacheMisses.get(cacheKey) || 0;
+    this.cacheMisses.set(cacheKey, misses + 1);
+    trackCacheHit(cacheKey, false);
+
     // Create new request
-    const requestPromise = requestFn()
-      .finally(() => {
-        // Remove from pending requests when complete
-        this.pendingRequests.delete(cacheKey);
-      });
+    const requestPromise = requestFn().finally(() => {
+      // Remove from pending requests when complete
+      this.pendingRequests.delete(cacheKey);
+    });
 
     // Store in pending requests
     this.pendingRequests.set(cacheKey, requestPromise);
@@ -64,8 +78,15 @@ class ApiService {
       },
     };
 
+    // Track request start time
+    const startTime = Date.now();
+
     try {
       const response = await fetch(url, config);
+
+      // Track response time
+      const duration = Date.now() - startTime;
+      trackSlowAPI(endpoint, duration);
 
       // Handle rate limiting
       if (response.status === 429) {
@@ -108,11 +129,39 @@ class ApiService {
 
       return data;
     } catch (error) {
+      // Track API errors
+      trackAPIError(endpoint, error);
+
       if (error instanceof Error) {
         throw error;
       }
       throw new Error("An unexpected error occurred");
     }
+  }
+
+  /**
+   * Get cache statistics for monitoring
+   */
+  getCacheStats(): {
+    hits: Record<string, number>;
+    misses: Record<string, number>;
+    hitRate: number;
+  } {
+    const hits = Object.fromEntries(this.cacheHits);
+    const misses = Object.fromEntries(this.cacheMisses);
+
+    const totalHits = Array.from(this.cacheHits.values()).reduce(
+      (a, b) => a + b,
+      0
+    );
+    const totalMisses = Array.from(this.cacheMisses.values()).reduce(
+      (a, b) => a + b,
+      0
+    );
+    const hitRate =
+      totalHits + totalMisses > 0 ? totalHits / (totalHits + totalMisses) : 0;
+
+    return { hits, misses, hitRate };
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {

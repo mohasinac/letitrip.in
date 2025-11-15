@@ -7,6 +7,7 @@ import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { productsService } from "@/services/products.service";
+import { mediaService } from "@/services/media.service";
 
 const STEPS = [
   { id: 1, name: "Basic Info", description: "Name, category, and brand" },
@@ -64,6 +65,11 @@ export default function CreateProductPage() {
   const [newFeature, setNewFeature] = useState("");
   const [newSpecKey, setNewSpecKey] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingVideos, setUploadingVideos] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: number;
+  }>({});
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
@@ -617,14 +623,42 @@ export default function CreateProductPage() {
                 accept="image/*"
                 className="hidden"
                 id="image-upload"
-                onChange={(e) => {
+                disabled={uploadingImages}
+                onChange={async (e) => {
                   if (e.target.files) {
                     const files = Array.from(e.target.files);
-                    // TODO: Implement actual image upload
-                    console.log("Files to upload:", files);
-                    alert(
-                      "Image upload feature coming soon. This will use Firebase Storage."
-                    );
+                    setUploadingImages(true);
+
+                    try {
+                      const uploadPromises = files.map(async (file, index) => {
+                        const key = `image-${index}`;
+                        setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+                        const result = await mediaService.upload({
+                          file,
+                          context: "product",
+                        });
+
+                        setUploadProgress((prev) => ({
+                          ...prev,
+                          [key]: 100,
+                        }));
+
+                        return result.url;
+                      });
+
+                      const uploadedUrls = await Promise.all(uploadPromises);
+                      setFormData((prev) => ({
+                        ...prev,
+                        images: [...prev.images, ...uploadedUrls],
+                      }));
+                    } catch (error) {
+                      console.error("Image upload failed:", error);
+                      alert("Failed to upload images. Please try again.");
+                    } finally {
+                      setUploadingImages(false);
+                      setUploadProgress({});
+                    }
                   }
                 }}
               />
@@ -632,11 +666,71 @@ export default function CreateProductPage() {
                 htmlFor="image-upload"
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
               >
-                Select Images
+                {uploadingImages ? "Uploading..." : "Select Images"}
               </label>
               <p className="mt-2 text-xs text-gray-500">
                 PNG, JPG, GIF up to 10MB each
               </p>
+
+              {/* Upload Progress */}
+              {uploadingImages && (
+                <div className="mt-4 space-y-2">
+                  {Object.entries(uploadProgress)
+                    .filter(([key]) => key.startsWith("image-"))
+                    .map(([key, progress]) => (
+                      <div key={key} className="flex items-center gap-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {progress}%
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* Uploaded Images */}
+              {formData.images.length > 0 && (
+                <div className="mt-4 grid grid-cols-4 gap-4">
+                  {formData.images.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={url}
+                        alt={`Product ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            images: prev.images.filter((_, i) => i !== index),
+                          }));
+                        }}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
@@ -667,14 +761,42 @@ export default function CreateProductPage() {
                 accept="video/*"
                 className="hidden"
                 id="video-upload"
-                onChange={(e) => {
+                disabled={uploadingVideos}
+                onChange={async (e) => {
                   if (e.target.files) {
                     const files = Array.from(e.target.files);
-                    // TODO: Implement actual video upload
-                    console.log("Videos to upload:", files);
-                    alert(
-                      "Video upload feature coming soon. This will use Firebase Storage."
-                    );
+                    setUploadingVideos(true);
+
+                    try {
+                      const uploadPromises = files.map(async (file, index) => {
+                        const key = `video-${index}`;
+                        setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+                        const result = await mediaService.upload({
+                          file,
+                          context: "product",
+                        });
+
+                        setUploadProgress((prev) => ({
+                          ...prev,
+                          [key]: 100,
+                        }));
+
+                        return result.url;
+                      });
+
+                      const uploadedUrls = await Promise.all(uploadPromises);
+                      setFormData((prev) => ({
+                        ...prev,
+                        videos: [...prev.videos, ...uploadedUrls],
+                      }));
+                    } catch (error) {
+                      console.error("Video upload failed:", error);
+                      alert("Failed to upload videos. Please try again.");
+                    } finally {
+                      setUploadingVideos(false);
+                      setUploadProgress({});
+                    }
                   }
                 }}
               />
@@ -682,11 +804,72 @@ export default function CreateProductPage() {
                 htmlFor="video-upload"
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
               >
-                Select Videos
+                {uploadingVideos ? "Uploading..." : "Select Videos"}
               </label>
               <p className="mt-2 text-xs text-gray-500">
                 MP4, WebM up to 100MB each
               </p>
+
+              {/* Upload Progress */}
+              {uploadingVideos && (
+                <div className="mt-4 space-y-2">
+                  {Object.entries(uploadProgress)
+                    .filter(([key]) => key.startsWith("video-"))
+                    .map(([key, progress]) => (
+                      <div key={key} className="flex items-center gap-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-600 h-2 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {progress}%
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* Uploaded Videos */}
+              {formData.videos.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {formData.videos.map((url, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                    >
+                      <span className="text-sm text-gray-700 truncate">
+                        Video {index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            videos: prev.videos.filter((_, i) => i !== index),
+                          }));
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-lg bg-blue-50 p-4">

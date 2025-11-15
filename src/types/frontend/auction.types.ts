@@ -229,6 +229,24 @@ export interface AuctionFormFE {
 }
 
 /**
+ * Product auction form data (for seller auction creation/editing)
+ * Used in AuctionForm component
+ */
+export interface ProductAuctionFormFE {
+  shopId: string | null;
+  name: string;
+  slug: string;
+  description: string;
+  startingBid: number;
+  reservePrice: number | null;
+  startTime: Date;
+  endTime: Date;
+  status: AuctionStatus;
+  images: string[];
+  videos: string[];
+}
+
+/**
  * Auction stats for dashboard
  */
 export interface AuctionStatsFE {

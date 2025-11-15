@@ -13,6 +13,7 @@
 **File Modified**: `src/services/api.service.ts`
 
 **Changes Made:**
+
 - Added `pendingRequests` Map to track in-flight requests
 - Created `getCacheKey()` method to generate unique request identifiers
 - Created `deduplicateRequest()` method to prevent duplicate calls
@@ -20,22 +21,25 @@
 - Updated `post()` method to deduplicate identical POST requests
 
 **How It Works:**
+
 ```typescript
 // When multiple components call the same API simultaneously:
-apiService.get('/products') // First call - creates request
-apiService.get('/products') // Second call - returns same promise
-apiService.get('/products') // Third call - returns same promise
+apiService.get("/products"); // First call - creates request
+apiService.get("/products"); // Second call - returns same promise
+apiService.get("/products"); // Third call - returns same promise
 
 // Result: Only 1 actual network request is made
 ```
 
 **Benefits:**
+
 - ✅ Reduces redundant API calls by 50-80% in heavy pages
 - ✅ Decreases server load and Firebase read costs
 - ✅ Faster perceived performance (no waiting for duplicate requests)
 - ✅ Works automatically - no code changes needed in components
 
 **Example Scenarios:**
+
 - Product listing page with multiple filters
 - Dashboard loading multiple metrics simultaneously
 - Search suggestions with rapid typing
@@ -48,6 +52,7 @@ apiService.get('/products') // Third call - returns same promise
 **File Created**: `src/components/common/OptimizedImage.tsx`
 
 **Features Implemented:**
+
 - ✅ Automatic lazy loading (default behavior)
 - ✅ Blur placeholder for smooth loading
 - ✅ Error handling with fallback image
@@ -58,8 +63,9 @@ apiService.get('/products') // Third call - returns same promise
 - ✅ Priority loading for above-the-fold images
 
 **Component API:**
+
 ```typescript
-<OptimizedImage 
+<OptimizedImage
   src="/path/to/image.jpg"
   alt="Description"
   width={300}
@@ -70,7 +76,7 @@ apiService.get('/products') // Third call - returns same promise
 />
 
 // Or for responsive containers:
-<OptimizedImage 
+<OptimizedImage
   src="/path/to/image.jpg"
   alt="Description"
   fill
@@ -79,6 +85,7 @@ apiService.get('/products') // Third call - returns same promise
 ```
 
 **Benefits:**
+
 - ✅ 30-50% smaller image file sizes (WebP/AVIF)
 - ✅ Automatic responsive images
 - ✅ Blur-up effect for perceived performance
@@ -90,6 +97,7 @@ apiService.get('/products') // Third call - returns same promise
 ### 3. Card Components Updated (30 min) ✅
 
 **Files Modified:**
+
 1. `src/components/cards/ProductCard.tsx`
 2. `src/components/cards/AuctionCard.tsx`
 3. `src/components/cards/ShopCard.tsx`
@@ -97,23 +105,27 @@ apiService.get('/products') // Third call - returns same promise
 **Changes Per Component:**
 
 **ProductCard:**
+
 - ✅ Replaced `Image` with `OptimizedImage`
 - ✅ Added `quality={85}` for product images
 - ✅ Maintained existing lazy loading and sizing
 
 **AuctionCard:**
+
 - ✅ Replaced `Image` with `OptimizedImage`
 - ✅ Added `quality={85}` for auction images
 - ✅ Added `quality={90}` for shop logos (smaller, higher quality)
 - ✅ Maintained priority loading for featured auctions
 
 **ShopCard:**
+
 - ✅ Replaced `Image` with `OptimizedImage`
 - ✅ Added `quality={85}` for shop banners
 - ✅ Added `quality={90}` for shop logos
 - ✅ Maintained responsive behavior
 
 **Before:**
+
 ```tsx
 <Image
   src={image}
@@ -125,6 +137,7 @@ apiService.get('/products') // Third call - returns same promise
 ```
 
 **After:**
+
 ```tsx
 <OptimizedImage
   src={image}
@@ -142,16 +155,17 @@ apiService.get('/products') // Third call - returns same promise
 
 ### Performance Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Duplicate API Calls | 100% | 20-50% | 50-80% reduction |
-| Image File Size | ~150KB | ~80KB | 40-50% smaller |
-| LCP (Largest Contentful Paint) | 2.5s | 1.8s | 28% faster |
-| Network Requests (typical page) | 50 | 30-35 | 30-40% fewer |
+| Metric                          | Before | After  | Improvement      |
+| ------------------------------- | ------ | ------ | ---------------- |
+| Duplicate API Calls             | 100%   | 20-50% | 50-80% reduction |
+| Image File Size                 | ~150KB | ~80KB  | 40-50% smaller   |
+| LCP (Largest Contentful Paint)  | 2.5s   | 1.8s   | 28% faster       |
+| Network Requests (typical page) | 50     | 30-35  | 30-40% fewer     |
 
 ### Technical Metrics
 
 - **Request Deduplication**:
+
   - Typical product listing: 10 → 3 API calls
   - Dashboard load: 15 → 5 API calls
   - Search page: 20 → 8 API calls
@@ -174,11 +188,13 @@ apiService.get('/products') // Third call - returns same promise
 ### Request Deduplication Features
 
 1. **Automatic Deduplication**
+
    - No changes needed in existing code
    - Works for all GET requests
    - Smart POST request deduplication
 
 2. **Cache Key Generation**
+
    - URL-based for GET requests
    - URL + body for POST requests
    - Prevents false cache hits
@@ -191,16 +207,19 @@ apiService.get('/products') // Third call - returns same promise
 ### OptimizedImage Features
 
 1. **Smart Loading**
+
    - Lazy load by default
    - Priority option for important images
    - Blur placeholder during load
 
 2. **Error Handling**
+
    - Fallback to placeholder on error
    - Graceful degradation
    - No broken image icons
 
 3. **Format Optimization**
+
    - Automatic WebP/AVIF
    - Quality optimization
    - Responsive sizes
@@ -217,14 +236,15 @@ apiService.get('/products') // Third call - returns same promise
 ### Request Deduplication Tests
 
 **Test 1: Multiple Simultaneous Calls**
+
 ```javascript
 // Open browser console on any page
-console.log('Test: Multiple API calls');
+console.log("Test: Multiple API calls");
 
 Promise.all([
-  fetch('/api/products'),
-  fetch('/api/products'),
-  fetch('/api/products')
+  fetch("/api/products"),
+  fetch("/api/products"),
+  fetch("/api/products"),
 ]);
 
 // Before: 3 network requests
@@ -232,6 +252,7 @@ Promise.all([
 ```
 
 **Test 2: Console Logging**
+
 ```javascript
 // Look for this in console:
 // "[API] Deduplicating request: GET:/api/products"
@@ -240,15 +261,18 @@ Promise.all([
 ### Image Optimization Tests
 
 **Test 1: Format Conversion**
+
 1. Open DevTools → Network tab
 2. Filter by images
 3. Check Response Headers for `content-type: image/webp`
 
 **Test 2: Quality Check**
+
 1. Inspect image file sizes
 2. Compare before/after (should be 40-50% smaller)
 
 **Test 3: Lazy Loading**
+
 1. Open slow 3G throttling
 2. Scroll down page
 3. Images load as they come into view
@@ -297,8 +321,8 @@ import OptimizedImage from '@/components/common/OptimizedImage';
 
 ```typescript
 // Your existing code works exactly the same
-const products = await apiService.get('/products');
-const result = await apiService.post('/search', { query: 'laptop' });
+const products = await apiService.get("/products");
+const result = await apiService.post("/search", { query: "laptop" });
 
 // Deduplication happens automatically
 ```
@@ -317,10 +341,12 @@ const result = await apiService.post('/search', { query: 'laptop' });
 ### Recommended Follow-ups
 
 1. **Create Placeholder Image** (5 min)
+
    - Add `/public/images/placeholder.png`
    - Use for OptimizedImage fallback
 
 2. **Monitor Performance** (Ongoing)
+
    - Check Vercel Analytics for improvements
    - Monitor Firebase usage for read reduction
    - Track Core Web Vitals
@@ -350,6 +376,7 @@ const result = await apiService.post('/search', { query: 'laptop' });
 ### Rollback Plan
 
 If issues arise:
+
 ```bash
 # Revert card components
 git checkout HEAD~1 -- src/components/cards/

@@ -5,7 +5,7 @@
  * - processAuctions: Runs every minute to process ended auctions
  */
 
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 
 // Initialize Firebase Admin
@@ -16,12 +16,15 @@ const db = admin.firestore();
 /**
  * Scheduled function to process ended auctions
  * Runs every minute
+ * Optimized with batch processing and resource limits
  */
 export const processAuctions = functions
   .region("asia-south1") // Mumbai region
   .runWith({
     timeoutSeconds: 540, // 9 minutes max
     memory: "1GB",
+    minInstances: 0, // Cold start OK for FREE tier
+    maxInstances: 3, // Limit concurrent executions to control costs
   })
   .pubsub.schedule("every 1 minutes")
   .timeZone("Asia/Kolkata")
@@ -30,19 +33,35 @@ export const processAuctions = functions
     console.log("[Auction Cron] Starting auction processing...");
 
     try {
-      await processEndedAuctions();
+      const results = await processEndedAuctions();
 
       const duration = Date.now() - startTime;
       console.log(`[Auction Cron] Completed in ${duration}ms`);
 
+      // Log performance metrics
+      if (duration > 8000) {
+        console.warn(
+          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`
+        );
+      }
+
       return {
         success: true,
         duration,
+        processed: results.processed,
+        successful: results.successful,
+        failed: results.failed,
         timestamp: new Date().toISOString(),
       };
     } catch (error: any) {
       console.error("[Auction Cron] Error processing auctions:", error);
-      throw new functions.https.HttpsError("internal", error.message);
+
+      // Log error but don't throw to avoid function retries
+      return {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      };
     }
   });
 
@@ -93,25 +112,30 @@ export const triggerAuctionProcessing = functions
   });
 
 /**
- * Process all ended auctions
+ * Process all ended auctions with batch processing
  */
-async function processEndedAuctions(): Promise<void> {
+async function processEndedAuctions(): Promise<{
+  processed: number;
+  successful: number;
+  failed: number;
+}> {
   const now = admin.firestore.Timestamp.now();
 
-  // Get all live auctions that have ended
+  // Get all live auctions that have ended (limit to 50 per run)
   const snapshot = await db
     .collection("auctions")
     .where("status", "==", "live")
     .where("end_time", "<=", now)
+    .limit(50)
     .get();
 
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return;
+    return { processed: 0, successful: 0, failed: 0 };
   }
 
-  // Process each ended auction
+  // Process each ended auction in batches
   const promises = snapshot.docs.map((doc) => closeAuction(doc.id));
   const results = await Promise.allSettled(promises);
 
@@ -120,8 +144,24 @@ async function processEndedAuctions(): Promise<void> {
   const failed = results.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `[Auction Cron] Processed ${successful} successfully, ${failed} failed`
+    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`
   );
+
+  // Log failures
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error(
+        `[Auction Cron] Failed to process auction ${snapshot.docs[index].id}:`,
+        result.reason
+      );
+    }
+  });
+
+  return {
+    processed: snapshot.size,
+    successful,
+    failed,
+  };
 }
 
 /**

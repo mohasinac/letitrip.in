@@ -10,7 +10,7 @@ import {
 } from "@/components/common/inline-edit";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
 
 export default function AdminReturnsPage() {
@@ -52,10 +52,10 @@ export default function AdminReturnsPage() {
 
     try {
       await returnsService.approve(id, { approved: true });
-      // toast.success("Return approved");
+      toast.success("Return approved");
       loadReturns();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to approve return");
+      toast.error(error.message || "Failed to approve return");
     }
   };
 
@@ -65,10 +65,10 @@ export default function AdminReturnsPage() {
 
     try {
       await returnsService.approve(id, { approved: false, notes: reason });
-      // toast.success("Return rejected");
+      toast.success("Return rejected");
       loadReturns();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to reject return");
+      toast.error(error.message || "Failed to reject return");
     }
   };
 

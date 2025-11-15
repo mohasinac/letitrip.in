@@ -34,6 +34,29 @@ export interface ShopFE {
     shippingCharge: number;
     freeShippingAbove: number | null;
   };
+
+  // Extended fields (optional - for admin/seller forms)
+  website?: string | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+  };
+  gst?: string | null;
+  pan?: string | null;
+  policies?: {
+    returnPolicy?: string | null;
+    shippingPolicy?: string | null;
+  };
+  bankDetails?: {
+    accountHolderName?: string | null;
+    accountNumber?: string | null;
+    ifscCode?: string | null;
+    bankName?: string | null;
+    branchName?: string | null;
+  };
+  upiId?: string | null;
+
   createdAt: Date;
   updatedAt: Date;
 
@@ -94,4 +117,23 @@ export interface ShopFormFE {
   city: string;
   state: string;
   postalCode: string;
+
+  // Extended fields (optional)
+  location?: string;
+  website?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  gst?: string;
+  pan?: string;
+  returnPolicy?: string;
+  shippingPolicy?: string;
+  bankDetails?: {
+    accountHolderName: string;
+    accountNumber: string;
+    ifscCode: string;
+    bankName: string;
+    branchName: string;
+  };
+  upiId?: string;
 }

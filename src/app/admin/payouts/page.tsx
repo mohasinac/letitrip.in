@@ -10,7 +10,7 @@ import {
 } from "@/components/common/inline-edit";
 import { payoutsService } from "@/services/payouts.service";
 import { PAYOUT_FILTERS } from "@/constants/filters";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { Eye, Download, CheckCircle, XCircle } from "lucide-react";
 
 export default function AdminPayoutsPage() {
@@ -95,10 +95,10 @@ export default function AdminPayoutsPage() {
       if (!transactionId) return;
 
       await payoutsService.processPayout(id, transactionId);
-      // toast.success("Payout processed");
+      toast.success("Payout processed");
       loadPayouts();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to process payout");
+      toast.error(error.message || "Failed to process payout");
     }
   };
 
@@ -108,16 +108,16 @@ export default function AdminPayoutsPage() {
 
     try {
       await payoutsService.cancelPayout(id, reason);
-      // toast.success("Payout rejected");
+      toast.success("Payout rejected");
       loadPayouts();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to reject payout");
+      toast.error(error.message || "Failed to reject payout");
     }
   };
 
   const handleBulkProcess = async () => {
     if (selectedPayouts.size === 0) {
-      // toast.error("Please select payouts first");
+      toast.error("Please select payouts first");
       return;
     }
 
@@ -127,11 +127,13 @@ export default function AdminPayoutsPage() {
       const result = await payoutsService.bulkProcess(
         Array.from(selectedPayouts)
       );
-      // toast.success(`${result.success} payouts processed, ${result.failed} failed`);
+      toast.success(
+        `${result.success} payouts processed, ${result.failed} failed`
+      );
       setSelectedPayouts(new Set());
       loadPayouts();
     } catch (error: any) {
-      // toast.error(error.message || "Bulk processing failed");
+      toast.error(error.message || "Bulk processing failed");
     }
   };
 

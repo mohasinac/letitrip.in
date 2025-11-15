@@ -18,17 +18,17 @@ interface OptimizedImageProps {
 
 /**
  * OptimizedImage Component
- * 
+ *
  * A wrapper around Next.js Image component with:
  * - Automatic lazy loading
  * - Blur placeholder
  * - Error handling with fallback
  * - Optimized quality (85% default)
  * - Automatic format conversion (WebP/AVIF)
- * 
+ *
  * Usage:
- * <OptimizedImage 
- *   src="/path/to/image.jpg" 
+ * <OptimizedImage
+ *   src="/path/to/image.jpg"
  *   alt="Description"
  *   width={300}
  *   height={200}
@@ -94,7 +94,9 @@ export default function OptimizedImage({
       <Image
         {...commonProps}
         fill
-        sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+        sizes={
+          sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        }
         placeholder="blur"
         blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
       />
