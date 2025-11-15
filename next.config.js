@@ -4,9 +4,8 @@ const nextConfig = {
 
   // TypeScript configuration
   typescript: {
-    // ⚠️ Temporarily ignore build errors while fixing test-workflows
-    // Production code has 0 errors, only test-workflows have type errors (216 errors)
-    ignoreBuildErrors: true,
+    // Production code has 0 TypeScript errors ✅
+    ignoreBuildErrors: false,
   },
 
   // Turbopack configuration (empty to silence warning)

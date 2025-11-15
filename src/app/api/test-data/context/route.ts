@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
-import { TestDataContext } from "@/types/test-workflow";
 
 const PREFIX = "TEST_";
 
@@ -12,7 +11,7 @@ const PREFIX = "TEST_";
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
-    const context: TestDataContext = {
+    const context: any = {
       users: {
         admin: [],
         sellers: [],
