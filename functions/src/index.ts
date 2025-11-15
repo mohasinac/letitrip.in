@@ -28,7 +28,7 @@ export const processAuctions = functions
   })
   .pubsub.schedule("every 1 minutes")
   .timeZone("Asia/Kolkata")
-  .onRun(async (context) => {
+  .onRun(async () => {
     const startTime = Date.now();
     console.log("[Auction Cron] Starting auction processing...");
 
@@ -41,7 +41,7 @@ export const processAuctions = functions
       // Log performance metrics
       if (duration > 8000) {
         console.warn(
-          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`
+          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`,
         );
       }
 
@@ -53,13 +53,13 @@ export const processAuctions = functions
         failed: results.failed,
         timestamp: new Date().toISOString(),
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("[Auction Cron] Error processing auctions:", error);
 
       // Log error but don't throw to avoid function retries
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString(),
       };
     }
@@ -75,12 +75,12 @@ export const triggerAuctionProcessing = functions
     timeoutSeconds: 540,
     memory: "1GB",
   })
-  .https.onCall(async (data, context) => {
+  .https.onCall(async (_data, context) => {
     // Check authentication
     if (!context.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
-        "User must be authenticated"
+        "User must be authenticated",
       );
     }
 
@@ -91,7 +91,7 @@ export const triggerAuctionProcessing = functions
     if (!user || user.role !== "admin") {
       throw new functions.https.HttpsError(
         "permission-denied",
-        "Admin access required"
+        "Admin access required",
       );
     }
 
@@ -105,9 +105,12 @@ export const triggerAuctionProcessing = functions
         message: "Auction processing completed",
         timestamp: new Date().toISOString(),
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("[Auction Cron] Error in manual trigger:", error);
-      throw new functions.https.HttpsError("internal", error.message);
+      throw new functions.https.HttpsError(
+        "internal",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   });
 
@@ -132,7 +135,7 @@ async function processEndedAuctions(): Promise<{
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return { processed: 0, successful: 0, failed: 0 };
+    return {processed: 0, successful: 0, failed: 0};
   }
 
   // Process each ended auction in batches
@@ -144,7 +147,7 @@ async function processEndedAuctions(): Promise<{
   const failed = results.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`
+    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`,
   );
 
   // Log failures
@@ -152,7 +155,7 @@ async function processEndedAuctions(): Promise<{
     if (result.status === "rejected") {
       console.error(
         `[Auction Cron] Failed to process auction ${snapshot.docs[index].id}:`,
-        result.reason
+        result.reason,
       );
     }
   });
@@ -178,7 +181,7 @@ async function closeAuction(auctionId: string): Promise<void> {
     return;
   }
 
-  const auction = auctionDoc.data() as any;
+  const auction = auctionDoc.data() as Record<string, unknown>;
 
   // Find highest bid
   const bidsSnapshot = await db
@@ -201,12 +204,12 @@ async function closeAuction(auctionId: string): Promise<void> {
     return;
   }
 
-  const winningBid = bidsSnapshot.docs[0].data() as any;
-  const winnerId = winningBid.user_id;
-  const finalBid = winningBid.amount;
+  const winningBid = bidsSnapshot.docs[0].data() as Record<string, unknown>;
+  const winnerId = winningBid.user_id as string;
+  const finalBid = winningBid.amount as number;
 
   // Check if reserve price was met
-  if (auction.reserve_price && finalBid < auction.reserve_price) {
+  if (auction.reserve_price && finalBid < (auction.reserve_price as number)) {
     // Reserve not met
     await auctionRef.update({
       status: "ended",
@@ -214,7 +217,7 @@ async function closeAuction(auctionId: string): Promise<void> {
     });
 
     console.log(
-      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`
+      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`,
     );
 
     // TODO: Notify seller and highest bidder
@@ -230,7 +233,7 @@ async function closeAuction(auctionId: string): Promise<void> {
   });
 
   console.log(
-    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`
+    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`,
   );
 
   // Create order for winner
@@ -252,7 +255,7 @@ async function closeAuction(auctionId: string): Promise<void> {
   // TODO: Notify winner and seller
 
   // Update product inventory if linked
-  if (auction.product_id) {
+  if (auction.product_id && typeof auction.product_id === "string") {
     await updateInventory(auction.product_id);
   }
 }
@@ -261,15 +264,15 @@ async function closeAuction(auctionId: string): Promise<void> {
  * Create order for auction winner
  */
 async function createWinnerOrder(
-  auction: any,
+  auction: Record<string, unknown>,
   auctionId: string,
   winnerId: string,
-  finalBid: number
+  finalBid: number,
 ): Promise<void> {
   try {
     // Get winner details
     const winnerDoc = await db.collection("users").doc(winnerId).get();
-    const winner = winnerDoc.data() as any;
+    const winner = winnerDoc.data() as Record<string, unknown>;
 
     if (!winner) {
       console.error(`[Auction Cron] Winner ${winnerId} not found`);
@@ -349,7 +352,7 @@ async function createWinnerOrder(
     await db.collection("orders").add(orderData);
 
     console.log(
-      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`
+      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`,
     );
   } catch (error) {
     console.error("[Auction Cron] Error creating winner order:", error);
@@ -365,8 +368,8 @@ async function updateInventory(productId: string): Promise<void> {
     const productDoc = await productRef.get();
 
     if (productDoc.exists) {
-      const product = productDoc.data() as any;
-      const newStock = Math.max(0, (product.stock || 0) - 1);
+      const product = productDoc.data() as Record<string, unknown>;
+      const newStock = Math.max(0, ((product.stock as number) || 0) - 1);
 
       await productRef.update({
         stock: newStock,
@@ -375,7 +378,7 @@ async function updateInventory(productId: string): Promise<void> {
       });
 
       console.log(
-        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`
+        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`,
       );
     }
   } catch (error) {

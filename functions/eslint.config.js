@@ -4,12 +4,12 @@ const googleConfig = require("eslint-config-google");
 
 module.exports = [
   {
-    ignores: ["lib/**/*", "generated/**/*", "node_modules/**/*"],
+    ignores: ["lib/**/*", "generated/**/*", "node_modules/**/*", "*.config.js", ".eslintrc.js"],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.js"],
+    files: ["**/*.ts"],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
