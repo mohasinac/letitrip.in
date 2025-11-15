@@ -35,7 +35,7 @@ export default function BlogListClient() {
         setBlogs(response);
         setTotalPages(1);
       } else {
-        setBlogs(response.data || []);
+        setBlogs(response.posts || []);
         setTotalPages(response.pagination?.totalPages || 1);
       }
     } catch (err) {

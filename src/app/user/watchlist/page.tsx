@@ -8,6 +8,8 @@ import { auctionsService } from "@/services/auctions.service";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatCurrency } from "@/lib/formatters";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 
 interface WatchlistItem {
   id: string;
@@ -17,29 +19,10 @@ interface WatchlistItem {
   created_at: any;
 }
 
-interface Auction {
-  id: string;
-  name: string;
-  slug: string;
-  images: string[];
-  currentBid: number;
-  startingBid: number;
-  bidCount: number;
-  endTime: Date | string;
-  status: string;
-  condition?: "new" | "used" | "refurbished";
-  shop?: {
-    id: string;
-    name: string;
-    logo?: string;
-    isVerified?: boolean;
-  };
-}
-
 export default function WatchlistPage() {
   const { user } = useAuth();
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -145,7 +128,10 @@ export default function WatchlistPage() {
                   Active Auctions
                 </div>
                 <div className="text-2xl font-bold text-green-600">
-                  {auctions.filter((a) => a.status === "live").length}
+                  {
+                    auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
+                      .length
+                  }
                 </div>
               </div>
               <div>
@@ -191,10 +177,15 @@ export default function WatchlistPage() {
             {auctions.map((auction) => (
               <AuctionCard
                 key={auction.id}
-                auction={{
-                  ...auction,
-                  currentBid: auction.currentBid || auction.startingBid,
-                }}
+                auction={
+                  {
+                    ...auction,
+                    name: auction.productName || "",
+                    slug: auction.productSlug || "",
+                    images: [auction.productImage],
+                    currentBid: auction.currentBid || auction.startingBid || 0,
+                  } as any
+                }
                 onWatch={handleRemoveFromWatchlist}
                 isWatched={true}
                 showShopInfo={true}

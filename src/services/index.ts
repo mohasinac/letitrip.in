@@ -50,9 +50,6 @@ export { ordersService } from "./orders.service";
 // Coupons service
 export { couponsService } from "./coupons.service";
 export type {
-  CouponFilters,
-  CreateCouponData,
-  UpdateCouponData,
   ValidateCouponData,
   ValidateCouponResponse,
 } from "./coupons.service";
@@ -66,8 +63,6 @@ export { auctionsService } from "./auctions.service";
 // Returns service
 export { returnsService } from "./returns.service";
 export type {
-  ReturnFilters,
-  InitiateReturnData,
   UpdateReturnData,
   ApproveReturnData,
   ProcessRefundData,
@@ -109,14 +104,7 @@ export type { FavoriteItem } from "./favorites.service";
 
 // Support service
 export { supportService } from "./support.service";
-export type {
-  TicketFilters,
-  CreateTicketData,
-  UpdateTicketData,
-  ReplyToTicketData,
-  AssignTicketData,
-  EscalateTicketData,
-} from "./support.service";
+// Types are now in @/types/frontend/support-ticket.types.ts and @/types/backend/support-ticket.types.ts
 
 // Blog service
 export { blogService } from "./blog.service";

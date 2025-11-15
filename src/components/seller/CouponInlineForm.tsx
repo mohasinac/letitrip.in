@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { couponsService } from "@/services/coupons.service";
-import type { Coupon } from "@/types";
+import type { CouponFE } from "@/types/frontend/coupon.types";
 
 interface CouponInlineFormProps {
-  coupon?: Coupon;
+  coupon?: CouponFE;
   shopId?: string;
   onSuccess: () => void;
   onCancel: () => void;

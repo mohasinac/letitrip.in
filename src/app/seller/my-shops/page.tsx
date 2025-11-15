@@ -17,12 +17,12 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { EmptyState } from "@/components/common/EmptyState";
 import { shopsService } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 export default function MyShopsPage() {
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteShopId, setDeleteShopId] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export default function MyShopsPage() {
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      shop.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -148,7 +148,7 @@ export default function MyShopsPage() {
             >
               <div className="h-32 bg-gray-100">
                 <img
-                  src={shop.banner}
+                  src={shop.banner || undefined}
                   alt={shop.name}
                   className="h-full w-full object-cover"
                 />

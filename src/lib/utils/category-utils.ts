@@ -3,7 +3,10 @@
  * Helper functions for working with multi-parent categories
  */
 
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
+
+// Alias for backwards compatibility
+type Category = CategoryFE;
 
 /**
  * Get all parent IDs from a category (supports both old and new structure)
@@ -22,7 +25,7 @@ export function getParentIds(category: Category): string[] {
  * Get all children IDs from a category
  */
 export function getChildrenIds(category: Category): string[] {
-  return category.childrenIds || [];
+  return (category as any).childrenIds || [];
 }
 
 /**
@@ -176,7 +179,7 @@ export function getRootCategories(categories: Category[]): Category[] {
  */
 export function getLeafCategories(categories: Category[]): Category[] {
   return categories.filter((cat) => {
-    return !cat.hasChildren || getChildrenIds(cat).length === 0;
+    return !(cat as any).hasChildren || getChildrenIds(cat).length === 0;
   });
 }
 

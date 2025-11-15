@@ -1,62 +1,46 @@
 import { apiService } from "./api.service";
 import type {
-  SupportTicket,
-  SupportTicketMessage,
-  SupportTicketStatus,
-  SupportTicketCategory,
-  SupportTicketPriority,
-  PaginatedResponse,
-} from "@/types";
+  SupportTicketBE,
+  SupportTicketMessageBE,
+  SupportTicketFiltersBE,
+} from "@/types/backend/support-ticket.types";
+import type {
+  SupportTicketFE,
+  SupportTicketMessageFE,
+  SupportTicketFormFE,
+  UpdateTicketFormFE,
+  ReplyToTicketFormFE,
+  AssignTicketFormFE,
+  EscalateTicketFormFE,
+} from "@/types/frontend/support-ticket.types";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
+import type {
+  TicketStatus,
+  TicketCategory,
+  TicketPriority,
+} from "@/types/shared/common.types";
+import {
+  toFESupportTicket,
+  toFESupportTickets,
+  toFESupportTicketMessage,
+  toFESupportTicketMessages,
+  toBECreateSupportTicketRequest,
+  toBEUpdateSupportTicketRequest,
+  toBEReplyToTicketRequest,
+  toBEAssignTicketRequest,
+  toBEEscalateTicketRequest,
+} from "@/types/transforms/support-ticket.transforms";
 
-interface TicketFilters {
-  status?: SupportTicketStatus;
-  category?: SupportTicketCategory;
-  priority?: SupportTicketPriority;
-  shopId?: string;
-  orderId?: string;
-  assignedTo?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-interface CreateTicketData {
-  category: SupportTicketCategory;
-  priority?: SupportTicketPriority;
-  subject: string;
-  description: string;
-  attachments?: string[];
-  shopId?: string;
-  orderId?: string;
-}
-
-interface UpdateTicketData {
-  status?: SupportTicketStatus;
-  priority?: SupportTicketPriority;
-  subject?: string;
-}
-
-interface ReplyToTicketData {
-  message: string;
-  attachments?: string[];
-  isInternal?: boolean;
-}
-
-interface AssignTicketData {
-  assignedTo: string;
-  notes?: string;
-}
-
-interface EscalateTicketData {
-  reason: string;
-  notes?: string;
-}
+// Removed old interfaces - now using types from type system
 
 class SupportService {
   // List tickets (role-filtered)
   async listTickets(
-    filters?: TicketFilters,
-  ): Promise<PaginatedResponse<SupportTicket>> {
+    filters?: Partial<SupportTicketFiltersBE>
+  ): Promise<PaginatedResponseFE<SupportTicketFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -72,38 +56,66 @@ class SupportService {
       ? `/support/tickets?${queryString}`
       : "/support/tickets";
 
-    return apiService.get<PaginatedResponse<SupportTicket>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<SupportTicketBE>>(
+      endpoint
+    );
+
+    return {
+      data: toFESupportTickets(response.data),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get ticket by ID
-  async getTicket(id: string): Promise<SupportTicket> {
-    return apiService.get<SupportTicket>(`/support/tickets/${id}`);
+  async getTicket(id: string): Promise<SupportTicketFE> {
+    const ticketBE = await apiService.get<SupportTicketBE>(
+      `/support/tickets/${id}`
+    );
+    return toFESupportTicket(ticketBE);
   }
 
   // Create ticket
-  async createTicket(data: CreateTicketData): Promise<SupportTicket> {
-    return apiService.post<SupportTicket>("/support/tickets", data);
+  async createTicket(data: SupportTicketFormFE): Promise<SupportTicketFE> {
+    const request = toBECreateSupportTicketRequest(data);
+    const ticketBE = await apiService.post<SupportTicketBE>(
+      "/support/tickets",
+      request
+    );
+    return toFESupportTicket(ticketBE);
   }
 
   // Update ticket
   async updateTicket(
     id: string,
-    data: UpdateTicketData,
-  ): Promise<SupportTicket> {
-    return apiService.patch<SupportTicket>(`/support/tickets/${id}`, data);
+    data: UpdateTicketFormFE
+  ): Promise<SupportTicketFE> {
+    const request = toBEUpdateSupportTicketRequest(data);
+    const ticketBE = await apiService.patch<SupportTicketBE>(
+      `/support/tickets/${id}`,
+      request
+    );
+    return toFESupportTicket(ticketBE);
   }
 
   // Close ticket
-  async closeTicket(id: string): Promise<SupportTicket> {
-    return apiService.post<SupportTicket>(`/support/tickets/${id}/close`, {});
+  async closeTicket(id: string): Promise<SupportTicketFE> {
+    const ticketBE = await apiService.post<SupportTicketBE>(
+      `/support/tickets/${id}/close`,
+      {}
+    );
+    return toFESupportTicket(ticketBE);
   }
 
   // Get ticket messages
   async getMessages(
     ticketId: string,
     page?: number,
-    limit?: number,
-  ): Promise<PaginatedResponse<SupportTicketMessage>> {
+    limit?: number
+  ): Promise<PaginatedResponseFE<SupportTicketMessageFE>> {
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
@@ -113,40 +125,57 @@ class SupportService {
       ? `/support/tickets/${ticketId}/messages?${queryString}`
       : `/support/tickets/${ticketId}/messages`;
 
-    return apiService.get<PaginatedResponse<SupportTicketMessage>>(endpoint);
+    const response = await apiService.get<
+      PaginatedResponseBE<SupportTicketMessageBE>
+    >(endpoint);
+
+    return {
+      data: toFESupportTicketMessages(response.data),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Reply to ticket
   async replyToTicket(
     ticketId: string,
-    data: ReplyToTicketData,
-  ): Promise<SupportTicketMessage> {
-    return apiService.post<SupportTicketMessage>(
+    data: ReplyToTicketFormFE
+  ): Promise<SupportTicketMessageFE> {
+    const request = toBEReplyToTicketRequest(data);
+    const messageBE = await apiService.post<SupportTicketMessageBE>(
       `/support/tickets/${ticketId}/messages`,
-      data,
+      request
     );
+    return toFESupportTicketMessage(messageBE);
   }
 
   // Assign ticket (admin only)
   async assignTicket(
     id: string,
-    data: AssignTicketData,
-  ): Promise<SupportTicket> {
-    return apiService.post<SupportTicket>(
+    data: AssignTicketFormFE
+  ): Promise<SupportTicketFE> {
+    const request = toBEAssignTicketRequest(data);
+    const ticketBE = await apiService.post<SupportTicketBE>(
       `/support/tickets/${id}/assign`,
-      data,
+      request
     );
+    return toFESupportTicket(ticketBE);
   }
 
   // Escalate ticket (seller/admin)
   async escalateTicket(
     id: string,
-    data: EscalateTicketData,
-  ): Promise<SupportTicket> {
-    return apiService.post<SupportTicket>(
+    data: EscalateTicketFormFE
+  ): Promise<SupportTicketFE> {
+    const request = toBEEscalateTicketRequest(data);
+    const ticketBE = await apiService.post<SupportTicketBE>(
       `/support/tickets/${id}/escalate`,
-      data,
+      request
     );
+    return toFESupportTicket(ticketBE);
   }
 
   // Upload attachment
@@ -178,8 +207,8 @@ class SupportService {
     resolvedTickets: number;
     averageResponseTime: number;
     averageResolutionTime: number;
-    ticketsByCategory: Record<SupportTicketCategory, number>;
-    ticketsByPriority: Record<SupportTicketPriority, number>;
+    ticketsByCategory: Record<TicketCategory, number>;
+    ticketsByPriority: Record<TicketPriority, number>;
   }> {
     const params = new URLSearchParams();
 
@@ -201,29 +230,14 @@ class SupportService {
 
   // Get my tickets
   async getMyTickets(
-    filters?: Omit<TicketFilters, "assignedTo">,
-  ): Promise<PaginatedResponse<SupportTicket>> {
-    const params = new URLSearchParams();
-
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `/support/my-tickets?${queryString}`
-      : "/support/my-tickets";
-
-    return apiService.get<PaginatedResponse<SupportTicket>>(endpoint);
+    filters?: Omit<Partial<SupportTicketFiltersBE>, "assignedTo">
+  ): Promise<PaginatedResponseFE<SupportTicketFE>> {
+    return this.listTickets(filters);
   }
 
   // Get ticket count
   async getTicketCount(
-    filters?: Pick<TicketFilters, "status" | "category">,
+    filters?: Pick<Partial<SupportTicketFiltersBE>, "status" | "category">
   ): Promise<{ count: number }> {
     const params = new URLSearchParams();
 
@@ -245,11 +259,5 @@ class SupportService {
 }
 
 export const supportService = new SupportService();
-export type {
-  TicketFilters,
-  CreateTicketData,
-  UpdateTicketData,
-  ReplyToTicketData,
-  AssignTicketData,
-  EscalateTicketData,
-};
+// Types are now exported from type system
+// Use SupportTicketFiltersBE, SupportTicketFormFE, etc. from @/types/

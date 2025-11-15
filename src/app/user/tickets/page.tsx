@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
-import type { SupportTicket } from "@/types";
+import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -26,7 +26,7 @@ const categoryLabels = {
 
 export default function UserTicketsPage() {
   const router = useRouter();
-  const [tickets, setTickets] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState({

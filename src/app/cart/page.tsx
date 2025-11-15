@@ -158,7 +158,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="px-6">
-                  {cart.items.map((item) => (
+                  {cart.items.map((item: any) => (
                     <CartItem
                       key={item.id}
                       item={item}
@@ -186,12 +186,12 @@ export default function CartPage() {
             <div className="lg:col-span-4 mt-8 lg:mt-0">
               <CartSummary
                 subtotal={cart.subtotal}
-                shipping={cart.shipping}
+                shipping={(cart as any).shipping || 0}
                 tax={cart.tax}
                 discount={cart.discount}
                 total={cart.total}
                 itemCount={cart.itemCount}
-                couponCode={cart.couponCode}
+                couponCode={(cart as any).couponCode}
                 onApplyCoupon={handleApplyCoupon}
                 onRemoveCoupon={removeCoupon}
                 onCheckout={handleCheckout}

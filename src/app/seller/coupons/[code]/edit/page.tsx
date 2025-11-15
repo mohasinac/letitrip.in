@@ -9,7 +9,7 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Coupon } from "@/types";
+import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
 
 export default function EditCouponPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function EditCouponPage() {
   const { user } = useAuth();
   const code = params.code as string;
 
-  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [coupon, setCoupon] = useState<CouponFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -43,7 +43,7 @@ export default function EditCouponPage() {
     }
   };
 
-  const handleSubmit = async (data: Partial<Coupon>) => {
+  const handleSubmit = async (data: CouponFormFE) => {
     try {
       setIsSubmitting(true);
       await couponsService.update(code, data);
@@ -178,7 +178,7 @@ export default function EditCouponPage() {
                     style={{
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100,
+                        100
                       )}%`,
                     }}
                   />

@@ -1,232 +1,114 @@
 /**
- * Socket.io Client Hook for Live Auctions
+ * Firebase Realtime Database Hook for Live Auctions
  *
  * Provides real-time auction updates to React components
  *
  * Usage:
- *   const { socket, connected, bid, setupAutoBid } = useAuctionSocket(auctionId);
+ *   const { connected, currentBid, bidCount, bids, placeBid } = useAuctionSocket(auctionId);
  */
 
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import {
+  subscribeToAuction,
+  subscribeToAuctionBids,
+  type AuctionStatus,
+  type AuctionBid,
+} from "@/lib/firebase-realtime";
 
 interface AuctionState {
-  auction: {
-    id: string;
-    name: string;
-    current_bid: number;
-    bid_count: number;
-    status: string;
-    end_time: string;
-    reserve_price?: number;
-  };
-  bids: any[];
-  watcherCount: number;
-  timestamp: string;
-}
-
-interface NewBid {
-  auctionId: string;
-  bidId: string;
-  userId: string;
-  amount: number;
   currentBid: number;
   bidCount: number;
-  timestamp: string;
-  isWinning: boolean;
-}
-
-interface CountdownSync {
-  auctionId: string;
-  endTime: string;
-  remainingMs: number;
-  serverTime: string;
+  isActive: boolean;
+  endTime: number;
+  winnerId?: string;
+  lastUpdate: number;
 }
 
 export function useAuctionSocket(auctionId: string | null) {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
   const [auctionState, setAuctionState] = useState<AuctionState | null>(null);
-  const [latestBid, setLatestBid] = useState<NewBid | null>(null);
-  const [countdown, setCountdown] = useState<CountdownSync | null>(null);
-  const [watcherCount, setWatcherCount] = useState(0);
-  const [autoBidActive, setAutoBidActive] = useState(false);
+  const [bids, setBids] = useState<AuctionBid[]>([]);
+  const [latestBid, setLatestBid] = useState<AuctionBid | null>(null);
 
-  const socketRef = useRef<Socket | null>(null);
-
-  // Initialize socket connection
+  // Subscribe to auction status updates
   useEffect(() => {
     if (!auctionId) return;
 
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL || window.location.origin;
+    setConnected(true);
+    console.log("[Firebase] Subscribing to auction:", auctionId);
 
-    const newSocket = io(socketUrl, {
-      path: "/api/socketio",
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-    });
-
-    socketRef.current = newSocket;
-    setSocket(newSocket);
-
-    // Connection events
-    newSocket.on("connect", () => {
-      console.log("[Socket] Connected to server");
-      setConnected(true);
-
-      // Join auction room
-      if (auctionId) {
-        newSocket.emit("join-auction", auctionId);
+    const unsubscribeStatus = subscribeToAuction(
+      auctionId,
+      (status: AuctionStatus) => {
+        console.log("[Firebase] Auction status updated:", status);
+        setAuctionState({
+          currentBid: status.currentBid,
+          bidCount: status.bidCount,
+          isActive: status.isActive,
+          endTime: status.endTime,
+          winnerId: status.winnerId,
+          lastUpdate: status.lastUpdate,
+        });
       }
-    });
+    );
 
-    newSocket.on("disconnect", () => {
-      console.log("[Socket] Disconnected from server");
-      setConnected(false);
-    });
-
-    newSocket.on("connect_error", (error) => {
-      console.error("[Socket] Connection error:", error);
-    });
-
-    // Auction state
-    newSocket.on("auction-state", (state: AuctionState) => {
-      console.log("[Socket] Received auction state:", state);
-      setAuctionState(state);
-      setWatcherCount(state.watcherCount);
-    });
-
-    // New bid
-    newSocket.on("new-bid", (bid: NewBid) => {
-      console.log("[Socket] New bid received:", bid);
-      setLatestBid(bid);
-
-      // Update auction state
-      setAuctionState((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          auction: {
-            ...prev.auction,
-            current_bid: bid.currentBid,
-            bid_count: bid.bidCount,
-          },
-          bids: [
-            {
-              id: bid.bidId,
-              user_id: bid.userId,
-              amount: bid.amount,
-              created_at: bid.timestamp,
-              is_winning: bid.isWinning,
-            },
-            ...prev.bids.slice(0, 9),
-          ],
-        };
-      });
-    });
-
-    // Auto-bid placed
-    newSocket.on("auto-bid-placed", (data: any) => {
-      console.log("[Socket] Auto-bid placed:", data);
-      // Show notification
-    });
-
-    // Auto-bid executed (for the auto-bidder)
-    newSocket.on("autobid-executed", (data: any) => {
-      console.log("[Socket] Your auto-bid was executed:", data);
-      // Show notification to user
-    });
-
-    // Auction status changed
-    newSocket.on("auction-status-changed", (data: any) => {
-      console.log("[Socket] Auction status changed:", data);
-      setAuctionState((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          auction: {
-            ...prev.auction,
-            status: data.status,
-          },
-        };
-      });
-    });
-
-    // Countdown sync
-    newSocket.on("countdown-sync", (data: CountdownSync) => {
-      setCountdown(data);
-    });
-
-    // Ending soon alert
-    newSocket.on("ending-soon", (data: any) => {
-      console.log("[Socket] Ending soon:", data);
-      // Show alert/notification
-    });
+    const unsubscribeBids = subscribeToAuctionBids(
+      auctionId,
+      (updatedBids: AuctionBid[]) => {
+        console.log("[Firebase] Bids updated:", updatedBids);
+        setBids(updatedBids);
+        if (updatedBids.length > 0) {
+          setLatestBid(updatedBids[0]); // Most recent bid
+        }
+      }
+    );
 
     return () => {
-      if (auctionId) {
-        newSocket.emit("leave-auction", auctionId);
-      }
-      newSocket.close();
-      socketRef.current = null;
+      console.log("[Firebase] Unsubscribing from auction:", auctionId);
+      unsubscribeStatus();
+      unsubscribeBids();
+      setConnected(false);
     };
   }, [auctionId]);
 
-  // Request countdown sync
-  const syncCountdown = useCallback(() => {
-    if (socket && connected && auctionId) {
-      socket.emit("sync-countdown", auctionId);
-    }
-  }, [socket, connected, auctionId]);
+  // Place a bid through API
+  const placeBid = useCallback(
+    async (userId: string, userName: string, amount: number) => {
+      if (!auctionId) return { success: false, error: "No auction ID" };
 
-  // Setup auto-bid
-  const setupAutoBid = useCallback(
-    (maxBid: number, userId: string) => {
-      if (socket && connected && auctionId) {
-        socket.emit("setup-autobid", { auctionId, userId, maxBid });
-        setAutoBidActive(true);
+      try {
+        // Call API route to place bid (which will update Firebase)
+        const response = await fetch("/api/auctions/bid", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ auctionId, userId, userName, amount }),
+        });
+
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.error("[Firebase] Failed to place bid:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
       }
     },
-    [socket, connected, auctionId],
-  );
-
-  // Cancel auto-bid
-  const cancelAutoBid = useCallback(
-    (userId: string) => {
-      if (socket && connected && auctionId) {
-        socket.emit("cancel-autobid", { auctionId, userId });
-        setAutoBidActive(false);
-      }
-    },
-    [socket, connected, auctionId],
-  );
-
-  // Notify server of new bid (after API call)
-  const notifyBidPlaced = useCallback(
-    (userId: string, amount: number) => {
-      if (socket && connected && auctionId) {
-        socket.emit("bid-placed", { auctionId, userId, amount });
-      }
-    },
-    [socket, connected, auctionId],
+    [auctionId]
   );
 
   return {
-    socket,
     connected,
     auctionState,
+    currentBid: auctionState?.currentBid ?? 0,
+    bidCount: auctionState?.bidCount ?? 0,
+    isActive: auctionState?.isActive ?? false,
+    endTime: auctionState?.endTime ?? 0,
+    winnerId: auctionState?.winnerId,
+    bids,
     latestBid,
-    countdown,
-    watcherCount,
-    autoBidActive,
-    syncCountdown,
-    setupAutoBid,
-    cancelAutoBid,
-    notifyBidPlaced,
+    placeBid,
   };
 }

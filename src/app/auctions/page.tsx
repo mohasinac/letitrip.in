@@ -20,14 +20,15 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
-import type { Auction, AuctionStatus } from "@/types";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 import { formatDistanceToNow } from "date-fns";
 
 function AuctionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -70,7 +71,7 @@ function AuctionsContent() {
 
       const response = await auctionsService.list(apiFilters);
       setAuctions(response.data || []);
-      setTotalCount(response.pagination?.total || 0);
+      setTotalCount(response.total || 0);
     } catch (error) {
       console.error("Failed to load auctions:", error);
     } finally {
@@ -284,7 +285,10 @@ function AuctionsContent() {
                 <div>
                   <p className="text-sm text-gray-600">Live Auctions</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {auctions.filter((a) => a.status === "live").length}
+                    {
+                      auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
+                        .length
+                    }
                   </p>
                 </div>
               </div>
@@ -302,7 +306,8 @@ function AuctionsContent() {
                         const diff =
                           new Date(a.endTime).getTime() - new Date().getTime();
                         return (
-                          a.status === "live" && diff < 24 * 60 * 60 * 1000
+                          a.status === AuctionStatus.ACTIVE &&
+                          diff < 24 * 60 * 60 * 1000
                         );
                       }).length
                     }
@@ -318,7 +323,7 @@ function AuctionsContent() {
                 <div>
                   <p className="text-sm text-gray-600">Total Bids</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {auctions.reduce((sum, a) => sum + a.bidCount, 0)}
+                    {auctions.reduce((sum, a) => sum + (a.bidCount || 0), 0)}
                   </p>
                 </div>
               </div>
@@ -356,7 +361,7 @@ function AuctionsContent() {
                           ★ Featured
                         </div>
                       )}
-                      {auction.status === "live" && (
+                      {auction.status === AuctionStatus.ACTIVE && (
                         <div className="absolute top-2 left-2 rounded-full bg-green-500 px-2 py-1 text-xs font-medium text-white flex items-center gap-1">
                           <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                           Live
@@ -378,16 +383,21 @@ function AuctionsContent() {
                           Current Bid:
                         </span>
                         <span className="text-lg font-bold text-primary">
-                          ₹{auction.currentBid.toLocaleString()}
+                          ₹
+                          {(
+                            auction.currentBid ||
+                            auction.startingBid ||
+                            0
+                          ).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Bids:</span>
                         <span className="font-medium text-gray-900">
-                          {auction.bidCount}
+                          {auction.bidCount || 0}
                         </span>
                       </div>
-                      {auction.status === "live" && (
+                      {auction.status === AuctionStatus.ACTIVE && (
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Time Left:</span>
                           <span className="font-medium text-red-600">
@@ -398,16 +408,21 @@ function AuctionsContent() {
                       {auction.status === "scheduled" && (
                         <div className="text-sm text-blue-600">
                           Starts{" "}
-                          {formatDistanceToNow(new Date(auction.startTime), {
-                            addSuffix: true,
-                          })}
+                          {formatDistanceToNow(
+                            new Date(auction.startTime || 0),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
                         </div>
                       )}
                     </div>
 
                     {/* CTA */}
                     <button className="mt-4 w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
-                      {auction.status === "live" ? "Place Bid" : "View Details"}
+                      {auction.status === AuctionStatus.ACTIVE
+                        ? "Place Bid"
+                        : "View Details"}
                     </button>
                   </div>
                 </Link>
@@ -434,7 +449,7 @@ function AuctionsContent() {
                           ★ Featured
                         </div>
                       )}
-                      {auction.status === "live" && (
+                      {auction.status === AuctionStatus.ACTIVE && (
                         <div className="absolute top-2 left-2 rounded-full bg-green-500 px-2 py-1 text-xs font-medium text-white flex items-center gap-1">
                           <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                           Live
@@ -457,16 +472,21 @@ function AuctionsContent() {
                             Current Bid
                           </span>
                           <p className="text-xl font-bold text-primary">
-                            ₹{auction.currentBid.toLocaleString()}
+                            ₹
+                            {(
+                              auction.currentBid ||
+                              auction.startingBid ||
+                              0
+                            ).toLocaleString()}
                           </p>
                         </div>
                         <div>
                           <span className="text-xs text-gray-600">Bids</span>
                           <p className="text-lg font-semibold text-gray-900">
-                            {auction.bidCount}
+                            {auction.bidCount || 0}
                           </p>
                         </div>
-                        {auction.status === "live" && (
+                        {auction.status === AuctionStatus.ACTIVE && (
                           <div>
                             <span className="text-xs text-gray-600">
                               Time Left
@@ -483,7 +503,7 @@ function AuctionsContent() {
                             </span>
                             <p className="text-sm text-blue-600">
                               {formatDistanceToNow(
-                                new Date(auction.startTime),
+                                new Date(auction.startTime || 0),
                                 {
                                   addSuffix: true,
                                 }
@@ -495,7 +515,9 @@ function AuctionsContent() {
                     </div>
 
                     <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
-                      {auction.status === "live" ? "Place Bid" : "View Details"}
+                      {auction.status === AuctionStatus.ACTIVE
+                        ? "Place Bid"
+                        : "View Details"}
                     </button>
                   </div>
                 </Link>

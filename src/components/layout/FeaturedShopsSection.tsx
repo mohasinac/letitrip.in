@@ -6,11 +6,12 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
-import type { Shop, Product } from "@/types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface ShopWithProducts {
-  shop: Shop;
-  products: Product[];
+  shop: ShopCardFE;
+  products: ProductCardFE[];
 }
 
 export default function FeaturedShopsSection() {
@@ -33,32 +34,31 @@ export default function FeaturedShopsSection() {
       const shops = shopsData.data;
 
       const shopsData2 = await Promise.all(
-        shops.map(async (shop: Shop) => {
+        shops.map(async (shop: ShopCardFE) => {
           try {
             const productsData = await productsService.list({
               shopId: shop.id,
               limit: 5, // Reduced from 10 to 5
-              status: "published" as const,
-            });
+            } as any);
             return {
               shop,
-              products: productsData.data,
+              products: productsData.products,
             };
           } catch (error) {
             console.error(
               `Error fetching products for shop ${shop.id}:`,
-              error,
+              error
             );
             return {
               shop,
               products: [],
             };
           }
-        }),
+        })
       );
 
       setShopsWithProducts(
-        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0),
+        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0)
       );
     } catch (error) {
       console.error("Error fetching featured shops:", error);
@@ -110,11 +110,11 @@ export default function FeaturedShopsSection() {
               name={shop.name}
               slug={shop.slug}
               description={shop.description || ""}
-              logo={shop.logo}
-              banner={shop.banner}
+              logo={shop.logo || undefined}
+              banner={shop.banner || undefined}
               rating={shop.rating}
-              reviewCount={shop.reviewCount}
-              productCount={shop.productCount}
+              reviewCount={shop.reviewCount || 0}
+              productCount={shop.productCount || shop.totalProducts}
               isVerified={shop.isVerified}
               compact={false}
             />
@@ -135,7 +135,7 @@ export default function FeaturedShopsSection() {
                 name={product.name}
                 slug={product.slug}
                 price={product.price}
-                originalPrice={product.originalPrice}
+                originalPrice={product.originalPrice || undefined}
                 image={product.images[0] || "/placeholder-product.png"}
                 rating={product.rating}
                 reviewCount={product.reviewCount}

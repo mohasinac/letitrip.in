@@ -1,11 +1,11 @@
 import { apiService } from "./api.service";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface FavoriteItem {
   id: string;
   userId: string;
   productId: string;
-  product: Product;
+  product: ProductCardFE;
   addedAt: Date;
 }
 
@@ -28,16 +28,16 @@ class FavoritesService {
   // Remove by product ID
   async removeByProductId(productId: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(
-      `/favorites/product/${productId}`,
+      `/favorites/product/${productId}`
     );
   }
 
   // Check if product is favorited
   async isFavorited(
-    productId: string,
+    productId: string
   ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
     return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
-      `/favorites/check/${productId}`,
+      `/favorites/check/${productId}`
     );
   }
 
@@ -113,7 +113,7 @@ class FavoritesService {
         "/favorites/sync",
         {
           productIds: guestFavorites,
-        },
+        }
       );
 
       // Clear guest favorites after sync

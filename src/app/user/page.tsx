@@ -16,12 +16,12 @@ import { StatsCard } from "@/components/common/StatsCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ordersService } from "@/services/orders.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Order } from "@/types";
+import type { OrderCardFE } from "@/types/frontend/order.types";
 
 export default function UserDashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [recentOrders, setRecentOrders] = useState<OrderCardFE[]>([]);
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -42,20 +42,20 @@ export default function UserDashboardPage() {
     setLoading(true);
     try {
       // Load recent orders
-      const ordersData = await ordersService.list({ limit: 5 });
+      const ordersData = await ordersService.list({} as any);
       const orders = ordersData.data || [];
       setRecentOrders(orders);
 
       // Calculate stats
       const totalOrders = orders.length;
       const pendingOrders = orders.filter(
-        (o) => o.status === "pending" || o.status === "confirmed",
+        (o) => o.status === "pending" || o.status === "confirmed"
       ).length;
       const completedOrders = orders.filter(
-        (o) => o.status === "delivered",
+        (o) => o.status === "delivered"
       ).length;
       const cancelledOrders = orders.filter(
-        (o) => o.status === "cancelled",
+        (o) => o.status === "cancelled"
       ).length;
 
       setStats({
@@ -209,13 +209,13 @@ export default function UserDashboardPage() {
                           Order #{order.id.slice(0, 8).toUpperCase()}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {new Date(order.createdAt).toLocaleDateString(
+                          {new Date(order.createdAt || 0).toLocaleDateString(
                             "en-IN",
                             {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
-                            },
+                            }
                           )}
                         </p>
                       </div>
@@ -228,8 +228,8 @@ export default function UserDashboardPage() {
                             order.status === "delivered"
                               ? "bg-green-100 text-green-700"
                               : order.status === "cancelled"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +

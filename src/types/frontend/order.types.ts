@@ -35,6 +35,11 @@ export interface OrderItemFE {
   formattedPrice: string; // "₹1,999"
   formattedSubtotal: string;
   formattedTotal: string;
+
+  // Backwards compatibility (admin pages)
+  variant?: string | null; // Alias for variantName
+  shopId?: string | null; // For admin pages
+  shopName?: string | null; // For admin pages
 }
 
 /**
@@ -55,6 +60,13 @@ export interface ShippingAddressFE {
   // Formatted
   formattedAddress: string; // Full address as single string
   shortAddress: string; // City, State
+
+  // Backwards compatibility (admin pages)
+  name?: string; // Alias for fullName
+  phone?: string; // Alias for phoneNumber
+  line1?: string; // Alias for addressLine1
+  line2?: string | null; // Alias for addressLine2
+  pincode?: string; // Alias for postalCode
 }
 
 /**
@@ -163,6 +175,13 @@ export interface OrderFE {
 
   // Metadata
   metadata?: Record<string, any>;
+
+  // Backwards compatibility (admin pages)
+  customerId?: string; // Use userId
+  billingAddress?: ShippingAddressFE | null; // Admin pages may need this
+  shippingProvider?: string | null; // For shipment display
+  internalNotes?: string | null; // Alias for adminNotes
+  shipping?: number; // Alias for shippingCost
 }
 
 /**
@@ -191,6 +210,15 @@ export interface OrderCardFE {
   badges: string[];
   isPaid: boolean;
   canCancel: boolean;
+
+  // Backwards compatibility (admin pages)
+  shippingAddress?: {
+    name: string;
+    phone: string;
+  };
+  createdAt?: string; // Alias for orderDate
+  items?: any[]; // For item count display
+  paymentMethod?: string; // For display
 }
 
 /**

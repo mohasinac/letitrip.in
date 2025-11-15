@@ -29,12 +29,10 @@ export default function SellerOrdersPage() {
       setLoading(true);
       const response = await ordersService.getSellerOrders({
         ...filterValues,
-        page: currentPage,
-        limit: 20,
-      });
+      } as any);
       setOrders(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalOrders(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalOrders(response.total || 0);
     } catch (error: any) {
       console.error("Failed to load orders:", error);
     } finally {
@@ -44,7 +42,7 @@ export default function SellerOrdersPage() {
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
-      await ordersService.updateStatus(id, { status: status as any });
+      await ordersService.updateStatus(id, status as any);
       loadOrders();
     } catch (error: any) {
       console.error("Failed to update status:", error);

@@ -81,11 +81,10 @@ export default function ReviewForm({
     try {
       await reviewsService.create({
         productId,
-        orderItemId: orderId,
         rating,
         title: title.trim(),
         comment: comment.trim(),
-        media: getUploadedUrls(),
+        images: getUploadedUrls(),
       });
 
       // Success! Clear tracking

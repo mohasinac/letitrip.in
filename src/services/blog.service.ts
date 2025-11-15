@@ -1,5 +1,4 @@
 import { apiService } from "./api.service";
-import type { PaginatedResponse } from "@/types";
 
 export interface BlogPost {
   id: string;
@@ -53,13 +52,16 @@ interface CreateBlogPostData {
   publishedAt?: Date;
 }
 
-interface UpdateBlogPostData extends Partial<Omit<CreateBlogPostData, "status">> {
+interface UpdateBlogPostData
+  extends Partial<Omit<CreateBlogPostData, "status">> {
   status?: "draft" | "published" | "archived";
 }
 
 class BlogService {
   // List blog posts (role-filtered)
-  async list(filters?: BlogFilters): Promise<PaginatedResponse<BlogPost>> {
+  async list(
+    filters?: BlogFilters
+  ): Promise<{ posts: BlogPost[]; pagination: any }> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -77,7 +79,17 @@ class BlogService {
     const queryString = params.toString();
     const endpoint = queryString ? `/blog?${queryString}` : "/blog";
 
-    return apiService.get<PaginatedResponse<BlogPost>>(endpoint);
+    const response = await apiService.get<any>(endpoint);
+    return {
+      posts: response.data || [],
+      pagination: {
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages,
+        hasMore: response.hasMore,
+      },
+    };
   }
 
   // Get blog post by ID
@@ -129,7 +141,7 @@ class BlogService {
   async toggleLike(id: string): Promise<{ liked: boolean; likes: number }> {
     return apiService.post<{ liked: boolean; likes: number }>(
       `/blog/${id}/like`,
-      {},
+      {}
     );
   }
 
@@ -150,8 +162,8 @@ class BlogService {
   async getByCategory(
     category: string,
     page?: number,
-    limit?: number,
-  ): Promise<PaginatedResponse<BlogPost>> {
+    limit?: number
+  ): Promise<{ posts: BlogPost[]; pagination: any }> {
     return this.list({ category, status: "published", page, limit });
   }
 
@@ -159,8 +171,8 @@ class BlogService {
   async getByTag(
     tag: string,
     page?: number,
-    limit?: number,
-  ): Promise<PaginatedResponse<BlogPost>> {
+    limit?: number
+  ): Promise<{ posts: BlogPost[]; pagination: any }> {
     return this.list({ tag, status: "published", page, limit });
   }
 
@@ -168,8 +180,8 @@ class BlogService {
   async getByAuthor(
     authorId: string,
     page?: number,
-    limit?: number,
-  ): Promise<PaginatedResponse<BlogPost>> {
+    limit?: number
+  ): Promise<{ posts: BlogPost[]; pagination: any }> {
     return this.list({ author: authorId, status: "published", page, limit });
   }
 
@@ -177,8 +189,8 @@ class BlogService {
   async search(
     query: string,
     page?: number,
-    limit?: number,
-  ): Promise<PaginatedResponse<BlogPost>> {
+    limit?: number
+  ): Promise<{ posts: BlogPost[]; pagination: any }> {
     return this.list({ search: query, status: "published", page, limit });
   }
 }

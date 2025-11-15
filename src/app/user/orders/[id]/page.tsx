@@ -15,7 +15,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import type { Order } from "@/types";
+import type { OrderFE } from "@/types/frontend/order.types";
 
 interface OrderPageProps {
   params: Promise<{
@@ -26,7 +26,7 @@ interface OrderPageProps {
 export default function OrderDetailPage({ params }: OrderPageProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -70,9 +70,7 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
     try {
-      await ordersService.cancel(orderId, {
-        reason: "Customer requested cancellation",
-      });
+      await ordersService.cancel(orderId, "Customer requested cancellation");
       await loadOrder();
       alert("Order cancelled successfully");
     } catch (error) {
@@ -320,8 +318,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900"
-                      : "text-gray-400"
+                    ? "text-gray-900"
+                    : "text-gray-400"
                 }`}
               >
                 {step.label}

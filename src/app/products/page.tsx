@@ -9,7 +9,7 @@ import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 function ProductsContent() {
   const router = useRouter();
@@ -17,7 +17,7 @@ function ProductsContent() {
   const { addItem } = useCart();
   const isMobile = useIsMobile();
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("grid");
   const [showFilters, setShowFilters] = useState(false);
@@ -44,13 +44,11 @@ function ProductsContent() {
         search: searchQuery || undefined,
         ...filterValues,
         sortBy: sortBy as any,
-        sortOrder,
-        status: "published" as any,
         page: currentPage,
         limit: itemsPerPage,
-      });
+      } as any);
 
-      const productsData = response.data || [];
+      const productsData = response.products || [];
       setProducts(productsData);
       setTotalCount(response.pagination?.total || 0);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -245,7 +243,7 @@ function ProductsContent() {
                         name={product.name}
                         slug={product.slug}
                         price={product.price}
-                        originalPrice={product.originalPrice}
+                        originalPrice={product.originalPrice || undefined}
                         image={product.images?.[0] || ""}
                         rating={product.rating}
                         reviewCount={product.reviewCount}

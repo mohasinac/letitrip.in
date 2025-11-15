@@ -8,13 +8,13 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { shopsService } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 function ShopsContent() {
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
 
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState(
@@ -50,7 +50,8 @@ function ShopsContent() {
       } else if (sortBy === "newest") {
         shopsData.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
         );
       }
 
@@ -204,11 +205,11 @@ function ShopsContent() {
                         name={shop.name}
                         slug={shop.slug}
                         description={shop.description || ""}
-                        logo={shop.logo}
-                        banner={shop.banner}
+                        logo={shop.logo || undefined}
+                        banner={shop.banner || undefined}
                         rating={shop.rating}
-                        reviewCount={shop.reviewCount}
-                        productCount={shop.productCount}
+                        reviewCount={shop.reviewCount || 0}
+                        productCount={shop.productCount || shop.totalProducts}
                         isVerified={shop.isVerified}
                         isFeatured={shop.isFeatured}
                         location={shop.location}
@@ -224,11 +225,11 @@ function ShopsContent() {
                         name={shop.name}
                         slug={shop.slug}
                         description={shop.description || ""}
-                        logo={shop.logo}
-                        banner={shop.banner}
+                        logo={shop.logo || undefined}
+                        banner={shop.banner || undefined}
                         rating={shop.rating}
-                        reviewCount={shop.reviewCount}
-                        productCount={shop.productCount}
+                        reviewCount={shop.reviewCount || 0}
+                        productCount={shop.productCount || shop.totalProducts}
                         isVerified={shop.isVerified}
                         isFeatured={shop.isFeatured}
                         location={shop.location}

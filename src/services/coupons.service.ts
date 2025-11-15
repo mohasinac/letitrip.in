@@ -1,60 +1,23 @@
 import { apiService } from "./api.service";
+import type { CouponBE, CouponFiltersBE } from "@/types/backend/coupon.types";
 import type {
-  Coupon,
-  CouponType,
-  CouponStatus,
-  PaginatedResponse,
-} from "@/types";
+  CouponFE,
+  CouponFormFE,
+  ValidateCouponRequestFE,
+  ValidateCouponResponseFE,
+} from "@/types/frontend/coupon.types";
+import type {
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
+import {
+  toFECoupon,
+  toFECoupons,
+  toBECreateCouponRequest,
+  toBEUpdateCouponRequest,
+} from "@/types/transforms/coupon.transforms";
 
-interface CouponFilters {
-  shopId?: string;
-  type?: CouponType;
-  status?: CouponStatus;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-interface CreateCouponData {
-  shopId: string;
-  code: string;
-  name: string;
-  description?: string;
-  type: CouponType;
-  discountValue?: number;
-  maxDiscountAmount?: number;
-  tiers?: {
-    minAmount: number;
-    discountPercentage: number;
-  }[];
-  bogoConfig?: {
-    buyQuantity: number;
-    getQuantity: number;
-    discountPercentage: number;
-    applicableProducts?: string[];
-  };
-  minPurchaseAmount: number;
-  minQuantity: number;
-  applicability: "all" | "category" | "product";
-  applicableCategories?: string[];
-  applicableProducts?: string[];
-  excludedCategories?: string[];
-  excludedProducts?: string[];
-  usageLimit?: number;
-  usageLimitPerUser: number;
-  startDate: Date;
-  endDate: Date;
-  firstOrderOnly: boolean;
-  newUsersOnly: boolean;
-  canCombineWithOtherCoupons: boolean;
-  autoApply: boolean;
-  isPublic: boolean;
-  isFeatured: boolean;
-}
-
-interface UpdateCouponData extends Partial<CreateCouponData> {
-  status?: CouponStatus;
-}
+// Remove old interfaces - now using types from type system
 
 interface ValidateCouponData {
   code: string;
@@ -75,7 +38,9 @@ interface ValidateCouponResponse {
 
 class CouponsService {
   // List coupons (public active/owner all)
-  async list(filters?: CouponFilters): Promise<PaginatedResponse<Coupon>> {
+  async list(
+    filters?: Partial<CouponFiltersBE>
+  ): Promise<PaginatedResponseFE<CouponFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -93,27 +58,47 @@ class CouponsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/coupons?${queryString}` : "/coupons";
 
-    return apiService.get<PaginatedResponse<Coupon>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<CouponBE>>(
+      endpoint
+    );
+
+    return {
+      data: toFECoupons(response.data),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get coupon by ID
-  async getById(id: string): Promise<Coupon> {
-    return apiService.get<Coupon>(`/coupons/${id}`);
+  async getById(id: string): Promise<CouponFE> {
+    const couponBE = await apiService.get<CouponBE>(`/coupons/${id}`);
+    return toFECoupon(couponBE);
   }
 
   // Get coupon by code
-  async getByCode(code: string): Promise<Coupon> {
-    return apiService.get<Coupon>(`/coupons/${code}`);
+  async getByCode(code: string): Promise<CouponFE> {
+    const couponBE = await apiService.get<CouponBE>(`/coupons/${code}`);
+    return toFECoupon(couponBE);
   }
 
   // Create coupon (seller/admin)
-  async create(data: CreateCouponData): Promise<Coupon> {
-    return apiService.post<Coupon>("/coupons", data);
+  async create(data: CouponFormFE): Promise<CouponFE> {
+    const request = toBECreateCouponRequest(data);
+    const couponBE = await apiService.post<CouponBE>("/coupons", request);
+    return toFECoupon(couponBE);
   }
 
   // Update coupon (owner/admin)
-  async update(code: string, data: UpdateCouponData): Promise<Coupon> {
-    return apiService.patch<Coupon>(`/coupons/${code}`, data);
+  async update(code: string, data: Partial<CouponFormFE>): Promise<CouponFE> {
+    const request = toBEUpdateCouponRequest(data);
+    const couponBE = await apiService.patch<CouponBE>(
+      `/coupons/${code}`,
+      request
+    );
+    return toFECoupon(couponBE);
   }
 
   // Delete coupon (owner/admin)
@@ -141,7 +126,7 @@ class CouponsService {
   }
 
   // Get public coupons (featured/active)
-  async getPublic(shopId?: string): Promise<Coupon[]> {
+  async getPublic(shopId?: string): Promise<CouponFE[]> {
     const params = new URLSearchParams();
     if (shopId) params.append("shopId", shopId);
 
@@ -150,15 +135,10 @@ class CouponsService {
       ? `/coupons/public?${queryString}`
       : "/coupons/public";
 
-    return apiService.get<Coupon[]>(endpoint);
+    const couponsBE = await apiService.get<CouponBE[]>(endpoint);
+    return toFECoupons(couponsBE);
   }
 }
 
 export const couponsService = new CouponsService();
-export type {
-  CouponFilters,
-  CreateCouponData,
-  UpdateCouponData,
-  ValidateCouponData,
-  ValidateCouponResponse,
-};
+export type { ValidateCouponData, ValidateCouponResponse };

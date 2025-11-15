@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { UserRole } from "@/types";
+import { UserRole } from "@/types/shared/common.types";
 import {
   InlineEditRow,
   BulkActionBar,
@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
   const [showUnbanDialog, setShowUnbanDialog] = useState(false);
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [banReason, setBanReason] = useState("");
-  const [newRole, setNewRole] = useState<UserRole>("user");
+  const [newRole, setNewRole] = useState<UserRole>(UserRole.USER);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Inline edit states
@@ -147,13 +147,9 @@ export default function AdminUsersPage() {
 
       // Use appropriate usersService method based on action
       if (actionId === "ban") {
-        await Promise.all(
-          selectedIds.map((id) => usersService.ban(id, { isBanned: true }))
-        );
+        await Promise.all(selectedIds.map((id) => usersService.ban(id, true)));
       } else if (actionId === "unban") {
-        await Promise.all(
-          selectedIds.map((id) => usersService.ban(id, { isBanned: false }))
-        );
+        await Promise.all(selectedIds.map((id) => usersService.ban(id, false)));
       }
       // Note: delete action not supported by usersService yet
 

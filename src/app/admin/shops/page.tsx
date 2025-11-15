@@ -30,8 +30,9 @@ import {
   BulkAction,
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
-import { shopsService, type ShopFilters } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import { shopsService } from "@/services/shops.service";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import type { ShopFiltersBE } from "@/types/backend/shop.types";
 import { SHOP_FILTERS } from "@/constants/filters";
 import { getShopBulkActions } from "@/constants/bulk-actions";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -47,14 +48,14 @@ export default function AdminShopsPage() {
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
 
   // Filters
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [filterValues, setFilterValues] = useState<Partial<ShopFiltersBE>>({});
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,7 +82,10 @@ export default function AdminShopsPage() {
       setLoading(true);
       setError(null);
 
-      const filters: ShopFilters = {
+      const filters: Partial<ShopFiltersBE> & {
+        page?: number;
+        limit?: number;
+      } = {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
@@ -91,8 +95,8 @@ export default function AdminShopsPage() {
       const response = await shopsService.list(filters);
 
       setShops(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalShops(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalShops(response.total || 0);
     } catch (error) {
       console.error("Failed to load shops:", error);
       setError(error instanceof Error ? error.message : "Failed to load shops");
@@ -129,7 +133,7 @@ export default function AdminShopsPage() {
             case "feature":
               await shopsService.setFeatureFlags(shop.slug, {
                 isFeatured: true,
-                showOnHomepage: shop.showOnHomepage,
+                showOnHomepage: shop.showOnHomepage || false,
               });
               break;
             case "unfeature":

@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
-import type { Shop } from "@/types";
+import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 
 interface ShopHeaderProps {
-  shop: Shop;
+  shop: ShopFE;
 }
 
 export function ShopHeader({ shop }: ShopHeaderProps) {
@@ -115,10 +115,12 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                       <span>({shop.reviewCount} reviews)</span>
                     </div>
                   )}
-                  {shop.location && (
+                  {(shop.city || shop.state) && (
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
-                      <span>{shop.location}</span>
+                      <span>
+                        {[shop.city, shop.state].filter(Boolean).join(", ")}
+                      </span>
                     </div>
                   )}
                   {shop.isVerified && (
@@ -148,8 +150,8 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                   {checkingFollow
                     ? "..."
                     : isFollowing
-                      ? "Following"
-                      : "Follow"}
+                    ? "Following"
+                    : "Follow"}
                 </button>
                 <button
                   onClick={handleShare}

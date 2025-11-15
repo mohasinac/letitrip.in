@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { categoriesService } from "@/services/categories.service";
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 import {
   Layers,
   Heart,
@@ -36,7 +36,7 @@ export default function FeaturedCategories() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function FeaturedCategories() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -108,7 +108,7 @@ export default function FeaturedCategories() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth,
+                target.scrollLeft < target.scrollWidth - target.clientWidth
               );
             }}
           >
@@ -123,19 +123,19 @@ export default function FeaturedCategories() {
                     <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
                   </div>
                 ))
-              : visibleCategories.map((category) => {
-                  const Icon = iconMap[category.icon || "package"] || Package;
+              : visibleCategories.map((CategoryFE) => {
+                  const Icon = iconMap[CategoryFE.icon || "package"] || Package;
                   return (
                     <Link
-                      key={category.id}
-                      href={`/categories/${category.slug}`}
+                      key={CategoryFE.id}
+                      href={`/categories/${CategoryFE.slug}`}
                       className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
                     >
                       <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
                         <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700" />
                       </div>
                       <span className="text-[10px] lg:text-xs text-gray-800 text-center group-hover:text-yellow-700 font-medium leading-tight">
-                        {category.name}
+                        {CategoryFE.name}
                       </span>
                     </Link>
                   );

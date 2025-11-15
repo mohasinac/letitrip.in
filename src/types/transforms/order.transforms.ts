@@ -278,6 +278,11 @@ function toFEOrderItem(itemBE: OrderItemBE_BE): OrderItemFE {
     formattedPrice: formatPrice(itemBE.price),
     formattedSubtotal: formatPrice(itemBE.subtotal),
     formattedTotal: formatPrice(itemBE.total),
+
+    // Backwards compatibility (admin pages)
+    variant: itemBE.variantName,
+    shopId: null, // Not available in OrderItemBE
+    shopName: null, // Not available in OrderItemBE
   };
 }
 
@@ -289,6 +294,13 @@ function toFEShippingAddress(addressBE: ShippingAddressBE): ShippingAddressFE {
     ...addressBE,
     formattedAddress: formatAddress(addressBE),
     shortAddress: formatShortAddress(addressBE),
+
+    // Backwards compatibility (admin pages)
+    name: addressBE.fullName,
+    phone: addressBE.phoneNumber,
+    line1: addressBE.addressLine1,
+    line2: addressBE.addressLine2,
+    pincode: addressBE.postalCode,
   };
 }
 
@@ -395,6 +407,15 @@ export function toFEOrder(orderBE: OrderBE): OrderFE {
     badges: generateOrderBadges(orderBE),
 
     metadata: orderBE.metadata,
+
+    // Backwards compatibility (admin pages)
+    customerId: orderBE.userId,
+    billingAddress: orderBE.billingAddress
+      ? toFEShippingAddress(orderBE.billingAddress)
+      : null,
+    shippingProvider: orderBE.shippingProvider || null,
+    internalNotes: orderBE.adminNotes,
+    shipping: orderBE.shippingCost,
   };
 }
 
@@ -419,6 +440,17 @@ export function toFEOrderCard(orderBE: OrderListItemBE): OrderCardFE {
     canCancel:
       orderBE.status === OrderStatus.PENDING ||
       orderBE.status === OrderStatus.CONFIRMED,
+
+    // Backwards compatibility (admin pages)
+    shippingAddress: orderBE.shippingAddress
+      ? {
+          name: orderBE.shippingAddress.fullName,
+          phone: orderBE.shippingAddress.phoneNumber,
+        }
+      : undefined,
+    createdAt: formatDate(createdAt),
+    items: [], // Not available in list response
+    paymentMethod: orderBE.paymentMethod || undefined,
   };
 }
 

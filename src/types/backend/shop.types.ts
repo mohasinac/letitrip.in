@@ -100,3 +100,16 @@ export interface ShopStatsResponseBE {
   totalRevenue: number;
   averageRating: number;
 }
+
+/**
+ * Shop filters for list queries
+ */
+export interface ShopFiltersBE {
+  search?: string; // Search in name, description
+  status?: Status | Status[];
+  isVerified?: boolean;
+  city?: string;
+  state?: string;
+  minRating?: number;
+  sellerId?: string;
+}

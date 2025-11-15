@@ -6,14 +6,14 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import AuctionForm from "@/components/seller/AuctionForm";
 import { auctionsService } from "@/services/auctions.service";
-import type { Auction } from "@/types";
+import type { AuctionFE } from "@/types/frontend/auction.types";
 
 export default function EditAuctionPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 
-  const [auction, setAuction] = useState<Auction | null>(null);
+  const [auction, setAuction] = useState<AuctionFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ export default function EditAuctionPage() {
     }
   };
 
-  const handleSubmit = async (data: Partial<Auction>) => {
+  const handleSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
       setError("");

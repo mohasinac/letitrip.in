@@ -82,7 +82,7 @@ export default function AdminBlogPage() {
         ...filterValues,
       });
 
-      const data = Array.isArray(response) ? response : response.data || [];
+      const data = Array.isArray(response) ? response : response.posts || [];
       setPosts(data);
       setTotalPages(
         Array.isArray(response) ? 1 : response.pagination?.totalPages || 1
@@ -94,9 +94,9 @@ export default function AdminBlogPage() {
       // Calculate stats
       setStats({
         total: totalPosts,
-        published: data.filter((p) => p.status === "published").length,
-        draft: data.filter((p) => p.status === "draft").length,
-        archived: data.filter((p) => p.status === "archived").length,
+        published: data.filter((p: any) => p.status === "published").length,
+        draft: data.filter((p: any) => p.status === "draft").length,
+        archived: data.filter((p: any) => p.status === "archived").length,
       });
     } catch (error) {
       console.error("Failed to load blog posts:", error);

@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 interface ShopInlineFormProps {
-  shop?: Shop;
+  shop?: ShopFE;
   onSuccess: () => void;
   onCancel: () => void;
 }

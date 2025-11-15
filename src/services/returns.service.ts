@@ -1,31 +1,15 @@
 import { apiService } from "./api.service";
+import type { ReturnBE, ReturnFiltersBE } from "@/types/backend/return.types";
+import type { ReturnFE, ReturnFormFE } from "@/types/frontend/return.types";
+import {
+  returnBEtoFE,
+  returnFormFEtoRequestBE,
+} from "@/types/transforms/return.transforms";
+import { ReturnStatus, ReturnReason } from "@/types/shared/common.types";
 import type {
-  Return,
-  ReturnStatus,
-  ReturnReason,
-  PaginatedResponse,
-} from "@/types";
-
-interface ReturnFilters {
-  orderId?: string;
-  customerId?: string;
-  shopId?: string;
-  status?: ReturnStatus;
-  reason?: ReturnReason;
-  requiresAdminIntervention?: boolean;
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  limit?: number;
-}
-
-interface InitiateReturnData {
-  orderId: string;
-  orderItemId: string;
-  reason: ReturnReason;
-  description: string;
-  media?: string[]; // Images/videos
-}
+  PaginatedResponseBE,
+  PaginatedResponseFE,
+} from "@/types/shared/common.types";
 
 interface UpdateReturnData {
   status?: ReturnStatus;
@@ -51,7 +35,9 @@ interface ResolveDisputeData {
 
 class ReturnsService {
   // List returns (role-filtered)
-  async list(filters?: ReturnFilters): Promise<PaginatedResponse<Return>> {
+  async list(
+    filters?: Partial<ReturnFiltersBE>
+  ): Promise<PaginatedResponseFE<ReturnFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -65,37 +51,67 @@ class ReturnsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/returns?${queryString}` : "/returns";
 
-    return apiService.get<PaginatedResponse<Return>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<ReturnBE>>(
+      endpoint
+    );
+
+    return {
+      data: response.data.map(returnBEtoFE),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      hasMore: response.hasMore,
+    };
   }
 
   // Get return by ID
-  async getById(id: string): Promise<Return> {
-    return apiService.get<Return>(`/returns/${id}`);
+  async getById(id: string): Promise<ReturnFE> {
+    const returnBE = await apiService.get<ReturnBE>(`/returns/${id}`);
+    return returnBEtoFE(returnBE);
   }
 
   // Initiate return (customer)
-  async initiate(data: InitiateReturnData): Promise<Return> {
-    return apiService.post<Return>("/returns", data);
+  async initiate(data: ReturnFormFE): Promise<ReturnFE> {
+    const request = returnFormFEtoRequestBE(data);
+    const returnBE = await apiService.post<ReturnBE>("/returns", request);
+    return returnBEtoFE(returnBE);
   }
 
   // Update return (seller/admin)
-  async update(id: string, data: UpdateReturnData): Promise<Return> {
-    return apiService.patch<Return>(`/returns/${id}`, data);
+  async update(id: string, data: UpdateReturnData): Promise<ReturnFE> {
+    const returnBE = await apiService.patch<ReturnBE>(`/returns/${id}`, data);
+    return returnBEtoFE(returnBE);
   }
 
   // Approve/reject return (seller/admin)
-  async approve(id: string, data: ApproveReturnData): Promise<Return> {
-    return apiService.post<Return>(`/returns/${id}/approve`, data);
+  async approve(id: string, data: ApproveReturnData): Promise<ReturnFE> {
+    const returnBE = await apiService.post<ReturnBE>(
+      `/returns/${id}/approve`,
+      data
+    );
+    return returnBEtoFE(returnBE);
   }
 
   // Process refund (seller/admin)
-  async processRefund(id: string, data: ProcessRefundData): Promise<Return> {
-    return apiService.post<Return>(`/returns/${id}/refund`, data);
+  async processRefund(id: string, data: ProcessRefundData): Promise<ReturnFE> {
+    const returnBE = await apiService.post<ReturnBE>(
+      `/returns/${id}/refund`,
+      data
+    );
+    return returnBEtoFE(returnBE);
   }
 
   // Resolve dispute (admin only)
-  async resolveDispute(id: string, data: ResolveDisputeData): Promise<Return> {
-    return apiService.post<Return>(`/returns/${id}/resolve`, data);
+  async resolveDispute(
+    id: string,
+    data: ResolveDisputeData
+  ): Promise<ReturnFE> {
+    const returnBE = await apiService.post<ReturnBE>(
+      `/returns/${id}/resolve`,
+      data
+    );
+    return returnBEtoFE(returnBE);
   }
 
   // Upload media for return
@@ -143,8 +159,6 @@ class ReturnsService {
 
 export const returnsService = new ReturnsService();
 export type {
-  ReturnFilters,
-  InitiateReturnData,
   UpdateReturnData,
   ApproveReturnData,
   ProcessRefundData,

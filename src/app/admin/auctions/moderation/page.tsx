@@ -9,6 +9,7 @@ import {
 } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
+import { AuctionStatus } from "@/types/shared/common.types";
 import {
   Eye,
   CheckCircle,
@@ -44,8 +45,8 @@ export default function AuctionModerationPage() {
         limit: 20,
       });
       setAuctions(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalAuctions(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalAuctions(response.total || 0);
     } catch (error: any) {
       console.error("Failed to load auctions:", error);
     } finally {
@@ -56,7 +57,7 @@ export default function AuctionModerationPage() {
   const handleApprove = async (id: string) => {
     try {
       setProcessingId(id);
-      await auctionsService.update(id, { status: "scheduled" as any });
+      await auctionsService.update(id, { status: AuctionStatus.SCHEDULED });
       await loadAuctions();
     } catch (error: any) {
       console.error("Failed to approve auction:", error);
@@ -71,7 +72,7 @@ export default function AuctionModerationPage() {
 
     try {
       setProcessingId(id);
-      await auctionsService.update(id, { status: "rejected" as any });
+      await auctionsService.update(id, { status: AuctionStatus.CANCELLED });
       await loadAuctions();
     } catch (error: any) {
       console.error("Failed to reject auction:", error);

@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface SimilarProductsProps {
   productId: string;
@@ -18,7 +18,7 @@ export function SimilarProducts({
   categoryId,
   currentShopId,
 }: SimilarProductsProps) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export function SimilarProducts({
       });
 
       // Filter out current product and diversify shops
-      const filtered = (data.data || []).filter(
-        (p: Product) => p.id !== productId,
+      const filtered = (data.products || []).filter(
+        (p: ProductCardFE) => p.id !== productId
       );
 
       // Diversify by prioritizing different shops
@@ -53,9 +53,12 @@ export function SimilarProducts({
   };
 
   // Helper to diversify products by shop
-  const diversifyByShop = (products: Product[], currentShopId: string) => {
-    const otherShops: Product[] = [];
-    const sameShop: Product[] = [];
+  const diversifyByShop = (
+    products: ProductCardFE[],
+    currentShopId: string
+  ) => {
+    const otherShops: ProductCardFE[] = [];
+    const sameShop: ProductCardFE[] = [];
 
     products.forEach((p) => {
       if (p.shopId === currentShopId) {
@@ -100,7 +103,7 @@ export function SimilarProducts({
             name={product.name}
             slug={product.slug}
             price={product.price}
-            originalPrice={product.originalPrice}
+            originalPrice={product.originalPrice ?? undefined}
             image={product.images?.[0] || ""}
             rating={product.rating}
             reviewCount={product.reviewCount}

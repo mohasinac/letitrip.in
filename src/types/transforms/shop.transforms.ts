@@ -73,6 +73,10 @@ export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
   if (shopBE.rating >= 4.5) badges.push("Top Rated");
   if (shopBE.totalProducts >= 100) badges.push("Large Catalog");
 
+  // Format location
+  const locationParts = [shopBE.city, shopBE.state].filter(Boolean);
+  const location = locationParts.length > 0 ? locationParts.join(", ") : null;
+
   return {
     id: shopBE.id,
     name: shopBE.name,
@@ -87,6 +91,21 @@ export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
     isVerified: shopBE.isVerified,
     urlPath: `/shops/${shopBE.slug}`,
     badges,
+
+    // Backwards compatibility (admin pages)
+    email: shopBE.email,
+    location: location || undefined,
+    isFeatured: shopBE.metadata?.isFeatured || false,
+    isBanned: shopBE.status === Status.ARCHIVED, // Using ARCHIVED for banned
+    showOnHomepage: shopBE.metadata?.showOnHomepage || false,
+    productCount: shopBE.totalProducts,
+    reviewCount: shopBE.reviewCount,
+    ownerId: shopBE.ownerId,
+    description: shopBE.description || null,
+    banner: shopBE.banner || null,
+    createdAt: shopBE.createdAt
+      ? new Date(shopBE.createdAt.seconds * 1000).toISOString()
+      : undefined,
   };
 }
 

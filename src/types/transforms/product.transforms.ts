@@ -324,6 +324,10 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
     rating: productBE.averageRating,
     stockCount: productBE.stockCount,
     condition: "new" as any, // Default, not available in list item
+    sku: productBE.sku || null,
+    categoryId: productBE.categoryId || null,
+    salesCount: productBE.salesCount || 0,
+    lowStockThreshold: productBE.lowStockThreshold || 10,
   };
 }
 

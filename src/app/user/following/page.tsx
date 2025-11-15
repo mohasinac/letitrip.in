@@ -6,10 +6,10 @@ import { shopsService } from "@/services/shops.service";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
-import type { Shop } from "@/types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 export default function FollowingPage() {
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,16 +80,16 @@ export default function FollowingPage() {
                 id={shop.id}
                 name={shop.name}
                 slug={shop.slug}
-                logo={shop.logo}
-                banner={shop.banner}
-                description={shop.description}
+                logo={shop.logo || undefined}
+                banner={shop.banner || undefined}
+                description={shop.description || undefined}
                 rating={shop.rating}
                 reviewCount={shop.reviewCount}
                 productCount={shop.productCount || 0}
-                location={shop.location}
+                location={shop.location || undefined}
                 isVerified={shop.isVerified}
                 isFeatured={shop.isFeatured}
-                categories={shop.categories}
+                categories={(shop as any).categories}
                 isFollowing={true}
               />
             ))}

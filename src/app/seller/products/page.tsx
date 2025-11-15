@@ -34,13 +34,13 @@ import {
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 export default function ProductsPage() {
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -73,9 +73,9 @@ export default function ProductsPage() {
         search: searchQuery || undefined,
         ...filterValues,
       });
-      setProducts(response.data || []);
+      setProducts(response.products || []);
       setTotalProducts(
-        response.pagination?.total || response.data?.length || 0
+        response.pagination?.total || response.products?.length || 0
       );
     } catch (error) {
       console.error("Failed to load products:", error);

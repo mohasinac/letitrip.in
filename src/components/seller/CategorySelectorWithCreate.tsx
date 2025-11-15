@@ -102,13 +102,14 @@ export default function CategorySelectorWithCreate({
       const newCategory = await categoriesService.create({
         name: createForm.name.trim(),
         slug: createForm.slug.trim(),
-        description: createForm.description.trim() || undefined,
+        description: createForm.description.trim() || "",
+        image: null,
+        icon: null,
         parentIds: [],
-        sortOrder: 0,
+        order: 0,
         isFeatured: false,
         showOnHomepage: false,
         isActive: true,
-        commissionRate: 0,
       });
 
       // Reload categories

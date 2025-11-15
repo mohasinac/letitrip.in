@@ -257,7 +257,7 @@ class AuctionsService {
   // Quick update for inline editing
   async quickUpdate(
     id: string,
-    data: Partial<UpdateAuctionFormFE>
+    data: Partial<AuctionFormFE>
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       `/api/auctions/${id}`,

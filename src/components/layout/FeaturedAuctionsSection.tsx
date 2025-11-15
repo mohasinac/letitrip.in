@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { auctionsService } from "@/services/auctions.service";
-import type { Auction } from "@/types";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 
 export default function FeaturedAuctionsSection() {
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,9 +20,9 @@ export default function FeaturedAuctionsSection() {
       setLoading(true);
       const response = await auctionsService.list({
         isFeatured: true,
-        status: "live",
+        status: AuctionStatus.ACTIVE,
         limit: 10,
-      });
+      } as any);
 
       const auctionsList = Array.isArray(response)
         ? response
@@ -70,21 +71,25 @@ export default function FeaturedAuctionsSection() {
         {auctions.map((auction) => (
           <AuctionCard
             key={auction.id}
-            auction={{
-              id: auction.id,
-              name: auction.name,
-              slug: auction.slug,
-              images: auction.images || [],
-              currentBid: auction.currentBid,
-              startingBid: auction.startingBid,
-              bidCount: auction.bidCount,
-              endTime: auction.endTime,
-              isFeatured: auction.isFeatured,
-              shop: {
-                id: auction.shopId,
-                name: "Shop", // Would come from shop data
-              },
-            }}
+            auction={
+              {
+                id: auction.id,
+                name: auction.productName || "",
+                slug: auction.productSlug || "",
+                images: [auction.productImage],
+                currentBid: auction.currentBid || auction.startingBid || 0,
+                startingBid: auction.startingBid || 0,
+                bidCount: auction.bidCount || 0,
+                endTime: auction.endTime,
+                isFeatured: auction.isFeatured,
+                shop: auction.shopId
+                  ? {
+                      id: auction.shopId,
+                      name: (auction as any).shopName || "Shop",
+                    }
+                  : undefined,
+              } as any
+            }
             showShopInfo={true}
           />
         ))}

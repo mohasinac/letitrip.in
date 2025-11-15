@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { Loader2, Plus, X } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import TagInput from "@/components/common/TagInput";
-import type { Coupon, CouponType } from "@/types";
+import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
+import { CouponType, CouponApplicability } from "@/types/shared/common.types";
 import { couponsService } from "@/services/coupons.service";
 
 interface CouponFormProps {
   mode: "create" | "edit";
-  initialData?: Partial<Coupon>;
+  initialData?: Partial<CouponFE>;
   shopId?: string;
-  onSubmit: (data: Partial<Coupon>) => void;
+  onSubmit: (data: CouponFormFE) => void;
   isSubmitting?: boolean;
 }
 
@@ -20,12 +21,24 @@ const COUPON_TYPES: {
   label: string;
   description: string;
 }[] = [
-  { value: "percentage", label: "Percentage", description: "e.g., 10% off" },
-  { value: "flat", label: "Flat Amount", description: "e.g., ₹100 off" },
-  { value: "bogo", label: "BOGO", description: "Buy One Get One" },
-  { value: "tiered", label: "Tiered", description: "Spend more, save more" },
   {
-    value: "free-shipping",
+    value: CouponType.PERCENTAGE,
+    label: "Percentage",
+    description: "e.g., 10% off",
+  },
+  {
+    value: CouponType.FLAT,
+    label: "Flat Amount",
+    description: "e.g., ₹100 off",
+  },
+  { value: CouponType.BOGO, label: "BOGO", description: "Buy One Get One" },
+  {
+    value: CouponType.TIERED,
+    label: "Tiered",
+    description: "Spend more, save more",
+  },
+  {
+    value: CouponType.FREE_SHIPPING,
     label: "Free Shipping",
     description: "No shipping charges",
   },
@@ -61,12 +74,12 @@ export default function CouponForm({
     name: initialData?.name || "",
     description: initialData?.description || "",
     shopId: initialData?.shopId || shopId || "",
-    type: (initialData?.type as CouponType) || "percentage",
+    type: initialData?.type || CouponType.PERCENTAGE,
     discountValue: initialData?.discountValue || 0,
     maxDiscountAmount: initialData?.maxDiscountAmount || 0,
     minPurchaseAmount: initialData?.minPurchaseAmount || 0,
     minQuantity: initialData?.minQuantity || 1,
-    applicability: initialData?.applicability || "all",
+    applicability: initialData?.applicability || CouponApplicability.ALL,
     applicableCategories: initialData?.applicableCategories || [],
     applicableProducts: initialData?.applicableProducts || [],
     usageLimit: initialData?.usageLimit || undefined,
@@ -74,8 +87,13 @@ export default function CouponForm({
     startDate: initialData?.startDate || new Date(),
     endDate:
       initialData?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    status: initialData?.status || "active",
     firstOrderOnly: initialData?.firstOrderOnly || false,
+    newUsersOnly: initialData?.newUsersOnly || false,
+    canCombineWithOtherCoupons:
+      initialData?.canCombineWithOtherCoupons || false,
+    autoApply: initialData?.autoApply || false,
+    isPublic: initialData?.isPublic || true,
+    isFeatured: initialData?.isFeatured || false,
   });
 
   const [codeError, setCodeError] = useState("");
@@ -560,40 +578,7 @@ export default function CouponForm({
         </div>
       </div>
 
-      {/* Status */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Status</h3>
-
-        <div className="flex items-center gap-3">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="status"
-              value="active"
-              checked={formData.status === "active"}
-              onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value as any })
-              }
-              className="h-4 w-4 text-blue-600"
-            />
-            <span className="ml-2 text-sm text-gray-700">Active</span>
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="status"
-              value="inactive"
-              checked={formData.status === "inactive"}
-              onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value as any })
-              }
-              className="h-4 w-4 text-blue-600"
-            />
-            <span className="ml-2 text-sm text-gray-700">Inactive</span>
-          </label>
-        </div>
-      </div>
+      {/* Status - Managed by backend, coupons start active by default */}
 
       {/* Submit Button */}
       <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">

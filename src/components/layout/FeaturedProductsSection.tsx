@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { productsService } from "@/services/products.service";
-import type { ProductCardFE } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 import { ShoppingBag } from "lucide-react";
 
 export default function FeaturedProductsSection() {
@@ -85,7 +85,7 @@ export default function FeaturedProductsSection() {
             name={product.name}
             slug={product.slug}
             price={product.price}
-            originalPrice={product.originalPrice}
+            originalPrice={product.originalPrice || undefined}
             image={product.images[0] || "/placeholder-product.jpg"}
             rating={product.rating}
             reviewCount={product.reviewCount}

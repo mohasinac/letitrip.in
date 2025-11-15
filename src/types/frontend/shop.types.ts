@@ -67,6 +67,19 @@ export interface ShopCardFE {
   isVerified: boolean;
   urlPath: string;
   badges: string[];
+
+  // Backwards compatibility (admin pages)
+  email?: string;
+  location?: string; // Formatted location string
+  isFeatured?: boolean;
+  isBanned?: boolean;
+  showOnHomepage?: boolean;
+  productCount?: number; // Alias for totalProducts
+  reviewCount?: number;
+  ownerId?: string;
+  description?: string | null; // Shop description for cards
+  banner?: string | null; // Banner image for cards
+  createdAt?: string; // Creation date for sorting
 }
 
 export interface ShopFormFE {

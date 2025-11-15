@@ -7,30 +7,11 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { auctionsService } from "@/services/auctions.service";
 import Link from "next/link";
 import Image from "next/image";
-
-interface WonAuction {
-  id: string;
-  name: string;
-  slug: string;
-  images: string[];
-  currentBid: number;
-  startingBid: number;
-  bidCount: number;
-  endTime: Date | string;
-  status: string;
-  highest_bidder_id?: string;
-  order_id?: string;
-  order_status?: string;
-  shop?: {
-    id: string;
-    name: string;
-    logo?: string;
-  };
-}
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
 export default function WonAuctionsPage() {
   const { user } = useAuth();
-  const [auctions, setAuctions] = useState<WonAuction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,14 +78,14 @@ export default function WonAuctionsPage() {
   }
 
   const totalWinnings = auctions.reduce(
-    (sum, auction) => sum + auction.currentBid,
+    (sum, auction) => sum + (auction.currentBid || 0),
     0
   );
   const pendingPayment = auctions.filter(
-    (a) => !a.order_id || a.order_status === "pending"
+    (a) => !(a as any).order_id || (a as any).order_status === "pending"
   );
   const completedOrders = auctions.filter(
-    (a) => a.order_id && a.order_status === "completed"
+    (a) => (a as any).order_id && (a as any).order_status === "completed"
   );
 
   return (
@@ -177,8 +158,9 @@ export default function WonAuctionsPage() {
           <div className="space-y-4">
             {auctions.map((auction) => {
               const hasPendingPayment =
-                !auction.order_id || auction.order_status === "pending";
-              const hasOrder = !!auction.order_id;
+                !(auction as any).order_id ||
+                (auction as any).order_status === "pending";
+              const hasOrder = !!(auction as any).order_id;
 
               return (
                 <div
@@ -189,10 +171,10 @@ export default function WonAuctionsPage() {
                     <div className="flex gap-4">
                       {/* Image */}
                       <div className="relative w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        {auction.images?.[0] ? (
+                        {[auction.productImage]?.[0] ? (
                           <Image
-                            src={auction.images[0]}
-                            alt={auction.name}
+                            src={auction.productImage}
+                            alt={auction.productName || ""}
                             fill
                             className="object-cover"
                           />
@@ -212,24 +194,24 @@ export default function WonAuctionsPage() {
                         <div className="flex items-start justify-between gap-4 mb-3">
                           <div className="flex-1 min-w-0">
                             <Link
-                              href={`/auctions/${auction.slug}`}
+                              href={`/auctions/${auction.productSlug}`}
                               className="text-xl font-semibold text-gray-900 hover:text-blue-600 line-clamp-2"
                             >
-                              {auction.name}
+                              {auction.productName}
                             </Link>
-                            {auction.shop && (
+                            {(auction as any).shop && (
                               <div className="flex items-center gap-2 mt-1">
-                                {auction.shop.logo && (
+                                {(auction as any).shop.logo && (
                                   <Image
-                                    src={auction.shop.logo}
-                                    alt={auction.shop.name}
+                                    src={(auction as any).shop.logo}
+                                    alt={(auction as any).shop.name}
                                     width={20}
                                     height={20}
                                     className="rounded-full"
                                   />
                                 )}
                                 <span className="text-sm text-gray-600">
-                                  {auction.shop.name}
+                                  {(auction as any).shop.name}
                                 </span>
                               </div>
                             )}
@@ -254,7 +236,7 @@ export default function WonAuctionsPage() {
                               Winning Bid
                             </div>
                             <div className="font-bold text-green-600 text-lg">
-                              {formatCurrency(auction.currentBid)}
+                              {formatCurrency(auction.currentBid || 0)}
                             </div>
                           </div>
                           <div>
@@ -269,14 +251,16 @@ export default function WonAuctionsPage() {
                               {formatDate(auction.endTime, { format: "short" })}
                             </div>
                           </div>
-                          {hasOrder && auction.order_id && (
+                          {hasOrder && (auction as any).order_id && (
                             <div>
                               <div className="text-gray-500 mb-1">Order ID</div>
                               <Link
-                                href={`/user/orders/${auction.order_id}`}
+                                href={`/user/orders/${
+                                  (auction as any).order_id
+                                }`}
                                 className="text-blue-600 hover:underline font-medium"
                               >
-                                #{auction.order_id}
+                                #{(auction as any).order_id}
                               </Link>
                             </div>
                           )}
@@ -301,17 +285,21 @@ export default function WonAuctionsPage() {
                             </Link>
                           )}
 
-                          {hasOrder && auction.order_id && (
+                          {hasOrder && (auction as any).order_id && (
                             <>
                               <Link
-                                href={`/user/orders/${auction.order_id}`}
+                                href={`/user/orders/${
+                                  (auction as any).order_id
+                                }`}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
                               >
                                 <Package size={16} />
                                 Track Order
                               </Link>
                               <Link
-                                href={`/api/orders/${auction.order_id}/invoice`}
+                                href={`/api/orders/${
+                                  (auction as any).order_id
+                                }/invoice`}
                                 target="_blank"
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium"
                               >

@@ -53,7 +53,7 @@ export default function SellerOrderDetailPage() {
   const handleUpdateStatus = async (status: string) => {
     try {
       setUpdating(true);
-      await ordersService.updateStatus(orderId, { status: status as any });
+      await ordersService.updateStatus(orderId, status);
       await loadOrder();
     } catch (error: any) {
       console.error("Failed to update status:", error);
@@ -66,13 +66,14 @@ export default function SellerOrderDetailPage() {
     e.preventDefault();
     try {
       setUpdating(true);
-      await ordersService.createShipment(orderId, {
-        trackingNumber: shippingData.trackingNumber,
-        shippingProvider: shippingData.shippingProvider,
-        estimatedDelivery: shippingData.estimatedDelivery
+      await ordersService.createShipment(
+        orderId,
+        shippingData.trackingNumber,
+        shippingData.shippingProvider,
+        shippingData.estimatedDelivery
           ? new Date(shippingData.estimatedDelivery)
-          : undefined,
-      });
+          : undefined
+      );
       setShowShippingForm(false);
       setShippingData({
         trackingNumber: "",

@@ -31,11 +31,10 @@ import {
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { getProductBulkActions } from "@/constants/bulk-actions";
-import {
-  productsService,
-  type ProductFilters,
-} from "@/services/products.service";
-import type { Product, ProductStatus } from "@/types";
+import { productsService } from "@/services/products.service";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { ProductFiltersBE } from "@/types/backend/product.types";
+import type { ProductStatus } from "@/types/shared/common.types";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import {
@@ -50,7 +49,7 @@ export default function AdminProductsPage() {
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,7 +83,7 @@ export default function AdminProductsPage() {
       setLoading(true);
       setError(null);
 
-      const filters: ProductFilters = {
+      const filters: any = {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
@@ -95,7 +94,7 @@ export default function AdminProductsPage() {
 
       const response = await productsService.list(filters);
 
-      setProducts(response.data || []);
+      setProducts(response.products || []);
       setTotalPages(response.pagination?.totalPages || 1);
       setTotalProducts(response.pagination?.total || 0);
     } catch (error) {
@@ -596,7 +595,7 @@ export default function AdminProductsPage() {
                                 product.stockCount === 0
                                   ? "text-red-600"
                                   : product.stockCount <
-                                    product.lowStockThreshold
+                                    (product.lowStockThreshold || 10)
                                   ? "text-yellow-600"
                                   : "text-green-600"
                               }`}

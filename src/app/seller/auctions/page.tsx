@@ -38,14 +38,15 @@ import {
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
-import type { Auction, AuctionStatus } from "@/types";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
 import { formatDistanceToNow } from "date-fns";
 
 export default function SellerAuctionsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("table");
   const [totalAuctions, setTotalAuctions] = useState(0);
@@ -119,18 +120,18 @@ export default function SellerAuctionsPage() {
   };
 
   const getStatusBadge = (status: AuctionStatus) => {
-    const styles = {
-      draft: "bg-gray-100 text-gray-800",
-      scheduled: "bg-blue-100 text-blue-800",
-      live: "bg-green-100 text-green-800",
-      ended: "bg-yellow-100 text-yellow-800",
-      cancelled: "bg-red-100 text-red-800",
+    const styles: Record<string, string> = {
+      [AuctionStatus.DRAFT]: "bg-gray-100 text-gray-800",
+      [AuctionStatus.SCHEDULED]: "bg-blue-100 text-blue-800",
+      [AuctionStatus.ACTIVE]: "bg-green-100 text-green-800",
+      [AuctionStatus.ENDED]: "bg-yellow-100 text-yellow-800",
+      [AuctionStatus.CANCELLED]: "bg-red-100 text-red-800",
     };
 
     return (
       <span
         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-          styles[status] || styles.draft
+          styles[status] || styles[AuctionStatus.DRAFT]
         }`}
       >
         {status}
@@ -140,9 +141,10 @@ export default function SellerAuctionsPage() {
 
   const stats = {
     total: auctions.length,
-    live: auctions.filter((a) => a.status === "live").length,
-    scheduled: auctions.filter((a) => a.status === "scheduled").length,
-    ended: auctions.filter((a) => a.status === "ended").length,
+    live: auctions.filter((a) => a.status === AuctionStatus.ACTIVE).length,
+    scheduled: auctions.filter((a) => a.status === AuctionStatus.SCHEDULED)
+      .length,
+    ended: auctions.filter((a) => a.status === AuctionStatus.ENDED).length,
   };
 
   if (loading) {
@@ -449,12 +451,7 @@ export default function SellerAuctionsPage() {
 
                                   await auctionsService.quickUpdate(
                                     auction.id,
-                                    {
-                                      ...values,
-                                      images: values.images
-                                        ? [values.images]
-                                        : auction.images,
-                                    }
+                                    values
                                   );
                                   await loadAuctions();
                                   setEditingId(null);
@@ -519,7 +516,12 @@ export default function SellerAuctionsPage() {
                             {/* Current Bid */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="font-medium text-gray-900">
-                                ₹{auction.currentBid.toLocaleString("en-IN")}
+                                ₹
+                                {(
+                                  auction.currentBid ||
+                                  auction.startingBid ||
+                                  0
+                                ).toLocaleString("en-IN")}
                               </div>
                             </td>
 
@@ -530,7 +532,7 @@ export default function SellerAuctionsPage() {
 
                             {/* Time */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                              {auction.status === "live"
+                              {auction.status === AuctionStatus.ACTIVE
                                 ? formatDistanceToNow(
                                     new Date(auction.endTime),
                                     {
@@ -612,7 +614,12 @@ export default function SellerAuctionsPage() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Current Bid:</span>
                           <span className="font-semibold text-gray-900">
-                            ₹{auction.currentBid.toLocaleString()}
+                            ₹
+                            {(
+                              auction.currentBid ||
+                              auction.startingBid ||
+                              0
+                            ).toLocaleString()}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
@@ -624,7 +631,7 @@ export default function SellerAuctionsPage() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Ends:</span>
                           <span className="text-gray-900">
-                            {auction.status === "live"
+                            {auction.status === AuctionStatus.ACTIVE
                               ? formatDistanceToNow(new Date(auction.endTime), {
                                   addSuffix: true,
                                 })

@@ -8,14 +8,14 @@ import { ordersService } from "@/services/orders.service";
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
-import type { Order } from "@/types";
+import type { OrderCardFE } from "@/types/frontend/order.types";
 
 export const dynamic = "force-dynamic";
 
 export default function OrdersPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({});
 

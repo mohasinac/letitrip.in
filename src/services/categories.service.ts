@@ -17,7 +17,10 @@ import {
   toFECategoryTreeNode,
   toBECreateCategoryRequest,
 } from "@/types/transforms/category.transforms";
-import type { ProductBE } from "@/types/backend/product.types";
+import type {
+  ProductBE,
+  ProductListItemBE,
+} from "@/types/backend/product.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { toFEProductCard } from "@/types/transforms/product.transforms";
 import type {
@@ -222,7 +225,9 @@ class CategoriesService {
       ? `/categories/${slug}/products?${qs}`
       : `/categories/${slug}/products`;
 
-    const res = await apiService.get<PaginatedResponseBE<ProductBE>>(endpoint);
+    const res = await apiService.get<PaginatedResponseBE<ProductListItemBE>>(
+      endpoint
+    );
     return {
       data: res.data.map(toFEProductCard),
       total: res.total,

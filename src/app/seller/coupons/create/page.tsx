@@ -6,13 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import CouponForm from "@/components/seller/CouponForm";
 import { couponsService } from "@/services/coupons.service";
-import type { Coupon } from "@/types";
+import type { CouponFormFE } from "@/types/frontend/coupon.types";
 
 export default function CreateCouponPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data: Partial<Coupon>) => {
+  const handleSubmit = async (data: CouponFormFE) => {
     try {
       setIsSubmitting(true);
 

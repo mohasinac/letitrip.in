@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { shopsService } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
 import {
   ChevronRight,
   ChevronLeft,
@@ -33,7 +33,7 @@ export default function ShopsNav() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function ShopsNav() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -103,7 +103,7 @@ export default function ShopsNav() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth,
+                target.scrollLeft < target.scrollWidth - target.clientWidth
               );
             }}
           >
@@ -118,20 +118,20 @@ export default function ShopsNav() {
                     <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
                   </div>
                 ))
-              : shops.map((shop) => {
-                  // Use shop logo or fallback to icon
+              : shops.map((ShopCardFE) => {
+                  // Use ShopCardFE logo or fallback to icon
                   const Icon = shopIconMap["store"] || Store;
                   return (
                     <Link
-                      key={shop.id}
-                      href={`/shops/${shop.slug}`}
+                      key={ShopCardFE.id}
+                      href={`/shops/${ShopCardFE.slug}`}
                       className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
                     >
                       <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors overflow-hidden">
-                        {shop.logo ? (
+                        {ShopCardFE.logo ? (
                           <img
-                            src={shop.logo}
-                            alt={shop.name}
+                            src={ShopCardFE.logo}
+                            alt={ShopCardFE.name}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -139,7 +139,7 @@ export default function ShopsNav() {
                         )}
                       </div>
                       <span className="text-[10px] lg:text-xs text-gray-800 text-center group-hover:text-yellow-700 font-medium leading-tight">
-                        {shop.name}
+                        {ShopCardFE.name}
                       </span>
                     </Link>
                   );

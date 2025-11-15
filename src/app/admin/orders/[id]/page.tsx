@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ordersService } from "@/services/orders.service";
-import type { Order, OrderStatus } from "@/types";
+import type { OrderFE } from "@/types/frontend/order.types";
+import { OrderStatus } from "@/types/shared/common.types";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import Link from "next/link";
@@ -12,14 +13,14 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const params = useParams();
   const orderId = (params.id as string) || "";
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Status update
   const [showStatusDialog, setShowStatusDialog] = useState(false);
-  const [newStatus, setNewStatus] = useState<OrderStatus>("pending");
+  const [newStatus, setNewStatus] = useState<OrderStatus>(OrderStatus.PENDING);
   const [internalNotes, setInternalNotes] = useState("");
 
   // Shipment
@@ -53,13 +54,14 @@ export default function OrderDetailPage() {
 
     try {
       setSaving(true);
-      const updated = await ordersService.updateStatus(order.id, {
-        status: newStatus,
-        internalNotes: internalNotes || undefined,
-      });
+      const updated = await ordersService.updateStatus(
+        order.id,
+        newStatus,
+        internalNotes || undefined
+      );
       setOrder(updated);
       setShowStatusDialog(false);
-      setNewStatus("pending");
+      setNewStatus(OrderStatus.PENDING);
       setInternalNotes("");
     } catch (err: any) {
       alert(err.message || "Failed to update status");
@@ -78,13 +80,12 @@ export default function OrderDetailPage() {
 
     try {
       setSaving(true);
-      const updated = await ordersService.createShipment(order.id, {
-        trackingNumber: trackingNumber.trim(),
-        shippingProvider: shippingProvider.trim(),
-        estimatedDelivery: estimatedDelivery
-          ? new Date(estimatedDelivery)
-          : undefined,
-      });
+      const updated = await ordersService.createShipment(
+        order.id,
+        trackingNumber.trim(),
+        shippingProvider.trim(),
+        estimatedDelivery ? new Date(estimatedDelivery) : undefined
+      );
       setOrder(updated);
       setShowShipmentDialog(false);
       setTrackingNumber("");
@@ -107,9 +108,7 @@ export default function OrderDetailPage() {
 
     try {
       setSaving(true);
-      const updated = await ordersService.cancel(order.id, {
-        reason: cancelReason.trim(),
-      });
+      const updated = await ordersService.cancel(order.id, cancelReason.trim());
       setOrder(updated);
       setShowCancelDialog(false);
       setCancelReason("");
@@ -415,7 +414,7 @@ export default function OrderDetailPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Shipping</span>
                 <span className="text-gray-900">
-                  {formatCurrency(order.shipping)}
+                  {formatCurrency(order.shipping || order.shippingCost)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">

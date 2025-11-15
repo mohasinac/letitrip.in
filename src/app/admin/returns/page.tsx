@@ -38,8 +38,8 @@ export default function AdminReturnsPage() {
         limit: 20,
       });
       setReturns(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalReturns(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalReturns(response.total || 0);
     } catch (error: any) {
       // toast.error(error.message || "Failed to load returns");
     } finally {

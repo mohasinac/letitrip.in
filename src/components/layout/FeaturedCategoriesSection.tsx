@@ -5,11 +5,12 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
-import type { Category, Product } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface CategoryWithProducts {
-  category: Category;
-  products: Product[];
+  category: CategoryFE;
+  products: ProductCardFE[];
 }
 
 export default function FeaturedCategoriesSection() {
@@ -29,34 +30,33 @@ export default function FeaturedCategoriesSection() {
       const topCategories = categories.slice(0, 3); // Reduced from 5 to 3
 
       const categoriesData = await Promise.all(
-        topCategories.map(async (category: Category) => {
+        topCategories.map(async (category: CategoryFE) => {
           try {
             const productsData = await productsService.list({
               categoryId: category.id,
               limit: 5, // Reduced from 10 to 5
-              status: "published" as const,
-            });
+            } as any);
             return {
               category,
-              products: productsData.data,
+              products: productsData.products,
             };
           } catch (error) {
             console.error(
               `Error fetching products for category ${category.id}:`,
-              error,
+              error
             );
             return {
               category,
               products: [],
             };
           }
-        }),
+        })
       );
 
       setCategoriesWithProducts(
         categoriesData.filter(
-          (item: CategoryWithProducts) => item.products.length > 0,
-        ),
+          (item: CategoryWithProducts) => item.products.length > 0
+        )
       );
     } catch (error) {
       console.error("Error fetching featured categories:", error);
@@ -115,7 +115,7 @@ export default function FeaturedCategoriesSection() {
                 name={product.name}
                 slug={product.slug}
                 price={product.price}
-                originalPrice={product.originalPrice}
+                originalPrice={product.originalPrice || undefined}
                 image={product.images[0] || "/placeholder-product.png"}
                 rating={product.rating}
                 reviewCount={product.reviewCount}

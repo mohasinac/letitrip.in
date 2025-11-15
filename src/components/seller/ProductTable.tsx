@@ -9,10 +9,10 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { FormModal } from "@/components/common/FormModal";
 import { ProductInlineForm } from "./ProductInlineForm";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface ProductTableProps {
-  products: Product[];
+  products: ProductCardFE[];
   isLoading?: boolean;
   onRefresh?: () => void;
 }
@@ -24,7 +24,9 @@ export default function ProductTable({
 }: ProductTableProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductCardFE | null>(
+    null
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -37,8 +39,8 @@ export default function ProductTable({
       setSelectedProduct(null);
       onRefresh?.();
     } catch (error) {
-      console.error("Failed to delete product:", error);
-      alert("Failed to delete product. Please try again.");
+      console.error("Failed to delete ProductCardFE:", error);
+      alert("Failed to delete ProductCardFE. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -50,17 +52,17 @@ export default function ProductTable({
     onRefresh?.();
   };
 
-  const columns: Column<Product>[] = [
+  const columns: Column<ProductCardFE>[] = [
     {
       key: "image",
       label: "Image",
       width: "80px",
-      render: (_, product) => (
+      render: (_, ProductCardFE) => (
         <div className="h-12 w-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-          {product.images?.[0] ? (
+          {ProductCardFE.images?.[0] ? (
             <img
-              src={product.images[0]}
-              alt={product.name}
+              src={ProductCardFE.images[0]}
+              alt={ProductCardFE.name}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -73,13 +75,13 @@ export default function ProductTable({
     },
     {
       key: "name",
-      label: "Product Name",
+      label: "ProductCardFE Name",
       sortable: true,
-      render: (_, product) => (
+      render: (_, ProductCardFE) => (
         <div className="min-w-[200px]">
-          <div className="font-medium text-gray-900">{product.name}</div>
+          <div className="font-medium text-gray-900">{ProductCardFE.name}</div>
           <div className="text-xs text-gray-500 mt-1">
-            SKU: {product.sku || "N/A"}
+            SKU: {ProductCardFE.sku || "N/A"}
           </div>
         </div>
       ),
@@ -107,16 +109,17 @@ export default function ProductTable({
       key: "price",
       label: "Price",
       sortable: true,
-      render: (_, product) => (
+      render: (_, ProductCardFE) => (
         <div className="min-w-[100px]">
           <div className="font-medium text-gray-900">
-            ₹{product.price?.toLocaleString("en-IN") || "0"}
+            ₹{ProductCardFE.price?.toLocaleString("en-IN") || "0"}
           </div>
-          {product.originalPrice && product.originalPrice > product.price && (
-            <div className="text-xs text-gray-500 line-through">
-              ₹{product.originalPrice.toLocaleString("en-IN")}
-            </div>
-          )}
+          {ProductCardFE.originalPrice &&
+            ProductCardFE.originalPrice > ProductCardFE.price && (
+              <div className="text-xs text-gray-500 line-through">
+                ₹{ProductCardFE.originalPrice.toLocaleString("en-IN")}
+              </div>
+            )}
         </div>
       ),
     },
@@ -124,9 +127,10 @@ export default function ProductTable({
       key: "stockCount",
       label: "Stock",
       sortable: true,
-      render: (stockCount, product) => {
+      render: (stockCount, ProductCardFE) => {
         const isLowStock =
-          stockCount <= (product.lowStockThreshold || 5) && stockCount > 0;
+          stockCount <= (ProductCardFE.lowStockThreshold || 5) &&
+          stockCount > 0;
         const isOutOfStock = stockCount === 0;
 
         return (
@@ -136,8 +140,8 @@ export default function ProductTable({
                 isOutOfStock
                   ? "text-red-600"
                   : isLowStock
-                    ? "text-yellow-600"
-                    : "text-gray-900"
+                  ? "text-yellow-600"
+                  : "text-gray-900"
               }`}
             >
               {stockCount}
@@ -162,11 +166,11 @@ export default function ProductTable({
       key: "actions",
       label: "Actions",
       width: "160px",
-      render: (_, product) => (
+      render: (_, ProductCardFE) => (
         <div className="flex items-center gap-2">
           {/* View Public Page */}
           <Link
-            href={`/products/${product.slug}`}
+            href={`/products/${ProductCardFE.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -178,7 +182,7 @@ export default function ProductTable({
           {/* Quick Edit */}
           <button
             onClick={() => {
-              setSelectedProduct(product);
+              setSelectedProduct(ProductCardFE);
               setShowEditModal(true);
             }}
             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -189,7 +193,7 @@ export default function ProductTable({
 
           {/* Edit Page */}
           <Link
-            href={`/seller/products/${product.slug}/edit`}
+            href={`/seller/products/${ProductCardFE.slug}/edit`}
             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             title="Full edit page"
           >
@@ -199,11 +203,11 @@ export default function ProductTable({
           {/* Delete */}
           <button
             onClick={() => {
-              setSelectedProduct(product);
+              setSelectedProduct(ProductCardFE);
               setShowDeleteDialog(true);
             }}
             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete product"
+            title="Delete ProductCardFE"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -217,9 +221,9 @@ export default function ProductTable({
       <DataTable
         data={products}
         columns={columns}
-        keyExtractor={(product) => product.id || product.slug}
+        keyExtractor={(ProductCardFE) => ProductCardFE.id || ProductCardFE.slug}
         isLoading={isLoading}
-        emptyMessage="No products found. Create your first product to get started."
+        emptyMessage="No products found. Create your first ProductCardFE to get started."
         className="border border-gray-200 rounded-lg"
       />
 
@@ -230,7 +234,7 @@ export default function ProductTable({
           setShowEditModal(false);
           setSelectedProduct(null);
         }}
-        title="Quick Edit Product"
+        title="Quick Edit ProductCardFE"
       >
         <ProductInlineForm
           product={selectedProduct || undefined}
@@ -250,13 +254,13 @@ export default function ProductTable({
           setSelectedProduct(null);
         }}
         onConfirm={handleDelete}
-        title="Delete Product"
+        title="Delete ProductCardFE"
         description={
           selectedProduct
             ? `Are you sure you want to delete "${selectedProduct.name}"? This action cannot be undone.`
             : ""
         }
-        confirmLabel="Delete Product"
+        confirmLabel="Delete ProductCardFE"
         variant="danger"
         isLoading={isDeleting}
       />

@@ -6,7 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";
-import type { SupportTicket } from "@/types";
+import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 
 export default function SupportTicketsPage() {
   return (
@@ -17,7 +17,7 @@ export default function SupportTicketsPage() {
 }
 
 function SupportTicketsContent() {
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,8 +53,8 @@ function SupportTicketsContent() {
       });
 
       setTickets(response.data);
-      setTotalPages(response.pagination.totalPages);
-      setTotalTickets(response.pagination.total);
+      setTotalPages(response.totalPages);
+      setTotalTickets(response.total);
     } catch (err: any) {
       console.error("Failed to load tickets:", err);
       setError(err.message || "Failed to load support tickets");

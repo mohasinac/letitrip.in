@@ -91,13 +91,10 @@ export interface ProductBE extends BaseEntity {
   countryOfOrigin?: string;
   manufacturer?: string;
 
-  // Timestamps (Firestore format)
+  // Note: createdAt and updatedAt inherited from BaseEntity (FirebaseTimestamp)
+  // Additional legacy timestamp fields if needed by API
   created_at?: FirebaseTimestamp;
   updated_at?: FirebaseTimestamp;
-
-  // Timestamps (ISO format from API)
-  createdAt: ISOTimestamp;
-  updatedAt: ISOTimestamp;
 }
 
 /**
@@ -117,6 +114,11 @@ export interface ProductListItemBE {
   shopId: string;
   isFeatured: boolean;
   createdAt: ISOTimestamp;
+  // Admin list view needs these
+  sku?: string;
+  categoryId?: string;
+  salesCount?: number;
+  lowStockThreshold?: number;
 }
 
 /**

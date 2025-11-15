@@ -8,7 +8,7 @@ import ShopForm from "@/components/seller/ShopForm";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { shopsService } from "@/services/shops.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Shop } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 export default function EditShopPage() {
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function EditShopPage() {
   const { user } = useAuth();
   const slug = params.slug as string;
 
-  const [shop, setShop] = useState<Shop | null>(null);
+  const [shop, setShop] = useState<ShopFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -42,7 +42,7 @@ export default function EditShopPage() {
     }
   };
 
-  const handleSubmit = async (data: Partial<Shop>) => {
+  const handleSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
 

@@ -92,6 +92,8 @@ export interface OrderBE {
   // Shipping
   shippingMethod: ShippingMethod;
   shippingAddress: ShippingAddressBE;
+  billingAddress?: ShippingAddressBE | null; // Optional billing address
+  shippingProvider?: string | null; // Provider name (India Post, Delhivery, etc.)
   trackingNumber: string | null;
   estimatedDelivery: Timestamp | null;
   deliveredAt: Timestamp | null;
@@ -129,6 +131,10 @@ export interface OrderListItemBE {
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   createdAt: Timestamp;
+
+  // Optional fields for admin views
+  shippingAddress?: ShippingAddressBE;
+  paymentMethod?: PaymentMethod;
 }
 
 /**

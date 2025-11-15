@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { shopsService } from "@/services/shops.service";
-import type { Shop } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 export default function ShopDashboardPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
 
-  const [shop, setShop] = useState<Shop | null>(null);
+  const [shop, setShop] = useState<ShopFE | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -135,7 +135,7 @@ export default function ShopDashboardPage() {
                   )}
                 </div>
                 <p className="mt-1 text-sm text-gray-600">
-                  {shop.location || "Location not set"}
+                  {shop.address || "Location not set"}
                 </p>
               </div>
             </div>

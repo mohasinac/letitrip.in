@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { ReviewCard } from "@/components/cards/ReviewCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { reviewsService } from "@/services/reviews.service";
-import type { Review } from "@/types";
+import type { ReviewFE } from "@/types/frontend/review.types";
 
 export default function FeaturedReviewsSection() {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,14 +64,14 @@ export default function FeaturedReviewsSection() {
             id={review.id}
             userId={review.userId}
             userName="Customer" // Would come from user data
-            productId={review.productId}
+            productId={review.productId || undefined}
             productName="Product" // Would come from product data
             rating={review.rating}
-            title={review.title}
+            title={review.title || undefined}
             comment={review.comment}
             media={review.media}
-            verifiedPurchase={review.verifiedPurchase}
-            helpfulCount={review.helpfulCount}
+            verifiedPurchase={review.verifiedPurchase || false}
+            helpfulCount={review.helpfulCount || 0}
             createdAt={review.createdAt}
             compact={true}
             showProduct={true}

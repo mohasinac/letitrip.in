@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type { CartItem as CartItemType } from "@/types";
+import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
 interface CartItemProps {
   item: CartItemType & {
@@ -56,7 +56,7 @@ export function CartItem({
   const hasDiscount = item.originalPrice && item.originalPrice > item.price;
   const discountPercent = hasDiscount
     ? Math.round(
-        ((item.originalPrice! - item.price) / item.originalPrice!) * 100,
+        ((item.originalPrice! - item.price) / item.originalPrice!) * 100
       )
     : 0;
 
@@ -101,9 +101,9 @@ export function CartItem({
                 </Link>
               </div>
 
-              {item.variant && (
+              {item.variantId && (
                 <div className="mt-1 text-xs text-gray-600">
-                  Variant: {item.variant}
+                  Variant: {item.variantId}
                 </div>
               )}
 

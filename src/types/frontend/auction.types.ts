@@ -223,6 +223,9 @@ export interface AuctionFormFE {
   autoExtend: boolean;
   extensionMinutes?: number;
   minBidIncrement: number;
+
+  // Admin/moderation fields
+  status?: AuctionStatus; // For admin status updates
 }
 
 /**

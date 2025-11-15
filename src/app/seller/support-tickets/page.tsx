@@ -17,7 +17,8 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { supportService } from "@/services/support.service";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
-import type { SupportTicket } from "@/types";
+import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
+import { TicketStatus } from "@/types/shared/common.types";
 
 export default function SellerSupportTicketsPage() {
   return (
@@ -30,7 +31,7 @@ export default function SellerSupportTicketsPage() {
 function SellerSupportTicketsContent() {
   const isMobile = useIsMobile();
   const [showFilters, setShowFilters] = useState(false);
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -58,7 +59,7 @@ function SellerSupportTicketsContent() {
         ...filterValues,
       });
       setTickets(response.data || []);
-      setTotalTickets(response.pagination?.total || 0);
+      setTotalTickets(response.total || 0);
     } catch (error) {
       console.error("Failed to load tickets:", error);
     } finally {
@@ -69,10 +70,11 @@ function SellerSupportTicketsContent() {
   const loadStats = async () => {
     try {
       const [totalRes, openRes, inProgressRes, resolvedRes] = await Promise.all(
-        [      supportService.getTicketCount({}),
-      supportService.getTicketCount({ status: "open" }),
-      supportService.getTicketCount({ status: "in-progress" }),
-      supportService.getTicketCount({ status: "resolved" }),
+        [
+          supportService.getTicketCount({}),
+          supportService.getTicketCount({ status: TicketStatus.OPEN }),
+          supportService.getTicketCount({ status: TicketStatus.IN_PROGRESS }),
+          supportService.getTicketCount({ status: TicketStatus.RESOLVED }),
         ]
       );
 

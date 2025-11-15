@@ -6,7 +6,7 @@ import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
-import type { Review } from "@/types";
+import type { ReviewFE } from "@/types/frontend/review.types";
 
 interface ProductReviewsProps {
   productId: string;
@@ -17,7 +17,7 @@ export function ProductReviews({
   productId,
   productSlug,
 }: ProductReviewsProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [stats, setStats] = useState({
@@ -46,11 +46,11 @@ export function ProductReviews({
       // Calculate stats
       if (reviewsList.length > 0) {
         const totalRating = reviewsList.reduce(
-          (sum: number, r: Review) => sum + r.rating,
-          0,
+          (sum: number, r: ReviewFE) => sum + r.rating,
+          0
         );
         const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-        reviewsList.forEach((r: Review) => {
+        reviewsList.forEach((r: ReviewFE) => {
           breakdown[r.rating as keyof typeof breakdown]++;
         });
 
@@ -90,7 +90,7 @@ export function ProductReviews({
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      {/* Header with Write Review Button */}
+      {/* Header with Write ReviewFE Button */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
         {!showReviewForm && (
@@ -99,16 +99,16 @@ export function ProductReviews({
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Edit className="w-4 h-4" />
-            Write a Review
+            Write a ReviewFE
           </button>
         )}
       </div>
 
-      {/* Review Form */}
+      {/* ReviewFE Form */}
       {showReviewForm && (
         <div className="mb-8 p-6 border border-gray-200 rounded-lg bg-gray-50">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Write Your Review
+            Write Your ReviewFE
           </h3>
           <ReviewForm
             productId={productId}

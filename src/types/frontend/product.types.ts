@@ -162,6 +162,10 @@ export interface ProductCardFE {
   rating: number; // Alias for averageRating
   stockCount: number; // Actual stock number (0 if out-of-stock)
   condition: ProductCondition; // Product condition
+  sku?: string | null; // SKU for admin display
+  categoryId?: string | null; // Category ID for admin display
+  salesCount?: number; // Sales count for admin display
+  lowStockThreshold?: number; // Low stock threshold for admin display
 }
 
 /**

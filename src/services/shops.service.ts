@@ -6,7 +6,10 @@ import {
   toFEShopCard,
   toBECreateShopRequest,
 } from "@/types/transforms/shop.transforms";
-import type { ProductBE } from "@/types/backend/product.types";
+import type {
+  ProductBE,
+  ProductListItemBE,
+} from "@/types/backend/product.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { toFEProductCard } from "@/types/transforms/product.transforms";
 import type {
@@ -153,9 +156,9 @@ class ShopsService {
     const endpoint = qs
       ? `/shops/${slug}/products?${qs}`
       : `/shops/${slug}/products`;
-    const response = await apiService.get<PaginatedResponseBE<ProductBE>>(
-      endpoint
-    );
+    const response = await apiService.get<
+      PaginatedResponseBE<ProductListItemBE>
+    >(endpoint);
 
     return {
       data: response.data.map(toFEProductCard),

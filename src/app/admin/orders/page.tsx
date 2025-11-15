@@ -16,13 +16,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { ordersService, type OrderFilters } from "@/services/orders.service";
+import { ordersService } from "@/services/orders.service";
 import { shopsService } from "@/services/shops.service";
+import type { OrderCardFE } from "@/types/frontend/order.types";
+import type { OrderFiltersBE } from "@/types/backend/order.types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { OrderStatus, PaymentStatus } from "@/types/shared/common.types";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
-import type { Order, OrderStatus, PaymentStatus, Shop } from "@/types";
 
 export default function AdminOrdersPage() {
   const router = useRouter();
@@ -31,14 +34,14 @@ export default function AdminOrdersPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [orders, setOrders] = useState<OrderCardFE[]>([]);
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Filters - unified state
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({});
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,13 +63,14 @@ export default function AdminOrdersPage() {
       setLoading(true);
       setError(null);
 
-      const filters: OrderFilters = {
+      const filters: Partial<OrderFiltersBE> & {
+        page?: number;
+        limit?: number;
+      } = {
         page: currentPage,
         limit,
         search: searchQuery || undefined,
         ...filterValues,
-        sortBy: "createdAt",
-        sortOrder: "desc",
       };
 
       const [ordersData, shopsData, statsData] = await Promise.all([
@@ -76,8 +80,8 @@ export default function AdminOrdersPage() {
       ]);
 
       setOrders(ordersData.data || []);
-      setTotalPages(ordersData.pagination?.totalPages || 1);
-      setTotalOrders(ordersData.pagination?.total || 0);
+      setTotalPages(ordersData.totalPages || 1);
+      setTotalOrders(ordersData.total || 0);
       setShops(shopsData.data || []);
       setStats(statsData);
     } catch (error) {
@@ -104,13 +108,13 @@ export default function AdminOrdersPage() {
 
     const rows = orders.map((order) => [
       order.orderNumber,
-      order.shippingAddress.name,
-      new Date(order.createdAt).toLocaleDateString(),
-      order.items.length,
+      order.shippingAddress?.name || "N/A",
+      order.createdAt || order.orderDate,
+      order.itemCount,
       `₹${order.total.toFixed(2)}`,
       order.status,
       order.paymentStatus,
-      order.paymentMethod,
+      order.paymentMethod || "N/A",
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
@@ -143,10 +147,11 @@ export default function AdminOrdersPage() {
 
   const getPaymentStatusColor = (status: PaymentStatus) => {
     const colors: Record<PaymentStatus, string> = {
-      pending: "bg-yellow-100 text-yellow-700",
-      paid: "bg-green-100 text-green-700",
-      failed: "bg-red-100 text-red-700",
-      refunded: "bg-gray-100 text-gray-700",
+      [PaymentStatus.PENDING]: "bg-yellow-100 text-yellow-700",
+      [PaymentStatus.PROCESSING]: "bg-blue-100 text-blue-700",
+      [PaymentStatus.COMPLETED]: "bg-green-100 text-green-700",
+      [PaymentStatus.FAILED]: "bg-red-100 text-red-700",
+      [PaymentStatus.REFUNDED]: "bg-gray-100 text-gray-700",
     };
     return colors[status] || "bg-gray-100 text-gray-700";
   };
@@ -371,26 +376,26 @@ export default function AdminOrdersPage() {
                             {order.orderNumber}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {order.paymentMethod.toUpperCase()}
+                            {order.paymentMethod?.toUpperCase() || "N/A"}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="font-medium text-gray-900">
-                            {order.shippingAddress.name}
+                            {order.shippingAddress?.name || "N/A"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {order.shippingAddress.phone}
+                            {order.shippingAddress?.phone || "N/A"}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {new Date(order.createdAt).toLocaleDateString()}
+                        {order.createdAt || order.orderDate}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {order.items.length} item
-                        {order.items.length !== 1 ? "s" : ""}
+                        {order.itemCount} item
+                        {order.itemCount !== 1 ? "s" : ""}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900">

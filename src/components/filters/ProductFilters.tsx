@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Filter, X, ChevronDown, ChevronRight } from "lucide-react";
 import { categoriesService } from "@/services/categories.service";
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
 export interface ProductFilterValues {
   priceMin?: number;
@@ -32,7 +32,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onReset,
   availableBrands = [],
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
@@ -101,8 +101,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     });
   };
 
-  const renderCategoryTree = (category: Category, depth = 0) => {
-    const hasChildren = category.hasChildren;
+  const renderCategoryTree = (category: CategoryFE, depth = 0) => {
+    const hasChildren = category.parentIds && category.parentIds.length > 0;
     const isExpanded = expandedCategories.has(category.id);
     const isSelected = (filters.categories || []).includes(category.id);
     const children = hasChildren ? getChildCategories(category.id) : [];
@@ -135,7 +135,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           />
           <span className="text-sm text-gray-700 flex-1">{category.name}</span>
           <span className="text-xs text-gray-500">
-            ({category.productCount})
+            ({category.productCount || 0})
           </span>
         </label>
         {hasChildren && isExpanded && (
@@ -182,7 +182,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           ) : rootCategories.length === 0 ? (
             <p className="text-sm text-gray-500 py-2">No categories found</p>
           ) : (
-            rootCategories.map((category) => renderCategoryTree(category))
+            rootCategories.map((CategoryFE) => renderCategoryTree(CategoryFE))
           )}
         </div>
       </div>

@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 
 interface ProductInlineFormProps {
-  product?: Product;
+  product?: ProductFE | ProductCardFE;
   shopId?: string;
   onSuccess: () => void;
   onCancel: () => void;
@@ -26,8 +26,8 @@ export function ProductInlineForm({
     price: product?.price || 0,
     stockCount: product?.stockCount || 0,
     categoryId: product?.categoryId || "",
-    description: product?.description || "",
-    condition: product?.condition || "new",
+    description: product && "description" in product ? product.description : "",
+    condition: product && "condition" in product ? product.condition : "new",
     status: product?.status || "draft",
   });
 
@@ -44,7 +44,7 @@ export function ProductInlineForm({
 
       if (product) {
         // Update existing product
-        await productsService.update(product.slug, formData);
+        await productsService.update(product.slug, formData as any);
       } else {
         // Create new product
         if (!shopId) {

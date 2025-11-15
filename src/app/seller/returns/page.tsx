@@ -40,8 +40,8 @@ export default function SellerReturnsPage() {
         limit: 20,
       });
       setReturns(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalReturns(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalReturns(response.total || 0);
     } catch (error: any) {
       console.error("Failed to load returns:", error);
     } finally {

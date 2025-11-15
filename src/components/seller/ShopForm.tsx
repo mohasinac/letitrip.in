@@ -5,11 +5,11 @@ import { Save, Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
-import type { Shop } from "@/types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 
 interface ShopFormProps {
-  shop?: Shop;
-  onSubmit: (data: Partial<Shop>) => Promise<void>;
+  shop?: ShopFE;
+  onSubmit: (data: any) => Promise<void>;
   isSubmitting?: boolean;
   mode: "create" | "edit";
 }
@@ -23,10 +23,10 @@ export default function ShopForm({
   const [name, setName] = useState(shop?.name || "");
   const [slug, setSlug] = useState(shop?.slug || "");
   const [description, setDescription] = useState(shop?.description || "");
-  const [location, setLocation] = useState(shop?.location || "");
+  const [location, setLocation] = useState(shop?.address || "");
   const [phone, setPhone] = useState(shop?.phone || "");
   const [email, setEmail] = useState(shop?.email || "");
-  const [website, setWebsite] = useState(shop?.website || "");
+  const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const slugValidation = useShopSlugValidation(slug, shop?.id);
 
@@ -68,14 +68,13 @@ export default function ShopForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    const data: Partial<Shop> = {
+    const data: any = {
       name: name.trim(),
       slug: slug.trim(),
       description: description.trim(),
-      location: location.trim() || undefined,
+      address: location.trim() || undefined,
       phone: phone.trim() || undefined,
       email: email.trim() || undefined,
-      website: website.trim() || undefined,
     };
     await onSubmit(data);
   };

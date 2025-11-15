@@ -7,7 +7,8 @@ import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { productsService } from "@/services/products.service";
-import type { Product, ProductStatus, ProductCondition } from "@/types";
+import type { ProductFE } from "@/types/frontend/product.types";
+import { ProductStatus, ProductCondition } from "@/types/shared/common.types";
 
 const STEPS = [
   { id: 1, name: "Basic Info", description: "Name, price, and category" },
@@ -24,7 +25,7 @@ export default function EditProductPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<ProductFE | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     slug: "",

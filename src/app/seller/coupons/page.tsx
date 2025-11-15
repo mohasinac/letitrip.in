@@ -17,13 +17,13 @@ import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Coupon } from "@/types";
+import type { CouponFE } from "@/types/frontend/coupon.types";
 
 export default function CouponsPage() {
   const { user } = useAuth();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [coupons, setCoupons] = useState<CouponFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,7 +73,7 @@ export default function CouponsPage() {
     (coupon) =>
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {

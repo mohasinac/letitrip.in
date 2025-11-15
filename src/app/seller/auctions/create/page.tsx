@@ -19,7 +19,7 @@ import SlugInput from "@/components/common/SlugInput";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import { auctionsService } from "@/services/auctions.service";
 import { categoriesService } from "@/services/categories.service";
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
 // Step definitions
 const STEPS = [
@@ -68,7 +68,7 @@ export default function CreateAuctionWizardPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [slugError, setSlugError] = useState("");
   const [isValidatingSlug, setIsValidatingSlug] = useState(false);
 

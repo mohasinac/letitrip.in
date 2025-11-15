@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ChevronRight, Tag, Loader2, Search, List } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { categoriesService } from "@/services/categories.service";
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<
@@ -43,7 +43,7 @@ export default function CategoriesPage() {
       filtered = filtered.filter(
         (cat) =>
           cat.name.toLowerCase().includes(query) ||
-          cat.description?.toLowerCase().includes(query),
+          cat.description?.toLowerCase().includes(query)
       );
     }
 

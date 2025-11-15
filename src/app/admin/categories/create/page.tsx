@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
 import { categoriesService } from "@/services/categories.service";
-import type { Category } from "@/types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
 // Step definitions
 const STEPS = [
@@ -44,7 +44,7 @@ export default function CreateCategoryWizardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [slugError, setSlugError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -106,7 +106,7 @@ export default function CreateCategoryWizardPage() {
     switch (step) {
       case 1:
         if (!formData.name.trim() || formData.name.length < 2) {
-          setError("Category name must be at least 2 characters");
+          setError("CategoryFE name must be at least 2 characters");
           return false;
         }
         break;
@@ -169,8 +169,8 @@ export default function CreateCategoryWizardPage() {
       await categoriesService.create(categoryData);
       router.push("/admin/categories?created=true");
     } catch (err: any) {
-      console.error("Error creating category:", err);
-      setError(err.message || "Failed to create category");
+      console.error("Error creating CategoryFE:", err);
+      setError(err.message || "Failed to create CategoryFE");
     } finally {
       setIsSubmitting(false);
     }
@@ -213,7 +213,7 @@ export default function CreateCategoryWizardPage() {
             Back to Categories
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">
-            Create New Category
+            Create New CategoryFE
           </h1>
           <p className="mt-1 text-sm text-gray-600">
             Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].name}
@@ -279,14 +279,14 @@ export default function CreateCategoryWizardPage() {
                   Basic Information
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">
-                  Enter the basic details about this category
+                  Enter the basic details about this CategoryFE
                 </p>
               </div>
 
-              {/* Category Name */}
+              {/* CategoryFE Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Name <span className="text-red-500">*</span>
+                  CategoryFE Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -296,14 +296,14 @@ export default function CreateCategoryWizardPage() {
                   placeholder="e.g., Electronics, Fashion, Home & Garden"
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
-                  Choose a clear, descriptive name for the category
+                  Choose a clear, descriptive name for the CategoryFE
                 </p>
               </div>
 
-              {/* Parent Category */}
+              {/* Parent CategoryFE */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Parent Category
+                  Parent CategoryFE
                 </label>
                 <select
                   value={formData.parentCategory}
@@ -312,7 +312,7 @@ export default function CreateCategoryWizardPage() {
                   }
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
-                  <option value="">None (Top Level Category)</option>
+                  <option value="">None (Top Level CategoryFE)</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -321,7 +321,7 @@ export default function CreateCategoryWizardPage() {
                 </select>
                 <p className="mt-1.5 text-xs text-gray-500">
                   Select a parent to create a subcategory, or leave empty for a
-                  top-level category
+                  top-level CategoryFE
                 </p>
               </div>
 
@@ -335,7 +335,7 @@ export default function CreateCategoryWizardPage() {
                   onChange={(e) => handleChange("description", e.target.value)}
                   rows={4}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Brief description of this category and what products it includes..."
+                  placeholder="Brief description of this CategoryFE and what products it includes..."
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
                   {formData.description.length}/500 characters
@@ -352,21 +352,21 @@ export default function CreateCategoryWizardPage() {
                   Media & Icon
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">
-                  Add visual elements to make the category recognizable
+                  Add visual elements to make the CategoryFE recognizable
                 </p>
               </div>
 
-              {/* Category Image */}
+              {/* CategoryFE Image */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Image URL
+                  CategoryFE Image URL
                 </label>
                 <input
                   type="url"
                   value={formData.imageUrl}
                   onChange={(e) => handleChange("imageUrl", e.target.value)}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/category-image.jpg"
+                  placeholder="https://example.com/CategoryFE-image.jpg"
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
                   Square image recommended (400x400px or larger)
@@ -381,11 +381,11 @@ export default function CreateCategoryWizardPage() {
                   </p>
                   <img
                     src={formData.imageUrl}
-                    alt="Category preview"
+                    alt="CategoryFE preview"
                     className="w-full max-w-sm h-48 object-cover rounded-lg border border-gray-200"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
-                        "/placeholder-category.png";
+                        "/placeholder-CategoryFE.png";
                     }}
                   />
                 </div>
@@ -394,7 +394,7 @@ export default function CreateCategoryWizardPage() {
               {/* Icon */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Icon
+                  CategoryFE Icon
                 </label>
                 <input
                   type="text"
@@ -418,7 +418,7 @@ export default function CreateCategoryWizardPage() {
                   <span className="text-4xl">{formData.icon}</span>
                   <div className="text-sm text-blue-800">
                     <p className="font-medium">
-                      {formData.name || "Category Name"}
+                      {formData.name || "CategoryFE Name"}
                     </p>
                     <p className="text-blue-600">
                       This is how your icon will appear
@@ -502,12 +502,12 @@ export default function CreateCategoryWizardPage() {
                   maxLength={60}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   placeholder={`${
-                    formData.name || "Category"
+                    formData.name || "CategoryFE"
                   } - Shop on JustForView`}
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
                   {formData.metaTitle.length}/60 characters • Leave empty to use
-                  category name
+                  CategoryFE name
                 </p>
               </div>
 
@@ -524,7 +524,7 @@ export default function CreateCategoryWizardPage() {
                   maxLength={160}
                   rows={3}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Browse our collection of quality products in this category..."
+                  placeholder="Browse our collection of quality products in this CategoryFE..."
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
                   {formData.metaDescription.length}/160 characters • Appears in
@@ -539,16 +539,17 @@ export default function CreateCategoryWizardPage() {
                 </p>
                 <div className="text-sm">
                   <p className="text-blue-600 font-medium truncate">
-                    {formData.metaTitle || formData.name || "Category Name"} -
+                    {formData.metaTitle || formData.name || "CategoryFE Name"} -
                     JustForView
                   </p>
                   <p className="text-green-700 text-xs truncate">
-                    justforview.in/categories/{formData.slug || "category-slug"}
+                    justforview.in/categories/
+                    {formData.slug || "CategoryFE-slug"}
                   </p>
                   <p className="text-gray-600 mt-1 line-clamp-2">
                     {formData.metaDescription ||
                       formData.description ||
-                      "Category description will appear here..."}
+                      "CategoryFE description will appear here..."}
                   </p>
                 </div>
               </div>
@@ -563,13 +564,15 @@ export default function CreateCategoryWizardPage() {
                   Display Settings
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">
-                  Control how and where this category appears
+                  Control how and where this CategoryFE appears
                 </p>
               </div>
 
-              {/* Category Summary */}
+              {/* CategoryFE Summary */}
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 space-y-3">
-                <h3 className="font-medium text-gray-900">Category Summary</h3>
+                <h3 className="font-medium text-gray-900">
+                  CategoryFE Summary
+                </h3>
 
                 <div className="grid gap-3 sm:grid-cols-2 text-sm">
                   <div>
@@ -633,7 +636,7 @@ export default function CreateCategoryWizardPage() {
                   <label htmlFor="isActive" className="text-sm">
                     <span className="font-medium text-gray-900">Active</span>
                     <p className="text-gray-600">
-                      Make this category visible to customers
+                      Make this CategoryFE visible to customers
                     </p>
                   </label>
                 </div>
@@ -650,7 +653,7 @@ export default function CreateCategoryWizardPage() {
                   />
                   <label htmlFor="isFeatured" className="text-sm">
                     <span className="font-medium text-gray-900">
-                      Featured Category
+                      Featured CategoryFE
                     </span>
                     <p className="text-gray-600">
                       Highlight in featured sections and promotions
@@ -673,7 +676,7 @@ export default function CreateCategoryWizardPage() {
                       Show on Homepage
                     </span>
                     <p className="text-gray-600">
-                      Display this category on the homepage
+                      Display this CategoryFE on the homepage
                     </p>
                   </label>
                 </div>
@@ -683,8 +686,8 @@ export default function CreateCategoryWizardPage() {
               {!formData.isActive && (
                 <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-4">
                   <p className="text-sm text-yellow-800">
-                    ⚠️ This category will be created as inactive. You can
-                    activate it later from category settings.
+                    ⚠️ This CategoryFE will be created as inactive. You can
+                    activate it later from CategoryFE settings.
                   </p>
                 </div>
               )}
@@ -721,7 +724,7 @@ export default function CreateCategoryWizardPage() {
               className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Creating Category..." : "Create Category"}
+              {isSubmitting ? "Creating CategoryFE..." : "Create CategoryFE"}
             </button>
           )}
         </div>

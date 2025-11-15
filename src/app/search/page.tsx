@@ -34,7 +34,7 @@ function SearchContent() {
       });
       // For now, just return products - proper multi-type search would need separate services
       setResults({
-        products: response.data || [],
+        products: response.products || [],
         shops: [],
         categories: [],
         total: response.pagination?.total || 0,

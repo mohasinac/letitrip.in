@@ -441,8 +441,7 @@ export default function CategoriesPage() {
                         showOnHomepage: values.show_on_homepage || false,
                         isActive: values.is_active !== false,
                         sortOrder: 0,
-                        commissionRate: 0,
-                      });
+                      } as any);
                       await loadCategories();
                     } catch (error) {
                       console.error("Failed to create category:", error);

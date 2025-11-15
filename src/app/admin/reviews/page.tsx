@@ -41,8 +41,8 @@ export default function AdminReviewsPage() {
         limit: 20,
       });
       setReviews(response.data || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalReviews(response.pagination?.total || 0);
+      setTotalPages(response.totalPages || 1);
+      setTotalReviews(response.total || 0);
     } catch (error: any) {
       // toast.error(error.message || "Failed to load reviews");
     } finally {

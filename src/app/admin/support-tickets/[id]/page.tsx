@@ -6,10 +6,10 @@ import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import type {
-  SupportTicket,
-  SupportTicketMessage,
-  SupportTicketStatus,
-} from "@/types";
+  SupportTicketFE,
+  SupportTicketMessageFE,
+} from "@/types/frontend/support-ticket.types";
+import { TicketStatus } from "@/types/shared/common.types";
 
 interface AssignTicketData {
   assignedTo: string;
@@ -40,8 +40,8 @@ function TicketDetailContent() {
   const router = useRouter();
   const ticketId = params.id as string;
 
-  const [ticket, setTicket] = useState<SupportTicket | null>(null);
-  const [messages, setMessages] = useState<SupportTicketMessage[]>([]);
+  const [ticket, setTicket] = useState<SupportTicketFE | null>(null);
+  const [messages, setMessages] = useState<SupportTicketMessageFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -186,7 +186,7 @@ function TicketDetailContent() {
     }
   };
 
-  const handleUpdateStatus = async (newStatus: SupportTicketStatus) => {
+  const handleUpdateStatus = async (newStatus: TicketStatus) => {
     try {
       setUpdating(true);
       await supportService.updateTicket(ticketId, { status: newStatus });
@@ -314,7 +314,9 @@ function TicketDetailContent() {
                 <>
                   {ticket.status === "open" && (
                     <button
-                      onClick={() => handleUpdateStatus("in-progress")}
+                      onClick={() =>
+                        handleUpdateStatus(TicketStatus.IN_PROGRESS)
+                      }
                       disabled={updating}
                       className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
                     >
@@ -323,7 +325,7 @@ function TicketDetailContent() {
                   )}
                   {ticket.status === "in-progress" && (
                     <button
-                      onClick={() => handleUpdateStatus("resolved")}
+                      onClick={() => handleUpdateStatus(TicketStatus.RESOLVED)}
                       disabled={updating}
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                     >
@@ -497,7 +499,7 @@ function TicketDetailContent() {
                     Attachments:
                   </h4>
                   <div className="space-y-1">
-                    {ticket.attachments.map((url, index) => (
+                    {ticket.attachments.map((url: string, index: number) => (
                       <a
                         key={index}
                         href={url}
@@ -559,17 +561,19 @@ function TicketDetailContent() {
                       {message.attachments &&
                         message.attachments.length > 0 && (
                           <div className="mt-2 space-y-1">
-                            {message.attachments.map((url, index) => (
-                              <a
-                                key={index}
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block text-xs text-orange-600 hover:text-orange-700"
-                              >
-                                📎 Attachment {index + 1}
-                              </a>
-                            ))}
+                            {message.attachments.map(
+                              (url: string, index: number) => (
+                                <a
+                                  key={index}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block text-xs text-orange-600 hover:text-orange-700"
+                                >
+                                  📎 Attachment {index + 1}
+                                </a>
+                              )
+                            )}
                           </div>
                         )}
                     </div>
