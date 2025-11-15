@@ -4,7 +4,13 @@ const googleConfig = require("eslint-config-google");
 
 module.exports = [
   {
-    ignores: ["lib/**/*", "generated/**/*", "node_modules/**/*", "*.config.js", ".eslintrc.js"],
+    ignores: [
+      "lib/**/*",
+      "generated/**/*",
+      "node_modules/**/*",
+      "*.config.js",
+      ".eslintrc.js",
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
