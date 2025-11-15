@@ -27,7 +27,7 @@ export default function SettingsPage() {
 
     // Load user data
     setFormData({
-      name: user.name || "",
+      name: user.fullName || "",
       email: user.email || "",
       phone: "",
     });
@@ -41,7 +41,7 @@ export default function SettingsPage() {
 
     try {
       await authService.updateProfile({
-        name: formData.name,
+        fullName: formData.name,
         email: formData.email,
       });
 

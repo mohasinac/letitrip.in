@@ -7,10 +7,11 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { authService, User, AuthResponse } from "@/services/auth.service";
+import { authService, AuthResponse } from "@/services/auth.service";
+import { UserFE } from "@/types/frontend/user.types";
 
 interface AuthContextType {
-  user: User | null;
+  user: UserFE | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<AuthResponse>;
@@ -30,7 +31,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserFE | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Initialize auth state
@@ -123,10 +124,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Computed values
+  // Computed values (UserFE already has these as boolean fields)
   const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin";
-  const isSeller = user?.role === "seller";
+  const isAdmin = user?.isAdmin || false;
+  const isSeller = user?.isSeller || false;
   const isAdminOrSeller = isAdmin || isSeller;
 
   const value: AuthContextType = {

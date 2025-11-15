@@ -73,17 +73,17 @@ export default function MainNavBar({
 
   // Get user initials or first letter of name
   const getUserInitials = () => {
-    if (!user?.name) return "U";
-    const names = user.name.split(" ");
+    if (!user?.fullName) return "U";
+    const names = user.fullName.split(" ");
     if (names.length >= 2) {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }
-    return user.name[0].toUpperCase();
+    return user.fullName[0].toUpperCase();
   };
 
   // Get profile picture URL
   const getProfilePicture = () => {
-    return user?.profile?.avatar || null;
+    return user?.photoURL || null;
   };
 
   return (
@@ -279,7 +279,7 @@ export default function MainNavBar({
                     {getProfilePicture() ? (
                       <img
                         src={getProfilePicture()!}
-                        alt={user.name}
+                        alt={user.fullName}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -288,7 +288,9 @@ export default function MainNavBar({
                       </span>
                     )}
                   </div>
-                  <span className="hidden sm:inline text-sm">{user.name}</span>
+                  <span className="hidden sm:inline text-sm">
+                    {user.fullName}
+                  </span>
                   <ChevronDown className="w-4 h-4 hidden sm:inline" />
                 </button>
 
@@ -296,7 +298,7 @@ export default function MainNavBar({
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
                     <div className="px-4 py-2 border-b border-gray-200">
-                      <p className="font-semibold text-sm">{user.name}</p>
+                      <p className="font-semibold text-sm">{user.fullName}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
                     </div>
                     {USER_MENU_ITEMS.map((item) =>

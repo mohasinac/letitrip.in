@@ -151,8 +151,9 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
+        {" "}
         <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {user?.name || "Admin"}!
+          Welcome back, {user?.fullName || "Admin"}!
         </h1>
         <p className="mt-2 text-gray-600">
           Here's what's happening with your platform today.

@@ -206,7 +206,7 @@ export default function CheckoutPage() {
             }
           },
           prefill: {
-            name: user?.name || user?.email,
+            name: user?.fullName || user?.email,
             email: user?.email,
           },
           theme: {

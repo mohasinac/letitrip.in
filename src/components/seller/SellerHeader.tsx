@@ -72,7 +72,7 @@ export function SellerHeader() {
               </div>
               <div className="hidden text-left lg:block">
                 <p className="text-sm font-medium text-gray-900">
-                  {user?.name || user?.email?.split("@")[0] || "Seller"}
+                  {user?.fullName || user?.email?.split("@")[0] || "Seller"}
                 </p>
                 <p className="text-xs text-gray-500 capitalize">
                   {user?.role || "seller"}
@@ -84,7 +84,7 @@ export function SellerHeader() {
               <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-lg">
                 <div className="border-b border-gray-200 px-4 py-3">
                   <p className="text-sm font-medium text-gray-900">
-                    {user?.name || user?.email?.split("@")[0] || "Seller"}
+                    {user?.fullName || user?.email?.split("@")[0] || "Seller"}
                   </p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>

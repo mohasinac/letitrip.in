@@ -11,7 +11,7 @@ export default function LogoutPage() {
   const router = useRouter();
   const { logout, user } = useAuth();
   const [status, setStatus] = useState<"logging-out" | "success" | "error">(
-    "logging-out",
+    "logging-out"
   );
   const [error, setError] = useState("");
 
@@ -67,8 +67,8 @@ export default function LogoutPage() {
                   Logging you out...
                 </h2>
                 <p className="text-gray-600">
-                  {user?.name && `Goodbye, ${user.name}!`}
-                  {!user?.name && "Please wait a moment"}
+                  {user?.fullName && `Goodbye, ${user.fullName}!`}
+                  {!user?.fullName && "Please wait a moment"}
                 </p>
               </div>
             </div>

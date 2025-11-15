@@ -1,6 +1,11 @@
 import { apiService } from "./api.service";
+import { UserFE } from "@/types/frontend/user.types";
+import { UserRole, UserStatus } from "@/types/shared/common.types";
 
-interface User {
+/**
+ * Auth API response user (simplified, not full UserBE)
+ */
+interface AuthUserBE {
   uid: string;
   email: string;
   name: string;
@@ -13,9 +18,100 @@ interface User {
   };
 }
 
+/**
+ * Transform auth API user to UserFE
+ */
+function toFEAuthUser(authUser: AuthUserBE): UserFE {
+  const firstName = authUser.name.split(" ")[0] || null;
+  const lastName = authUser.name.split(" ").slice(1).join(" ") || null;
+
+  return {
+    id: authUser.uid,
+    uid: authUser.uid,
+    email: authUser.email,
+    displayName: authUser.name,
+    photoURL: authUser.profile?.avatar || null,
+    phoneNumber: null,
+    role: authUser.role as UserRole,
+    status: UserStatus.ACTIVE,
+
+    // Profile
+    firstName,
+    lastName,
+    fullName: authUser.name,
+    initials: authUser.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2),
+    bio: authUser.profile?.bio || null,
+    location: null,
+
+    // Verification
+    emailVerified: authUser.isEmailVerified,
+    phoneVerified: false,
+    isVerified: authUser.isEmailVerified,
+
+    // Shop
+    shopId: null,
+    shopName: null,
+    shopSlug: null,
+    hasShop: false,
+
+    // Stats (defaults for auth user)
+    totalOrders: 0,
+    totalSpent: 0,
+    totalSales: 0,
+    totalProducts: 0,
+    totalAuctions: 0,
+    rating: 0,
+    reviewCount: 0,
+
+    // Formatted stats
+    formattedTotalSpent: "₹0",
+    formattedTotalSales: "₹0",
+    ratingStars: 0,
+    ratingDisplay: "No reviews yet",
+
+    // Preferences
+    notifications: {
+      email: true,
+      push: true,
+      orderUpdates: true,
+      auctionUpdates: true,
+      promotions: false,
+    },
+
+    // Timestamps
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    lastLoginAt: new Date(),
+
+    // Formatted dates
+    memberSince: "Recently joined",
+    lastLoginDisplay: "Just now",
+    accountAge: "New",
+
+    // UI States
+    isActive: true,
+    isBlocked: false,
+    isSuspended: false,
+    isAdmin: authUser.role === "admin",
+    isSeller: authUser.role === "seller",
+    isUser: authUser.role === "user",
+
+    // Badges
+    badges: authUser.isEmailVerified ? ["Verified"] : [],
+
+    // Metadata
+    metadata: {},
+  };
+}
+
 interface AuthResponse {
   message: string;
-  user: User;
+  user: UserFE;
   sessionId: string;
 }
 
@@ -38,15 +134,21 @@ class AuthService {
   // Register new user
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await apiService.post<AuthResponse>(
-        "/auth/register",
-        data,
-      );
+      const response = await apiService.post<{
+        message: string;
+        user: AuthUserBE;
+        sessionId: string;
+      }>("/auth/register", data);
 
-      // Store user (session is in cookie)
-      this.setUser(response.user);
+      // Transform and store user
+      const userFE = toFEAuthUser(response.user);
+      this.setUser(userFE);
 
-      return response;
+      return {
+        message: response.message,
+        user: userFE,
+        sessionId: response.sessionId,
+      };
     } catch (error) {
       throw error;
     }
@@ -55,15 +157,21 @@ class AuthService {
   // Login user
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await apiService.post<AuthResponse>(
-        "/auth/login",
-        credentials,
-      );
+      const response = await apiService.post<{
+        message: string;
+        user: AuthUserBE;
+        sessionId: string;
+      }>("/auth/login", credentials);
 
-      // Store user (session is in cookie)
-      this.setUser(response.user);
+      // Transform and store user
+      const userFE = toFEAuthUser(response.user);
+      this.setUser(userFE);
 
-      return response;
+      return {
+        message: response.message,
+        user: userFE,
+        sessionId: response.sessionId,
+      };
     } catch (error) {
       throw error;
     }
@@ -96,16 +204,17 @@ class AuthService {
   }
 
   // Get current user from server
-  async getCurrentUser(): Promise<User | null> {
+  async getCurrentUser(): Promise<UserFE | null> {
     try {
-      const response = await apiService.get<{ user: User; session: any }>(
-        "/auth/me",
+      const response = await apiService.get<{ user: AuthUserBE; session: any }>(
+        "/auth/me"
       );
 
-      // Update stored user
-      this.setUser(response.user);
+      // Transform and store user
+      const userFE = toFEAuthUser(response.user);
+      this.setUser(userFE);
 
-      return response.user;
+      return userFE;
     } catch (error: any) {
       // Only clear if it's a 401 (unauthorized), not network errors
       if (error?.status === 401 || error?.response?.status === 401) {
@@ -120,12 +229,12 @@ class AuthService {
   }
 
   // Get cached user from local storage
-  getCachedUser(): User | null {
+  getCachedUser(): UserFE | null {
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem(this.STORAGE_KEY);
       if (userStr) {
         try {
-          return JSON.parse(userStr);
+          return JSON.parse(userStr) as UserFE;
         } catch {
           return null;
         }
@@ -135,7 +244,7 @@ class AuthService {
   }
 
   // Set user
-  private setUser(user: User) {
+  private setUser(user: UserFE) {
     if (typeof window !== "undefined") {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
     }
@@ -162,7 +271,7 @@ class AuthService {
   async getSessions(): Promise<any[]> {
     try {
       const response = await apiService.get<{ sessions: any[] }>(
-        "/auth/sessions",
+        "/auth/sessions"
       );
       return response.sessions;
     } catch (error) {
@@ -192,21 +301,22 @@ class AuthService {
   }
 
   // Update user profile
-  async updateProfile(data: Partial<User>): Promise<User> {
-    const response = await apiService.patch<{ user: User }>(
+  async updateProfile(data: Partial<UserFE>): Promise<UserFE> {
+    const response = await apiService.patch<{ user: AuthUserBE }>(
       "/auth/profile",
-      data,
+      data
     );
 
-    // Update stored user
-    this.setUser(response.user);
-    return response.user;
+    // Transform and store user
+    const userFE = toFEAuthUser(response.user);
+    this.setUser(userFE);
+    return userFE;
   }
 
   // Change password
   async changePassword(
     currentPassword: string,
-    newPassword: string,
+    newPassword: string
   ): Promise<{ message: string }> {
     return apiService.post("/auth/change-password", {
       currentPassword,
@@ -216,4 +326,4 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-export type { User, AuthResponse, LoginCredentials, RegisterData };
+export type { UserFE as User, AuthResponse, LoginCredentials, RegisterData };
