@@ -17,10 +17,16 @@
     "clean:logs": "rm -rf logs/*.log",
     "setup:vercel": "powershell -ExecutionPolicy Bypass -File scripts/setup-vercel-env.ps1",
     "setup:firebase-rules": "firebase deploy --only firestore:rules,firestore:indexes,storage,database",
+    "setup:firebase-functions": "cd functions && npm install",
+    "functions:build": "cd functions && npm run build",
+    "functions:serve": "cd functions && npm run serve",
+    "functions:deploy": "firebase deploy --only functions",
+    "functions:logs": "firebase functions:log",
     "sync:env:bulk": "node scripts/bulk-set-vercel-env.js",
     "sync:env:bulk:dry-run": "node scripts/bulk-set-vercel-env.js --dry-run",
     "deploy": "npm run build && git push origin main",
-    "deploy:prod": "npm run build && vercel --prod --yes"
+    "deploy:prod": "npm run build && vercel --prod --yes",
+    "deploy:firebase": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

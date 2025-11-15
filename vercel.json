@@ -13,12 +13,6 @@
     }
   },
   "regions": ["bom1"],
-  "crons": [
-    {
-      "path": "/api/cron/process-auctions",
-      "schedule": "* * * * *"
-    }
-  ],
   "functions": {
     "src/app/api/**": {
       "memory": 1024,
