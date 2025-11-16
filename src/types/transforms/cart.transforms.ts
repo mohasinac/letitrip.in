@@ -183,7 +183,7 @@ export function toFECart(cartBE: CartBE): CartFE {
   const updatedAt = parseDate(cartBE.updatedAt)!;
   const expiresAt = parseDate(cartBE.expiresAt);
 
-  const items = cartBE.items.map(toFECartItem);
+  const items = (cartBE.items || []).map(toFECartItem);
   const itemsByShop = groupItemsByShop(items);
   const validationErrors = getValidationErrors(items);
   const validationWarnings = getValidationWarnings(items);

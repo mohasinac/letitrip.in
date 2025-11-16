@@ -112,73 +112,26 @@ export default function SellerDashboardPage() {
       console.error("Error loading dashboard:", err);
       setError(err instanceof Error ? err.message : "Failed to load dashboard");
 
-      // Fallback to mock data for development
+      // Set empty data structure
       setData({
         stats: {
-          shops: { total: 1, active: 1 },
-          products: { total: 24, active: 20 },
-          orders: { pending: 5, total: 150 },
-          revenue: { thisMonth: 45000, lastMonth: 38000 },
+          shops: { total: 0, active: 0 },
+          products: { total: 0, active: 0 },
+          orders: { pending: 0, total: 0 },
+          revenue: { thisMonth: 0, lastMonth: 0 },
         },
-        recentOrders: [
-          {
-            id: "1",
-            orderNumber: "ORD-2024-001",
-            customer: "John Doe",
-            amount: 2500,
-            status: "pending",
-            date: "2024-11-07",
-          },
-          {
-            id: "2",
-            orderNumber: "ORD-2024-002",
-            customer: "Jane Smith",
-            amount: 1800,
-            status: "confirmed",
-            date: "2024-11-07",
-          },
-          {
-            id: "3",
-            orderNumber: "ORD-2024-003",
-            customer: "Bob Johnson",
-            amount: 3200,
-            status: "shipped",
-            date: "2024-11-06",
-          },
-        ],
-        topProducts: [
-          {
-            id: "1",
-            name: "Premium Headphones",
-            sales: 45,
-            revenue: 67500,
-            views: 1250,
-          },
-          {
-            id: "2",
-            name: "Wireless Mouse",
-            sales: 38,
-            revenue: 19000,
-            views: 890,
-          },
-          {
-            id: "3",
-            name: "Mechanical Keyboard",
-            sales: 32,
-            revenue: 96000,
-            views: 756,
-          },
-        ],
+        recentOrders: [],
+        topProducts: [],
         shopPerformance: {
-          averageRating: 4.8,
-          totalRatings: 156,
-          orderFulfillment: 94,
-          responseTime: "2.5 hours",
+          averageRating: 0,
+          totalRatings: 0,
+          orderFulfillment: 0,
+          responseTime: "N/A",
         },
         alerts: {
-          lowStock: 3,
-          pendingShipment: 5,
-          newReviews: 2,
+          lowStock: 0,
+          pendingShipment: 0,
+          newReviews: 0,
         },
       });
     } finally {

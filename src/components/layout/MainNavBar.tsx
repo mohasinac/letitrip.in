@@ -228,15 +228,15 @@ export default function MainNavBar({
             </div>
           )}
 
-          {/* Test Workflow Link - Only for Admin Users */}
+          {/* Demo Link - Only for Admin Users */}
           {isAuthenticated && isAdmin && (
             <Link
-              href="/test-workflow"
+              href="/admin/demo"
               className="hidden lg:flex items-center gap-2 text-sm hover:bg-gray-700 px-3 py-2 rounded"
-              title="Test Data & Workflows"
+              title="Demo Data & Workflows"
             >
               <Database className="w-5 h-5" />
-              <span>Test</span>
+              <span>DEMO</span>
             </Link>
           )}
 

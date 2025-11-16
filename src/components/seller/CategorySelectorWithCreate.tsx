@@ -16,6 +16,7 @@ interface CategorySelectorWithCreateProps {
   placeholder?: string;
   className?: string;
   required?: boolean;
+  onCategoryCreated?: (category: CategoryType) => void; // Callback when new category is created
 }
 
 export default function CategorySelectorWithCreate({
@@ -26,12 +27,14 @@ export default function CategorySelectorWithCreate({
   placeholder = "Select a category",
   className = "",
   required = false,
+  onCategoryCreated,
 }: CategorySelectorWithCreateProps) {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creating, setCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0); // Force refresh trigger
 
   // Create category form state
   const [createForm, setCreateForm] = useState({
@@ -43,12 +46,16 @@ export default function CategorySelectorWithCreate({
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [refreshKey]); // Re-fetch when refreshKey changes
 
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await categoriesService.list({ isActive: true });
+      // Add timestamp to bypass cache
+      const data = await categoriesService.list({
+        isActive: true,
+        _t: Date.now(), // Cache buster
+      });
       const transformed = data.map((cat: any) => ({
         id: cat.id,
         name: cat.name,
@@ -112,10 +119,7 @@ export default function CategorySelectorWithCreate({
         isActive: true,
       });
 
-      // Reload categories
-      await loadCategories();
-
-      // Select the newly created category
+      // Transform the newly created category
       const transformedCategory: CategoryType = {
         id: newCategory.id,
         name: newCategory.name,
@@ -125,6 +129,16 @@ export default function CategorySelectorWithCreate({
         has_children: false,
         is_active: true,
       };
+
+      // Trigger refresh to reload all categories
+      setRefreshKey((prev) => prev + 1);
+
+      // Call parent callback if provided
+      if (onCategoryCreated) {
+        onCategoryCreated(transformedCategory);
+      }
+
+      // Select the newly created category
       onChange(newCategory.id, transformedCategory);
 
       // Reset form and close dialog

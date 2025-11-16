@@ -101,67 +101,31 @@ export default function AdminDashboardPage() {
       } catch (error) {
         console.error("Failed to load stats:", error);
 
-        // Fallback to mock data for development
+        // Set empty data structure
         setStats({
           overview: {
-            totalUsers: 2547,
-            totalSellers: 142,
-            totalShops: 156,
-            totalProducts: 8432,
-            totalOrders: 15623,
-            totalRevenue: 4582340,
-            activeAuctions: 89,
-            totalCoupons: 234,
+            totalUsers: 0,
+            totalSellers: 0,
+            totalShops: 0,
+            totalProducts: 0,
+            totalOrders: 0,
+            totalRevenue: 0,
+            activeAuctions: 0,
+            totalCoupons: 0,
           },
           trends: {
-            users: { value: 12.5, isPositive: true },
-            shops: { value: 8.3, isPositive: true },
-            products: { value: 23.1, isPositive: true },
-            orders: { value: 15.7, isPositive: true },
-            revenue: { value: 28.4, isPositive: true },
+            users: { value: 0, isPositive: true },
+            shops: { value: 0, isPositive: true },
+            products: { value: 0, isPositive: true },
+            orders: { value: 0, isPositive: true },
+            revenue: { value: 0, isPositive: true },
           },
-          recentActivity: [
-            {
-              id: "1",
-              type: "user",
-              message: "New user registered: john.doe@example.com",
-              time: "2 minutes ago",
-              status: "info",
-            },
-            {
-              id: "2",
-              type: "shop",
-              message: "Shop pending approval: Tokyo Electronics",
-              time: "15 minutes ago",
-              status: "warning",
-            },
-            {
-              id: "3",
-              type: "order",
-              message: "New order placed: Order #ORD-15624",
-              time: "32 minutes ago",
-              status: "success",
-            },
-            {
-              id: "4",
-              type: "product",
-              message: "5 new products listed by Anime Haven",
-              time: "1 hour ago",
-              status: "info",
-            },
-            {
-              id: "5",
-              type: "ticket",
-              message: "Support ticket escalated: #TKT-892",
-              time: "2 hours ago",
-              status: "error",
-            },
-          ],
+          recentActivity: [],
           pendingActions: {
-            pendingShops: 8,
-            pendingProducts: 23,
-            pendingReturns: 12,
-            openTickets: 34,
+            pendingShops: 0,
+            pendingProducts: 0,
+            pendingReturns: 0,
+            openTickets: 0,
           },
         });
       } finally {

@@ -24,6 +24,7 @@ export const AUTH_ROUTES = {
 
 // User Routes
 export const USER_ROUTES = {
+  // Profile management (user can access their own)
   PROFILE: "/user/profile",
   UPDATE_PROFILE: "/user/profile",
   AVATAR: "/users/me/avatar",
@@ -34,6 +35,14 @@ export const USER_ROUTES = {
   ORDER_BY_ID: (id: string) => `/user/orders/${id}`,
   WISHLIST: "/user/wishlist",
   VIEWING_HISTORY: "/user/viewing-history",
+
+  // Admin user management (unified routes with RBAC)
+  LIST: "/users",
+  BY_ID: (id: string) => `/users/${id}`,
+  BULK: "/users/bulk",
+  STATS: "/users/stats",
+  BAN: (id: string) => `/users/${id}/ban`,
+  ROLE: (id: string) => `/users/${id}/role`,
 } as const;
 
 // Product Routes
@@ -304,12 +313,6 @@ export const SELLER_ROUTES = {
   ANALYTICS_SALES: "/seller/analytics/sales",
 } as const;
 
-// Homepage Public Routes (for frontend display)
-export const HOMEPAGE_ROUTES = {
-  BANNER: "/homepage/banner",
-  HERO_SLIDES: "/homepage/hero-slides",
-} as const;
-
 // Checkout Routes
 export const CHECKOUT_ROUTES = {
   CREATE_ORDER: "/checkout/create-order",
@@ -323,14 +326,24 @@ export const RETURNS_ROUTES = {
   MEDIA: (id: string) => `/returns/${id}/media`,
 } as const;
 
-// Payment Routes
+// Payment Routes (Unified with RBAC)
 export const PAYMENT_ROUTES = {
   LIST: "/payments",
   BY_ID: (id: string) => `/payments/${id}`,
   CREATE: "/payments",
+  BULK: "/payments/bulk",
   VERIFY: "/payments/verify",
   REFUND: (id: string) => `/payments/${id}/refund`,
   METHODS: "/payments/methods",
+  STATS: "/payments/stats",
+} as const;
+
+// Homepage Routes (Unified with RBAC)
+export const HOMEPAGE_ROUTES = {
+  SETTINGS: "/homepage",
+  RESET: "/homepage/reset",
+  BANNER: "/homepage/banner",
+  HERO_SLIDES: "/hero-slides", // Already unified
 } as const;
 
 // Payout Routes

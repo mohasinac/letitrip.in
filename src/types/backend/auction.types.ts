@@ -27,10 +27,13 @@ export interface BidBE {
  */
 export interface AuctionBE {
   id: string;
+  slug: string; // Unique slug for auction URL
   productId: string;
   productName: string;
   productSlug: string;
   productImage: string;
+  images?: string[]; // Multiple images for carousel
+  videos?: string[]; // Video URLs for carousel
   productDescription: string;
 
   // Seller
@@ -94,10 +97,13 @@ export interface AuctionBE {
  */
 export interface AuctionListItemBE {
   id: string;
+  slug: string; // Unique slug for auction URL
   productId: string;
   productName: string;
   productSlug: string;
   productImage: string;
+  images?: string[]; // Multiple images for carousel
+  videos?: string[]; // Video URLs for carousel
   type: AuctionType;
   status: AuctionStatus;
   currentPrice: number;

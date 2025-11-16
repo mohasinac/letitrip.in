@@ -104,7 +104,9 @@ export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
     description: shopBE.description || null,
     banner: shopBE.banner || null,
     createdAt: shopBE.createdAt
-      ? new Date(shopBE.createdAt.seconds * 1000).toISOString()
+      ? typeof shopBE.createdAt === "object" && "seconds" in shopBE.createdAt
+        ? new Date(shopBE.createdAt.seconds * 1000).toISOString()
+        : new Date(shopBE.createdAt).toISOString()
       : undefined,
   };
 }

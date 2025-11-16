@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   Plus,
   Search,
@@ -52,7 +53,12 @@ export default function AdminShopsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
+
+  // Infinite loop prevention
+  const loadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
 
   // Filters
   const [filterValues, setFilterValues] = useState<Partial<ShopFiltersBE>>({});
@@ -71,14 +77,15 @@ export default function AdminShopsPage() {
     Record<string, string>
   >({});
 
-  useEffect(() => {
-    if (user && isAdmin) {
-      loadShops();
+  const loadShops = useCallback(async () => {
+    // Prevent concurrent calls
+    if (loadingRef.current) {
+      console.log("[Shops] Already loading, skipping...");
+      return;
     }
-  }, [user, isAdmin, searchQuery, filterValues, currentPage]);
 
-  const loadShops = async () => {
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
@@ -88,22 +95,31 @@ export default function AdminShopsPage() {
       } = {
         page: currentPage,
         limit,
-        search: searchQuery || undefined,
+        search: debouncedSearchQuery || undefined,
         ...filterValues,
       };
 
+      console.log("[Shops] Loading with filters:", filters);
       const response = await shopsService.list(filters);
 
       setShops(response.data || []);
       setTotalPages(response.totalPages || 1);
       setTotalShops(response.total || 0);
+      hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load shops:", error);
       setError(error instanceof Error ? error.message : "Failed to load shops");
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  };
+  }, [currentPage, debouncedSearchQuery, filterValues, limit]);
+
+  useEffect(() => {
+    if (user?.uid && isAdmin && !loadingRef.current) {
+      loadShops();
+    }
+  }, [user?.uid, isAdmin, loadShops]);
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
