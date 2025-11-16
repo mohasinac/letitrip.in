@@ -226,15 +226,83 @@ class AuctionsService {
     return toFEAuctions(auctionsBE);
   }
 
-  // Bulk actions for seller dashboard
+  /**
+   * Bulk actions - supports: start, end, cancel, feature, unfeature, delete, update
+   */
   async bulkAction(
     action: string,
-    ids: string[]
-  ): Promise<{ success: boolean }> {
-    return apiService.post("/api/seller/auctions/bulk", {
+    auctionIds: string[],
+    data?: any
+  ): Promise<{ success: boolean; results: any[] }> {
+    return apiService.post(AUCTION_ROUTES.BULK, {
       action,
-      ids,
+      auctionIds,
+      data,
     });
+  }
+
+  /**
+   * Bulk start auctions
+   */
+  async bulkStart(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("start", auctionIds);
+  }
+
+  /**
+   * Bulk end auctions
+   */
+  async bulkEnd(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("end", auctionIds);
+  }
+
+  /**
+   * Bulk cancel auctions
+   */
+  async bulkCancel(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("cancel", auctionIds);
+  }
+
+  /**
+   * Bulk feature auctions
+   */
+  async bulkFeature(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("feature", auctionIds);
+  }
+
+  /**
+   * Bulk unfeature auctions
+   */
+  async bulkUnfeature(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("unfeature", auctionIds);
+  }
+
+  /**
+   * Bulk delete auctions
+   */
+  async bulkDelete(
+    auctionIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("delete", auctionIds);
+  }
+
+  /**
+   * Bulk update auctions
+   */
+  async bulkUpdate(
+    auctionIds: string[],
+    updates: Partial<AuctionFormFE>
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("update", auctionIds, updates);
   }
 
   // Quick create for inline editing (minimal fields)
@@ -246,7 +314,7 @@ class AuctionsService {
     status?: string;
     images?: string[];
   }): Promise<AuctionFE> {
-    const auctionBE = await apiService.post<AuctionBE>("/api/seller/auctions", {
+    const auctionBE = await apiService.post<AuctionBE>(AUCTION_ROUTES.LIST, {
       ...data,
       description: "",
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
@@ -260,7 +328,7 @@ class AuctionsService {
     data: Partial<AuctionFormFE>
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
-      `/api/auctions/${id}`,
+      AUCTION_ROUTES.BY_ID(id),
       data
     );
     return toFEAuction(auctionBE);

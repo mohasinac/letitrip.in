@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { TICKET_ROUTES } from "@/constants/api-routes";
 import type {
   SupportTicketBE,
   SupportTicketMessageBE,
@@ -34,10 +35,13 @@ import {
   toBEEscalateTicketRequest,
 } from "@/types/transforms/support-ticket.transforms";
 
-// Removed old interfaces - now using types from type system
+/**
+ * Support/Tickets Service
+ * Manages support tickets with role-based access (User, Seller, Admin)
+ */
 
 class SupportService {
-  // List tickets (role-filtered)
+  // List tickets (role-filtered: user sees own, seller sees shop, admin sees all)
   async listTickets(
     filters?: Partial<SupportTicketFiltersBE>
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
@@ -53,8 +57,8 @@ class SupportService {
 
     const queryString = params.toString();
     const endpoint = queryString
-      ? `/support/tickets?${queryString}`
-      : "/support/tickets";
+      ? `${TICKET_ROUTES.LIST}?${queryString}`
+      : TICKET_ROUTES.LIST;
 
     const response = await apiService.get<PaginatedResponseBE<SupportTicketBE>>(
       endpoint
@@ -70,42 +74,42 @@ class SupportService {
     };
   }
 
-  // Get ticket by ID
+  // Get ticket by ID (owner, related seller, or admin only)
   async getTicket(id: string): Promise<SupportTicketFE> {
     const ticketBE = await apiService.get<SupportTicketBE>(
-      `/support/tickets/${id}`
+      TICKET_ROUTES.BY_ID(id)
     );
     return toFESupportTicket(ticketBE);
   }
 
-  // Create ticket
+  // Create ticket (authenticated users only)
   async createTicket(data: SupportTicketFormFE): Promise<SupportTicketFE> {
     const request = toBECreateSupportTicketRequest(data);
     const ticketBE = await apiService.post<SupportTicketBE>(
-      "/support/tickets",
+      TICKET_ROUTES.LIST,
       request
     );
     return toFESupportTicket(ticketBE);
   }
 
-  // Update ticket
+  // Update ticket (owner with limited fields, admin with all fields)
   async updateTicket(
     id: string,
     data: UpdateTicketFormFE
   ): Promise<SupportTicketFE> {
     const request = toBEUpdateSupportTicketRequest(data);
     const ticketBE = await apiService.patch<SupportTicketBE>(
-      `/support/tickets/${id}`,
+      TICKET_ROUTES.BY_ID(id),
       request
     );
     return toFESupportTicket(ticketBE);
   }
 
-  // Close ticket
+  // Close ticket (now uses PATCH with status update)
   async closeTicket(id: string): Promise<SupportTicketFE> {
-    const ticketBE = await apiService.post<SupportTicketBE>(
-      `/support/tickets/${id}/close`,
-      {}
+    const ticketBE = await apiService.patch<SupportTicketBE>(
+      TICKET_ROUTES.BY_ID(id),
+      { status: "closed" }
     );
     return toFESupportTicket(ticketBE);
   }
@@ -139,43 +143,76 @@ class SupportService {
     };
   }
 
-  // Reply to ticket
+  // Reply to ticket (owner, seller, or admin)
   async replyToTicket(
     ticketId: string,
     data: ReplyToTicketFormFE
   ): Promise<SupportTicketMessageFE> {
     const request = toBEReplyToTicketRequest(data);
     const messageBE = await apiService.post<SupportTicketMessageBE>(
-      `/support/tickets/${ticketId}/messages`,
+      TICKET_ROUTES.REPLY(ticketId),
       request
     );
     return toFESupportTicketMessage(messageBE);
   }
 
-  // Assign ticket (admin only)
+  // Assign ticket (admin only - now uses bulk endpoint)
   async assignTicket(
     id: string,
     data: AssignTicketFormFE
   ): Promise<SupportTicketFE> {
     const request = toBEAssignTicketRequest(data);
-    const ticketBE = await apiService.post<SupportTicketBE>(
-      `/support/tickets/${id}/assign`,
-      request
-    );
-    return toFESupportTicket(ticketBE);
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "assign",
+      ids: [id],
+      updates: request,
+    });
+    return this.getTicket(id);
   }
 
-  // Escalate ticket (seller/admin)
+  // Escalate ticket (admin only - now uses bulk endpoint)
   async escalateTicket(
     id: string,
     data: EscalateTicketFormFE
   ): Promise<SupportTicketFE> {
-    const request = toBEEscalateTicketRequest(data);
-    const ticketBE = await apiService.post<SupportTicketBE>(
-      `/support/tickets/${id}/escalate`,
-      request
-    );
-    return toFESupportTicket(ticketBE);
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "escalate",
+      ids: [id],
+    });
+    return this.getTicket(id);
+  }
+
+  // Bulk operations (admin only)
+  async bulkDelete(ids: string[]): Promise<void> {
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "delete",
+      ids,
+    });
+  }
+
+  async bulkUpdate(
+    ids: string[],
+    updates: Partial<UpdateTicketFormFE>
+  ): Promise<void> {
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "update",
+      ids,
+      updates,
+    });
+  }
+
+  async bulkResolve(ids: string[]): Promise<void> {
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "resolve",
+      ids,
+    });
+  }
+
+  async bulkClose(ids: string[]): Promise<void> {
+    await apiService.post(TICKET_ROUTES.BULK, {
+      action: "close",
+      ids,
+    });
   }
 
   // Upload attachment

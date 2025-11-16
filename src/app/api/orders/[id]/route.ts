@@ -1,49 +1,83 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
+/**
+ * GET /api/orders/[id]
+ * Get single order
+ * - User: Own orders only
+ * - Seller: Orders for their shop
+ * - Admin: All orders
+ */
 export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getUserFromRequest(request);
     const { id } = await params;
     const doc = await Collections.orders().doc(id).get();
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
+
+    const orderData: any = doc.data();
+
+    // Check access permissions
+    if (user?.role === "user" && orderData.user_id !== user.uid) {
+      return NextResponse.json(
+        { success: false, error: "Not found" },
+        { status: 404 }
+      );
+    }
+
+    if (user?.role === "seller") {
+      const owns = await userOwnsShop(orderData.shop_id, user.uid);
+      if (!owns) {
+        return NextResponse.json(
+          { success: false, error: "Not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      data: { id: doc.id, ...doc.data() },
+      data: { id: doc.id, ...orderData },
     });
   } catch (error) {
     console.error("Order detail error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
+/**
+ * PATCH /api/orders/[id]
+ * Update order (seller/admin only)
+ */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.id)
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
-    if (!(role === "seller" || role === "admin")) {
+    if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
+        { success: false, error: "Only sellers and admins can update orders" },
+        { status: 403 }
       );
     }
 
@@ -53,16 +87,16 @@ export async function PATCH(
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const order = doc.data() as any;
     if (role === "seller") {
-      const owns = await userOwnsShop(order.shop_id, user.id);
+      const owns = await userOwnsShop(order.shop_id, user.uid);
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
     }
 
@@ -81,18 +115,7 @@ export async function PATCH(
     console.error("Order update error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
-}
-
-// Minimal change placeholder for follow-up
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  return NextResponse.json(
-    { success: false, error: "Method not allowed" },
-    { status: 405 },
-  );
 }

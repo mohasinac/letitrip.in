@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../../lib/session";
+import {
+  getUserFromRequest,
+  requireRole,
+} from "@/app/api/middleware/rbac-auth";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/categories/[slug] - Public category detail
-// PATCH /api/categories/[slug] - Admin update
-// DELETE /api/categories/[slug] - Admin delete
+/**
+ * GET /api/categories/[slug]
+ * Get category details
+ * - Public: Active categories only
+ * - Admin: All categories including inactive
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const user = await getUserFromRequest(request);
     const { slug } = await params;
     const snapshot = await Collections.categories()
       .where("slug", "==", slug)
@@ -23,6 +31,14 @@ export async function GET(
     }
     const doc = snapshot.docs[0];
     const data: any = doc.data();
+
+    // Public users can only see active categories
+    if ((!user || user.role !== "admin") && !data.is_active) {
+      return NextResponse.json(
+        { success: false, error: "Category not found" },
+        { status: 404 }
+      );
+    }
     return NextResponse.json({
       success: true,
       data: {
@@ -55,18 +71,20 @@ export async function GET(
   }
 }
 
+/**
+ * PATCH /api/categories/[slug]
+ * Update category (admin only)
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (user?.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 }
-      );
+    const roleResult = await requireRole(request, ["admin"]);
+    if (roleResult.error) {
+      return roleResult.error;
     }
+
     const { slug } = await params;
     const snapshot = await Collections.categories()
       .where("slug", "==", slug)
@@ -192,18 +210,20 @@ export async function PATCH(
   }
 }
 
+/**
+ * DELETE /api/categories/[slug]
+ * Delete category (admin only)
+ */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (user?.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 }
-      );
+    const roleResult = await requireRole(request, ["admin"]);
+    if (roleResult.error) {
+      return roleResult.error;
     }
+
     const { slug } = await params;
     const snapshot = await Collections.categories()
       .where("slug", "==", slug)

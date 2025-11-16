@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { REVIEW_ROUTES } from "@/constants/api-routes";
 import { ReviewBE } from "@/types/backend/review.types";
 import {
   ReviewFE,
@@ -36,7 +37,9 @@ class ReviewsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/reviews?${queryString}` : "/reviews";
+    const endpoint = queryString
+      ? `${REVIEW_ROUTES.LIST}?${queryString}`
+      : REVIEW_ROUTES.LIST;
 
     const response = await apiService.get<PaginatedResponseBE<ReviewBE>>(
       endpoint
@@ -53,14 +56,17 @@ class ReviewsService {
 
   // Get review by ID
   async getById(id: string): Promise<ReviewFE> {
-    const reviewBE = await apiService.get<ReviewBE>(`/reviews/${id}`);
+    const reviewBE = await apiService.get<ReviewBE>(REVIEW_ROUTES.BY_ID(id));
     return toFEReview(reviewBE);
   }
 
   // Create review (authenticated users after purchase)
   async create(formData: ReviewFormFE): Promise<ReviewFE> {
     const request = toBECreateReviewRequest(formData);
-    const reviewBE = await apiService.post<ReviewBE>("/reviews", request);
+    const reviewBE = await apiService.post<ReviewBE>(
+      REVIEW_ROUTES.CREATE,
+      request
+    );
     return toFEReview(reviewBE);
   }
 
@@ -68,7 +74,7 @@ class ReviewsService {
   async update(id: string, formData: Partial<ReviewFormFE>): Promise<ReviewFE> {
     const request = toBECreateReviewRequest(formData as ReviewFormFE);
     const reviewBE = await apiService.patch<ReviewBE>(
-      `/reviews/${id}`,
+      REVIEW_ROUTES.UPDATE(id),
       request
     );
     return toFEReview(reviewBE);
@@ -76,13 +82,13 @@ class ReviewsService {
 
   // Delete review (author/admin)
   async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/reviews/${id}`);
+    return apiService.delete<{ message: string }>(REVIEW_ROUTES.DELETE(id));
   }
 
   // Moderate review (shop owner/admin)
   async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {
     const reviewBE = await apiService.patch<ReviewBE>(
-      `/reviews/${id}/moderate`,
+      `${REVIEW_ROUTES.BY_ID(id)}/moderate`,
       data
     );
     return toFEReview(reviewBE);
@@ -91,7 +97,7 @@ class ReviewsService {
   // Mark review as helpful
   async markHelpful(id: string): Promise<{ helpfulCount: number }> {
     return apiService.post<{ helpfulCount: number }>(
-      `/reviews/${id}/helpful`,
+      REVIEW_ROUTES.HELPFUL(id),
       {}
     );
   }
@@ -101,7 +107,7 @@ class ReviewsService {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const response = await fetch("/api/reviews/media", {
+    const response = await fetch(REVIEW_ROUTES.MEDIA, {
       method: "POST",
       body: formData,
     });
@@ -135,8 +141,8 @@ class ReviewsService {
 
     const queryString = params.toString();
     const endpoint = queryString
-      ? `/reviews/summary?${queryString}`
-      : "/reviews/summary";
+      ? `${REVIEW_ROUTES.SUMMARY}?${queryString}`
+      : REVIEW_ROUTES.SUMMARY;
 
     return apiService.get<any>(endpoint);
   }
@@ -167,9 +173,49 @@ class ReviewsService {
   // Get homepage reviews
   async getHomepage(): Promise<ReviewFE[]> {
     const response = await apiService.get<{ data: ReviewBE[] }>(
-      "/reviews?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20"
+      `${REVIEW_ROUTES.LIST}?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20`
     );
     return toFEReviews(response.data);
+  }
+
+  // Bulk operations (admin only)
+  private async bulkAction(
+    action: string,
+    ids: string[],
+    data?: Record<string, any>
+  ): Promise<{
+    success: boolean;
+    results: {
+      success: string[];
+      failed: { id: string; error: string }[];
+    };
+    summary: { total: number; succeeded: number; failed: number };
+  }> {
+    return apiService.post(REVIEW_ROUTES.BULK, { action, ids, data });
+  }
+
+  async bulkApprove(ids: string[]): Promise<any> {
+    return this.bulkAction("approve", ids);
+  }
+
+  async bulkReject(ids: string[]): Promise<any> {
+    return this.bulkAction("reject", ids);
+  }
+
+  async bulkFlag(ids: string[]): Promise<any> {
+    return this.bulkAction("flag", ids);
+  }
+
+  async bulkUnflag(ids: string[]): Promise<any> {
+    return this.bulkAction("unflag", ids);
+  }
+
+  async bulkDelete(ids: string[]): Promise<any> {
+    return this.bulkAction("delete", ids);
+  }
+
+  async bulkUpdate(ids: string[], updates: Record<string, any>): Promise<any> {
+    return this.bulkAction("update", ids, updates);
   }
 }
 

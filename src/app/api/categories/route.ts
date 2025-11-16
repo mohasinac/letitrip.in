@@ -1,21 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../lib/session";
+import {
+  getUserFromRequest,
+  requireRole,
+} from "@/app/api/middleware/rbac-auth";
 import { withCache } from "@/app/api/middleware/cache";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/categories - List categories (public)
-// POST /api/categories - Create category (admin only)
+/**
+ * GET /api/categories
+ * List categories with role-based filtering
+ * - Public: Active categories only
+ * - Admin: All categories including inactive
+ */
 export async function GET(request: NextRequest) {
   return withCache(
     request,
     async (req: NextRequest) => {
       try {
+        const user = await getUserFromRequest(req);
         const { searchParams } = new URL(req.url);
         const isFeatured = searchParams.get("isFeatured");
         const showOnHomepage = searchParams.get("showOnHomepage");
         const parentId = searchParams.get("parentId");
 
         let query: FirebaseFirestore.Query = Collections.categories();
+
+        // Public users only see active categories
+        if (!user || user.role !== "admin") {
+          query = query.where("is_active", "==", true);
+        }
 
         if (isFeatured !== null) {
           query = query.where("is_featured", "==", isFeatured === "true");
@@ -76,23 +90,30 @@ export async function GET(request: NextRequest) {
   );
 }
 
+/**
+ * POST /api/categories
+ * Create a new category (admin only)
+ */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
-    if (user?.role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 }
-      );
+    const roleResult = await requireRole(request, ["admin"]);
+    if (roleResult.error) {
+      return roleResult.error;
     }
 
     const body = await request.json();
     const { name, slug } = body;
-    if (!name || !slug) {
-      return NextResponse.json(
-        { success: false, error: "Name and slug are required" },
-        { status: 400 }
-      );
+
+    // Validation
+    const errors: Record<string, string> = {};
+    if (!name || name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters";
+    }
+    if (!slug || slug.trim().length < 2) {
+      errors.slug = "Slug must be at least 2 characters";
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ValidationError("Validation failed", errors);
     }
 
     // Slug uniqueness (global)
@@ -189,7 +210,13 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message, errors: error.errors },
+        { status: 400 }
+      );
+    }
     console.error("Error creating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create category" },

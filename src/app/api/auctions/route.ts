@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/auctions - List auctions (role-filtered)
-// POST /api/auctions - Create auction (seller/admin)
+/**
+ * GET /api/auctions
+ * List auctions with role-based filtering
+ * - Public: Active auctions only
+ * - Seller: Own auctions (all statuses)
+ * - Admin: All auctions
+ */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
+    const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
     const shopId = searchParams.get("shop_id");
@@ -30,25 +39,28 @@ export async function GET(request: NextRequest) {
     console.error("Error listing auctions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list auctions" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
+/**
+ * POST /api/auctions
+ * Create auction (seller/admin only)
+ */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
-    if (!(role === "seller" || role === "admin")) {
+    if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
+        {
+          success: false,
+          error: "Only sellers and admins can create auctions",
+        },
+        { status: 403 }
       );
     }
 
@@ -57,16 +69,16 @@ export async function POST(request: NextRequest) {
     if (!shop_id || !name || !slug || starting_bid == null || !end_time) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (role === "seller") {
-      const ownsShop = await userOwnsShop(shop_id, user.id);
+      const ownsShop = await userOwnsShop(shop_id, user.uid);
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Cannot create auction for this shop" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       // Limit: 5 active auctions per shop
@@ -81,7 +93,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Active auction limit reached for this shop",
           },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -94,7 +106,7 @@ export async function POST(request: NextRequest) {
     if (!existingSlug.empty) {
       return NextResponse.json(
         { success: false, error: "Auction slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -116,13 +128,13 @@ export async function POST(request: NextRequest) {
     const created = await docRef.get();
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create auction" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

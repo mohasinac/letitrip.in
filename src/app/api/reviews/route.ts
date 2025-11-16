@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Unified Reviews API with RBAC
+ * GET: List reviews (public: approved only, admin: all)
+ * POST: Create review (authenticated users only)
+ */
 
 // GET /api/reviews - List reviews (filtered by product/shop/user)
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
+    const user = await getUserFromRequest(req);
     const { searchParams } = new URL(req.url);
 
     const productId = searchParams.get("product_id");
@@ -17,6 +28,13 @@ export async function GET(req: NextRequest) {
     let query = db
       .collection(COLLECTIONS.REVIEWS)
       .orderBy("created_at", "desc");
+
+    // Role-based filtering
+    if (!user || user.role !== "admin") {
+      // Public users only see approved reviews
+      query = query.where("status", "==", "published");
+    }
+    // Admin sees all reviews
 
     // Apply filters
     if (productId) {
@@ -52,7 +70,7 @@ export async function GET(req: NextRequest) {
       if (totalReviews > 0) {
         const totalRating = allReviews.reduce(
           (sum: number, r: any) => sum + r.rating,
-          0,
+          0
         );
         const averageRating = totalRating / totalReviews;
 
@@ -73,6 +91,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
+      success: true,
       reviews,
       stats,
       pagination: {
@@ -84,8 +103,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json(
-      { error: "Failed to fetch reviews" },
-      { status: 500 },
+      { success: false, error: "Failed to fetch reviews" },
+      { status: 500 }
     );
   }
 }
@@ -93,14 +112,12 @@ export async function GET(req: NextRequest) {
 // POST /api/reviews - Create review
 export async function POST(req: NextRequest) {
   try {
+    const authResult = await requireAuth(req);
+    if (authResult.error) return authResult.error;
+
+    const { user } = authResult;
     const db = getFirestoreAdmin();
     const body = await req.json();
-
-    // TODO: Get user_id from session (temporary using header)
-    const userId = req.headers.get("x-user-id");
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const { product_id, order_id, rating, title, comment, images } = body;
 
@@ -108,7 +125,7 @@ export async function POST(req: NextRequest) {
     if (!product_id || !rating || !comment) {
       return NextResponse.json(
         { error: "Missing required fields: product_id, rating, comment" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -116,7 +133,7 @@ export async function POST(req: NextRequest) {
     if (rating < 1 || rating > 5) {
       return NextResponse.json(
         { error: "Rating must be between 1 and 5" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -124,14 +141,14 @@ export async function POST(req: NextRequest) {
     const existingReview = await db
       .collection(COLLECTIONS.REVIEWS)
       .where("product_id", "==", product_id)
-      .where("user_id", "==", userId)
+      .where("user_id", "==", user.uid)
       .limit(1)
       .get();
 
     if (!existingReview.empty) {
       return NextResponse.json(
         { error: "You have already reviewed this product" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -148,7 +165,7 @@ export async function POST(req: NextRequest) {
 
     // Create review
     const reviewData = {
-      user_id: userId,
+      user_id: user.uid,
       product_id,
       shop_id: product?.shop_id,
       order_id: order_id || null,
@@ -167,16 +184,20 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        id: docRef.id,
-        ...reviewData,
+        success: true,
+        review: {
+          id: docRef.id,
+          ...reviewData,
+        },
+        message: "Review created successfully",
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating review:", error);
     return NextResponse.json(
-      { error: "Failed to create review" },
-      { status: 500 },
+      { success: false, error: "Failed to create review" },
+      { status: 500 }
     );
   }
 }

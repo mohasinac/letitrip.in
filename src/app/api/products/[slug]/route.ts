@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../../lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/products/[slug] - Get single product by slug
+/**
+ * GET /api/products/[slug]
+ * Get single product by slug
+ * - Public: Published products only
+ * - Owner/Admin: All statuses
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const user = await getUserFromRequest(request);
     const { slug } = await params;
 
     const snapshot = await Collections.products()
@@ -23,6 +33,25 @@ export async function GET(
     }
     const doc = snapshot.docs[0];
     const data: any = doc.data();
+
+    // Public users can only see published products
+    if ((!user || user.role === "user") && data.status !== "published") {
+      return NextResponse.json(
+        { success: false, error: "Product not found" },
+        { status: 404 }
+      );
+    }
+
+    // Sellers can only see their own non-published products
+    if (user?.role === "seller" && data.status !== "published") {
+      const ownsShop = await userOwnsShop(data.shop_id, user.uid);
+      if (!ownsShop) {
+        return NextResponse.json(
+          { success: false, error: "Product not found" },
+          { status: 404 }
+        );
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -48,19 +77,20 @@ export async function GET(
   }
 }
 
-// PATCH /api/products/[slug] - Update product by slug
+/**
+ * PATCH /api/products/[slug]
+ * Update product (owner/admin only)
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    const authResult = await requireAuth(request);
+    if (authResult.error) {
+      return authResult.error;
     }
+    const user = authResult.user!;
 
     const { slug } = await params;
     const snapshot = await Collections.products()
@@ -76,16 +106,18 @@ export async function PATCH(
     const doc = snapshot.docs[0];
     const productData = doc.data() as any;
 
-    // Validate user owns the shop (shopId first, then userId/email)
-    const ownsShop = await userOwnsShop(productData?.shop_id, user.email);
-    if (!ownsShop) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You do not have permission to update this product",
-        },
-        { status: 403 }
-      );
+    // Validate user owns the shop (sellers only edit own, admin edits all)
+    if (user.role !== "admin") {
+      const ownsShop = await userOwnsShop(productData?.shop_id, user.uid);
+      if (!ownsShop) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "You do not have permission to update this product",
+          },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await request.json();
@@ -137,19 +169,20 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/products/[slug] - Delete product by slug
+/**
+ * DELETE /api/products/[slug]
+ * Delete product (owner/admin only)
+ */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    const authResult = await requireAuth(request);
+    if (authResult.error) {
+      return authResult.error;
     }
+    const user = authResult.user!;
 
     const { slug } = await params;
     const snapshot = await Collections.products()
@@ -165,15 +198,18 @@ export async function DELETE(
     const doc = snapshot.docs[0];
     const productData = doc.data() as any;
 
-    const ownsShop = await userOwnsShop(productData?.shop_id, user.email);
-    if (!ownsShop) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You do not have permission to delete this product",
-        },
-        { status: 403 }
-      );
+    // Validate user owns the shop (sellers only delete own, admin deletes all)
+    if (user.role !== "admin") {
+      const ownsShop = await userOwnsShop(productData?.shop_id, user.uid);
+      if (!ownsShop) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "You do not have permission to delete this product",
+          },
+          { status: 403 }
+        );
+      }
     }
 
     await Collections.products().doc(doc.id).delete();

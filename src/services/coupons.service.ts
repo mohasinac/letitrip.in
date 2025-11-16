@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { COUPON_ROUTES, buildUrl } from "@/constants/api-routes";
 import type { CouponBE, CouponFiltersBE } from "@/types/backend/coupon.types";
 import type {
   CouponFE,
@@ -41,23 +42,7 @@ class CouponsService {
   async list(
     filters?: Partial<CouponFiltersBE>
   ): Promise<PaginatedResponseFE<CouponFE>> {
-    const params = new URLSearchParams();
-
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach((v) => params.append(key, v.toString()));
-          } else {
-            params.append(key, value.toString());
-          }
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/coupons?${queryString}` : "/coupons";
-
+    const endpoint = buildUrl(COUPON_ROUTES.LIST, filters);
     const response = await apiService.get<PaginatedResponseBE<CouponBE>>(
       endpoint
     );
@@ -72,22 +57,27 @@ class CouponsService {
     };
   }
 
-  // Get coupon by ID
+  // Get coupon by ID (or code)
   async getById(id: string): Promise<CouponFE> {
-    const couponBE = await apiService.get<CouponBE>(`/coupons/${id}`);
+    const couponBE = await apiService.get<CouponBE>(COUPON_ROUTES.BY_CODE(id));
     return toFECoupon(couponBE);
   }
 
   // Get coupon by code
   async getByCode(code: string): Promise<CouponFE> {
-    const couponBE = await apiService.get<CouponBE>(`/coupons/${code}`);
+    const couponBE = await apiService.get<CouponBE>(
+      COUPON_ROUTES.BY_CODE(code)
+    );
     return toFECoupon(couponBE);
   }
 
   // Create coupon (seller/admin)
   async create(data: CouponFormFE): Promise<CouponFE> {
     const request = toBECreateCouponRequest(data);
-    const couponBE = await apiService.post<CouponBE>("/coupons", request);
+    const couponBE = await apiService.post<CouponBE>(
+      COUPON_ROUTES.LIST,
+      request
+    );
     return toFECoupon(couponBE);
   }
 
@@ -95,7 +85,7 @@ class CouponsService {
   async update(code: string, data: Partial<CouponFormFE>): Promise<CouponFE> {
     const request = toBEUpdateCouponRequest(data);
     const couponBE = await apiService.patch<CouponBE>(
-      `/coupons/${code}`,
+      COUPON_ROUTES.BY_CODE(code),
       request
     );
     return toFECoupon(couponBE);
@@ -103,12 +93,15 @@ class CouponsService {
 
   // Delete coupon (owner/admin)
   async delete(code: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/coupons/${code}`);
+    return apiService.delete<{ message: string }>(COUPON_ROUTES.BY_CODE(code));
   }
 
   // Validate coupon
   async validate(data: ValidateCouponData): Promise<ValidateCouponResponse> {
-    return apiService.post<ValidateCouponResponse>("/coupons/validate", data);
+    return apiService.post<ValidateCouponResponse>(
+      COUPON_ROUTES.VALIDATE,
+      data
+    );
   }
 
   // Check if coupon code is available (for form validation)
@@ -137,6 +130,62 @@ class CouponsService {
 
     const couponsBE = await apiService.get<CouponBE[]>(endpoint);
     return toFECoupons(couponsBE);
+  }
+
+  /**
+   * Bulk actions - supports: activate, deactivate, delete, update
+   */
+  async bulkAction(
+    action: string,
+    couponIds: string[],
+    data?: any
+  ): Promise<{ success: boolean; results: any[] }> {
+    return apiService.post(COUPON_ROUTES.BULK, {
+      action,
+      couponIds,
+      data,
+    });
+  }
+
+  /**
+   * Bulk activate coupons
+   */
+  async bulkActivate(
+    couponIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("activate", couponIds);
+  }
+
+  /**
+   * Bulk deactivate coupons
+   */
+  async bulkDeactivate(
+    couponIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("deactivate", couponIds);
+  }
+
+  /**
+   * Bulk delete coupons
+   */
+  async bulkDelete(
+    couponIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("delete", couponIds);
+  }
+
+  /**
+   * Bulk update coupons
+   */
+  async bulkUpdate(
+    couponIds: string[],
+    updates: Partial<CouponFormFE>
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction(
+      "update",
+      couponIds,
+      toBEUpdateCouponRequest(updates)
+    );
   }
 }
 

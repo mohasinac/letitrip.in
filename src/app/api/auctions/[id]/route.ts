@@ -1,46 +1,76 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../../lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/auctions/[id]
+/**
+ * GET /api/auctions/[id]
+ * Get single auction
+ * - Public: Active auctions only
+ * - Owner/Admin: All statuses
+ */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getUserFromRequest(request);
     const { id } = await params;
     const doc = await Collections.auctions().doc(id).get();
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
+
     const data = { id: doc.id, ...doc.data() } as any;
+
+    // Public users can only see active auctions
+    if ((!user || user.role === "user") && data.status !== "active") {
+      return NextResponse.json(
+        { success: false, error: "Auction not found" },
+        { status: 404 }
+      );
+    }
+
+    // Sellers can only see their own non-active auctions
+    if (user?.role === "seller" && data.status !== "active") {
+      const ownsShop = await userOwnsShop(data.shop_id, user.uid);
+      if (!ownsShop) {
+        return NextResponse.json(
+          { success: false, error: "Auction not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error("Error fetching auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch auction" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PATCH /api/auctions/[id]
+/**
+ * PATCH /api/auctions/[id]
+ * Update auction (owner/admin only)
+ */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
     const { id } = await params;
     const docRef = Collections.auctions().doc(id);
@@ -48,17 +78,17 @@ export async function PATCH(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
     const auction: any = { id: doc.id, ...doc.data() };
     if (role === "seller") {
-      const ownsShop = await userOwnsShop(auction.shop_id, user.id);
+      const ownsShop = await userOwnsShop(auction.shop_id, user.uid);
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -79,24 +109,23 @@ export async function PATCH(
     console.error("Error updating auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update auction" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// DELETE /api/auctions/[id]
+/**
+ * DELETE /api/auctions/[id]
+ * Delete auction (owner/admin only)
+ */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
     const { id } = await params;
     const docRef = Collections.auctions().doc(id);
@@ -104,17 +133,17 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
     const auction: any = { id: doc.id, ...doc.data() };
     if (role === "seller") {
-      const ownsShop = await userOwnsShop(auction.shop_id, user.id);
+      const ownsShop = await userOwnsShop(auction.shop_id, user.uid);
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -125,7 +154,7 @@ export async function DELETE(
     console.error("Error deleting auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete auction" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
