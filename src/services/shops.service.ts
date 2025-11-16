@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { SHOP_ROUTES } from "@/constants/api-routes";
 import { ShopBE } from "@/types/backend/shop.types";
 import { ShopFE, ShopCardFE, ShopFormFE } from "@/types/frontend/shop.types";
 import {
@@ -58,7 +59,9 @@ class ShopsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/shops?${queryString}` : "/shops";
+    const endpoint = queryString
+      ? `${SHOP_ROUTES.LIST}?${queryString}`
+      : SHOP_ROUTES.LIST;
 
     const response = await apiService.get<PaginatedResponseBE<ShopBE>>(
       endpoint
@@ -76,27 +79,30 @@ class ShopsService {
 
   // Get shop by slug
   async getBySlug(slug: string): Promise<ShopFE> {
-    const shopBE = await apiService.get<ShopBE>(`/shops/${slug}`);
+    const shopBE = await apiService.get<ShopBE>(SHOP_ROUTES.BY_SLUG(slug));
     return toFEShop(shopBE);
   }
 
   // Create shop (seller/admin)
   async create(formData: ShopFormFE): Promise<ShopFE> {
     const request = toBECreateShopRequest(formData);
-    const shopBE = await apiService.post<ShopBE>("/shops", request);
+    const shopBE = await apiService.post<ShopBE>(SHOP_ROUTES.LIST, request);
     return toFEShop(shopBE);
   }
 
   // Update shop (owner/admin)
   async update(slug: string, formData: Partial<ShopFormFE>): Promise<ShopFE> {
     const request = toBECreateShopRequest(formData as ShopFormFE);
-    const shopBE = await apiService.patch<ShopBE>(`/shops/${slug}`, request);
+    const shopBE = await apiService.patch<ShopBE>(
+      SHOP_ROUTES.BY_SLUG(slug),
+      request
+    );
     return toFEShop(shopBE);
   }
 
   // Delete shop (owner/admin)
   async delete(slug: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/shops/${slug}`);
+    return apiService.delete<{ message: string }>(SHOP_ROUTES.BY_SLUG(slug));
   }
 
   // Verify shop (admin only)
@@ -226,6 +232,62 @@ class ShopsService {
       "/shops?featured=true&verified=true&limit=20"
     );
     return response.data.map(toFEShopCard);
+  }
+
+  // Bulk operations (admin only)
+  private async bulkAction(
+    action: string,
+    ids: string[],
+    data?: Record<string, any>
+  ): Promise<{
+    success: boolean;
+    results: {
+      success: string[];
+      failed: { id: string; error: string }[];
+    };
+    summary: { total: number; succeeded: number; failed: number };
+  }> {
+    return apiService.post(SHOP_ROUTES.BULK, { action, ids, data });
+  }
+
+  async bulkVerify(ids: string[]): Promise<any> {
+    return this.bulkAction("verify", ids);
+  }
+
+  async bulkUnverify(ids: string[]): Promise<any> {
+    return this.bulkAction("unverify", ids);
+  }
+
+  async bulkFeature(ids: string[]): Promise<any> {
+    return this.bulkAction("feature", ids);
+  }
+
+  async bulkUnfeature(ids: string[]): Promise<any> {
+    return this.bulkAction("unfeature", ids);
+  }
+
+  async bulkActivate(ids: string[]): Promise<any> {
+    return this.bulkAction("activate", ids);
+  }
+
+  async bulkDeactivate(ids: string[]): Promise<any> {
+    return this.bulkAction("deactivate", ids);
+  }
+
+  async bulkBan(ids: string[], banReason?: string): Promise<any> {
+    return this.bulkAction("ban", ids, { banReason });
+  }
+
+  async bulkUnban(ids: string[]): Promise<any> {
+    return this.bulkAction("unban", ids);
+  }
+
+  async bulkDelete(ids: string[]): Promise<any> {
+    return this.bulkAction("delete", ids);
+  }
+
+  async bulkUpdate(ids: string[], updates: Record<string, any>): Promise<any> {
+    return this.bulkAction("update", ids, updates);
   }
 }
 

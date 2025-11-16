@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { HERO_SLIDE_ROUTES } from "@/constants/api-routes";
 
 /**
  * Hero Slide interface
@@ -47,13 +48,15 @@ export interface HeroSlideFormData {
 
 /**
  * Hero Slides Service
- * Manages homepage hero slides/carousel (Admin CRUD operations)
+ * Manages homepage hero slides/carousel with RBAC
  */
 class HeroSlidesService {
-  private readonly BASE_PATH = "/admin/hero-slides";
+  private readonly BASE_PATH = "/api/hero-slides";
 
   /**
    * Get all hero slides with optional filters
+   * Public: Returns only active slides
+   * Admin: Returns all slides with full data
    */
   async getHeroSlides(filters?: HeroSlideFilters): Promise<HeroSlide[]> {
     const params = new URLSearchParams();
@@ -66,8 +69,8 @@ class HeroSlidesService {
     }
 
     const url = params.toString()
-      ? `${this.BASE_PATH}?${params}`
-      : this.BASE_PATH;
+      ? `${HERO_SLIDE_ROUTES.LIST}?${params}`
+      : HERO_SLIDE_ROUTES.LIST;
 
     const response = await apiService.get<{ slides: HeroSlide[] }>(url);
     return response.slides || [];
@@ -75,64 +78,66 @@ class HeroSlidesService {
 
   /**
    * Get a single hero slide by ID
+   * Public: Returns only if active
+   * Admin: Returns full slide data
    */
   async getHeroSlideById(id: string): Promise<HeroSlide> {
     const response = await apiService.get<{ slide: HeroSlide }>(
-      `${this.BASE_PATH}/${id}`
+      HERO_SLIDE_ROUTES.BY_ID(id)
     );
     return response.slide;
   }
 
   /**
-   * Create a new hero slide
+   * Create a new hero slide (Admin only)
    */
   async createHeroSlide(data: HeroSlideFormData): Promise<HeroSlide> {
     const response = await apiService.post<{ slide: HeroSlide }>(
-      this.BASE_PATH,
+      HERO_SLIDE_ROUTES.LIST,
       data
     );
     return response.slide;
   }
 
   /**
-   * Update an existing hero slide
+   * Update an existing hero slide (Admin only)
    */
   async updateHeroSlide(
     id: string,
     data: Partial<HeroSlideFormData>
   ): Promise<HeroSlide> {
     const response = await apiService.patch<{ slide: HeroSlide }>(
-      `${this.BASE_PATH}/${id}`,
+      HERO_SLIDE_ROUTES.BY_ID(id),
       data
     );
     return response.slide;
   }
 
   /**
-   * Delete a hero slide
+   * Delete a hero slide (Admin only)
    */
   async deleteHeroSlide(id: string): Promise<void> {
-    await apiService.delete(`${this.BASE_PATH}/${id}`);
+    await apiService.delete(HERO_SLIDE_ROUTES.BY_ID(id));
   }
 
   /**
-   * Bulk delete hero slides
+   * Bulk delete hero slides (Admin only)
    */
   async bulkDelete(ids: string[]): Promise<void> {
-    await apiService.post(`${this.BASE_PATH}/bulk`, {
+    await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "delete",
       ids,
     });
   }
 
   /**
-   * Bulk update hero slides (activate/deactivate)
+   * Bulk update hero slides (Admin only)
    */
   async bulkUpdate(
     ids: string[],
     updates: Partial<HeroSlideFormData>
   ): Promise<void> {
-    await apiService.post(`${this.BASE_PATH}/bulk`, {
+    await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "update",
       ids,
       updates,
@@ -140,12 +145,13 @@ class HeroSlidesService {
   }
 
   /**
-   * Reorder hero slides
+   * Reorder hero slides (Admin only)
    */
   async reorderSlides(
     slideOrders: { id: string; order: number }[]
   ): Promise<void> {
-    await apiService.post(`${this.BASE_PATH}/reorder`, {
+    await apiService.post(HERO_SLIDE_ROUTES.BULK, {
+      action: "reorder",
       slides: slideOrders,
     });
   }

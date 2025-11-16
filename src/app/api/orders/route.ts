@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/orders - role-filtered list
-// POST /api/orders - create order (user)
+/**
+ * GET /api/orders
+ * List orders with role-based filtering
+ * - User: Own orders only
+ * - Seller: Orders for their shop(s)
+ * - Admin: All orders
+ */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
+    const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
     const shopId = searchParams.get("shop_id");
@@ -18,15 +27,15 @@ export async function GET(request: NextRequest) {
       if (shopId) query = query.where("shop_id", "==", shopId);
     } else if (role === "seller") {
       if (!shopId) return NextResponse.json({ success: true, data: [] });
-      const owns = await userOwnsShop(shopId, user!.id);
+      const owns = await userOwnsShop(shopId, user!.uid);
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       query = query.where("shop_id", "==", shopId);
     } else if (role === "user") {
-      query = query.where("user_id", "==", user!.id);
+      query = query.where("user_id", "==", user!.uid);
     } else {
       return NextResponse.json({ success: true, data: [] });
     }
@@ -38,30 +47,30 @@ export async function GET(request: NextRequest) {
     console.error("Orders list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list orders" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
+/**
+ * POST /api/orders
+ * Create order (authenticated users only)
+ */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.id)
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const body = await request.json();
     const { shop_id, items, amount } = body;
     if (!shop_id || !Array.isArray(items) || !Number.isFinite(Number(amount))) {
-      return NextResponse.json(
-        { success: false, error: "Invalid payload" },
-        { status: 400 },
+      throw new ValidationError(
+        "Invalid payload: shop_id, items array, and amount are required"
       );
     }
     const now = new Date().toISOString();
     const docRef = await Collections.orders().add({
-      user_id: user.id,
+      user_id: user.uid,
       shop_id,
       items,
       amount: Number(amount),
@@ -72,13 +81,13 @@ export async function POST(request: NextRequest) {
     const created = await docRef.get();
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Create order error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

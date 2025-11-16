@@ -41,6 +41,7 @@ export const PRODUCT_ROUTES = {
   LIST: "/products",
   BY_ID: (id: string) => `/products/${id}`,
   BY_SLUG: (slug: string) => `/products/${slug}`,
+  BULK: "/products/bulk",
   REVIEWS: (productId: string) => `/products/${productId}/reviews`,
   RELATED: (productId: string) => `/products/${productId}/related`,
 } as const;
@@ -50,6 +51,7 @@ export const AUCTION_ROUTES = {
   LIST: "/auctions",
   BY_ID: (id: string) => `/auctions/${id}`,
   BY_SLUG: (slug: string) => `/auctions/${slug}`,
+  BULK: "/auctions/bulk",
   BIDS: (auctionId: string) => `/auctions/${auctionId}/bids`,
   PLACE_BID: (auctionId: string) => `/auctions/${auctionId}/bids`,
   AUTO_BID: (auctionId: string) => `/auctions/${auctionId}/auto-bid`,
@@ -59,15 +61,16 @@ export const AUCTION_ROUTES = {
   WON: "/auctions/won",
 } as const;
 
-// Category Routes
+// Category Routes (Unified - Public + Admin with RBAC)
 export const CATEGORY_ROUTES = {
   LIST: "/categories",
   BY_ID: (id: string) => `/categories/${id}`,
   BY_SLUG: (slug: string) => `/categories/${slug}`,
+  BULK: "/categories/bulk",
   TREE: "/categories/tree",
   PRODUCTS: (categoryId: string) => `/categories/${categoryId}/products`,
 
-  // Category management & utility routes
+  // Category management & utility routes (admin only)
   LEAVES: "/categories/leaves",
   FEATURED: "/categories/featured",
   HOMEPAGE: "/categories/homepage",
@@ -80,6 +83,11 @@ export const CATEGORY_ROUTES = {
   SIMILAR: (slug: string) => `/categories/${slug}/similar`,
   HIERARCHY: (slug: string) => `/categories/${slug}/hierarchy`,
   BREADCRUMB: (id: string) => `/categories/${id}/hierarchy`, // Alias for HIERARCHY
+
+  // Multi-parent category operations (admin only)
+  ADD_PARENT: (slug: string) => `/categories/${slug}/add-parent`,
+  REMOVE_PARENT: (slug: string) => `/categories/${slug}/remove-parent`,
+  PARENTS: (slug: string) => `/categories/${slug}/parents`,
 } as const;
 
 // Shop Routes
@@ -87,6 +95,7 @@ export const SHOP_ROUTES = {
   LIST: "/shops",
   BY_ID: (id: string) => `/shops/${id}`,
   BY_SLUG: (slug: string) => `/shops/${slug}`,
+  BULK: "/shops/bulk",
   PRODUCTS: (shopId: string) => `/shops/${shopId}/products`,
   AUCTIONS: (shopId: string) => `/shops/${shopId}/auctions`,
   REVIEWS: (shopId: string) => `/shops/${shopId}/reviews`,
@@ -108,6 +117,7 @@ export const ORDER_ROUTES = {
   LIST: "/orders",
   CREATE: "/orders",
   BY_ID: (id: string) => `/orders/${id}`,
+  BULK: "/orders/bulk",
   CANCEL: (id: string) => `/orders/${id}/cancel`,
   TRACKING: (id: string) => `/orders/${id}/tracking`,
   INVOICE: (id: string) => `/orders/${id}/invoice`,
@@ -116,6 +126,8 @@ export const ORDER_ROUTES = {
 // Coupon Routes
 export const COUPON_ROUTES = {
   LIST: "/coupons",
+  BY_CODE: (code: string) => `/coupons/${code}`,
+  BULK: "/coupons/bulk",
   VALIDATE: "/coupons/validate",
   APPLY: "/coupons/apply",
 } as const;
@@ -138,23 +150,36 @@ export const SEARCH_ROUTES = {
 
 // Review Routes
 export const REVIEW_ROUTES = {
+  LIST: "/reviews",
   CREATE: "/reviews",
   BY_ID: (id: string) => `/reviews/${id}`,
   UPDATE: (id: string) => `/reviews/${id}`,
   DELETE: (id: string) => `/reviews/${id}`,
+  BULK: "/reviews/bulk",
   HELPFUL: (id: string) => `/reviews/${id}/helpful`,
   MEDIA: "/reviews/media",
+  SUMMARY: "/reviews/summary",
+} as const;
+
+// Hero Slide Routes (Unified - Public + Admin)
+export const HERO_SLIDE_ROUTES = {
+  LIST: "/hero-slides",
+  BY_ID: (id: string) => `/hero-slides/${id}`,
+  BULK: "/hero-slides/bulk",
+} as const;
+
+// Ticket Routes (Unified - User + Seller + Admin)
+export const TICKET_ROUTES = {
+  LIST: "/tickets",
+  BY_ID: (id: string) => `/tickets/${id}`,
+  REPLY: (id: string) => `/tickets/${id}/reply`,
+  BULK: "/tickets/bulk",
 } as const;
 
 // Admin Routes
 export const ADMIN_ROUTES = {
   // Dashboard
   DASHBOARD: "/admin/dashboard",
-
-  // Hero Slides
-  HERO_SLIDES: "/admin/hero-slides",
-  HERO_SLIDE_BY_ID: (id: string) => `/admin/hero-slides/${id}`,
-  HERO_SLIDES_BULK: "/admin/hero-slides/bulk",
 
   // Categories
   CATEGORIES: "/admin/categories",
@@ -213,15 +238,6 @@ export const ADMIN_ROUTES = {
   COUPONS: "/admin/coupons",
   COUPON_BY_ID: (id: string) => `/admin/coupons/${id}`,
   COUPONS_BULK: "/admin/coupons/bulk",
-
-  // Support Tickets
-  TICKETS: "/admin/tickets",
-  TICKET_BY_ID: (id: string) => `/admin/tickets/${id}`,
-  TICKETS_BULK: "/admin/tickets/bulk",
-  TICKET_ASSIGN: (id: string) => `/admin/tickets/${id}/assign`,
-  TICKET_REPLY: (id: string) => `/admin/tickets/${id}/reply`,
-  TICKET_ESCALATE: (id: string) => `/admin/tickets/${id}/escalate`,
-  TICKET_CLOSE: (id: string) => `/admin/tickets/${id}/close`,
 
   // Blog
   BLOG_POSTS: "/admin/blog",
@@ -282,12 +298,6 @@ export const SELLER_ROUTES = {
   COUPON_BY_ID: (id: string) => `/seller/coupons/${id}`,
   COUPONS_BULK: "/seller/coupons/bulk",
 
-  // Support Tickets
-  TICKETS: "/seller/tickets",
-  TICKET_BY_ID: (id: string) => `/seller/tickets/${id}`,
-  TICKET_REPLY: (id: string) => `/seller/tickets/${id}/reply`,
-  TICKET_CLOSE: (id: string) => `/seller/tickets/${id}/close`,
-
   // Analytics
   ANALYTICS: "/analytics",
   ANALYTICS_DASHBOARD: "/seller/analytics/dashboard",
@@ -304,15 +314,6 @@ export const HOMEPAGE_ROUTES = {
 export const CHECKOUT_ROUTES = {
   CREATE_ORDER: "/checkout/create-order",
   VERIFY_PAYMENT: "/checkout/verify-payment",
-} as const;
-
-// Support Routes
-export const SUPPORT_ROUTES = {
-  CREATE_TICKET: "/support",
-  TICKETS: "/support/tickets",
-  TICKET_BY_ID: (id: string) => `/support/tickets/${id}`,
-  REPLY: (id: string) => `/support/tickets/${id}/reply`,
-  ATTACHMENTS: "/support/attachments",
 } as const;
 
 // Returns Routes
@@ -336,6 +337,7 @@ export const PAYMENT_ROUTES = {
 export const PAYOUT_ROUTES = {
   LIST: "/payouts",
   BY_ID: (id: string) => `/payouts/${id}`,
+  BULK: "/payouts/bulk",
   REQUEST: "/payouts/request",
   PENDING: "/payouts/pending",
   HISTORY: "/payouts/history",
@@ -394,7 +396,7 @@ export const API_ROUTES = {
   PAYOUT: PAYOUT_ROUTES,
   HOMEPAGE: HOMEPAGE_ROUTES,
   CHECKOUT: CHECKOUT_ROUTES,
-  SUPPORT: SUPPORT_ROUTES,
+  TICKET: TICKET_ROUTES,
   RETURNS: RETURNS_ROUTES,
   ANALYTICS: ANALYTICS_ROUTES,
   ADMIN: ADMIN_ROUTES,

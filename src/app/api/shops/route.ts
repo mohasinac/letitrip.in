@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildQueryFromFilters } from "@/lib/filter-helpers";
-import { getCurrentUser } from "../lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
   getShopsQuery,
@@ -21,7 +24,7 @@ export async function GET(request: NextRequest) {
     request,
     async (req: NextRequest) => {
       try {
-        const user = await getCurrentUser(req);
+        const user = await getUserFromRequest(req);
 
         const { searchParams } = new URL(req.url);
 
@@ -32,7 +35,7 @@ export async function GET(request: NextRequest) {
         });
 
         const role = user?.role ? (user.role as UserRole) : UserRole.USER;
-        const userId = user?.id;
+        const userId = user?.uid;
 
         // Build role-based query
         let query = getShopsQuery(role, userId);
@@ -186,18 +189,10 @@ export async function GET(request: NextRequest) {
 // POST /api/shops - Create shop
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
+    const authResult = await requireAuth(request);
+    if (authResult.error) return authResult.error;
 
-    // Check authentication
-    if (!user) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Unauthorized",
-        },
-        { status: 401 }
-      );
-    }
+    const { user } = authResult;
 
     // Check role (seller or admin)
     if (user.role !== "seller" && user.role !== "admin") {
@@ -210,7 +205,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = user.id;
+    const userId = user.uid;
     const userRole = user.role;
 
     // Check shop creation limit (1 for sellers, unlimited for admins)

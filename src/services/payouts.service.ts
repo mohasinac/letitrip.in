@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { PAYOUT_ROUTES } from "@/constants/api-routes";
 
 /**
  * Payout interface
@@ -79,8 +80,6 @@ export interface PayoutStats {
  * Manages seller payouts and transactions
  */
 class PayoutsService {
-  private readonly BASE_PATH = "/admin/payouts";
-
   /**
    * Get all payouts with filters
    */
@@ -104,8 +103,8 @@ class PayoutsService {
     if (filters?.limit) params.set("limit", String(filters.limit));
 
     const url = params.toString()
-      ? `${this.BASE_PATH}?${params}`
-      : this.BASE_PATH;
+      ? `${PAYOUT_ROUTES.LIST}?${params}`
+      : PAYOUT_ROUTES.LIST;
 
     const response = await apiService.get<{
       payouts: Payout[];
@@ -122,7 +121,7 @@ class PayoutsService {
    */
   async getPayoutStats(): Promise<PayoutStats> {
     const response = await apiService.get<{ stats: PayoutStats }>(
-      `${this.BASE_PATH}/stats`
+      `${PAYOUT_ROUTES.LIST}/stats`
     );
     return response.stats;
   }
@@ -132,7 +131,7 @@ class PayoutsService {
    */
   async getPayoutById(id: string): Promise<Payout> {
     const response = await apiService.get<{ payout: Payout }>(
-      `${this.BASE_PATH}/${id}`
+      PAYOUT_ROUTES.BY_ID(id)
     );
     return response.payout;
   }
@@ -142,7 +141,7 @@ class PayoutsService {
    */
   async createPayout(data: PayoutFormData): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
-      this.BASE_PATH,
+      PAYOUT_ROUTES.LIST,
       data
     );
     return response.payout;
@@ -158,7 +157,7 @@ class PayoutsService {
     failureReason?: string
   ): Promise<Payout> {
     const response = await apiService.patch<{ payout: Payout }>(
-      `${this.BASE_PATH}/${id}/status`,
+      `${PAYOUT_ROUTES.BY_ID(id)}/status`,
       { status, transactionId, failureReason }
     );
     return response.payout;
@@ -169,7 +168,7 @@ class PayoutsService {
    */
   async processPayout(id: string, transactionId: string): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
-      `${this.BASE_PATH}/${id}/process`,
+      `${PAYOUT_ROUTES.BY_ID(id)}/process`,
       { transactionId }
     );
     return response.payout;
@@ -180,7 +179,7 @@ class PayoutsService {
    */
   async cancelPayout(id: string, reason: string): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
-      `${this.BASE_PATH}/${id}/cancel`,
+      `${PAYOUT_ROUTES.BY_ID(id)}/cancel`,
       { reason }
     );
     return response.payout;
@@ -198,7 +197,7 @@ class PayoutsService {
       success: number;
       failed: number;
       errors: { id: string; error: string }[];
-    }>(`${this.BASE_PATH}/bulk-process`, { ids });
+    }>(`${PAYOUT_ROUTES.LIST}/bulk-process`, { ids });
     return response;
   }
 
@@ -221,7 +220,7 @@ class PayoutsService {
       orderCount: number;
       platformFee: number;
       netAmount: number;
-    }>(`${this.BASE_PATH}/calculate`, {
+    }>(`${PAYOUT_ROUTES.LIST}/calculate`, {
       sellerId,
       shopId,
       startDate,
@@ -242,14 +241,54 @@ class PayoutsService {
     if (filters?.endDate) params.set("endDate", filters.endDate);
 
     const url = params.toString()
-      ? `${this.BASE_PATH}/export?${params}`
-      : `${this.BASE_PATH}/export`;
+      ? `${PAYOUT_ROUTES.LIST}/export?${params}`
+      : `${PAYOUT_ROUTES.LIST}/export`;
 
     const response = await apiService.get<Blob>(url, {
       responseType: "blob",
     } as any);
 
     return response as any;
+  }
+
+  // Bulk operations (admin only)
+  private async bulkAction(
+    action: string,
+    ids: string[],
+    data?: Record<string, any>
+  ): Promise<{
+    success: boolean;
+    results: {
+      success: string[];
+      failed: { id: string; error: string }[];
+    };
+    summary: { total: number; succeeded: number; failed: number };
+  }> {
+    return apiService.post(PAYOUT_ROUTES.BULK, { action, ids, data });
+  }
+
+  async bulkApprove(ids: string[]): Promise<any> {
+    return this.bulkAction("approve", ids);
+  }
+
+  async bulkProcessPayouts(ids: string[]): Promise<any> {
+    return this.bulkAction("process", ids);
+  }
+
+  async bulkComplete(ids: string[]): Promise<any> {
+    return this.bulkAction("complete", ids);
+  }
+
+  async bulkReject(ids: string[], reason?: string): Promise<any> {
+    return this.bulkAction("reject", ids, { reason });
+  }
+
+  async bulkDelete(ids: string[]): Promise<any> {
+    return this.bulkAction("delete", ids);
+  }
+
+  async bulkUpdate(ids: string[], updates: Record<string, any>): Promise<any> {
+    return this.bulkAction("update", ids, updates);
   }
 }
 

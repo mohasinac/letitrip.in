@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
 import { supportService } from "@/services/support.service";
-import { SUPPORT_ROUTES } from "@/constants/api-routes";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

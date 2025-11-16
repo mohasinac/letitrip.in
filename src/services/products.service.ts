@@ -217,14 +217,92 @@ class ProductsService {
   }
 
   /**
-   * Bulk actions for seller dashboard
+   * Bulk actions - supports: publish, unpublish, archive, feature, unfeature, update-stock, delete, update
    */
   async bulkAction(
     action: string,
-    ids: string[],
-    input?: any
-  ): Promise<{ success: boolean }> {
-    return apiService.post("/api/seller/products/bulk", { action, ids, input });
+    productIds: string[],
+    data?: any
+  ): Promise<{ success: boolean; results: any[] }> {
+    return apiService.post(PRODUCT_ROUTES.BULK, {
+      action,
+      productIds,
+      data,
+    });
+  }
+
+  /**
+   * Bulk publish products
+   */
+  async bulkPublish(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("publish", productIds);
+  }
+
+  /**
+   * Bulk unpublish products
+   */
+  async bulkUnpublish(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("unpublish", productIds);
+  }
+
+  /**
+   * Bulk archive products
+   */
+  async bulkArchive(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("archive", productIds);
+  }
+
+  /**
+   * Bulk feature products
+   */
+  async bulkFeature(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("feature", productIds);
+  }
+
+  /**
+   * Bulk unfeature products
+   */
+  async bulkUnfeature(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("unfeature", productIds);
+  }
+
+  /**
+   * Bulk update stock
+   */
+  async bulkUpdateStock(
+    productIds: string[],
+    stockCount: number
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("update-stock", productIds, { stockCount });
+  }
+
+  /**
+   * Bulk delete products
+   */
+  async bulkDelete(
+    productIds: string[]
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("delete", productIds);
+  }
+
+  /**
+   * Bulk update products
+   */
+  async bulkUpdate(
+    productIds: string[],
+    updates: Partial<ProductFormFE>
+  ): Promise<{ success: boolean; results: any[] }> {
+    return this.bulkAction("update", productIds, toBEProductUpdate(updates));
   }
 
   /**
@@ -238,7 +316,7 @@ class ProductsService {
     status?: string;
     images?: string[];
   }): Promise<ProductFE> {
-    const productBE = await apiService.post<ProductBE>("/api/seller/products", {
+    const productBE = await apiService.post<ProductBE>(PRODUCT_ROUTES.LIST, {
       ...data,
       description: "",
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
@@ -251,7 +329,7 @@ class ProductsService {
    */
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
     const productBE = await apiService.patch<ProductBE>(
-      `/api/products/${slug}`,
+      PRODUCT_ROUTES.BY_SLUG(slug),
       data
     );
     return toFEProduct(productBE);

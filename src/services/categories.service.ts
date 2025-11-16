@@ -270,6 +270,53 @@ class CategoriesService {
     );
     return toFECategories(res.data || []);
   }
+
+  // Bulk operations (admin only)
+  async bulkActivate(ids: string[]): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "activate",
+      ids,
+    });
+  }
+
+  async bulkDeactivate(ids: string[]): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "deactivate",
+      ids,
+    });
+  }
+
+  async bulkFeature(ids: string[]): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "feature",
+      ids,
+    });
+  }
+
+  async bulkUnfeature(ids: string[]): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "unfeature",
+      ids,
+    });
+  }
+
+  async bulkDelete(ids: string[]): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "delete",
+      ids,
+    });
+  }
+
+  async bulkUpdate(
+    ids: string[],
+    updates: Partial<CategoryFormFE>
+  ): Promise<void> {
+    await apiService.post("/categories/bulk", {
+      action: "update",
+      ids,
+      updates,
+    });
+  }
 }
 
 export const categoriesService = new CategoriesService();

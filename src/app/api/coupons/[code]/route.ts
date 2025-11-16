@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../../lib/session";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ValidationError } from "@/lib/api-errors";
 
-// GET /api/coupons/[code] - Public if active, owner/admin otherwise
+/**
+ * GET /api/coupons/[code]
+ * Get single coupon by code
+ * - Public: Active coupons only
+ * - Owner/Admin: All statuses
+ */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
     const { code } = await params;
-    const user = await getCurrentUser(request);
+    const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
 
     const snapshot = await Collections.coupons()
@@ -20,7 +29,7 @@ export async function GET(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
     const doc = snapshot.docs[0];
@@ -29,7 +38,7 @@ export async function GET(
     if ((role === "guest" || role === "user") && !data.is_active) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -38,24 +47,23 @@ export async function GET(
     console.error("Error fetching coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch coupon" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PATCH /api/coupons/[code] - Update by code (owner/admin)
+/**
+ * PATCH /api/coupons/[code]
+ * Update coupon (owner/admin only)
+ */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
     const { code } = await params;
 
@@ -66,7 +74,7 @@ export async function PATCH(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -74,11 +82,11 @@ export async function PATCH(
     const coupon: any = { id: doc.id, ...doc.data() };
 
     if (role === "seller") {
-      const ownsShop = await userOwnsShop(coupon.shop_id, user.id);
+      const ownsShop = await userOwnsShop(coupon.shop_id, user.uid);
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -100,24 +108,23 @@ export async function PATCH(
     console.error("Error updating coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update coupon" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// DELETE /api/coupons/[code] - Delete (owner/admin)
+/**
+ * DELETE /api/coupons/[code]
+ * Delete coupon (owner/admin only)
+ */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user?.email) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+    const { user, error } = await requireAuth(request);
+    if (error) return error;
+
     const role = user.role;
     const { code } = await params;
 
@@ -128,7 +135,7 @@ export async function DELETE(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -136,11 +143,11 @@ export async function DELETE(
     const coupon: any = { id: doc.id, ...doc.data() };
 
     if (role === "seller") {
-      const ownsShop = await userOwnsShop(coupon.shop_id, user.id);
+      const ownsShop = await userOwnsShop(coupon.shop_id, user.uid);
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -151,7 +158,7 @@ export async function DELETE(
     console.error("Error deleting coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete coupon" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
