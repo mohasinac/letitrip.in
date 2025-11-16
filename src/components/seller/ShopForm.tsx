@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Loader2 } from "lucide-react";
+import { Save } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import { Card, Input, Button, FormActions } from "@/components/ui";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -80,40 +81,21 @@ export default function ShopForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Basic Information
-        </h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card title="Basic Information">
         <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Shop Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg bg-white900 text-gray-900 focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? "border-red-300" : "border-gray-300700"
-              }`}
-              placeholder="Enter your shop name"
-              disabled={isSubmitting}
-            />
-            {errors.name && (
-              <p className="text-sm text-red-600 mt-1">{errors.name}</p>
-            )}
-          </div>
+          <Input
+            label="Shop Name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={errors.name}
+            placeholder="Enter your shop name"
+            disabled={isSubmitting}
+          />
 
           <div>
-            <label
-              htmlFor="slug"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Shop Slug <span className="text-red-500">*</span>
             </label>
             <SlugInput
@@ -122,6 +104,9 @@ export default function ShopForm({
               sourceText={name}
               error={errors.slug}
               disabled={isSubmitting}
+              showPreview={true}
+              allowManualEdit={true}
+              baseUrl="https://letitrip.in/shops"
             />
             {/* Validation hint */}
             <div className="mt-1 text-xs">
@@ -129,21 +114,18 @@ export default function ShopForm({
                 <span className="text-gray-500">Checking availability…</span>
               )}
               {!slugValidation.checking && slug && slugValidation.available && (
-                <span className="text-green-600">Slug is available</span>
+                <span className="text-green-600">✓ Slug is available</span>
               )}
               {!slugValidation.checking &&
                 slug &&
                 slugValidation.available === false && (
-                  <span className="text-red-600">Slug is already taken</span>
+                  <span className="text-red-600">✗ Slug is already taken</span>
                 )}
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              URL: letitrip.in/shops/{slug || "your-slug"}
-            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Shop Description <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
@@ -160,127 +142,80 @@ export default function ShopForm({
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Contact Information
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email
-            </label>
-            <input
+      <Card title="Contact Information">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Email"
               type="email"
-              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg bg-white900 text-gray-900 focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? "border-red-300400" : "border-gray-300700"
-              }`}
+              error={errors.email}
               placeholder="shop@example.com"
               disabled={isSubmitting}
             />
-            {errors.email && (
-              <p className="text-sm text-red-600 mt-1">{errors.email}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Phone
-            </label>
-            <input
+            <Input
+              label="Phone"
               type="tel"
-              id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg bg-white900 text-gray-900 focus:ring-2 focus:ring-blue-500 ${
-                errors.phone ? "border-red-300400" : "border-gray-300700"
-              }`}
+              error={errors.phone}
               placeholder="9876543210"
               disabled={isSubmitting}
             />
-            {errors.phone && (
-              <p className="text-sm text-red-600 mt-1">{errors.phone}</p>
-            )}
           </div>
-        </div>
 
-        <div className="mt-4">
-          <label
-            htmlFor="location"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Location
-          </label>
-          <textarea
-            id="location"
+          <Input
+            label="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300700 rounded-lg bg-white900 text-gray-900 focus:ring-2 focus:ring-blue-500 resize-none"
             placeholder="City, State"
             disabled={isSubmitting}
           />
-        </div>
 
-        <div className="mt-4">
-          <label
-            htmlFor="website"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Website
-          </label>
-          <input
+          <Input
+            label="Website"
             type="url"
-            id="website"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg bg-white900 text-gray-900 focus:ring-2 focus:ring-blue-500 ${
-              errors.website ? "border-red-300400" : "border-gray-300700"
-            }`}
+            error={errors.website}
             placeholder="https://yourwebsite.com"
             disabled={isSubmitting}
           />
-          {errors.website && (
-            <p className="text-sm text-red-600 mt-1">{errors.website}</p>
-          )}
         </div>
-      </div>
+      </Card>
 
-      <div className="flex items-center justify-between pt-6 border-t">
-        <div>
-          {mode === "create" && (
-            <p className="text-sm text-gray-600">
-              You'll upload logo and banner after creation
-            </p>
-          )}
+      {mode === "create" && (
+        <div className="text-sm text-gray-600 text-center">
+          💡 You'll be able to upload logo and banner after creating the shop
         </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {mode === "create" ? "Creating..." : "Saving..."}
-            </>
-          ) : (
-            <>
-              <Save className="w-5 h-5" />
-              {mode === "create" ? "Create Shop" : "Save Changes"}
-            </>
-          )}
-        </button>
-      </div>
+      )}
+
+      <FormActions
+        submitLabel={mode === "create" ? "Create Shop" : "Save Changes"}
+        isSubmitting={isSubmitting}
+        submitDisabled={
+          slugValidation.checking || slugValidation.available === false
+        }
+        position="space-between"
+        additionalActions={
+          <Button
+            type="button"
+            variant="ghost"
+            leftIcon={<Save className="w-5 h-5" />}
+          >
+            {isSubmitting
+              ? mode === "create"
+                ? "Creating..."
+                : "Saving..."
+              : mode === "create"
+              ? "Create Shop"
+              : "Save Changes"}
+          </Button>
+        }
+      />
     </form>
   );
 }
