@@ -1,5 +1,18 @@
 # AI Agent Development Guide - JustForView.in
 
+**Last Updated**: November 17, 2025  
+**Repository**: https://github.com/mohasinac/justforview.in  
+**Current Branch**: component
+
+This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
+
+## Quick Reference
+
+**Project Type**: Next.js 16+ (App Router) with TypeScript  
+**Primary Domain**: Auction & E-commerce Platform for India  
+**No Mocks**: All APIs are real and ready - never suggest mock data  
+**Code Over Docs**: Focus on implementation, not documentationent Guide - JustForView.in
+
 This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
 
 ## Quick Reference

@@ -1,8 +1,9 @@
 # Architecture Overview - JustForView.in
 
-**Last Updated**: November 11, 2025  
-**Version**: 1.0  
-**Audience**: AI Agents, New Developers
+**Last Updated**: November 17, 2025  
+**Version**: 1.1  
+**Audience**: AI Agents, New Developers  
+**Repository**: https://github.com/mohasinac/justforview.in
 
 ---
 
@@ -48,10 +49,10 @@
 
 | Technology       | Version | Purpose                     |
 | ---------------- | ------- | --------------------------- |
-| **Next.js**      | 14+     | React framework, App Router |
-| **TypeScript**   | 5.x     | Type safety                 |
-| **Tailwind CSS** | 3.x     | Utility-first styling       |
-| **React**        | 18.x    | UI library                  |
+| **Next.js**      | 16+     | React framework, App Router |
+| **React**        | 19.x    | UI library                  |
+| **TypeScript**   | 5.3     | Type safety                 |
+| **Tailwind CSS** | 3.4     | Utility-first styling       |
 
 ### Backend
 

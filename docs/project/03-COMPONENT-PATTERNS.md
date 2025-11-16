@@ -1,8 +1,9 @@
 # Component Patterns - JustForView.in
 
-**Last Updated**: November 11, 2025  
-**Version**: 1.0  
-**Audience**: AI Agents, New Developers
+**Last Updated**: November 17, 2025  
+**Version**: 1.1  
+**Audience**: AI Agents, New Developers  
+**Repository**: https://github.com/mohasinac/justforview.in
 
 ---
 
