@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import CategorySelector, {
@@ -12,6 +11,7 @@ import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { categoriesService } from "@/services/categories.service";
+import { Card, Input, Textarea, Checkbox, FormActions } from "@/components/ui";
 
 interface CategoryFormProps {
   initialData?: {
@@ -175,91 +175,83 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Basic Information
-        </h2>
-
-        {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category Name *
-          </label>
-          <input
-            type="text"
+      <Card title="Basic Information">
+        <div className="space-y-4">
+          {/* Name */}
+          <Input
+            label="Category Name"
+            required
             value={formData.name}
             onChange={(e) => {
               setFormData((prev) => ({ ...prev, name: e.target.value }));
               setErrors((prev) => ({ ...prev, name: "" }));
             }}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.name ? "border-red-500" : "border-gray-300"
-            }`}
+            error={errors.name}
             placeholder="Electronics, Fashion, etc."
+            disabled={loading}
           />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-          )}
-        </div>
 
-        {/* Slug */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            URL Slug *
-          </label>
-          <SlugInput
-            sourceText={formData.name}
-            value={formData.slug}
-            onChange={(slug) => {
-              setFormData((prev) => ({ ...prev, slug }));
-              setErrors((prev) => ({ ...prev, slug: "" }));
-            }}
-            error={errors.slug}
-            placeholder="auto-generated-slug"
-          />
-        </div>
+          {/* Slug */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              URL Slug <span className="text-red-500">*</span>
+            </label>
+            <SlugInput
+              sourceText={formData.name}
+              value={formData.slug}
+              onChange={(slug) => {
+                setFormData((prev) => ({ ...prev, slug }));
+                setErrors((prev) => ({ ...prev, slug: "" }));
+              }}
+              error={errors.slug}
+              placeholder="auto-generated-slug"
+              disabled={loading}
+              showPreview={true}
+              allowManualEdit={true}
+            />
+          </div>
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
-          </label>
-          <RichTextEditor
-            value={formData.description}
-            onChange={(html) =>
-              setFormData((prev) => ({ ...prev, description: html }))
-            }
-            placeholder="Enter category description..."
-          />
-        </div>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
+            <RichTextEditor
+              value={formData.description}
+              onChange={(html) =>
+                setFormData((prev) => ({ ...prev, description: html }))
+              }
+              placeholder="Enter category description..."
+            />
+          </div>
 
-        {/* Parent Category */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Parent Category
-          </label>
-          <CategorySelector
-            categories={categories}
-            value={formData.parent_id}
-            onChange={(parent_id) =>
-              setFormData((prev) => ({ ...prev, parent_id: parent_id || null }))
-            }
-            placeholder="Select parent category (optional)"
-            allowParentSelection={true}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Leave empty to create a root level category
-          </p>
-        </div>
+          {/* Parent Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Parent Category
+            </label>
+            <CategorySelector
+              categories={categories}
+              value={formData.parent_id}
+              onChange={(parent_id) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  parent_id: parent_id || null,
+                }))
+              }
+              placeholder="Select parent category (optional)"
+              allowParentSelection={true}
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              Leave empty to create a root level category
+            </p>
+          </div>
 
-        {/* Sort Order */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Sort Order
-          </label>
-          <input
+          {/* Sort Order */}
+          <Input
+            label="Sort Order"
             type="number"
             value={formData.sort_order}
             onChange={(e) =>
@@ -268,159 +260,117 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
                 sort_order: parseInt(e.target.value) || 0,
               }))
             }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="0"
             min="0"
+            helperText="Lower numbers appear first"
+            disabled={loading}
           />
-          <p className="mt-1 text-sm text-gray-500">
-            Lower numbers appear first
-          </p>
         </div>
-      </div>
+      </Card>
 
       {/* Image */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Category Image</h2>
+      <Card title="Category Image">
+        <div className="space-y-4">
+          {formData.image && !uploadedFiles.length && (
+            <div>
+              <img
+                src={formData.image}
+                alt="Current category"
+                className="w-full max-w-md h-48 object-cover rounded-lg"
+              />
+            </div>
+          )}
 
-        {formData.image && !uploadedFiles.length && (
-          <div className="mb-4">
-            <img
-              src={formData.image}
-              alt="Current category"
-              className="w-full max-w-md h-48 object-cover rounded-lg"
-            />
-          </div>
-        )}
+          {isUploading && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700">📤 Uploading image...</p>
+            </div>
+          )}
 
-        {isUploading && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">📤 Uploading image...</p>
-          </div>
-        )}
+          {hasUploadedMedia && !isUploading && (
+            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm text-orange-700">
+                ⚠️ New image uploaded. Will be deleted if save fails.
+              </p>
+            </div>
+          )}
 
-        {hasUploadedMedia && !isUploading && (
-          <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-            <p className="text-sm text-orange-700">
-              ⚠️ New image uploaded. Will be deleted if save fails.
-            </p>
-          </div>
-        )}
-
-        <MediaUploader
-          accept="image"
-          maxFiles={1}
-          multiple={false}
-          resourceType="category"
-          onFilesAdded={handleImageUpload}
-          onFileRemoved={() => {
-            setUploadedFiles([]);
-          }}
-          files={uploadedFiles}
-          disabled={loading || isUploading || isCleaning}
-        />
-      </div>
+          <MediaUploader
+            accept="image"
+            maxFiles={1}
+            multiple={false}
+            resourceType="category"
+            onFilesAdded={handleImageUpload}
+            onFileRemoved={() => {
+              setUploadedFiles([]);
+            }}
+            files={uploadedFiles}
+            disabled={loading || isUploading || isCleaning}
+          />
+        </div>
+      </Card>
 
       {/* Display Options */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Display Options</h2>
-
+      <Card title="Display Options">
         <div className="space-y-4">
-          {/* Active */}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_active}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  is_active: e.target.checked,
-                }))
-              }
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <div>
-              <div className="text-sm font-medium text-gray-900">Active</div>
-              <div className="text-sm text-gray-500">
-                Make this category visible to customers
-              </div>
-            </div>
-          </label>
+          <Checkbox
+            label="Active"
+            description="Make this category visible to customers"
+            checked={formData.is_active}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                is_active: e.target.checked,
+              }))
+            }
+            disabled={loading}
+          />
 
-          {/* Featured */}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_featured}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  is_featured: e.target.checked,
-                }))
-              }
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <div>
-              <div className="text-sm font-medium text-gray-900">Featured</div>
-              <div className="text-sm text-gray-500">
-                Highlight this category in featured sections
-              </div>
-            </div>
-          </label>
+          <Checkbox
+            label="Featured"
+            description="Highlight this category in featured sections"
+            checked={formData.is_featured}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                is_featured: e.target.checked,
+              }))
+            }
+            disabled={loading}
+          />
 
-          {/* Show on Homepage */}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.show_on_homepage}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  show_on_homepage: e.target.checked,
-                }))
-              }
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <div>
-              <div className="text-sm font-medium text-gray-900">
-                Show on Homepage
-              </div>
-              <div className="text-sm text-gray-500">
-                Display this category on the homepage
-              </div>
-            </div>
-          </label>
+          <Checkbox
+            label="Show on Homepage"
+            description="Display this category on the homepage"
+            checked={formData.show_on_homepage}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                show_on_homepage: e.target.checked,
+              }))
+            }
+            disabled={loading}
+          />
         </div>
-      </div>
+      </Card>
 
       {/* SEO Metadata */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">SEO Metadata</h2>
-
-        {/* Meta Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Meta Title
-          </label>
-          <input
-            type="text"
+      <Card title="SEO Metadata">
+        <div className="space-y-4">
+          <Input
+            label="Meta Title"
             value={formData.meta_title}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, meta_title: e.target.value }))
             }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="SEO title (defaults to category name)"
+            maxLength={60}
+            helperText={`${formData.meta_title.length} / 60 characters`}
+            disabled={loading}
           />
-          <p className="mt-1 text-sm text-gray-500">
-            {formData.meta_title.length} / 60 characters
-          </p>
-        </div>
 
-        {/* Meta Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Meta Description
-          </label>
-          <textarea
+          <Textarea
+            label="Meta Description"
             value={formData.meta_description}
             onChange={(e) =>
               setFormData((prev) => ({
@@ -429,14 +379,13 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
               }))
             }
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="SEO description"
+            maxLength={160}
+            showCharCount
+            disabled={loading}
           />
-          <p className="mt-1 text-sm text-gray-500">
-            {formData.meta_description.length} / 160 characters
-          </p>
         </div>
-      </div>
+      </Card>
 
       {/* Error Message */}
       {errors.submit && (
@@ -446,24 +395,12 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50"
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-          disabled={loading}
-        >
-          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          {mode === "create" ? "Create Category" : "Save Changes"}
-        </button>
-      </div>
+      <FormActions
+        onCancel={() => router.back()}
+        submitLabel={mode === "create" ? "Create Category" : "Save Changes"}
+        isSubmitting={loading}
+        cancelDisabled={loading}
+      />
     </form>
   );
 }

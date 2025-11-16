@@ -73,6 +73,7 @@ export default function SlugInput({
         onChange(newSlug);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceText, prefix, suffix, isManualEdit]);
 
   // Validate uniqueness with debounce
@@ -96,7 +97,8 @@ export default function SlugInput({
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [localValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localValue, validateUnique]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,17 +142,14 @@ export default function SlugInput({
         <div
           className={`
           flex items-center gap-2 border rounded-lg overflow-hidden
-          ${disabled ? "bg-gray-100800" : "bg-white900"}
-          ${displayError ? "border-red-500400" : "border-gray-300700"}
-          ${
-            !disabled &&
-            "focus-within:ring-2 focus-within:ring-blue-500:ring-blue-400"
-          }
+          ${disabled ? "bg-gray-100" : "bg-white"}
+          ${displayError ? "border-red-500" : "border-gray-300"}
+          ${!disabled && "focus-within:ring-2 focus-within:ring-blue-500"}
         `}
         >
           {/* Prefix indicator */}
           {prefix && (
-            <span className="px-3 text-gray-500400 text-sm bg-gray-50800 border-r border-gray-300700">
+            <span className="px-3 text-gray-500 text-sm bg-gray-50 border-r border-gray-300">
               {prefix}
             </span>
           )}
@@ -164,15 +163,19 @@ export default function SlugInput({
             disabled={disabled || !allowManualEdit}
             maxLength={maxLength}
             className={`
-              flex-1 px-4 py-2 outline-none bg-white900 text-gray-900
-              ${disabled || !allowManualEdit ? "cursor-not-allowed" : ""}
+              flex-1 px-4 py-2 outline-none bg-white text-gray-900
+              ${
+                disabled || !allowManualEdit
+                  ? "cursor-not-allowed opacity-60"
+                  : ""
+              }
               font-mono text-sm
             `}
           />
 
           {/* Suffix indicator */}
           {suffix && (
-            <span className="px-3 text-gray-500400 text-sm bg-gray-50800 border-l border-gray-300700">
+            <span className="px-3 text-gray-500 text-sm bg-gray-50 border-l border-gray-300">
               {suffix}
             </span>
           )}
@@ -188,7 +191,7 @@ export default function SlugInput({
               !validationError &&
               localValue && (
                 <svg
-                  className="w-4 h-4 text-green-600400"
+                  className="w-4 h-4 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -204,7 +207,7 @@ export default function SlugInput({
 
             {!isValidating && validationError && (
               <svg
-                className="w-4 h-4 text-red-600400"
+                className="w-4 h-4 text-red-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -227,10 +230,10 @@ export default function SlugInput({
             onClick={handleRegenerate}
             disabled={disabled}
             className={`
-              absolute right-2 top-1/2 -translate-y-1/2
+              absolute right-16 top-1/2 -translate-y-1/2
               px-2 py-1 text-xs rounded
-              bg-gray-100800 hover:bg-gray-200:bg-gray-700
-              text-gray-700300
+              bg-gray-100 hover:bg-gray-200
+              text-gray-700
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-colors
             `}
@@ -249,7 +252,7 @@ export default function SlugInput({
             href={previewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600400 hover:underline font-mono flex-1 truncate"
+            className="text-blue-600 hover:underline font-mono flex-1 truncate"
           >
             {previewUrl}
           </a>
@@ -258,7 +261,7 @@ export default function SlugInput({
           <button
             type="button"
             onClick={() => navigator.clipboard.writeText(previewUrl)}
-            className="p-1 hover:bg-gray-200:bg-gray-700 rounded"
+            className="p-1 hover:bg-gray-200 rounded transition-colors"
             title="Copy URL"
           >
             <svg
@@ -295,7 +298,7 @@ export default function SlugInput({
 
       {/* Format requirements */}
       {!isValidFormat && localValue && (
-        <div className="mt-1 text-xs text-orange-600400">
+        <div className="mt-1 text-xs text-orange-600">
           ⚠ Slug should only contain lowercase letters, numbers, and hyphens
         </div>
       )}

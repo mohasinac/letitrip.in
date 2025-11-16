@@ -1,13 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, ImagePlus, X, Video } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { auctionsService } from "@/services/auctions.service";
+import {
+  Card,
+  Input,
+  Select,
+  Textarea,
+  FormActions,
+  SelectOption,
+} from "@/components/ui";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
@@ -17,7 +24,7 @@ interface AuctionFormProps {
   isSubmitting?: boolean;
 }
 
-const STATUS_OPTIONS: { value: AuctionStatus; label: string }[] = [
+const STATUS_OPTIONS: SelectOption[] = [
   { value: AuctionStatus.DRAFT, label: "Draft" },
   { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
   { value: AuctionStatus.ACTIVE, label: "Active" },
@@ -121,31 +128,21 @@ export default function AuctionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          Basic Information
-        </h2>
+      <Card title="Basic Information">
         <div className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Auction Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="e.g., Vintage Watch Collection"
-            />
-          </div>
+          <Input
+            label="Auction Name"
+            required
+            value={formData.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+            placeholder="e.g., Vintage Watch Collection"
+            disabled={isSubmitting}
+          />
 
-          {/* Slug */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Auction URL <span className="text-red-500">*</span>
             </label>
             <SlugInput
@@ -155,14 +152,21 @@ export default function AuctionForm({
                 handleChange("slug", slug);
                 validateSlug(slug);
               }}
-              prefix="auctions/"
               error={slugError}
+              disabled={isSubmitting}
+              showPreview={true}
+              allowManualEdit={true}
+              baseUrl="https://letitrip.in/auctions"
             />
+            {isValidatingSlug && (
+              <p className="mt-1 text-xs text-gray-500">
+                Checking availability...
+              </p>
+            )}
           </div>
 
-          {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Description <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
@@ -172,63 +176,44 @@ export default function AuctionForm({
             />
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Bidding Details */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          Bidding Details
-        </h2>
+      <Card title="Bidding Details">
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Starting Bid */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Starting Bid (₹) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={formData.startingBid}
-              onChange={(e) =>
-                handleChange("startingBid", parseFloat(e.target.value))
-              }
-              required
-              min="1"
-              step="1"
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
+          <Input
+            label="Starting Bid (₹)"
+            required
+            type="number"
+            value={formData.startingBid}
+            onChange={(e) =>
+              handleChange("startingBid", parseFloat(e.target.value))
+            }
+            min="1"
+            step="1"
+            disabled={isSubmitting}
+          />
 
-          {/* Reserve Price */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Reserve Price (₹)
-            </label>
-            <input
-              type="number"
-              value={formData.reservePrice}
-              onChange={(e) =>
-                handleChange("reservePrice", parseFloat(e.target.value) || 0)
-              }
-              min="0"
-              step="1"
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Minimum price for the item to be sold (optional)
-            </p>
-          </div>
+          <Input
+            label="Reserve Price (₹)"
+            type="number"
+            value={formData.reservePrice}
+            onChange={(e) =>
+              handleChange("reservePrice", parseFloat(e.target.value) || 0)
+            }
+            min="0"
+            step="1"
+            helperText="Minimum price for the item to be sold (optional)"
+            disabled={isSubmitting}
+          />
         </div>
-      </div>
+      </Card>
 
       {/* Timing */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          Auction Timing
-        </h2>
+      <Card title="Auction Timing">
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Start Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Start Time <span className="text-red-500">*</span>
             </label>
             <DateTimePicker
@@ -238,9 +223,8 @@ export default function AuctionForm({
             />
           </div>
 
-          {/* End Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               End Time <span className="text-red-500">*</span>
             </label>
             <DateTimePicker
@@ -250,117 +234,81 @@ export default function AuctionForm({
             />
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Media */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Media</h2>
-        <div className="space-y-6">
-          {/* Images */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Images (URLs, comma-separated)
-            </label>
-            <textarea
-              value={formData.images.join(", ")}
-              onChange={(e) =>
-                handleChange(
-                  "images",
-                  e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean)
-                )
-              }
-              rows={3}
-              className="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Enter image URLs separated by commas (max 10)
-            </p>
-          </div>
+      <Card title="Media">
+        <div className="space-y-4">
+          <Textarea
+            label="Images (URLs, comma-separated)"
+            value={formData.images.join(", ")}
+            onChange={(e) =>
+              handleChange(
+                "images",
+                e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              )
+            }
+            rows={3}
+            placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+            helperText="Enter image URLs separated by commas (max 10)"
+            disabled={isSubmitting}
+          />
 
-          {/* Videos */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Videos (URLs, comma-separated)
-            </label>
-            <textarea
-              value={(formData.videos || []).join(", ")}
-              onChange={(e) =>
-                handleChange(
-                  "videos",
-                  e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean)
-                )
-              }
-              rows={2}
-              className="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="https://example.com/video1.mp4"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Enter video URLs separated by commas (optional, max 3)
-            </p>
-          </div>
+          <Textarea
+            label="Videos (URLs, comma-separated)"
+            value={(formData.videos || []).join(", ")}
+            onChange={(e) =>
+              handleChange(
+                "videos",
+                e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              )
+            }
+            rows={2}
+            placeholder="https://example.com/video1.mp4"
+            helperText="Enter video URLs separated by commas (optional, max 3)"
+            disabled={isSubmitting}
+          />
         </div>
-      </div>
+      </Card>
 
       {/* Status */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Status</h2>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Auction Status
-          </label>
-          <select
-            value={formData.status}
-            onChange={(e) =>
-              handleChange("status", e.target.value as AuctionStatus)
-            }
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-gray-500">
-            {formData.status === AuctionStatus.DRAFT &&
-              "Draft auctions are not visible to buyers"}
-            {formData.status === AuctionStatus.SCHEDULED &&
-              "Auction will go live at the scheduled start time"}
-            {formData.status === AuctionStatus.ACTIVE &&
-              "Auction is currently accepting bids"}
-            {formData.status === AuctionStatus.ENDED && "Auction has ended"}
-            {formData.status === AuctionStatus.CANCELLED &&
-              "Auction has been cancelled"}
-          </p>
-        </div>
-      </div>
+      <Card title="Status">
+        <Select
+          label="Auction Status"
+          value={formData.status}
+          onChange={(e) =>
+            handleChange("status", e.target.value as AuctionStatus)
+          }
+          options={STATUS_OPTIONS}
+          disabled={isSubmitting}
+          helperText={
+            formData.status === AuctionStatus.DRAFT
+              ? "Draft auctions are not visible to buyers"
+              : formData.status === AuctionStatus.SCHEDULED
+              ? "Auction will go live at the scheduled start time"
+              : formData.status === AuctionStatus.ACTIVE
+              ? "Auction is currently accepting bids"
+              : formData.status === AuctionStatus.ENDED
+              ? "Auction has ended"
+              : "Auction has been cancelled"
+          }
+        />
+      </Card>
 
       {/* Submit Buttons */}
-      <div className="flex items-center justify-end gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <button
-          type="button"
-          onClick={() => window.history.back()}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-          disabled={isSubmitting}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting || !!slugError || isValidatingSlug}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {mode === "create" ? "Create Auction" : "Save Changes"}
-        </button>
-      </div>
+      <FormActions
+        onCancel={() => window.history.back()}
+        submitLabel={mode === "create" ? "Create Auction" : "Save Changes"}
+        isSubmitting={isSubmitting}
+        submitDisabled={!!slugError || isValidatingSlug}
+        cancelDisabled={isSubmitting}
+      />
     </form>
   );
 }
