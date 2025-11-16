@@ -1,18 +1,21 @@
-# Letitrip.in - Auction & E-commerce Platform
+# JustForView.in - Auction & E-commerce Platform
 
-Modern, scalable auction and e-commerce platform built for the Indian market with Next.js 15+, TypeScript, Firebase, and Socket.IO.
+Modern, scalable auction and e-commerce platform built for the Indian market with Next.js 16+, TypeScript, Firebase, and real-time bidding.
 
-**Repository**: https://github.com/mohasinac/letitrip.in
+**Repository**: https://github.com/mohasinac/justforview.in  
+**Current Branch**: component  
+**Last Updated**: November 17, 2025
 
 ## 🚀 Features
 
 ### Auction System
 
-- ✅ **Real-time Bidding**: Live auction updates using Socket.IO
+- ✅ **Real-time Bidding**: Live auction updates using Firebase Realtime Database
 - ✅ **Multiple Auction Types**: Regular, Reverse, and Silent auctions
 - ✅ **Auto-bidding**: Automated bidding up to user-defined maximum
-- ✅ **Auction Scheduling**: Automated start/end times with notifications
+- ✅ **Auction Scheduling**: Automated start/end times with Firebase Cloud Functions
 - ✅ **Bid History**: Complete audit trail of all bids
+- ✅ **Zero Cost**: FREE tier Firebase for real-time features
 
 ### E-commerce
 
@@ -21,71 +24,81 @@ Modern, scalable auction and e-commerce platform built for the Indian market wit
 - ✅ **Shopping Cart**: Session-based cart with real-time updates
 - ✅ **Order Management**: Complete order lifecycle tracking
 - ✅ **Coupon System**: Discount codes and promotional offers
+- ✅ **Payment Integration**: Razorpay, PayPal, Cash on Delivery
 
 ### Development Guidelines
 
-- Read existing code before making changes
-- Use the service layer for all API calls
-- Add TypeScript types for new features
-- Write clear, concise commit messages
-- Test thoroughly before submitting PR
-- Follow the patterns in `AI-AGENT-GUIDE.md`
+- **NEVER call APIs directly** - Always use the service layer
+- **Read existing code** before making changes
+- **TypeScript strict mode** - No `any` types allowed
+- **Service layer pattern** - All API calls go through services
+- **Component organization** - Server vs Client components
+- **Follow patterns** in `docs/ai/AI-AGENT-GUIDE.md` and `docs/project/`
+- **Test your changes** - Run test workflows before commits
+- **No mocks** - We have real APIs ready
 
-## 📐 Type System Architecture
+## 📐 Architecture & Stack
 
-**Status**: ✅ **Production-Ready Type System** (100% Complete - Nov 15, 2025)
+**Status**: ✅ **Production-Ready** (Last Updated: Nov 17, 2025)
 
-This project uses a **strict FE/BE type separation** pattern for maximum type safety:
+### Technology Stack
 
-### Architecture Pattern
+- **Frontend**: Next.js 16+ (App Router), React 19, TypeScript 5.3
+- **Backend**: Next.js API Routes, Firebase Admin SDK
+- **Database**: Firestore (NoSQL), Firebase Realtime Database
+- **Storage**: Firebase Storage (images/videos)
+- **Authentication**: Firebase Auth
+- **Styling**: Tailwind CSS 3.4
+- **Forms**: React Hook Form + Zod validation
+- **Deployment**: Vercel (FREE tier)
 
-```
-Backend API Response (BE Types)
-  ↓ Transform Layer
-Frontend UI Data (FE Types)
-  ↓ Components
-React UI
-```
+### Architecture Principles
+
+1. **Service Layer Pattern** - All API calls through services (NO direct fetch)
+2. **Server/Client Split** - Server Components for data, Client for interactivity
+3. **Firebase Admin on Server** - Never use Client SDK for Storage operations
+4. **TypeScript Strict** - No `any` types, comprehensive interfaces
+5. **Zero Cost Infrastructure** - 100% FREE tier ($0/month)
+
+### Cost Optimization (FREE Tier)
+
+Replaced paid services with FREE alternatives, saving **$432+/year**:
+
+- ✅ **Sentry** ($26/mo) → Firebase Analytics + Discord webhooks
+- ✅ **Redis** ($10/mo) → In-memory cache (`src/lib/memory-cache.ts`)
+- ✅ **Socket.IO** (hosting) → Firebase Realtime Database
+- ✅ **Slack** → Discord webhooks
+
+**Custom FREE Libraries**:
+- `memory-cache.ts` - TTL-based caching
+- `rate-limiter.ts` - Sliding window rate limiting
+- `firebase-realtime.ts` - Real-time auction bidding
+- `firebase-error-logger.ts` - Error tracking via Firebase Analytics
+- `discord-notifier.ts` - Team notifications
 
 ### Key Features
 
-- ✅ **12 Complete Entity Type Systems**: Product, User, Order, Cart, Auction, Category, Shop, Review, Address, Coupon, SupportTicket, Return
-- ✅ **Service Layer Transformation**: All services automatically convert BE → FE types
-- ✅ **Zero TypeScript Errors**: 594 → 0 errors (100% reduction)
-- ✅ **Type-Safe by Default**: Components receive correct FE types automatically
-- ✅ **36+ Type Files**: Backend, Frontend, and Transform layers
-
-### Usage Example
-
-```typescript
-// Service layer handles transformation automatically
-const product = await productService.getProduct(id); // Returns ProductFE
-
-// Component receives UI-optimized type
-<ProductCard product={product} />; // product.formattedPrice, product.badges, etc.
-
-// No manual transformation needed!
-```
+- ✅ **25+ Service Classes**: Complete API abstraction layer
+- ✅ **Service Layer Transformation**: Automatic data transformations
+- ✅ **Zero TypeScript Errors**: 100% type-safe codebase
+- ✅ **11 Test Workflows**: 140+ steps of comprehensive E2E testing
+- ✅ **Real-time Auctions**: Firebase Realtime Database (FREE tier)
+- ✅ **Multi-vendor Platform**: Individual seller shops
+- ✅ **Complete Order Lifecycle**: From cart to delivery
 
 ### Documentation
 
-- **[Type System Status](docs/type-system/TYPE-SYSTEM-STATUS.md)** - Current completion status
-- **[Migration Guide](docs/type-system/TYPE-MIGRATION-GUIDE.md)** - How to use the type system
-- **[Final Checklist](docs/type-system/TYPE-SYSTEM-FINAL-CHECKLIST.md)** - Detailed progress tracking
+- **[Quick Start](docs/project/00-QUICK-START.md)** - 5-minute onboarding
+- **[Architecture Overview](docs/project/01-ARCHITECTURE-OVERVIEW.md)** - System design
+- **[Service Layer Guide](docs/project/02-SERVICE-LAYER-GUIDE.md)** - API patterns
+- **[Component Patterns](docs/project/03-COMPONENT-PATTERNS.md)** - React best practices
+- **[AI Agent Guide](docs/ai/AI-AGENT-GUIDE.md)** - Development patterns
 
-### Benefits
-
-- 🎯 **Type Safety**: Catch errors at compile time, not runtime
-- 🚀 **Developer Experience**: IntelliSense shows exact fields available
-- 📦 **UI-Optimized**: FE types include formatted strings, computed fields, badges
-- 🔧 **Maintainable**: Clear separation between API and UI concerns
-- ✅ **Production Ready**: Zero compilation errors
-
-## 🧪 Testing
+## 🧪 Testing & Quality
 
 ### Test Workflows (Complete Suite)
 
-**11 comprehensive end-to-end test workflows** covering all major platform operations:
+**11 comprehensive end-to-end test workflows** with 140+ steps covering all major platform operations:
 
 #### User Workflows (7)
 
@@ -109,23 +122,27 @@ const product = await productService.getProduct(id); // Returns ProductFE
 
 **Total**: 140+ test steps | **Status**: 100% Complete ✅
 
-### Running Tests
+### Running Commands
 
 ```bash
-# Run individual workflows
-npm run test:workflow:1    # Product Purchase
-npm run test:workflow:8    # Seller Product Creation (NEW)
-npm run test:workflow:11   # Admin Inline Edits (NEW)
+# Development server
+npm run dev              # Start dev server (with --turbopack)
 
-# Run all workflows
-npm run test:workflows:all
+# Type checking
+npm run type-check       # TypeScript validation
 
-# Run only new workflows (#8-11)
-npm run test:workflows:new
+# Building
+npm run build            # Production build
+npm start                # Run production server
 
-# Interactive UI Dashboard
-npm run dev
-# Then visit: http://localhost:3000/test-workflows
+# Firebase Functions (optional)
+npm run functions:build  # Build Cloud Functions
+npm run functions:serve  # Test locally
+npm run functions:deploy # Deploy to Firebase
+
+# Deployment
+npm run deploy:prod      # Deploy to Vercel production
+npm run deploy:firebase  # Deploy to Firebase
 ```
 
 ### Test Architecture
@@ -136,16 +153,22 @@ npm run dev
 - **Comprehensive Logging**: Step-by-step execution tracking
 - **Real APIs**: No mocks, all real service layer calls
 
-For detailed documentation, see [tests/README.md](./tests/README.md)
+### Code Quality
 
-## 🔒 Authentication & Security
+- **Zero TypeScript Errors**: Strict mode enabled
+- **Comprehensive Types**: All entities have full type definitions
+- **Service Layer**: 25+ services, all type-safe
+- **Linting**: ESLint with Next.js config
+- **Best Practices**: Documented in `docs/project/`
+
+## 🔒 Security & Performance
 
 ### Authentication Flow
 
 1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
+2. Request goes through rate limiting middleware
 3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
+4. JWT token generated and returned with user data
 5. Token and user profile stored in localStorage
 6. `AuthContext` provides global auth state
 7. `AuthGuard` component protects authenticated routes
@@ -153,10 +176,30 @@ For detailed documentation, see [tests/README.md](./tests/README.md)
 
 ### Role-Based Access Control (RBAC)
 
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
+- **admin**: Full system access, manage users, products, auctions, categories
+- **seller**: Create/manage products, shops, auctions, view analytics
+- **user**: Browse, bid, purchase, manage orders, write reviews
+- **guest**: Browse public content only (products, shops, auctions)
+
+### Security Features
+
+- ✅ **Rate Limiting**: Sliding window algorithm (`src/lib/rate-limiter.ts`)
+- ✅ **Input Validation**: Zod schemas for all forms
+- ✅ **Firestore Security Rules**: Row-level security
+- ✅ **Storage Security Rules**: File type and size validation
+- ✅ **JWT Authentication**: Secure token-based auth
+- ✅ **HTTPS Only**: Enforced in production
+- ✅ **XSS Protection**: React's built-in sanitization
+- ✅ **CSRF Protection**: Token-based requests
+
+### Performance Optimization
+
+- ✅ **In-memory caching**: 5-minute TTL for frequently accessed data
+- ✅ **Server Components**: Reduced client-side JavaScript
+- ✅ **Image optimization**: Next.js Image component
+- ✅ **Code splitting**: Automatic per-page bundling
+- ✅ **Turbopack**: Faster builds in development
+- ✅ **Firebase FREE tier**: Optimized queries to stay within limits
 
 ### Protected Routes
 
@@ -171,7 +214,7 @@ Use `AuthGuard` component to protect pages:
 ## 📁 Project Structure
 
 ```
-letitrip.in/
+justforview.in/
 ├── src/
 │   ├── app/                           # Next.js App Router (Pages & Routes)
 │   │   ├── api/                       # API Routes
@@ -209,13 +252,13 @@ letitrip.in/
 │   │   ├── layout/                   # Layout components (Header, Footer, Nav)
 │   │   └── common/                   # Shared UI components
 │   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
+│   │   ├── api.service.ts            # Base HTTP client (DON'T USE DIRECTLY)
 │   │   ├── auth.service.ts           # Authentication service
 │   │   ├── auctions.service.ts       # Auction operations
 │   │   ├── products.service.ts       # Product operations
 │   │   ├── cart.service.ts           # Cart operations
 │   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
+│   │   └── (25+ other services)      # See docs for complete list
 │   ├── hooks/                        # Custom React Hooks
 │   │   ├── useAuctionSocket.ts       # Real-time auction updates
 │   │   ├── useCart.ts                # Shopping cart state
@@ -225,36 +268,62 @@ letitrip.in/
 │   │   ├── AuthContext.tsx           # Global auth state
 │   │   └── UploadContext.tsx         # Upload queue state
 │   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
+│   │   ├── memory-cache.ts           # In-memory cache (Redis replacement)
+│   │   ├── rate-limiter.ts           # API rate limiting
+│   │   ├── firebase-realtime.ts      # Real-time auction system
+│   │   ├── firebase-error-logger.ts  # Error tracking
+│   │   ├── discord-notifier.ts       # Team notifications
 │   │   └── utils.ts                  # General utilities
 │   ├── types/                        # TypeScript Type Definitions
 │   └── constants/                    # App Constants & Config
+│       ├── api-routes.ts             # Centralized API routes
+│       ├── database.ts               # Firestore collection names
+│       ├── inline-fields.ts          # Form field configurations
+│       └── bulk-actions.ts           # Bulk action definitions
 ├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
+│   ├── bulk-set-vercel-env.js        # Bulk environment sync to Vercel
+│   ├── deploy-to-vercel-prod.ps1    # Production deployment
+│   ├── set-vercel-env-from-local.ps1 # Sync .env to Vercel
+│   └── migrate-categories-multi-parent.ts # Category migration
 ├── logs/                             # Application Logs
 ├── public/                           # Static Assets
+├── docs/                             # Comprehensive Documentation
+│   ├── ai/                           # AI Agent guides
+│   ├── project/                      # Project documentation
+│   └── resources/                    # Resource-specific docs
+├── functions/                        # Firebase Cloud Functions
+│   ├── src/                          # Function source code
+│   └── lib/                          # Compiled JavaScript
 ├── .env.example                      # Environment variables template
 ├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
+├── vercel.json                       # Vercel deployment config
 ├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
+└── package.json                      # Dependencies & scripts
 ```
 
-## 🛠️ Setup
+## 🛠️ Setup & Installation
 
-### 1. Install Dependencies
+### Prerequisites
+
+- Node.js 20+ (LTS recommended)
+- npm or yarn
+- Firebase account (FREE tier)
+- Vercel account (FREE tier, optional for deployment)
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/mohasinac/justforview.in.git
+cd justforview.in
+```
+
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Environment Variables
+### 3. Environment Variables
 
 Copy `.env.example` to `.env.local`:
 
@@ -262,61 +331,115 @@ Copy `.env.example` to `.env.local`:
 cp .env.example .env.local
 ```
 
-Fill in your Firebase and Sentry credentials:
+Fill in your Firebase credentials (no Sentry needed):
 
 ```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
+# Firebase Admin SDK (Backend - From Firebase Console → Service Account)
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project-id.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key Here\n-----END PRIVATE KEY-----\n"
+FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
 
-# Firebase Client SDK (Frontend)
+# Firebase Client SDK (Frontend - From Firebase Console → Project Settings)
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.region.firebasedatabase.app
 
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
+# Discord Notifications (Optional - Replace Slack)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
+
+# JWT Secret (Generate with: openssl rand -base64 32)
+JWT_SECRET=your-super-secret-jwt-key-here
 
 # API Configuration
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-### 3. Firebase Setup
+### 4. Firebase Setup
+
+#### A. Create Firebase Project
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
+2. Click "Add Project" or select existing project
+3. Follow the setup wizard
 
-### 4. Firebase Collections Setup
+#### B. Enable Firebase Services
 
-Create these Firestore collections:
+**Authentication**:
+- Go to Authentication → Sign-in method
+- Enable "Email/Password"
 
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
+**Firestore Database**:
+- Go to Firestore Database → Create database
+- Choose "Production mode"
+- Select closest region (e.g., asia-south1 for India)
+- Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes`
+
+**Firebase Storage**:
+- Go to Storage → Get started
+- Deploy rules: `firebase deploy --only storage`
+
+**Realtime Database** (for auctions):
+- Go to Realtime Database → Create database
+- Choose closest region
+- Start in "locked mode" (we have custom rules)
+- Deploy rules: `firebase deploy --only database`
+
+#### C. Get Firebase Credentials
+
+**Service Account (Admin SDK)**:
+1. Go to Project Settings → Service Accounts
+2. Click "Generate New Private Key"
+3. Save JSON file securely
+4. Copy values to `.env.local`:
+   - `project_id` → `FIREBASE_PROJECT_ID`
+   - `client_email` → `FIREBASE_CLIENT_EMAIL`
+   - `private_key` → `FIREBASE_PRIVATE_KEY`
+
+**Web App Config (Client SDK)**:
+1. Go to Project Settings → General
+2. Scroll to "Your apps" → Web app
+3. Click "Add app" if none exists
+4. Copy config values to `.env.local` (all `NEXT_PUBLIC_FIREBASE_*`)
+
+### 5. Deploy Firebase Configuration
+
+```bash
+# Deploy Firestore rules, indexes, and Storage rules
+firebase deploy --only firestore:rules,firestore:indexes,storage,database
+
+# Optional: Deploy Cloud Functions
+npm run functions:build
+npm run functions:deploy
+```
+
+### 6. Firestore Collections
+
+Collections are created automatically when data is first added. Key collections:
+
+- `users` - User profiles and authentication
+- `products` - Product catalog
+- `auctions` - Auction listings
+- `bids` - Auction bid history (also in Realtime DB)
 - `orders` - Order records
+- `order_items` - Order line items
 - `carts` - Shopping carts
 - `shops` - Seller shops
 - `categories` - Product categories
+- `reviews` - Product/shop reviews
 - `coupons` - Discount codes
+- `support_tickets` - Customer support
+- `hero_slides` - Homepage hero carousel
 
-### 5. Run Development Server
+See `src/constants/database.ts` for complete list.
+
+### 7. Run Development Server
 
 ```bash
 npm run dev
@@ -324,1716 +447,218 @@ npm run dev
 
 The application will start on [http://localhost:3000](http://localhost:3000)
 
-Socket.IO server will run on the same port for real-time features.
+- **With Turbopack**: Faster builds and hot reloading
+- **Real-time features**: Firebase Realtime Database (no Socket.IO server needed)
 
-## 📚 API Quick Reference
+## 📚 Available Services (API Abstraction Layer)
 
-### Authentication
+**CRITICAL**: Never call APIs directly. Always use the service layer.
 
-#### Register
+### Core Business Services
 
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
-
-### Auctions
-
-#### Get Active Auctions
-
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
-
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
-
-### Products
-
-#### Search Products
-
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
-
-#### Get Product Details
-
-```bash
-curl http://localhost:3000/api/products/[id]
-```
-
-### Cart
-
-#### Add to Cart
-
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
-
-### Health Check
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
-
-## 📁 Project Structure
-
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
-
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
-
-Socket.IO server will run on the same port for real-time features.
-
-## 📚 API Quick Reference
-
-### Authentication
-
-#### Register
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
-
-### Auctions
-
-#### Get Active Auctions
-
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
-
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
-
-### Products
-
-#### Search Products
-
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
-
-#### Get Product Details
-
-```bash
-curl http://localhost:3000/api/products/[id]
-```
-
-### Cart
-
-#### Add to Cart
-
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
-
-### Health Check
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
-
-## 📁 Project Structure
-
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
-
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
-
-Socket.IO server will run on the same port for real-time features.
-
-## 📚 API Quick Reference
-
-### Authentication
-
-#### Register
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
-
-### Auctions
-
-#### Get Active Auctions
-
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
-
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
-
-### Products
-
-#### Search Products
-
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
-
-#### Get Product Details
-
-```bash
-curl http://localhost:3000/api/products/[id]
-```
-
-### Cart
-
-#### Add to Cart
-
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
-
-### Health Check
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
-
-## 📁 Project Structure
-
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
-
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
-
-Socket.IO server will run on the same port for real-time features.
-
-## 📚 API Quick Reference
-
-### Authentication
-
-#### Register
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
-
-### Auctions
-
-#### Get Active Auctions
-
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
-
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
-
-### Products
-
-#### Search Products
-
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
-
-#### Get Product Details
-
-```bash
-curl http://localhost:3000/api/products/[id]
-```
-
-### Cart
-
-#### Add to Cart
-
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
-
-### Health Check
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
-
-## 📁 Project Structure
-
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
-
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
-
-Socket.IO server will run on the same port for real-time features.
-
-## 📚 API Quick Reference
-
-### Authentication
-
-#### Register
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
-
-### Auctions
-
-#### Get Active Auctions
-
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
-
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
-
-### Products
-
-#### Search Products
+- `authService` - Authentication & sessions
+- `productService` - Product CRUD & search
+- `auctionService` - Auction management & bidding
+- `categoryService` - Category hierarchy
+- `shopService` - Shop/vendor management
+- `cartService` - Shopping cart operations
+- `orderService` - Order processing
+- `reviewService` - Product reviews & ratings
+- `userService` - User profile management
+- `addressService` - User addresses
 
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
-
-#### Get Product Details
-
-```bash
-curl http://localhost:3000/api/products/[id]
-```
-
-### Cart
-
-#### Add to Cart
-
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
-
-### Health Check
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
+### Marketing & Content
 
-## 📁 Project Structure
+- `couponService` - Discount codes
+- `heroSlideService` - Homepage hero carousel
+- `homepageService` - Homepage configuration
+- `blogService` - Blog post management
 
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
-
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
+### Support & Operations
 
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
+- `supportService` - Support tickets
+- `returnService` - Return requests
+- `payoutService` - Seller payouts
 
-Socket.IO server will run on the same port for real-time features.
+### Utilities
 
-## 📚 API Quick Reference
+- `mediaService` - File uploads (images, videos)
+- `searchService` - Global search
+- `analyticsService` - Analytics & insights
+- `testDataService` - Test data generation (admin only)
+- `favoritesService` - User wishlist
+- `checkoutService` - Checkout process
 
-### Authentication
+### Usage Example
 
-#### Register
+```typescript
+// ❌ WRONG - Direct API call
+fetch('/api/products')
 
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
+// ❌ WRONG - Direct apiService
+apiService.get('/api/products')
 
-### Auctions
+// ✅ CORRECT - Use service layer
+import { productService } from '@/services/products.service'
 
-#### Get Active Auctions
+// In Server Component
+const products = await productService.getProducts({ status: 'published' })
 
-```bash
-curl http://localhost:3000/api/auctions?status=active
+// In Client Component
+useEffect(() => {
+  productService.getProducts().then(setProducts)
+}, [])
 ```
 
-#### Place Bid
-
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
-```
+**Documentation**: See [Service Layer Guide](docs/project/02-SERVICE-LAYER-GUIDE.md) for complete reference.
 
-### Products
+## 🎓 Learning Resources
 
-#### Search Products
+### For AI Agents & New Developers
 
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
+1. **[Quick Start Guide](docs/project/00-QUICK-START.md)** - 5-minute onboarding (START HERE!)
+2. **[Architecture Overview](docs/project/01-ARCHITECTURE-OVERVIEW.md)** - System design & decisions
+3. **[Service Layer Guide](docs/project/02-SERVICE-LAYER-GUIDE.md)** - How to use services
+4. **[Component Patterns](docs/project/03-COMPONENT-PATTERNS.md)** - React best practices
+5. **[AI Agent Guide](docs/ai/AI-AGENT-GUIDE.md)** - Development patterns & tools
 
-#### Get Product Details
+### Resource Documentation
 
-```bash
-curl http://localhost:3000/api/products/[id]
-```
+Located in `docs/resources/`, each resource has complete documentation:
 
-### Cart
+- **Products** - Product catalog management
+- **Auctions** - Auction system & bidding
+- **Categories** - Hierarchical categories
+- **Orders** - Order lifecycle
+- **Shops** - Multi-vendor shops
+- **Reviews** - Product reviews & ratings
+- **Coupons** - Discount codes
+- **And 8+ more**
 
-#### Add to Cart
+Each document includes:
+- Complete schema with all fields
+- Relationships to other resources
+- Filter configurations
+- API routes
+- Service methods
+- Component patterns
+- Bulk actions
 
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
+## 🚢 Deployment
 
-### Health Check
+### Deploy to Vercel (Recommended)
 
 ```bash
-curl http://localhost:3000/api/health
-```
-
-## 🔒 Authentication & Security
-
-### Authentication Flow
-
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
-
-### Role-Based Access Control (RBAC)
-
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
-
-### Protected Routes
-
-Use `AuthGuard` component to protect pages:
-
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
-
-## 📁 Project Structure
-
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
+# First time setup
+vercel login
+vercel link
 
-## 🛠️ Setup
-
-### 1. Install Dependencies
-
-```bash
-npm install
+# Deploy to production
+npm run deploy:prod
 ```
 
-### 2. Environment Variables
+### Deploy Firebase Functions
 
-Copy `.env.example` to `.env.local`:
-
 ```bash
-cp .env.example .env.local
+# Build and deploy
+npm run functions:build
+npm run functions:deploy
 ```
 
-Fill in your Firebase and Sentry credentials:
-
-```env
-# Firebase Admin SDK (Backend)
-FIREBASE_PROJECT_ID=letitrip-in-app
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@letitrip-in-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-
-# Firebase Client SDK (Frontend)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=letitrip-in-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=letitrip-in-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=letitrip-in-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://letitrip-in-app-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Sentry (Error Tracking)
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
-
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
+### Environment Variables (Vercel)
 
-### 3. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing
-3. Enable Authentication > Email/Password
-4. Create Firestore Database with rules from `firestore.rules`
-5. Enable Firebase Storage with rules from `storage.rules`
-6. Create indexes from `firestore.indexes.json`
-7. Generate service account key:
-   - Go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Copy credentials to `.env.local`
-
-### 4. Firebase Collections Setup
-
-Create these Firestore collections:
-
-- `users` - User profiles
-- `products` - Product listings
-- `auctions` - Auction items
-- `bids` - Bid history
-- `orders` - Order records
-- `carts` - Shopping carts
-- `shops` - Seller shops
-- `categories` - Product categories
-- `coupons` - Discount codes
-
-### 5. Run Development Server
+Sync local environment to Vercel:
 
 ```bash
-npm run dev
+# PowerShell
+npm run setup:vercel
 ```
-
-The application will start on [http://localhost:3000](http://localhost:3000)
 
-Socket.IO server will run on the same port for real-time features.
+Or manually add in Vercel Dashboard → Project Settings → Environment Variables
 
-## 📚 API Quick Reference
+## 📊 Monitoring & Maintenance
 
-### Authentication
+### Error Tracking
 
-#### Register
+Errors are logged to:
+- **Firebase Analytics** (automatic)
+- **Discord Webhooks** (critical errors only)
+- **Console logs** (development)
 
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123","name":"John Doe"}'
-```
-
-#### Login
+See `src/lib/firebase-error-logger.ts` for configuration.
 
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"securePassword123"}'
-```
+### Performance Monitoring
 
-### Auctions
+- **Vercel Analytics**: Built-in performance monitoring
+- **Firebase Performance**: Optional, can be enabled
+- **Custom metrics**: Logged via `logPerformance()` in `firebase-error-logger.ts`
 
-#### Get Active Auctions
+### Cache Management
 
-```bash
-curl http://localhost:3000/api/auctions?status=active
-```
+```typescript
+import { memoryCache } from '@/lib/memory-cache'
 
-#### Place Bid
+// Get cache statistics
+const stats = memoryCache.getStats()
+console.log(`Hits: ${stats.hits}, Misses: ${stats.misses}`)
 
-```bash
-curl -X POST http://localhost:3000/api/auctions/[id]/bids \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"amount":1000}'
+// Clear cache
+memoryCache.clear()
 ```
 
-### Products
+### Rate Limiting
 
-#### Search Products
+Check rate limit status:
 
-```bash
-curl "http://localhost:3000/api/products?search=laptop&category=electronics"
-```
+```typescript
+import { apiRateLimiter } from '@/lib/rate-limiter'
 
-#### Get Product Details
+// Check if identifier is allowed
+const allowed = apiRateLimiter.check(userId)
 
-```bash
-curl http://localhost:3000/api/products/[id]
+// Cleanup expired entries
+const cleaned = apiRateLimiter.cleanup()
 ```
-
-### Cart
 
-#### Add to Cart
+## 🤝 Contributing
 
-```bash
-curl -X POST http://localhost:3000/api/cart \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"productId":"abc123","quantity":1}'
-```
+### Development Workflow
 
-### Health Check
+1. **Read documentation** - Understand the patterns
+2. **Check existing code** - Follow established patterns
+3. **Use TypeScript** - No `any` types
+4. **Use service layer** - Never direct API calls
+5. **Test your changes** - Run locally before committing
+6. **Write clear commits** - Descriptive commit messages
 
-```bash
-curl http://localhost:3000/api/health
-```
+### Code Standards
 
-## 🔒 Authentication & Security
+- **TypeScript**: Strict mode, all types defined
+- **ESLint**: Follow Next.js config
+- **Formatting**: Consistent indentation and style
+- **Comments**: Explain non-obvious logic
+- **Documentation**: Update docs when adding features
 
-### Authentication Flow
+### Pull Request Guidelines
 
-1. User submits credentials via `/login` or `/register` page
-2. Request goes through middleware (rate limiting, logging)
-3. Backend verifies credentials with Firebase Authentication
-4. Custom token is generated and returned with user data
-5. Token and user profile stored in localStorage
-6. `AuthContext` provides global auth state
-7. `AuthGuard` component protects authenticated routes
-8. `apiService` automatically adds token to all API requests
+- Clear description of changes
+- Link to related issues
+- All tests passing
+- No TypeScript errors
+- Documentation updated if needed
 
-### Role-Based Access Control (RBAC)
+## 📞 Support & Community
 
-- **admin**: Full system access, manage users, products, auctions
-- **seller**: Create/manage products, shops, and auctions
-- **user**: Browse, bid, purchase, manage orders
-- **guest**: Browse public content only
+- **Issues**: [GitHub Issues](https://github.com/mohasinac/justforview.in/issues)
+- **Discussions**: GitHub Discussions (coming soon)
+- **Discord**: Team notifications channel
 
-### Protected Routes
+## 📄 License
 
-Use `AuthGuard` component to protect pages:
+This project is private and proprietary. All rights reserved.
 
-```tsx
-<AuthGuard requireAuth={true} allowedRoles={["seller", "admin"]}>
-  <SellerDashboard />
-</AuthGuard>
-```
+---
 
-## 📁 Project Structure
+**Built with ❤️ for zero-cost scalability**
 
-```
-letitrip.in/
-├── src/
-│   ├── app/                           # Next.js App Router (Pages & Routes)
-│   │   ├── api/                       # API Routes
-│   │   │   ├── lib/firebase/         # Firebase Admin & Client SDK
-│   │   │   ├── middleware/           # Rate limiting, caching, logging
-│   │   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── auctions/             # Auction management endpoints
-│   │   │   ├── products/             # Product CRUD endpoints
-│   │   │   ├── cart/                 # Shopping cart endpoints
-│   │   │   ├── orders/               # Order processing endpoints
-│   │   │   └── health/               # Health check endpoint
-│   │   ├── auctions/                 # Auction pages & details
-│   │   ├── products/                 # Product listing & details
-│   │   ├── seller/                   # Seller dashboard
-│   │   ├── admin/                    # Admin panel
-│   │   ├── cart/                     # Shopping cart page
-│   │   ├── checkout/                 # Checkout flow
-│   │   ├── user/                     # User profile & settings
-│   │   ├── login/                    # Login page
-│   │   ├── register/                 # Registration page
-│   │   ├── unauthorized/             # 401 error page
-│   │   ├── not-found.tsx             # 404 error page
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── global-error.tsx          # Global error boundary
-│   │   └── layout.tsx                # Root layout with header/footer
-│   ├── components/                   # React Components
-│   │   ├── admin/                    # Admin-specific components
-│   │   ├── auction/                  # Auction components (bidding, timer)
-│   │   ├── auth/                     # Auth components (AuthGuard, login forms)
-│   │   ├── cart/                     # Shopping cart components
-│   │   ├── checkout/                 # Checkout flow components
-│   │   ├── product/                  # Product display components
-│   │   ├── seller/                   # Seller dashboard components
-│   │   ├── shop/                     # Shop/vendor components
-│   │   ├── layout/                   # Layout components (Header, Footer, Nav)
-│   │   └── common/                   # Shared UI components
-│   ├── services/                     # API Service Layer (NO MOCKS)
-│   │   ├── api.service.ts            # Base HTTP client
-│   │   ├── auth.service.ts           # Authentication service
-│   │   ├── auctions.service.ts       # Auction operations
-│   │   ├── products.service.ts       # Product operations
-│   │   ├── cart.service.ts           # Cart operations
-│   │   ├── orders.service.ts         # Order operations
-│   │   └── media.service.ts          # Media upload/management
-│   ├── hooks/                        # Custom React Hooks
-│   │   ├── useAuctionSocket.ts       # Real-time auction updates
-│   │   ├── useCart.ts                # Shopping cart state
-│   │   ├── useMediaUpload.ts         # File upload handling
-│   │   └── useViewingHistory.ts      # Product view tracking
-│   ├── contexts/                     # React Context Providers
-│   │   ├── AuthContext.tsx           # Global auth state
-│   │   └── UploadContext.tsx         # Upload queue state
-│   ├── lib/                          # Utility Libraries
-│   │   ├── socket-server.ts          # Socket.IO server setup
-│   │   ├── auction-scheduler.ts      # Automated auction timing
-│   │   ├── rbac.ts                   # Role-based access control
-│   │   ├── formatters.ts             # Date, currency formatters
-│   │   └── utils.ts                  # General utilities
-│   ├── types/                        # TypeScript Type Definitions
-│   └── constants/                    # App Constants & Config
-├── scripts/                          # Utility Scripts
-│   ├── test-api.js                   # API endpoint testing
-│   ├── test-auction-automation.js    # Auction system tests
-│   └── load-test.js                  # Performance testing
-├── logs/                             # Application Logs
-├── public/                           # Static Assets
-├── .env.example                      # Environment variables template
-├── firebase.json                     # Firebase configuration
-├── server.js                         # Custom Next.js server
-├── README.md                         # This file
-├── AI-AGENT-GUIDE.md                 # AI Agent development guide
-└── package.json
-```
+Need help? Check the [docs](docs/) or open an issue on GitHub.

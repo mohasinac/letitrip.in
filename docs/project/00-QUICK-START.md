@@ -12,10 +12,10 @@
 
 JustForView.in is an **auction and e-commerce platform** for India built with:
 
-- **Next.js 14+** (App Router) + **TypeScript** + **Tailwind CSS**
+- **Next.js 16+** (App Router) + **React 19** + **TypeScript 5.3** + **Tailwind CSS 3.4**
 - **Firebase** (Firestore, Storage, Realtime DB, Auth) - 100% FREE tier
 - **Vercel** hosting - FREE tier
-- **Zero monthly costs** - All custom implementations
+- **Zero monthly costs** - All custom implementations (no Sentry, Redis, Socket.IO)
 
 ### Core Concepts
 

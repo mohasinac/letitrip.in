@@ -1,5 +1,9 @@
 # Project Documentation - JustForView.in
 
+**Last Updated**: November 17, 2025  
+**Repository**: https://github.com/mohasinac/justforview.in  
+**Current Branch**: component
+
 This folder contains comprehensive documentation designed specifically for AI agents and new developers to quickly understand and work with the JustForView.in codebase.
 
 ---
@@ -157,21 +161,24 @@ A modern auction and e-commerce platform for India featuring:
 
 - **Multi-vendor marketplace** with individual seller shops
 - **Dual selling modes**: Traditional e-commerce + auction bidding
-- **Real-time auctions** via Firebase Realtime Database
+- **Real-time auctions** via Firebase Realtime Database (no Socket.IO)
 - **Complete order lifecycle** management
 - **Integrated payments** (Razorpay, PayPal, COD)
 - **Support system** with tickets
 - **Product reviews** and ratings
+- **Zero monthly costs** - 100% FREE tier infrastructure
 
 ### Technology Stack
 
-- **Frontend**: Next.js 14+ (App Router), TypeScript, Tailwind CSS
+- **Frontend**: Next.js 16+ (App Router), React 19, TypeScript 5.3
 - **Backend**: Next.js API Routes, Firebase Admin SDK
 - **Database**: Firestore (NoSQL)
 - **Storage**: Firebase Storage (images/videos)
 - **Real-time**: Firebase Realtime Database (auctions)
 - **Auth**: Firebase Authentication
 - **Hosting**: Vercel (FREE tier)
+- **Styling**: Tailwind CSS 3.4
+- **Forms**: React Hook Form + Zod validation
 
 ### Cost: $0/month
 
