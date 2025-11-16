@@ -19,15 +19,16 @@ import {
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getFirestoreAdmin();
     const user = await getUserFromRequest(req);
 
     const doc = await db
       .collection(COLLECTIONS.HERO_SLIDES)
-      .doc(params.id)
+      .doc(id)
       .get();
 
     if (!doc.exists) {
@@ -90,9 +91,10 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Require admin role
     const roleResult = await requireRole(req, ["admin"]);
     if (roleResult.error) {
@@ -103,7 +105,7 @@ export async function PATCH(
     const body = await req.json();
 
     // Check if slide exists
-    const docRef = db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id);
+    const docRef = db.collection(COLLECTIONS.HERO_SLIDES).doc(id);
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -166,9 +168,10 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Require admin role
     const roleResult = await requireRole(req, ["admin"]);
     if (roleResult.error) {
@@ -176,7 +179,7 @@ export async function DELETE(
     }
 
     const db = getFirestoreAdmin();
-    const docRef = db.collection(COLLECTIONS.HERO_SLIDES).doc(params.id);
+    const docRef = db.collection(COLLECTIONS.HERO_SLIDES).doc(id);
 
     // Check if slide exists
     const doc = await docRef.get();
