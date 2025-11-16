@@ -8,7 +8,7 @@ import { InlineField } from "@/types/inline-edit";
 // Common validation patterns
 const PATTERNS = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  url: /^https?:\/\/.+/,
+  url: /^(https?:\/\/.+|\/[^\s]*)/, // Allow http(s):// URLs OR relative paths starting with /
   slug: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
   alphanumeric: /^[a-zA-Z0-9\s]+$/,
   numeric: /^\d+$/,
@@ -34,7 +34,7 @@ export const validators = {
 
   url: (value: string): string | null => {
     if (value && !PATTERNS.url.test(value)) {
-      return "Invalid URL (must start with http:// or https://)";
+      return "Invalid URL (must be an absolute URL or relative path like /products)";
     }
     return null;
   },
@@ -84,7 +84,7 @@ export const validators = {
   custom: (
     value: any,
     validator: (_val: any) => boolean,
-    message: string,
+    message: string
   ): string | null => {
     if (value && !validator(value)) {
       return message;
@@ -405,7 +405,7 @@ export function getValidationSchema(resourceName: string): InlineField[] {
 // Validate form data against schema
 export function validateFormData(
   data: Record<string, any>,
-  fields: InlineField[],
+  fields: InlineField[]
 ): Record<string, string> {
   const errors: Record<string, string> = {};
 
@@ -468,7 +468,7 @@ export function validateFormData(
 export function validateBulkAction(
   action: string,
   resourceType: string,
-  data?: Record<string, any>,
+  data?: Record<string, any>
 ): { valid: boolean; error?: string } {
   // Validate action exists for resource type
   const validActions: Record<string, string[]> = {

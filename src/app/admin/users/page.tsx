@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Loader2,
@@ -14,6 +14,7 @@ import {
   Calendar,
   Filter,
 } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { UserRole } from "@/types/shared/common.types";
@@ -59,6 +60,13 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
+  // Debounce search query to prevent excessive API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Track if we've loaded data to prevent initial duplicate calls
+  const hasLoadedRef = useRef(false);
+  const loadingRef = useRef(false);
+
   // Actions
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showBanDialog, setShowBanDialog] = useState(false);
@@ -75,9 +83,22 @@ export default function AdminUsersPage() {
     Record<string, string>
   >({});
 
-  // Load users
-  const loadUsers = async () => {
+  // Load users with ref check to prevent duplicate calls
+  const loadUsers = useCallback(async () => {
+    // Prevent concurrent calls
+    if (loadingRef.current) {
+      console.log("[Users] Already loading, skipping...");
+      return;
+    }
+
+    // Only check hasLoadedRef for filters, not initial load
+    if (hasLoadedRef.current && !roleFilter && !statusFilter) {
+      console.log("[Users] Already loaded and no filters, skipping...");
+      return;
+    }
+
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
@@ -85,21 +106,24 @@ export default function AdminUsersPage() {
       if (roleFilter !== "all") filters.role = roleFilter;
       if (statusFilter !== "all") filters.status = statusFilter;
 
+      console.log("[Users] Loading users with filters:", filters);
       const data = await usersService.list(filters);
       setUsers((data.data || []) as any);
+      hasLoadedRef.current = true;
     } catch (err) {
       console.error("Failed to load users:", err);
       setError(err instanceof Error ? err.message : "Failed to load users");
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  };
+  }, [roleFilter, statusFilter]);
 
   useEffect(() => {
-    if (currentUser && isAdmin) {
+    if (currentUser?.uid && isAdmin && !loadingRef.current) {
       loadUsers();
     }
-  }, [currentUser, isAdmin, roleFilter, statusFilter]);
+  }, [currentUser?.uid, isAdmin, roleFilter, statusFilter, loadUsers]);
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
@@ -243,13 +267,13 @@ export default function AdminUsersPage() {
     }
   };
 
-  // Filter users
+  // Filter users - use debounced search query
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      !searchQuery ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.phone?.includes(searchQuery);
+      !debouncedSearchQuery ||
+      user.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      user.name?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      user.phone?.includes(debouncedSearchQuery);
 
     return matchesSearch;
   });

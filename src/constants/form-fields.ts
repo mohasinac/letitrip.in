@@ -851,10 +851,12 @@ export const HERO_SLIDE_FIELDS: FormField[] = [
     key: "link_url",
     label: "Link URL",
     type: "url",
-    placeholder: "https://...",
+    placeholder: "/products or https://...",
     showInTable: false,
     showInQuickCreate: true,
-    validators: [{ type: "url", message: "Must be a valid URL" }],
+    validators: [
+      { type: "url", message: "Must be a valid URL or path (e.g., /products)" },
+    ],
     group: "content",
   },
   {

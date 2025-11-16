@@ -17,6 +17,8 @@ export interface ProductCardProps {
   price: number;
   originalPrice?: number;
   image: string;
+  images?: string[]; // Additional images for carousel
+  videos?: string[]; // Video URLs
   rating?: number;
   reviewCount?: number;
   shopName: string;
@@ -49,6 +51,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   price,
   originalPrice,
   image,
+  images = [],
+  videos = [],
   rating = 0,
   reviewCount = 0,
   shopName,
@@ -64,9 +68,74 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   showShopName = true,
   compact = false,
 }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
+  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const discountPercentage = originalPrice
     ? formatDiscount(originalPrice, price)
     : "";
+
+  // Combine all media (video first if available, then images)
+  const allMedia = React.useMemo(() => {
+    const media: Array<{ type: "video" | "image"; url: string }> = [];
+
+    if (videos && videos.length > 0) {
+      media.push(...videos.map((url) => ({ type: "video" as const, url })));
+    }
+
+    // Use images array if provided, otherwise use single image
+    const imageUrls = images.length > 0 ? images : [image];
+    media.push(...imageUrls.map((url) => ({ type: "image" as const, url })));
+
+    return media;
+  }, [image, images, videos]);
+
+  // Auto-rotate images on hover
+  React.useEffect(() => {
+    if (isHovered && allMedia.length > 1) {
+      const currentMedia = allMedia[currentMediaIndex];
+
+      // If current media is video, play it
+      if (currentMedia.type === "video") {
+        setIsPlayingVideo(true);
+        if (videoRef.current) {
+          videoRef.current.play().catch(() => {
+            // Autoplay failed, move to next media
+            setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+          });
+        }
+      } else {
+        // For images, rotate every 3 seconds
+        setIsPlayingVideo(false);
+        intervalRef.current = setInterval(() => {
+          setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+        }, 3000);
+      }
+    } else {
+      setIsPlayingVideo(false);
+      setCurrentMediaIndex(0);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+  }, [isHovered, currentMediaIndex, allMedia]);
+
+  const currentMedia = allMedia[currentMediaIndex] ||
+    allMedia[0] || { type: "image", url: image };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -102,18 +171,54 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <Link
       href={`/products/${slug}`}
       className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Container */}
+      {/* Image/Video Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        <OptimizedImage
-          src={image}
-          alt={name}
-          fill
-          quality={85}
-          objectFit="cover"
-          className="group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        />
+        {currentMedia.type === "video" && isHovered ? (
+          <video
+            ref={videoRef}
+            src={currentMedia.url}
+            className="w-full h-full object-cover"
+            muted
+            loop
+            playsInline
+            onEnded={() => {
+              setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+            }}
+          />
+        ) : (
+          <OptimizedImage
+            src={currentMedia.url}
+            alt={name}
+            fill
+            quality={85}
+            objectFit="cover"
+            className={
+              isHovered
+                ? "scale-105 transition-transform duration-300"
+                : "transition-transform duration-300"
+            }
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        )}
+
+        {/* Media Indicators */}
+        {allMedia.length > 1 && isHovered && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {allMedia.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1.5 rounded-full transition-all ${
+                  index === currentMediaIndex
+                    ? "w-4 bg-white"
+                    : "w-1.5 bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">

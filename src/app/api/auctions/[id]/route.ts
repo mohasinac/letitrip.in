@@ -20,15 +20,29 @@ export async function GET(
   try {
     const user = await getUserFromRequest(request);
     const { id } = await params;
-    const doc = await Collections.auctions().doc(id).get();
-    if (!doc.exists) {
-      return NextResponse.json(
-        { success: false, error: "Auction not found" },
-        { status: 404 }
-      );
-    }
 
-    const data = { id: doc.id, ...doc.data() } as any;
+    // Try to find by slug first, then by ID
+    let doc = await Collections.auctions()
+      .where("slug", "==", id)
+      .limit(1)
+      .get();
+    let data: any = null;
+
+    if (!doc.empty) {
+      // Found by slug
+      const firstDoc = doc.docs[0];
+      data = { id: firstDoc.id, ...firstDoc.data() };
+    } else {
+      // Try by ID
+      const docById = await Collections.auctions().doc(id).get();
+      if (!docById.exists) {
+        return NextResponse.json(
+          { success: false, error: "Auction not found" },
+          { status: 404 }
+        );
+      }
+      data = { id: docById.id, ...docById.data() };
+    }
 
     // Public users can only see active auctions
     if ((!user || user.role === "user") && data.status !== "active") {

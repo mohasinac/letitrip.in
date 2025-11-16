@@ -43,6 +43,8 @@ export interface AuctionFE {
   productName: string;
   productSlug: string;
   productImage: string;
+  images?: string[]; // Multiple images for carousel
+  videos?: string[]; // Video URLs for carousel
   productDescription: string;
 
   // Seller
@@ -140,7 +142,6 @@ export interface AuctionFE {
   // Backwards compatibility aliases (for legacy code)
   currentBid?: number; // Alias for currentPrice
   name?: string; // Alias for productName
-  images?: string[]; // Alias for [productImage]
   description?: string; // Alias for productDescription
   isFeatured?: boolean; // Derived from metadata
   bidCount?: number; // Alias for totalBids
@@ -172,7 +173,8 @@ export interface AuctionCardFE {
   // Backwards compatibility aliases
   slug?: string; // Alias for productSlug
   name?: string; // Alias for productName
-  images?: string[]; // Alias for [productImage]
+  images?: string[]; // Multiple images for carousel
+  videos?: string[]; // Video URLs for carousel
   currentBid?: number; // Alias for currentPrice
   bidCount?: number; // Alias for totalBids
   startingBid?: number; // For admin tables (not in minimal card)

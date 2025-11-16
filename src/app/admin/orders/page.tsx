@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   Search,
   Filter,
@@ -41,7 +42,12 @@ export default function AdminOrdersPage() {
 
   // Filters - unified state
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({});
+
+  // Infinite loop prevention
+  const loadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,14 +58,15 @@ export default function AdminOrdersPage() {
   // Bulk selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (user && isAdmin) {
-      loadData();
+  const loadData = useCallback(async () => {
+    // Prevent concurrent calls
+    if (loadingRef.current) {
+      console.log("[Orders] Already loading, skipping...");
+      return;
     }
-  }, [user, isAdmin, searchQuery, filterValues, currentPage]);
 
-  const loadData = async () => {
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
@@ -69,10 +76,11 @@ export default function AdminOrdersPage() {
       } = {
         page: currentPage,
         limit,
-        search: searchQuery || undefined,
+        search: debouncedSearchQuery || undefined,
         ...filterValues,
       };
 
+      console.log("[Orders] Loading with filters:", filters);
       const [ordersData, shopsData, statsData] = await Promise.all([
         ordersService.list(filters),
         shopsService.list({ limit: 1000 }),
@@ -84,6 +92,7 @@ export default function AdminOrdersPage() {
       setTotalOrders(ordersData.total || 0);
       setShops(shopsData.data || []);
       setStats(statsData);
+      hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load orders:", error);
       setError(
@@ -91,8 +100,15 @@ export default function AdminOrdersPage() {
       );
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  };
+  }, [currentPage, debouncedSearchQuery, filterValues, limit]);
+
+  useEffect(() => {
+    if (user?.uid && isAdmin && !loadingRef.current) {
+      loadData();
+    }
+  }, [user?.uid, isAdmin, loadData]);
 
   const handleBulkExport = () => {
     const headers = [

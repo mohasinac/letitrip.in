@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   Plus,
   Search,
@@ -53,7 +54,12 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
+
+  // Infinite loop prevention
+  const loadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
 
   // Filters
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -72,31 +78,34 @@ export default function AdminProductsPage() {
     Record<string, string>
   >({});
 
-  useEffect(() => {
-    if (user && isAdmin) {
-      loadProducts();
+  const loadProducts = useCallback(async () => {
+    // Prevent concurrent calls
+    if (loadingRef.current) {
+      console.log("[Products] Already loading, skipping...");
+      return;
     }
-  }, [user, isAdmin, searchQuery, filterValues, currentPage]);
 
-  const loadProducts = async () => {
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
       const filters: any = {
         page: currentPage,
         limit,
-        search: searchQuery || undefined,
+        search: debouncedSearchQuery || undefined,
         ...filterValues,
         sortBy: "createdAt",
         sortOrder: "desc",
       };
 
+      console.log("[Products] Loading with filters:", filters);
       const response = await productsService.list(filters);
 
       setProducts(response.products || []);
       setTotalPages(response.pagination?.totalPages || 1);
       setTotalProducts(response.pagination?.total || 0);
+      hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load products:", error);
       setError(
@@ -104,8 +113,15 @@ export default function AdminProductsPage() {
       );
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  };
+  }, [currentPage, debouncedSearchQuery, filterValues, limit]);
+
+  useEffect(() => {
+    if (user?.uid && isAdmin && !loadingRef.current) {
+      loadProducts();
+    }
+  }, [user?.uid, isAdmin, loadProducts]);
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(

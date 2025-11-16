@@ -20,6 +20,7 @@ export interface AuctionCardProps {
     name: string;
     slug: string;
     images: string[];
+    videos?: string[]; // Video URLs for carousel
     currentBid: number;
     startingBid: number;
     bidCount: number;
@@ -47,6 +48,12 @@ export default function AuctionCard({
   showShopInfo = true,
   priority = false,
 }: AuctionCardProps) {
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
+  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
   // Convert endTime to Date object, handling various formats
   let endTime: Date | null = null;
   if (typeof auction.endTime === "string") {
@@ -66,6 +73,69 @@ export default function AuctionCard({
   const currentBid = auction.currentBid || auction.startingBid;
   const hasImage = auction.images && auction.images.length > 0;
 
+  // Combine all media (video first if available, then images)
+  const allMedia = React.useMemo(() => {
+    const media: Array<{ type: "video" | "image"; url: string }> = [];
+
+    if (auction.videos && auction.videos.length > 0) {
+      media.push(
+        ...auction.videos.map((url) => ({ type: "video" as const, url }))
+      );
+    }
+
+    if (auction.images && auction.images.length > 0) {
+      media.push(
+        ...auction.images.map((url) => ({ type: "image" as const, url }))
+      );
+    }
+
+    return media;
+  }, [auction.images, auction.videos]);
+
+  // Auto-rotate media on hover
+  React.useEffect(() => {
+    if (isHovered && allMedia.length > 1) {
+      const currentMedia = allMedia[currentMediaIndex];
+
+      // If current media is video, play it
+      if (currentMedia.type === "video") {
+        setIsPlayingVideo(true);
+        if (videoRef.current) {
+          videoRef.current.play().catch(() => {
+            // Autoplay failed, move to next media
+            setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+          });
+        }
+      } else {
+        // For images, rotate every 3 seconds
+        setIsPlayingVideo(false);
+        intervalRef.current = setInterval(() => {
+          setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+        }, 3000);
+      }
+    } else {
+      setIsPlayingVideo(false);
+      setCurrentMediaIndex(0);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+  }, [isHovered, currentMediaIndex, allMedia]);
+
+  const currentMedia = allMedia[currentMediaIndex] ||
+    allMedia[0] || { type: "image", url: auction.images[0] };
+
   const handleWatchClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -83,20 +153,40 @@ export default function AuctionCard({
     <Link
       href={`/auctions/${auction.slug}`}
       className="group block bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all duration-200"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Section */}
+      {/* Image/Video Section */}
       <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-        {hasImage ? (
-          <OptimizedImage
-            src={auction.images[0]}
-            alt={auction.name}
-            fill
-            quality={85}
-            objectFit="cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="group-hover:scale-105 transition-transform duration-200"
-            priority={priority}
-          />
+        {allMedia.length > 0 ? (
+          currentMedia.type === "video" && isHovered ? (
+            <video
+              ref={videoRef}
+              src={currentMedia.url}
+              className="w-full h-full object-cover"
+              muted
+              loop
+              playsInline
+              onEnded={() => {
+                setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+              }}
+            />
+          ) : (
+            <OptimizedImage
+              src={currentMedia.url}
+              alt={auction.name}
+              fill
+              quality={85}
+              objectFit="cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className={
+                isHovered
+                  ? "scale-105 transition-transform duration-300"
+                  : "transition-transform duration-300"
+              }
+              priority={priority}
+            />
+          )
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
             <Gavel size={48} />
@@ -146,6 +236,20 @@ export default function AuctionCard({
           <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
             <Eye size={12} />
             <span>{auction.viewCount}</span>
+          </div>
+        )}
+
+        {/* Media Indicators */}
+        {allMedia.length > 1 && isHovered && (
+          <div className="absolute bottom-2 right-2 flex items-center gap-1">
+            {allMedia.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  index === currentMediaIndex ? "bg-white w-4" : "bg-white/50"
+                }`}
+              />
+            ))}
           </div>
         )}
       </div>

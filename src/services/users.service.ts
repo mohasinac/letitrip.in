@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { USER_ROUTES } from "@/constants/api-routes";
 import {
   UserBE,
   UserFiltersBE,
@@ -40,7 +41,9 @@ class UsersService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString ? `/users?${queryString}` : "/users";
+    const endpoint = queryString
+      ? `${USER_ROUTES.LIST}?${queryString}`
+      : USER_ROUTES.LIST;
 
     const response = await apiService.get<PaginatedResponseBE<UserBE>>(
       endpoint
@@ -58,14 +61,16 @@ class UsersService {
 
   // Get user by ID (self/admin)
   async getById(id: string): Promise<UserFE> {
-    const userBE = await apiService.get<UserBE>(`/users/${id}`);
+    const userBE = await apiService.get<UserBE>(USER_ROUTES.BY_ID(id));
     return toFEUser(userBE);
   }
 
   // Update user (self/admin)
   async update(id: string, formData: UserProfileFormFE): Promise<UserFE> {
     const request = toBEUpdateUserRequest(formData);
-    const userBE = await apiService.patch<UserBE>(`/users/${id}`, request);
+    const userBE = await apiService.patch<UserBE>(USER_ROUTES.BY_ID(id), {
+      updates: request,
+    });
     return toFEUser(userBE);
   }
 
@@ -76,20 +81,25 @@ class UsersService {
     banReason?: string
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
-    const userBE = await apiService.patch<UserBE>(`/users/${id}/ban`, request);
+    const userBE = await apiService.patch<UserBE>(USER_ROUTES.BAN(id), request);
     return toFEUser(userBE);
   }
 
   // Change user role (admin only)
   async changeRole(id: string, role: string, notes?: string): Promise<UserFE> {
     const request = toBEChangeRoleRequest(role, notes);
-    const userBE = await apiService.patch<UserBE>(`/users/${id}/role`, request);
+    const userBE = await apiService.patch<UserBE>(
+      USER_ROUTES.ROLE(id),
+      request
+    );
     return toFEUser(userBE);
   }
 
   // Get current user profile
   async getMe(): Promise<UserFE> {
-    const response = await apiService.get<{ user: UserBE }>("/user/profile");
+    const response = await apiService.get<{ user: UserBE }>(
+      USER_ROUTES.PROFILE
+    );
     return toFEUser(response.user);
   }
 
@@ -97,7 +107,7 @@ class UsersService {
   async updateMe(formData: UserProfileFormFE): Promise<UserFE> {
     const request = toBEUpdateUserRequest(formData);
     const response = await apiService.patch<{ user: UserBE; message: string }>(
-      "/user/profile",
+      USER_ROUTES.UPDATE_PROFILE,
       request
     );
     return toFEUser(response.user);
@@ -107,7 +117,7 @@ class UsersService {
   async changePassword(
     formData: ChangePasswordFormFE
   ): Promise<{ message: string }> {
-    return apiService.post<{ message: string }>("/user/password", {
+    return apiService.post<{ message: string }>(USER_ROUTES.CHANGE_PASSWORD, {
       currentPassword: formData.currentPassword,
       newPassword: formData.newPassword,
     });
@@ -146,7 +156,7 @@ class UsersService {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/users/me/avatar", {
+    const response = await fetch(`/api${USER_ROUTES.AVATAR}`, {
       method: "POST",
       body: formData,
     });
@@ -161,7 +171,7 @@ class UsersService {
 
   // Delete avatar
   async deleteAvatar(): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>("/users/me/avatar");
+    return apiService.delete<{ message: string }>(USER_ROUTES.AVATAR);
   }
 
   // Delete account
@@ -183,7 +193,40 @@ class UsersService {
       activeUsers: number;
       newUsersThisMonth: number;
       usersByRole: Record<string, number>;
-    }>("/users/stats");
+    }>(USER_ROUTES.STATS);
+  }
+
+  // Bulk operations (admin only)
+  private async bulkAction(action: string, ids: string[], data?: any) {
+    return apiService.post(USER_ROUTES.BULK, { action, ids, data });
+  }
+
+  async bulkMakeSeller(ids: string[]) {
+    return this.bulkAction("make-seller", ids);
+  }
+
+  async bulkMakeUser(ids: string[]) {
+    return this.bulkAction("make-user", ids);
+  }
+
+  async bulkBan(ids: string[], banReason?: string) {
+    return this.bulkAction("ban", ids, { banReason });
+  }
+
+  async bulkUnban(ids: string[]) {
+    return this.bulkAction("unban", ids);
+  }
+
+  async bulkVerifyEmail(ids: string[]) {
+    return this.bulkAction("verify-email", ids);
+  }
+
+  async bulkVerifyPhone(ids: string[]) {
+    return this.bulkAction("verify-phone", ids);
+  }
+
+  async bulkDelete(ids: string[]) {
+    return this.bulkAction("delete", ids);
   }
 }
 

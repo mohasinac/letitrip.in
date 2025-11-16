@@ -31,10 +31,12 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
-function formatTimeRemaining(endTime: Date): {
+function formatTimeRemaining(endTime: Date | null): {
   display: string;
   seconds: number;
 } {
+  if (!endTime) return { display: "Ended", seconds: 0 };
+
   const now = new Date();
   const diff = endTime.getTime() - now.getTime();
   const seconds = Math.floor(diff / 1000);
@@ -202,7 +204,11 @@ export function toFEAuction(
     // Backwards compatibility aliases
     currentBid: auctionBE.currentPrice,
     name: auctionBE.productName,
-    images: [auctionBE.productImage],
+    images:
+      auctionBE.images && auctionBE.images.length > 0
+        ? auctionBE.images
+        : [auctionBE.productImage],
+    videos: auctionBE.videos || [],
     description: auctionBE.productDescription,
     isFeatured: (auctionBE.metadata as any)?.isFeatured || false,
     bidCount: auctionBE.totalBids,
@@ -236,9 +242,13 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
     isEndingSoon: timeRemainingSeconds > 0 && timeRemainingSeconds < 3600,
     badges: auctionBE.status === AuctionStatus.ACTIVE ? ["Live"] : [],
     // Backwards compatibility
-    slug: auctionBE.productSlug,
+    slug: auctionBE.slug || auctionBE.productSlug,
     name: auctionBE.productName,
-    images: [auctionBE.productImage],
+    images:
+      auctionBE.images && auctionBE.images.length > 0
+        ? auctionBE.images
+        : [auctionBE.productImage],
+    videos: auctionBE.videos || [],
     currentBid: auctionBE.currentPrice,
     bidCount: auctionBE.totalBids,
     // Admin fields not available in list response, will be undefined

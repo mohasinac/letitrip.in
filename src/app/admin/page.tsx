@@ -48,16 +48,16 @@ export default function AdminDashboardPage() {
       } catch (error) {
         console.error("Failed to load stats:", error);
 
-        // Fallback to mock data for development
+        // Set empty data structure
         setStats({
-          totalUsers: 1250,
-          totalSellers: 85,
-          totalShops: 92,
-          totalCategories: 45,
-          totalProducts: 3420,
-          totalOrders: 8750,
-          activeUsers: 420,
-          pendingOrders: 23,
+          totalUsers: 0,
+          totalSellers: 0,
+          totalShops: 0,
+          totalCategories: 0,
+          totalProducts: 0,
+          totalOrders: 0,
+          activeUsers: 0,
+          pendingOrders: 0,
         });
       } finally {
         setLoading(false);

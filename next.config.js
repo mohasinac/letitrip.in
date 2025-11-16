@@ -58,6 +58,7 @@ const nextConfig = {
       },
     ],
     unoptimized: true,
+    qualities: [75, 85], // Add quality 85 to supported qualities
   },
 };
 
