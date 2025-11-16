@@ -26,10 +26,7 @@ export async function GET(
     const db = getFirestoreAdmin();
     const user = await getUserFromRequest(req);
 
-    const doc = await db
-      .collection(COLLECTIONS.HERO_SLIDES)
-      .doc(id)
-      .get();
+    const doc = await db.collection(COLLECTIONS.HERO_SLIDES).doc(id).get();
 
     if (!doc.exists) {
       throw new NotFoundError("Hero slide not found");
