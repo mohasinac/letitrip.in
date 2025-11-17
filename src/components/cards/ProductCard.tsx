@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
+import { Star, ShoppingCart, Eye } from "lucide-react";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 import {
   formatCurrency,
   formatDiscount,
@@ -283,21 +284,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons */}
         <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {onToggleFavorite && (
-            <button
-              onClick={handleToggleFavorite}
-              className={`p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
-                isFavorite ? "text-red-500" : "text-gray-600"
-              }`}
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
-            >
-              <Heart
-                className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-              />
-            </button>
-          )}
+          <FavoriteButton
+            itemId={id}
+            itemType="product"
+            initialIsFavorite={isFavorite}
+            onToggle={() => onToggleFavorite?.(id)}
+            size="md"
+          />
           {onQuickView && (
             <button
               onClick={handleQuickView}

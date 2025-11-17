@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Package } from "lucide-react";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 
 export interface CategoryCardProps {
   id: string;
@@ -127,6 +128,16 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
             </span>
           </div>
         )}
+      </div>
+
+      {/* Favorite Button */}
+      <div className="absolute top-2 right-2 z-10">
+        <FavoriteButton
+          itemId={id}
+          itemType="category"
+          initialIsFavorite={false}
+          size="md"
+        />
       </div>
     </Link>
   );

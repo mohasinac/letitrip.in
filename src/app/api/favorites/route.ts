@@ -11,7 +11,9 @@ export async function GET(req: NextRequest) {
     // Pagination params
     const startAfter = searchParams.get("startAfter");
     const limit = parseInt(searchParams.get("limit") || "50");
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
 
     // TODO: Get user_id from session
     const userId = req.headers.get("x-user-id") || "demo-user";
@@ -23,7 +25,10 @@ export async function GET(req: NextRequest) {
 
     // Apply cursor pagination
     if (startAfter) {
-      const startDoc = await db.collection(COLLECTIONS.FAVORITES).doc(startAfter).get();
+      const startDoc = await db
+        .collection(COLLECTIONS.FAVORITES)
+        .doc(startAfter)
+        .get();
       if (startDoc.exists) {
         query = query.startAfter(startDoc);
       }
@@ -63,9 +68,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Get next cursor
-    const nextCursor = hasNextPage && resultDocs.length > 0
-      ? resultDocs[resultDocs.length - 1].id
-      : null;
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     return NextResponse.json({
       success: true,
@@ -81,7 +87,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(
       { error: "Failed to fetch favorites" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -98,7 +104,7 @@ export async function POST(req: NextRequest) {
     if (!body.product_id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -113,7 +119,7 @@ export async function POST(req: NextRequest) {
     if (!existing.empty) {
       return NextResponse.json(
         { error: "Product already in favorites" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -131,13 +137,13 @@ export async function POST(req: NextRequest) {
         id: docRef.id,
         ...favoriteData,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error adding favorite:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

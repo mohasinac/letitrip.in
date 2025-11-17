@@ -10,7 +10,8 @@
 import React from "react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
-import { Clock, Gavel, Eye, Heart, ExternalLink } from "lucide-react";
+import { Clock, Gavel, Eye, ExternalLink } from "lucide-react";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
 import { getTimeRemaining } from "@/lib/validation/auction";
 
@@ -269,19 +270,13 @@ export default function AuctionCard({
 
         {/* Action Buttons */}
         <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {onWatch && (
-            <button
-              onClick={handleWatchClick}
-              className={`p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
-                isWatched ? "text-red-500" : "text-gray-600"
-              }`}
-              aria-label={
-                isWatched ? "Remove from watchlist" : "Add to watchlist"
-              }
-            >
-              <Heart className={`w-5 h-5 ${isWatched ? "fill-current" : ""}`} />
-            </button>
-          )}
+          <FavoriteButton
+            itemId={auction.id}
+            itemType="auction"
+            initialIsFavorite={isWatched}
+            onToggle={() => onWatch?.(auction.id)}
+            size="md"
+          />
           {auction.viewCount && auction.viewCount > 0 && (
             <div className="p-2 rounded-full bg-white shadow-md text-gray-600 flex items-center gap-1 text-xs">
               <Eye size={14} />

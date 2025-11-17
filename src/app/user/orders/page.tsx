@@ -16,15 +16,15 @@ export default function OrdersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  
+
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  
+
   // Filters from URL
   const [filters, setFilters] = useState({
     status: searchParams.get("status") || undefined,
@@ -57,7 +57,7 @@ export default function OrdersPage() {
         startAfter: startAfter || undefined,
         limit: 20,
       } as any);
-      
+
       setOrders(data.data || []);
       setHasNextPage(data.hasMore || false);
 
@@ -172,7 +172,7 @@ export default function OrdersPage() {
                   router.push(`/user/orders/${order.id}`)
                 }
               />
-              
+
               {/* Pagination Controls */}
               {orders.length > 0 && (
                 <div className="border-t border-gray-200 px-6 py-4">

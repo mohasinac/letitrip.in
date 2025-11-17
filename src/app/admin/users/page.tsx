@@ -115,7 +115,7 @@ export default function AdminUsersPage() {
       const data = await usersService.list(filters);
       setUsers((data.data || []) as any);
       setHasNextPage(data.hasMore || false);
-      
+
       if (data.nextCursor) {
         setCursors((prev) => {
           const newCursors = [...prev];
@@ -123,7 +123,7 @@ export default function AdminUsersPage() {
           return newCursors;
         });
       }
-      
+
       hasLoadedRef.current = true;
     } catch (err) {
       console.error("Failed to load users:", err);
@@ -138,7 +138,14 @@ export default function AdminUsersPage() {
     if (currentUser?.uid && isAdmin && !loadingRef.current) {
       loadUsers();
     }
-  }, [currentUser?.uid, isAdmin, roleFilter, statusFilter, currentPage, loadUsers]);
+  }, [
+    currentUser?.uid,
+    isAdmin,
+    roleFilter,
+    statusFilter,
+    currentPage,
+    loadUsers,
+  ]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {

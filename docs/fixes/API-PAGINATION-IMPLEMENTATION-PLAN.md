@@ -517,11 +517,11 @@ For each API route:
 | Reviews    | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
 | Categories | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
 | Blog       | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
-| Orders     | ✅     | ✅      | ✅      | ✅         | ⏳      | ✅       |
-| Users      | ✅     | ✅      | ✅      | ✅         | ⏳      | ⏳       |
-| Tickets    | ✅     | ✅      | ✅      | ✅         | ⏳      | ⏳       |
-| Favorites  | ✅     | ✅      | ✅      | ✅         | ✅      | ⏳       |
-| Cart       | ✅     | ✅      | ✅      | ✅         | ✅      | ⏳       |
+| Orders     | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
+| Users      | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
+| Tickets    | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
+| Favorites  | ✅     | ✅      | ✅      | ✅         | ✅      | N/A      |
+| Cart       | ✅     | ✅      | ✅      | ✅         | ✅      | N/A      |
 | Bids       | ✅     | ✅      | ✅      | ✅         | ✅      | ✅       |
 
 ## Completed API Refactors
