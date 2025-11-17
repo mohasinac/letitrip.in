@@ -13,27 +13,82 @@ import { nanoid } from "nanoid";
 
 const DEMO_PREFIX = "DEMO_";
 
-// Real public image URLs from Unsplash (free to use)
+// Real public image URLs from Unsplash (free to use) - Diverse collection
 const PRODUCT_IMAGES = [
-  "https://images.unsplash.com/photo-1511512578047-dfb367046420",
-  "https://images.unsplash.com/photo-1601924994987-69e26d50dc26",
-  "https://images.unsplash.com/photo-1578632767115-351597cf2477",
-  "https://images.unsplash.com/photo-1613582036683-2748ada05454",
-  "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe",
-  "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3",
-  "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f",
-  "https://images.unsplash.com/photo-1611339555312-e607c8352fd7",
-  "https://images.unsplash.com/photo-1611689102192-1f6e0e52df0a",
-  "https://images.unsplash.com/photo-1628744448839-e5e9a17e1b9f",
+  // Tech & Electronics
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e", // Headphones
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30", // Watch
+  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad", // Camera
+  "https://images.unsplash.com/photo-1572635196237-14b3f281503f", // Sunglasses
+  "https://images.unsplash.com/photo-1560343090-f0409e92791a", // Smartwatch
+  // Fashion & Accessories
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff", // Red Nike shoe
+  "https://images.unsplash.com/photo-1549298916-b41d501d3772", // White sneaker
+  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62", // Backpack
+  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa", // Hoodie
+  "https://images.unsplash.com/photo-1598808503491-fa80d3e5a0d9", // Jacket
+  // Home & Decor
+  "https://images.unsplash.com/photo-1571781418606-70265b9cce90", // Table lamp
+  "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf", // Plant pot
+  "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6", // Minimalist watch
+  "https://images.unsplash.com/photo-1586023492125-27b2c045efd7", // Furniture
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64", // Art supplies
+  // Sports & Fitness
+  "https://images.unsplash.com/photo-1517836357463-d25dfeac3438", // Gym equipment
+  "https://images.unsplash.com/photo-1551958219-acbc608c6377", // Yoga mat
+  "https://images.unsplash.com/photo-1526401363794-c96080fe9a07", // Dumbbells
+  "https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4", // Basketball
+  "https://images.unsplash.com/photo-1577212017184-0d65605d1e4e", // Soccer ball
+  // Gaming & Toys
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf", // Game controller
+  "https://images.unsplash.com/photo-1622297845775-5ff3fef71d13", // Gaming setup
+  "https://images.unsplash.com/photo-1598550476439-6847785fcea6", // Gaming keyboard
+  "https://images.unsplash.com/photo-1629727820047-c8bbf05c7e19", // Toy figures
+  "https://images.unsplash.com/photo-1611329532992-0b7d41e8b9b1", // Board game
+  // Books & Stationery
+  "https://images.unsplash.com/photo-1512820790803-83ca734da794", // Books stack
+  "https://images.unsplash.com/photo-1544947950-fa07a98d237f", // Open book
+  "https://images.unsplash.com/photo-1455390582262-044cdead277a", // Notebooks
+  "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0", // Art journal
+  "https://images.unsplash.com/photo-1532012197267-da84d127e765", // Pencils
+  // Food & Beverage (products)
+  "https://images.unsplash.com/photo-1551024506-0bccd828d307", // Coffee mug
+  "https://images.unsplash.com/photo-1559056199-641a0ac8b55e", // Tea set
+  "https://images.unsplash.com/photo-1556679343-c7306c1976bc", // Water bottle
+  "https://images.unsplash.com/photo-1587049352846-4a222e784046", // Kitchen tools
+  "https://images.unsplash.com/photo-1504279577054-acfeccf8fc52", // Cookware
+  // Beauty & Personal Care
+  "https://images.unsplash.com/photo-1596462502278-27bfdc403348", // Perfume
+  "https://images.unsplash.com/photo-1571875257727-256c39da42af", // Skincare
+  "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b", // Makeup
+  "https://images.unsplash.com/photo-1522338242992-e1a54906a8da", // Cosmetics
+  "https://images.unsplash.com/photo-1564131989068-2c9eae58e5b4", // Nail polish
+  // Jewelry & Watches
+  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338", // Gold watch
+  "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f", // Ring
+  "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908", // Bracelet
+  "https://images.unsplash.com/photo-1611591437281-460bfbe1220a", // Necklace
+  "https://images.unsplash.com/photo-1603561596112-0a132b757442", // Earrings
+  // Miscellaneous
+  "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b", // Phone case
+  "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f", // USB cable
+  "https://images.unsplash.com/photo-1572635196184-84e35138cf62", // Tech gadget
+  "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89", // Laptop
+  "https://images.unsplash.com/photo-1585282263861-f55e341878f8", // Tablet
 ];
 
-// Real public video URLs (free sample videos)
+// Real public video URLs (free sample videos) - More diverse
 const PRODUCT_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
 ];
 
 // TCG, Beyblade, and Figurine Categories with multi-parent structure (EXPANDED)

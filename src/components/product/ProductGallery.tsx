@@ -87,6 +87,38 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
             <ZoomIn className="w-5 h-5" />
           </button>
 
+          {/* Media Count Badges (Top Right) */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {media.filter((m) => m.type === "image").length > 0 && (
+              <div className="bg-black/70 backdrop-blur-sm text-white px-2.5 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium">
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {media.filter((m) => m.type === "image").length}
+              </div>
+            )}
+            {media.filter((m) => m.type === "video").length > 0 && (
+              <div className="bg-black/70 backdrop-blur-sm text-white px-2.5 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium">
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                </svg>
+                {media.filter((m) => m.type === "video").length}
+              </div>
+            )}
+          </div>
+
           {/* Counter */}
           {media.length > 1 && (
             <div className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">

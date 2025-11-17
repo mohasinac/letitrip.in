@@ -250,17 +250,47 @@ export default function MainNavBar({
           </button>
 
           {/* Cart - Hidden on mobile/tablet when bottom nav is visible */}
-          <Link
-            href="/cart"
-            className="hidden lg:flex relative hover:bg-gray-700 p-2 rounded"
-          >
-            <ShoppingCart className="w-6 h-6" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-gray-900 text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
-                <span className="animate-pulse">{cartCount}</span>
-              </span>
+          <div className="hidden lg:block relative group">
+            <Link
+              href="/cart"
+              className="flex relative hover:bg-gray-700 p-2 rounded"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-yellow-500 text-gray-900 text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
+                  <span className="animate-pulse">{cartCount}</span>
+                </span>
+              )}
+            </Link>
+
+            {/* Cart Hover Tooltip */}
+            {cartCount > 0 && cart && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white text-gray-900 rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold">Cart Summary</span>
+                    <span className="text-sm text-gray-600">
+                      {cartCount} items
+                    </span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Subtotal:</span>
+                      <span className="font-bold text-lg">
+                        {cart.formattedSubtotal}
+                      </span>
+                    </div>
+                  </div>
+                  <Link
+                    href="/cart"
+                    className="mt-3 block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    View Cart
+                  </Link>
+                </div>
+              </div>
             )}
-          </Link>
+          </div>
 
           {/* User Menu or Sign In */}
           <div className="relative" ref={userMenuRef}>

@@ -22,6 +22,7 @@ import { productsService } from "@/services/products.service";
 import { notFound } from "@/lib/error-redirects";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
+import { toast } from "@/components/admin/Toast";
 import type { CategoryFE, ProductCardFE } from "@/types";
 
 interface PageProps {
@@ -196,9 +197,9 @@ export default function CategoryDetailPage({ params }: PageProps) {
       }
 
       await addItem(productId, 1, undefined, productDetails);
-      alert("Added to cart!");
+      toast.success(`${productDetails.name} added to cart!`);
     } catch (error: any) {
-      alert(error.message || "Failed to add to cart");
+      toast.error(error.message || "Failed to add to cart");
     }
   };
 
@@ -515,6 +516,8 @@ export default function CategoryDetailPage({ params }: PageProps) {
                           price={product.price}
                           originalPrice={product.originalPrice || undefined}
                           image={product.images?.[0] || ""}
+                          images={product.images || []}
+                          videos={product.videos || []}
                           rating={product.rating}
                           reviewCount={product.reviewCount}
                           shopName={product.shopId}
