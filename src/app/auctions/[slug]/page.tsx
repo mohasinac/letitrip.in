@@ -460,11 +460,11 @@ export default function AuctionDetailPage() {
             <div className="border-t border-b border-gray-200 py-4">
               <p className="text-sm text-gray-600">Current Bid</p>
               <p className="text-3xl font-bold text-primary">
-                ₹{(auction.currentBid || auction.currentPrice).toLocaleString()}
+                ₹{((auction.currentBid || auction.currentPrice || 0)).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600 mt-1">
-                {auction.bidCount || auction.totalBids}{" "}
-                {(auction.bidCount || auction.totalBids) === 1 ? "bid" : "bids"}
+                {auction.bidCount || auction.totalBids || 0}{" "}
+                {(auction.bidCount || auction.totalBids || 0) === 1 ? "bid" : "bids"}
               </p>
             </div>
 
