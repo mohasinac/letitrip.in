@@ -293,26 +293,28 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </div>
 
                   {/* Quantity Selector */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-900">
-                      Quantity:
-                    </label>
-                    <select
-                      value={selectedQuantity}
-                      onChange={(e) =>
-                        setSelectedQuantity(Number(e.target.value))
-                      }
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      {[...Array(Math.min(product.stockCount, 10))].map(
-                        (_, i) => (
-                          <option key={i + 1} value={i + 1}>
-                            {i + 1}
-                          </option>
-                        )
-                      )}
-                    </select>
-                  </div>
+                  {product.stockCount > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-900">
+                        Quantity:
+                      </label>
+                      <select
+                        value={selectedQuantity}
+                        onChange={(e) =>
+                          setSelectedQuantity(Number(e.target.value))
+                        }
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        {[...Array(Math.min(product.stockCount, 10))].map(
+                          (_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {i + 1}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+                  )}
 
                   {/* Action Buttons */}
                   <div className="space-y-2">

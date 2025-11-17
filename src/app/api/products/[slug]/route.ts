@@ -6,6 +6,7 @@ import {
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
+import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
 /**
  * GET /api/products/[slug]
@@ -141,9 +142,33 @@ export async function PATCH(
     delete updateData.created_at;
     delete updateData.id;
 
+    // Track if status or category changed to update counts
+    const statusChanged = body.status && body.status !== productData.status;
+    const categoryChanged =
+      body.category_id && body.category_id !== productData.category_id;
+    const oldCategoryId = productData.category_id;
+    const newCategoryId = body.category_id || oldCategoryId;
+
     await Collections.products().doc(doc.id).update(updateData);
     const updatedDoc = await Collections.products().doc(doc.id).get();
     const updatedData: any = updatedDoc.data();
+
+    // Update category counts if status or category changed
+    if (statusChanged || categoryChanged) {
+      try {
+        if (categoryChanged && oldCategoryId) {
+          // Update old category counts
+          await updateCategoryProductCounts(oldCategoryId);
+        }
+        // Update new category counts
+        if (newCategoryId) {
+          await updateCategoryProductCounts(newCategoryId);
+        }
+      } catch (error) {
+        console.error("Failed to update category counts:", error);
+        // Don't fail the request if count update fails
+      }
+    }
 
     return NextResponse.json({
       success: true,

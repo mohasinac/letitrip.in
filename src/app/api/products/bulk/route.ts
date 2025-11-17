@@ -3,6 +3,7 @@ import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
+import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
 /**
  * POST /api/products/bulk
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
     };
 
     const now = new Date().toISOString();
+    const categoriesNeedingUpdate = new Set<string>();
 
     for (const productId of ids) {
       try {
@@ -89,12 +91,17 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Track categories that need count updates
+        const categoryId = productData.category_id;
+        let needsCountUpdate = false;
+
         switch (action) {
           case "publish":
             await productRef.update({
               status: "published",
               updated_at: now,
             });
+            needsCountUpdate = true;
             break;
 
           case "unpublish":
@@ -102,6 +109,7 @@ export async function POST(request: NextRequest) {
               status: "draft",
               updated_at: now,
             });
+            needsCountUpdate = true;
             break;
 
           case "archive":
@@ -109,6 +117,7 @@ export async function POST(request: NextRequest) {
               status: "archived",
               updated_at: now,
             });
+            needsCountUpdate = true;
             break;
 
           case "feature":
@@ -151,10 +160,21 @@ export async function POST(request: NextRequest) {
               ...updates,
               updated_at: now,
             });
+            // Check if status changed
+            if (updates.status && updates.status !== productData.status) {
+              needsCountUpdate = true;
+            }
+            // Check if category changed
+            if (updates.category_id && updates.category_id !== categoryId) {
+              categoriesNeedingUpdate.add(categoryId);
+              categoriesNeedingUpdate.add(updates.category_id);
+              needsCountUpdate = false; // Will be handled by category change
+            }
             break;
 
           case "delete":
             await productRef.delete();
+            needsCountUpdate = true;
             break;
 
           default:
@@ -162,9 +182,31 @@ export async function POST(request: NextRequest) {
             continue;
         }
 
+        if (needsCountUpdate && categoryId) {
+          categoriesNeedingUpdate.add(categoryId);
+        }
+
         results.success.push(productId);
       } catch (error: any) {
         results.failed.push({ id: productId, error: error.message });
+      }
+    }
+
+    // Update all affected category counts
+    if (categoriesNeedingUpdate.size > 0) {
+      console.log(
+        `Updating counts for ${categoriesNeedingUpdate.size} categories`
+      );
+      for (const categoryId of categoriesNeedingUpdate) {
+        try {
+          await updateCategoryProductCounts(categoryId);
+        } catch (error) {
+          console.error(
+            `Failed to update counts for category ${categoryId}:`,
+            error
+          );
+          // Don't fail the bulk operation if count update fails
+        }
       }
     }
 

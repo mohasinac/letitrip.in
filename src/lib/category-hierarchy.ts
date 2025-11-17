@@ -103,63 +103,103 @@ export async function wouldCreateCycle(
 }
 
 /**
- * Count products in a category (including all descendants)
+ * Count products directly in a leaf category (no descendants)
+ * For leaf nodes only - counts unique products
  */
-export async function countCategoryProducts(
+export async function countLeafCategoryProducts(
   categoryId: string
 ): Promise<number> {
   const db = getFirestoreAdmin();
 
-  // Get all descendant category IDs
-  const descendantIds = await getAllDescendantIds(categoryId);
-  const allCategoryIds = [categoryId, ...descendantIds];
+  // Get products and filter manually (Firestore can't query for "is_deleted !== true or missing")
+  const productsSnapshot = await db
+    .collection("products")
+    .where("category_id", "==", categoryId)
+    .where("status", "==", "published")
+    .get();
 
-  // Count products in all these categories
+  // Filter out deleted products (handles both is_deleted: true and missing field)
+  const validProducts = productsSnapshot.docs.filter(
+    (doc) => doc.data().is_deleted !== true
+  );
+
+  return validProducts.length;
+}
+
+/**
+ * Count products for parent category by summing children counts
+ * For non-leaf nodes - sums all direct children counts
+ */
+export async function countParentCategoryProducts(
+  categoryId: string
+): Promise<number> {
+  const db = getFirestoreAdmin();
+
+  // Get direct children
+  const childrenSnapshot = await db
+    .collection("categories")
+    .where("parent_ids", "array-contains", categoryId)
+    .get();
+
+  if (childrenSnapshot.empty) {
+    // This is actually a leaf node, count its products
+    return countLeafCategoryProducts(categoryId);
+  }
+
+  // Sum up children counts
   let totalCount = 0;
-
-  // Firestore doesn't support "in" queries with more than 10 items
-  // So we batch them
-  const batchSize = 10;
-  for (let i = 0; i < allCategoryIds.length; i += batchSize) {
-    const batch = allCategoryIds.slice(i, i + batchSize);
-
-    const productsSnapshot = await db
-      .collection("products")
-      .where("category_id", "in", batch)
-      .where("status", "==", "published")
-      .where("is_deleted", "==", false)
-      .count()
-      .get();
-
-    totalCount += productsSnapshot.data().count;
+  for (const childDoc of childrenSnapshot.docs) {
+    const childData = childDoc.data() as any;
+    totalCount += childData.product_count || 0;
   }
 
   return totalCount;
 }
 
 /**
+ * Count products in a category
+ * - Leaf nodes: count actual products
+ * - Parent nodes: sum children counts
+ */
+export async function countCategoryProducts(
+  categoryId: string
+): Promise<number> {
+  const isLeaf = await isCategoryLeaf(categoryId);
+
+  if (isLeaf) {
+    // Leaf node: count actual products
+    return countLeafCategoryProducts(categoryId);
+  } else {
+    // Parent node: sum children counts
+    return countParentCategoryProducts(categoryId);
+  }
+}
+
+/**
  * Update product count for a category and all its ancestors
+ * Updates bottom-up: leaf first, then parents
  */
 export async function updateCategoryProductCounts(
   categoryId: string
 ): Promise<void> {
   const db = getFirestoreAdmin();
-  const batch = db.batch();
 
-  // Update the category itself
+  // Update the category itself first
   const count = await countCategoryProducts(categoryId);
-  const categoryRef = db.collection("categories").doc(categoryId);
-  batch.update(categoryRef, { product_count: count });
+  await db.collection("categories").doc(categoryId).update({
+    product_count: count,
+  });
 
-  // Update all ancestors
+  // Update all ancestors (from bottom to top)
   const ancestorIds = await getAllAncestorIds(categoryId);
+
+  // Sort ancestors by level (if available) or update one by one
   for (const ancestorId of ancestorIds) {
     const ancestorCount = await countCategoryProducts(ancestorId);
-    const ancestorRef = db.collection("categories").doc(ancestorId);
-    batch.update(ancestorRef, { product_count: ancestorCount });
+    await db.collection("categories").doc(ancestorId).update({
+      product_count: ancestorCount,
+    });
   }
-
-  await batch.commit();
 }
 
 /**
@@ -310,21 +350,47 @@ export async function getCategoryProducts(
 export async function rebuildAllCategoryCounts(): Promise<{
   updated: number;
   errors: string[];
+  details?: any;
 }> {
   const db = getFirestoreAdmin();
   const categoriesSnapshot = await db.collection("categories").get();
 
   let updated = 0;
   const errors: string[] = [];
+  const details: any = {
+    totalCategories: categoriesSnapshot.size,
+    categoryCounts: {},
+  };
+
+  console.log(`Found ${categoriesSnapshot.size} categories to rebuild`);
 
   for (const doc of categoriesSnapshot.docs) {
     try {
-      await updateCategoryProductCounts(doc.id);
+      const categoryData = doc.data();
+      const count = await countCategoryProducts(doc.id);
+
+      await db.collection("categories").doc(doc.id).update({
+        product_count: count,
+      });
+
+      details.categoryCounts[doc.id] = {
+        name: categoryData.name,
+        count: count,
+        isLeaf: await isCategoryLeaf(doc.id),
+      };
+
+      console.log(
+        `Updated ${categoryData.name} (${doc.id}): ${count} products`
+      );
       updated++;
     } catch (error: any) {
+      console.error(`Failed to update ${doc.id}:`, error);
       errors.push(`Failed to update ${doc.id}: ${error.message}`);
     }
   }
 
-  return { updated, errors };
+  console.log(
+    `Rebuild complete: ${updated} categories updated, ${errors.length} errors`
+  );
+  return { updated, errors, details };
 }

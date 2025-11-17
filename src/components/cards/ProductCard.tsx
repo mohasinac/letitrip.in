@@ -78,17 +78,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     ? formatDiscount(originalPrice, price)
     : "";
 
-  // Combine all media (video first if available, then images)
+  // Combine all media (images first, then videos - first image is cover)
   const allMedia = React.useMemo(() => {
     const media: Array<{ type: "video" | "image"; url: string }> = [];
-
-    if (videos && videos.length > 0) {
-      media.push(...videos.map((url) => ({ type: "video" as const, url })));
-    }
 
     // Use images array if provided, otherwise use single image
     const imageUrls = images.length > 0 ? images : [image];
     media.push(...imageUrls.map((url) => ({ type: "image" as const, url })));
+
+    if (videos && videos.length > 0) {
+      media.push(...videos.map((url) => ({ type: "video" as const, url })));
+    }
 
     return media;
   }, [image, images, videos]);
@@ -98,7 +98,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     if (isHovered && allMedia.length > 1) {
       const currentMedia = allMedia[currentMediaIndex];
 
-      // If current media is video, play it
+      // If current media is video, play it immediately
       if (currentMedia.type === "video") {
         setIsPlayingVideo(true);
         if (videoRef.current) {
@@ -108,11 +108,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           });
         }
       } else {
-        // For images, rotate every 3 seconds
+        // For images, rotate every 2 seconds
         setIsPlayingVideo(false);
         intervalRef.current = setInterval(() => {
           setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-        }, 3000);
+        }, 2000);
       }
     } else {
       setIsPlayingVideo(false);
