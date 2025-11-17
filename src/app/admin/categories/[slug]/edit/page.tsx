@@ -7,6 +7,7 @@ import CategoryForm from "@/components/admin/CategoryForm";
 import { categoriesService } from "@/services/categories.service";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "@/lib/error-redirects";
 
 interface Category {
   id: string;
@@ -41,11 +42,9 @@ export default function EditCategoryPage() {
       try {
         const categoryData = await categoriesService.getBySlug(slug);
         setCategory(categoryData as any);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to load category:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load category"
-        );
+        router.push(notFound.category(slug, err));
       } finally {
         setLoading(false);
       }

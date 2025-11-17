@@ -23,18 +23,19 @@ function parseDate(date: Timestamp | string): Date {
 
 export function toFECategory(categoryBE: CategoryBE): CategoryFE {
   const metadata = categoryBE.metadata as any; // Cast for backwards compat access
+  const parentIds = categoryBE.parentIds || [];
   return {
     ...categoryBE,
     createdAt: parseDate(categoryBE.createdAt),
     updatedAt: parseDate(categoryBE.updatedAt),
     hasProducts: categoryBE.productCount > 0,
-    hasParents: categoryBE.parentIds.length > 0,
+    hasParents: parentIds.length > 0,
     isRoot: categoryBE.level === 0,
     displayName: categoryBE.name,
     urlPath: `/categories/${categoryBE.slug}`,
     banner: categoryBE.banner || null,
     // Backwards compatibility
-    parentId: categoryBE.parentIds[0] || null,
+    parentId: parentIds[0] || null,
     isFeatured: metadata?.isFeatured || false,
     showOnHomepage: metadata?.showOnHomepage || false,
     isActive: categoryBE.status === Status.PUBLISHED,

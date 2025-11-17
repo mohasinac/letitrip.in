@@ -8,6 +8,7 @@ import { OrderStatus } from "@/types/shared/common.types";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import Link from "next/link";
+import { notFound } from "@/lib/error-redirects";
 
 export default function OrderDetailPage() {
   const router = useRouter();
@@ -43,7 +44,8 @@ export default function OrderDetailPage() {
       const data = await ordersService.getById(orderId);
       setOrder(data);
     } catch (err: any) {
-      setError(err.message || "Failed to load order");
+      console.error("Failed to load order:", err);
+      router.push(notFound.order(orderId, err));
     } finally {
       setLoading(false);
     }

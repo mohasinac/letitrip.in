@@ -881,13 +881,12 @@ export default function CreateShopWizardPage() {
           >
             <ArrowLeft className="h-4 w-4" />
             Previous
-          </button>
-
+          </button>{" "}
           {currentStep < STEPS.length ? (
             <button
               type="button"
               onClick={nextStep}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               Next
               <ArrowRight className="h-4 w-4" />

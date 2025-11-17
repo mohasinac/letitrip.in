@@ -11,6 +11,7 @@ import {
 } from "@/app/api/lib/firebase/queries";
 import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
+import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
 /**
  * GET /api/products
@@ -204,6 +205,16 @@ export async function POST(request: NextRequest) {
     };
 
     const docRef = await Collections.products().add(productData);
+
+    // Update category product counts (including ancestors)
+    if (category_id && status === "published") {
+      try {
+        await updateCategoryProductCounts(category_id);
+      } catch (error) {
+        console.error("Failed to update category counts:", error);
+        // Don't fail the request if count update fails
+      }
+    }
 
     return NextResponse.json(
       { success: true, data: { id: docRef.id, ...productData } },

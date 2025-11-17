@@ -158,6 +158,7 @@ export interface ProductCardFE {
 
   // Backwards compatibility aliases (for legacy code migration)
   images: string[]; // Array with primaryImage as first element
+  videos?: string[]; // Video URLs for hover carousel
   originalPrice: number | null; // Alias for compareAtPrice
   rating: number; // Alias for averageRating
   stockCount: number; // Actual stock number (0 if out-of-stock)

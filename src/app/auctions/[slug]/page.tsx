@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
+import { notFound } from "@/lib/error-redirects";
 import type {
   AuctionFE,
   AuctionCardFE,
@@ -99,8 +100,9 @@ export default function AuctionDetailPage() {
       const currentBidValue = data.currentBid || data.currentPrice;
       const minIncrement = Math.max(100, currentBidValue * 0.05); // 5% or ₹100
       setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load auction:", error);
+      router.push(notFound.auction(slug, error));
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { unauthorized, forbidden } from "@/lib/error-redirects";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export default function AuthGuard({
   allowedRoles,
 }: AuthGuardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isAuthenticated, loading } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
@@ -25,13 +27,19 @@ export default function AuthGuard({
     if (loading) return;
 
     if (requireAuth && !isAuthenticated) {
-      router.push(redirectTo);
+      // Use custom redirect if provided, otherwise use unauthorized helper
+      if (redirectTo !== "/login") {
+        router.push(redirectTo);
+      } else {
+        router.push(unauthorized.notLoggedIn(pathname));
+      }
       return;
     }
 
     if (allowedRoles && user) {
       if (!allowedRoles.includes(user.role)) {
-        router.push("/unauthorized");
+        const requiredRole = allowedRoles[0]; // Use first role as primary requirement
+        router.push(forbidden.wrongRole(requiredRole, user.role, pathname));
         return;
       }
     }
@@ -42,6 +50,7 @@ export default function AuthGuard({
     redirectTo,
     allowedRoles,
     router,
+    pathname,
     user,
     isAuthenticated,
     loading,

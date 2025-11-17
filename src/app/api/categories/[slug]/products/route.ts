@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
-import { Collections } from "@/app/api/lib/firebase/collections";
+import { getCategoryIdsForQuery } from "@/lib/category-hierarchy";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { toFEProductCards } from "@/types/transforms/product.transforms";
+import type { ProductListItemBE } from "@/types/backend/product.types";
 
 /**
  * GET /api/categories/[slug]/products
- * Fetch products in a category (includes subcategories if specified)
+ * Fetch products in a category (includes all subcategories hierarchically)
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -16,108 +19,98 @@ export async function GET(
     // Parse query parameters
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
-    const includeSubcategories =
-      searchParams.get("includeSubcategories") === "true";
     const sortBy = searchParams.get("sortBy") || "createdAt";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    // First, get the category by slug
-    const categoriesSnapshot = await Collections.categories()
+    const db = getFirestoreAdmin();
+
+    // Get the category by slug
+    const categorySnapshot = await db
+      .collection("categories")
       .where("slug", "==", slug)
       .limit(1)
       .get();
 
-    if (categoriesSnapshot.empty) {
+    if (categorySnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
-    const categoryDoc = categoriesSnapshot.docs[0];
-    const categoryId = categoryDoc.id;
+    const categoryDoc = categorySnapshot.docs[0];
+    const category = { id: categoryDoc.id, ...categoryDoc.data() };
 
-    let categoryIds = [categoryId];
+    // ALWAYS get all descendant categories (children, grandchildren, etc.)
+    // This ensures that products in ANY subcategory are shown
+    const categoryIds = await getCategoryIdsForQuery(category.id);
 
-    // If including subcategories, fetch them
-    if (includeSubcategories) {
-      const subcategoriesSnapshot = await Collections.categories()
-        .where("parentId", "==", categoryId)
+    // Fetch products from all categories in batches (Firestore 'in' limit = 10)
+    const batchSize = 10;
+    let allProducts: ProductListItemBE[] = [];
+
+    console.log(
+      `Fetching products for category ${slug} (${categoryIds.length} categories including descendants)`
+    );
+
+    for (let i = 0; i < categoryIds.length; i += batchSize) {
+      const batch = categoryIds.slice(i, i + batchSize);
+
+      const productsSnapshot = await db
+        .collection("products")
+        .where("category_id", "in", batch)
+        .where("status", "==", "published")
         .get();
 
-      const subIds = subcategoriesSnapshot.docs.map((doc: any) => doc.id);
-      categoryIds = [...categoryIds, ...subIds];
+      const batchProducts = productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductListItemBE[];
+
+      allProducts.push(...batchProducts);
     }
 
-    // Build products query
-    let query = Collections.products().where(
-      "status",
-      "==",
-      "published",
-    ) as any;
-
-    // Filter by category IDs (Firestore has limit of 10 for 'in' operator)
-    if (categoryIds.length <= 10) {
-      query = query.where("categoryId", "in", categoryIds);
-    } else {
-      // Fallback to just the main category if too many subcategories
-      query = query.where("categoryId", "==", categoryId);
-    }
-
-    // Apply sorting
+    // Apply sorting field mapping
     const sortField =
       sortBy === "price"
         ? "price"
         : sortBy === "rating"
-          ? "averageRating"
-          : sortBy === "sales"
-            ? "soldCount"
-            : sortBy === "views"
-              ? "viewCount"
-              : "createdAt";
+        ? "average_rating"
+        : sortBy === "sales"
+        ? "sales_count"
+        : sortBy === "views"
+        ? "view_count"
+        : "created_at";
 
-    query = query.orderBy(sortField, sortOrder as "asc" | "desc");
+    // Apply client-side sorting (since we fetched from multiple batches)
+    allProducts.sort((a, b) => {
+      const aVal = (a as any)[sortField] || 0;
+      const bVal = (b as any)[sortField] || 0;
 
-    // Apply pagination
-    const offset = (page - 1) * limit;
-    if (offset > 0) {
-      const offsetSnapshot = await query.limit(offset).get();
-      if (!offsetSnapshot.empty) {
-        const lastDoc = offsetSnapshot.docs[offsetSnapshot.docs.length - 1];
-        query = query.startAfter(lastDoc);
+      if (sortOrder === "asc") {
+        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+      } else {
+        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
       }
-    }
+    });
 
-    query = query.limit(limit);
-
-    // Execute query
-    const productsSnapshot = await query.get();
-
-    const products = productsSnapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Get total count
-    let countQuery = Collections.products().where(
-      "status",
-      "==",
-      "published",
-    ) as any;
-
-    if (categoryIds.length <= 10) {
-      countQuery = countQuery.where("categoryId", "in", categoryIds);
-    } else {
-      countQuery = countQuery.where("categoryId", "==", categoryId);
-    }
-
-    const totalSnapshot = await countQuery.count().get();
-    const total = totalSnapshot.data().count;
+    // Apply client-side pagination
+    const total = allProducts.length;
     const totalPages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const paginatedProducts = allProducts.slice(offset, offset + limit);
+
+    // Transform to FE types for response
+    const productsForResponse = toFEProductCards(paginatedProducts);
 
     return NextResponse.json({
       success: true,
-      products,
+      data: productsForResponse,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasMore: page < totalPages,
       pagination: {
         page,
         limit,
@@ -125,6 +118,12 @@ export async function GET(
         totalPages,
         hasNext: page < totalPages,
         hasPrev: page > 1,
+      },
+      meta: {
+        categoryId: category.id,
+        categorySlug: slug,
+        descendantCategoryCount: categoryIds.length - 1, // Exclude self
+        totalCategoriesSearched: categoryIds.length,
       },
     });
   } catch (error: any) {
@@ -134,7 +133,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch category products",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

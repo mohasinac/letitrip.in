@@ -107,6 +107,7 @@ export interface ProductListItemBE {
   price: number;
   compareAtPrice?: number;
   images: string[];
+  videos?: string[];
   status: ProductStatus;
   stockCount: number;
   averageRating: number;

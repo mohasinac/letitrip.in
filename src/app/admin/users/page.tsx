@@ -194,25 +194,6 @@ export default function AdminUsersPage() {
 
       await usersService.update(userId, updates);
       await loadUsers();
-      return; // Exit early after using service
-
-      const response = await fetch("/admin/users", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, updates }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to update user");
-      }
-
-      // Update local state
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, ...result.data } : u))
-      );
-
       return true;
     } catch (err) {
       console.error("Failed to update user:", err);

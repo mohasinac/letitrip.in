@@ -14,6 +14,7 @@ import {
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
 import { auctionsService } from "@/services/auctions.service";
+import { notFound } from "@/lib/error-redirects";
 import { ShopHeader } from "@/components/shop/ShopHeader";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -84,9 +85,9 @@ export default function ShopPage({ params }: ShopPageProps) {
       setLoading(true);
       const data = await shopsService.getBySlug(slug);
       setShop(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load shop:", error);
-      router.push("/404");
+      router.push(notFound.shop(slug, error));
     } finally {
       setLoading(false);
     }

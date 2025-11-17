@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
+import { OrderStatus } from "@/types";
+import { notFound } from "@/lib/error-redirects";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import type { OrderFE } from "@/types/frontend/order.types";
 
@@ -48,9 +50,9 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
       setLoading(true);
       const data = await ordersService.getById(orderId);
       setOrder(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load order:", error);
-      router.push("/user/orders");
+      router.push(notFound.order(orderId, error));
     } finally {
       setLoading(false);
     }

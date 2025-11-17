@@ -19,6 +19,7 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
+import { notFound } from "@/lib/error-redirects";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { CategoryFE, ProductCardFE } from "@/types";
@@ -129,9 +130,9 @@ export default function CategoryDetailPage({ params }: PageProps) {
         isActive: true,
       });
       setSubcategories(subcats);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load category:", error);
-      setCategory(null);
+      router.push(notFound.category(slug, error));
     } finally {
       setLoading(false);
     }

@@ -36,6 +36,55 @@ Modern, scalable auction and e-commerce platform built for the Indian market wit
 - **Follow patterns** in `docs/ai/AI-AGENT-GUIDE.md` and `docs/project/`
 - **Test your changes** - Run test workflows before commits
 - **No mocks** - We have real APIs ready
+- **Media uploads** - Use `mediaService.upload()` which stores files in Firebase Storage and returns URLs for database storage
+
+### Media Upload Pattern
+
+**CRITICAL**: Files are uploaded to Firebase Storage, only URLs are stored in database.
+
+```typescript
+// ✅ CORRECT: Upload image/video and store URL
+const handleUpload = async (file: File) => {
+  const result = await mediaService.upload({
+    file,
+    context: "product", // or "auction", "shop", etc.
+  });
+
+  // result.url is what gets saved to database
+  setFormData((prev) => ({
+    ...prev,
+    images: [...prev.images, result.url],
+  }));
+};
+
+// ❌ WRONG: Never store file directly in database
+// ❌ WRONG: Never use Firebase Client SDK directly
+```
+
+**Implementation Example** (Product/Auction Forms):
+
+```typescript
+<input
+  type="file"
+  multiple
+  accept="image/*"
+  onChange={async (e) => {
+    const files = Array.from(e.target.files);
+    const uploadPromises = files.map((file) =>
+      mediaService.upload({ file, context: "product" })
+    );
+    const results = await Promise.all(uploadPromises);
+    const urls = results.map((r) => r.url);
+
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...urls],
+    }));
+  }}
+/>
+```
+
+See: `src/app/seller/products/create/page.tsx` for complete implementation with progress tracking.
 
 ## 📐 Architecture & Stack
 
