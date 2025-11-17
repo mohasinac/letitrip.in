@@ -20,7 +20,7 @@ export default function FeaturedProductsSection() {
       setLoading(true);
       // Try to get homepage products first
       let response = await productsService.list({
-        isFeatured: true,
+        featured: true,
         limit: 10,
       });
 
@@ -29,7 +29,7 @@ export default function FeaturedProductsSection() {
       // If less than 10, try to fill with featured products
       if (productsList.length < 10) {
         const additionalResponse = await productsService.list({
-          isFeatured: true,
+          featured: true,
           limit: 10 - productsList.length,
         });
 
@@ -92,7 +92,7 @@ export default function FeaturedProductsSection() {
             shopName="Shop" // Would come from shop data
             shopSlug={product.shopId}
             inStock={product.stockCount > 0}
-            isFeatured={product.isFeatured}
+            featured={product.featured}
             condition={product.condition}
             showShopName={true}
           />

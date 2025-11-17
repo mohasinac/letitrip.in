@@ -524,7 +524,7 @@ function CategoryDetailContent({ params }: PageProps) {
                           shopSlug={product.shopId}
                           shopId={product.shopId}
                           inStock={product.stockCount > 0}
-                          isFeatured={product.isFeatured}
+                          featured={product.featured}
                           condition={product.condition}
                           onAddToCart={handleAddToCart}
                           showShopName={true}

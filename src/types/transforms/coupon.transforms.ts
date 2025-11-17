@@ -182,7 +182,7 @@ export const toFECoupon = (couponBE: CouponBE): CouponFE => {
     canCombineWithOtherCoupons: couponBE.canCombineWithOtherCoupons,
     autoApply: couponBE.autoApply,
     isPublic: couponBE.isPublic,
-    isFeatured: couponBE.isFeatured,
+    featured: couponBE.featured,
     createdAt,
     updatedAt,
     isActive,
@@ -233,7 +233,7 @@ export const toFECouponCard = (couponBE: CouponBE): CouponCardFE => {
     usageCount: couponBE.usageCount,
     usageLimit: couponBE.usageLimit,
     isPublic: couponBE.isPublic,
-    isFeatured: couponBE.isFeatured,
+    featured: couponBE.featured,
     formattedDiscount: formatDiscount(couponBE),
     formattedValidUntil: `Valid until ${formatDate(endDate)}`,
     isActive,
@@ -286,7 +286,7 @@ export const toBECreateCouponRequest = (
     canCombineWithOtherCoupons: formData.canCombineWithOtherCoupons,
     autoApply: formData.autoApply,
     isPublic: formData.isPublic,
-    isFeatured: formData.isFeatured,
+    featured: formData.featured,
   };
 };
 
@@ -347,8 +347,7 @@ export const toBEUpdateCouponRequest = (
     request.canCombineWithOtherCoupons = formData.canCombineWithOtherCoupons;
   if (formData.autoApply !== undefined) request.autoApply = formData.autoApply;
   if (formData.isPublic !== undefined) request.isPublic = formData.isPublic;
-  if (formData.isFeatured !== undefined)
-    request.isFeatured = formData.isFeatured;
+  if (formData.featured !== undefined) request.featured = formData.featured;
 
   return request;
 };

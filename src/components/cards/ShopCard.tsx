@@ -21,7 +21,7 @@ export interface ShopCardProps {
   liveAuctionCount?: number;
   location?: string;
   isVerified?: boolean;
-  isFeatured?: boolean;
+  featured?: boolean;
   categories?: string[];
   onFollow?: (id: string) => void;
   isFollowing?: boolean;
@@ -44,7 +44,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
   liveAuctionCount = 0,
   location,
   isVerified = false,
-  isFeatured = false,
+  featured = false,
   categories = [],
   onFollow,
   isFollowing = false,
@@ -75,7 +75,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
             objectFit="cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
-          {isFeatured && (
+          {featured && (
             <div className="absolute top-2 left-2">
               <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
                 Featured Shop

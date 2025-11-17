@@ -12,8 +12,7 @@ export interface CategoryCardProps {
   image?: string;
   description?: string;
   productCount: number;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
+  featured?: boolean;
   parentCategory?: string;
   subcategoryCount?: number;
   variant?: "default" | "compact" | "large";
@@ -26,8 +25,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   image,
   description,
   productCount,
-  isFeatured = false,
-  showOnHomepage = false,
+  featured = false,
   parentCategory,
   subcategoryCount = 0,
   variant = "default",
@@ -72,14 +70,9 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {isFeatured && (
+          {featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Featured
-            </span>
-          )}
-          {showOnHomepage && (
-            <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
-              Popular
             </span>
           )}
         </div>

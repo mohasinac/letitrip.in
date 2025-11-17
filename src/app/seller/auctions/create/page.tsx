@@ -107,7 +107,7 @@ export default function CreateAuctionWizardPage() {
     shippingTerms: "",
     returnPolicy: "no-returns",
     status: "scheduled",
-    isFeatured: false,
+    featured: false,
   });
 
   // Load categories
@@ -255,7 +255,7 @@ export default function CreateAuctionWizardPage() {
         status: formData.status,
         images: formData.images,
         videos: formData.videos,
-        isFeatured: formData.isFeatured,
+        featured: formData.featured,
       };
 
       await auctionsService.create(auctionData);
@@ -1095,8 +1095,8 @@ export default function CreateAuctionWizardPage() {
               <input
                 type="checkbox"
                 id="featured"
-                checked={formData.isFeatured}
-                onChange={(e) => handleChange("isFeatured", e.target.checked)}
+                checked={formData.featured}
+                onChange={(e) => handleChange("featured", e.target.checked)}
                 className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <label htmlFor="featured" className="text-sm">

@@ -130,16 +130,10 @@ export default function AdminBlogPage() {
               await blogService.update(id, { status: "archived" as any });
               break;
             case "feature":
-              await blogService.update(id, { isFeatured: true });
+              await blogService.update(id, { featured: true });
               break;
             case "unfeature":
-              await blogService.update(id, { isFeatured: false });
-              break;
-            case "homepage":
-              await blogService.update(id, { showOnHomepage: true });
-              break;
-            case "remove-homepage":
-              await blogService.update(id, { showOnHomepage: false });
+              await blogService.update(id, { featured: false });
               break;
             case "delete":
               await blogService.delete(id);
@@ -360,11 +354,8 @@ export default function AdminBlogPage() {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <StatusBadge status={post.status} />
                       <div className="flex gap-1">
-                        {post.isFeatured && (
+                        {post.featured && (
                           <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        )}
-                        {post.showOnHomepage && (
-                          <Home className="h-4 w-4 text-blue-500" />
                         )}
                       </div>
                     </div>
@@ -506,16 +497,10 @@ export default function AdminBlogPage() {
                                 {post.excerpt}
                               </div>
                               <div className="flex gap-1 mt-1">
-                                {post.isFeatured && (
+                                {post.featured && (
                                   <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
                                     <Star className="h-3 w-3" />
                                     Featured
-                                  </span>
-                                )}
-                                {post.showOnHomepage && (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                    <Home className="h-3 w-3" />
-                                    Homepage
                                   </span>
                                 )}
                               </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { CategoryCard } from "@/components/cards/CategoryCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
@@ -92,18 +93,34 @@ export default function FeaturedCategoriesSection() {
 
   return (
     <div className="space-y-12 py-8">
-      <div className="mb-6">
+      <div className="mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Shop by Category
         </h2>
-        <p className="text-gray-600">Browse products from our top categories</p>
+        <p className="text-gray-600">
+          Explore our featured categories and their top products
+        </p>
       </div>
       {categoriesWithProducts.map(({ category, products }) => (
         <section key={category.id} className="space-y-4">
+          {/* Category Header Card */}
+          <div className="mb-4">
+            <CategoryCard
+              id={category.id}
+              name={category.name}
+              slug={category.slug}
+              image={category.image || category.icon || undefined}
+              description={category.description || undefined}
+              productCount={category.productCount || 0}
+              featured={category.featured}
+              variant="compact"
+            />
+          </div>
+
           <HorizontalScrollContainer
-            title={category.name}
+            title=""
             viewAllLink={`/categories/${category.slug}`}
-            viewAllText="View All"
+            viewAllText="View All in Category"
             itemWidth="280px"
             gap="1rem"
             headingLevel="h3"
@@ -122,7 +139,7 @@ export default function FeaturedCategoriesSection() {
                 shopName="Shop"
                 shopSlug={`/shops/${product.shopId}`}
                 inStock={product.stockCount > 0}
-                isFeatured={product.isFeatured}
+                featured={product.featured}
                 condition={product.condition}
                 showShopName={true}
                 compact={false}

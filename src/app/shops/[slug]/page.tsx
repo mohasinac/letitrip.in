@@ -113,7 +113,7 @@ export default function ShopPage({ params }: ShopPageProps) {
             : productFilters.stock === "out_of_stock"
             ? false
             : undefined,
-        isFeatured: productFilters.featured,
+        featured: productFilters.featured,
         rating: productFilters.rating,
       });
 
@@ -153,7 +153,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         apiFilters.maxBid = auctionFilters.bidMax;
       }
       if (auctionFilters.featured) {
-        apiFilters.isFeatured = true;
+        apiFilters.featured = true;
       }
       if (auctionFilters.endingSoon) {
         apiFilters.endingSoon = true;
@@ -438,7 +438,7 @@ export default function ShopPage({ params }: ShopPageProps) {
                           shopSlug={shop.slug}
                           shopId={shop.id}
                           inStock={product.stockCount > 0}
-                          isFeatured={product.isFeatured}
+                          featured={product.featured}
                           condition={product.condition}
                           showShopName={false}
                           onAddToCart={handleAddToCart}

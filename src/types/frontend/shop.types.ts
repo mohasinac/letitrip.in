@@ -73,8 +73,7 @@ export interface ShopFE {
   // Backwards compatibility aliases
   productCount?: number; // Alias for totalProducts
   follower_count?: number; // For admin pages
-  isFeatured?: boolean; // Derived from metadata
-  showOnHomepage?: boolean; // Derived from metadata
+  featured?: boolean; // Derived from metadata
   isBanned?: boolean; // status === 'banned'
   banReason?: string | null; // From metadata
 }
@@ -94,9 +93,8 @@ export interface ShopCardFE {
   // Backwards compatibility (admin pages)
   email?: string;
   location?: string; // Formatted location string
-  isFeatured?: boolean;
+  featured?: boolean;
   isBanned?: boolean;
-  showOnHomepage?: boolean;
   productCount?: number; // Alias for totalProducts
   reviewCount?: number;
   ownerId?: string;

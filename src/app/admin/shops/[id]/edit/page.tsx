@@ -241,8 +241,7 @@ export default function AdminEditShopPage() {
     if (!shop) return;
     try {
       await shopsService.setFeatureFlags(shop.slug, {
-        isFeatured: !shop.isFeatured,
-        showOnHomepage: shop.showOnHomepage || false,
+        featured: !shop.featured,
       });
       await loadShopData();
     } catch (error) {
@@ -352,7 +351,7 @@ export default function AdminEditShopPage() {
                     Banned
                   </span>
                 )}
-                {shop.isFeatured && (
+                {shop.featured && (
                   <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
                     Featured
                   </span>
@@ -462,13 +461,13 @@ export default function AdminEditShopPage() {
           <button
             onClick={handleFeature}
             className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${
-              shop.isFeatured
+              shop.featured
                 ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 : "bg-yellow-600 text-white hover:bg-yellow-700"
             }`}
           >
             <Star className="h-4 w-4" />
-            {shop.isFeatured ? "Remove Featured" : "Set Featured"}
+            {shop.featured ? "Remove Featured" : "Set Featured"}
           </button>
           <button
             onClick={() => setShowBanDialog(true)}

@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         const status = searchParams.get("status");
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
-        const isFeatured = searchParams.get("isFeatured");
+        const featured = searchParams.get("featured");
         const slug = searchParams.get("slug");
         const search = searchParams.get("search");
         const page = parseInt(searchParams.get("page") || "1");
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         if (status && user) {
           query = query.where("status", "==", status);
         }
-        if (isFeatured === "true") {
+        if (featured === "true") {
           query = query.where("is_featured", "==", true);
         }
         if (slug) {
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
             shopId: data.shop_id,
             categoryId: data.category_id,
             stockCount: data.stock_count,
-            isFeatured: data.is_featured,
+            featured: data.is_featured,
             isDeleted: data.is_deleted,
             originalPrice: data.original_price,
             reviewCount: data.review_count,
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     const images = body.images || [];
     const status = body.status || "draft";
     const stock_quantity = body.stock_quantity ?? body.stockCount ?? null;
-    const is_featured = body.is_featured ?? body.isFeatured ?? false;
+    const is_featured = body.is_featured ?? body.featured ?? false;
 
     // Validation
     const errors: Record<string, string> = {};

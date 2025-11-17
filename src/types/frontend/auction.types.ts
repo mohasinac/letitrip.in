@@ -143,7 +143,7 @@ export interface AuctionFE {
   currentBid?: number; // Alias for currentPrice
   name?: string; // Alias for productName
   description?: string; // Alias for productDescription
-  isFeatured?: boolean; // Derived from metadata
+  featured?: boolean; // Derived from metadata
   bidCount?: number; // Alias for totalBids
 }
 
@@ -181,7 +181,7 @@ export interface AuctionCardFE {
   reservePrice?: number | null; // For admin tables
   startTime?: Date; // For admin tables
   shopId?: string | null; // For admin tables
-  isFeatured?: boolean; // For admin tables
+  featured?: boolean; // For admin tables
 }
 
 /**

@@ -93,7 +93,7 @@ export default function CouponForm({
       initialData?.canCombineWithOtherCoupons || false,
     autoApply: initialData?.autoApply || false,
     isPublic: initialData?.isPublic || true,
-    isFeatured: initialData?.isFeatured || false,
+    featured: initialData?.featured || false,
   });
 
   const [codeError, setCodeError] = useState("");

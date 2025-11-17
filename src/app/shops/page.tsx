@@ -211,7 +211,7 @@ function ShopsContent() {
                         reviewCount={shop.reviewCount || 0}
                         productCount={shop.productCount || shop.totalProducts}
                         isVerified={shop.isVerified}
-                        isFeatured={shop.isFeatured}
+                        featured={shop.featured}
                         location={shop.location}
                       />
                     ))}
@@ -231,7 +231,7 @@ function ShopsContent() {
                         reviewCount={shop.reviewCount || 0}
                         productCount={shop.productCount || shop.totalProducts}
                         isVerified={shop.isVerified}
-                        isFeatured={shop.isFeatured}
+                        featured={shop.featured}
                         location={shop.location}
                         showBanner={false}
                         compact={true}

@@ -108,7 +108,7 @@ return NextResponse.json({
     stockCount: data.stock_count,
     compareAtPrice: data.compare_at_price,
     lowStockThreshold: data.low_stock_threshold,
-    isFeatured: data.is_featured,
+    featured: data.is_featured,
     isActive: data.is_active,
     isDeleted: data.is_deleted,
     isReturnable: data.is_returnable,
@@ -407,7 +407,7 @@ export async function GET(request: NextRequest, { params }: any) {
       trackInventory: data.track_inventory,
       compareAtPrice: data.compare_at_price,
       taxRate: data.tax_rate,
-      isFeatured: data.is_featured,
+      featured: data.is_featured,
       isActive: data.is_active,
       isDeleted: data.is_deleted,
       isReturnable: data.is_returnable,
@@ -469,7 +469,7 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
 | `category_id`          | `category_id`, `categoryId`          | `categoryId`         |
 | `stock_count`          | `stock_count`, `stockCount`          | `stockCount`         |
 | `compare_at_price`     | `compare_at_price`, `compareAtPrice` | `compareAtPrice`     |
-| `is_featured`          | `is_featured`, `isFeatured`          | `isFeatured`         |
+| `is_featured`          | `is_featured`, `featured`            | `featured`           |
 | `is_active`            | `is_active`, `isActive`              | `isActive`           |
 | `is_deleted`           | `is_deleted`, `isDeleted`            | `isDeleted`          |
 | `created_at`           | `created_at`, `createdAt`            | `createdAt`          |
@@ -500,7 +500,7 @@ function addCamelCaseAliases(data: any): any {
     taxRate: data.tax_rate,
 
     // Booleans
-    isFeatured: data.is_featured,
+    featured: data.is_featured,
     isActive: data.is_active,
     isDeleted: data.is_deleted,
     isReturnable: data.is_returnable,
@@ -592,7 +592,7 @@ async list(filters?: ProductFiltersFE): Promise<{ products: ProductCardFE[]; pag
     priceMax: filters?.priceRange?.max,
     status: filters?.status?.[0],
     inStock: filters?.inStock,
-    isFeatured: filters?.isFeatured,
+    featured: filters?.featured,
     page: filters?.page || 1,        // ✅ Use from filters
     limit: filters?.limit || 20,      // ✅ Use from filters
     sortBy: filters?.sortBy,
@@ -809,7 +809,7 @@ let shops = snapshot.docs.map((doc) => {
     // Add camelCase aliases
     ownerId: data.owner_id,
     isVerified: data.is_verified,
-    isFeatured: data.is_featured,
+    featured: data.is_featured,
     isBanned: data.is_banned,
     showOnHomepage: data.show_on_homepage,
     totalProducts: data.total_products || data.product_count || 0,

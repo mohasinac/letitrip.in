@@ -154,8 +154,8 @@ export default function AdminAuctionsPage() {
         start: { status: "live" as AuctionStatus },
         end: { status: "ended" as AuctionStatus },
         cancel: { status: "cancelled" as AuctionStatus },
-        feature: { isFeatured: true },
-        unfeature: { isFeatured: false },
+        feature: { featured: true },
+        unfeature: { featured: false },
       };
 
       if (actionId === "delete") {
@@ -221,7 +221,7 @@ export default function AdminAuctionsPage() {
       new Date(a.endTime).toISOString(),
       a.bidCount || a.totalBids || 0,
       a.shopId || "",
-      a.isFeatured ? "Yes" : "No",
+      a.featured ? "Yes" : "No",
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
@@ -566,7 +566,7 @@ export default function AdminAuctionsPage() {
                                 >
                                   {auction.name}
                                 </Link>
-                                {auction.isFeatured && (
+                                {auction.featured && (
                                   <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                                     Featured
                                   </span>
@@ -687,7 +687,7 @@ export default function AdminAuctionsPage() {
                           }}
                         />
                       </div>
-                      {auction.isFeatured && (
+                      {auction.featured && (
                         <div className="absolute top-2 left-2">
                           <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-400 text-yellow-900">
                             Featured

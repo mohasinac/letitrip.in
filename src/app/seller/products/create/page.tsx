@@ -55,7 +55,7 @@ export default function CreateProductPage() {
     // Step 6: SEO & Publish
     metaTitle: "",
     metaDescription: "",
-    isFeatured: false,
+    featured: false,
     status: "draft" as const,
 
     // System fields
@@ -996,15 +996,15 @@ export default function CreateProductPage() {
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                id="isFeatured"
-                checked={formData.isFeatured}
+                id="featured"
+                checked={formData.featured}
                 onChange={(e) =>
-                  setFormData({ ...formData, isFeatured: e.target.checked })
+                  setFormData({ ...formData, featured: e.target.checked })
                 }
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <label
-                htmlFor="isFeatured"
+                htmlFor="featured"
                 className="text-sm font-medium text-gray-700"
               >
                 Feature this product on homepage

@@ -62,7 +62,7 @@ function AuctionsContent() {
       }
 
       if (featured === "true") {
-        apiFilters.isFeatured = true;
+        apiFilters.featured = true;
       }
 
       if (searchQuery) {
@@ -232,13 +232,13 @@ function AuctionsContent() {
               />
             </div>
 
-            {/* Filter Toggle (Mobile) */}
+            {/* Filter Toggle Button */}
             <button
-              onClick={() => setShowFilters(true)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               <FilterIcon className="h-5 w-5" />
-              Filters
+              {showFilters ? "Hide" : "Show"} Filters
             </button>
 
             {/* View Toggle */}
@@ -356,7 +356,7 @@ function AuctionsContent() {
                         alt={auction.name}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      {auction.isFeatured && (
+                      {auction.featured && (
                         <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
                           ★ Featured
                         </div>
@@ -444,7 +444,7 @@ function AuctionsContent() {
                         alt={auction.name}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      {auction.isFeatured && (
+                      {auction.featured && (
                         <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
                           ★ Featured
                         </div>

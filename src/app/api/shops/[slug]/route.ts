@@ -58,7 +58,7 @@ export async function GET(
       // Add camelCase aliases
       ownerId: data.owner_id,
       isVerified: data.is_verified,
-      isFeatured: data.is_featured,
+      featured: data.is_featured,
       isBanned: data.is_banned,
       showOnHomepage: data.show_on_homepage,
       totalProducts: data.total_products || data.product_count || 0,

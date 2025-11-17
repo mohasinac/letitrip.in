@@ -45,7 +45,7 @@ class ProductsService {
       priceMax: filters?.priceRange?.max,
       status: filters?.status?.[0],
       inStock: filters?.inStock,
-      isFeatured: filters?.isFeatured,
+      featured: filters?.featured,
       page: filters?.page || 1,
       limit: filters?.limit || 20,
       sortBy: filters?.sortBy,
@@ -186,7 +186,7 @@ class ProductsService {
    */
   async getFeatured(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
-      isFeatured: true,
+      featured: true,
       status: "published",
       limit: 100,
     });
@@ -201,7 +201,7 @@ class ProductsService {
    */
   async getHomepage(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
-      isFeatured: true,
+      featured: true,
       status: "published",
       limit: 20,
     });

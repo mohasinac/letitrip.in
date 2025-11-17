@@ -63,9 +63,7 @@ export const createCategorySchema = z.object({
   sortOrder: z.number().int().min(0).default(0).optional(),
 
   // Flags
-  isFeatured: z.boolean().default(false).optional(),
-
-  showOnHomepage: z.boolean().default(false).optional(),
+  featured: z.boolean().default(false).optional(),
 
   isActive: z.boolean().default(true).optional(),
 
@@ -147,8 +145,7 @@ export const categoryQuerySchema = z.object({
   // Filters
   parentId: z.string().optional().nullable(), // null = root categories only
 
-  isFeatured: z.coerce.boolean().optional(),
-  showOnHomepage: z.coerce.boolean().optional(),
+  featured: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().optional(),
 
   // Hierarchy filters
@@ -189,8 +186,7 @@ export const validateLeafCategorySchema = z.object({
 export const bulkUpdateCategoriesSchema = z.object({
   categoryIds: z.array(z.string()).min(1),
   updates: z.object({
-    isFeatured: z.boolean().optional(),
-    showOnHomepage: z.boolean().optional(),
+    featured: z.boolean().optional(),
     isActive: z.boolean().optional(),
   }),
 });

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       try {
         const user = await getUserFromRequest(req);
         const { searchParams } = new URL(req.url);
-        const isFeatured = searchParams.get("isFeatured");
+        const featured = searchParams.get("featured");
         const showOnHomepage = searchParams.get("showOnHomepage");
         const parentId = searchParams.get("parentId");
 
@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
           query = query.where("is_active", "==", true);
         }
 
-        if (isFeatured !== null) {
-          query = query.where("is_featured", "==", isFeatured === "true");
+        if (featured !== null) {
+          query = query.where("is_featured", "==", featured === "true");
         }
         if (showOnHomepage !== null) {
           query = query.where(
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
               data.parent_ids || (data.parent_id ? [data.parent_id] : []),
             childrenIds: data.children_ids || [],
             parentId: data.parent_id, // Backward compatibility
-            isFeatured: data.is_featured,
+            featured: data.is_featured,
             showOnHomepage: data.show_on_homepage,
             isActive: data.is_active,
             productCount: data.product_count || 0,
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
           parentIds: createdData.parent_ids || [],
           childrenIds: createdData.children_ids || [],
           parentId: createdData.parent_id, // Backward compatibility
-          isFeatured: createdData.is_featured,
+          featured: createdData.is_featured,
           showOnHomepage: createdData.show_on_homepage,
           isActive: createdData.is_active,
           productCount: createdData.product_count || 0,

@@ -48,7 +48,7 @@ export async function GET(
         parentIds: data.parent_ids || (data.parent_id ? [data.parent_id] : []),
         childrenIds: data.children_ids || [],
         parentId: data.parent_id, // Backward compatibility
-        isFeatured: data.is_featured,
+        featured: data.is_featured,
         showOnHomepage: data.show_on_homepage,
         isActive: data.is_active,
         productCount: data.product_count || 0,
@@ -187,7 +187,7 @@ export async function PATCH(
           (updatedData.parent_id ? [updatedData.parent_id] : []),
         childrenIds: updatedData.children_ids || [],
         parentId: updatedData.parent_id, // Backward compatibility
-        isFeatured: updatedData.is_featured,
+        featured: updatedData.is_featured,
         showOnHomepage: updatedData.show_on_homepage,
         isActive: updatedData.is_active,
         productCount: updatedData.product_count || 0,

@@ -172,7 +172,7 @@ export default function CategoriesPage() {
                     <Tag className="w-3 h-3" />
                     <span>{category.productCount} products</span>
                   </div>
-                  {category.isFeatured && (
+                  {category.featured && (
                     <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-medium rounded">
                       Featured
                     </span>

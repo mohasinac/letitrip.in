@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
             ...catData,
             // Add camelCase aliases
             parentId: catData.parent_id,
-            isFeatured: catData.is_featured,
+            featured: catData.is_featured,
             showOnHomepage: catData.show_on_homepage,
             isActive: catData.is_active,
             productCount: catData.product_count || 0,

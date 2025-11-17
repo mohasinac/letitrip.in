@@ -22,7 +22,7 @@ interface ShopCardProps {
     description?: string;
     logo: string | null;
     isVerified: boolean;
-    isFeatured: boolean;
+    featured: boolean;
     isBanned: boolean;
     productCount?: number;
     rating?: number;
@@ -97,7 +97,7 @@ export default function ShopCard({
               Verified
             </span>
           )}
-          {shop.isFeatured && (
+          {shop.featured && (
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 shadow-sm">
               <Star className="w-3 h-3" />
               Featured

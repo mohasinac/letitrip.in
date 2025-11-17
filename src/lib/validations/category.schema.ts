@@ -26,7 +26,7 @@ export const categorySchema = z.object({
   image: z.string().url("Invalid image URL").optional(),
   banner: z.string().url("Invalid banner URL").optional(),
   isActive: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
+  featured: z.boolean().default(false),
   sortOrder: z
     .number()
     .int("Sort order must be a whole number")

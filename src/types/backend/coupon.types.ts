@@ -80,7 +80,7 @@ export interface CouponBE {
   // Display
   autoApply: boolean;
   isPublic: boolean;
-  isFeatured: boolean;
+  featured: boolean;
 
   // Audit
   createdAt: Timestamp;
@@ -128,7 +128,7 @@ export interface CreateCouponRequestBE {
   canCombineWithOtherCoupons: boolean;
   autoApply: boolean;
   isPublic: boolean;
-  isFeatured: boolean;
+  featured: boolean;
 }
 
 /**

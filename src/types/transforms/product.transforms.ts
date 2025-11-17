@@ -96,7 +96,7 @@ function getStockStatus(
 function generateBadges(product: {
   createdAt: Date;
   discountPercentage: number | null;
-  isFeatured: boolean;
+  featured: boolean;
   stockStatus: string;
   salesCount: number;
 }): ProductBadge[] {
@@ -120,7 +120,7 @@ function generateBadges(product: {
   }
 
   // Featured badge
-  if (product.isFeatured) {
+  if (product.featured) {
     badges.push({ type: "featured", label: "Featured", color: "purple" });
   }
 
@@ -214,7 +214,7 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
     // Status
     status: productBE.status,
     condition: productBE.condition,
-    isFeatured: productBE.isFeatured,
+    featured: productBE.featured,
     isReturnable: productBE.isReturnable,
     isPublished: productBE.status === ProductStatus.PUBLISHED,
 
@@ -270,7 +270,7 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
   productFE.badges = generateBadges({
     createdAt,
     discountPercentage,
-    isFeatured: productBE.isFeatured,
+    featured: productBE.featured,
     stockStatus,
     salesCount: productBE.salesCount || 0,
   });
@@ -297,7 +297,7 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
   const badges = generateBadges({
     createdAt,
     discountPercentage,
-    isFeatured: productBE.isFeatured,
+    featured: productBE.featured,
     stockStatus,
     salesCount: 0, // Not available in list item
   });
@@ -318,7 +318,7 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
     ratingStars,
     reviewCount: productBE.reviewCount,
     shopId: productBE.shopId,
-    isFeatured: productBE.isFeatured,
+    featured: productBE.featured,
     badges,
 
     // Backwards compatibility aliases
@@ -363,7 +363,7 @@ export function toBEProductCreate(formFE: ProductFormFE): any {
     specifications: formFE.specifications || {},
     metaTitle: formFE.metaTitle || "",
     metaDescription: formFE.metaDescription || "",
-    isFeatured: formFE.isFeatured || false,
+    featured: formFE.featured || false,
     isReturnable: true,
     countryOfOrigin: "India",
     trackInventory: true,
@@ -407,8 +407,7 @@ export function toBEProductUpdate(formFE: Partial<ProductFormFE>): any {
   if (formFE.metaTitle !== undefined) updateData.metaTitle = formFE.metaTitle;
   if (formFE.metaDescription !== undefined)
     updateData.metaDescription = formFE.metaDescription;
-  if (formFE.isFeatured !== undefined)
-    updateData.isFeatured = formFE.isFeatured;
+  if (formFE.featured !== undefined) updateData.featured = formFE.featured;
 
   return updateData;
 }

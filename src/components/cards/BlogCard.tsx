@@ -22,7 +22,7 @@ export interface BlogCardProps {
   publishedAt?: Date | string;
   views?: number;
   likes?: number;
-  isFeatured?: boolean;
+  featured?: boolean;
   readTime?: number; // in minutes
   compact?: boolean;
   onLike?: (id: string) => void;
@@ -41,7 +41,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   publishedAt,
   views = 0,
   likes = 0,
-  isFeatured = false,
+  featured = false,
   readTime,
   compact = false,
   onLike,
@@ -85,7 +85,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {isFeatured && (
+          {featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Featured
             </span>

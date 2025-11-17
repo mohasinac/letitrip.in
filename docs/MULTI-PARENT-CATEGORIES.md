@@ -79,7 +79,7 @@ const category = await categoriesService.create({
   description: "Wireless audio devices",
   parentIds: ["electronics", "mobile-accessories"], // Multiple parents
   sortOrder: 1,
-  isFeatured: true,
+  featured: true,
   showOnHomepage: true,
   isActive: true,
   commissionRate: 12,

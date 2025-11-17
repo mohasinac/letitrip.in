@@ -24,8 +24,7 @@ interface ShopVerificationData {
 }
 
 interface ShopFeatureData {
-  isFeatured: boolean;
-  showOnHomepage: boolean;
+  featured: boolean;
 }
 
 interface ShopBanData {

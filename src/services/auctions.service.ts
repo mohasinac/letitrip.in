@@ -139,13 +139,13 @@ class AuctionsService {
   // Set featured auction (admin only)
   async setFeatured(
     id: string,
-    isFeatured: boolean,
+    featured: boolean,
     priority?: number
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       `/auctions/${id}/feature`,
       {
-        isFeatured,
+        featured,
         featuredPriority: priority,
       }
     );

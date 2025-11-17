@@ -108,8 +108,7 @@ export default function InlineCategorySelectorWithCreate({
         icon: null,
         parentIds: [],
         order: 0,
-        isFeatured: false,
-        showOnHomepage: false,
+        featured: false,
         isActive: true,
       });
 

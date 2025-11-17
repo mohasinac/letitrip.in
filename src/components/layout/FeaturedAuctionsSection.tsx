@@ -19,7 +19,7 @@ export default function FeaturedAuctionsSection() {
     try {
       setLoading(true);
       const response = await auctionsService.list({
-        isFeatured: true,
+        featured: true,
         status: AuctionStatus.ACTIVE,
         limit: 10,
       } as any);
@@ -81,7 +81,7 @@ export default function FeaturedAuctionsSection() {
                 startingBid: auction.startingBid || 0,
                 bidCount: auction.bidCount || 0,
                 endTime: auction.endTime,
-                isFeatured: auction.isFeatured,
+                featured: auction.featured,
                 shop: auction.shopId
                   ? {
                       id: auction.shopId,

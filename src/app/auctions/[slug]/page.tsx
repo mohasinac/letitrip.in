@@ -262,7 +262,7 @@ export default function AuctionDetailPage() {
                     alt={auction.name}
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                   />
-                  {auction.isFeatured && (
+                  {auction.featured && (
                     <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                       ★ Featured
                     </div>

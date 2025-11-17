@@ -110,7 +110,7 @@ export function SimilarProducts({
             shopName={product.shopId}
             shopSlug={product.shopId}
             inStock={product.stockCount > 0}
-            isFeatured={product.isFeatured}
+            featured={product.featured}
             condition={product.condition}
             showShopName={true}
           />

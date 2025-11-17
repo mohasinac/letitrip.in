@@ -148,8 +148,8 @@ export default function CategoriesPage() {
       const mappedData = data.map((cat) => ({
         ...cat,
         parent_id: cat.parentId || null,
-        is_featured: cat.isFeatured || false,
-        show_on_homepage: cat.showOnHomepage || false,
+        is_featured: cat.featured || false,
+        show_on_homepage: cat.featured || false,
         is_active: cat.isActive !== false,
         sort_order: cat.sortOrder || 0,
         created_at: cat.createdAt || new Date().toISOString(),
@@ -437,8 +437,7 @@ export default function CategoriesPage() {
                         slug: values.name.toLowerCase().replace(/\s+/g, "-"),
                         parentId: values.parent_id || null,
                         image: values.image || "",
-                        isFeatured: values.is_featured || false,
-                        showOnHomepage: values.show_on_homepage || false,
+                        featured: values.is_featured || false,
                         isActive: values.is_active !== false,
                         sortOrder: 0,
                       } as any);
@@ -500,8 +499,7 @@ export default function CategoriesPage() {
                               name: values.name,
                               parentId: values.parent_id || null,
                               image: values.image || undefined,
-                              isFeatured: values.is_featured,
-                              showOnHomepage: values.show_on_homepage,
+                              featured: values.is_featured,
                               isActive: values.is_active,
                             });
                             await loadCategories();

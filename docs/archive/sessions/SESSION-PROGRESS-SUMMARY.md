@@ -125,7 +125,7 @@ export interface ProductFiltersFE {
     max: number;
   };
   inStock?: boolean;
-  isFeatured?: boolean;
+  featured?: boolean;
   rating?: number;
   sortBy?:
     | "relevance"

@@ -24,8 +24,7 @@ export default function CreateBlogPostPage() {
     category: "",
     tags: [] as string[],
     status: "draft" as "draft" | "published",
-    isFeatured: false,
-    showOnHomepage: false,
+    featured: false,
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -433,25 +432,13 @@ export default function CreateBlogPostPage() {
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              name="isFeatured"
-              checked={formData.isFeatured}
+              name="featured"
+              checked={formData.featured}
               onChange={handleInputChange}
               className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
             />
             <span className="text-sm text-gray-700">
-              Feature this post (show in featured section)
-            </span>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="showOnHomepage"
-              checked={formData.showOnHomepage}
-              onChange={handleInputChange}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-            />
-            <span className="text-sm text-gray-700">
-              Show on homepage (display in homepage blog section)
+              Feature this post (show in featured sections and homepage)
             </span>
           </label>
         </div>

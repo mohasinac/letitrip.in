@@ -73,8 +73,7 @@ export default function AdminEditProductPage() {
     metaTitle: "",
     metaDescription: "",
     status: "draft" as ProductStatus,
-    isFeatured: false,
-    showOnHomepage: false,
+    featured: false,
     shippingClass: ShippingClass.STANDARD,
   });
 
@@ -147,8 +146,7 @@ export default function AdminEditProductPage() {
         metaTitle: productData.metaTitle || "",
         metaDescription: productData.metaDescription || "",
         status: productData.status,
-        isFeatured: productData.isFeatured || false,
-        showOnHomepage: productData.showOnHomepage || false,
+        featured: productData.featured || false,
         shippingClass: (productData.shippingClass ||
           "standard") as ShippingClass,
       });
@@ -919,27 +917,15 @@ export default function AdminEditProductPage() {
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={formData.isFeatured}
+                  checked={formData.featured}
                   onChange={(e) =>
-                    setFormData({ ...formData, isFeatured: e.target.checked })
+                    setFormData({ ...formData, featured: e.target.checked })
                   }
                   className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
-                <span className="text-sm text-gray-700">Featured Product</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.showOnHomepage}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      showOnHomepage: e.target.checked,
-                    })
-                  }
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">Show on Homepage</span>
+                <span className="text-sm text-gray-700">
+                  Featured Product (shown in featured sections and homepage)
+                </span>
               </label>
             </div>
           </div>

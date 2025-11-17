@@ -227,7 +227,7 @@ export function ProductCard({
 
       {/* Status badges */}
       <div className="flex gap-2 mt-2">
-        {product.isFeatured && (
+        {product.featured && (
           <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">
             Featured
           </span>

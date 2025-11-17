@@ -140,8 +140,8 @@ export default function AdminProductsPage() {
       const actionMap: Record<string, any> = {
         approve: { status: "published" as ProductStatus },
         reject: { status: "archived" as ProductStatus },
-        feature: { isFeatured: true },
-        unfeature: { isFeatured: false },
+        feature: { featured: true },
+        unfeature: { featured: false },
       };
 
       if (actionId === "delete") {
@@ -387,7 +387,7 @@ export default function AdminProductsPage() {
                         <Package size={48} />
                       </div>
                     )}
-                    {product.isFeatured && (
+                    {product.featured && (
                       <div className="absolute top-2 right-2">
                         <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
                           Featured
@@ -586,7 +586,7 @@ export default function AdminProductsPage() {
                                 <div className="text-sm text-gray-500 truncate">
                                   {product.sku || "No SKU"}
                                 </div>
-                                {product.isFeatured && (
+                                {product.featured && (
                                   <span className="inline-block mt-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
                                     Featured
                                   </span>

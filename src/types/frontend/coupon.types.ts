@@ -82,7 +82,7 @@ export interface CouponFE {
   // Display
   autoApply: boolean;
   isPublic: boolean;
-  isFeatured: boolean;
+  featured: boolean;
 
   // Audit
   createdAt: Date;
@@ -122,7 +122,7 @@ export interface CouponCardFE {
   usageCount: number;
   usageLimit?: number;
   isPublic: boolean;
-  isFeatured: boolean;
+  featured: boolean;
 
   // UI helpers
   formattedDiscount: string;
@@ -171,7 +171,7 @@ export interface CouponFormFE {
   canCombineWithOtherCoupons: boolean;
   autoApply: boolean;
   isPublic: boolean;
-  isFeatured: boolean;
+  featured: boolean;
 }
 
 /**
@@ -208,5 +208,5 @@ export interface CouponFiltersFE {
   status?: CouponStatus;
   search?: string;
   isPublic?: boolean;
-  isFeatured?: boolean;
+  featured?: boolean;
 }

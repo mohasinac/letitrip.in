@@ -148,14 +148,12 @@ export default function AdminShopsPage() {
               break;
             case "feature":
               await shopsService.setFeatureFlags(shop.slug, {
-                isFeatured: true,
-                showOnHomepage: shop.showOnHomepage || false,
+                featured: true,
               });
               break;
             case "unfeature":
               await shopsService.setFeatureFlags(shop.slug, {
-                isFeatured: false,
-                showOnHomepage: false,
+                featured: false,
               });
               break;
             case "ban":
@@ -212,7 +210,7 @@ export default function AdminShopsPage() {
       s.email || "",
       s.location || "",
       s.isVerified ? "Yes" : "No",
-      s.isFeatured ? "Yes" : "No",
+      s.featured ? "Yes" : "No",
       s.isBanned ? "Yes" : "No",
       s.productCount,
       s.rating,
@@ -398,12 +396,12 @@ export default function AdminShopsPage() {
                       </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2 text-sm">
-                      {shop.isFeatured && (
+                      {shop.featured && (
                         <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
                           Featured
                         </span>
                       )}
-                      {shop.showOnHomepage && (
+                      {shop.featured && (
                         <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
                           Homepage
                         </span>
@@ -505,8 +503,7 @@ export default function AdminShopsPage() {
                             initialValues={{
                               name: shop.name,
                               isVerified: shop.isVerified,
-                              isFeatured: shop.isFeatured,
-                              showOnHomepage: shop.showOnHomepage,
+                              featured: shop.featured,
                             }}
                             onSave={async (values) => {
                               try {
@@ -534,15 +531,11 @@ export default function AdminShopsPage() {
                                     isVerified: values.isVerified,
                                   });
                                 }
-                                if (
-                                  values.isFeatured !== shop.isFeatured ||
-                                  values.showOnHomepage !== shop.showOnHomepage
-                                ) {
+                                if (values.featured !== shop.featured) {
                                   await shopsService.setFeatureFlags(
                                     shop.slug,
                                     {
-                                      isFeatured: values.isFeatured,
-                                      showOnHomepage: values.showOnHomepage,
+                                      featured: values.featured,
                                     }
                                   );
                                 }
@@ -638,12 +631,12 @@ export default function AdminShopsPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex flex-col gap-1">
-                              {shop.isFeatured && (
+                              {shop.featured && (
                                 <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
                                   Featured
                                 </span>
                               )}
-                              {shop.showOnHomepage && (
+                              {shop.featured && (
                                 <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
                                   Homepage
                                 </span>

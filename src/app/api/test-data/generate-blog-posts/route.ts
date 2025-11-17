@@ -122,8 +122,7 @@ ${faker.lorem.paragraph()}
         category: category,
         tags: tags,
         status: status,
-        isFeatured: Math.random() < 0.2, // 20% featured
-        showOnHomepage: Math.random() < 0.3, // 30% on homepage
+        featured: Math.random() < 0.3, // 30% featured (consolidated from featured + showOnHomepage)
         publishedAt: status === "published" ? publishedAt.toISOString() : null,
         createdAt: publishedAt.toISOString(),
         updatedAt: new Date().toISOString(),
@@ -144,7 +143,7 @@ ${faker.lorem.paragraph()}
         slug: post.slug,
         category: post.category,
         status: post.status,
-        isFeatured: post.isFeatured,
+        featured: post.featured,
       })),
     });
   } catch (error: any) {

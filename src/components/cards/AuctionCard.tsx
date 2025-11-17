@@ -26,7 +26,7 @@ export interface AuctionCardProps {
     bidCount: number;
     endTime: Date | string;
     condition?: "new" | "used" | "refurbished";
-    isFeatured?: boolean;
+    featured?: boolean;
     shop?: {
       id: string;
       name: string;
@@ -152,12 +152,12 @@ export default function AuctionCard({
   return (
     <Link
       href={`/auctions/${auction.slug}`}
-      className="group block bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all duration-200"
+      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image/Video Section */}
-      <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gray-100">
         {allMedia.length > 0 ? (
           currentMedia.type === "video" && isHovered ? (
             <video
@@ -195,76 +195,117 @@ export default function AuctionCard({
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {auction.isFeatured && (
+          {auction.featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
-              FEATURED
-            </span>
-          )}
-          {auction.condition && (
-            <span className="bg-gray-900 text-white text-xs font-semibold px-2 py-1 rounded uppercase">
-              {auction.condition}
+              Featured
             </span>
           )}
           {isEnded && (
-            <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
-              ENDED
+            <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
+              Ended
             </span>
           )}
           {isEndingSoon && !isEnded && (
-            <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded animate-pulse">
-              ENDING SOON
+            <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded animate-pulse">
+              Ending Soon
+            </span>
+          )}
+          {auction.condition && auction.condition !== "new" && (
+            <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded capitalize">
+              {auction.condition}
             </span>
           )}
         </div>
 
-        {/* Watch Button */}
-        <button
-          onClick={handleWatchClick}
-          className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-          aria-label={isWatched ? "Remove from watchlist" : "Add to watchlist"}
-        >
-          <Heart
-            size={20}
-            className={
-              isWatched ? "fill-red-500 text-red-500" : "text-gray-600"
-            }
-          />
-        </button>
-
-        {/* View Count */}
-        {auction.viewCount && auction.viewCount > 0 && (
-          <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
-            <Eye size={12} />
-            <span>{auction.viewCount}</span>
-          </div>
-        )}
-
         {/* Media Indicators */}
         {allMedia.length > 1 && isHovered && (
-          <div className="absolute bottom-2 right-2 flex items-center gap-1">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
             {allMedia.map((_, index) => (
               <div
                 key={index}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${
-                  index === currentMediaIndex ? "bg-white w-4" : "bg-white/50"
+                className={`h-1.5 rounded-full transition-all ${
+                  index === currentMediaIndex
+                    ? "w-4 bg-white"
+                    : "w-1.5 bg-white/50"
                 }`}
               />
             ))}
           </div>
         )}
+
+        {/* Media Count Badge */}
+        {allMedia.length > 1 && (
+          <div className="absolute bottom-2 right-2 flex gap-1">
+            {auction.images && auction.images.length > 0 && (
+              <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+                <svg
+                  className="w-3 h-3"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {auction.images.length}
+              </span>
+            )}
+            {auction.videos && auction.videos.length > 0 && (
+              <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+                <svg
+                  className="w-3 h-3"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                </svg>
+                {auction.videos.length}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {onWatch && (
+            <button
+              onClick={handleWatchClick}
+              className={`p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
+                isWatched ? "text-red-500" : "text-gray-600"
+              }`}
+              aria-label={
+                isWatched ? "Remove from watchlist" : "Add to watchlist"
+              }
+            >
+              <Heart className={`w-5 h-5 ${isWatched ? "fill-current" : ""}`} />
+            </button>
+          )}
+          {auction.viewCount && auction.viewCount > 0 && (
+            <div className="p-2 rounded-full bg-white shadow-md text-gray-600 flex items-center gap-1 text-xs">
+              <Eye size={14} />
+              <span>
+                {auction.viewCount > 999
+                  ? `${Math.floor(auction.viewCount / 1000)}k`
+                  : auction.viewCount}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content Section */}
-      <div className="p-4">
+      <div className="p-3">
         {/* Shop Info */}
         {showShopInfo && auction.shop && (
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-1.5 mb-2">
             {auction.shop.logo && (
               <OptimizedImage
                 src={auction.shop.logo}
                 alt={auction.shop.name}
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 quality={90}
                 className="rounded-full"
               />
@@ -274,7 +315,7 @@ export default function AuctionCard({
             </span>
             {auction.shop.isVerified && (
               <svg
-                className="w-4 h-4 text-blue-500 flex-shrink-0"
+                className="w-3.5 h-3.5 text-blue-500 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -289,36 +330,36 @@ export default function AuctionCard({
         )}
 
         {/* Auction Name */}
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors min-h-[2.5rem]">
           {auction.name}
         </h3>
 
         {/* Current Bid */}
         <div className="mb-2">
-          <div className="text-xs text-gray-500 mb-1">Current Bid</div>
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-green-600">
+            <span className="text-lg font-bold text-gray-900">
               {formatCurrency(currentBid)}
             </span>
             {auction.bidCount > 0 && (
               <span className="text-xs text-gray-500">
-                ({auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"})
+                {auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"}
               </span>
             )}
           </div>
+          <div className="text-xs text-gray-500">Current Bid</div>
         </div>
 
         {/* Time Remaining */}
         <div
-          className={`flex items-center gap-1 text-sm ${
+          className={`flex items-center gap-1 text-xs mb-3 ${
             isEnded
               ? "text-gray-500"
               : isEndingSoon
-              ? "text-red-600 font-semibold"
-              : "text-gray-700"
+              ? "text-orange-600 font-medium"
+              : "text-gray-600"
           }`}
         >
-          <Clock size={14} />
+          <Clock size={12} />
           <span>{isEnded ? "Ended" : formatTimeRemaining(endTime)}</span>
         </div>
 
@@ -328,10 +369,10 @@ export default function AuctionCard({
             e.preventDefault();
             // This would typically open a quick bid modal
           }}
-          className={`mt-3 w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
+          className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
             isEnded
-              ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
           }`}
           disabled={isEnded}
         >

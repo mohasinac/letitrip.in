@@ -225,7 +225,7 @@ export const PRODUCT_FIELDS: FormField[] = [
     group: "shipping",
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     defaultValue: false,
@@ -373,7 +373,7 @@ export const AUCTION_FIELDS: FormField[] = [
     group: "basic",
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     defaultValue: false,
@@ -469,7 +469,7 @@ export const CATEGORY_FIELDS: FormField[] = [
     group: "display",
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     defaultValue: false,
@@ -637,7 +637,7 @@ export const SHOP_FIELDS: FormField[] = [
     showInWizard: false,
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     defaultValue: false,

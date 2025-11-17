@@ -201,7 +201,7 @@ export default function BlogListClient() {
                 publishedAt={blog.publishedAt}
                 views={blog.views}
                 likes={blog.likes}
-                isFeatured={blog.isFeatured}
+                featured={blog.featured}
               />
             ))}
           </div>

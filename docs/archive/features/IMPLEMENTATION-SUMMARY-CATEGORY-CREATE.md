@@ -128,7 +128,7 @@ Uses existing `categoriesService.create()` method with minimal required data:
   description?: string;   // Optional user input
   parentIds: [];         // Empty for root category
   sortOrder: 0;          // Default
-  isFeatured: false;     // Default
+  featured: false;     // Default
   showOnHomepage: false; // Default
   isActive: true;        // Active by default
   commissionRate: 0;     // Default

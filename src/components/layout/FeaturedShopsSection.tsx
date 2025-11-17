@@ -28,7 +28,7 @@ export default function FeaturedShopsSection() {
     try {
       setLoading(true);
       const shopsData = await shopsService.list({
-        showOnHomepage: true,
+        featured: true,
         limit: 3, // Reduced from 5 to 3
       });
       const shops = shopsData.data;
@@ -142,7 +142,7 @@ export default function FeaturedShopsSection() {
                 shopName={shop.name}
                 shopSlug={shop.slug}
                 inStock={product.stockCount > 0}
-                isFeatured={product.isFeatured}
+                featured={product.featured}
                 condition={product.condition}
                 showShopName={false}
                 compact={false}
