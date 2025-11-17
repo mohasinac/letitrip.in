@@ -44,19 +44,13 @@ class CategoriesService {
     const queryString = params.toString();
     const endpoint = queryString ? `/categories?${queryString}` : "/categories";
 
-    const response = await apiService.get<{
-      success: boolean;
-      data: CategoryBE[];
-    }>(endpoint);
+    const response: any = await apiService.get(endpoint);
     return toFECategories(response.data || []);
   }
 
   // Get category by ID
   async getById(id: string): Promise<CategoryFE> {
-    const response = await apiService.get<{
-      success: boolean;
-      data: CategoryBE;
-    }>(`/categories/${id}`);
+    const response: any = await apiService.get(`/categories/${id}`);
     return toFECategory(response.data);
   }
 

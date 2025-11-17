@@ -20,6 +20,8 @@ export async function GET(request: NextRequest) {
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
     const shopId = searchParams.get("shop_id");
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "50", 10);
 
     let query: FirebaseFirestore.Query = Collections.auctions();
     if (role === "guest" || role === "user") {
@@ -28,13 +30,42 @@ export async function GET(request: NextRequest) {
       query = query.where("shop_id", "==", shopId);
     } else if (role === "seller" && !shopId) {
       // require shopId for seller scoped queries
-      return NextResponse.json({ success: true, data: [] });
+      return NextResponse.json({
+        success: true,
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      });
     }
 
-    const snapshot = await query.limit(200).get();
-    const auctions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    // Get all auctions for pagination
+    const snapshot = await query.get();
+    const allAuctions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-    return NextResponse.json({ success: true, data: auctions });
+    // Calculate pagination
+    const total = allAuctions.length;
+    const totalPages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const paginatedAuctions = allAuctions.slice(offset, offset + limit);
+
+    return NextResponse.json({
+      success: true,
+      data: paginatedAuctions,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (error) {
     console.error("Error listing auctions:", error);
     return NextResponse.json(

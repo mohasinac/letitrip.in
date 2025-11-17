@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         // Build role-based query
         let query = getShopsQuery(role, userId);
 
+        const page = parseInt(searchParams.get("page") || "1");
         const limit = filters.limit ? parseInt(filters.limit) : 20;
 
         // Use composite indexes for optimal performance
@@ -169,20 +170,28 @@ export async function GET(request: NextRequest) {
           canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
         }
 
+        // Calculate pagination
+        const total = shops.length;
+        const totalPages = Math.ceil(total / limit);
+        const offset = (page - 1) * limit;
+        const paginatedShops = shops.slice(offset, offset + limit);
+
         // Return consistent response format
         return NextResponse.json({
           success: true,
-          data: shops, // Use 'data' for consistency with other APIs
-          shops, // Keep for backward compatibility
+          data: paginatedShops, // Use 'data' for consistency with other APIs
+          shops: paginatedShops, // Keep for backward compatibility
           canCreateMore,
-          total: shops.length,
+          total,
           pagination: {
-            page: 1,
+            page,
             limit,
-            total: shops.length,
-            totalPages: 1,
-            hasNext: false,
-            hasPrev: false,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
           },
         });
       } catch (error: any) {

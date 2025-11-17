@@ -570,7 +570,7 @@ const snapshot = await query.limit(limit).get();
 return NextResponse.json({
   success: true,
   data: products,
-  count: products.length,  // No pagination metadata
+  count: products.length, // No pagination metadata
 });
 ```
 
@@ -623,10 +623,14 @@ let allProducts = countSnapshot.docs.map((doc) => ({
 
 // Apply client-side filters (price, search)
 if (minPrice) {
-  allProducts = allProducts.filter((p: any) => (p.price ?? 0) >= parseFloat(minPrice));
+  allProducts = allProducts.filter(
+    (p: any) => (p.price ?? 0) >= parseFloat(minPrice)
+  );
 }
 if (maxPrice) {
-  allProducts = allProducts.filter((p: any) => (p.price ?? 0) <= parseFloat(maxPrice));
+  allProducts = allProducts.filter(
+    (p: any) => (p.price ?? 0) <= parseFloat(maxPrice)
+  );
 }
 if (search) {
   const searchLower = search.toLowerCase();
@@ -662,9 +666,11 @@ return NextResponse.json({
 ### Where to Fix
 
 **Service Layer:**
+
 - `src/services/products.service.ts` - `list()` method
 
 **API Routes:**
+
 - `src/app/api/products/route.ts` - GET endpoint
 - Any other list endpoints (shops, categories, orders, etc.)
 
@@ -698,12 +704,14 @@ curl "http://localhost:3000/api/products?page=2&limit=10" | jq '.data | length'
 ### Common Mistakes
 
 ❌ **Using Firestore `.limit()` for pagination**:
+
 ```typescript
 // This doesn't work with client-side filters
 const snapshot = await query.limit(limit).get();
 ```
 
 ✅ **Get all, filter, then slice**:
+
 ```typescript
 // Get all matching products
 const snapshot = await query.get();
@@ -714,17 +722,19 @@ const paginatedProducts = products.slice(offset, offset + limit);
 ```
 
 ❌ **Forgetting pagination metadata**:
+
 ```typescript
 // Frontend can't show page numbers
 return { success: true, data: products };
 ```
 
 ✅ **Include full pagination object**:
+
 ```typescript
 return {
   success: true,
   data: products,
-  pagination: { page, limit, total, totalPages, hasNextPage, hasPrevPage }
+  pagination: { page, limit, total, totalPages, hasNextPage, hasPrevPage },
 };
 ```
 
