@@ -61,17 +61,17 @@ class UsersService {
 
   // Get user by ID (self/admin)
   async getById(id: string): Promise<UserFE> {
-    const userBE = await apiService.get<UserBE>(USER_ROUTES.BY_ID(id));
-    return toFEUser(userBE);
+    const response: any = await apiService.get(USER_ROUTES.BY_ID(id));
+    return toFEUser(response.data);
   }
 
   // Update user (self/admin)
   async update(id: string, formData: UserProfileFormFE): Promise<UserFE> {
     const request = toBEUpdateUserRequest(formData);
-    const userBE = await apiService.patch<UserBE>(USER_ROUTES.BY_ID(id), {
+    const response: any = await apiService.patch(USER_ROUTES.BY_ID(id), {
       updates: request,
     });
-    return toFEUser(userBE);
+    return toFEUser(response.data);
   }
 
   // Ban user (admin only)
@@ -81,18 +81,15 @@ class UsersService {
     banReason?: string
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
-    const userBE = await apiService.patch<UserBE>(USER_ROUTES.BAN(id), request);
-    return toFEUser(userBE);
+    const response: any = await apiService.patch(USER_ROUTES.BAN(id), request);
+    return toFEUser(response.data);
   }
 
   // Change user role (admin only)
   async changeRole(id: string, role: string, notes?: string): Promise<UserFE> {
     const request = toBEChangeRoleRequest(role, notes);
-    const userBE = await apiService.patch<UserBE>(
-      USER_ROUTES.ROLE(id),
-      request
-    );
-    return toFEUser(userBE);
+    const response: any = await apiService.patch(USER_ROUTES.ROLE(id), request);
+    return toFEUser(response.data);
   }
 
   // Get current user profile

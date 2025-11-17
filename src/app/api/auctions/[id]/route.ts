@@ -63,7 +63,33 @@ export async function GET(
       }
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...data,
+        // Add camelCase aliases for all snake_case fields
+        shopId: data.shop_id,
+        sellerId: data.seller_id,
+        categoryId: data.category_id,
+        startingPrice: data.starting_price,
+        reservePrice: data.reserve_price,
+        currentPrice: data.current_price,
+        buyNowPrice: data.buy_now_price,
+        startTime: data.start_time,
+        endTime: data.end_time,
+        bidIncrement: data.bid_increment,
+        totalBids: data.total_bids,
+        viewCount: data.view_count,
+        watchCount: data.watch_count,
+        isFeatured: data.is_featured,
+        isActive: data.is_active,
+        isDeleted: data.is_deleted,
+        winnerId: data.winner_id,
+        winningBid: data.winning_bid,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      },
+    });
   } catch (error) {
     console.error("Error fetching auction:", error);
     return NextResponse.json(
@@ -115,9 +141,34 @@ export async function PATCH(
 
     await docRef.update(update);
     const updated = await docRef.get();
+    const updatedData: any = updated.data();
     return NextResponse.json({
       success: true,
-      data: { id: updated.id, ...updated.data() },
+      data: {
+        id: updated.id,
+        ...updatedData,
+        // Add camelCase aliases for all snake_case fields
+        shopId: updatedData.shop_id,
+        sellerId: updatedData.seller_id,
+        categoryId: updatedData.category_id,
+        startingPrice: updatedData.starting_price,
+        reservePrice: updatedData.reserve_price,
+        currentPrice: updatedData.current_price,
+        buyNowPrice: updatedData.buy_now_price,
+        startTime: updatedData.start_time,
+        endTime: updatedData.end_time,
+        bidIncrement: updatedData.bid_increment,
+        totalBids: updatedData.total_bids,
+        viewCount: updatedData.view_count,
+        watchCount: updatedData.watch_count,
+        isFeatured: updatedData.is_featured,
+        isActive: updatedData.is_active,
+        isDeleted: updatedData.is_deleted,
+        winnerId: updatedData.winner_id,
+        winningBid: updatedData.winning_bid,
+        createdAt: updatedData.created_at,
+        updatedAt: updatedData.updated_at,
+      },
     });
   } catch (error) {
     console.error("Error updating auction:", error);

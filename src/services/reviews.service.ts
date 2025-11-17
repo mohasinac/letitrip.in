@@ -56,28 +56,25 @@ class ReviewsService {
 
   // Get review by ID
   async getById(id: string): Promise<ReviewFE> {
-    const reviewBE = await apiService.get<ReviewBE>(REVIEW_ROUTES.BY_ID(id));
-    return toFEReview(reviewBE);
+    const response: any = await apiService.get(REVIEW_ROUTES.BY_ID(id));
+    return toFEReview(response.data);
   }
 
   // Create review (authenticated users after purchase)
   async create(formData: ReviewFormFE): Promise<ReviewFE> {
     const request = toBECreateReviewRequest(formData);
-    const reviewBE = await apiService.post<ReviewBE>(
-      REVIEW_ROUTES.CREATE,
-      request
-    );
-    return toFEReview(reviewBE);
+    const response: any = await apiService.post(REVIEW_ROUTES.CREATE, request);
+    return toFEReview(response.data);
   }
 
   // Update review (author only)
   async update(id: string, formData: Partial<ReviewFormFE>): Promise<ReviewFE> {
     const request = toBECreateReviewRequest(formData as ReviewFormFE);
-    const reviewBE = await apiService.patch<ReviewBE>(
+    const response: any = await apiService.patch(
       REVIEW_ROUTES.UPDATE(id),
       request
     );
-    return toFEReview(reviewBE);
+    return toFEReview(response.data);
   }
 
   // Delete review (author/admin)
@@ -87,11 +84,11 @@ class ReviewsService {
 
   // Moderate review (shop owner/admin)
   async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {
-    const reviewBE = await apiService.patch<ReviewBE>(
+    const response: any = await apiService.patch(
       `${REVIEW_ROUTES.BY_ID(id)}/moderate`,
       data
     );
-    return toFEReview(reviewBE);
+    return toFEReview(response.data);
   }
 
   // Mark review as helpful

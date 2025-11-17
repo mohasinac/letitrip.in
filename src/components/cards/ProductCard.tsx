@@ -96,25 +96,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   // Auto-rotate images on hover
   React.useEffect(() => {
     if (isHovered && allMedia.length > 1) {
-      const currentMedia = allMedia[currentMediaIndex];
-
-      // If current media is video, play it immediately
-      if (currentMedia.type === "video") {
-        setIsPlayingVideo(true);
-        if (videoRef.current) {
-          videoRef.current.play().catch(() => {
-            // Autoplay failed, move to next media
-            setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-          });
-        }
-      } else {
-        // For images, rotate every 2 seconds
-        setIsPlayingVideo(false);
-        intervalRef.current = setInterval(() => {
-          setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-        }, 2000);
-      }
+      // Start rotating through all media
+      intervalRef.current = setInterval(() => {
+        setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+      }, 2000);
     } else {
+      // Reset when not hovering
       setIsPlayingVideo(false);
       setCurrentMediaIndex(0);
       if (intervalRef.current) {
@@ -128,11 +115,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+    };
+  }, [isHovered, allMedia.length]);
+
+  // Handle video playback separately
+  React.useEffect(() => {
+    const currentMedia = allMedia[currentMediaIndex];
+
+    if (isHovered && currentMedia?.type === "video") {
+      setIsPlayingVideo(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+          console.log("Video autoplay failed");
+        });
+      }
+    } else {
+      setIsPlayingVideo(false);
       if (videoRef.current) {
         videoRef.current.pause();
       }
-    };
-  }, [isHovered, currentMediaIndex, allMedia]);
+    }
+  }, [currentMediaIndex, isHovered, allMedia]);
 
   const currentMedia = allMedia[currentMediaIndex] ||
     allMedia[0] || { type: "image", url: image };

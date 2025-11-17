@@ -244,8 +244,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                         7-day return policy available
                       </li>
                     )}
-                    <li>Cash on Delivery available</li>
-                    <li>Free delivery on orders above ₹5,000</li>
                   </ul>
                 </div>
               </div>
@@ -268,18 +266,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                       </p>
                     </div>
                   )}
-
-                  {/* Delivery Info */}
-                  <div className="text-sm">
-                    <p className="font-semibold text-gray-900 mb-1">Delivery</p>
-                    <p className="text-gray-700">
-                      FREE delivery{" "}
-                      <span className="font-semibold">Tomorrow</span>
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Order within 3 hrs 42 mins
-                    </p>
-                  </div>
 
                   {/* Stock Status */}
                   <div className="text-sm">

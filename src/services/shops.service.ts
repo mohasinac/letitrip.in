@@ -79,25 +79,25 @@ class ShopsService {
 
   // Get shop by slug
   async getBySlug(slug: string): Promise<ShopFE> {
-    const shopBE = await apiService.get<ShopBE>(SHOP_ROUTES.BY_SLUG(slug));
-    return toFEShop(shopBE);
+    const response: any = await apiService.get(SHOP_ROUTES.BY_SLUG(slug));
+    return toFEShop(response.data);
   }
 
   // Create shop (seller/admin)
   async create(formData: ShopFormFE): Promise<ShopFE> {
     const request = toBECreateShopRequest(formData);
-    const shopBE = await apiService.post<ShopBE>(SHOP_ROUTES.LIST, request);
-    return toFEShop(shopBE);
+    const response: any = await apiService.post(SHOP_ROUTES.LIST, request);
+    return toFEShop(response.data);
   }
 
   // Update shop (owner/admin)
   async update(slug: string, formData: Partial<ShopFormFE>): Promise<ShopFE> {
     const request = toBECreateShopRequest(formData as ShopFormFE);
-    const shopBE = await apiService.patch<ShopBE>(
+    const response: any = await apiService.patch(
       SHOP_ROUTES.BY_SLUG(slug),
       request
     );
-    return toFEShop(shopBE);
+    return toFEShop(response.data);
   }
 
   // Delete shop (owner/admin)
@@ -107,26 +107,23 @@ class ShopsService {
 
   // Verify shop (admin only)
   async verify(slug: string, data: ShopVerificationData): Promise<ShopFE> {
-    const shopBE = await apiService.patch<ShopBE>(
-      `/shops/${slug}/verify`,
-      data
-    );
-    return toFEShop(shopBE);
+    const response: any = await apiService.patch(`/shops/${slug}/verify`, data);
+    return toFEShop(response.data);
   }
 
   // Ban/unban shop (admin only)
   async ban(slug: string, data: ShopBanData): Promise<ShopFE> {
-    const shopBE = await apiService.patch<ShopBE>(`/shops/${slug}/ban`, data);
-    return toFEShop(shopBE);
+    const response: any = await apiService.patch(`/shops/${slug}/ban`, data);
+    return toFEShop(response.data);
   }
 
   // Set feature flags (admin only)
   async setFeatureFlags(slug: string, data: ShopFeatureData): Promise<ShopFE> {
-    const shopBE = await apiService.patch<ShopBE>(
+    const response: any = await apiService.patch(
       `/shops/${slug}/feature`,
       data
     );
-    return toFEShop(shopBE);
+    return toFEShop(response.data);
   }
 
   // Get shop payments (owner/admin)
