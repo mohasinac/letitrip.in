@@ -14,6 +14,7 @@ interface HorizontalScrollContainerProps {
   gap?: string;
   showArrows?: boolean;
   headingLevel?: "h2" | "h3" | "h4";
+  arrowStyle?: "compact" | "full-height";
 }
 
 export const HorizontalScrollContainer: React.FC<
@@ -28,10 +29,37 @@ export const HorizontalScrollContainer: React.FC<
   gap = "1rem",
   showArrows = true,
   headingLevel = "h2",
+  arrowStyle = "full-height",
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [containerMaxWidth, setContainerMaxWidth] = useState<string>("100%");
+
+  // Calculate how many items can fit in the container width
+  const calculateVisibleItems = () => {
+    if (containerRef.current) {
+      const totalWidth = containerRef.current.clientWidth;
+      const itemWidthNum = parseInt(itemWidth);
+      const gapNum = parseInt(gap) * 16; // Convert rem to px (assuming 1rem = 16px)
+      const arrowWidth = showArrows && arrowStyle === "full-height" ? 48 : 0; // 2 arrows * ~24px each
+
+      // Available width after accounting for arrows
+      const availableWidth = totalWidth - arrowWidth * 2;
+
+      // Calculate how many complete items fit
+      const itemsPerRow = Math.floor(availableWidth / (itemWidthNum + gapNum));
+      const actualItems = Math.max(1, itemsPerRow);
+      setVisibleItems(actualItems);
+
+      // Set exact width for the scroll container to show only complete items
+      const exactWidth =
+        actualItems * itemWidthNum + (actualItems - 1) * gapNum;
+      setContainerMaxWidth(`${exactWidth}px`);
+    }
+  };
 
   // Check scroll position and update arrow visibility
   const checkScroll = () => {
@@ -43,23 +71,31 @@ export const HorizontalScrollContainer: React.FC<
   };
 
   useEffect(() => {
+    calculateVisibleItems();
     checkScroll();
     const scrollElement = scrollRef.current;
 
+    const handleResize = () => {
+      calculateVisibleItems();
+      checkScroll();
+    };
+
     if (scrollElement) {
       scrollElement.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", checkScroll);
+      window.addEventListener("resize", handleResize);
 
       return () => {
         scrollElement.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", checkScroll);
+        window.removeEventListener("resize", handleResize);
       };
     }
-  }, [children]);
+  }, [children, itemWidth, gap, showArrows, arrowStyle]);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = 300;
+      const itemWidthNum = parseInt(itemWidth);
+      const gapNum = parseInt(gap) * 16;
+      const scrollAmount = (itemWidthNum + gapNum) * visibleItems;
       const newScrollLeft =
         scrollRef.current.scrollLeft +
         (direction === "left" ? -scrollAmount : scrollAmount);
@@ -81,7 +117,7 @@ export const HorizontalScrollContainer: React.FC<
                     ? "text-2xl font-bold text-gray-900"
                     : "text-xl font-bold text-gray-900",
               },
-              title,
+              title
             )}
           {viewAllLink && (
             <Link
@@ -96,32 +132,46 @@ export const HorizontalScrollContainer: React.FC<
       )}
 
       {/* Scroll Container */}
-      <div className="relative">
+      <div
+        ref={containerRef}
+        className="relative flex items-stretch justify-center"
+      >
         {/* Left Arrow */}
         {showArrows && showLeftArrow && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+            className={
+              arrowStyle === "full-height"
+                ? "flex-shrink-0 z-10 bg-white/90 hover:bg-white shadow-lg px-3 transition-all flex items-center justify-center group"
+                : "absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+            }
             aria-label="Scroll left"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft
+              className={
+                arrowStyle === "full-height"
+                  ? "w-8 h-8 text-gray-700 group-hover:text-gray-900"
+                  : "w-6 h-6 text-gray-700"
+              }
+            />
           </button>
         )}
 
         {/* Scrollable Content */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide scroll-smooth"
+          className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
           style={{
             gap: gap,
             scrollbarWidth: "none",
             msOverflowStyle: "none",
+            maxWidth: containerMaxWidth,
           }}
         >
           {React.Children.map(children, (child) => (
             <div
-              style={{ minWidth: itemWidth, maxWidth: itemWidth }}
-              className="flex-shrink-0"
+              className="flex-shrink-0 snap-start"
+              style={{ width: itemWidth }}
             >
               {child}
             </div>
@@ -132,10 +182,20 @@ export const HorizontalScrollContainer: React.FC<
         {showArrows && showRightArrow && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+            className={
+              arrowStyle === "full-height"
+                ? "flex-shrink-0 z-10 bg-white/90 hover:bg-white shadow-lg px-3 transition-all flex items-center justify-center group"
+                : "absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+            }
             aria-label="Scroll right"
           >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
+            <ChevronRight
+              className={
+                arrowStyle === "full-height"
+                  ? "w-8 h-8 text-gray-700 group-hover:text-gray-900"
+                  : "w-6 h-6 text-gray-700"
+              }
+            />
           </button>
         )}
       </div>

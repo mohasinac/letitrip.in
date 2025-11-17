@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ordersService } from "@/services/orders.service";
+import { notFound } from "@/lib/error-redirects";
 import {
   ArrowLeft,
   Package,
@@ -45,6 +46,7 @@ export default function SellerOrderDetailPage() {
       setOrder(data);
     } catch (error: any) {
       console.error("Failed to load order:", error);
+      router.push(notFound.order(orderId, error));
     } finally {
       setLoading(false);
     }

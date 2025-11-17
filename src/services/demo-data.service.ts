@@ -27,6 +27,7 @@ export interface DemoDataSummary {
   orders: number;
   payments: number;
   shipments: number;
+  reviews?: number;
   prefix: string;
   createdAt: string;
 }
@@ -168,6 +169,20 @@ class DemoDataService {
         reviews: number;
       };
     }>(`${this.BASE_PATH}/cleanup/${sessionId}`);
+    return response;
+  }
+
+  /**
+   * Get statistics for existing demo data
+   */
+  async getStats(): Promise<{
+    exists: boolean;
+    summary: DemoDataSummary | null;
+  }> {
+    const response = await apiService.get<{
+      exists: boolean;
+      summary: DemoDataSummary | null;
+    }>(`${this.BASE_PATH}/stats`);
     return response;
   }
 

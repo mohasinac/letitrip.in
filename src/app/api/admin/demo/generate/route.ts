@@ -13,7 +13,30 @@ import { nanoid } from "nanoid";
 
 const DEMO_PREFIX = "DEMO_";
 
-// TCG, Beyblade, and Figurine Categories with multi-parent structure
+// Real public image URLs from Unsplash (free to use)
+const PRODUCT_IMAGES = [
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+  "https://images.unsplash.com/photo-1601924994987-69e26d50dc26",
+  "https://images.unsplash.com/photo-1578632767115-351597cf2477",
+  "https://images.unsplash.com/photo-1613582036683-2748ada05454",
+  "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe",
+  "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3",
+  "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f",
+  "https://images.unsplash.com/photo-1611339555312-e607c8352fd7",
+  "https://images.unsplash.com/photo-1611689102192-1f6e0e52df0a",
+  "https://images.unsplash.com/photo-1628744448839-e5e9a17e1b9f",
+];
+
+// Real public video URLs (free sample videos)
+const PRODUCT_VIDEOS = [
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+];
+
+// TCG, Beyblade, and Figurine Categories with multi-parent structure (EXPANDED)
 const CATEGORY_TREE = {
   // Root categories
   "Trading Card Games": {
@@ -41,6 +64,22 @@ const CATEGORY_TREE = {
           "Draft Boosters": { isLeaf: true },
           "Set Boosters": { isLeaf: true },
           "Collector Boosters": { isLeaf: true },
+          "Preconstructed Decks": { isLeaf: true },
+          "Bundle Sets": { isLeaf: true },
+        },
+      },
+      "Digimon Card Game": {
+        children: {
+          "Starter Decks": { isLeaf: true },
+          "Booster Sets": { isLeaf: true },
+          "Special Editions": { isLeaf: true },
+        },
+      },
+      "Dragon Ball Super": {
+        children: {
+          "Expansion Sets": { isLeaf: true },
+          "Starter Decks": { isLeaf: true },
+          "Premium Packs": { isLeaf: true },
         },
       },
     },
@@ -62,6 +101,14 @@ const CATEGORY_TREE = {
           "Metal Fusion": { isLeaf: true },
           "Metal Masters": { isLeaf: true },
           "Metal Fury": { isLeaf: true },
+          "Limited Editions": { isLeaf: true },
+        },
+      },
+      "Beyblade X": {
+        children: {
+          "X Series Attack": { isLeaf: true },
+          "X Series Defense": { isLeaf: true },
+          "X Series Balance": { isLeaf: true },
         },
       },
     },
@@ -88,17 +135,49 @@ const CATEGORY_TREE = {
           "Limited Edition": { isLeaf: true },
           "Exclusive Variants": { isLeaf: true },
           "Artist Series": { isLeaf: true },
+          "Premium Collection": { isLeaf: true },
+        },
+      },
+      "Movie Figures": {
+        children: {
+          "Marvel Characters": { isLeaf: true },
+          "DC Characters": { isLeaf: true },
+          "Star Wars": { isLeaf: true },
         },
       },
     },
   },
   Accessories: {
     children: {
-      "Card Sleeves": { isLeaf: true },
-      "Deck Boxes": { isLeaf: true },
-      Playmats: { isLeaf: true },
-      "Storage Solutions": { isLeaf: true },
-      "Display Cases": { isLeaf: true },
+      "Card Protection": {
+        children: {
+          "Card Sleeves": { isLeaf: true },
+          "Deck Boxes": { isLeaf: true },
+          Binders: { isLeaf: true },
+        },
+      },
+      "Gaming Accessories": {
+        children: {
+          Playmats: { isLeaf: true },
+          "Dice Sets": { isLeaf: true },
+          "Counters & Tokens": { isLeaf: true },
+        },
+      },
+      "Storage & Display": {
+        children: {
+          "Storage Solutions": { isLeaf: true },
+          "Display Cases": { isLeaf: true },
+          "Protective Cases": { isLeaf: true },
+        },
+      },
+    },
+  },
+  "Special Editions": {
+    children: {
+      "Limited Releases": { isLeaf: true },
+      "Convention Exclusives": { isLeaf: true },
+      "Anniversary Editions": { isLeaf: true },
+      "Signed Collectibles": { isLeaf: true },
     },
   },
 };
@@ -181,6 +260,7 @@ const PRODUCT_TEMPLATES = {
 // User templates
 const USER_TEMPLATES = [
   { name: "Alex Chen", email: "alex.chen@demo.justforview.in", role: "seller" },
+  { name: "Raj Patel", email: "raj.patel@demo.justforview.in", role: "seller" },
   {
     name: "Priya Sharma",
     email: "priya.sharma@demo.justforview.in",
@@ -197,15 +277,74 @@ const USER_TEMPLATES = [
     email: "kenji.tanaka@demo.justforview.in",
     role: "user",
   },
+  { name: "Sarah Johnson", email: "sarah.j@demo.justforview.in", role: "user" },
+  { name: "Ahmed Khan", email: "ahmed.k@demo.justforview.in", role: "user" },
+  { name: "Emily Wong", email: "emily.w@demo.justforview.in", role: "user" },
+  { name: "Carlos Silva", email: "carlos.s@demo.justforview.in", role: "user" },
 ];
 
-// Address templates
+// Address templates (expanded)
 const ADDRESS_TEMPLATES = [
-  { city: "Mumbai", state: "Maharashtra", pincode: "400001" },
-  { city: "Delhi", state: "Delhi", pincode: "110001" },
-  { city: "Bangalore", state: "Karnataka", pincode: "560001" },
-  { city: "Chennai", state: "Tamil Nadu", pincode: "600001" },
-  { city: "Kolkata", state: "West Bengal", pincode: "700001" },
+  {
+    street: "123 Marine Drive",
+    city: "Mumbai",
+    state: "Maharashtra",
+    pincode: "400001",
+  },
+  {
+    street: "456 Connaught Place",
+    city: "Delhi",
+    state: "Delhi",
+    pincode: "110001",
+  },
+  {
+    street: "789 MG Road",
+    city: "Bangalore",
+    state: "Karnataka",
+    pincode: "560001",
+  },
+  {
+    street: "321 Anna Salai",
+    city: "Chennai",
+    state: "Tamil Nadu",
+    pincode: "600001",
+  },
+  {
+    street: "654 Park Street",
+    city: "Kolkata",
+    state: "West Bengal",
+    pincode: "700001",
+  },
+  {
+    street: "987 FC Road",
+    city: "Pune",
+    state: "Maharashtra",
+    pincode: "411001",
+  },
+  {
+    street: "147 Ashram Road",
+    city: "Ahmedabad",
+    state: "Gujarat",
+    pincode: "380001",
+  },
+  {
+    street: "258 Hitech City",
+    city: "Hyderabad",
+    state: "Telangana",
+    pincode: "500001",
+  },
+  {
+    street: "369 Mall Road",
+    city: "Jaipur",
+    state: "Rajasthan",
+    pincode: "302001",
+  },
+  {
+    street: "741 MG Marg",
+    city: "Gurgaon",
+    state: "Haryana",
+    pincode: "122001",
+  },
 ];
 
 export async function POST(request: NextRequest) {
@@ -259,18 +398,31 @@ export async function POST(request: NextRequest) {
 
     await createCategories(CATEGORY_TREE);
 
-    // Step 2: Create users
+    // Step 2: Create users with addresses
     const userIds: { id: string; role: string; name: string }[] = [];
 
-    for (const userTemplate of USER_TEMPLATES) {
+    for (let index = 0; index < USER_TEMPLATES.length; index++) {
+      const userTemplate = USER_TEMPLATES[index];
       const userRef = db.collection("users").doc();
       const userId = userRef.id;
+
+      // Assign address to user
+      const userAddress = ADDRESS_TEMPLATES[index % ADDRESS_TEMPLATES.length];
 
       await userRef.set({
         name: `${DEMO_PREFIX}${userTemplate.name}`,
         email: userTemplate.email,
         role: userTemplate.role,
         isActive: true,
+        phone: `+91-98765${String(43210 + index).padStart(5, "0")}`,
+        addresses: [
+          {
+            id: `addr-${userId}-1`,
+            ...userAddress,
+            isDefault: true,
+            label: "Home",
+          },
+        ],
         createdAt: timestamp,
         updatedAt: timestamp,
         // Demo password: "Demo@123"
@@ -284,38 +436,91 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const seller = userIds.find((u) => u.role === "seller")!;
+    const sellers = userIds.filter((u) => u.role === "seller");
     const buyers = userIds.filter((u) => u.role === "user");
 
-    // Step 3: Create shop
-    const shopRef = db.collection("shops").doc();
-    const shopId = shopRef.id;
+    // Step 3: Create shops
+    const shopIds: string[] = [];
+    const shopData: Array<{ id: string; ownerId: string; name: string }> = [];
 
-    await shopRef.set({
-      name: `${DEMO_PREFIX}CollectorsHub - TCG & Collectibles`,
-      slug: `${DEMO_PREFIX.toLowerCase()}collectorshub-tcg`,
-      description:
-        "Your one-stop shop for Trading Card Games, Beyblades, and Premium Figurines",
-      owner_id: seller.id,
-      email: "shop@collectorshub.demo.justforview.in",
-      phone: "+91-9876543210",
-      address: "123 Collector Street, Mumbai, Maharashtra 400001",
-      is_active: true,
-      status: "active",
-      verified: true,
-      featured: true,
-      logo: `https://picsum.photos/seed/shop-${shopId}/200/200`,
-      banner: `https://picsum.photos/seed/shop-banner-${shopId}/1200/400`,
-      rating: 4.8,
-      review_count: 0,
-      total_products: 0,
-      created_at: timestamp,
-      updated_at: timestamp,
-    });
+    const shopTemplates = [
+      {
+        name: `${DEMO_PREFIX}CollectorsHub - TCG & Collectibles`,
+        slug: `${DEMO_PREFIX.toLowerCase().replace(
+          /_/g,
+          "-"
+        )}collectorshub-tcg`,
+        description:
+          "Your one-stop shop for Trading Card Games, Beyblades, and Premium Figurines",
+        email: "shop@collectorshub.demo.justforview.in",
+        phone: "+91-9876543210",
+        address: "123 Collector Street, Mumbai, Maharashtra 400001",
+      },
+      {
+        name: `${DEMO_PREFIX}Anime Legends - Figure Paradise`,
+        slug: `${DEMO_PREFIX.toLowerCase().replace(
+          /_/g,
+          "-"
+        )}anime-legends-figures`,
+        description:
+          "Premium Anime Figures, Gaming Collectibles, and Limited Edition Statues",
+        email: "shop@animelegends.demo.justforview.in",
+        phone: "+91-9876543211",
+        address: "456 Otaku Avenue, Bangalore, Karnataka 560001",
+      },
+    ];
 
-    // Step 4: Create products (100 products with variants)
+    for (let i = 0; i < sellers.length; i++) {
+      const seller = sellers[i];
+      const template = shopTemplates[i];
+      const shopRef = db.collection("shops").doc();
+      const shopId = shopRef.id;
+
+      await shopRef.set({
+        ...template,
+        owner_id: seller.id,
+        is_active: true,
+        status: "active",
+        verified: true,
+        featured: true,
+        logo: `https://picsum.photos/seed/shop-${shopId}/200/200`,
+        banner: `https://picsum.photos/seed/shop-banner-${shopId}/1200/400`,
+        rating: 4.5 + Math.random() * 0.5,
+        review_count: 0,
+        total_products: 0,
+        total_sales: 0,
+        settings: {
+          minOrderAmount: 500,
+          shippingCharge: 50,
+          freeShippingThreshold: 2000,
+          processingTime: "1-2 business days",
+          acceptsCOD: true,
+          acceptsReturns: true,
+          returnWindow: 7,
+        },
+        policies: {
+          shippingPolicy:
+            "We ship within 1-2 business days. Free shipping on orders above ₹2000.",
+          returnPolicy:
+            "7-day return policy for unused items in original packaging.",
+          termsAndConditions:
+            "Standard terms and conditions apply to all purchases.",
+        },
+        created_at: timestamp,
+        updated_at: timestamp,
+      });
+
+      shopIds.push(shopId);
+      shopData.push({ id: shopId, ownerId: seller.id, name: template.name });
+    }
+
+    // Step 4: Create products (300 products with variants, distributed across shops)
     const productIds: string[] = [];
+    const productsByShop: Record<string, string[]> = {};
     let productCount = 0;
+
+    // Initialize product arrays for each shop
+    shopIds.forEach((id) => (productsByShop[id] = []));
 
     // Get leaf categories only
     const leafCategories = Array.from(categoryMap.entries()).filter(
@@ -325,15 +530,23 @@ export async function POST(request: NextRequest) {
           name.includes("Set") ||
           name.includes("Type") ||
           name.includes("Figure") ||
-          name.includes("Booster")
+          name.includes("Booster") ||
+          name.includes("Deck") ||
+          name.includes("Collection") ||
+          name.includes("Edition") ||
+          name.includes("Series")
         );
       }
     );
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 300; i++) {
       const [categoryName, categoryId] =
         leafCategories[i % leafCategories.length];
       const template = PRODUCT_TEMPLATES["Pokemon TCG"][i % 4]; // Use templates cyclically
+
+      // Alternate between shops
+      const shopIndex = i % shopData.length;
+      const currentShop = shopData[shopIndex];
 
       const productRef = db.collection("products").doc();
       const productId = productRef.id;
@@ -344,76 +557,157 @@ export async function POST(request: NextRequest) {
 
       const stockCount = Math.floor(Math.random() * 50) + 10;
 
-      // Generate 3-5 images for 60% of products, 1 image for others
+      // Generate 3-5 real images for 60% of products, 1-2 images for others
       const imageCount =
-        Math.random() < 0.6 ? 3 + Math.floor(Math.random() * 3) : 1;
-      const productImages = Array.from(
-        { length: imageCount },
-        (_, idx) => `https://picsum.photos/seed/${productId}-img-${idx}/800/800`
-      );
-
-      // Add video to 60% of products
-      const productVideos =
         Math.random() < 0.6
-          ? [
-              `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`,
-            ]
-          : [];
+          ? 3 + Math.floor(Math.random() * 3)
+          : 1 + Math.floor(Math.random() * 2);
+      const productImages = Array.from({ length: imageCount }, (_, idx) => {
+        const imageIndex = (i * 10 + idx) % PRODUCT_IMAGES.length;
+        return `${PRODUCT_IMAGES[imageIndex]}?w=800&h=800&fit=crop&q=80`;
+      });
+
+      // Add video to 60% of products (use different videos)
+      const productVideos =
+        Math.random() < 0.6 ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]] : [];
+
+      // Calculate comprehensive pricing
+      const sellingPrice = Math.round(basePrice);
+      const compareAtPrice = Math.round(basePrice * 1.2); // Original/MSRP price (20% higher)
+      const costPrice = Math.round(basePrice * 0.6); // Cost to seller (60% of selling price)
+      const taxRate = 0.18; // 18% GST for India
 
       await productRef.set({
         name: `${DEMO_PREFIX}${template.name} #${i + 1}`,
-        slug: `${DEMO_PREFIX.toLowerCase()}${template.name
+        slug: `${DEMO_PREFIX.toLowerCase().replace(/_/g, "-")}${template.name
           .toLowerCase()
           .replace(/\s+/g, "-")}-${i + 1}`,
         sku: `${DEMO_PREFIX}SKU-${String(i + 1).padStart(4, "0")}`,
         description: `Premium ${template.name} from ${categoryName} collection. Authentic and in mint condition.`,
-        price: Math.round(basePrice),
-        compare_at_price: Math.round(basePrice * 1.2),
+
+        // Comprehensive Pricing
+        price: sellingPrice, // Current selling price
+        compare_at_price: compareAtPrice, // Original/MSRP price (shows discount)
+        cost: costPrice, // Cost to seller (for profit calculation)
+        tax_rate: taxRate, // Tax percentage
+
+        // Inventory Management
         stock_count: stockCount,
         low_stock_threshold: 5,
+        track_inventory: true, // Enable inventory tracking
+
+        // Product Info
         category_id: categoryId,
-        shop_id: shopId,
-        seller_id: seller.id,
+        shop_id: currentShop.id,
+        seller_id: currentShop.ownerId,
         status: "published",
         is_active: true,
-        is_featured: i < 20,
+        is_featured: i < 30,
         brand: "Official",
         condition: "New",
         // Images and videos
         images: productImages,
         videos: productVideos,
-        // Variants
+        // Variants with comprehensive pricing
         has_variants: true,
         variants: [
           {
             id: `${productId}-v1`,
             name: "Standard Edition",
             sku: `${productId}-STD`,
-            price: Math.round(basePrice),
+            price: sellingPrice,
+            compare_at_price: compareAtPrice,
+            cost: costPrice,
             stock_count: Math.floor(stockCount * 0.6),
+            low_stock_threshold: 3,
           },
           {
             id: `${productId}-v2`,
             name: "Deluxe Edition",
             sku: `${productId}-DLX`,
-            price: Math.round(basePrice * 1.3),
+            price: Math.round(sellingPrice * 1.3),
+            compare_at_price: Math.round(compareAtPrice * 1.3),
+            cost: Math.round(costPrice * 1.25),
             stock_count: Math.floor(stockCount * 0.4),
+            low_stock_threshold: 2,
           },
+        ],
+
+        // Physical Attributes
+        weight: 50 + Math.random() * 150, // 50-200 grams
+        dimensions: {
+          length: 10 + Math.random() * 15, // 10-25 cm
+          width: 8 + Math.random() * 12, // 8-20 cm
+          height: 2 + Math.random() * 5, // 2-7 cm
+          unit: "cm",
+        },
+
+        // Shipping & Returns
+        shipping_class: "standard", // standard, express, free
+        is_returnable: true,
+        return_window_days: 7, // 7 days return policy
+        return_policy:
+          "Items can be returned within 7 days of delivery if unopened and in original condition. Return shipping cost will be borne by the customer unless the item is defective.",
+        warranty_info: "6 months manufacturer warranty against defects.",
+
+        // Stats (initialize to reasonable values)
+        view_count: Math.floor(Math.random() * 500),
+        sales_count: Math.floor(Math.random() * 50),
+        favorite_count: Math.floor(Math.random() * 100),
+        review_count: 0, // Will be populated when reviews are created
+        average_rating: 0, // Will be calculated when reviews are created
+
+        // Additional Info
+        country_of_origin: "Japan",
+        manufacturer:
+          categoryName === "Pokémon TCG" || categoryName === "Yu-Gi-Oh!"
+            ? "Konami"
+            : "Official Licensed",
+
+        // Features and Specifications
+        features: [
+          "100% Authentic",
+          "Fast Shipping",
+          "Secure Packaging",
+          "Premium Quality",
+          "Verified Seller",
+        ],
+        specifications: {
+          "Product Type": categoryName,
+          Condition: "New",
+          Authentication: "Verified",
+          "Package Includes": "1x Product, Original Packaging",
+        },
+
+        // SEO and metadata
+        meta_title: `${template.name} - Premium Collectible`,
+        meta_description: `Get authentic ${template.name} from ${categoryName}. High quality, verified seller, fast shipping.`,
+        keywords: [
+          categoryName,
+          template.name,
+          "collectible",
+          "trading card",
+          "beyblade",
+          "figurine",
         ],
         created_at: timestamp,
         updated_at: timestamp,
       });
 
       productIds.push(productId);
+      productsByShop[currentShop.id].push(productId);
       productCount++;
     }
 
-    // Step 5: Create auctions (5 auctions from random products)
+    // Step 5: Create auctions (10 auctions distributed across shops)
     const auctionIds: string[] = [];
-    const auctionProductIds = productIds.slice(0, 5); // First 5 products
 
-    for (let i = 0; i < 5; i++) {
-      const productId = auctionProductIds[i];
+    for (let i = 0; i < 10; i++) {
+      const shopIndex = i % shopData.length;
+      const currentShop = shopData[shopIndex];
+      const shopProducts = productsByShop[currentShop.id];
+      const productId = shopProducts[i % shopProducts.length];
+
       const auctionRef = db.collection("auctions").doc();
       const auctionId = auctionRef.id;
 
@@ -422,31 +716,37 @@ export async function POST(request: NextRequest) {
 
       const startingBid = 5000 + Math.random() * 15000;
       const title = `${DEMO_PREFIX}Auction #${i + 1} - Premium Collectible`;
-      const auctionSlug = `${DEMO_PREFIX.toLowerCase()}${title
+      const auctionSlug = `${DEMO_PREFIX.toLowerCase().replace(
+        /_/g,
+        "-"
+      )}${title
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")}-${i}`;
+        .replace(
+          new RegExp(DEMO_PREFIX.toLowerCase().replace(/_/g, "-"), "g"),
+          ""
+        )
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")}-${i}`;
 
-      // Generate 3-5 images for 60% of auctions, 3 images for others
+      // Generate 3-5 real images for 60% of auctions, 3 images for others
       const auctionImageCount =
         Math.random() < 0.6 ? 3 + Math.floor(Math.random() * 3) : 3;
       const auctionImages = Array.from(
         { length: auctionImageCount },
-        (_, idx) =>
-          `https://picsum.photos/seed/auction-${auctionId}-${idx}/800/800`
+        (_, idx) => {
+          const imageIndex = (i * 5 + idx) % PRODUCT_IMAGES.length;
+          return `${PRODUCT_IMAGES[imageIndex]}?w=800&h=800&fit=crop&q=80`;
+        }
       );
 
-      // Add video to 60% of auctions
+      // Add video to 60% of auctions (use different videos)
       const auctionVideos =
-        Math.random() < 0.6
-          ? [
-              `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`,
-            ]
-          : [];
+        Math.random() < 0.6 ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]] : [];
 
       await auctionRef.set({
         product_id: productId,
-        shop_id: shopId,
-        seller_id: seller.id,
+        shop_id: currentShop.id,
+        seller_id: currentShop.ownerId,
         title,
         slug: auctionSlug,
         description: "Rare item up for auction. Don't miss this opportunity!",
@@ -459,6 +759,7 @@ export async function POST(request: NextRequest) {
         start_time: startDate,
         end_time: endDate,
         status: "active",
+        is_featured: i < 5,
         total_bids: 0,
         unique_bidders: 0,
         created_at: timestamp,
@@ -526,10 +827,15 @@ export async function POST(request: NextRequest) {
         const paymentMethod =
           paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
 
+        // Select shop for this order
+        const shopIndex = orderCount % shopData.length;
+        const orderShop = shopData[shopIndex];
+
         const numItems = 1 + Math.floor(Math.random() * 3); // 1-3 items per order
-        const orderProducts = productIds
+        const shopProducts = productsByShop[orderShop.id];
+        const orderProducts = shopProducts
           .slice(orderCount * 3, orderCount * 3 + numItems)
-          .map((pid) => pid);
+          .filter((pid) => pid);
 
         let subtotal = 0;
         const items: any[] = [];
@@ -561,8 +867,8 @@ export async function POST(request: NextRequest) {
           )}`,
           buyerId: buyer.id,
           buyerName: buyer.name,
-          shopId,
-          sellerId: seller.id,
+          shopId: orderShop.id,
+          sellerId: orderShop.ownerId,
           items,
           subtotal: Math.round(subtotal),
           shippingFee,
@@ -573,10 +879,7 @@ export async function POST(request: NextRequest) {
           ],
           paymentMethod,
           paymentStatus: paymentMethod === "cod" ? "pending" : "completed",
-          shippingAddress: {
-            street: `${Math.floor(Math.random() * 999) + 1}, Demo Street`,
-            ...address,
-          },
+          shippingAddress: address,
           createdAt: timestamp,
           updatedAt: timestamp,
         });
@@ -613,6 +916,100 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Step 8: Mark categories as featured/homepage (more for 75 categories)
+    const categoryIds = Array.from(categoryMap.values());
+    const featuredCategoryIds = categoryIds.slice(0, 15); // 15 featured
+    const homepageCategoryIds = categoryIds.slice(0, 12); // 12 on homepage
+
+    for (const catId of featuredCategoryIds) {
+      await db
+        .collection("categories")
+        .doc(catId)
+        .update({ is_featured: true });
+    }
+
+    for (const catId of homepageCategoryIds) {
+      await db
+        .collection("categories")
+        .doc(catId)
+        .update({
+          metadata: { showOnHomepage: true, isFeatured: true },
+        });
+    }
+
+    // Step 9: Create reviews for products (ALL products get reviews)
+    let reviewCount = 0;
+    const productReviewStats: Record<string, { total: number; sum: number }> =
+      {};
+
+    // Give reviews to ALL products (not just first 60)
+    for (const productId of productIds) {
+      const numReviews = 2 + Math.floor(Math.random() * 6); // 2-7 reviews per product
+      const ratings: number[] = [];
+
+      for (let i = 0; i < numReviews; i++) {
+        const reviewer = buyers[Math.floor(Math.random() * buyers.length)];
+        const reviewRef = db.collection("reviews").doc();
+        const rating = 3 + Math.floor(Math.random() * 3); // 3-5 stars
+        ratings.push(rating);
+
+        const reviewTitles = [
+          "Great product!",
+          "Excellent purchase",
+          "Highly recommend",
+          "Amazing quality",
+          "Perfect condition",
+          "Fast shipping",
+          "Worth the price",
+          "Very satisfied",
+        ];
+
+        const reviewComments = [
+          "This is a fantastic item. Highly recommend!",
+          "Very satisfied with the quality and authenticity.",
+          "Excellent product, arrived quickly and well-packaged.",
+          "Authentic and in perfect condition. Great seller!",
+          "Worth every rupee. Will buy again!",
+          "Good quality product, exactly as described.",
+          "Fast delivery and secure packaging. Thumbs up!",
+          "Premium quality collectible. Very happy with purchase.",
+        ];
+
+        await reviewRef.set({
+          product_id: productId,
+          user_id: reviewer.id,
+          user_name: reviewer.name,
+          rating,
+          title: reviewTitles[i % reviewTitles.length],
+          comment: reviewComments[i % reviewComments.length],
+          is_verified: Math.random() > 0.2, // 80% verified
+          is_featured: i === 0 && Math.random() > 0.7, // 30% chance first review is featured
+          helpful_count: Math.floor(Math.random() * 25),
+          images: [], // Can add review images later
+          created_at: timestamp,
+          updated_at: timestamp,
+        });
+
+        reviewCount++;
+      }
+
+      // Calculate average rating
+      const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+      productReviewStats[productId] = {
+        total: numReviews,
+        sum: ratings.reduce((a, b) => a + b, 0),
+      };
+
+      // Update product with review stats
+      await db
+        .collection("products")
+        .doc(productId)
+        .update({
+          review_count: numReviews,
+          average_rating: Math.round(avgRating * 10) / 10, // Round to 1 decimal
+        });
+    }
+
     // Response
     return NextResponse.json({
       success: true,
@@ -620,16 +1017,22 @@ export async function POST(request: NextRequest) {
       summary: {
         prefix: DEMO_PREFIX,
         categories: categoryCount,
+        featuredCategories: featuredCategoryIds.length,
+        homepageCategories: homepageCategoryIds.length,
         users: userIds.length,
-        shops: 1,
+        sellers: sellers.length,
+        buyers: buyers.length,
+        shops: shopIds.length,
         products: productCount,
+        featuredProducts: productIds.filter((_, i) => i < 60).length,
         auctions: auctionIds.length,
+        featuredAuctions: 5,
         bids: bidCount,
         orders: orderCount,
         orderItems: orderItemCount,
         payments: orderCount,
         shipments: Math.floor(orderCount * 0.5),
-        reviews: 0,
+        reviews: reviewCount,
         createdAt: timestamp.toISOString(),
       },
     });

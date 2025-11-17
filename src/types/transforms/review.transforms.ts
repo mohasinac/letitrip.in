@@ -109,8 +109,9 @@ export function toFEReviewStats(statsBE: ReviewStatsResponseBE): ReviewStatsFE {
 }
 
 export function toFEReviews(
-  reviewsBE: ReviewBE[],
+  reviewsBE: ReviewBE[] | undefined,
   currentUserId?: string
 ): ReviewFE[] {
+  if (!reviewsBE) return [];
   return reviewsBE.map((r) => toFEReview(r, currentUserId));
 }

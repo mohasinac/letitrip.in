@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Play,
   Trash2,
@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   Store,
   Gavel,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { demoDataService, DemoDataSummary } from "@/services/demo-data.service";
@@ -18,9 +19,29 @@ import { demoDataService, DemoDataSummary } from "@/services/demo-data.service";
 const DEMO_PREFIX = "DEMO_";
 
 export default function AdminDemoPage() {
+  const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [cleaning, setCleaning] = useState(false);
   const [summary, setSummary] = useState<DemoDataSummary | null>(null);
+
+  // Fetch existing demo data on mount
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      try {
+        const data = await demoDataService.getStats();
+        if (data.exists && data.summary) {
+          setSummary(data.summary);
+        }
+      } catch (error: any) {
+        // Silently fail - just don't show summary if fetch fails
+        console.log("No existing demo data found or fetch failed");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExistingData();
+  }, []);
 
   const handleGenerate = async () => {
     try {
@@ -61,6 +82,20 @@ export default function AdminDemoPage() {
       setCleaning(false);
     }
   };
+
+  // Show loading state while fetching existing data
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading demo data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -214,6 +249,16 @@ export default function AdminDemoPage() {
               </div>
               <p className="text-sm text-gray-600">Shipments</p>
             </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <Package className="w-5 h-5 text-pink-600" />
+                <span className="text-2xl font-bold text-gray-900">
+                  {summary.reviews || 0}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600">Reviews</p>
+            </div>
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -233,14 +278,19 @@ export default function AdminDemoPage() {
           What gets generated?
         </h3>
         <ul className="space-y-2 text-sm text-blue-800">
-          <li>• 50 categories with multi-parent structure</li>
-          <li>• 5 users (1 seller, 4 buyers)</li>
-          <li>• 1 shop ({DEMO_PREFIX}CollectorsHub)</li>
-          <li>• 100 products with 3-5 images (60% have videos)</li>
-          <li>• 5 auctions with 3-5 images (60% have videos)</li>
-          <li>• 60+ bids on auctions</li>
-          <li>• 8-16 orders with items</li>
+          <li>
+            • 75+ categories with multi-parent structure (15 featured, 12 on
+            homepage)
+          </li>
+          <li>• 10 users (2 sellers, 8 buyers) with addresses</li>
+          <li>• 2 shops ({DEMO_PREFIX}CollectorsHub & AnimeLegends)</li>
+          <li>• 300 products with real Unsplash images (60% have videos)</li>
+          <li>• 60 featured products for homepage display</li>
+          <li>• 10 auctions with real images (60% have videos)</li>
+          <li>• 324+ bids on auctions</li>
+          <li>• 24 orders with full shipping addresses</li>
           <li>• Payment and shipment records</li>
+          <li>• Reviews for 60 featured products (2-5 reviews each)</li>
         </ul>
       </div>
     </div>

@@ -7,6 +7,7 @@ import Link from "next/link";
 import AuctionForm from "@/components/seller/AuctionForm";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionFE } from "@/types/frontend/auction.types";
+import { notFound } from "@/lib/error-redirects";
 
 export default function EditAuctionPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function EditAuctionPage() {
       setAuction(data);
     } catch (err: any) {
       console.error("Error loading auction:", err);
-      setError("Failed to load auction");
+      router.push(notFound.auction(id, err));
     } finally {
       setLoading(false);
     }

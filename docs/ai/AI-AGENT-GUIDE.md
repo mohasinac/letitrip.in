@@ -338,29 +338,192 @@ export async function POST(request: Request) {
 }
 ```
 
-### 4. Firebase Storage Architecture Pattern
+### 4. Media Upload Pattern (Images & Videos)
 
-**CRITICAL**: Never use Firebase Client SDK directly in client code. Always use API routes.
+**CRITICAL**: All media uploads go through `mediaService.upload()` which handles Firebase Storage uploads and returns URLs for database storage.
+
+**Architecture**:
 
 ```
-Client (UI)
-  ↓ API call
-Client Service (src/services/)
-  ↓ HTTP request
-API Route (src/app/api/)
+Component (Form)
+  ↓ File selection
+mediaService.upload({ file, context })
+  ↓ API call with file
+API Route (/api/media/upload)
   ↓ Firebase Admin SDK
-Server Service (src/app/api/lib/)
-  ↓ Firebase Storage/Firestore
-Firebase Backend
+Firebase Storage
+  ↓ Returns public URL
+Database stores URL only (not file)
 ```
 
-**Upload Flow (2-Step Process)**:
+**Upload Flow**:
 
-1. **Request Signed URL**: Client calls API to get temporary upload URL
-2. **Direct Upload**: Client uploads directly to Firebase Storage using signed URL
-3. **Confirm Upload**: Client calls API to save metadata to Firestore
+1. User selects file in form (image or video)
+2. Call `mediaService.upload()` with file and context
+3. Service uploads to Firebase Storage
+4. Returns public URL
+5. Store URL in database (NOT the file)
 
-**Example Pattern**:
+**Implementation Pattern**:
+
+```typescript
+// ✅ CORRECT: In product/auction create forms
+const [uploadingImages, setUploadingImages] = useState(false);
+const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+  {}
+);
+
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files) return;
+
+  const files = Array.from(e.target.files);
+  setUploadingImages(true);
+
+  try {
+    const uploadPromises = files.map(async (file, index) => {
+      const key = `image-${index}`;
+      setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+      // Upload to Firebase Storage and get URL
+      const result = await mediaService.upload({
+        file,
+        context: "product", // or "auction", "shop", etc.
+      });
+
+      setUploadProgress((prev) => ({ ...prev, [key]: 100 }));
+      return result.url; // This is what gets saved to database
+    });
+
+    const uploadedUrls = await Promise.all(uploadPromises);
+
+    // Store URLs in form data
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...uploadedUrls],
+    }));
+  } catch (error) {
+    console.error("Upload failed:", error);
+    alert("Failed to upload images");
+  } finally {
+    setUploadingImages(false);
+    setUploadProgress({});
+  }
+};
+
+// In JSX
+<input
+  type="file"
+  multiple
+  accept="image/*"
+  onChange={handleImageUpload}
+  disabled={uploadingImages}
+/>;
+
+// Show upload progress
+{
+  uploadingImages && (
+    <div className="space-y-2">
+      {Object.entries(uploadProgress).map(([key, progress]) => (
+        <div key={key} className="flex items-center gap-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-xs">{progress}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Display uploaded images with remove option
+{
+  formData.images.map((url, index) => (
+    <div key={index} className="relative group">
+      <img src={url} alt={`Product ${index + 1}`} />
+      <button
+        onClick={() => {
+          setFormData((prev) => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index),
+          }));
+        }}
+        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+      >
+        ×
+      </button>
+    </div>
+  ));
+}
+```
+
+**Database Schema**:
+
+```typescript
+// In Firestore, we store URLs as arrays
+{
+  id: "product-123",
+  name: "Product Name",
+  images: [
+    "https://firebasestorage.googleapis.com/.../image1.jpg",
+    "https://firebasestorage.googleapis.com/.../image2.jpg"
+  ],
+  videos: [
+    "https://firebasestorage.googleapis.com/.../video1.mp4"
+  ],
+  // ... other fields
+}
+```
+
+**Key Points**:
+
+- ✅ Files uploaded to Firebase Storage
+- ✅ Only URLs stored in Firestore/Database
+- ✅ Use `mediaService.upload()` - never direct Firebase SDK
+- ✅ Show upload progress for better UX
+- ✅ Support multiple file uploads
+- ✅ Allow removal of uploaded media
+- ✅ Validate file types and sizes
+
+**Media Service**:
+
+```typescript
+// src/services/media.service.ts
+class MediaService {
+  async upload(params: {
+    file: File;
+    context: "product" | "auction" | "shop" | "blog" | "user";
+  }): Promise<{ url: string; storagePath: string }> {
+    const formData = new FormData();
+    formData.append("file", params.file);
+    formData.append("context", params.context);
+
+    const response = await apiService.post("/media/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return response.data;
+  }
+}
+```
+
+**Supported Contexts & Paths**:
+
+- `product` → `/product-images/**` or `/product-videos/**`
+- `auction` → `/auction-images/**` or `/auction-videos/**`
+- `shop` → `/shop-logos/**` or `/shop-banners/**`
+- `blog` → `/blog-media/**`
+- `user` → `/user-documents/**`
+
+**File Limits**:
+
+- Images: 10MB per file (JPEG, PNG, GIF, WebP)
+- Videos: 100MB per file (MP4, WebM, MOV)
+- Multiple files: Up to 10 files per upload
+
+### 5. Firebase Storage Architecture Pattern (Advanced)
 
 ```typescript
 // ✅ CORRECT: Client Service

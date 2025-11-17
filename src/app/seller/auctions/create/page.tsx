@@ -19,6 +19,7 @@ import SlugInput from "@/components/common/SlugInput";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import { auctionsService } from "@/services/auctions.service";
 import { categoriesService } from "@/services/categories.service";
+import { mediaService } from "@/services/media.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
 // Step definitions
@@ -71,6 +72,11 @@ export default function CreateAuctionWizardPage() {
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [slugError, setSlugError] = useState("");
   const [isValidatingSlug, setIsValidatingSlug] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingVideos, setUploadingVideos] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
 
   // Form data
   const [formData, setFormData] = useState({
@@ -96,8 +102,6 @@ export default function CreateAuctionWizardPage() {
     // Step 4: Media
     images: [] as string[],
     videos: [] as string[],
-    imageInput: "",
-    videoInput: "",
 
     // Step 5: Terms & Publishing
     shippingTerms: "",
@@ -262,34 +266,6 @@ export default function CreateAuctionWizardPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const addImage = () => {
-    if (formData.imageInput.trim() && formData.images.length < 10) {
-      handleChange("images", [...formData.images, formData.imageInput.trim()]);
-      handleChange("imageInput", "");
-    }
-  };
-
-  const removeImage = (index: number) => {
-    handleChange(
-      "images",
-      formData.images.filter((_, i) => i !== index)
-    );
-  };
-
-  const addVideo = () => {
-    if (formData.videoInput.trim() && formData.videos.length < 3) {
-      handleChange("videos", [...formData.videos, formData.videoInput.trim()]);
-      handleChange("videoInput", "");
-    }
-  };
-
-  const removeVideo = (index: number) => {
-    handleChange(
-      "videos",
-      formData.videos.filter((_, i) => i !== index)
-    );
   };
 
   const duration =
@@ -721,71 +697,142 @@ export default function CreateAuctionWizardPage() {
         {/* Step 4: Media */}
         {currentStep === 4 && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Media Upload
-              </h2>
-              <p className="text-sm text-gray-600 mb-6">
-                Add images and videos of your auction item
-              </p>
-            </div>
-
-            {/* Images */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Images <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="url"
-                  value={formData.imageInput}
-                  onChange={(e) => handleChange("imageInput", e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addImage())
-                  }
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/image.jpg"
-                />
-                <button
-                  type="button"
-                  onClick={addImage}
-                  disabled={
-                    !formData.imageInput.trim() || formData.images.length >= 10
-                  }
-                  className="px-4 py-2.5 rounded-lg bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            {/* Images Upload */}
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Add
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
               </div>
-              <p className="text-xs text-gray-500 mb-3">
-                {formData.images.length}/10 images • Enter image URL and press
-                Add or Enter
+              <h3 className="text-sm font-medium text-gray-900 mb-1">
+                Upload Auction Images
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">
+                Drag and drop images here, or click to select files
+              </p>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                id="auction-image-upload"
+                disabled={uploadingImages}
+                onChange={async (e) => {
+                  if (e.target.files) {
+                    const files = Array.from(e.target.files);
+                    if (files.length + formData.images.length > 10) {
+                      alert("Maximum 10 images allowed");
+                      return;
+                    }
+                    setUploadingImages(true);
+
+                    try {
+                      const uploadPromises = files.map(async (file, index) => {
+                        const key = `image-${index}`;
+                        setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+                        const result = await mediaService.upload({
+                          file,
+                          context: "auction",
+                        });
+
+                        setUploadProgress((prev) => ({ ...prev, [key]: 100 }));
+                        return result.url;
+                      });
+
+                      const uploadedUrls = await Promise.all(uploadPromises);
+                      setFormData((prev) => ({
+                        ...prev,
+                        images: [...prev.images, ...uploadedUrls],
+                      }));
+                    } catch (error) {
+                      console.error("Image upload failed:", error);
+                      alert("Failed to upload images. Please try again.");
+                    } finally {
+                      setUploadingImages(false);
+                      setUploadProgress({});
+                    }
+                  }
+                }}
+              />
+              <label
+                htmlFor="auction-image-upload"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploadingImages ? "Uploading..." : "Select Images"}
+              </label>
+              <p className="mt-2 text-xs text-gray-500">
+                PNG, JPG, GIF up to 10MB each • {formData.images.length}/10
+                images
               </p>
 
+              {/* Upload Progress */}
+              {uploadingImages && (
+                <div className="mt-4 space-y-2">
+                  {Object.entries(uploadProgress)
+                    .filter(([key]) => key.startsWith("image-"))
+                    .map(([key, progress]) => (
+                      <div key={key} className="flex items-center gap-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {progress}%
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* Uploaded Images */}
               {formData.images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="mt-4 grid grid-cols-4 gap-4">
                   {formData.images.map((url, index) => (
                     <div key={index} className="relative group">
-                      <div className="aspect-square rounded-lg border-2 border-gray-200 bg-gray-50 overflow-hidden">
-                        <img
-                          src={url}
-                          alt={`Image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              "/placeholder-image.png";
-                          }}
-                        />
-                      </div>
+                      <img
+                        src={url}
+                        alt={`Auction ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-lg"
+                      />
                       <button
                         type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            images: prev.images.filter((_, i) => i !== index),
+                          }));
+                        }}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <ArrowLeft className="h-3 w-3 rotate-180" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
                       </button>
                       {index === 0 && (
-                        <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
+                        <span className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">
                           Primary
                         </span>
                       )}
@@ -795,55 +842,134 @@ export default function CreateAuctionWizardPage() {
               )}
             </div>
 
-            {/* Videos */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Videos (Optional)
-              </label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="url"
-                  value={formData.videoInput}
-                  onChange={(e) => handleChange("videoInput", e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addVideo())
-                  }
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/video.mp4"
-                />
-                <button
-                  type="button"
-                  onClick={addVideo}
-                  disabled={
-                    !formData.videoInput.trim() || formData.videos.length >= 3
-                  }
-                  className="px-4 py-2.5 rounded-lg bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            {/* Videos Upload */}
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-6 h-6 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Add
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
               </div>
-              <p className="text-xs text-gray-500 mb-3">
-                {formData.videos.length}/3 videos • Enter video URL and press
-                Add or Enter
+              <h3 className="text-sm font-medium text-gray-900 mb-1">
+                Upload Auction Videos (Optional)
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">
+                Add demonstration or review videos
+              </p>
+              <input
+                type="file"
+                multiple
+                accept="video/*"
+                className="hidden"
+                id="auction-video-upload"
+                disabled={uploadingVideos}
+                onChange={async (e) => {
+                  if (e.target.files) {
+                    const files = Array.from(e.target.files);
+                    if (files.length + formData.videos.length > 3) {
+                      alert("Maximum 3 videos allowed");
+                      return;
+                    }
+                    setUploadingVideos(true);
+
+                    try {
+                      const uploadPromises = files.map(async (file, index) => {
+                        const key = `video-${index}`;
+                        setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+                        const result = await mediaService.upload({
+                          file,
+                          context: "auction",
+                        });
+
+                        setUploadProgress((prev) => ({ ...prev, [key]: 100 }));
+                        return result.url;
+                      });
+
+                      const uploadedUrls = await Promise.all(uploadPromises);
+                      setFormData((prev) => ({
+                        ...prev,
+                        videos: [...prev.videos, ...uploadedUrls],
+                      }));
+                    } catch (error) {
+                      console.error("Video upload failed:", error);
+                      alert("Failed to upload videos. Please try again.");
+                    } finally {
+                      setUploadingVideos(false);
+                      setUploadProgress({});
+                    }
+                  }
+                }}
+              />
+              <label
+                htmlFor="auction-video-upload"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploadingVideos ? "Uploading..." : "Select Videos"}
+              </label>
+              <p className="mt-2 text-xs text-gray-500">
+                MP4, WebM up to 100MB each • {formData.videos.length}/3 videos
               </p>
 
+              {/* Upload Progress */}
+              {uploadingVideos && (
+                <div className="mt-4 space-y-2">
+                  {Object.entries(uploadProgress)
+                    .filter(([key]) => key.startsWith("video-"))
+                    .map(([key, progress]) => (
+                      <div key={key} className="flex items-center gap-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-600 h-2 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {progress}%
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* Uploaded Videos */}
               {formData.videos.length > 0 && (
-                <div className="space-y-2">
+                <div className="mt-4 space-y-2">
                   {formData.videos.map((url, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50"
                     >
-                      <div className="flex-shrink-0 w-10 h-10 rounded bg-gray-200 flex items-center justify-center">
-                        <ImageIcon className="h-5 w-5 text-gray-500" />
+                      <div className="flex-shrink-0">
+                        <video
+                          src={url}
+                          className="w-16 h-16 object-cover rounded"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-700 truncate">{url}</p>
+                        <p className="text-sm text-gray-700 truncate">
+                          Video {index + 1}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">{url}</p>
                       </div>
                       <button
                         type="button"
-                        onClick={() => removeVideo(index)}
-                        className="flex-shrink-0 text-red-600 hover:text-red-700"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            videos: prev.videos.filter((_, i) => i !== index),
+                          }));
+                        }}
+                        className="flex-shrink-0 text-red-600 hover:text-red-700 text-sm font-medium"
                       >
                         Remove
                       </button>
@@ -1002,7 +1128,7 @@ export default function CreateAuctionWizardPage() {
           <button
             type="button"
             onClick={nextStep}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             Next
             <ArrowRight className="h-4 w-4" />

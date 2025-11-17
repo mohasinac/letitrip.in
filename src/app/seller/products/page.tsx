@@ -239,12 +239,46 @@ export default function ProductsPage() {
                     key={product.id}
                     className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
                   >
-                    <div className="aspect-square bg-gray-100">
+                    <div className="aspect-square bg-gray-100 relative">
                       <img
                         src={product.images?.[0] || "/placeholder-product.jpg"}
                         alt={product.name}
                         className="h-full w-full object-cover"
                       />
+                      {/* Media count badge */}
+                      {(product.images?.length > 0 ||
+                        (product as any).videos?.length > 0) && (
+                        <div className="absolute bottom-2 right-2 flex gap-1">
+                          {product.images?.length > 0 && (
+                            <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+                              <svg
+                                className="w-3 h-3"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              {product.images.length}
+                            </span>
+                          )}
+                          {(product as any).videos?.length > 0 && (
+                            <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+                              <svg
+                                className="w-3 h-3"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                              </svg>
+                              {(product as any).videos.length}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-2">
@@ -486,7 +520,7 @@ export default function ProductsPage() {
                             {/* Product */}
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden">
+                                <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
                                   {product.images?.[0] ? (
                                     <img
                                       src={product.images[0]}
@@ -496,6 +530,15 @@ export default function ProductsPage() {
                                   ) : (
                                     <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">
                                       No image
+                                    </div>
+                                  )}
+                                  {/* Media count badge */}
+                                  {(product.images?.length > 1 ||
+                                    (product as any).videos?.length > 0) && (
+                                    <div className="absolute bottom-0 right-0 bg-black/70 text-white text-[10px] px-1 rounded-tl">
+                                      {product.images?.length || 0}
+                                      {(product as any).videos?.length > 0 &&
+                                        `+${(product as any).videos.length}v`}
                                     </div>
                                   )}
                                 </div>

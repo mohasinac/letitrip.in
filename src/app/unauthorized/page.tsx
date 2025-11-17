@@ -1,58 +1,167 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Shield, Home, LogIn, ArrowLeft } from "lucide-react";
 
 export default function Unauthorized() {
+  const searchParams = useSearchParams();
+  const reason = searchParams.get("reason");
+  const requiredRole = searchParams.get("role");
+  const resource = searchParams.get("resource");
+  const details = searchParams.get("details");
+
+  const decodedDetails = details ? decodeURIComponent(details) : null;
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  const getMessage = () => {
+    if (reason === "not-logged-in") {
+      return {
+        title: "Authentication Required",
+        message: "You need to sign in to access this page.",
+        suggestion: "Please log in with your account to continue.",
+      };
+    }
+    if (reason === "session-expired") {
+      return {
+        title: "Session Expired",
+        message: "Your session has expired for security reasons.",
+        suggestion: "Please log in again to continue.",
+      };
+    }
+    if (reason === "invalid-token") {
+      return {
+        title: "Invalid Authentication",
+        message: "Your authentication token is invalid or has been revoked.",
+        suggestion: "Please log in again to get a new token.",
+      };
+    }
+
+    return {
+      title: "Unauthorized Access",
+      message: "You need to be logged in to access this page.",
+      suggestion: "Please sign in to continue.",
+    };
+  };
+
+  const messageInfo = getMessage();
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
-        <div className="mb-6">
-          <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-12 h-12 text-orange-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 px-4">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-red-600 to-orange-600 px-8 py-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white">401</h1>
+              <p className="text-red-100">Unauthorized</p>
+            </div>
           </div>
         </div>
 
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">401</h1>
+        {/* Content */}
+        <div className="p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {messageInfo.title}
+          </h2>
 
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Unauthorized Access
-        </h2>
+          <p className="text-gray-600 mb-4">{messageInfo.message}</p>
+          <p className="text-gray-500 text-sm mb-6">{messageInfo.suggestion}</p>
 
-        <p className="text-gray-600 mb-8">
-          You need to be logged in to access this page. Please sign in to
-          continue.
-        </p>
+          {/* Required Role */}
+          {requiredRole && (
+            <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm font-medium text-orange-900 mb-1">
+                Required Permission
+              </p>
+              <p className="text-sm text-orange-700">
+                You need <span className="font-semibold">{requiredRole}</span>{" "}
+                role to access this resource.
+              </p>
+            </div>
+          )}
 
-        <div className="space-y-3">
-          <Link
-            href="/login"
-            className="block w-full px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg font-semibold hover:from-orange-700 hover:to-red-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-          >
-            Sign In
-          </Link>
+          {/* Resource Info */}
+          {resource && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm font-medium text-red-900 mb-1">
+                Requested Resource
+              </p>
+              <p className="text-sm text-red-700 font-mono break-all">
+                {resource}
+              </p>
+            </div>
+          )}
 
-          <Link
-            href="/register"
-            className="block w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-          >
-            Create Account
-          </Link>
-        </div>
+          {/* Developer Details */}
+          {isDevelopment && decodedDetails && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-xs font-semibold text-yellow-900 uppercase mb-2">
+                🛠️ Developer Info
+              </p>
+              <pre className="text-xs text-yellow-800 font-mono whitespace-pre-wrap break-words">
+                {decodedDetails}
+              </pre>
+            </div>
+          )}
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back to Home
-          </Link>
+          {/* Action Buttons */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Go Back
+              </button>
+              <Link
+                href="/login"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all shadow-md hover:shadow-lg"
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In
+              </Link>
+            </div>
+
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 w-full px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-red-500 hover:text-red-600 transition-colors"
+            >
+              <Home className="w-4 h-4" />
+              Go to Homepage
+            </Link>
+          </div>
+
+          {/* Help Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-600 mb-2">
+              Need help with your account?
+            </p>
+            <div className="flex gap-4">
+              <Link
+                href="/register"
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Create Account
+              </Link>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Reset Password
+              </Link>
+              <Link
+                href="/support/ticket"
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Contact Support
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

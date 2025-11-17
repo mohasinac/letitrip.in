@@ -195,7 +195,8 @@ export const ADMIN_ROUTES = {
   CATEGORY_BY_ID: (id: string) => `/admin/categories/${id}`,
   CATEGORIES_BULK: "/admin/categories/bulk",
 
-  // Users
+  // Users - Note: These are UI routes for admin pages, not API endpoints
+  // For API calls, use USER_ROUTES instead (unified with RBAC)
   USERS: "/admin/users",
   USER_BY_ID: (id: string) => `/admin/users/${id}`,
   USERS_BULK: "/admin/users/bulk",

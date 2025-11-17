@@ -1,5 +1,5 @@
 import { apiService } from "./api.service";
-import { ADMIN_ROUTES } from "@/constants/api-routes";
+import { HOMEPAGE_ROUTES } from "@/constants/api-routes";
 
 export interface HomepageSettings {
   specialEventBanner: {
@@ -58,33 +58,41 @@ interface HomepageSettingsResponse {
 class HomepageSettingsService {
   // Get current homepage settings
   async getSettings(): Promise<HomepageSettingsResponse> {
-    return apiService.get<HomepageSettingsResponse>(ADMIN_ROUTES.HOMEPAGE);
+    const response = await apiService.get<{
+      data: HomepageSettings;
+      isDefault: boolean;
+    }>(HOMEPAGE_ROUTES.SETTINGS);
+    return {
+      settings: response.data,
+      isDefault: response.isDefault,
+    };
   }
 
   // Update homepage settings (admin only)
   async updateSettings(
     settings: Partial<HomepageSettings>,
-    userId?: string,
+    userId?: string
   ): Promise<HomepageSettings> {
-    const response = await apiService.patch<{ settings: HomepageSettings }>(
-      ADMIN_ROUTES.HOMEPAGE,
-      { settings, userId },
+    const response = await apiService.patch<{ data: HomepageSettings }>(
+      HOMEPAGE_ROUTES.SETTINGS,
+      { settings, userId }
     );
-    return response.settings;
+    return response.data;
   }
 
   // Reset to default settings (admin only)
   async resetSettings(): Promise<HomepageSettings> {
-    const response = await apiService.post<{ settings: HomepageSettings }>(
-      ADMIN_ROUTES.HOMEPAGE_RESET,
+    const response = await apiService.post<{ data: HomepageSettings }>(
+      HOMEPAGE_ROUTES.SETTINGS,
+      {}
     );
-    return response.settings;
+    return response.data;
   }
 
   // Toggle a section on/off (admin only)
   async toggleSection(
     sectionKey: string,
-    enabled: boolean,
+    enabled: boolean
   ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };
@@ -114,7 +122,7 @@ class HomepageSettingsService {
       productsPerShop?: number;
       maxBlogs?: number;
       maxReviews?: number;
-    },
+    }
   ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };

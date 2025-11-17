@@ -41,7 +41,10 @@ function parseDate(timestamp: any): Date {
 /**
  * Format price to Indian currency
  */
-function formatPrice(price: number): string {
+function formatPrice(price: number | undefined | null): string {
+  if (price === undefined || price === null || isNaN(price)) {
+    return "₹0";
+  }
   return `₹${price.toLocaleString("en-IN")}`;
 }
 
@@ -320,6 +323,7 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
 
     // Backwards compatibility aliases
     images: productBE.images || [],
+    videos: productBE.videos || [],
     originalPrice: productBE.compareAtPrice || null,
     rating: productBE.averageRating,
     stockCount: productBE.stockCount,
