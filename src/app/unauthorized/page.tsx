@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Shield, Home, LogIn, ArrowLeft } from "lucide-react";
+import { Suspense } from "react";
 
-export default function Unauthorized() {
+function UnauthorizedContent() {
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");
   const requiredRole = searchParams.get("role");
@@ -165,5 +166,22 @@ export default function Unauthorized() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Unauthorized() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <UnauthorizedContent />
+    </Suspense>
   );
 }

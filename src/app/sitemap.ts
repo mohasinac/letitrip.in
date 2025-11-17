@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { safeToISOString, toISOStringOrDefault } from "@/lib/date-utils";
 
 // Note: This is a server component, we can fetch data directly
 async function fetchProducts() {
@@ -7,7 +8,7 @@ async function fetchProducts() {
       "https://letitrip.in/api/products?status=active&limit=1000",
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
-      },
+      }
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -20,12 +21,9 @@ async function fetchProducts() {
 
 async function fetchCategories() {
   try {
-    const res = await fetch(
-      "https://letitrip.in/api/categories?limit=1000",
-      {
-        next: { revalidate: 3600 },
-      },
-    );
+    const res = await fetch("https://letitrip.in/api/categories?limit=1000", {
+      next: { revalidate: 3600 },
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return data.data || data.categories || [];
@@ -41,7 +39,7 @@ async function fetchShops() {
       "https://letitrip.in/api/shops?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
-      },
+      }
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -58,7 +56,7 @@ async function fetchAuctions() {
       "https://letitrip.in/api/auctions?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
-      },
+      }
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -172,44 +170,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   // Dynamic product pages
-  const productPages: MetadataRoute.Sitemap = products.map((product: any) => ({
-    url: `${baseUrl}/products/${product.slug}`,
-    lastModified: product.updated_at
-      ? new Date(product.updated_at)
-      : currentDate,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  const productPages: MetadataRoute.Sitemap = products
+    .filter((product: any) => product.slug) // Only include products with valid slugs
+    .map((product: any) => {
+      const lastMod = safeToISOString(product.updated_at || product.updatedAt);
+      return {
+        url: `${baseUrl}/products/${product.slug}`,
+        lastModified: lastMod ? new Date(lastMod) : currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      };
+    });
 
   // Dynamic category pages
-  const categoryPages: MetadataRoute.Sitemap = categories.map(
-    (category: any) => ({
-      url: `${baseUrl}/categories/${category.slug}`,
-      lastModified: category.updated_at
-        ? new Date(category.updated_at)
-        : currentDate,
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    }),
-  );
+  const categoryPages: MetadataRoute.Sitemap = categories
+    .filter((category: any) => category.slug)
+    .map((category: any) => {
+      const lastMod = safeToISOString(
+        category.updated_at || category.updatedAt
+      );
+      return {
+        url: `${baseUrl}/categories/${category.slug}`,
+        lastModified: lastMod ? new Date(lastMod) : currentDate,
+        changeFrequency: "daily" as const,
+        priority: 0.9,
+      };
+    });
 
   // Dynamic shop pages
-  const shopPages: MetadataRoute.Sitemap = shops.map((shop: any) => ({
-    url: `${baseUrl}/shops/${shop.slug}`,
-    lastModified: shop.updated_at ? new Date(shop.updated_at) : currentDate,
-    changeFrequency: "daily" as const,
-    priority: 0.7,
-  }));
+  const shopPages: MetadataRoute.Sitemap = shops
+    .filter((shop: any) => shop.slug)
+    .map((shop: any) => {
+      const lastMod = safeToISOString(shop.updated_at || shop.updatedAt);
+      return {
+        url: `${baseUrl}/shops/${shop.slug}`,
+        lastModified: lastMod ? new Date(lastMod) : currentDate,
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+      };
+    });
 
   // Dynamic auction pages
-  const auctionPages: MetadataRoute.Sitemap = auctions.map((auction: any) => ({
-    url: `${baseUrl}/auctions/${auction.slug || auction.id}`,
-    lastModified: auction.updated_at
-      ? new Date(auction.updated_at)
-      : currentDate,
-    changeFrequency: "hourly" as const,
-    priority: 0.8,
-  }));
+  const auctionPages: MetadataRoute.Sitemap = auctions
+    .filter((auction: any) => auction.slug || auction.id)
+    .map((auction: any) => {
+      const lastMod = safeToISOString(auction.updated_at || auction.updatedAt);
+      return {
+        url: `${baseUrl}/auctions/${auction.slug || auction.id}`,
+        lastModified: lastMod ? new Date(lastMod) : currentDate,
+        changeFrequency: "hourly" as const,
+        priority: 0.8,
+      };
+    });
 
   return [
     ...staticPages,

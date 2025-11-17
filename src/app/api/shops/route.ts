@@ -102,25 +102,43 @@ export async function GET(request: NextRequest) {
           console.log("[Shops API] No shops found for the given filters");
         }
 
-        let shops = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        let shops = snapshot.docs.map((doc) => {
+          const data: any = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            // Add camelCase aliases
+            ownerId: data.owner_id,
+            isVerified: data.is_verified,
+            isFeatured: data.is_featured,
+            isBanned: data.is_banned,
+            showOnHomepage: data.show_on_homepage,
+            totalProducts: data.total_products || data.product_count || 0,
+            reviewCount: data.review_count || 0,
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+          };
+        });
 
         // Calculate accurate product counts (published products only) for each shop
         const shopsWithCounts = await Promise.all(
           shops.map(async (shop) => {
             try {
-              const productsCount = await Collections.products()
+              // Get all published products for the shop
+              const productsSnapshot = await Collections.products()
                 .where("shop_id", "==", shop.id)
                 .where("status", "==", "published")
-                .where("is_deleted", "==", false)
-                .count()
                 .get();
+
+              // Filter in application code to handle undefined is_deleted
+              const validProducts = productsSnapshot.docs.filter(
+                (doc) => doc.data().is_deleted !== true
+              );
 
               return {
                 ...shop,
-                product_count: productsCount.data().count,
+                product_count: validProducts.length,
+                totalProducts: validProducts.length, // camelCase alias
               };
             } catch (error) {
               console.error(
