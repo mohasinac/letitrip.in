@@ -8,6 +8,8 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { ProductDescription } from "@/components/product/ProductDescription";
 import { ProductReviews } from "@/components/product/ProductReviews";
+import { ProductVariants } from "@/components/product/ProductVariants";
+import { SellerProducts } from "@/components/product/SellerProducts";
 import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
@@ -29,13 +31,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const [product, setProduct] = useState<ProductFE | null>(null);
   const [shop, setShop] = useState<ShopFE | null>(null);
-  const [variants, setVariants] = useState<ProductCardFE[]>([]);
-  const [shopProducts, setShopProducts] = useState<ProductCardFE[]>([]);
-  const [similarProducts, setSimilarProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
-  const [variantsLoading, setVariantsLoading] = useState(false);
-  const [shopProductsLoading, setShopProductsLoading] = useState(false);
-  const [showAllVariants, setShowAllVariants] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const { addItem, loading: cartLoading } = useCart();
@@ -59,9 +55,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
       }
 
-      // Load related data
-      loadVariants(slug);
-      loadShopProducts(slug);
+
     } catch (error: any) {
       console.error("Failed to load product:", error);
       router.push(notFound.product(slug, error));
@@ -70,31 +64,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
   };
 
-  const loadVariants = async (slug: string) => {
-    try {
-      setVariantsLoading(true);
-      const data = await productsService.getVariants(slug);
-      setVariants(data.slice(0, 12)); // Limit to 12 variants
-    } catch (error) {
-      // Silently fail - variants are optional
-      setVariants([]);
-    } finally {
-      setVariantsLoading(false);
-    }
-  };
 
-  const loadShopProducts = async (slug: string) => {
-    try {
-      setShopProductsLoading(true);
-      const data = await productsService.getSellerProducts(slug, 12);
-      setShopProducts(data);
-    } catch (error) {
-      // Silently fail - shop products are optional
-      setShopProducts([]);
-    } finally {
-      setShopProductsLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -382,135 +352,19 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      {/* 4. Variants Section (Full Width - Expandable Grid) */}
-      {variants.length > 0 && (
-        <div className="bg-white border-t">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">
-                Similar items from {shop?.name || "this shop"}
-              </h2>
-              {variants.length > 6 && (
-                <button
-                  onClick={() => setShowAllVariants(!showAllVariants)}
-                  className="text-sm text-blue-600 hover:underline font-medium"
-                >
-                  {showAllVariants
-                    ? "Show less"
-                    : `See all ${variants.length} options`}
-                </button>
-              )}
-            </div>
-            <div
-              className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4`}
-            >
-              {(showAllVariants ? variants : variants.slice(0, 6)).map(
-                (variant) => (
-                  <div
-                    key={variant.id}
-                    onClick={() => router.push(`/products/${variant.slug}`)}
-                    className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all group bg-white"
-                  >
-                    <div className="aspect-square relative bg-gray-100">
-                      <img
-                        src={variant.primaryImage || variant.images?.[0] || ""}
-                        alt={variant.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <p className="text-sm text-gray-900 line-clamp-2 mb-2 h-10">
-                        {variant.name}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-gray-900">
-                          {variant.formattedPrice}
-                        </span>
-                      </div>
-                      {variant.compareAtPrice &&
-                        variant.compareAtPrice > variant.price && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-500 line-through">
-                              ₹{variant.compareAtPrice.toLocaleString()}
-                            </span>
-                            <span className="text-xs text-red-600">
-                              -
-                              {Math.round(
-                                ((variant.compareAtPrice - variant.price) /
-                                  variant.compareAtPrice) *
-                                  100
-                              )}
-                              %
-                            </span>
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. Products from this Seller (Excluding current & leaf category) */}
-      {shopProducts.length > 0 && (
-        <div className="bg-white border-t">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">
-                Products related to this item
-              </h2>
-              <button
-                onClick={() => router.push(`/shops/${product.shopId}`)}
-                className="text-sm text-blue-600 hover:underline font-medium"
-              >
-                See more
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <div className="flex gap-4 pb-2">
-                {shopProducts.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => router.push(`/products/${item.slug}`)}
-                    className="flex-shrink-0 w-40 cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all group bg-white"
-                  >
-                    <div className="aspect-square relative bg-gray-100">
-                      <img
-                        src={item.primaryImage || item.images?.[0] || ""}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-                    <div className="p-2">
-                      <p className="text-xs text-gray-900 line-clamp-2 mb-1 h-8">
-                        {item.name}
-                      </p>
-                      <div className="text-sm font-bold text-gray-900">
-                        {item.formattedPrice}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 6. Similar Products (From parent categories & uncles) */}
+      {/* 4. Product Variants (Same Category) */}
       <div className="bg-white border-t">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <SimilarProducts
+          <ProductVariants
             productId={product.id}
             categoryId={product.categoryId}
             currentShopId={product.shopId}
+            categoryName={product.category?.name || "this category"}
           />
         </div>
       </div>
 
-      {/* 7. Product Description (Full Width) */}
+      {/* 5. Product Description (Full Width) */}
       <div className="bg-white border-t">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -522,6 +376,32 @@ export default function ProductPage({ params }: ProductPageProps) {
           />
         </div>
       </div>
+
+      {/* 6. Seller Products (Same/Parent Category) */}
+      <div className="bg-white border-t">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <SellerProducts
+            productId={product.id}
+            categoryId={product.categoryId}
+            shopId={product.shopId}
+            shopName={shop?.name || product.shopId}
+          />
+        </div>
+      </div>
+
+      {/* 7. Similar Products (From Parent Categories) */}
+      {product.categoryIds && product.categoryIds.length > 0 && (
+        <div className="bg-white border-t">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <SimilarProducts
+              productId={product.id}
+              parentCategoryIds={product.categoryIds.filter((id: string) => id !== product.categoryId)}
+              currentShopId={product.shopId}
+              parentCategoryName="related categories"
+            />
+          </div>
+        </div>
+      )}
 
       {/* 8. Customer Reviews & Ratings */}
       <div className="bg-white border-t" id="reviews">
