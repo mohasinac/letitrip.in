@@ -19,22 +19,35 @@ export async function GET(req: NextRequest) {
     const user = await getUserFromRequest(req);
     const { searchParams } = new URL(req.url);
 
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
+    const limit = parseInt(searchParams.get("limit") || "20");
+
+    // Filter params
     const productId = searchParams.get("product_id");
     const shopId = searchParams.get("shop_id");
     const userId = searchParams.get("user_id");
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const status = searchParams.get("status");
+    const minRating = searchParams.get("minRating");
+    const maxRating = searchParams.get("maxRating");
+    const verified = searchParams.get("verified");
 
-    let query = db
-      .collection(COLLECTIONS.REVIEWS)
-      .orderBy("created_at", "desc");
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
+
+    let query: FirebaseFirestore.Query = db.collection(COLLECTIONS.REVIEWS);
 
     // Role-based filtering
     if (!user || user.role !== "admin") {
-      // Public users only see approved reviews
+      // Public users only see published reviews
       query = query.where("status", "==", "published");
+    } else if (status) {
+      // Admin can filter by status
+      query = query.where("status", "==", status);
     }
-    // Admin sees all reviews
 
     // Apply filters
     if (productId) {
@@ -46,15 +59,63 @@ export async function GET(req: NextRequest) {
     if (userId) {
       query = query.where("user_id", "==", userId);
     }
+    if (verified === "true") {
+      query = query.where("verified_purchase", "==", true);
+    }
 
-    // Pagination
-    query = query.limit(limit).offset(offset);
+    // Rating range filters (only if sorting by rating)
+    const validSortFields = ["created_at", "rating", "helpful_count"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
 
+    if (sortField === "rating") {
+      if (minRating) {
+        const minRatingNum = parseInt(minRating);
+        if (!isNaN(minRatingNum) && minRatingNum >= 1 && minRatingNum <= 5) {
+          query = query.where("rating", ">=", minRatingNum);
+        }
+      }
+      if (maxRating) {
+        const maxRatingNum = parseInt(maxRating);
+        if (!isNaN(maxRatingNum) && maxRatingNum >= 1 && maxRatingNum <= 5) {
+          query = query.where("rating", "<=", maxRatingNum);
+        }
+      }
+    }
+
+    // Add sorting
+    query = query.orderBy(sortField, sortOrder);
+
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await db
+        .collection(COLLECTIONS.REVIEWS)
+        .doc(startAfter)
+        .get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
     const snapshot = await query.get();
-    const reviews = snapshot.docs.map((doc) => ({
+    const docs = snapshot.docs;
+
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    // Transform data
+    const reviews = resultDocs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Get next cursor
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     // Calculate stats if filtering by product
     let stats = null;
@@ -62,6 +123,7 @@ export async function GET(req: NextRequest) {
       const allReviewsSnapshot = await db
         .collection(COLLECTIONS.REVIEWS)
         .where("product_id", "==", productId)
+        .where("status", "==", "published")
         .get();
 
       const allReviews = allReviewsSnapshot.docs.map((doc) => doc.data());
@@ -92,12 +154,13 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      reviews,
+      data: reviews,
+      count: reviews.length,
       stats,
       pagination: {
         limit,
-        offset,
-        total: reviews.length,
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error) {

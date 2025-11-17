@@ -35,30 +35,73 @@ function AuctionsContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Cursor-based pagination
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   const status = searchParams.get("status") as AuctionStatus | null;
   const featured = searchParams.get("featured");
-  const page = parseInt(searchParams.get("page") || "1");
+  const sortBy = searchParams.get("sortBy") || "created_at";
+  const sortOrder = searchParams.get("sortOrder") || "desc";
   const itemsPerPage = 12;
+
+  // Sync filter values with URL on mount
+  useEffect(() => {
+    const initialFilters: Record<string, any> = {};
+    if (status) initialFilters.status = status;
+    if (featured) initialFilters.featured = featured;
+    setFilterValues(initialFilters);
+  }, []);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filterValues.status) params.set("status", filterValues.status);
+    if (filterValues.categoryId)
+      params.set("categoryId", filterValues.categoryId);
+    if (filterValues.minBid) params.set("minBid", String(filterValues.minBid));
+    if (filterValues.maxBid) params.set("maxBid", String(filterValues.maxBid));
+    if (filterValues.featured) params.set("featured", "true");
+    if (sortBy !== "created_at") params.set("sortBy", sortBy);
+    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+    if (currentPage > 1) params.set("page", String(currentPage));
+
+    const newUrl = params.toString() ? `?${params.toString()}` : "/auctions";
+    router.push(newUrl, { scroll: false });
+  }, [filterValues, sortBy, sortOrder, currentPage]);
 
   useEffect(() => {
     loadAuctions();
-  }, [status, featured, page, filterValues, searchQuery]);
+  }, [
+    status,
+    featured,
+    currentPage,
+    filterValues,
+    searchQuery,
+    sortBy,
+    sortOrder,
+  ]);
 
   const loadAuctions = async () => {
     try {
       setLoading(true);
+      const startAfter = cursors[currentPage - 1];
+
       const apiFilters: any = {
-        page,
+        startAfter: startAfter || undefined,
         limit: itemsPerPage,
+        sortBy,
+        sortOrder,
         ...filterValues,
       };
 
       if (status) {
         apiFilters.status = status;
       } else if (!filterValues.status) {
-        apiFilters.status = "live"; // Default to live auctions
+        apiFilters.status = "active"; // Default to active auctions
       }
 
       if (featured === "true") {
@@ -72,6 +115,16 @@ function AuctionsContent() {
       const response = await auctionsService.list(apiFilters);
       setAuctions(response.data || []);
       setTotalCount(response.total || 0);
+      setHasNextPage(response.hasMore || false);
+
+      // Store cursor for next page
+      if (response.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.nextCursor || null;
+          return newCursors;
+        });
+      }
     } catch (error) {
       console.error("Failed to load auctions:", error);
     } finally {
@@ -83,67 +136,42 @@ function AuctionsContent() {
     setFilterValues({});
     setSearchQuery("");
     setShowFilters(false);
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
-  const totalPages = Math.ceil(totalCount / itemsPerPage);
-
   const renderPagination = () => {
-    if (totalPages <= 1) return null;
-
-    const pages = [];
-    const showEllipsisStart = page > 3;
-    const showEllipsisEnd = page < totalPages - 2;
-
-    if (showEllipsisStart) {
-      pages.push(1);
-      if (page > 4) pages.push("...");
-    }
-
-    for (
-      let i = Math.max(1, page - 2);
-      i <= Math.min(totalPages, page + 2);
-      i++
-    ) {
-      pages.push(i);
-    }
-
-    if (showEllipsisEnd) {
-      if (page < totalPages - 3) pages.push("...");
-      pages.push(totalPages);
-    }
+    if (!hasNextPage && currentPage === 1) return null;
 
     return (
-      <div className="flex items-center justify-center gap-2 mt-8">
+      <div className="flex items-center justify-center gap-4 mt-8">
         <button
-          onClick={() => router.push(`/auctions?page=${page - 1}`)}
-          disabled={page === 1}
-          className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => {
+            if (currentPage > 1) {
+              setCurrentPage(currentPage - 1);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          disabled={currentPage === 1}
+          className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Previous
         </button>
-        {pages.map((p, i) =>
-          typeof p === "number" ? (
-            <button
-              key={i}
-              onClick={() => router.push(`/auctions?page=${p}`)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                page === p
-                  ? "bg-primary text-white"
-                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              {p}
-            </button>
-          ) : (
-            <span key={i} className="px-2 text-gray-400">
-              {p}
-            </span>
-          )
-        )}
+
+        <span className="text-sm text-gray-600 dark:text-gray-400">
+          Page {currentPage}{" "}
+          {auctions.length > 0 && `(${auctions.length} items)`}
+        </span>
+
         <button
-          onClick={() => router.push(`/auctions?page=${page + 1}`)}
-          disabled={page === totalPages}
-          className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => {
+            if (hasNextPage) {
+              setCurrentPage(currentPage + 1);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          disabled={!hasNextPage}
+          className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Next
         </button>
@@ -269,8 +297,8 @@ function AuctionsContent() {
           {/* Results Count */}
           {!loading && (
             <p className="mb-4 text-sm text-gray-600">
-              Showing {(page - 1) * itemsPerPage + 1}-
-              {Math.min(page * itemsPerPage, totalCount)} of {totalCount}{" "}
+              Showing {(currentPage - 1) * itemsPerPage + 1}-
+              {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
               results
             </p>
           )}

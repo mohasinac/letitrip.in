@@ -20,43 +20,54 @@ function ShopsContent() {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
   );
-  const [sortBy, setSortBy] = useState<string>("rating");
+  const [sortBy, setSortBy] = useState<string>(
+    searchParams.get("sortBy") || "created_at"
+  );
+  const [sortOrder, setSortOrder] = useState<string>(
+    searchParams.get("sortOrder") || "desc"
+  );
   const [showFilters, setShowFilters] = useState(false);
   const [totalShops, setTotalShops] = useState(0);
+
+  // Cursor-based pagination
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const limit = 20;
 
   // Unified filters
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   useEffect(() => {
     loadShops();
-  }, [filterValues, sortBy, searchQuery]);
+  }, [filterValues, sortBy, sortOrder, searchQuery, currentPage]);
 
   const loadShops = async () => {
     try {
       setLoading(true);
+      const startAfter = cursors[currentPage - 1];
+
       const response = await shopsService.list({
+        startAfter: startAfter || undefined,
+        limit,
+        sortBy,
+        sortOrder,
         search: searchQuery || undefined,
         ...filterValues,
-        limit: 100,
       });
 
-      let shopsData = response.data || [];
+      setShops(response.data || []);
+      setTotalShops(response.total || 0);
+      setHasNextPage(response.hasMore || false);
 
-      // Sort shops
-      if (sortBy === "rating") {
-        shopsData.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      } else if (sortBy === "products") {
-        shopsData.sort((a, b) => (b.productCount || 0) - (a.productCount || 0));
-      } else if (sortBy === "newest") {
-        shopsData.sort(
-          (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime()
-        );
+      // Store cursor for next page
+      if (response.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.nextCursor || null;
+          return newCursors;
+        });
       }
-
-      setShops(shopsData);
-      setTotalShops(shopsData.length);
     } catch (error) {
       console.error("Failed to load shops:", error);
     } finally {
@@ -67,7 +78,10 @@ function ShopsContent() {
   const handleReset = () => {
     setSearchQuery("");
     setFilterValues({});
-    setSortBy("rating");
+    setSortBy("created_at");
+    setSortOrder("desc");
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
   return (
@@ -241,6 +255,44 @@ function ShopsContent() {
                 )}
               </>
             )}
+
+            {/* Pagination */}
+            {!loading &&
+              shops.length > 0 &&
+              (hasNextPage || currentPage > 1) && (
+                <div className="flex items-center justify-center gap-4 mt-8">
+                  <button
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage(currentPage - 1);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    disabled={currentPage === 1}
+                    className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Page {currentPage}{" "}
+                    {shops.length > 0 && `(${shops.length} shops)`}
+                  </span>
+
+                  <button
+                    onClick={() => {
+                      if (hasNextPage) {
+                        setCurrentPage(currentPage + 1);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    disabled={!hasNextPage}
+                    className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
           </div>
         </div>
 

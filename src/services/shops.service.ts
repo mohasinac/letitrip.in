@@ -39,7 +39,7 @@ interface ShopPaymentData {
 }
 
 class ShopsService {
-  // List shops (filtered by role)
+  // List shops (filtered by role) with cursor-based pagination
   async list(
     filters?: Record<string, any>
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
@@ -65,12 +65,13 @@ class ShopsService {
     const response: any = await apiService.get(endpoint);
 
     return {
-      data: (response.data || []).map(toFEShopCard),
-      total: response.pagination?.total || response.total || 0,
-      page: response.pagination?.page || response.page || 1,
-      limit: response.pagination?.limit || response.limit || 20,
-      totalPages: response.pagination?.totalPages || response.totalPages || 1,
-      hasMore: response.pagination?.hasNextPage || response.hasMore || false,
+      data: (response.data || response.shops || []).map(toFEShopCard),
+      total: response.count || 0,
+      page: 1, // Not used with cursor pagination
+      limit: response.pagination?.limit || 20,
+      totalPages: 1, // Not used with cursor pagination
+      hasMore: response.pagination?.hasNextPage || false,
+      nextCursor: response.pagination?.nextCursor || null,
     };
   }
 

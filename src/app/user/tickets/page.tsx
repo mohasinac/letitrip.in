@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
@@ -29,6 +30,12 @@ export default function UserTicketsPage() {
   const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  
   const [filter, setFilter] = useState({
     status: "",
     category: "",
@@ -36,24 +43,56 @@ export default function UserTicketsPage() {
 
   useEffect(() => {
     fetchTickets();
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const fetchTickets = async () => {
     setIsLoading(true);
     setError("");
 
     try {
+      const startAfter = cursors[currentPage - 1];
       const response = await supportService.listTickets({
         status: filter.status as any,
         category: filter.category as any,
-      });
+        startAfter,
+        limit: 20,
+      } as any);
+      
       setTickets(response.data || []);
+      setHasNextPage(response.hasMore || false);
+      
+      if (response.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.nextCursor || null;
+          return newCursors;
+        });
+      }
     } catch (err: any) {
       console.error("Error fetching tickets:", err);
       setError(err.message || "Failed to load tickets");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleFilterChange = () => {
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
   return (
@@ -81,9 +120,10 @@ export default function UserTicketsPage() {
               </label>
               <select
                 value={filter.status}
-                onChange={(e) =>
-                  setFilter({ ...filter, status: e.target.value })
-                }
+                onChange={(e) => {
+                  setFilter({ ...filter, status: e.target.value });
+                  handleFilterChange();
+                }}
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="">All Statuses</option>
@@ -101,9 +141,10 @@ export default function UserTicketsPage() {
               </label>
               <select
                 value={filter.category}
-                onChange={(e) =>
-                  setFilter({ ...filter, category: e.target.value })
-                }
+                onChange={(e) => {
+                  setFilter({ ...filter, category: e.target.value });
+                  handleFilterChange();
+                }}
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="">All Categories</option>
@@ -170,75 +211,104 @@ export default function UserTicketsPage() {
 
         {/* Tickets Grid */}
         {!isLoading && tickets.length > 0 && (
-          <div className="grid gap-4">
-            {tickets.map((ticket) => (
-              <div
-                key={ticket.id}
-                onClick={() => router.push(`/user/tickets/${ticket.id}`)}
-                className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow cursor-pointer"
-              >
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          {ticket.subject}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                          {ticket.description}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              statusColors[
-                                ticket.status as keyof typeof statusColors
-                              ]
-                            }`}
-                          >
-                            {ticket.status}
-                          </span>
-                          <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
-                            {categoryLabels[
-                              ticket.category as keyof typeof categoryLabels
-                            ] || ticket.category}
-                          </span>
-                          <span>
-                            {new Date(ticket.createdAt).toLocaleDateString()}
-                          </span>
+          <>
+            <div className="grid gap-4">
+              {tickets.map((ticket) => (
+                <div
+                  key={ticket.id}
+                  onClick={() => router.push(`/user/tickets/${ticket.id}`)}
+                  className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow cursor-pointer"
+                >
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                            {ticket.subject}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                            {ticket.description}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                statusColors[
+                                  ticket.status as keyof typeof statusColors
+                                ]
+                              }`}
+                            >
+                              {ticket.status}
+                            </span>
+                            <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                              {categoryLabels[
+                                ticket.category as keyof typeof categoryLabels
+                              ] || ticket.category}
+                            </span>
+                            <span>
+                              {new Date(ticket.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    {ticket.priority === "urgent" && (
-                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold">
-                        Urgent
-                      </span>
-                    )}
-                    {ticket.priority === "high" && (
-                      <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-semibold">
-                        High
-                      </span>
-                    )}
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    <div className="flex items-center gap-2">
+                      {ticket.priority === "urgent" && (
+                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold">
+                          Urgent
+                        </span>
+                      )}
+                      {ticket.priority === "high" && (
+                        <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-semibold">
+                          High
+                        </span>
+                      )}
+                      <svg
+                        className="h-5 w-5 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="mt-6 border-t border-gray-200 pt-4">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1 || isLoading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} • {tickets.length} tickets
+                </span>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={!hasNextPage || isLoading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+          </>
         )}
       </main>
     </AuthGuard>

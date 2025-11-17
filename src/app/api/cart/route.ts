@@ -15,13 +15,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get cart items
-    const cartSnapshot = await Collections.cart()
+    const searchParams = request.nextUrl.searchParams;
+    const startAfter = searchParams.get("startAfter");
+    const limit = parseInt(searchParams.get("limit") || "100");
+
+    // Get cart items with cursor pagination
+    let query = Collections.cart()
       .where("user_id", "==", user.id)
-      .get();
+      .orderBy("added_at", "desc");
+
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await Collections.cart().doc(startAfter).get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
+    const cartSnapshot = await query.get();
+    const docs = cartSnapshot.docs;
+
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
     const items = await Promise.all(
-      cartSnapshot.docs.map(async (doc: any) => {
+      resultDocs.map(async (doc: any) => {
         const data = doc.data();
 
         // Get product details
@@ -68,6 +89,11 @@ export async function GET(request: NextRequest) {
     const discount = 0; // Will be calculated if coupon applied
     const total = subtotal + shipping + tax - discount;
 
+    // Get next cursor
+    const nextCursor = hasNextPage && resultDocs.length > 0
+      ? resultDocs[resultDocs.length - 1].id
+      : null;
+
     const summary = {
       items: validItems,
       subtotal,
@@ -81,7 +107,16 @@ export async function GET(request: NextRequest) {
       ),
     };
 
-    return NextResponse.json({ success: true, data: summary });
+    return NextResponse.json({
+      success: true,
+      data: summary,
+      count: validItems.length,
+      pagination: {
+        limit,
+        hasNextPage,
+        nextCursor,
+      },
+    });
   } catch (error) {
     console.error("Error fetching cart:", error);
     return NextResponse.json(

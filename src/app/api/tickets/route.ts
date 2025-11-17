@@ -18,16 +18,26 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
 
     const searchParams = request.nextUrl.searchParams;
+
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
+    const limit = parseInt(searchParams.get("limit") || "20");
+
+    // Filter params
     const status = searchParams.get("status");
     const category = searchParams.get("category");
     const priority = searchParams.get("priority");
     const assignedTo = searchParams.get("assignedTo");
     const shopId = searchParams.get("shopId");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
 
     const db = getFirestoreAdmin();
-    let query: any = db.collection("support_tickets");
+    let query: FirebaseFirestore.Query = db.collection("support_tickets");
 
     // Role-based filtering
     if (!user || user.role === "user") {
@@ -65,21 +75,32 @@ export async function GET(request: NextRequest) {
       query = query.where("assignedTo", "==", assignedTo);
     }
 
-    // Order by created date
-    query = query.orderBy("createdAt", "desc");
+    // Add sorting
+    const validSortFields = ["createdAt", "updatedAt", "priority"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+    query = query.orderBy(sortField, sortOrder);
 
-    // Get total count
-    const countSnapshot = await query.count().get();
-    const total = countSnapshot.data().count;
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await db
+        .collection("support_tickets")
+        .doc(startAfter)
+        .get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
 
-    // Apply pagination
-    const offset = (page - 1) * limit;
-    query = query.limit(limit).offset(offset);
-
-    // Execute query
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
     const snapshot = await query.get();
+    const docs = snapshot.docs;
 
-    const tickets = snapshot.docs.map((doc: any) => {
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    const tickets = resultDocs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -89,6 +110,12 @@ export async function GET(request: NextRequest) {
         resolvedAt: data.resolvedAt?.toDate?.() || data.resolvedAt,
       };
     });
+
+    // Get next cursor
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     // Get statistics (admin only)
     let stats = undefined;
@@ -116,14 +143,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: tickets,
+      count: tickets.length,
       ...(stats && { stats }),
       pagination: {
-        page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: page * limit < total,
-        hasPrev: page > 1,
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error: any) {

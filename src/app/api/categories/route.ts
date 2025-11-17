@@ -20,9 +20,21 @@ export async function GET(request: NextRequest) {
       try {
         const user = await getUserFromRequest(req);
         const { searchParams } = new URL(req.url);
+
+        // Pagination params
+        const startAfter = searchParams.get("startAfter");
+        const limit = parseInt(searchParams.get("limit") || "200");
+
+        // Filter params
         const featured = searchParams.get("featured");
         const showOnHomepage = searchParams.get("showOnHomepage");
         const parentId = searchParams.get("parentId");
+
+        // Sort params
+        const sortBy = searchParams.get("sortBy") || "sort_order";
+        const sortOrder = (searchParams.get("sortOrder") || "asc") as
+          | "asc"
+          | "desc";
 
         let query: FirebaseFirestore.Query = Collections.categories();
 
@@ -49,8 +61,36 @@ export async function GET(request: NextRequest) {
           );
         }
 
-        const snapshot = await query.limit(200).get();
-        const categories = snapshot.docs.map((d) => {
+        // Add sorting
+        const validSortFields = [
+          "sort_order",
+          "name",
+          "product_count",
+          "created_at",
+        ];
+        const sortField = validSortFields.includes(sortBy)
+          ? sortBy
+          : "sort_order";
+        query = query.orderBy(sortField, sortOrder);
+
+        // Apply cursor pagination
+        if (startAfter) {
+          const startDoc = await Collections.categories().doc(startAfter).get();
+          if (startDoc.exists) {
+            query = query.startAfter(startDoc);
+          }
+        }
+
+        // Fetch limit + 1 to check if there's a next page
+        query = query.limit(limit + 1);
+        const snapshot = await query.get();
+        const docs = snapshot.docs;
+
+        // Check if there's a next page
+        const hasNextPage = docs.length > limit;
+        const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+        const categories = resultDocs.map((d) => {
           const data: any = d.data();
           return {
             id: d.id,
@@ -75,7 +115,22 @@ export async function GET(request: NextRequest) {
           };
         });
 
-        return NextResponse.json({ success: true, data: categories });
+        // Get next cursor
+        const nextCursor =
+          hasNextPage && resultDocs.length > 0
+            ? resultDocs[resultDocs.length - 1].id
+            : null;
+
+        return NextResponse.json({
+          success: true,
+          data: categories,
+          count: categories.length,
+          pagination: {
+            limit,
+            hasNextPage,
+            nextCursor,
+          },
+        });
       } catch (error) {
         console.error("Error listing categories:", error);
         return NextResponse.json(

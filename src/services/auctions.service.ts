@@ -27,7 +27,7 @@ import type {
 } from "@/types/shared/common.types";
 
 class AuctionsService {
-  // List auctions (role-filtered)
+  // List auctions (role-filtered) with cursor-based pagination
   async list(
     filters?: Partial<AuctionFiltersBE>
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
@@ -36,11 +36,12 @@ class AuctionsService {
 
     return {
       data: (response.data || []).map(toFEAuctionCard),
-      total: response.pagination?.total || response.total || 0,
-      page: response.pagination?.page || response.page || 1,
-      limit: response.pagination?.limit || response.limit || 50,
-      totalPages: response.pagination?.totalPages || response.totalPages || 1,
-      hasMore: response.pagination?.hasNextPage || response.hasMore || false,
+      total: response.count || 0,
+      page: 1, // Not used with cursor pagination
+      limit: response.pagination?.limit || 50,
+      totalPages: 1, // Not used with cursor pagination
+      hasMore: response.pagination?.hasNextPage || false,
+      nextCursor: response.pagination?.nextCursor || null,
     };
   }
 
@@ -103,26 +104,39 @@ class AuctionsService {
   async getBids(
     id: string,
     page?: number,
-    limit?: number
+    limit?: number,
+    startAfter?: string | null,
+    sortOrder: "asc" | "desc" = "desc"
   ): Promise<PaginatedResponseFE<BidFE>> {
     const params = new URLSearchParams();
-    if (page) params.append("page", page.toString());
+    if (startAfter) params.append("startAfter", startAfter);
     if (limit) params.append("limit", limit.toString());
+    if (sortOrder) params.append("sortOrder", sortOrder);
 
     const queryString = params.toString();
     const endpoint = queryString
       ? `/auctions/${id}/bid?${queryString}`
       : `/auctions/${id}/bid`;
 
-    const response = await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
+    const response = await apiService.get<{
+      success: boolean;
+      data: BidBE[];
+      count: number;
+      pagination: {
+        limit: number;
+        hasNextPage: boolean;
+        nextCursor: string | null;
+      };
+    }>(endpoint);
 
     return {
       data: response.data.map((bid) => toFEBid(bid)),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      total: response.count,
+      page: page || 1,
+      limit: response.pagination.limit,
+      totalPages: 1,
+      hasMore: response.pagination.hasNextPage,
+      nextCursor: response.pagination.nextCursor,
     };
   }
 

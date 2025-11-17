@@ -77,14 +77,18 @@ class BlogService {
     const endpoint = queryString ? `/blog?${queryString}` : "/blog";
 
     const response = await apiService.get<any>(endpoint);
+    
+    // Support both old and new cursor-based pagination
     return {
       posts: response.data || [],
       pagination: {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.totalPages,
-        hasMore: response.hasMore,
+        total: response.count || response.total || 0,
+        page: response.page || 1,
+        limit: response.pagination?.limit || response.limit || 50,
+        totalPages: response.totalPages || 1,
+        hasMore: response.pagination?.hasNextPage || response.hasMore || false,
+        hasNextPage: response.pagination?.hasNextPage,
+        nextCursor: response.pagination?.nextCursor,
       },
     };
   }

@@ -1,42 +1,74 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BlogCard } from "@/components/cards/BlogCard";
 import { blogService, type BlogFilters } from "@/services/blog.service";
 import type { BlogPost } from "@/services/blog.service";
-import { Search, Filter, Tag, Calendar } from "lucide-react";
+import { Search, Filter, Tag, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function BlogListClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  
+  // Filters from URL
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",
-    page: 1,
     limit: 12,
-    sortBy: "publishedAt",
-    sortOrder: "desc",
+    sortBy: (searchParams.get("sortBy") as any) || "publishedAt",
+    sortOrder: (searchParams.get("sortOrder") as any) || "desc",
+    category: searchParams.get("category") || undefined,
+    featured: searchParams.get("featured") === "true" || undefined,
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchBlogs();
-  }, [filters]);
+  }, [currentPage, filters]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (filters.sortBy) params.set("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
+    if (filters.category) params.set("category", filters.category);
+    if (filters.featured) params.set("featured", "true");
+
+    router.push(`/blog?${params.toString()}`, { scroll: false });
+  }, [searchQuery, filters]);
 
   const fetchBlogs = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await blogService.list(filters);
+      
+      const startAfter = cursors[currentPage - 1];
+      const response = await blogService.list({
+        ...filters,
+        startAfter,
+        search: searchQuery || undefined,
+      });
 
-      // Handle both array and paginated response
-      if (Array.isArray(response)) {
-        setBlogs(response);
-        setTotalPages(1);
-      } else {
-        setBlogs(response.posts || []);
-        setTotalPages(response.pagination?.totalPages || 1);
+      setBlogs(response.posts || []);
+      setHasNextPage(response.pagination?.hasNextPage || false);
+
+      // Store next cursor
+      if (response.pagination?.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.pagination.nextCursor || null;
+          return newCursors;
+        });
       }
     } catch (err) {
       setError("Failed to load blog posts. Please try again later.");
@@ -47,23 +79,40 @@ export default function BlogListClient() {
   };
 
   const handleSearch = () => {
-    setFilters((prev) => ({ ...prev, search: searchQuery, page: 1 }));
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
   const handleCategoryFilter = (category: string) => {
     setFilters((prev) => ({
       ...prev,
       category: prev.category === category ? undefined : category,
-      page: 1,
     }));
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
   const handleSortChange = (sortBy: string) => {
     setFilters((prev) => ({
       ...prev,
       sortBy: sortBy as any,
-      page: 1,
     }));
+    setCurrentPage(1);
+    setCursors([null]);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
@@ -207,37 +256,31 @@ export default function BlogListClient() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-12">
-              <button
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    page: Math.max(1, (prev.page || 1) - 1),
-                  }))
-                }
-                disabled={filters.page === 1}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
+          {blogs.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm p-4 mt-12">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1 || loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
 
-              <span className="px-4 py-2 text-gray-700">
-                Page {filters.page} of {totalPages}
-              </span>
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} • {blogs.length} posts
+                </span>
 
-              <button
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    page: Math.min(totalPages, (prev.page || 1) + 1),
-                  }))
-                }
-                disabled={filters.page === totalPages}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={!hasNextPage || loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </>
