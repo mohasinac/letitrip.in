@@ -20,13 +20,26 @@ export async function GET(request: NextRequest) {
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
     const shopId = searchParams.get("shop_id");
+    const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "50", 10);
 
     let query: FirebaseFirestore.Query = Collections.orders();
     if (role === "admin") {
       if (shopId) query = query.where("shop_id", "==", shopId);
     } else if (role === "seller") {
-      if (!shopId) return NextResponse.json({ success: true, data: [] });
+      if (!shopId)
+        return NextResponse.json({
+          success: true,
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPrevPage: false,
+          },
+        });
       const owns = await userOwnsShop(shopId, user!.uid);
       if (!owns)
         return NextResponse.json(
@@ -37,12 +50,42 @@ export async function GET(request: NextRequest) {
     } else if (role === "user") {
       query = query.where("user_id", "==", user!.uid);
     } else {
-      return NextResponse.json({ success: true, data: [] });
+      return NextResponse.json({
+        success: true,
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      });
     }
 
-    const snap = await query.orderBy("created_at", "desc").limit(limit).get();
-    const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    return NextResponse.json({ success: true, data });
+    // Get all orders for pagination
+    const allSnap = await query.orderBy("created_at", "desc").get();
+    const allOrders = allSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    // Calculate pagination
+    const total = allOrders.length;
+    const totalPages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const paginatedOrders = allOrders.slice(offset, offset + limit);
+
+    return NextResponse.json({
+      success: true,
+      data: paginatedOrders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (error) {
     console.error("Orders list error:", error);
     return NextResponse.json(
