@@ -34,7 +34,7 @@ export function SimilarProducts({
   const loadSimilarProducts = async () => {
     try {
       setLoading(true);
-      
+
       if (!parentCategoryIds || parentCategoryIds.length === 0) {
         setProducts([]);
         return;
@@ -42,14 +42,14 @@ export function SimilarProducts({
 
       // Fetch products from parent categories
       const allProducts: ProductCardFE[] = [];
-      
+
       for (const parentId of parentCategoryIds) {
         const data = await productsService.list({
           categoryId: parentId,
           status: "active" as any,
           limit: 20,
         });
-        
+
         if (data.products) {
           allProducts.push(...data.products);
         }
