@@ -20,29 +20,59 @@ export async function GET(request: NextRequest) {
 
     const { user } = authResult;
     const { searchParams } = new URL(request.url);
+
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
+    const limit = parseInt(searchParams.get("limit") || "50");
+
+    // Filter params
     const role = searchParams.get("role");
     const search = searchParams.get("search");
     const status = searchParams.get("status"); // active, banned
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const offset = parseInt(searchParams.get("offset") || "0");
 
-    let query = Collections.users().orderBy("created_at", "desc");
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
+
+    let query: FirebaseFirestore.Query = Collections.users();
 
     // Filter by role
     if (role && role !== "all") {
-      query = query.where("role", "==", role) as any;
+      query = query.where("role", "==", role);
     }
 
     // Filter by status (banned users have is_banned = true)
     if (status === "banned") {
-      query = query.where("is_banned", "==", true) as any;
+      query = query.where("is_banned", "==", true);
     } else if (status === "active") {
-      query = query.where("is_banned", "==", false) as any;
+      query = query.where("is_banned", "==", false);
     }
 
-    const snapshot = await query.limit(limit).offset(offset).get();
+    // Add sorting
+    const validSortFields = ["created_at", "last_login", "name"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
+    query = query.orderBy(sortField, sortOrder);
 
-    let users = snapshot.docs.map((doc) => ({
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await Collections.users().doc(startAfter).get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
+    const snapshot = await query.get();
+    const docs = snapshot.docs;
+
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    let users = resultDocs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -58,13 +88,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Get next cursor
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
+
     return NextResponse.json({
       success: true,
       data: users,
+      count: users.length,
       pagination: {
         limit,
-        offset,
-        hasMore: snapshot.size === limit,
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error: any) {

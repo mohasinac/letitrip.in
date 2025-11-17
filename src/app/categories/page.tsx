@@ -1,30 +1,73 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, Tag, Loader2, Search, List } from "lucide-react";
+import { ChevronRight, Tag, Loader2, Search, List, ChevronLeft } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
 export default function CategoriesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<
-    "alphabetical" | "productCount" | "level"
-  >("alphabetical");
+  
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  
+  // Filters from URL
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [sortBy, setSortBy] = useState<string>(
+    searchParams.get("sortBy") || "sort_order"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
+  );
+  const [featured, setFeatured] = useState(searchParams.get("featured") === "true");
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [currentPage, sortBy, sortOrder, featured]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (sortBy) params.set("sortBy", sortBy);
+    if (sortOrder) params.set("sortOrder", sortOrder);
+    if (featured) params.set("featured", "true");
+
+    router.push(`/categories?${params.toString()}`, { scroll: false });
+  }, [searchQuery, sortBy, sortOrder, featured]);
 
   const loadCategories = async () => {
     setLoading(true);
     try {
-      // Load all active categories
-      const allCategories = await categoriesService.list({ isActive: true });
-      setCategories(allCategories);
+      const startAfter = cursors[currentPage - 1];
+      const response = await categoriesService.list({
+        startAfter,
+        limit: 50,
+        sortBy,
+        sortOrder,
+        featured: featured || undefined,
+      });
+
+      setCategories(response.data || []);
+      setHasNextPage(response.hasMore || false);
+
+      // Store next cursor
+      if (response.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.nextCursor || null;
+          return newCursors;
+        });
+      }
     } catch (error) {
       console.error("Failed to load categories:", error);
       setCategories([]);
@@ -33,23 +76,40 @@ export default function CategoriesPage() {
     }
   };
 
-  // Filter and group categories by level
-  const categoriesByLevel = useMemo(() => {
-    let filtered = [...categories];
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    setCursors([null]);
+    loadCategories();
+  };
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (cat) =>
-          cat.name.toLowerCase().includes(query) ||
-          cat.description?.toLowerCase().includes(query)
-      );
+  const handleFilterChange = (key: string, value: any) => {
+    if (key === "sortBy") setSortBy(value);
+    else if (key === "sortOrder") setSortOrder(value);
+    else if (key === "featured") setFeatured(value);
+    
+    setCurrentPage(1);
+    setCursors([null]);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
 
-    // Group by level
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // Group categories by level for display
+  const categoriesByLevel = useMemo(() => {
     const grouped = new Map<number, CategoryFE[]>();
-    filtered.forEach((cat) => {
+    categories.forEach((cat) => {
       const level = cat.level || 0;
       if (!grouped.has(level)) {
         grouped.set(level, []);
@@ -57,25 +117,9 @@ export default function CategoriesPage() {
       grouped.get(level)!.push(cat);
     });
 
-    // Sort categories within each level
-    grouped.forEach((cats, level) => {
-      cats.sort((a, b) => {
-        switch (sortBy) {
-          case "alphabetical":
-            return a.name.localeCompare(b.name);
-          case "productCount":
-            return b.productCount - a.productCount;
-          case "level":
-            return a.name.localeCompare(b.name);
-          default:
-            return 0;
-        }
-      });
-    });
-
     // Convert to sorted array of [level, categories]
     return Array.from(grouped.entries()).sort((a, b) => a[0] - b[0]);
-  }, [categories, searchQuery, sortBy]);
+  }, [categories]);
 
   if (loading) {
     return (
@@ -118,30 +162,47 @@ export default function CategoriesPage() {
 
           {/* Search and Sort Controls */}
           <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Search categories..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search */}
+                <form onSubmit={handleSearchSubmit} className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="search"
+                    placeholder="Search categories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </form>
+
+                {/* Sort */}
+                <div className="sm:w-64">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="sort_order">Default Order</option>
+                    <option value="name">Alphabetically</option>
+                    <option value="product_count">By Product Count</option>
+                    <option value="created_at">Recently Added</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Sort */}
-              <div className="sm:w-64">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              {/* Filter Tags */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => handleFilterChange("featured", !featured)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                    featured
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
                 >
-                  <option value="alphabetical">Sort Alphabetically</option>
-                  <option value="productCount">Sort by Product Count</option>
-                  <option value="level">Sort by Level</option>
-                </select>
+                  ⭐ Featured Only
+                </button>
               </div>
             </div>
           </div>
@@ -219,14 +280,45 @@ export default function CategoriesPage() {
           ))}
 
           {/* Empty state for search */}
-          {categoriesByLevel.length === 0 && searchQuery && (
+          {categoriesByLevel.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500">
-                No categories found matching "{searchQuery}"
+                {searchQuery
+                  ? `No categories found matching "${searchQuery}"`
+                  : "No categories found"}
               </p>
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {categories.length > 0 && (
+          <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1 || loading}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
+              <div className="text-sm text-gray-600">
+                Page {currentPage} • {categories.length} categories
+              </div>
+
+              <button
+                onClick={handleNextPage}
+                disabled={!hasNextPage || loading}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,75 +3,87 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 const COLLECTION = "blog_posts";
 
-// GET /api/blog - List blog posts with filters
+// GET /api/blog - List blog posts with cursor-based pagination
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
     const { searchParams } = new URL(req.url);
 
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
+    const limit = parseInt(searchParams.get("limit") || "20");
+
+    // Filter params
     const status = searchParams.get("status") || "published";
     const category = searchParams.get("category");
     const featured =
-      searchParams.get("featured") || searchParams.get("showOnHomepage"); // Support both for backward compatibility
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const page = parseInt(searchParams.get("page") || "1");
+      searchParams.get("featured") || searchParams.get("showOnHomepage");
+
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "publishedAt";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
 
     // Build query using composite indexes
-    let query = db.collection(COLLECTION).where("status", "==", status);
+    let query: FirebaseFirestore.Query = db
+      .collection(COLLECTION)
+      .where("status", "==", status);
 
-    // Use composite indexes for better performance
-    if (featured === "true" && category) {
-      // Index: status + is_featured + category + publishedAt
-      query = query
-        .where("is_featured", "==", true)
-        .where("category", "==", category)
-        .orderBy("publishedAt", "desc") as any;
-    } else if (featured === "true") {
-      // Index: status + is_featured + publishedAt
-      query = query
-        .where("is_featured", "==", true)
-        .orderBy("publishedAt", "desc") as any;
-    } else if (category) {
-      // Index: status + category + publishedAt
-      query = query
-        .where("category", "==", category)
-        .orderBy("publishedAt", "desc") as any;
-    } else {
-      // Index: status + publishedAt
-      query = query.orderBy("publishedAt", "desc") as any;
+    // Apply filters
+    if (featured === "true") {
+      query = query.where("is_featured", "==", true);
+    }
+    if (category) {
+      query = query.where("category", "==", category);
     }
 
-    // Apply pagination using offset
-    const offset = (page - 1) * limit;
-    query = query.limit(limit).offset(offset) as any;
+    // Add sorting
+    const validSortFields = [
+      "publishedAt",
+      "created_at",
+      "view_count",
+      "title",
+    ];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "publishedAt";
+    query = query.orderBy(sortField, sortOrder);
 
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await db.collection(COLLECTION).doc(startAfter).get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
     const snapshot = await query.get();
+    const docs = snapshot.docs;
 
-    const posts = snapshot.docs.map((doc) => ({
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    const posts = resultDocs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Get total count for pagination
-    let countQuery = db.collection(COLLECTION).where("status", "==", status);
-    if (featured === "true") {
-      countQuery = countQuery.where("is_featured", "==", true) as any;
-    }
-    if (category) {
-      countQuery = countQuery.where("category", "==", category) as any;
-    }
-    const countSnapshot = await countQuery.count().get();
-    const total = countSnapshot.data().count;
-
-    const paginatedPosts = posts;
+    // Get next cursor
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     return NextResponse.json({
-      data: paginatedPosts,
+      success: true,
+      data: posts,
+      count: posts.length,
       pagination: {
-        page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error) {

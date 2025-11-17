@@ -314,6 +314,7 @@ export interface PaginatedResponseBE<T> {
 
 /**
  * Paginated Response (Frontend) - Flat structure for UI
+ * Supports both page-based and cursor-based pagination
  */
 export interface PaginatedResponseFE<T> {
   data: T[];
@@ -322,4 +323,6 @@ export interface PaginatedResponseFE<T> {
   limit: number;
   totalPages: number;
   hasMore: boolean;
+  nextCursor?: string | null; // For cursor-based pagination
+  prevCursor?: string | null; // For cursor-based pagination
 }

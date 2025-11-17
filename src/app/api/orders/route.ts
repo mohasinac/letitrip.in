@@ -19,11 +19,25 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-    const shopId = searchParams.get("shop_id");
-    const page = parseInt(searchParams.get("page") || "1", 10);
+
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
     const limit = parseInt(searchParams.get("limit") || "50", 10);
 
+    // Filter params
+    const shopId = searchParams.get("shop_id");
+    const status = searchParams.get("status");
+    const paymentStatus = searchParams.get("paymentStatus");
+
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
+
     let query: FirebaseFirestore.Query = Collections.orders();
+
+    // Role-based filtering
     if (role === "admin") {
       if (shopId) query = query.where("shop_id", "==", shopId);
     } else if (role === "seller") {
@@ -31,13 +45,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           data: [],
+          count: 0,
           pagination: {
-            page,
             limit,
-            total: 0,
-            totalPages: 0,
             hasNextPage: false,
-            hasPrevPage: false,
+            nextCursor: null,
           },
         });
       const owns = await userOwnsShop(shopId, user!.uid);
@@ -53,37 +65,61 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: [],
+        count: 0,
         pagination: {
-          page,
           limit,
-          total: 0,
-          totalPages: 0,
           hasNextPage: false,
-          hasPrevPage: false,
+          nextCursor: null,
         },
       });
     }
 
-    // Get all orders for pagination
-    const allSnap = await query.orderBy("created_at", "desc").get();
-    const allOrders = allSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    // Apply additional filters
+    if (status) {
+      query = query.where("status", "==", status);
+    }
+    if (paymentStatus) {
+      query = query.where("payment_status", "==", paymentStatus);
+    }
 
-    // Calculate pagination
-    const total = allOrders.length;
-    const totalPages = Math.ceil(total / limit);
-    const offset = (page - 1) * limit;
-    const paginatedOrders = allOrders.slice(offset, offset + limit);
+    // Add sorting
+    const validSortFields = ["created_at", "updated_at", "total_amount"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
+    query = query.orderBy(sortField, sortOrder);
+
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await Collections.orders().doc(startAfter).get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
+    const snapshot = await query.get();
+    const docs = snapshot.docs;
+
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    const orders = resultDocs.map((d) => ({ id: d.id, ...d.data() }));
+
+    // Get next cursor
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     return NextResponse.json({
       success: true,
-      data: paginatedOrders,
+      data: orders,
+      count: orders.length,
       pagination: {
-        page,
         limit,
-        total,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error) {

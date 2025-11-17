@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-    
+
     // Pagination params
     const startAfter = searchParams.get("startAfter");
     const limit = parseInt(searchParams.get("limit") || "50", 10);
-    
+
     // Filter params
     const shopId = searchParams.get("shop_id");
     const status = searchParams.get("status");
@@ -31,14 +31,16 @@ export async function GET(request: NextRequest) {
     const minBid = searchParams.get("minBid");
     const maxBid = searchParams.get("maxBid");
     const featured = searchParams.get("featured");
-    
+
     // Sort params
     const sortBy = searchParams.get("sortBy") || "created_at";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc";
 
     // Build base query with role-based filtering
     let query: FirebaseFirestore.Query = Collections.auctions();
-    
+
     // Role-based access control
     if (role === "guest" || role === "user") {
       query = query.where("status", "==", "active");
@@ -64,24 +66,29 @@ export async function GET(request: NextRequest) {
     if (shopId && (role === "admin" || role === "user" || role === "guest")) {
       query = query.where("shop_id", "==", shopId);
     }
-    
+
     if (status && role !== "guest" && role !== "user") {
       // Only admin/seller can filter by status other than active
       query = query.where("status", "==", status);
     }
-    
+
     if (categoryId) {
       query = query.where("category_id", "==", categoryId);
     }
-    
+
     if (featured === "true") {
       query = query.where("is_featured", "==", true);
     }
-    
+
     // Price range filters (only if sorting by current_bid or no price sort)
-    const validSortFields = ["created_at", "end_time", "current_bid", "bid_count"];
+    const validSortFields = [
+      "created_at",
+      "end_time",
+      "current_bid",
+      "bid_count",
+    ];
     const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
-    
+
     if (sortField === "current_bid") {
       if (minBid) {
         const minBidNum = parseFloat(minBid);
@@ -118,15 +125,16 @@ export async function GET(request: NextRequest) {
     const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
     // Transform data
-    const auctions = resultDocs.map((doc) => ({ 
-      id: doc.id, 
-      ...doc.data() 
+    const auctions = resultDocs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
     }));
 
     // Get next cursor
-    const nextCursor = hasNextPage && resultDocs.length > 0
-      ? resultDocs[resultDocs.length - 1].id
-      : null;
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     return NextResponse.json({
       success: true,

@@ -37,65 +37,84 @@ export async function GET(request: NextRequest) {
         const role = user?.role ? (user.role as UserRole) : UserRole.USER;
         const userId = user?.uid;
 
-        // Build role-based query
-        let query = getShopsQuery(role, userId);
-
-        const page = parseInt(searchParams.get("page") || "1");
+        // Pagination params
+        const startAfter = searchParams.get("startAfter");
         const limit = filters.limit ? parseInt(filters.limit) : 20;
 
-        // Use composite indexes for optimal performance
-        // Public users see only verified, non-banned shops
-        // TEMPORARY: Remove orderBy to work without composite indexes while they build
-        const useCompositeIndexes =
-          process.env.USE_COMPOSITE_INDEXES === "true";
+        // Sort params
+        const sortBy = searchParams.get("sortBy") || "created_at";
+        const sortOrder = (searchParams.get("sortOrder") || "desc") as
+          | "asc"
+          | "desc";
+
+        // Build role-based query with filters
+        let query: FirebaseFirestore.Query;
 
         if (!user || role === UserRole.USER) {
+          // Public users see only verified, non-banned shops
           if (
             filters.featured === "true" ||
             filters.showOnHomepage === "true"
           ) {
-            // Index: is_featured + is_verified + created_at
             query = Collections.shops()
               .where("is_featured", "==", true)
               .where("is_verified", "==", true);
-
-            if (useCompositeIndexes) {
-              query = query.orderBy("created_at", "desc");
-            }
-
-            query = query.limit(limit);
           } else {
-            // Index: is_banned + is_verified + created_at
             query = Collections.shops()
               .where("is_banned", "==", false)
               .where("is_verified", "==", true);
-
-            if (useCompositeIndexes) {
-              query = query.orderBy("created_at", "desc");
-            }
-
-            query = query.limit(limit);
+          }
+        } else if (role === UserRole.SELLER) {
+          // Sellers see own shops + verified public shops
+          if (userId) {
+            query = Collections.shops().where("owner_id", "==", userId);
+          } else {
+            query = Collections.shops()
+              .where("is_banned", "==", false)
+              .where("is_verified", "==", true);
           }
         } else {
-          // Authenticated users (sellers/admin) see more
-          if (
-            filters.featured === "true" ||
-            filters.showOnHomepage === "true"
-          ) {
-            query = query.where("is_featured", "==", true).limit(limit);
-          } else {
-            query = query.limit(limit);
+          // Admin sees all shops
+          query = Collections.shops();
+          if (filters.featured === "true") {
+            query = query.where("is_featured", "==", true);
           }
         }
 
-        // Execute query
+        // Add sorting
+        const validSortFields = [
+          "created_at",
+          "name",
+          "product_count",
+          "rating",
+        ];
+        const sortField = validSortFields.includes(sortBy)
+          ? sortBy
+          : "created_at";
+        query = query.orderBy(sortField, sortOrder);
+
+        // Apply cursor pagination
+        if (startAfter) {
+          const startDoc = await Collections.shops().doc(startAfter).get();
+          if (startDoc.exists) {
+            query = query.startAfter(startDoc);
+          }
+        }
+
+        // Fetch limit + 1 to check if there's a next page
+        query = query.limit(limit + 1);
         const snapshot = await query.get();
 
         if (snapshot.empty) {
           console.log("[Shops API] No shops found for the given filters");
         }
 
-        let shops = snapshot.docs.map((doc) => {
+        // Check if there's a next page
+        const docs = snapshot.docs;
+        const hasNextPage = docs.length > limit;
+        const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+        let shops = resultDocs.map((doc) => {
           const data: any = doc.data();
           return {
             id: doc.id,
@@ -113,58 +132,11 @@ export async function GET(request: NextRequest) {
           };
         });
 
-        // Calculate accurate product counts (published products only) for each shop
-        const shopsWithCounts = await Promise.all(
-          shops.map(async (shop) => {
-            try {
-              // Get all published products for the shop
-              const productsSnapshot = await Collections.products()
-                .where("shop_id", "==", shop.id)
-                .where("status", "==", "published")
-                .get();
-
-              // Filter in application code to handle undefined is_deleted
-              const validProducts = productsSnapshot.docs.filter(
-                (doc) => doc.data().is_deleted !== true
-              );
-
-              return {
-                ...shop,
-                product_count: validProducts.length,
-                totalProducts: validProducts.length, // camelCase alias
-              };
-            } catch (error) {
-              console.error(
-                `Failed to count products for shop ${shop.id}:`,
-                error
-              );
-              return shop; // Return shop with existing count on error
-            }
-          })
-        );
-
-        shops = shopsWithCounts;
-
-        // For sellers, also fetch public verified shops if needed
-        if (role === UserRole.SELLER && filters.includePublic === "true") {
-          const publicQuery = Collections.shops()
-            .where("is_verified", "==", true)
-            .where("is_banned", "==", false)
-            .limit(20);
-
-          const publicSnapshot = await publicQuery.get();
-          const publicShops = publicSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-
-          // Merge and deduplicate
-          const shopMap = new Map();
-          [...shops, ...publicShops].forEach((shop) =>
-            shopMap.set(shop.id, shop)
-          );
-          shops = Array.from(shopMap.values());
-        }
+        // Get next cursor
+        const nextCursor =
+          hasNextPage && resultDocs.length > 0
+            ? resultDocs[resultDocs.length - 1].id
+            : null;
 
         // Check if user can create more shops
         let canCreateMore = false;
@@ -181,28 +153,17 @@ export async function GET(request: NextRequest) {
           canCreateMore = userShopsSnapshot.size === 0; // Max 1 shop for sellers
         }
 
-        // Calculate pagination
-        const total = shops.length;
-        const totalPages = Math.ceil(total / limit);
-        const offset = (page - 1) * limit;
-        const paginatedShops = shops.slice(offset, offset + limit);
-
         // Return consistent response format
         return NextResponse.json({
           success: true,
-          data: paginatedShops, // Use 'data' for consistency with other APIs
-          shops: paginatedShops, // Keep for backward compatibility
+          data: shops,
+          shops, // Keep for backward compatibility
+          count: shops.length,
           canCreateMore,
-          total,
           pagination: {
-            page,
             limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
-            hasNext: page < totalPages,
-            hasPrev: page > 1,
+            hasNextPage,
+            nextCursor,
           },
         });
       } catch (error: any) {

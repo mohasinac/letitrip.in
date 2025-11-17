@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
 import { DataTable } from "@/components/common/DataTable";
@@ -14,26 +14,79 @@ export const dynamic = "force-dynamic";
 
 export default function OrdersPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
+  
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({});
+  
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  
+  // Filters from URL
+  const [filters, setFilters] = useState({
+    status: searchParams.get("status") || undefined,
+    sortBy: searchParams.get("sortBy") || "created_at",
+    sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
+  });
 
   useEffect(() => {
     if (user) {
       loadOrders();
     }
-  }, [user, filters]);
+  }, [user, currentPage, filters]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.status) params.set("status", filters.status);
+    if (filters.sortBy) params.set("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
+
+    router.push(`/user/orders?${params.toString()}`, { scroll: false });
+  }, [filters]);
 
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const data = await ordersService.list(filters);
+      const startAfter = cursors[currentPage - 1];
+      const data = await ordersService.list({
+        ...filters,
+        startAfter: startAfter || undefined,
+        limit: 20,
+      } as any);
+      
       setOrders(data.data || []);
+      setHasNextPage(data.hasMore || false);
+
+      // Store next cursor
+      if (data.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = data.nextCursor || null;
+          return newCursors;
+        });
+      }
     } catch (error) {
       console.error("Failed to load orders:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -109,15 +162,46 @@ export default function OrdersPage() {
               }}
             />
           ) : (
-            <DataTable
-              data={orders}
-              columns={columns}
-              keyExtractor={(order) => order.id}
-              isLoading={loading}
-              onRowClick={(order: any) =>
-                router.push(`/user/orders/${order.id}`)
-              }
-            />
+            <>
+              <DataTable
+                data={orders}
+                columns={columns}
+                keyExtractor={(order) => order.id}
+                isLoading={loading}
+                onRowClick={(order: any) =>
+                  router.push(`/user/orders/${order.id}`)
+                }
+              />
+              
+              {/* Pagination Controls */}
+              {orders.length > 0 && (
+                <div className="border-t border-gray-200 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1 || loading}
+                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Previous
+                    </button>
+
+                    <span className="text-sm text-gray-600">
+                      Page {currentPage} • {orders.length} orders
+                    </span>
+
+                    <button
+                      onClick={handleNextPage}
+                      disabled={!hasNextPage || loading}
+                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

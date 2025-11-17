@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import {
   UnifiedFilterSidebar,
@@ -9,16 +9,39 @@ import {
 } from "@/components/common/inline-edit";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { ordersService } from "@/services/orders.service";
-import { Eye, Package, Truck } from "lucide-react";
+import { Eye, Package, Truck, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function SellerOrdersPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [totalOrders, setTotalOrders] = useState(0);
+  
+  // Filters from URL
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({
+    status: searchParams.get("status") || "",
+    sortBy: searchParams.get("sortBy") || "created_at",
+    sortOrder: searchParams.get("sortOrder") || "desc",
+  });
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filterValues.status) params.set("status", filterValues.status);
+    if (filterValues.sortBy) params.set("sortBy", filterValues.sortBy);
+    if (filterValues.sortOrder) params.set("sortOrder", filterValues.sortOrder);
+    
+    const queryString = params.toString();
+    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  }, [filterValues]);
 
   useEffect(() => {
     loadOrders();
@@ -27,17 +50,52 @@ export default function SellerOrdersPage() {
   const loadOrders = async () => {
     try {
       setLoading(true);
+      const startAfter = cursors[currentPage - 1];
       const response = await ordersService.getSellerOrders({
         ...filterValues,
+        startAfter,
+        limit: 20,
       } as any);
+      
       setOrders(response.data || []);
-      setTotalPages(response.totalPages || 1);
       setTotalOrders(response.total || 0);
+      setHasNextPage(response.hasMore || false);
+      
+      if (response.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.nextCursor || null;
+          return newCursors;
+        });
+      }
     } catch (error: any) {
       console.error("Failed to load orders:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilterValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setCurrentPage(1);
+    setCursors([null]);
   };
 
   const handleUpdateStatus = async (id: string, status: string) => {
@@ -63,16 +121,19 @@ export default function SellerOrdersPage() {
           <UnifiedFilterSidebar
             sections={ORDER_FILTERS}
             values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({
-                ...prev,
-                [key]: value,
-              }));
-            }}
-            onApply={() => setCurrentPage(1)}
-            onReset={() => {
-              setFilterValues({});
+            onChange={handleFilterChange}
+            onApply={() => {
               setCurrentPage(1);
+              setCursors([null]);
+            }}
+            onReset={() => {
+              setFilterValues({
+                status: "",
+                sortBy: "created_at",
+                sortOrder: "desc",
+              });
+              setCurrentPage(1);
+              setCursors([null]);
             }}
             isOpen={false}
             onClose={() => {}}
@@ -223,27 +284,31 @@ export default function SellerOrdersPage() {
               )}
             </div>
 
-            {totalPages > 1 && (
-              <div className="mt-6 flex justify-center gap-2">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="px-4 py-2">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
-                >
-                  Next
-                </button>
+            {orders.length > 0 && (
+              <div className="mt-6 border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1 || loading}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  <span className="text-sm text-gray-600">
+                    Page {currentPage} • {orders.length} orders
+                  </span>
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!hasNextPage || loading}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             )}
           </div>

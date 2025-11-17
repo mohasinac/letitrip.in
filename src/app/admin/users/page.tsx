@@ -13,6 +13,8 @@ import {
   Phone,
   Calendar,
   Filter,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -55,6 +57,11 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -91,24 +98,32 @@ export default function AdminUsersPage() {
       return;
     }
 
-    // Only check hasLoadedRef for filters, not initial load
-    if (hasLoadedRef.current && !roleFilter && !statusFilter) {
-      console.log("[Users] Already loaded and no filters, skipping...");
-      return;
-    }
-
     try {
       loadingRef.current = true;
       setLoading(true);
       setError(null);
 
-      const filters: any = {};
+      const startAfter = cursors[currentPage - 1];
+      const filters: any = {
+        startAfter,
+        limit: 20,
+      };
       if (roleFilter !== "all") filters.role = roleFilter;
       if (statusFilter !== "all") filters.status = statusFilter;
 
       console.log("[Users] Loading users with filters:", filters);
       const data = await usersService.list(filters);
       setUsers((data.data || []) as any);
+      setHasNextPage(data.hasMore || false);
+      
+      if (data.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = data.nextCursor || null;
+          return newCursors;
+        });
+      }
+      
       hasLoadedRef.current = true;
     } catch (err) {
       console.error("Failed to load users:", err);
@@ -117,13 +132,32 @@ export default function AdminUsersPage() {
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [roleFilter, statusFilter]);
+  }, [roleFilter, statusFilter, currentPage, cursors]);
 
   useEffect(() => {
     if (currentUser?.uid && isAdmin && !loadingRef.current) {
       loadUsers();
     }
-  }, [currentUser?.uid, isAdmin, roleFilter, statusFilter, loadUsers]);
+  }, [currentUser?.uid, isAdmin, roleFilter, statusFilter, currentPage, loadUsers]);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleFilterChange = () => {
+    setCurrentPage(1);
+    setCursors([null]);
+  };
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
@@ -335,7 +369,10 @@ export default function AdminUsersPage() {
             <div>
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value);
+                  handleFilterChange();
+                }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Roles</option>
@@ -349,7 +386,10 @@ export default function AdminUsersPage() {
             <div>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  handleFilterChange();
+                }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Status</option>
@@ -673,6 +713,35 @@ export default function AdminUsersPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {filteredUsers.length > 0 && (
+            <div className="border-t border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1 || loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} • {filteredUsers.length} users
+                </span>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={!hasNextPage || loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

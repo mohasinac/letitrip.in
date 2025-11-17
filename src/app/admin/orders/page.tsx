@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   Search,
@@ -14,6 +14,8 @@ import {
   TrendingUp,
   DollarSign,
   ShoppingCart,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +32,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminOrdersPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAdmin } = useAuth();
   const isMobile = useIsMobile();
 
@@ -40,23 +43,67 @@ export default function AdminOrdersPage() {
   const [stats, setStats] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Cursor pagination state
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const limit = 20;
+
   // Filters - unified state
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({});
+  const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({
+    status: searchParams.get("status") as any || undefined,
+    sortBy: searchParams.get("sortBy") || "created_at",
+    sortOrder: searchParams.get("sortOrder") as any || "desc",
+  });
 
   // Infinite loop prevention
   const loadingRef = useRef(false);
   const hasLoadedRef = useRef(false);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalOrders, setTotalOrders] = useState(0);
-  const limit = 20;
-
   // Bulk selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (filterValues.status) {
+      const status = Array.isArray(filterValues.status) 
+        ? filterValues.status[0] 
+        : filterValues.status;
+      params.set("status", status);
+    }
+    
+    const queryString = params.toString();
+    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  }, [searchQuery, filterValues]);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilterValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setCurrentPage(1);
+    setCursors([null]);
+  };
 
   const loadData = useCallback(async () => {
     // Prevent concurrent calls
@@ -70,11 +117,9 @@ export default function AdminOrdersPage() {
       setLoading(true);
       setError(null);
 
-      const filters: Partial<OrderFiltersBE> & {
-        page?: number;
-        limit?: number;
-      } = {
-        page: currentPage,
+      const startAfter = cursors[currentPage - 1];
+      const filters: any = {
+        startAfter,
         limit,
         search: debouncedSearchQuery || undefined,
         ...filterValues,
@@ -88,10 +133,19 @@ export default function AdminOrdersPage() {
       ]);
 
       setOrders(ordersData.data || []);
-      setTotalPages(ordersData.totalPages || 1);
       setTotalOrders(ordersData.total || 0);
+      setHasNextPage(ordersData.hasMore || false);
       setShops(shopsData.data || []);
       setStats(statsData);
+      
+      if (ordersData.nextCursor) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = ordersData.nextCursor || null;
+          return newCursors;
+        });
+      }
+      
       hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load orders:", error);
@@ -102,7 +156,7 @@ export default function AdminOrdersPage() {
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [currentPage, debouncedSearchQuery, filterValues, limit]);
+  }, [currentPage, debouncedSearchQuery, filterValues, cursors, limit]);
 
   useEffect(() => {
     if (user?.uid && isAdmin && !loadingRef.current) {
@@ -325,28 +379,28 @@ export default function AdminOrdersPage() {
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
         {/* Desktop Filters - Always Visible Sidebar */}
-        {!isMobile && (
-          <UnifiedFilterSidebar
-            sections={ORDER_FILTERS}
-            values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({
-                ...prev,
-                [key]: value,
-              }));
-            }}
-            onApply={() => setCurrentPage(1)}
-            onReset={() => {
-              setFilterValues({});
-              setCurrentPage(1);
-            }}
-            isOpen={false}
-            onClose={() => {}}
-            searchable={true}
-            mobile={false}
-            resultCount={totalOrders}
-            isLoading={loading}
-          />
+        {!isMobile && (        <UnifiedFilterSidebar
+          sections={ORDER_FILTERS}
+          values={filterValues}
+          onChange={handleFilterChange}
+          onApply={() => {
+            setCurrentPage(1);
+            setCursors([null]);
+          }}
+          onReset={() => {
+            setFilterValues({
+              status: undefined,
+            });
+            setCurrentPage(1);
+            setCursors([null]);
+          }}
+          isOpen={false}
+          onClose={() => {}}
+          searchable={true}
+          mobile={false}
+          resultCount={totalOrders}
+          isLoading={loading}
+        />
         )}
 
         {/* Content Area */}
@@ -452,42 +506,30 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {orders.length > 0 && (
               <div className="border-t border-gray-200 px-6 py-4">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing{" "}
-                    <span className="font-medium">
-                      {(currentPage - 1) * limit + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="font-medium">
-                      {Math.min(currentPage * limit, totalOrders)}
-                    </span>{" "}
-                    of <span className="font-medium">{totalOrders}</span>{" "}
-                    results
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Previous
-                    </button>
-                    <span className="inline-flex items-center px-4 py-1.5 text-sm font-medium text-gray-700">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                      className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Next
-                    </button>
-                  </div>
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1 || loading}
+                    className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+
+                  <span className="text-sm text-gray-600">
+                    Page {currentPage} • {orders.length} orders
+                  </span>
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!hasNextPage || loading}
+                    className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             )}
@@ -517,19 +559,18 @@ export default function AdminOrdersPage() {
         <UnifiedFilterSidebar
           sections={ORDER_FILTERS}
           values={filterValues}
-          onChange={(key, value) => {
-            setFilterValues((prev) => ({
-              ...prev,
-              [key]: value,
-            }));
-          }}
+          onChange={handleFilterChange}
           onApply={() => {
             setShowFilters(false);
             setCurrentPage(1);
+            setCursors([null]);
           }}
           onReset={() => {
-            setFilterValues({});
+            setFilterValues({
+              status: undefined,
+            });
             setCurrentPage(1);
+            setCursors([null]);
           }}
           isOpen={showFilters}
           onClose={() => setShowFilters(false)}

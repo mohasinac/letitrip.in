@@ -30,7 +30,7 @@ import type {
 
 class CategoriesService {
   // List categories
-  async list(filters?: Record<string, any>): Promise<CategoryFE[]> {
+  async list(filters?: Record<string, any>): Promise<PaginatedResponseFE<CategoryFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -45,7 +45,31 @@ class CategoriesService {
     const endpoint = queryString ? `/categories?${queryString}` : "/categories";
 
     const response: any = await apiService.get(endpoint);
-    return toFECategories(response.data || []);
+    
+    // Support both old and new response formats
+    if (response.pagination) {
+      // New cursor-based format
+      return {
+        data: toFECategories(response.data || []),
+        total: response.count || 0,
+        page: 1,
+        limit: response.pagination.limit,
+        totalPages: 1,
+        hasMore: response.pagination.hasNextPage,
+        nextCursor: response.pagination.nextCursor,
+      };
+    } else {
+      // Old format or simple array
+      const categories = toFECategories(response.data || response || []);
+      return {
+        data: categories,
+        total: categories.length,
+        page: 1,
+        limit: categories.length,
+        totalPages: 1,
+        hasMore: false,
+      };
+    }
   }
 
   // Get category by ID

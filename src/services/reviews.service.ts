@@ -22,7 +22,7 @@ interface ModerateReviewData {
 }
 
 class ReviewsService {
-  // List reviews
+  // List reviews with cursor-based pagination
   async list(
     filters?: Record<string, any>
   ): Promise<PaginatedResponseFE<ReviewFE>> {
@@ -41,16 +41,15 @@ class ReviewsService {
       ? `${REVIEW_ROUTES.LIST}?${queryString}`
       : REVIEW_ROUTES.LIST;
 
-    const response = await apiService.get<PaginatedResponseBE<ReviewBE>>(
-      endpoint
-    );
+    const response: any = await apiService.get(endpoint);
     return {
-      data: toFEReviews(response.data),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      data: toFEReviews(response.data || response.reviews || []),
+      total: response.count || 0,
+      page: 1, // Not used with cursor pagination
+      limit: response.pagination?.limit || 20,
+      totalPages: 1, // Not used with cursor pagination
+      hasMore: response.pagination?.hasNextPage || false,
+      nextCursor: response.pagination?.nextCursor || null,
     };
   }
 
