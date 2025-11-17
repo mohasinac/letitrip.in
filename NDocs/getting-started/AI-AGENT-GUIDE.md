@@ -1,35 +1,39 @@
 # AI Agent Development Guide - JustForView.in
 
-**Last Updated**: November 17, 2025  
+**Last Updated**: November 18, 2025  
 **Repository**: https://github.com/mohasinac/justforview.in  
-**Current Branch**: component
+**Current Branch**: enhancements-and-mobile-friendly
 
-This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
+> **Complete guide for AI agents working on this Next.js auction & e-commerce platform**
 
-## Quick Reference
+---
 
-**Project Type**: Next.js 16+ (App Router) with TypeScript  
+## 📋 Table of Contents
+
+- [Quick Reference](#quick-reference)
+- [Golden Rules](#golden-rules)
+- [Project Architecture](#project-architecture)
+- [Critical Patterns](#critical-patterns)
+- [Common Tasks](#common-tasks)
+- [Testing & Validation](#testing--validation)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## ⚡ Quick Reference
+
+**Project Type**: Next.js 16+ (App Router) with TypeScript 5.3  
 **Primary Domain**: Auction & E-commerce Platform for India  
 **No Mocks**: All APIs are real and ready - never suggest mock data  
-**Code Over Docs**: Focus on implementation, not documentationent Guide - JustForView.in
-
-This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
-
-## Quick Reference
-
-### 6. State Management
-
-````typescript
-// Use Context for global state
-import { useAuth } from "@/contexts/AuthContext";
-
-// Use custom hooks for feature state
-import { useCart } from "@/hooks/useCart";
-import { useAuctionSocket } from "@/hooks/useAuctionSocket";
-``` Type**: Next.js 14+ (App Router) with TypeScript
-**Primary Domain**: Auction & E-commerce Platform for India
-**No Mocks**: All APIs are real and ready - never suggest mock data
 **Code Over Docs**: Focus on implementation, not documentation
+
+**Key Facts**:
+- 🏗️ **Architecture**: Service Layer Pattern (25+ services)
+- 🔥 **Backend**: Firebase (Firestore, Storage, Realtime DB, Auth)
+- 💰 **Cost**: $0/month (100% FREE tier)
+- 📦 **Components**: 164 pages, Server + Client separation
+- 🎨 **Styling**: Tailwind CSS 3.4
+- 🧪 **Testing**: 11 test workflows (140+ steps)
 
 ## Architecture Overview
 
