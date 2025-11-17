@@ -9,6 +9,7 @@ import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";
 import { useCart } from "@/hooks/useCart";
+import { toast } from "@/components/admin/Toast";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
 function ProductsContent() {
@@ -94,9 +95,9 @@ function ProductsContent() {
 
       await addItem(productId, 1, undefined, productDetails);
 
-      alert("Added to cart!");
+      toast.success(`${productDetails.name} added to cart!`);
     } catch (error: any) {
-      alert(error.message || "Failed to add to cart");
+      toast.error(error.message || "Failed to add to cart");
     }
   };
 
@@ -245,6 +246,8 @@ function ProductsContent() {
                         price={product.price}
                         originalPrice={product.originalPrice || undefined}
                         image={product.images?.[0] || ""}
+                        images={product.images || []}
+                        videos={product.videos || []}
                         rating={product.rating}
                         reviewCount={product.reviewCount}
                         shopName={product.shopId}
