@@ -5,6 +5,7 @@
  */
 
 import { Timestamp } from "firebase/firestore";
+import { safeToISOString } from "@/lib/date-utils";
 import {
   OrderBE,
   OrderListItemBE,
@@ -506,6 +507,8 @@ export function toBECreateShipmentRequest(
   return {
     trackingNumber,
     carrier,
-    eta: estimatedDelivery ? estimatedDelivery.toISOString() : undefined,
+    eta: estimatedDelivery
+      ? safeToISOString(estimatedDelivery) || undefined
+      : undefined,
   };
 }

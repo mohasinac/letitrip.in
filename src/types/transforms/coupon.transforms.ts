@@ -19,6 +19,7 @@ import type {
   BogoConfigFE,
 } from "../frontend/coupon.types";
 import { CouponStatus } from "../shared/common.types";
+import { safeToISOString } from "@/lib/date-utils";
 
 /**
  * Format currency amount
@@ -275,11 +276,11 @@ export const toBECreateCouponRequest = (
     startDate:
       typeof formData.startDate === "string"
         ? formData.startDate
-        : formData.startDate.toISOString(),
+        : safeToISOString(formData.startDate) || new Date().toISOString(),
     endDate:
       typeof formData.endDate === "string"
         ? formData.endDate
-        : formData.endDate.toISOString(),
+        : safeToISOString(formData.endDate) || new Date().toISOString(),
     firstOrderOnly: formData.firstOrderOnly,
     newUsersOnly: formData.newUsersOnly,
     canCombineWithOtherCoupons: formData.canCombineWithOtherCoupons,
@@ -330,13 +331,13 @@ export const toBEUpdateCouponRequest = (
     request.startDate =
       typeof formData.startDate === "string"
         ? formData.startDate
-        : formData.startDate.toISOString();
+        : safeToISOString(formData.startDate) || new Date().toISOString();
   }
   if (formData.endDate) {
     request.endDate =
       typeof formData.endDate === "string"
         ? formData.endDate
-        : formData.endDate.toISOString();
+        : safeToISOString(formData.endDate) || new Date().toISOString();
   }
   if (formData.firstOrderOnly !== undefined)
     request.firstOrderOnly = formData.firstOrderOnly;

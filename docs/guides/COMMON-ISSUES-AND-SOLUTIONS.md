@@ -9,6 +9,9 @@
 5. [Boolean Field Filtering Issues](#5-boolean-field-filtering-issues)
 6. [Snake Case vs Camel Case Mismatches](#6-snake-case-vs-camel-case-mismatches)
 7. [Pagination Not Working](#7-pagination-not-working)
+8. [Shop Product Counts Incorrect](#8-shop-product-counts-incorrect)
+9. [useSearchParams Suspense Boundary Errors](#9-usesearchparams-suspense-boundary-errors)
+10. [Invalid Date toISOString Errors](#10-invalid-date-toisostring-errors)
 
 ---
 
@@ -740,198 +743,542 @@ return {
 
 ---
 
-## Debugging Checklist
+## 8. Shop Product Counts Incorrect
 
-### When Product Data Isn't Showing
+### Symptoms
 
-1. **Check API Response**
+- Shops showing 0 products when they have products
+- Shop product counts don't match actual number of products
+- Shop stats showing incorrect product counts
+- Frontend displays wrong product count for shops
 
-   ```bash
-   curl http://localhost:3000/api/products/[slug] | jq
-   ```
+### Root Cause
 
-   - ✅ Does it have `success: true`?
-   - ✅ Does `data` object exist?
-   - ✅ Are camelCase aliases present?
-
-2. **Check Service Method**
-
-   ```typescript
-   // Add console.log temporarily
-   async getBySlug(slug: string): Promise<ProductFE> {
-     const response: any = await apiService.get(route);
-     console.log("API Response:", response);
-     console.log("Extracted Data:", response.data);
-     return toFEProduct(response.data);
-   }
-   ```
-
-3. **Check Transformer**
-
-   ```typescript
-   export function toFEProduct(productBE: ProductBE): ProductFE {
-     console.log("Input to transformer:", productBE);
-     const result = {
-       /* transformation */
-     };
-     console.log("Transformer output:", result);
-     return result;
-   }
-   ```
-
-4. **Check Frontend Component**
-   ```typescript
-   const product = await productsService.getBySlug(slug);
-   console.log("Product in component:", product);
-   ```
-
-### When Categories Show Zero
-
-1. **Check Product Documents**
-
-   ```bash
-   # In Firebase Console or Firestore tool
-   - Do products have `is_deleted` field?
-   - What are the values? (undefined, true, false)
-   ```
-
-2. **Check Counting Logic**
-
-   ```typescript
-   // Add logging
-   const validProducts = snapshot.docs.filter((doc) => {
-     const data = doc.data();
-     const isValid = data.is_deleted !== true;
-     console.log(
-       `Product ${doc.id}: is_deleted=${data.is_deleted}, valid=${isValid}`
-     );
-     return isValid;
-   });
-   ```
-
-3. **Rebuild Counts**
-   ```bash
-   POST http://localhost:3000/api/admin/categories/rebuild-counts
-   ```
-
----
-
-## Prevention Strategies
-
-### 1. Use Type Guards
+**Issue 1: Boolean Field Filter** - Using `is_deleted == false` excludes undefined:
 
 ```typescript
-function isNotDeleted(doc: any): boolean {
-  return doc.is_deleted !== true;
-}
-
-const activeProducts = products.filter(isNotDeleted);
+// ❌ WRONG - Excludes products with undefined is_deleted
+const productsCount = await Collections.products()
+  .where("shop_id", "==", shop.id)
+  .where("status", "==", "published")
+  .where("is_deleted", "==", false) // Excludes undefined!
+  .count()
+  .get();
 ```
 
-### 2. Create Utility Functions
+**Issue 2: Field Name Mismatch** - API returns `product_count` but type expects `totalProducts`:
 
 ```typescript
-// src/lib/firestore-utils.ts
-export function firestoreToFrontend(data: any): any {
-  return addCamelCaseAliases(data);
-}
-
-export function isActive(doc: any): boolean {
-  return doc.is_deleted !== true && doc.is_active !== false;
-}
+// API returns: product_count (snake_case)
+// Type expects: totalProducts (camelCase)
+// Result: Frontend can't access the count
 ```
 
-### 3. Document API Contracts
+### Solution
+
+**Fix 1: Get All Products, Filter in Code**
 
 ```typescript
-/**
- * GET /api/products/[slug]
- *
- * @returns {
- *   success: boolean,
- *   data: ProductBE  // Contains both snake_case and camelCase
- * }
- */
+// ✅ CORRECT - Get all published products, filter in application
+const productsSnapshot = await Collections.products()
+  .where("shop_id", "==", shop.id)
+  .where("status", "==", "published")
+  .get();
+
+// Filter in application code to handle undefined is_deleted
+const validProducts = productsSnapshot.docs.filter(
+  (doc) => doc.data().is_deleted !== true
+);
+
+return {
+  ...shop,
+  product_count: validProducts.length,
+  totalProducts: validProducts.length, // Add camelCase alias
+};
 ```
 
-### 4. Add Tests
+**Fix 2: Add CamelCase Aliases in API Response**
 
 ```typescript
-describe("Product API", () => {
-  it("should return camelCase aliases", async () => {
-    const response = await fetch("/api/products/test-slug");
-    const json = await response.json();
-
-    expect(json.data.shopId).toBeDefined();
-    expect(json.data.compareAtPrice).toBeDefined();
-    expect(json.data.stockCount).toBeDefined();
-  });
+// ✅ CORRECT - Add camelCase aliases for all fields
+let shops = snapshot.docs.map((doc) => {
+  const data: any = doc.data();
+  return {
+    id: doc.id,
+    ...data,
+    // Add camelCase aliases
+    ownerId: data.owner_id,
+    isVerified: data.is_verified,
+    isFeatured: data.is_featured,
+    isBanned: data.is_banned,
+    showOnHomepage: data.show_on_homepage,
+    totalProducts: data.total_products || data.product_count || 0,
+    reviewCount: data.review_count || 0,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
 });
 ```
 
+### Where to Fix
+
+**API Routes:**
+
+- `src/app/api/shops/route.ts` - List shops with product counts
+- `src/app/api/shops/[slug]/route.ts` - Individual shop endpoint
+- `src/app/api/shops/[slug]/stats/route.ts` - Shop statistics
+
+### Key Points
+
+1. **Cannot use Firestore `.where("is_deleted", "==", false)`** - Excludes undefined
+2. **Must filter in application code** - Use `is_deleted !== true`
+3. **Must add camelCase aliases** - API returns snake_case, frontend expects camelCase
+4. **Both product_count and totalProducts** - Provide both for compatibility
+
+### Testing
+
+```bash
+# Test shop list with product counts
+curl "http://localhost:3000/api/shops" | jq '.data[0] | {name, product_count, totalProducts}'
+
+# Should show both fields:
+# {
+#   "name": "Demo Shop",
+#   "product_count": 10,
+#   "totalProducts": 10
+# }
+
+# Test individual shop
+curl "http://localhost:3000/api/shops/demo-shop" | jq '.shop | {name, totalProducts}'
+```
+
+### Common Mistakes
+
+❌ **Using Firestore boolean filter**:
+
+```typescript
+// This excludes undefined values
+.where("is_deleted", "==", false)
+```
+
+✅ **Filter in application code**:
+
+```typescript
+// Get all, then filter
+const snapshot = await query.get();
+const validProducts = snapshot.docs.filter(
+  (doc) => doc.data().is_deleted !== true
+);
+```
+
+❌ **Only returning snake_case**:
+
+```typescript
+return { id: doc.id, ...doc.data() };
+// Frontend can't access product_count as totalProducts
+```
+
+✅ **Add camelCase aliases**:
+
+```typescript
+return {
+  id: doc.id,
+  ...doc.data(),
+  totalProducts: doc.data().product_count || 0,
+};
+```
+
+### Related Issues
+
+This is similar to:
+
+- [Category Product Counts Showing Zero](#1-category-product-counts-showing-zero)
+- [Boolean Field Filtering Issues](#5-boolean-field-filtering-issues)
+- [Snake Case vs Camel Case Mismatches](#6-snake-case-vs-camel-case-mismatches)
+
+All use the same root causes:
+
+1. Boolean field filtering with `=== false`
+2. Missing camelCase aliases in API responses
+
 ---
 
-## Quick Reference Commands
+## 9. useSearchParams Suspense Boundary Errors
 
-### Rebuild Category Counts
+### Symptoms
 
-```bash
-curl -X POST http://localhost:3000/api/admin/categories/rebuild-counts
+- Build fails with error: "useSearchParams() should be wrapped in a suspense boundary"
+- Error occurs during Next.js production build
+- Affects pages using URL query parameters
+
+### Root Cause
+
+Next.js 16+ requires `useSearchParams()` to be wrapped in a `<Suspense>` boundary for proper server-side rendering.
+
+### Solution
+
+**Split component and wrap in Suspense:**
+
+```typescript
+// ❌ WRONG - No Suspense boundary
+"use client";
+import { useSearchParams } from "next/navigation";
+
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q");
+  // ... component logic
+}
+
+// ✅ CORRECT - Wrapped in Suspense
+("use client");
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q");
+  // ... component logic
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
+  );
+}
 ```
 
-### Check Product API
+### Where to Fix
 
-```bash
-curl http://localhost:3000/api/products/[slug] | jq '.data | keys'
-```
+All pages using `useSearchParams()`:
 
-### Debug Products by Category
+- ✅ `src/app/not-found.tsx`
+- ✅ `src/app/forbidden/page.tsx`
+- ✅ `src/app/unauthorized/page.tsx`
+- ✅ `src/app/login/page.tsx`
+- ✅ `src/app/shops/page.tsx`
+- ✅ `src/app/products/page.tsx`
+- ✅ `src/app/search/page.tsx`
+- ✅ `src/app/auctions/page.tsx`
+- ✅ `src/app/categories/[slug]/page.tsx`
+- ✅ `src/app/seller/auctions/page.tsx`
 
-```bash
-curl http://localhost:3000/api/admin/debug/products-by-category | jq
-```
+### Key Points
 
-### Search for Missing .data Unwrapping
-
-```bash
-grep -r "apiService.get<" src/services/ | grep -v "response.data"
-```
-
-### Find Boolean Field Checks
-
-```bash
-grep -r "=== false" src/ --include="*.ts" --include="*.tsx"
-```
+1. **Extract component** - Move logic using `useSearchParams()` to separate component
+2. **Add Suspense import** - `import { Suspense } from "react"`
+3. **Wrap with Suspense** - Default export wraps content component
+4. **Provide fallback** - Loading spinner or skeleton UI
 
 ---
 
-## Related Documentation
+## 10. Invalid Date toISOString Errors
 
-- [PRODUCT-API-FIXES-NOV-17-2025.md](./PRODUCT-API-FIXES-NOV-17-2025.md) - Product API fixes
-- [COMPLETE-FIX-SUMMARY-NOV-17-2025.md](./COMPLETE-FIX-SUMMARY-NOV-17-2025.md) - Category count fixes
-- [IS_DELETED-FIELD-FIX-SUMMARY.md](./IS_DELETED-FIELD-FIX-SUMMARY.md) - Boolean field handling
+### Symptoms
+
+- Build fails with "RangeError: Invalid time value"
+- Error in sitemap generation or date transformations
+- Production build crashes on `.toISOString()` calls
+- Error: "Invalid time value at Date.toISOString"
+
+### Root Cause
+
+**Issue 1:** Calling `.toISOString()` on invalid/undefined dates:
+
+```typescript
+// ❌ WRONG - Crashes if date is invalid
+const isoString = someDate.toISOString();
+// If someDate is undefined, null, or invalid Date object: RangeError
+
+// ❌ WRONG - No validation
+lastModified: new Date(product.updated_at); // Crashes if updated_at is invalid
+```
+
+**Issue 2:** Firestore Timestamps not handled properly:
+
+```typescript
+// Firestore returns: { seconds: 1234567890, nanoseconds: 0 }
+// Direct conversion fails
+const date = new Date(firestoreTimestamp); // Invalid Date
+```
+
+**Issue 3:** Missing null checks before conversion:
+
+```typescript
+// ❌ WRONG - No validation
+const dateTime = publishDate.toISOString(); // Crashes if publishDate is null/undefined
+```
+
+### Solution
+
+**Step 1: Create Date Utility Functions**
+
+```typescript
+// src/lib/date-utils.ts
+
+/**
+ * Safely converts a date to ISO string, handling invalid dates
+ * @param date - Date to convert (Date object, string, number, or Firestore timestamp)
+ * @returns ISO string or null if date is invalid
+ */
+export function safeToISOString(date: any): string | null {
+  if (!date) return null;
+
+  try {
+    // Handle Firestore Timestamp
+    if (date?.seconds !== undefined) {
+      const d = new Date(date.seconds * 1000);
+      if (isNaN(d.getTime())) return null;
+      return d.toISOString();
+    }
+
+    // Handle Date object, string, or number
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString();
+  } catch (error) {
+    console.error("Error converting date to ISO string:", error);
+    return null;
+  }
+}
+
+/**
+ * Safely converts a date to ISO string with fallback
+ * @param date - Date to convert
+ * @param fallback - Fallback value if date is invalid (defaults to current date)
+ * @returns ISO string
+ */
+export function toISOStringOrDefault(
+  date: any,
+  fallback: Date = new Date()
+): string {
+  return safeToISOString(date) ?? fallback.toISOString();
+}
+
+/**
+ * Validates if a date is valid
+ * @param date - Date to validate
+ * @returns true if date is valid
+ */
+export function isValidDate(date: any): boolean {
+  if (!date) return false;
+
+  try {
+    // Handle Firestore Timestamp
+    if (date?.seconds !== undefined) {
+      const d = new Date(date.seconds * 1000);
+      return !isNaN(d.getTime());
+    }
+
+    const d = new Date(date);
+    return !isNaN(d.getTime());
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Formats date for HTML input[type="date"] (YYYY-MM-DD)
+ * @param date - Date to format
+ * @returns Date string in YYYY-MM-DD format or empty string if invalid
+ */
+export function toDateInputValue(date: any): string {
+  const isoString = safeToISOString(date);
+  return isoString ? isoString.split("T")[0] : "";
+}
+
+/**
+ * Gets current date in YYYY-MM-DD format for date inputs
+ * @returns Today's date in YYYY-MM-DD format
+ */
+export function getTodayDateInputValue(): string {
+  return new Date().toISOString().split("T")[0];
+}
+```
+
+**Step 2: Use in Sitemap Generation**
+
+```typescript
+// src/app/sitemap.ts
+import { safeToISOString } from "@/lib/date-utils";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [products, categories, shops] = await Promise.all([
+    fetchProducts(),
+    fetchCategories(),
+    fetchShops(),
+  ]);
+
+  // ✅ CORRECT - Safe date handling
+  const productPages: MetadataRoute.Sitemap = products
+    .filter((product: any) => product.slug)
+    .map((product: any) => {
+      const lastMod = safeToISOString(product.updated_at || product.updatedAt);
+      return {
+        url: `${baseUrl}/products/${product.slug}`,
+        lastModified: lastMod ? new Date(lastMod) : new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      };
+    });
+
+  return [...staticPages, ...productPages, ...categoryPages];
+}
+```
+
+**Step 3: Use in Type Transformers**
+
+```typescript
+// src/types/transforms/shop.transforms.ts
+import { safeToISOString } from "@/lib/date-utils";
+
+export function toFEShop(shopBE: ShopBE): ShopFE {
+  return {
+    id: shopBE.id,
+    name: shopBE.name,
+    // ... other fields
+    createdAt: safeToISOString(shopBE.createdAt) || undefined,
+  };
+}
+```
+
+**Step 4: Use in Form Submissions**
+
+```typescript
+// src/types/transforms/auction.transforms.ts
+import { safeToISOString } from "@/lib/date-utils";
+
+export function toBECreateAuctionRequest(
+  formData: AuctionFormFE
+): CreateAuctionRequestBE {
+  return {
+    productId: formData.productId,
+    startingPrice: formData.startingPrice,
+    startTime: safeToISOString(formData.startTime) || new Date().toISOString(),
+    endTime: safeToISOString(formData.endTime) || new Date().toISOString(),
+    // ... other fields
+  };
+}
+```
+
+**Step 5: Use in Components**
+
+```typescript
+// src/app/blog/[slug]/BlogPostClient.tsx
+import { safeToISOString } from "@/lib/date-utils";
+
+export default function BlogPostClient({ post }: Props) {
+  return (
+    <time dateTime={safeToISOString(publishDate) || new Date().toISOString()}>
+      {formatDate(publishDate)}
+    </time>
+  );
+}
+```
+
+### Where to Fix
+
+**Files Updated:**
+
+- ✅ `src/lib/date-utils.ts` - New utility file
+- ✅ `src/app/sitemap.ts` - Sitemap generation
+- ✅ `src/types/transforms/shop.transforms.ts` - Shop transformers
+- ✅ `src/types/transforms/auction.transforms.ts` - Auction transformers
+- ✅ `src/types/transforms/coupon.transforms.ts` - Coupon transformers
+- ✅ `src/types/transforms/order.transforms.ts` - Order transformers
+- ✅ `src/app/blog/[slug]/BlogPostClient.tsx` - Blog post display
+
+**Pattern to Apply Everywhere:**
+
+Replace all instances of:
+
+```typescript
+// ❌ WRONG
+date.toISOString();
+
+// ✅ CORRECT
+safeToISOString(date) || new Date().toISOString();
+// or
+safeToISOString(date) || undefined; // if null is acceptable
+```
+
+### Key Points
+
+1. **Always validate dates** before calling `.toISOString()`
+2. **Handle Firestore Timestamps** - Check for `.seconds` property
+3. **Provide fallbacks** - Use current date or undefined as appropriate
+4. **Filter invalid entries** - In sitemaps and lists, filter out items with invalid dates
+5. **Centralize date logic** - Use utility functions for consistency
+
+### Testing
+
+```bash
+# Test build to verify all date errors are fixed
+npm run build
+
+# Should complete successfully without "Invalid time value" errors
+```
+
+### Common Locations
+
+Search for these patterns in your codebase:
+
+```bash
+# Find all .toISOString() calls
+grep -r "\.toISOString()" src/ --include="*.ts" --include="*.tsx"
+
+# Check for potential issues
+grep -r "new Date(.*).toISOString()" src/ --include="*.ts" --include="*.tsx"
+```
+
+### Prevention Strategies
+
+1. **Import date-utils in all files that handle dates:**
+
+```typescript
+import { safeToISOString, toDateInputValue } from "@/lib/date-utils";
+```
+
+2. **Add ESLint rule** (optional):
+
+```json
+{
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.property.name='toISOString']",
+        "message": "Use safeToISOString() instead of .toISOString() for safety"
+      }
+    ]
+  }
+}
+```
+
+3. **Code review checklist:**
+   - ✅ All `.toISOString()` calls wrapped in try-catch or use `safeToISOString()`
+   - ✅ Firestore timestamps handled properly
+   - ✅ Null/undefined checks before date operations
+   - ✅ Fallback values provided where appropriate
+
+### Related Issues
+
+This fix resolves:
+
+- Sitemap generation errors
+- Form submission crashes
+- Data transformation errors
+- Build-time failures
 
 ---
 
-## Summary
-
-**Most Common Issues:**
-
-1. ❌ Using `=== false` instead of `!== true` for boolean checks
-2. ❌ Not unwrapping `.data` from API responses
-3. ❌ Missing camelCase aliases in API responses
-4. ❌ Effect dependency issues causing interval recreation
-5. ❌ Hardcoding pagination values in service layer
-6. ❌ Not implementing pagination logic in API routes
-
-**Always Remember:**
-
-- ✅ Boolean checks: Use `!== true` pattern
-- ✅ API responses: Return both snake_case and camelCase
-- ✅ Service methods: Extract `response.data`
-- ✅ Effects: Minimize dependencies, split concerns
-- ✅ Pagination: Pass through page/limit, slice results, return metadata
-
----
-
-_Last Updated: November 17, 2025_
+## Debugging Checklist

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useRef } from "react";
+import { use, useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -29,7 +29,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function CategoryDetailPage({ params }: PageProps) {
+function CategoryDetailContent({ params }: PageProps) {
   const { slug } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -749,5 +749,19 @@ export default function CategoryDetailPage({ params }: PageProps) {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CategoryDetailPage({ params }: PageProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      }
+    >
+      <CategoryDetailContent params={params} />
+    </Suspense>
   );
 }

@@ -51,7 +51,21 @@ export async function GET(
       );
     }
     const shopDoc = shopSnapshot.docs[0];
-    const shop: any = { id: shopDoc.id, ...shopDoc.data() };
+    const data: any = shopDoc.data();
+    const shop: any = {
+      id: shopDoc.id,
+      ...data,
+      // Add camelCase aliases
+      ownerId: data.owner_id,
+      isVerified: data.is_verified,
+      isFeatured: data.is_featured,
+      isBanned: data.is_banned,
+      showOnHomepage: data.show_on_homepage,
+      totalProducts: data.total_products || data.product_count || 0,
+      reviewCount: data.review_count || 0,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
 
     // Role-based access control
     const isOwner = Boolean(userId && shop.owner_id === userId);

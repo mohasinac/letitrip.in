@@ -6,6 +6,7 @@ import { Timestamp } from "firebase/firestore";
 import { ShopBE, CreateShopRequestBE } from "../backend/shop.types";
 import { ShopFE, ShopFormFE, ShopCardFE } from "../frontend/shop.types";
 import { Status } from "../shared/common.types";
+import { safeToISOString } from "@/lib/date-utils";
 
 function parseDate(date: Timestamp | string): Date {
   return date instanceof Timestamp ? date.toDate() : new Date(date);
@@ -103,11 +104,7 @@ export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
     ownerId: shopBE.ownerId,
     description: shopBE.description || null,
     banner: shopBE.banner || null,
-    createdAt: shopBE.createdAt
-      ? typeof shopBE.createdAt === "object" && "seconds" in shopBE.createdAt
-        ? new Date(shopBE.createdAt.seconds * 1000).toISOString()
-        : new Date(shopBE.createdAt).toISOString()
-      : undefined,
+    createdAt: safeToISOString(shopBE.createdAt) || undefined,
   };
 }
 

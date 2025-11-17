@@ -16,6 +16,7 @@ import {
   BidFE,
   PlaceBidFormFE,
 } from "../frontend/auction.types";
+import { safeToISOString } from "@/lib/date-utils";
 import { AuctionStatus, AuctionType } from "../shared/common.types";
 
 function parseDate(date: Timestamp | string | null): Date | null {
@@ -270,8 +271,8 @@ export function toBECreateAuctionRequest(
     reservePrice: formData.reservePrice,
     buyNowPrice: formData.buyNowPrice,
     bidIncrement: formData.bidIncrement,
-    startTime: formData.startTime.toISOString(),
-    endTime: formData.endTime.toISOString(),
+    startTime: safeToISOString(formData.startTime) || new Date().toISOString(),
+    endTime: safeToISOString(formData.endTime) || new Date().toISOString(),
     allowExtension: formData.allowExtension,
     extensionTime: formData.extensionTime,
   };

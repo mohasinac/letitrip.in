@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { safeToISOString } from "@/lib/date-utils";
 import {
   Calendar,
   User,
@@ -185,7 +186,11 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
 
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              <time dateTime={publishDate.toISOString()}>
+              <time
+                dateTime={
+                  safeToISOString(publishDate) || new Date().toISOString()
+                }
+              >
                 {formatDate(publishDate)}
               </time>
             </div>
