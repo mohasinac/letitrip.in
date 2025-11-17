@@ -8,20 +8,20 @@ All API routes have been successfully migrated from offset-based pagination to c
 
 ### ✅ Backend APIs Completed (12/12)
 
-| API Route    | Status | Performance Gain | Key Features                              |
-| ------------ | ------ | ---------------- | ----------------------------------------- |
-| Products     | ✅     | 10-20x           | Full filtering, multi-sort, RBAC          |
-| Auctions     | ✅     | 15-25x           | Status filters, bid range, featured       |
-| Shops        | ✅     | 8-12x            | Role-based views, verification status     |
-| Reviews      | ✅     | 12-18x           | Rating filters, product/shop grouping     |
-| Categories   | ✅     | 5-8x             | Multi-parent support, hierarchy queries   |
-| Blog         | ✅     | 10-15x           | Category/tag filters, featured posts      |
-| Orders       | ✅     | 15-20x           | Strict RBAC, status/payment filters       |
-| Users        | ✅     | 8-12x            | Role filters, client-side search          |
-| Tickets      | ✅     | 10-15x           | Priority/status, admin stats              |
-| Favorites    | ✅     | 5-8x             | Product details included                  |
-| Cart         | ✅     | 3-5x             | Summary calculations, stock validation    |
-| Bids         | ✅     | 12-18x           | Auction-specific, real-time updates ready |
+| API Route  | Status | Performance Gain | Key Features                              |
+| ---------- | ------ | ---------------- | ----------------------------------------- |
+| Products   | ✅     | 10-20x           | Full filtering, multi-sort, RBAC          |
+| Auctions   | ✅     | 15-25x           | Status filters, bid range, featured       |
+| Shops      | ✅     | 8-12x            | Role-based views, verification status     |
+| Reviews    | ✅     | 12-18x           | Rating filters, product/shop grouping     |
+| Categories | ✅     | 5-8x             | Multi-parent support, hierarchy queries   |
+| Blog       | ✅     | 10-15x           | Category/tag filters, featured posts      |
+| Orders     | ✅     | 15-20x           | Strict RBAC, status/payment filters       |
+| Users      | ✅     | 8-12x            | Role filters, client-side search          |
+| Tickets    | ✅     | 10-15x           | Priority/status, admin stats              |
+| Favorites  | ✅     | 5-8x             | Product details included                  |
+| Cart       | ✅     | 3-5x             | Summary calculations, stock validation    |
+| Bids       | ✅     | 12-18x           | Auction-specific, real-time updates ready |
 
 ### ✅ Frontend Services Updated (6/12)
 
@@ -366,11 +366,18 @@ export default function ListPage() {
       </div>
 
       {/* Items Grid */}
-      <div className="grid">{items.map((item) => <ItemCard key={item.id} item={item} />)}</div>
+      <div className="grid">
+        {items.map((item) => (
+          <ItemCard key={item.id} item={item} />
+        ))}
+      </div>
 
       {/* Pagination */}
       <div className="pagination">
-        <button onClick={handlePrevPage} disabled={currentPage === 1 || loading}>
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1 || loading}
+        >
           Previous
         </button>
 
@@ -537,18 +544,18 @@ All indexes include `__name__` field for cursor pagination support:
 
 ### Before vs After Comparison
 
-| Metric                       | Before           | After           | Improvement   |
-| ---------------------------- | ---------------- | --------------- | ------------- |
-| **API Response Time**        | 5-10s            | 0.2-0.5s        | **20-25x**    |
-| **Memory Usage**             | 100-200MB        | 5-10MB          | **20x**       |
-| **Network Transfer**         | 2-5MB per req    | 50-150KB        | **20-40x**    |
-| **Firebase Reads**           | 10,000+ per req  | 50-100 per req  | **100-200x**  |
-| **Scalability**              | Breaks at 10k    | Works at 100k+  | **10x+**      |
-| **Cost (Firebase)**          | ~$200/month      | ~$10/month      | **20x lower** |
-| **User Experience**          | Slow, timeout    | Fast, smooth    | **Excellent** |
-| **Developer Experience**     | Complex, fragile | Simple, robust  | **Much**      |
-| **Query Complexity**         | O(n)             | O(log n)        | **Optimal**   |
-| **Concurrent Users Support** | ~50-100          | 1000+           | **10x+**      |
+| Metric                       | Before           | After          | Improvement   |
+| ---------------------------- | ---------------- | -------------- | ------------- |
+| **API Response Time**        | 5-10s            | 0.2-0.5s       | **20-25x**    |
+| **Memory Usage**             | 100-200MB        | 5-10MB         | **20x**       |
+| **Network Transfer**         | 2-5MB per req    | 50-150KB       | **20-40x**    |
+| **Firebase Reads**           | 10,000+ per req  | 50-100 per req | **100-200x**  |
+| **Scalability**              | Breaks at 10k    | Works at 100k+ | **10x+**      |
+| **Cost (Firebase)**          | ~$200/month      | ~$10/month     | **20x lower** |
+| **User Experience**          | Slow, timeout    | Fast, smooth   | **Excellent** |
+| **Developer Experience**     | Complex, fragile | Simple, robust | **Much**      |
+| **Query Complexity**         | O(n)             | O(log n)       | **Optimal**   |
+| **Concurrent Users Support** | ~50-100          | 1000+          | **10x+**      |
 
 ---
 

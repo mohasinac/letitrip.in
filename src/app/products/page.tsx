@@ -4,6 +4,7 @@ import React, { useState, useEffect, Fragment, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -469,23 +470,31 @@ function ProductsContent() {
                                 </div>
                               )}
                             </td>
-                            <td className="px-6 py-4 text-right space-x-2">
-                              <button
-                                onClick={() =>
-                                  router.push(`/products/${product.slug}`)
-                                }
-                                className="text-blue-600 hover:underline text-sm"
-                              >
-                                View
-                              </button>
-                              {product.stockCount > 0 && (
+                            <td className="px-6 py-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <FavoriteButton
+                                  itemId={product.id}
+                                  itemType="product"
+                                  initialIsFavorite={false}
+                                  size="sm"
+                                />
                                 <button
-                                  onClick={() => handleAddToCart(product.id)}
+                                  onClick={() =>
+                                    router.push(`/products/${product.slug}`)
+                                  }
                                   className="text-blue-600 hover:underline text-sm"
                                 >
-                                  Add to Cart
+                                  View
                                 </button>
-                              )}
+                                {product.stockCount > 0 && (
+                                  <button
+                                    onClick={() => handleAddToCart(product.id)}
+                                    className="text-blue-600 hover:underline text-sm"
+                                  >
+                                    Add to Cart
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ))}

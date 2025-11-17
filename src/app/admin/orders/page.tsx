@@ -51,12 +51,12 @@ export default function AdminOrdersPage() {
   const limit = 20;
 
   // Filters - unified state
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({
-    status: searchParams.get("status") as any || undefined,
-    sortBy: searchParams.get("sortBy") || "created_at",
-    sortOrder: searchParams.get("sortOrder") as any || "desc",
+    status: (searchParams.get("status") as any) || undefined,
   });
 
   // Infinite loop prevention
@@ -71,12 +71,12 @@ export default function AdminOrdersPage() {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (filterValues.status) {
-      const status = Array.isArray(filterValues.status) 
-        ? filterValues.status[0] 
+      const status = Array.isArray(filterValues.status)
+        ? filterValues.status[0]
         : filterValues.status;
       params.set("status", status);
     }
-    
+
     const queryString = params.toString();
     const newUrl = queryString ? `?${queryString}` : window.location.pathname;
     window.history.replaceState({}, "", newUrl);
@@ -137,7 +137,7 @@ export default function AdminOrdersPage() {
       setHasNextPage(ordersData.hasMore || false);
       setShops(shopsData.data || []);
       setStats(statsData);
-      
+
       if (ordersData.nextCursor) {
         setCursors((prev) => {
           const newCursors = [...prev];
@@ -145,7 +145,7 @@ export default function AdminOrdersPage() {
           return newCursors;
         });
       }
-      
+
       hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load orders:", error);
@@ -379,28 +379,29 @@ export default function AdminOrdersPage() {
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
         {/* Desktop Filters - Always Visible Sidebar */}
-        {!isMobile && (        <UnifiedFilterSidebar
-          sections={ORDER_FILTERS}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={() => {
-            setCurrentPage(1);
-            setCursors([null]);
-          }}
-          onReset={() => {
-            setFilterValues({
-              status: undefined,
-            });
-            setCurrentPage(1);
-            setCursors([null]);
-          }}
-          isOpen={false}
-          onClose={() => {}}
-          searchable={true}
-          mobile={false}
-          resultCount={totalOrders}
-          isLoading={loading}
-        />
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={ORDER_FILTERS}
+            values={filterValues}
+            onChange={handleFilterChange}
+            onApply={() => {
+              setCurrentPage(1);
+              setCursors([null]);
+            }}
+            onReset={() => {
+              setFilterValues({
+                status: undefined,
+              });
+              setCurrentPage(1);
+              setCursors([null]);
+            }}
+            isOpen={false}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={totalOrders}
+            isLoading={loading}
+          />
         )}
 
         {/* Content Area */}

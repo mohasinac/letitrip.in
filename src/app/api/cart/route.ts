@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           stockCount: product.stock_count || 0,
           addedAt: data.added_at,
         };
-      }),
+      })
     );
 
     const validItems = items.filter((item: any) => item !== null);
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     // Calculate totals
     const subtotal = validItems.reduce(
       (sum: number, item: any) => sum + item.price * item.quantity,
-      0,
+      0
     );
     const shipping = subtotal > 5000 ? 0 : 100; // Free shipping above ₹5000
     const tax = subtotal * 0.18; // 18% GST
@@ -90,9 +90,10 @@ export async function GET(request: NextRequest) {
     const total = subtotal + shipping + tax - discount;
 
     // Get next cursor
-    const nextCursor = hasNextPage && resultDocs.length > 0
-      ? resultDocs[resultDocs.length - 1].id
-      : null;
+    const nextCursor =
+      hasNextPage && resultDocs.length > 0
+        ? resultDocs[resultDocs.length - 1].id
+        : null;
 
     const summary = {
       items: validItems,
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
       total,
       itemCount: validItems.reduce(
         (sum: number, item: any) => sum + item.quantity,
-        0,
+        0
       ),
     };
 
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching cart:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch cart" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
     if (!productId) {
       return NextResponse.json(
         { success: false, error: "Product ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
     if (!productDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
     if (product.stock_count < quantity) {
       return NextResponse.json(
         { success: false, error: "Insufficient stock" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
       if (product.stock_count < newQuantity) {
         return NextResponse.json(
           { success: false, error: "Insufficient stock" },
-          { status: 400 },
+          { status: 400 }
         );
       }
 
@@ -213,14 +214,14 @@ export async function POST(request: NextRequest) {
           data: { id: docRef.id, quantity },
           message: "Item added to cart",
         },
-        { status: 201 },
+        { status: 201 }
       );
     }
   } catch (error) {
     console.error("Error adding to cart:", error);
     return NextResponse.json(
       { success: false, error: "Failed to add to cart" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -233,7 +234,7 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -253,7 +254,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error clearing cart:", error);
     return NextResponse.json(
       { success: false, error: "Failed to clear cart" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

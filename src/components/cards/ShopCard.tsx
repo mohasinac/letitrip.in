@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Star, MapPin, BadgeCheck, ShoppingBag } from "lucide-react";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { formatCompactNumber } from "@/lib/formatters";
 
 export interface ShopCardProps {
@@ -62,8 +63,18 @@ export const ShopCard: React.FC<ShopCardProps> = ({
   return (
     <Link
       href={`/shops/${slug}`}
-      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 relative"
     >
+      {/* Favorite Button */}
+      <div className="absolute top-2 right-2 z-10">
+        <FavoriteButton
+          itemId={id}
+          itemType="shop"
+          initialIsFavorite={false}
+          size="md"
+        />
+      </div>
+
       {/* Banner */}
       {showBanner && banner && !compact && (
         <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">

@@ -14,16 +14,16 @@ import { Eye, Package, Truck, ChevronLeft, ChevronRight } from "lucide-react";
 export default function SellerOrdersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  
+
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalOrders, setTotalOrders] = useState(0);
-  
+
   // Filters from URL
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
     status: searchParams.get("status") || "",
@@ -37,7 +37,7 @@ export default function SellerOrdersPage() {
     if (filterValues.status) params.set("status", filterValues.status);
     if (filterValues.sortBy) params.set("sortBy", filterValues.sortBy);
     if (filterValues.sortOrder) params.set("sortOrder", filterValues.sortOrder);
-    
+
     const queryString = params.toString();
     const newUrl = queryString ? `?${queryString}` : window.location.pathname;
     window.history.replaceState({}, "", newUrl);
@@ -56,11 +56,11 @@ export default function SellerOrdersPage() {
         startAfter,
         limit: 20,
       } as any);
-      
+
       setOrders(response.data || []);
       setTotalOrders(response.total || 0);
       setHasNextPage(response.hasMore || false);
-      
+
       if (response.nextCursor) {
         setCursors((prev) => {
           const newCursors = [...prev];

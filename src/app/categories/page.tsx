@@ -3,7 +3,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, Tag, Loader2, Search, List, ChevronLeft } from "lucide-react";
+import {
+  ChevronRight,
+  Tag,
+  Loader2,
+  Search,
+  List,
+  ChevronLeft,
+} from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
@@ -14,21 +21,25 @@ export default function CategoriesPage() {
 
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  
+
   // Filters from URL
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
   const [sortBy, setSortBy] = useState<string>(
     searchParams.get("sortBy") || "sort_order"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
     (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
   );
-  const [featured, setFeatured] = useState(searchParams.get("featured") === "true");
+  const [featured, setFeatured] = useState(
+    searchParams.get("featured") === "true"
+  );
 
   useEffect(() => {
     loadCategories();
@@ -87,7 +98,7 @@ export default function CategoriesPage() {
     if (key === "sortBy") setSortBy(value);
     else if (key === "sortOrder") setSortOrder(value);
     else if (key === "featured") setFeatured(value);
-    
+
     setCurrentPage(1);
     setCursors([null]);
   };
@@ -180,7 +191,9 @@ export default function CategoriesPage() {
                 <div className="sm:w-64">
                   <select
                     value={sortBy}
-                    onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("sortBy", e.target.value)
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="sort_order">Default Order</option>

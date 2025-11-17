@@ -30,7 +30,9 @@ import type {
 
 class CategoriesService {
   // List categories
-  async list(filters?: Record<string, any>): Promise<PaginatedResponseFE<CategoryFE>> {
+  async list(
+    filters?: Record<string, any>
+  ): Promise<PaginatedResponseFE<CategoryFE>> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -45,7 +47,7 @@ class CategoriesService {
     const endpoint = queryString ? `/categories?${queryString}` : "/categories";
 
     const response: any = await apiService.get(endpoint);
-    
+
     // Support both old and new response formats
     if (response.pagination) {
       // New cursor-based format

@@ -30,12 +30,12 @@ export default function UserTicketsPage() {
   const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  
+
   const [filter, setFilter] = useState({
     status: "",
     category: "",
@@ -57,10 +57,10 @@ export default function UserTicketsPage() {
         startAfter,
         limit: 20,
       } as any);
-      
+
       setTickets(response.data || []);
       setHasNextPage(response.hasMore || false);
-      
+
       if (response.nextCursor) {
         setCursors((prev) => {
           const newCursors = [...prev];

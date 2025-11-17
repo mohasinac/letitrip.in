@@ -5,7 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BlogCard } from "@/components/cards/BlogCard";
 import { blogService, type BlogFilters } from "@/services/blog.service";
 import type { BlogPost } from "@/services/blog.service";
-import { Search, Filter, Tag, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Tag,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 export default function BlogListClient() {
   const router = useRouter();
@@ -14,14 +21,16 @@ export default function BlogListClient() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  
+
   // Filters from URL
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",
     limit: 12,
@@ -51,7 +60,7 @@ export default function BlogListClient() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const startAfter = cursors[currentPage - 1];
       const response = await blogService.list({
         ...filters,
