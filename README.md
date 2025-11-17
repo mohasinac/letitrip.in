@@ -113,32 +113,34 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📚 Documentation
 
-### Getting Started
+**Complete documentation is now available in `/NDocs`**
 
-| Document                                                          | Description               |
-| ----------------------------------------------------------------- | ------------------------- |
-| [Quick Start](docs/project/00-QUICK-START.md)                     | 5-minute onboarding guide |
-| [Architecture Overview](docs/project/01-ARCHITECTURE-OVERVIEW.md) | System design & patterns  |
-| [Service Layer Guide](docs/project/02-SERVICE-LAYER-GUIDE.md)     | API abstraction layer     |
-| [Component Patterns](docs/project/03-COMPONENT-PATTERNS.md)       | React best practices      |
+### 🚀 Quick Links
 
-### For AI Agents & Developers
+| Document                                                           | Description                |
+| ------------------------------------------------------------------ | -------------------------- |
+| **[📖 Complete Docs](NDocs/README.md)**                            | Master documentation index |
+| **[⚡ Quick Start](NDocs/getting-started/00-QUICK-START.md)**      | 5-minute setup guide       |
+| **[🤖 AI Agent Guide](NDocs/getting-started/AI-AGENT-GUIDE.md)**   | For AI development         |
+| **[🏗️ Architecture](NDocs/architecture/ARCHITECTURE-OVERVIEW.md)** | System design              |
 
-| Document                                                    | Description                  |
-| ----------------------------------------------------------- | ---------------------------- |
-| [AI Agent Guide](docs/ai/AI-AGENT-GUIDE.md)                 | Development patterns & tools |
-| [Common Issues](docs/guides/COMMON-ISSUES-AND-SOLUTIONS.md) | Troubleshooting guide        |
-| [Context Sharing](docs/CONTEXT-SHARING-GUIDE.md)            | How to share context with AI |
+### 📂 Documentation Structure
 
-### Technical Documentation
+```
+NDocs/
+├── getting-started/     # Quick onboarding
+├── architecture/        # System design & patterns
+├── development/         # Development guides
+├── features/            # Feature documentation
+├── deployment/          # Production setup
+└── guides/              # References & troubleshooting
+```
 
-| Category          | Location                                             |
-| ----------------- | ---------------------------------------------------- |
-| API Documentation | `docs/api-consolidation/`                            |
-| Resource Guides   | `docs/resources/` (Products, Auctions, Orders, etc.) |
-| Fix History       | `docs/fixes/` (All bug fixes & improvements)         |
-| Deployment        | `docs/deployment/` (Vercel, Firebase)                |
-| Testing           | `docs/testing/` (Test workflows)                     |
+### 🎯 By Role
+
+**New Developer**: Start with [Quick Start](NDocs/getting-started/00-QUICK-START.md)  
+**AI Agent**: Read [AI Agent Guide](NDocs/getting-started/AI-AGENT-GUIDE.md)  
+**Experienced Dev**: Check [Architecture](NDocs/architecture/ARCHITECTURE-OVERVIEW.md) and [Service Layer](NDocs/architecture/SERVICE-LAYER-GUIDE.md)
 
 ---
 

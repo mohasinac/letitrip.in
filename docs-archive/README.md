@@ -1,12 +1,39 @@
-# Documentation
+# Documentation Archive
 
-Organized documentation for JustForView.in platform.
+**⚠️ This folder contains archived documentation.**
 
-## Quick Start
+**All current documentation has been reorganized and consolidated in `/NDocs`**
 
-- **New Developers**: Start with [project/00-QUICK-START.md](project/00-QUICK-START.md)
-- **Architecture**: Read [project/01-ARCHITECTURE-OVERVIEW.md](project/01-ARCHITECTURE-OVERVIEW.md)
-- **AI Agent Guide**: See [ai/AI-AGENT-GUIDE.md](ai/AI-AGENT-GUIDE.md)
+👉 **Go to**: [/NDocs/README.md](../NDocs/README.md)
+
+---
+
+## 📍 New Documentation Location
+
+### Quick Links
+
+- **[Complete Documentation](../NDocs/README.md)** - Master index
+- **[Quick Start Guide](../NDocs/getting-started/00-QUICK-START.md)** - Get started in 5 minutes
+- **[AI Agent Guide](../NDocs/getting-started/AI-AGENT-GUIDE.md)** - For AI development
+- **[Architecture Overview](../NDocs/architecture/ARCHITECTURE-OVERVIEW.md)** - System design
+
+---
+
+## 📂 What's in This Archive
+
+This folder contains historical documentation that has been:
+
+- **Consolidated** into comprehensive guides in `/NDocs`
+- **Updated** with latest information
+- **Reorganized** for better navigation
+
+### Archived Content Includes
+
+- Old session summaries and progress updates
+- Historical fix documentation
+- Phase-specific implementation details
+- Legacy migration guides
+- Outdated checklists
 
 ## Directory Structure
 
