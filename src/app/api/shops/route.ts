@@ -50,7 +50,10 @@ export async function GET(request: NextRequest) {
           process.env.USE_COMPOSITE_INDEXES === "true";
 
         if (!user || role === UserRole.USER) {
-          if (filters.featured === "true" || filters.showOnHomepage === "true") {
+          if (
+            filters.featured === "true" ||
+            filters.showOnHomepage === "true"
+          ) {
             // Index: is_featured + is_verified + created_at
             query = Collections.shops()
               .where("is_featured", "==", true)
@@ -75,7 +78,10 @@ export async function GET(request: NextRequest) {
           }
         } else {
           // Authenticated users (sellers/admin) see more
-          if (filters.featured === "true" || filters.showOnHomepage === "true") {
+          if (
+            filters.featured === "true" ||
+            filters.showOnHomepage === "true"
+          ) {
             query = query.where("is_featured", "==", true).limit(limit);
           } else {
             query = query.limit(limit);

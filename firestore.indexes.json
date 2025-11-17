@@ -150,7 +150,7 @@
       "collectionGroup": "categories",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "sort_order", "order": "ASCENDING" }
       ]
     },
@@ -344,7 +344,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "showOnHomepage", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "publishedAt", "order": "DESCENDING" }
       ]
     },
@@ -385,16 +385,7 @@
         { "fieldPath": "__name__", "order": "ASCENDING" }
       ]
     },
-    {
-      "collectionGroup": "shops",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "is_banned", "order": "ASCENDING" },
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" },
-        { "fieldPath": "__name__", "order": "ASCENDING" }
-      ]
-    },
+
     {
       "collectionGroup": "shops",
       "queryScope": "COLLECTION",
@@ -406,19 +397,10 @@
       ]
     },
     {
-      "collectionGroup": "categories",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" },
-        { "fieldPath": "sort_order", "order": "ASCENDING" },
-        { "fieldPath": "__name__", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "blog_posts",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "showOnHomepage", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "publishedAt", "order": "DESCENDING" },
         { "fieldPath": "__name__", "order": "DESCENDING" }
@@ -429,7 +411,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "showOnHomepage", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "category", "order": "ASCENDING" },
         { "fieldPath": "publishedAt", "order": "DESCENDING" }
       ]
@@ -438,7 +420,7 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "featured", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "isApproved", "order": "ASCENDING" },
         { "fieldPath": "verifiedPurchase", "order": "ASCENDING" },
         { "fieldPath": "created_at", "order": "DESCENDING" }
@@ -510,15 +492,7 @@
         { "fieldPath": "end_time", "order": "ASCENDING" }
       ]
     },
-    {
-      "collectionGroup": "auctions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "end_time", "order": "ASCENDING" }
-      ]
-    },
+
     {
       "collectionGroup": "auctions",
       "queryScope": "COLLECTION",
@@ -618,7 +592,7 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "featured", "order": "ASCENDING" },
+        { "fieldPath": "is_featured", "order": "ASCENDING" },
         { "fieldPath": "isApproved", "order": "ASCENDING" },
         { "fieldPath": "created_at", "order": "DESCENDING" }
       ]
@@ -665,14 +639,7 @@
         { "fieldPath": "is_featured", "order": "ASCENDING" }
       ]
     },
-    {
-      "collectionGroup": "auctions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "name", "order": "ASCENDING" },
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" }
-      ]
-    },
+
     {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
@@ -689,15 +656,7 @@
         { "fieldPath": "name", "order": "ASCENDING" }
       ]
     },
-    {
-      "collectionGroup": "shops",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "is_banned", "order": "ASCENDING" },
-        { "fieldPath": "show_on_homepage", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
-      ]
-    },
+
     {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",

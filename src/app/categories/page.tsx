@@ -33,8 +33,8 @@ export default function CategoriesPage() {
     }
   };
 
-  // Filter and sort categories
-  const filteredAndSortedCategories = useMemo(() => {
+  // Filter and group categories by level
+  const categoriesByLevel = useMemo(() => {
     let filtered = [...categories];
 
     // Apply search filter
@@ -47,29 +47,34 @@ export default function CategoriesPage() {
       );
     }
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "alphabetical":
-          return a.name.localeCompare(b.name);
-        case "productCount":
-          // Parents first (they have children's product counts), then by count
-          if (a.level !== b.level) {
-            return a.level - b.level;
-          }
-          return b.productCount - a.productCount;
-        case "level":
-          // Sort by level, then alphabetically within level
-          if (a.level !== b.level) {
-            return a.level - b.level;
-          }
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
+    // Group by level
+    const grouped = new Map<number, CategoryFE[]>();
+    filtered.forEach((cat) => {
+      const level = cat.level || 0;
+      if (!grouped.has(level)) {
+        grouped.set(level, []);
       }
+      grouped.get(level)!.push(cat);
     });
 
-    return filtered;
+    // Sort categories within each level
+    grouped.forEach((cats, level) => {
+      cats.sort((a, b) => {
+        switch (sortBy) {
+          case "alphabetical":
+            return a.name.localeCompare(b.name);
+          case "productCount":
+            return b.productCount - a.productCount;
+          case "level":
+            return a.name.localeCompare(b.name);
+          default:
+            return 0;
+        }
+      });
+    });
+
+    // Convert to sorted array of [level, categories]
+    return Array.from(grouped.entries()).sort((a, b) => a[0] - b[0]);
   }, [categories, searchQuery, sortBy]);
 
   if (loading) {
@@ -142,53 +147,85 @@ export default function CategoriesPage() {
           </div>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredAndSortedCategories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/categories/${category.slug}`}
-              className="bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
-            >
-              {/* Category Image */}
-              {category.image && (
-                <div className="w-full h-48 bg-gray-100 overflow-hidden">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
+        {/* Categories by Level */}
+        <div className="space-y-8">
+          {categoriesByLevel.map(([level, levelCategories]) => (
+            <div key={level} className="space-y-4">
+              {/* Level Header */}
+              <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200">
+                <div className="flex items-center gap-2">
+                  <List className="w-5 h-5 text-blue-600" />
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {level === 0
+                      ? "Root Categories"
+                      : `Level ${level} Categories`}
+                  </h2>
                 </div>
-              )}
-
-              {/* Category Info */}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
-                  {category.name}
-                </h3>
-
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <div className="flex items-center gap-1 text-gray-500">
-                    <Tag className="w-3 h-3" />
-                    <span>{category.productCount} products</span>
-                  </div>
-                  {category.featured && (
-                    <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-medium rounded">
-                      Featured
-                    </span>
-                  )}
-                </div>
-
-                {/* Show level indicator */}
-                {category.level > 0 && (
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <List className="w-3 h-3" />
-                    <span>Level {category.level}</span>
-                  </div>
-                )}
+                <span className="text-sm text-gray-500 font-medium">
+                  ({levelCategories.length}{" "}
+                  {levelCategories.length === 1 ? "category" : "categories"})
+                </span>
               </div>
-            </Link>
+
+              {/* Categories Grid for this level */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {levelCategories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/categories/${category.slug}`}
+                    className="bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
+                  >
+                    {/* Category Image */}
+                    {category.image && (
+                      <div className="w-full h-48 bg-gray-100 overflow-hidden">
+                        <img
+                          src={category.image}
+                          alt={category.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    )}
+
+                    {/* Category Info */}
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                        {category.name}
+                      </h3>
+
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <div className="flex items-center gap-1 text-gray-500">
+                          <Tag className="w-3 h-3" />
+                          <span>{category.productCount} products</span>
+                        </div>
+                        {category.featured && (
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-medium rounded">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Parent indicator if not root */}
+                      {level > 0 && category.hasParents && (
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <ChevronRight className="w-3 h-3" />
+                          <span className="truncate">Subcategory</span>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
+
+          {/* Empty state for search */}
+          {categoriesByLevel.length === 0 && searchQuery && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                No categories found matching "{searchQuery}"
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
 
     const status = searchParams.get("status") || "published";
     const category = searchParams.get("category");
-    const featured = searchParams.get("featured") || searchParams.get("showOnHomepage"); // Support both for backward compatibility
+    const featured =
+      searchParams.get("featured") || searchParams.get("showOnHomepage"); // Support both for backward compatibility
     const limit = parseInt(searchParams.get("limit") || "20");
     const page = parseInt(searchParams.get("page") || "1");
 
@@ -20,15 +21,15 @@ export async function GET(req: NextRequest) {
 
     // Use composite indexes for better performance
     if (featured === "true" && category) {
-      // Index: status + featured + category + publishedAt
+      // Index: status + is_featured + category + publishedAt
       query = query
-        .where("featured", "==", true)
+        .where("is_featured", "==", true)
         .where("category", "==", category)
         .orderBy("publishedAt", "desc") as any;
     } else if (featured === "true") {
-      // Index: status + featured + publishedAt
+      // Index: status + is_featured + publishedAt
       query = query
-        .where("featured", "==", true)
+        .where("is_featured", "==", true)
         .orderBy("publishedAt", "desc") as any;
     } else if (category) {
       // Index: status + category + publishedAt
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
     // Get total count for pagination
     let countQuery = db.collection(COLLECTION).where("status", "==", status);
     if (featured === "true") {
-      countQuery = countQuery.where("featured", "==", true) as any;
+      countQuery = countQuery.where("is_featured", "==", true) as any;
     }
     if (category) {
       countQuery = countQuery.where("category", "==", category) as any;
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
       category: category || "Uncategorized",
       tags: tags || [],
       status: status || "draft",
-      featured: featured || false,
+      is_featured: featured || false,
       views: 0,
       likes: 0,
       publishedAt: status === "published" ? now : null,
