@@ -643,7 +643,7 @@ export const BLOG_FILTERS: FilterSection[] = [
     title: "Visibility",
     fields: [
       {
-        key: "isFeatured",
+        key: "featured",
         label: "Featured Posts",
         type: "checkbox",
         options: [{ label: "Featured only", value: "true" }],

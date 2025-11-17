@@ -4,9 +4,9 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 // GET /api/categories/homepage
 export async function GET() {
   try {
-    // Use composite index: show_on_homepage + sort_order
+    // Use composite index: is_featured + sort_order (consolidated from show_on_homepage)
     const snap = await Collections.categories()
-      .where("show_on_homepage", "==", true)
+      .where("is_featured", "==", true)
       .orderBy("sort_order", "asc")
       .limit(100)
       .get();
@@ -18,7 +18,7 @@ export async function GET() {
         ...catData,
         // Add camelCase aliases
         parentId: catData.parent_id,
-        isFeatured: catData.is_featured,
+        featured: catData.is_featured,
         showOnHomepage: catData.show_on_homepage,
         isActive: catData.is_active,
         productCount: catData.product_count || 0,

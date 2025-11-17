@@ -128,7 +128,7 @@ export default function ShopDashboardPage() {
                       ✓ Verified
                     </span>
                   )}
-                  {shop.isFeatured && (
+                  {shop.featured && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       ⭐ Featured
                     </span>
@@ -360,20 +360,20 @@ export default function ShopDashboardPage() {
                 <span className="text-sm text-gray-600">Featured</span>
                 <span
                   className={`text-sm font-medium ${
-                    shop.isFeatured ? "text-blue-600" : "text-gray-500"
+                    shop.featured ? "text-blue-600" : "text-gray-500"
                   }`}
                 >
-                  {shop.isFeatured ? "⭐ Yes" : "No"}
+                  {shop.featured ? "⭐ Yes" : "No"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Homepage Display</span>
+                <span className="text-sm text-gray-600">Featured Status</span>
                 <span
                   className={`text-sm font-medium ${
-                    shop.showOnHomepage ? "text-blue-600" : "text-gray-500"
+                    shop.featured ? "text-blue-600" : "text-gray-500"
                   }`}
                 >
-                  {shop.showOnHomepage ? "✓ Active" : "Inactive"}
+                  {shop.featured ? "⭐ Featured" : "Not Featured"}
                 </span>
               </div>
             </div>

@@ -73,7 +73,7 @@ export function CouponInlineForm({
           canCombineWithOtherCoupons: true,
           autoApply: false,
           isPublic: true,
-          isFeatured: false,
+          featured: false,
         } as any);
       }
 

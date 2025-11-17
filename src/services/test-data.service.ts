@@ -91,7 +91,7 @@ class TestDataService {
         shopId,
         sellerId: userId,
         status: this.randomFromArray(["draft", "published"]),
-        isFeatured: Math.random() > 0.7,
+        featured: Math.random() > 0.7,
         images: [
           `https://via.placeholder.com/400x400?text=${encodeURIComponent(
             name
@@ -150,7 +150,7 @@ class TestDataService {
         shopId,
         sellerId: userId,
         status: this.randomFromArray(["draft", "scheduled", "active"]),
-        isFeatured: Math.random() > 0.8,
+        featured: Math.random() > 0.8,
         images: [
           `https://via.placeholder.com/400x400?text=${encodeURIComponent(
             name
@@ -320,7 +320,7 @@ class TestDataService {
         description: "Test category for electronics",
         parentId: null,
         isActive: true,
-        isFeatured: true,
+        featured: true,
       },
       {
         name: `${this.PREFIX}Fashion`,
@@ -328,7 +328,7 @@ class TestDataService {
         description: "Test category for fashion",
         parentId: null,
         isActive: true,
-        isFeatured: false,
+        featured: false,
       },
       {
         name: `${this.PREFIX}Home & Kitchen`,
@@ -336,7 +336,7 @@ class TestDataService {
         description: "Test category for home products",
         parentId: null,
         isActive: true,
-        isFeatured: false,
+        featured: false,
       },
     ];
 

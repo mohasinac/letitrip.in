@@ -25,7 +25,7 @@ export interface ProductCardProps {
   shopSlug: string;
   shopId?: string;
   inStock: boolean;
-  isFeatured?: boolean;
+  featured?: boolean;
   condition?: "new" | "used" | "refurbished";
   onAddToCart?: (
     id: string,
@@ -59,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   shopSlug,
   shopId,
   inStock,
-  isFeatured = false,
+  featured = false,
   condition = "new",
   onAddToCart,
   onToggleFavorite,
@@ -225,7 +225,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {isFeatured && (
+          {featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Featured
             </span>

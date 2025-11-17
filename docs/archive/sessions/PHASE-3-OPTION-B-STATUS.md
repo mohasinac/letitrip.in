@@ -63,7 +63,7 @@ The following properties are used in admin/complex pages but don't exist in FE t
 
 **ShopFE missing**:
 
-- `isFeatured`, `showOnHomepage`, `isBanned`
+- `featured`, `showOnHomepage`, `isBanned`
 - `productCount` (has `totalProducts` instead)
 - `follower_count`
 - Social links: `website`, `facebook`, `instagram`, `twitter`

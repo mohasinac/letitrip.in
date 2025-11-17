@@ -162,7 +162,7 @@ class ReviewsService {
   // Get featured reviews
   async getFeatured(): Promise<ReviewFE[]> {
     const response = await apiService.get<{ data: ReviewBE[] }>(
-      "/reviews?isFeatured=true&isApproved=true&limit=100"
+      "/reviews?featured=true&isApproved=true&limit=100"
     );
     return toFEReviews(response.data);
   }
@@ -170,7 +170,7 @@ class ReviewsService {
   // Get homepage reviews
   async getHomepage(): Promise<ReviewFE[]> {
     const response = await apiService.get<{ data: ReviewBE[] }>(
-      `${REVIEW_ROUTES.LIST}?isFeatured=true&isApproved=true&verifiedPurchase=true&limit=20`
+      `${REVIEW_ROUTES.LIST}?featured=true&isApproved=true&verifiedPurchase=true&limit=20`
     );
     return toFEReviews(response.data);
   }

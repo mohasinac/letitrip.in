@@ -40,7 +40,7 @@ export const createShopSchema = z.object({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 
@@ -62,7 +62,7 @@ export const createShopSchema = z.object({
     .string()
     .regex(
       phoneRegex,
-      "Invalid phone number. Must be a valid Indian mobile number",
+      "Invalid phone number. Must be a valid Indian mobile number"
     )
     .optional(),
 
@@ -125,7 +125,7 @@ export const createShopSchema = z.object({
     .string()
     .regex(
       /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/,
-      "Invalid GST number",
+      "Invalid GST number"
     )
     .optional()
     .nullable(),
@@ -167,8 +167,7 @@ export const createShopSchema = z.object({
 
   // Flags (admin only)
   isVerified: z.boolean().default(false).optional(),
-  isFeatured: z.boolean().default(false).optional(),
-  showOnHomepage: z.boolean().default(false).optional(),
+  featured: z.boolean().default(false).optional(),
   isBanned: z.boolean().default(false).optional(),
 });
 
@@ -182,7 +181,7 @@ export const updateShopSchema = createShopSchema.partial().extend({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim()
     .optional(),
@@ -205,8 +204,7 @@ export const shopQuerySchema = z.object({
 
   // Filters
   isVerified: z.coerce.boolean().optional(),
-  isFeatured: z.coerce.boolean().optional(),
-  showOnHomepage: z.coerce.boolean().optional(),
+  featured: z.coerce.boolean().optional(),
   isBanned: z.coerce.boolean().optional(),
 
   category: z.string().optional(),
@@ -242,8 +240,7 @@ export const banShopSchema = z.object({
  * Shop Feature Schema (admin only)
  */
 export const featureShopSchema = z.object({
-  isFeatured: z.boolean(),
-  showOnHomepage: z.boolean().optional(),
+  featured: z.boolean(),
   featuredPriority: z.number().int().min(0).max(100).optional(),
 });
 

@@ -64,8 +64,7 @@ export default function CreateCategoryWizardPage() {
 
     // Step 4: Display Settings
     displayOrder: "0",
-    isFeatured: false,
-    showOnHomepage: false,
+    featured: false,
     isActive: true,
   });
 
@@ -159,8 +158,7 @@ export default function CreateCategoryWizardPage() {
         image: formData.imageUrl || undefined,
         icon: formData.icon,
         sort_order: parseInt(formData.displayOrder) || 0,
-        is_featured: formData.isFeatured,
-        show_on_homepage: formData.showOnHomepage,
+        is_featured: formData.featured,
         is_active: formData.isActive,
         meta_title: formData.metaTitle || undefined,
         meta_description: formData.metaDescription || undefined,
@@ -644,39 +642,17 @@ export default function CreateCategoryWizardPage() {
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
-                    id="isFeatured"
-                    checked={formData.isFeatured}
-                    onChange={(e) =>
-                      handleChange("isFeatured", e.target.checked)
-                    }
+                    id="featured"
+                    checked={formData.featured}
+                    onChange={(e) => handleChange("featured", e.target.checked)}
                     className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
-                  <label htmlFor="isFeatured" className="text-sm">
+                  <label htmlFor="featured" className="text-sm">
                     <span className="font-medium text-gray-900">
                       Featured CategoryFE
                     </span>
                     <p className="text-gray-600">
                       Highlight in featured sections and promotions
-                    </p>
-                  </label>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id="showOnHomepage"
-                    checked={formData.showOnHomepage}
-                    onChange={(e) =>
-                      handleChange("showOnHomepage", e.target.checked)
-                    }
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <label htmlFor="showOnHomepage" className="text-sm">
-                    <span className="font-medium text-gray-900">
-                      Show on Homepage
-                    </span>
-                    <p className="text-gray-600">
-                      Display this CategoryFE on the homepage
                     </p>
                   </label>
                 </div>

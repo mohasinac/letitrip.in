@@ -236,39 +236,38 @@ function ProductsContent() {
               </div>
             </div>
 
-            {/* Filter Toggle (Mobile) */}
+            {/* Filter Toggle Button */}
             <button
-              onClick={() => setShowFilters(true)}
-              className="lg:hidden px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
             >
               <Filter className="w-4 h-4" />
-              Filters
+              {showFilters ? "Hide" : "Show"} Filters
             </button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex gap-6">
-          {/* Desktop Sidebar */}
-          {!isMobile && (
-            <UnifiedFilterSidebar
-              sections={filterOptions}
-              values={filterValues}
-              onChange={(key, value) => {
-                setFilterValues((prev) => ({ ...prev, [key]: value }));
-              }}
-              onApply={() => {
-                setCurrentPage(1);
-              }}
-              onReset={handleResetFilters}
-              isOpen={true}
-              onClose={() => {}}
-              searchable={true}
-              mobile={false}
-              resultCount={totalCount}
-              isLoading={loading}
-            />
-          )}
+        <div className="flex gap-6 relative">
+          {/* Filter Sidebar - Overlays everything */}
+          <UnifiedFilterSidebar
+            sections={filterOptions}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {
+              setCurrentPage(1);
+              if (isMobile) setShowFilters(false);
+            }}
+            onReset={handleResetFilters}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={isMobile}
+            resultCount={totalCount}
+            isLoading={loading}
+          />
 
           {/* Products Grid/Table */}
           <div className="flex-1">
@@ -316,7 +315,7 @@ function ProductsContent() {
                         shopSlug={product.shopId}
                         shopId={product.shopId}
                         inStock={product.stockCount > 0}
-                        isFeatured={product.isFeatured}
+                        featured={product.featured}
                         condition={product.condition}
                         onAddToCart={handleAddToCart}
                         showShopName={true}

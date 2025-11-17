@@ -114,8 +114,7 @@ export default function CategorySelectorWithCreate({
         icon: null,
         parentIds: [],
         order: 0,
-        isFeatured: false,
-        showOnHomepage: false,
+        featured: false,
         isActive: true,
       });
 

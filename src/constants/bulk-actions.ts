@@ -46,7 +46,9 @@ export function getProductBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Products",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} product${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} product${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -86,7 +88,9 @@ export function getShopBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Ban Shops",
-      confirmMessage: `Are you sure you want to ban ${selectedCount} shop${selectedCount === 1 ? "" : "s"}? They will not be able to sell products.`,
+      confirmMessage: `Are you sure you want to ban ${selectedCount} shop${
+        selectedCount === 1 ? "" : "s"
+      }? They will not be able to sell products.`,
     },
     {
       id: "delete",
@@ -94,7 +98,9 @@ export function getShopBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Shops",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} shop${selectedCount === 1 ? "" : "s"}? This action cannot be undone and will remove all associated products.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} shop${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone and will remove all associated products.`,
     },
   ];
 }
@@ -116,7 +122,9 @@ export function getAuctionBulkActions(selectedCount: number): BulkAction[] {
       variant: "default",
       confirm: true,
       confirmTitle: "End Auctions",
-      confirmMessage: `Are you sure you want to end ${selectedCount} auction${selectedCount === 1 ? "" : "s"}? This will close bidding immediately.`,
+      confirmMessage: `Are you sure you want to end ${selectedCount} auction${
+        selectedCount === 1 ? "" : "s"
+      }? This will close bidding immediately.`,
     },
     {
       id: "cancel",
@@ -124,7 +132,9 @@ export function getAuctionBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Cancel Auctions",
-      confirmMessage: `Are you sure you want to cancel ${selectedCount} auction${selectedCount === 1 ? "" : "s"}? All bids will be refunded.`,
+      confirmMessage: `Are you sure you want to cancel ${selectedCount} auction${
+        selectedCount === 1 ? "" : "s"
+      }? All bids will be refunded.`,
     },
     {
       id: "feature",
@@ -144,7 +154,9 @@ export function getAuctionBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Auctions",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} auction${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} auction${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -184,7 +196,9 @@ export function getCategoryBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Categories",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} categor${selectedCount === 1 ? "y" : "ies"}? This cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} categor${
+        selectedCount === 1 ? "y" : "ies"
+      }? This cannot be undone.`,
     },
   ];
 }
@@ -212,7 +226,9 @@ export function getUserBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Suspend Users",
-      confirmMessage: `Are you sure you want to suspend ${selectedCount} user${selectedCount === 1 ? "" : "s"}? They will not be able to access their accounts.`,
+      confirmMessage: `Are you sure you want to suspend ${selectedCount} user${
+        selectedCount === 1 ? "" : "s"
+      }? They will not be able to access their accounts.`,
     },
     {
       id: "unsuspend",
@@ -226,7 +242,9 @@ export function getUserBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Users",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} user${selectedCount === 1 ? "" : "s"}? This action cannot be undone and will remove all user data.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} user${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone and will remove all user data.`,
     },
   ];
 }
@@ -260,7 +278,9 @@ export function getOrderBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Cancel Orders",
-      confirmMessage: `Are you sure you want to cancel ${selectedCount} order${selectedCount === 1 ? "" : "s"}? Customers will be notified and refunds processed if applicable.`,
+      confirmMessage: `Are you sure you want to cancel ${selectedCount} order${
+        selectedCount === 1 ? "" : "s"
+      }? Customers will be notified and refunds processed if applicable.`,
     },
     {
       id: "export",
@@ -306,7 +326,9 @@ export function getReviewBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Reviews",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} review${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} review${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -334,7 +356,9 @@ export function getCouponBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Coupons",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} coupon${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} coupon${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -362,7 +386,9 @@ export function getHeroSlideBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Slides",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} slide${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} slide${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -390,7 +416,9 @@ export function getTicketBulkActions(selectedCount: number): BulkAction[] {
       variant: "default",
       confirm: true,
       confirmTitle: "Close Tickets",
-      confirmMessage: `Are you sure you want to close ${selectedCount} ticket${selectedCount === 1 ? "" : "s"}?`,
+      confirmMessage: `Are you sure you want to close ${selectedCount} ticket${
+        selectedCount === 1 ? "" : "s"
+      }?`,
     },
     {
       id: "delete",
@@ -398,7 +426,9 @@ export function getTicketBulkActions(selectedCount: number): BulkAction[] {
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Tickets",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} ticket${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} ticket${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -439,24 +469,14 @@ export function getBlogBulkActions(selectedCount: number): BulkAction[] {
       confirm: false,
     },
     {
-      id: "homepage",
-      label: "Add to Homepage",
-      variant: "default",
-      confirm: false,
-    },
-    {
-      id: "remove-homepage",
-      label: "Remove from Homepage",
-      variant: "default",
-      confirm: false,
-    },
-    {
       id: "delete",
       label: "Delete",
       variant: "danger",
       confirm: true,
       confirmTitle: "Delete Blog Posts",
-      confirmMessage: `Are you sure you want to delete ${selectedCount} blog post${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+      confirmMessage: `Are you sure you want to delete ${selectedCount} blog post${
+        selectedCount === 1 ? "" : "s"
+      }? This action cannot be undone.`,
     },
   ];
 }
@@ -542,7 +562,9 @@ export function getGenericBulkActions(
     variant: "danger",
     confirm: true,
     confirmTitle: `Delete ${resourceName}`,
-    confirmMessage: `Are you sure you want to delete ${selectedCount} ${resourceName.toLowerCase()}${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`,
+    confirmMessage: `Are you sure you want to delete ${selectedCount} ${resourceName.toLowerCase()}${
+      selectedCount === 1 ? "" : "s"
+    }? This action cannot be undone.`,
   });
 
   return actions;

@@ -35,8 +35,7 @@ export interface CategoryFE {
 
   // Backwards compatibility aliases
   parentId?: string | null; // First parent or null (for single-parent legacy code)
-  isFeatured?: boolean; // Derived from metadata or default false
-  showOnHomepage?: boolean; // Derived from metadata or default false
+  featured?: boolean; // Derived from metadata or default false
   isActive?: boolean; // status === 'published'
   sortOrder?: number; // Alias for order
 }
@@ -79,8 +78,7 @@ export interface CategoryFormFE {
 
   // Backwards compatibility (optional for legacy forms)
   parentId?: string | null; // Can be used instead of parentIds
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
+  featured?: boolean;
   isActive?: boolean;
   sortOrder?: number; // Alias for order
 }

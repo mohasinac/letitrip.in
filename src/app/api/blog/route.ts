@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     const status = searchParams.get("status") || "published";
     const category = searchParams.get("category");
-    const showOnHomepage = searchParams.get("showOnHomepage");
+    const featured = searchParams.get("featured") || searchParams.get("showOnHomepage"); // Support both for backward compatibility
     const limit = parseInt(searchParams.get("limit") || "20");
     const page = parseInt(searchParams.get("page") || "1");
 
@@ -19,16 +19,16 @@ export async function GET(req: NextRequest) {
     let query = db.collection(COLLECTION).where("status", "==", status);
 
     // Use composite indexes for better performance
-    if (showOnHomepage === "true" && category) {
-      // Index: status + showOnHomepage + category + publishedAt
+    if (featured === "true" && category) {
+      // Index: status + featured + category + publishedAt
       query = query
-        .where("showOnHomepage", "==", true)
+        .where("featured", "==", true)
         .where("category", "==", category)
         .orderBy("publishedAt", "desc") as any;
-    } else if (showOnHomepage === "true") {
-      // Index: status + showOnHomepage + publishedAt
+    } else if (featured === "true") {
+      // Index: status + featured + publishedAt
       query = query
-        .where("showOnHomepage", "==", true)
+        .where("featured", "==", true)
         .orderBy("publishedAt", "desc") as any;
     } else if (category) {
       // Index: status + category + publishedAt
@@ -53,8 +53,8 @@ export async function GET(req: NextRequest) {
 
     // Get total count for pagination
     let countQuery = db.collection(COLLECTION).where("status", "==", status);
-    if (showOnHomepage === "true") {
-      countQuery = countQuery.where("showOnHomepage", "==", true) as any;
+    if (featured === "true") {
+      countQuery = countQuery.where("featured", "==", true) as any;
     }
     if (category) {
       countQuery = countQuery.where("category", "==", category) as any;
@@ -98,8 +98,7 @@ export async function POST(req: NextRequest) {
       category,
       tags,
       status,
-      showOnHomepage,
-      isFeatured,
+      featured,
     } = body;
 
     if (!title || !slug || !content) {
@@ -134,8 +133,7 @@ export async function POST(req: NextRequest) {
       category: category || "Uncategorized",
       tags: tags || [],
       status: status || "draft",
-      showOnHomepage: showOnHomepage || false,
-      isFeatured: isFeatured || false,
+      featured: featured || false,
       views: 0,
       likes: 0,
       publishedAt: status === "published" ? now : null,

@@ -44,18 +44,24 @@ export async function GET(
       data = { id: docById.id, ...docById.data() };
     }
 
-    // Public users can only see active auctions
-    if ((!user || user.role === "user") && data.status !== "active") {
+    // Public users can view active and ended auctions (readonly for ended)
+    // Only hide scheduled, cancelled, or draft auctions from public
+    const publicBlockedStatuses = ["scheduled", "cancelled", "draft"];
+    if (
+      (!user || user.role === "user") &&
+      publicBlockedStatuses.includes(data.status)
+    ) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
         { status: 404 }
       );
     }
 
-    // Sellers can only see their own non-active auctions
-    if (user?.role === "seller" && data.status !== "active") {
+    // Sellers can see own auctions (any status) or active/ended from others
+    if (user?.role === "seller") {
       const ownsShop = await userOwnsShop(data.shop_id, user.uid);
-      if (!ownsShop) {
+      const publicBlockedStatuses = ["scheduled", "cancelled", "draft"];
+      if (!ownsShop && publicBlockedStatuses.includes(data.status)) {
         return NextResponse.json(
           { success: false, error: "Auction not found" },
           { status: 404 }
@@ -81,7 +87,7 @@ export async function GET(
         totalBids: data.total_bids,
         viewCount: data.view_count,
         watchCount: data.watch_count,
-        isFeatured: data.is_featured,
+        featured: data.is_featured,
         isActive: data.is_active,
         isDeleted: data.is_deleted,
         winnerId: data.winner_id,
@@ -161,7 +167,7 @@ export async function PATCH(
         totalBids: updatedData.total_bids,
         viewCount: updatedData.view_count,
         watchCount: updatedData.watch_count,
-        isFeatured: updatedData.is_featured,
+        featured: updatedData.is_featured,
         isActive: updatedData.is_active,
         isDeleted: updatedData.is_deleted,
         winnerId: updatedData.winner_id,

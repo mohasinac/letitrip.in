@@ -52,7 +52,7 @@ export async function GET(
             (parentData.parent_id ? [parentData.parent_id] : []),
           childrenIds: parentData.children_ids || [],
           parentId: parentData.parent_id,
-          isFeatured: parentData.is_featured,
+          featured: parentData.is_featured,
           showOnHomepage: parentData.show_on_homepage,
           isActive: parentData.is_active,
           productCount: parentData.product_count || 0,

@@ -79,7 +79,7 @@ export const productSchema = z.object({
     .string()
     .max(160, "Meta description should be less than 160 characters")
     .optional(),
-  isFeatured: z.boolean().default(false),
+  featured: z.boolean().default(false),
   status: z.enum(["draft", "published", "archived"], {
     message: "Please select a valid status",
   }),
@@ -132,6 +132,6 @@ export const productStep5Schema = productSchema.pick({
 export const productStep6Schema = productSchema.pick({
   metaTitle: true,
   metaDescription: true,
-  isFeatured: true,
+  featured: true,
   status: true,
 });

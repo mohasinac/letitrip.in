@@ -88,7 +88,7 @@ export default function FollowingPage() {
                 productCount={shop.productCount || 0}
                 location={shop.location || undefined}
                 isVerified={shop.isVerified}
-                isFeatured={shop.isFeatured}
+                featured={shop.featured}
                 categories={(shop as any).categories}
                 isFollowing={true}
               />

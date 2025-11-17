@@ -113,13 +113,13 @@ export async function GET(req: NextRequest) {
         email: data.email,
         phone: data.phone,
         isVerified: data.is_verified,
-        isFeatured: data.is_featured,
+        featured: data.is_featured,
       };
 
       context.shops.all.push(shop);
       if (shop.isVerified) context.shops.verified.push(shop);
       else context.shops.unverified.push(shop);
-      if (shop.isFeatured) context.shops.featured.push(shop);
+      if (shop.featured) context.shops.featured.push(shop);
 
       if (!context.shops.byOwnerId[shop.ownerId]) {
         context.shops.byOwnerId[shop.ownerId] = [];
@@ -177,7 +177,7 @@ export async function GET(req: NextRequest) {
         price: data.price,
         stockCount: data.stock_count || 0,
         status: data.status,
-        isFeatured: data.is_featured,
+        featured: data.is_featured,
         sku: data.sku,
       };
 
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
       if (product.status === "published")
         context.products.published.push(product);
       if (product.status === "draft") context.products.draft.push(product);
-      if (product.isFeatured) context.products.featured.push(product);
+      if (product.featured) context.products.featured.push(product);
       if (product.stockCount > 0) context.products.inStock.push(product);
 
       if (!context.products.byShopId[product.shopId]) {
@@ -218,7 +218,7 @@ export async function GET(req: NextRequest) {
         startingBid: data.starting_bid,
         currentBid: data.current_bid,
         status: data.status,
-        isFeatured: data.is_featured,
+        featured: data.is_featured,
         startTime: data.start_time,
         endTime: data.end_time,
         bidCount: data.bid_count || 0,
@@ -229,7 +229,7 @@ export async function GET(req: NextRequest) {
       if (auction.status === "scheduled")
         context.auctions.scheduled.push(auction);
       if (auction.status === "draft") context.auctions.draft.push(auction);
-      if (auction.isFeatured) context.auctions.featured.push(auction);
+      if (auction.featured) context.auctions.featured.push(auction);
 
       if (!context.auctions.byShopId[auction.shopId]) {
         context.auctions.byShopId[auction.shopId] = [];

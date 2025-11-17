@@ -92,7 +92,7 @@ export default function FavoritesPage() {
                     shopName={product.shop_name || "Unknown Shop"}
                     shopSlug={product.shop_slug || "#"}
                     inStock={product.stock > 0}
-                    isFeatured={product.is_featured}
+                    featured={product.is_featured}
                     condition={product.condition}
                     isFavorite={true}
                     onToggleFavorite={() => setRemovingId(product.id)}

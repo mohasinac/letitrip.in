@@ -43,8 +43,7 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
     badges,
     productCount: shopBE.totalProducts, // Backwards compatibility
     follower_count: 0, // Not in backend yet, placeholder
-    isFeatured: shopBE.metadata?.isFeatured || false,
-    showOnHomepage: shopBE.metadata?.showOnHomepage || false,
+    featured: shopBE.metadata?.featured || false,
     isBanned: shopBE.status === Status.ARCHIVED, // Using ARCHIVED for banned shops
     banReason: shopBE.metadata?.banReason || null,
   };
@@ -96,9 +95,8 @@ export function toFEShopCard(shopBE: ShopBE): ShopCardFE {
     // Backwards compatibility (admin pages)
     email: shopBE.email,
     location: location || undefined,
-    isFeatured: shopBE.metadata?.isFeatured || false,
+    featured: shopBE.metadata?.featured || false,
     isBanned: shopBE.status === Status.ARCHIVED, // Using ARCHIVED for banned
-    showOnHomepage: shopBE.metadata?.showOnHomepage || false,
     productCount: shopBE.totalProducts,
     reviewCount: shopBE.reviewCount,
     ownerId: shopBE.ownerId,

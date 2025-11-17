@@ -67,7 +67,7 @@ export const createCouponSchema = z
       .max(20, "Coupon code must not exceed 20 characters")
       .regex(
         /^[A-Z0-9-]+$/,
-        "Coupon code must contain only uppercase letters, numbers, and hyphens",
+        "Coupon code must contain only uppercase letters, numbers, and hyphens"
       )
       .trim(),
 
@@ -149,7 +149,7 @@ export const createCouponSchema = z
     // Display
     isPublic: z.boolean().default(true).optional(), // Show in coupon list
 
-    isFeatured: z.boolean().default(false).optional(),
+    featured: z.boolean().default(false).optional(),
   })
   .refine(
     (data) => {
@@ -159,7 +159,7 @@ export const createCouponSchema = z
     {
       message: "End date must be after start date",
       path: ["endDate"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -179,7 +179,7 @@ export const createCouponSchema = z
     {
       message: "Discount value is required for percentage and flat coupons",
       path: ["discountValue"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -192,7 +192,7 @@ export const createCouponSchema = z
     {
       message: "Tiers are required for tiered coupons",
       path: ["tiers"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -205,7 +205,7 @@ export const createCouponSchema = z
     {
       message: "BOGO configuration is required for BOGO coupons",
       path: ["bogoConfig"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -228,7 +228,7 @@ export const createCouponSchema = z
       message:
         "Applicable categories/products are required based on applicability type",
       path: ["applicability"],
-    },
+    }
   );
 
 /**
@@ -256,7 +256,7 @@ export const applyCouponSchema = z.object({
       categoryId: z.string(),
       quantity: z.number().int().positive(),
       price: z.number().positive(),
-    }),
+    })
   ),
   userId: z.string().optional(),
   isFirstOrder: z.boolean().optional(),
@@ -283,7 +283,7 @@ export const couponQuerySchema = z.object({
   status: CouponStatus.optional(),
 
   isPublic: z.coerce.boolean().optional(),
-  isFeatured: z.coerce.boolean().optional(),
+  featured: z.coerce.boolean().optional(),
 
   applicability: CouponApplicability.optional(),
 

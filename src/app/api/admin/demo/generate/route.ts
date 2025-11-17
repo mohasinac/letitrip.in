@@ -494,9 +494,15 @@ export async function POST(request: NextRequest) {
     const sellers = userIds.filter((u) => u.role === "seller");
     const buyers = userIds.filter((u) => u.role === "user");
 
-    // Step 3: Create shops
+    // Step 3: Create 2 shops (one per seller)
     const shopIds: string[] = [];
-    const shopData: Array<{ id: string; ownerId: string; name: string }> = [];
+    const shopData: Array<{
+      id: string;
+      ownerId: string;
+      name: string;
+      slug: string;
+    }> = [];
+    const productsByShop: Record<string, string[]> = {};
 
     const shopTemplates = [
       {
@@ -525,7 +531,7 @@ export async function POST(request: NextRequest) {
       },
     ];
 
-    for (let i = 0; i < sellers.length; i++) {
+    for (let i = 0; i < 2 && i < sellers.length; i++) {
       const seller = sellers[i];
       const template = shopTemplates[i];
       const shopRef = db.collection("shops").doc();
@@ -537,13 +543,20 @@ export async function POST(request: NextRequest) {
         is_active: true,
         status: "active",
         verified: true,
-        featured: true,
+        featured: i === 0, // Only first shop is featured (homepage shop)
         logo: `https://picsum.photos/seed/shop-${shopId}/200/200`,
         banner: `https://picsum.photos/seed/shop-banner-${shopId}/1200/400`,
         rating: 4.5 + Math.random() * 0.5,
         review_count: 0,
         total_products: 0,
         total_sales: 0,
+        product_count: 0, // NEW: Track product count
+        auction_count: 0, // NEW: Track auction count
+        metadata: {
+          featured: i === 0, // NEW: Featured flag in metadata
+          productCount: 0, // NEW: Will update later
+          auctionCount: 0, // NEW: Will update later
+        },
         settings: {
           minOrderAmount: 500,
           shippingCharge: 50,
@@ -566,16 +579,18 @@ export async function POST(request: NextRequest) {
       });
 
       shopIds.push(shopId);
-      shopData.push({ id: shopId, ownerId: seller.id, name: template.name });
+      shopData.push({
+        id: shopId,
+        ownerId: seller.id,
+        name: template.name,
+        slug: template.slug,
+      });
+      productsByShop[shopId] = []; // Initialize product array for this shop
     }
 
-    // Step 4: Create products (300 products with variants, distributed across shops)
+    // Step 4: Create products (100 products with variants, distributed across shops)
     const productIds: string[] = [];
-    const productsByShop: Record<string, string[]> = {};
     let productCount = 0;
-
-    // Initialize product arrays for each shop
-    shopIds.forEach((id) => (productsByShop[id] = []));
 
     // Get leaf categories only
     const leafCategories = Array.from(categoryMap.entries()).filter(
@@ -594,13 +609,13 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 100; i++) {
       const [categoryName, categoryId] =
         leafCategories[i % leafCategories.length];
       const template = PRODUCT_TEMPLATES["Pokemon TCG"][i % 4]; // Use templates cyclically
 
-      // Alternate between shops
-      const shopIndex = i % shopData.length;
+      // Alternate between 2 shops (50 products each)
+      const shopIndex = i % 2;
       const currentShop = shopData[shopIndex];
 
       const productRef = db.collection("products").doc();
@@ -754,11 +769,11 @@ export async function POST(request: NextRequest) {
       productCount++;
     }
 
-    // Step 5: Create auctions (10 auctions distributed across shops)
+    // Step 5: Create 10 auctions (5 per shop) with FUTURE end dates for testing
     const auctionIds: string[] = [];
 
     for (let i = 0; i < 10; i++) {
-      const shopIndex = i % shopData.length;
+      const shopIndex = Math.floor(i / 5); // 0-4 = shop 0, 5-9 = shop 1
       const currentShop = shopData[shopIndex];
       const shopProducts = productsByShop[currentShop.id];
       const productId = shopProducts[i % shopProducts.length];
@@ -766,8 +781,13 @@ export async function POST(request: NextRequest) {
       const auctionRef = db.collection("auctions").doc();
       const auctionId = auctionRef.id;
 
-      const startDate = new Date(timestamp.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
-      const endDate = new Date(timestamp.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+      // FIXED: Start now, end 7-16 days in FUTURE (not past)
+      const startDate = new Date(); // Now
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 7 + (i % 10)); // 7-16 days in FUTURE
+      endDate.setHours(23, 59, 59, 999);
 
       const startingBid = 5000 + Math.random() * 15000;
       const title = `${DEMO_PREFIX}Auction #${i + 1} - Premium Collectible`;
@@ -814,7 +834,10 @@ export async function POST(request: NextRequest) {
         start_time: startDate,
         end_time: endDate,
         status: "active",
-        is_featured: i < 5,
+        is_featured: i % 5 < 2, // First 2 auctions per shop are featured
+        metadata: {
+          featured: i % 5 < 2, // NEW: Featured flag
+        },
         total_bids: 0,
         unique_bidders: 0,
         created_at: timestamp,
@@ -971,24 +994,38 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Step 8: Mark categories as featured/homepage (more for 75 categories)
+    // Step 8: Mark categories and shops as featured
     const categoryIds = Array.from(categoryMap.values());
-    const featuredCategoryIds = categoryIds.slice(0, 15); // 15 featured
-    const homepageCategoryIds = categoryIds.slice(0, 12); // 12 on homepage
+    const featuredCategoryIds = categoryIds.slice(0, 12); // 12 featured for homepage
 
     for (const catId of featuredCategoryIds) {
       await db
         .collection("categories")
         .doc(catId)
-        .update({ is_featured: true });
+        .update({
+          is_featured: true,
+          metadata: { featured: true }, // NEW: Consolidated featured flag
+        });
     }
 
-    for (const catId of homepageCategoryIds) {
+    // Update shop counts and featured flags
+    for (const shop of shopData) {
+      const productCount = productsByShop[shop.id].length;
+      const shopAuctionCount = auctionIds.filter(
+        (_, idx) =>
+          Math.floor(idx / 5) === shopData.findIndex((s) => s.id === shop.id)
+      ).length;
+
       await db
-        .collection("categories")
-        .doc(catId)
+        .collection("shops")
+        .doc(shop.id)
         .update({
-          metadata: { showOnHomepage: true, isFeatured: true },
+          product_count: productCount,
+          auction_count: shopAuctionCount,
+          total_products: productCount,
+          "metadata.productCount": productCount,
+          "metadata.auctionCount": shopAuctionCount,
+          "metadata.featured": shop.slug.includes("collectorshub"), // First shop is featured
         });
     }
 
@@ -1055,33 +1092,37 @@ export async function POST(request: NextRequest) {
         sum: ratings.reduce((a, b) => a + b, 0),
       };
 
-      // Update product with review stats
-      await db
-        .collection("products")
-        .doc(productId)
-        .update({
+      // Update product with review stats (check if exists first)
+      const productDoc = await db.collection("products").doc(productId).get();
+      if (productDoc.exists) {
+        await productDoc.ref.update({
           review_count: numReviews,
           average_rating: Math.round(avgRating * 10) / 10, // Round to 1 decimal
         });
+      } else {
+        console.warn(
+          `Product ${productId} not found, skipping review stats update`
+        );
+      }
     }
 
     // Response
     return NextResponse.json({
       success: true,
-      message: `Demo data created with ${DEMO_PREFIX} prefix`,
+      message: `Demo data created with ${DEMO_PREFIX} prefix - 2 shops, 100 products, 10 auctions with FUTURE end dates`,
       summary: {
         prefix: DEMO_PREFIX,
         categories: categoryCount,
         featuredCategories: featuredCategoryIds.length,
-        homepageCategories: homepageCategoryIds.length,
         users: userIds.length,
         sellers: sellers.length,
         buyers: buyers.length,
         shops: shopIds.length,
         products: productCount,
-        featuredProducts: productIds.filter((_, i) => i < 60).length,
+        productsPerShop: 50,
         auctions: auctionIds.length,
-        featuredAuctions: 5,
+        auctionsPerShop: 5,
+        featuredAuctions: 4, // 2 per shop
         bids: bidCount,
         orders: orderCount,
         orderItems: orderItemCount,

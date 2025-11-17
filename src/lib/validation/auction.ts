@@ -194,7 +194,7 @@ export const createAuctionSchema = z
     status: AuctionStatus.default("draft"),
 
     // Flags (admin only)
-    isFeatured: z.boolean().default(false).optional(),
+    featured: z.boolean().default(false).optional(),
 
     featuredPriority: z.number().int().min(0).max(100).optional(), // Higher = more prominent
 
@@ -317,7 +317,7 @@ export const auctionQuerySchema = z.object({
   categoryId: z.string().optional(),
   status: AuctionStatus.optional(),
 
-  isFeatured: z.coerce.boolean().optional(),
+  featured: z.coerce.boolean().optional(),
 
   // Condition
   condition: z.enum(["new", "used", "refurbished"]).optional(),
@@ -344,7 +344,7 @@ export const auctionQuerySchema = z.object({
  * Feature Auction Schema (admin only)
  */
 export const featureAuctionSchema = z.object({
-  isFeatured: z.boolean(),
+  featured: z.boolean(),
   featuredPriority: z.number().int().min(0).max(100).optional(),
 });
 

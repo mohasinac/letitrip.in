@@ -64,7 +64,7 @@ export interface ProductFE {
   // Status
   status: ProductStatus;
   condition: ProductCondition;
-  isFeatured: boolean;
+  featured: boolean;
   isReturnable: boolean;
   isPublished: boolean; // status === 'published'
 
@@ -120,7 +120,6 @@ export interface ProductFE {
   rating?: number; // Alias for averageRating
   shortDescription?: string; // For admin pages (use description)
   warranty?: string | null; // For admin pages
-  showOnHomepage?: boolean; // Derived from metadata
 }
 
 /**
@@ -152,7 +151,7 @@ export interface ProductCardFE {
   reviewCount: number;
   shopId: string;
   shop?: ShopReference;
-  isFeatured: boolean;
+  featured: boolean;
   isFavorited?: boolean;
   badges: ProductBadge[];
 
@@ -205,7 +204,7 @@ export interface ProductFormFE {
   // Step 6: SEO & Publish
   metaTitle: string;
   metaDescription: string;
-  isFeatured: boolean;
+  featured: boolean;
   status: ProductStatus;
 
   // System (set by backend)
@@ -231,7 +230,7 @@ export interface ProductFiltersFE {
     max: number;
   };
   inStock?: boolean;
-  isFeatured?: boolean;
+  featured?: boolean;
   rating?: number; // Minimum rating
   sortBy?:
     | "relevance"

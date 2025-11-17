@@ -72,7 +72,7 @@ export default function FeaturedBlogsSection() {
             publishedAt={blog.publishedAt}
             views={blog.views}
             likes={blog.likes}
-            isFeatured={blog.isFeatured}
+            featured={blog.featured}
             compact={false}
           />
         ))}

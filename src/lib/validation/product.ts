@@ -75,7 +75,7 @@ export const createProductSchema = z.object({
     .max(200, "Slug must not exceed 200 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 
@@ -196,8 +196,7 @@ export const createProductSchema = z.object({
   status: ProductStatus.default("draft"),
 
   // Flags (admin only)
-  isFeatured: z.boolean().default(false).optional(),
-  showOnHomepage: z.boolean().default(false).optional(),
+  featured: z.boolean().default(false).optional(),
 });
 
 /**
@@ -227,8 +226,7 @@ export const productQuerySchema = z.object({
   status: ProductStatus.optional(),
 
   inStock: z.coerce.boolean().optional(),
-  isFeatured: z.coerce.boolean().optional(),
-  showOnHomepage: z.coerce.boolean().optional(),
+  featured: z.coerce.boolean().optional(),
 
   // Price range
   minPrice: z.coerce.number().positive().optional(),
@@ -266,8 +264,7 @@ export const bulkUpdatePriceSchema = z.object({
  * Product Feature Schema (admin only)
  */
 export const featureProductSchema = z.object({
-  isFeatured: z.boolean(),
-  showOnHomepage: z.boolean().optional(),
+  featured: z.boolean(),
   featuredPriority: z.number().int().min(0).max(100).optional(),
 });
 

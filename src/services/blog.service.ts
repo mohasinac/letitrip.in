@@ -15,8 +15,7 @@ export interface BlogPost {
   category: string;
   tags: string[];
   status: "draft" | "published" | "archived";
-  isFeatured: boolean;
-  showOnHomepage: boolean;
+  featured: boolean;
   publishedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -30,8 +29,7 @@ interface BlogFilters {
   author?: string;
   status?: "draft" | "published" | "archived";
   search?: string;
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
+  featured?: boolean;
   page?: number;
   limit?: number;
   sortBy?: "publishedAt" | "views" | "likes" | "createdAt";
@@ -47,8 +45,7 @@ interface CreateBlogPostData {
   category: string;
   tags?: string[];
   status: "draft" | "published";
-  isFeatured?: boolean;
-  showOnHomepage?: boolean;
+  featured?: boolean;
   publishedAt?: Date;
 }
 
@@ -120,7 +117,7 @@ class BlogService {
   // Get featured blog posts
   async getFeatured(): Promise<BlogPost[]> {
     const response = await this.list({
-      isFeatured: true,
+      featured: true,
       status: "published",
       limit: 100,
     });
@@ -130,7 +127,7 @@ class BlogService {
   // Get homepage blog posts
   async getHomepage(): Promise<BlogPost[]> {
     const response = await this.list({
-      showOnHomepage: true,
+      featured: true,
       status: "published",
       limit: 20,
     });

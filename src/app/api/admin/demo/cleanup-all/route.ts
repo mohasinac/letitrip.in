@@ -15,17 +15,19 @@ export async function DELETE(request: NextRequest) {
     const db = getFirestoreAdmin();
     let totalDeleted = 0;
 
-    // Collections to clean up
+    // Collections to clean up (comprehensive list)
     const collections = [
       { name: "categories", field: "name" },
       { name: "users", field: "name" },
       { name: "shops", field: "name" },
       { name: "products", field: "name" },
       { name: "auctions", field: "title" },
-      { name: "bids", field: null },
+      { name: "bids", field: null }, // Will be filtered by checking fields
       { name: "orders", field: "orderNumber" },
       { name: "payments", field: "transactionId" },
       { name: "shipments", field: "trackingNumber" },
+      { name: "reviews", field: "user_name" }, // NEW: Clean up reviews
+      { name: "order_items", field: null }, // NEW: Clean up order items
     ];
 
     for (const collection of collections) {

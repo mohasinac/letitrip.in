@@ -56,7 +56,7 @@ export function FilterSidebar({
   isLoading = false,
 }: FilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function FilterSidebar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean,
+    checked: boolean
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -163,7 +163,7 @@ export function FilterSidebar({
                     handleCheckboxChange(
                       field.key,
                       option.value,
-                      e.target.checked,
+                      e.target.checked
                     )
                   }
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
@@ -290,9 +290,10 @@ export function FilterSidebar({
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:sticky inset-y-0 lg:top-20 lg:h-[calc(100vh-5rem)] left-0 z-40 lg:z-0 w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform lg:transform-none ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
         } ${className}`}
+        style={{ top: "80px", height: "calc(100vh - 80px)" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">

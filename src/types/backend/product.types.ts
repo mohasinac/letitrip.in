@@ -58,7 +58,7 @@ export interface ProductBE extends BaseEntity {
   // Status
   status: ProductStatus;
   condition: ProductCondition;
-  isFeatured: boolean;
+  featured: boolean;
   isReturnable: boolean;
 
   // Shop
@@ -113,7 +113,7 @@ export interface ProductListItemBE {
   averageRating: number;
   reviewCount: number;
   shopId: string;
-  isFeatured: boolean;
+  featured: boolean;
   createdAt: ISOTimestamp;
   // Admin list view needs these
   sku?: string;
@@ -148,7 +148,7 @@ export interface CreateProductRequestBE {
   specifications?: Record<string, string>;
   metaTitle?: string;
   metaDescription?: string;
-  isFeatured?: boolean;
+  featured?: boolean;
   isReturnable?: boolean;
   countryOfOrigin?: string;
   trackInventory?: boolean;
@@ -178,7 +178,7 @@ export interface UpdateProductRequestBE {
   specifications?: Record<string, string>;
   metaTitle?: string;
   metaDescription?: string;
-  isFeatured?: boolean;
+  featured?: boolean;
   isReturnable?: boolean;
 }
 
@@ -192,7 +192,7 @@ export interface ProductFiltersBE {
   sellerId?: string;
   status?: ProductStatus | ProductStatus[];
   condition?: ProductCondition;
-  isFeatured?: boolean;
+  featured?: boolean;
   inStock?: boolean;
   priceMin?: number;
   priceMax?: number;

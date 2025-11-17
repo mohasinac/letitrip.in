@@ -18,6 +18,7 @@ import {
 } from "../frontend/auction.types";
 import { safeToISOString } from "@/lib/date-utils";
 import { AuctionStatus, AuctionType } from "../shared/common.types";
+import { formatDate } from "@/lib/formatters";
 
 function parseDate(date: Timestamp | string | null): Date | null {
   if (!date) return null;
@@ -59,7 +60,10 @@ function generateAuctionBadges(
 ): string[] {
   const badges: string[] = [];
 
-  if (auctionBE.status === AuctionStatus.ACTIVE) badges.push("Live");
+  // Check if auction is truly active (status is active AND time remaining)
+  if (auctionBE.status === AuctionStatus.ACTIVE && timeRemainingSeconds > 0) {
+    badges.push("Live");
+  }
   if (timeRemainingSeconds > 0 && timeRemainingSeconds < 3600)
     badges.push("Ending Soon");
   if (auctionBE.totalBids > 50) badges.push("Hot");
@@ -97,10 +101,10 @@ export function toFEAuction(
   auctionBE: AuctionBE,
   currentUserId?: string
 ): AuctionFE {
-  const startTime = parseDate(auctionBE.startTime)!;
-  const endTime = parseDate(auctionBE.endTime)!;
-  const createdAt = parseDate(auctionBE.createdAt)!;
-  const updatedAt = parseDate(auctionBE.updatedAt)!;
+  const startTime = parseDate(auctionBE.startTime) || new Date();
+  const endTime = parseDate(auctionBE.endTime) || new Date();
+  const createdAt = parseDate(auctionBE.createdAt) || new Date();
+  const updatedAt = parseDate(auctionBE.updatedAt) || new Date();
 
   const { display: timeRemaining, seconds: timeRemainingSeconds } =
     formatTimeRemaining(endTime);
@@ -144,28 +148,20 @@ export function toFEAuction(
     startTime,
     endTime,
     duration: auctionBE.duration,
-    startTimeDisplay: startTime.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }),
-    endTimeDisplay: endTime.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }),
+    startTimeDisplay: startTime
+      ? formatDate(startTime, { format: "medium", includeTime: true })
+      : "Not started",
+    endTimeDisplay: endTime
+      ? formatDate(endTime, { format: "medium", includeTime: true })
+      : "Ended",
     timeRemaining,
     timeRemainingSeconds,
     durationDisplay: `${Math.floor(auctionBE.duration / 86400)} days`,
     allowExtension: auctionBE.allowExtension,
     extensionTime: auctionBE.extensionTime,
     timesExtended: auctionBE.timesExtended,
-    isActive: auctionBE.isActive,
-    isEnded: auctionBE.isEnded,
+    isActive: auctionBE.isActive && timeRemainingSeconds > 0,
+    isEnded: auctionBE.isEnded || timeRemainingSeconds <= 0,
     hasBids: auctionBE.hasBids,
     hasWinner: auctionBE.hasWinner,
     winnerId: auctionBE.winnerId,
@@ -175,10 +171,15 @@ export function toFEAuction(
       ? formatPrice(auctionBE.winningBid)
       : null,
     isUpcoming: now < startTime,
-    isLive: auctionBE.status === AuctionStatus.ACTIVE,
+    isLive:
+      auctionBE.status === AuctionStatus.ACTIVE && timeRemainingSeconds > 0,
     isEndingSoon: timeRemainingSeconds > 0 && timeRemainingSeconds < 3600,
-    canBid: auctionBE.isActive && auctionBE.sellerId !== currentUserId,
-    canBuyNow: auctionBE.isActive && !!auctionBE.buyNowPrice,
+    canBid:
+      auctionBE.isActive &&
+      timeRemainingSeconds > 0 &&
+      auctionBE.sellerId !== currentUserId,
+    canBuyNow:
+      auctionBE.isActive && timeRemainingSeconds > 0 && !!auctionBE.buyNowPrice,
     isYourAuction: auctionBE.sellerId === currentUserId,
     isYouWinning: auctionBE.highestBidderId === currentUserId,
     isYouWinner: auctionBE.winnerId === currentUserId,
@@ -211,13 +212,16 @@ export function toFEAuction(
         : [auctionBE.productImage],
     videos: auctionBE.videos || [],
     description: auctionBE.productDescription,
-    isFeatured: (auctionBE.metadata as any)?.isFeatured || false,
+    featured:
+      (auctionBE.metadata as any)?.featured ||
+      (auctionBE.metadata as any)?.featured ||
+      false,
     bidCount: auctionBE.totalBids,
   };
 }
 
 export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
-  const endTime = parseDate(auctionBE.endTime)!;
+  const endTime = parseDate(auctionBE.endTime) || new Date();
   const { display: timeRemaining, seconds: timeRemainingSeconds } =
     formatTimeRemaining(endTime);
 
@@ -239,9 +243,12 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
     endTime,
     timeRemaining,
     timeRemainingSeconds,
-    isActive: auctionBE.isActive,
+    isActive: auctionBE.isActive && timeRemainingSeconds > 0,
     isEndingSoon: timeRemainingSeconds > 0 && timeRemainingSeconds < 3600,
-    badges: auctionBE.status === AuctionStatus.ACTIVE ? ["Live"] : [],
+    badges:
+      auctionBE.status === AuctionStatus.ACTIVE && timeRemainingSeconds > 0
+        ? ["Live"]
+        : [],
     // Backwards compatibility
     slug: auctionBE.slug || auctionBE.productSlug,
     name: auctionBE.productName,
@@ -257,7 +264,7 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
     reservePrice: undefined,
     startTime: undefined,
     shopId: undefined,
-    isFeatured: false,
+    featured: false,
   };
 }
 

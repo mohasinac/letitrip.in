@@ -36,8 +36,7 @@ export function toFECategory(categoryBE: CategoryBE): CategoryFE {
     banner: categoryBE.banner || null,
     // Backwards compatibility
     parentId: parentIds[0] || null,
-    isFeatured: metadata?.isFeatured || false,
-    showOnHomepage: metadata?.showOnHomepage || false,
+    featured: metadata?.featured || false,
     isActive: categoryBE.status === Status.PUBLISHED,
     sortOrder: categoryBE.order,
   };

@@ -638,7 +638,7 @@ export default function SellerAuctionsPage() {
                               : new Date(auction.endTime).toLocaleDateString()}
                           </span>
                         </div>
-                        {auction.isFeatured && (
+                        {auction.featured && (
                           <div className="flex items-center gap-1 text-sm text-yellow-600">
                             <span>★</span>
                             <span>Featured</span>

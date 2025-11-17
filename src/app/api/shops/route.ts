@@ -50,18 +50,7 @@ export async function GET(request: NextRequest) {
           process.env.USE_COMPOSITE_INDEXES === "true";
 
         if (!user || role === UserRole.USER) {
-          if (filters.showOnHomepage === "true") {
-            // Index: is_banned + show_on_homepage + created_at
-            query = Collections.shops()
-              .where("is_banned", "==", false)
-              .where("show_on_homepage", "==", true);
-
-            if (useCompositeIndexes) {
-              query = query.orderBy("created_at", "desc");
-            }
-
-            query = query.limit(limit);
-          } else if (filters.featured === "true") {
+          if (filters.featured === "true" || filters.showOnHomepage === "true") {
             // Index: is_featured + is_verified + created_at
             query = Collections.shops()
               .where("is_featured", "==", true)
@@ -86,9 +75,7 @@ export async function GET(request: NextRequest) {
           }
         } else {
           // Authenticated users (sellers/admin) see more
-          if (filters.showOnHomepage === "true") {
-            query = query.where("show_on_homepage", "==", true).limit(limit);
-          } else if (filters.featured === "true") {
+          if (filters.featured === "true" || filters.showOnHomepage === "true") {
             query = query.where("is_featured", "==", true).limit(limit);
           } else {
             query = query.limit(limit);
@@ -110,7 +97,7 @@ export async function GET(request: NextRequest) {
             // Add camelCase aliases
             ownerId: data.owner_id,
             isVerified: data.is_verified,
-            isFeatured: data.is_featured,
+            featured: data.is_featured,
             isBanned: data.is_banned,
             showOnHomepage: data.show_on_homepage,
             totalProducts: data.total_products || data.product_count || 0,

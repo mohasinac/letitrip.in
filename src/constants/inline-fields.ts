@@ -1,6 +1,6 @@
 /**
  * Centralized Inline Form Field Configurations
- * 
+ *
  * Complete field definitions with validation for all resources
  * Based on documentation in docs/resources/*.md
  */
@@ -60,15 +60,18 @@ export const validateStock = (value: number): string | null => {
 export const validateSKU = (value: string): string | null => {
   if (!value) return "SKU is required";
   if (value.length < 3) return "SKU must be at least 3 characters";
-  if (!/^[A-Z0-9-_]+$/i.test(value)) return "SKU can only contain letters, numbers, hyphens, and underscores";
+  if (!/^[A-Z0-9-_]+$/i.test(value))
+    return "SKU can only contain letters, numbers, hyphens, and underscores";
   return null;
 };
 
 // Slug validation
 export const validateSlug = (value: string): string | null => {
   if (!value) return "Slug is required";
-  if (!/^[a-z0-9-]+$/.test(value)) return "Slug can only contain lowercase letters, numbers, and hyphens";
-  if (value.startsWith("-") || value.endsWith("-")) return "Slug cannot start or end with a hyphen";
+  if (!/^[a-z0-9-]+$/.test(value))
+    return "Slug can only contain lowercase letters, numbers, and hyphens";
+  if (value.startsWith("-") || value.endsWith("-"))
+    return "Slug cannot start or end with a hyphen";
   return null;
 };
 
@@ -89,7 +92,10 @@ export const validateFutureDate = (value: string): string | null => {
 };
 
 // Bid amount validation
-export const validateBidAmount = (value: number, formData?: Record<string, any>): string | null => {
+export const validateBidAmount = (
+  value: number,
+  formData?: Record<string, any>
+): string | null => {
   if (value === undefined || value === null) return "Bid amount is required";
   if (value < 0) return "Bid amount cannot be negative";
   if (formData?.startingBid && value < formData.startingBid) {
@@ -101,7 +107,9 @@ export const validateBidAmount = (value: number, formData?: Record<string, any>)
 /**
  * Product Fields - Complete set for inline editing
  */
-export const getProductFields = (categories: Array<{ id: string; name: string }>): InlineField[] => [
+export const getProductFields = (
+  categories: Array<{ id: string; name: string }>
+): InlineField[] => [
   {
     key: "images",
     label: "Image",
@@ -116,9 +124,11 @@ export const getProductFields = (categories: Array<{ id: string; name: string }>
     required: true,
     placeholder: "Enter product name",
     validate: (value) => {
-      if (!value || value.trim().length === 0) return "Product name is required";
+      if (!value || value.trim().length === 0)
+        return "Product name is required";
       if (value.length < 3) return "Product name must be at least 3 characters";
-      if (value.length > 200) return "Product name is too long (max 200 characters)";
+      if (value.length > 200)
+        return "Product name is too long (max 200 characters)";
       return null;
     },
   },
@@ -223,7 +233,7 @@ export const getProductFields = (categories: Array<{ id: string; name: string }>
     },
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     required: false,
@@ -233,7 +243,9 @@ export const getProductFields = (categories: Array<{ id: string; name: string }>
 /**
  * Auction Fields - Complete set for inline editing
  */
-export const getAuctionFields = (categories?: Array<{ id: string; name: string }>): InlineField[] => [
+export const getAuctionFields = (
+  categories?: Array<{ id: string; name: string }>
+): InlineField[] => [
   {
     key: "images",
     label: "Image",
@@ -248,7 +260,8 @@ export const getAuctionFields = (categories?: Array<{ id: string; name: string }
     required: true,
     placeholder: "Enter auction title",
     validate: (value) => {
-      if (!value || value.trim().length === 0) return "Auction title is required";
+      if (!value || value.trim().length === 0)
+        return "Auction title is required";
       if (value.length < 5) return "Title must be at least 5 characters";
       if (value.length > 200) return "Title is too long (max 200 characters)";
       return null;
@@ -322,11 +335,11 @@ export const getAuctionFields = (categories?: Array<{ id: string; name: string }
       if (!value) return "End time is required";
       const endDate = new Date(value);
       if (isNaN(endDate.getTime())) return "Invalid date";
-      
+
       if (formData?.startTime) {
         const startDate = new Date(formData.startTime);
         if (endDate <= startDate) return "End time must be after start time";
-        
+
         // Minimum auction duration: 1 hour
         const minDuration = 60 * 60 * 1000;
         if (endDate.getTime() - startDate.getTime() < minDuration) {
@@ -343,7 +356,10 @@ export const getAuctionFields = (categories?: Array<{ id: string; name: string }
           label: "Category",
           type: "select" as const,
           required: true,
-          options: categories.map((cat) => ({ value: cat.id, label: cat.name })),
+          options: categories.map((cat) => ({
+            value: cat.id,
+            label: cat.name,
+          })),
           validate: (value: any) => {
             if (!value) return "Please select a category";
             return null;
@@ -373,7 +389,10 @@ export const getAuctionFields = (categories?: Array<{ id: string; name: string }
 /**
  * Category Fields - Complete set for inline editing
  */
-export const getCategoryFields = (allCategories: Array<{ id: string; name: string }>, editingId?: string): InlineField[] => [
+export const getCategoryFields = (
+  allCategories: Array<{ id: string; name: string }>,
+  editingId?: string
+): InlineField[] => [
   {
     key: "image",
     label: "Image",
@@ -396,7 +415,8 @@ export const getCategoryFields = (allCategories: Array<{ id: string; name: strin
     required: true,
     placeholder: "Enter category name",
     validate: (value) => {
-      if (!value || value.trim().length === 0) return "Category name is required";
+      if (!value || value.trim().length === 0)
+        return "Category name is required";
       if (value.length < 2) return "Name must be at least 2 characters";
       if (value.length > 100) return "Name is too long (max 100 characters)";
       return null;
@@ -544,7 +564,9 @@ export const getShopFields = (): InlineField[] => [
     placeholder: "22AAAAA0000A1Z5",
     validate: (value) => {
       if (!value) return null;
-      if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(value)) {
+      if (
+        !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(value)
+      ) {
         return "Invalid GST number format";
       }
       return null;
@@ -557,7 +579,7 @@ export const getShopFields = (): InlineField[] => [
     required: false,
   },
   {
-    key: "isFeatured",
+    key: "featured",
     label: "Featured",
     type: "checkbox",
     required: false,
@@ -643,7 +665,8 @@ export const getCouponFields = (): InlineField[] => [
     placeholder: "SAVE20",
     validate: (value) => {
       if (!value || value.trim().length === 0) return "Coupon code is required";
-      if (!/^[A-Z0-9]+$/.test(value)) return "Code must be uppercase letters and numbers only";
+      if (!/^[A-Z0-9]+$/.test(value))
+        return "Code must be uppercase letters and numbers only";
       if (value.length < 3) return "Code must be at least 3 characters";
       if (value.length > 20) return "Code is too long (max 20 characters)";
       return null;
