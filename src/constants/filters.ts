@@ -36,6 +36,18 @@ export const PRODUCT_FILTERS: FilterSection[] = [
     collapsible: true,
   },
   {
+    title: "Shops",
+    fields: [
+      {
+        key: "shop_id",
+        label: "Shop",
+        type: "multiselect",
+        options: [], // Will be populated dynamically
+      },
+    ],
+    collapsible: true,
+  },
+  {
     title: "Availability",
     fields: [
       {

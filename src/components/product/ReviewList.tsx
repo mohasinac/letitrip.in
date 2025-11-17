@@ -64,19 +64,21 @@ export default function ReviewList({ productId }: ReviewListProps) {
 
       setReviews(response.data as any);
 
-      // Load stats
-      const statsData = await reviewsService.getSummary({ productId });
-      setStats({
-        totalReviews: statsData.totalReviews,
-        averageRating: statsData.averageRating,
-        ratingDistribution: statsData.ratingDistribution.reduce(
-          (acc: any, item: any) => {
-            acc[item.rating] = item.count;
-            return acc;
-          },
-          {}
-        ),
-      });
+      // Load stats (only if productId is provided)
+      if (productId) {
+        const statsData = await reviewsService.getSummary({ productId });
+        setStats({
+          totalReviews: statsData.totalReviews,
+          averageRating: statsData.averageRating,
+          ratingDistribution: statsData.ratingDistribution.reduce(
+            (acc: any, item: any) => {
+              acc[item.rating] = item.count;
+              return acc;
+            },
+            {}
+          ),
+        });
+      }
     } catch (error) {
       console.error("Failed to load reviews:", error);
       setReviews([]);

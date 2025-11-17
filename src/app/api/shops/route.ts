@@ -106,6 +106,33 @@ export async function GET(request: NextRequest) {
           ...doc.data(),
         }));
 
+        // Calculate accurate product counts (published products only) for each shop
+        const shopsWithCounts = await Promise.all(
+          shops.map(async (shop) => {
+            try {
+              const productsCount = await Collections.products()
+                .where("shop_id", "==", shop.id)
+                .where("status", "==", "published")
+                .where("is_deleted", "==", false)
+                .count()
+                .get();
+
+              return {
+                ...shop,
+                product_count: productsCount.data().count,
+              };
+            } catch (error) {
+              console.error(
+                `Failed to count products for shop ${shop.id}:`,
+                error
+              );
+              return shop; // Return shop with existing count on error
+            }
+          })
+        );
+
+        shops = shopsWithCounts;
+
         // For sellers, also fetch public verified shops if needed
         if (role === UserRole.SELLER && filters.includePublic === "true") {
           const publicQuery = Collections.shops()

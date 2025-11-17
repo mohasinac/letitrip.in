@@ -8,6 +8,8 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";
+import { categoriesService } from "@/services/categories.service";
+import { shopsService } from "@/services/shops.service";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/components/admin/Toast";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -28,6 +30,7 @@ function ProductsContent() {
   const itemsPerPage = 20;
 
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
   );
@@ -35,8 +38,67 @@ function ProductsContent() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
+    loadFilterOptions();
+  }, []);
+
+  useEffect(() => {
     loadProducts();
   }, [filterValues, sortBy, sortOrder, currentPage, searchQuery]);
+
+  const loadFilterOptions = async () => {
+    try {
+      const [categoriesData, shopsData] = await Promise.all([
+        categoriesService.list({ limit: 100, status: "active" }),
+        shopsService.list({ limit: 100, isVerified: true }),
+      ]);
+
+      const updatedFilters = PRODUCT_FILTERS.map((section) => {
+        if (section.title === "Categories") {
+          return {
+            ...section,
+            fields: section.fields.map((field) => {
+              if (field.key === "category_id") {
+                return {
+                  ...field,
+                  options: (categoriesData || []).map((cat) => ({
+                    label: cat.name,
+                    value: cat.id,
+                    count: cat.productCount || 0,
+                  })),
+                };
+              }
+              return field;
+            }),
+          };
+        }
+
+        if (section.title === "Shops") {
+          return {
+            ...section,
+            fields: section.fields.map((field) => {
+              if (field.key === "shop_id") {
+                return {
+                  ...field,
+                  options: (shopsData.data || []).map((shop) => ({
+                    label: shop.name,
+                    value: shop.id,
+                    count: shop.productCount || 0,
+                  })),
+                };
+              }
+              return field;
+            }),
+          };
+        }
+
+        return section;
+      });
+
+      setFilterOptions(updatedFilters);
+    } catch (error) {
+      console.error("Failed to load filter options:", error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
@@ -190,7 +252,7 @@ function ProductsContent() {
           {/* Desktop Sidebar */}
           {!isMobile && (
             <UnifiedFilterSidebar
-              sections={PRODUCT_FILTERS}
+              sections={filterOptions}
               values={filterValues}
               onChange={(key, value) => {
                 setFilterValues((prev) => ({ ...prev, [key]: value }));
@@ -430,7 +492,7 @@ function ProductsContent() {
         {/* Mobile Filter Drawer */}
         {isMobile && (
           <UnifiedFilterSidebar
-            sections={PRODUCT_FILTERS}
+            sections={filterOptions}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
