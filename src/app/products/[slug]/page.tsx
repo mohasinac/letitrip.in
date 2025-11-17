@@ -14,6 +14,7 @@ import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
+import { formatINR, formatDiscount } from "@/lib/price.utils";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/components/admin/Toast";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
@@ -159,20 +160,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {product.price && (
                   <>
                     <div className="flex items-baseline gap-2 mb-2">
-                      {product.compareAtPrice &&
-                        product.compareAtPrice > product.price && (
-                          <span className="text-sm font-medium text-red-600">
-                            -
-                            {Math.round(
-                              ((product.compareAtPrice - product.price) /
-                                product.compareAtPrice) *
-                                100
-                            )}
-                            %
-                          </span>
-                        )}
+                      {formatDiscount(
+                        product.compareAtPrice,
+                        product.price
+                      ) && (
+                        <span className="text-sm font-medium text-red-600">
+                          {formatDiscount(
+                            product.compareAtPrice,
+                            product.price
+                          )}
+                        </span>
+                      )}
                       <span className="text-3xl font-medium text-gray-900">
-                        ₹{product.price.toLocaleString()}
+                        {formatINR(product.price)}
                       </span>
                     </div>
                     {product.compareAtPrice &&
@@ -180,7 +180,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <div className="text-sm text-gray-600">
                           M.R.P.:{" "}
                           <span className="line-through">
-                            ₹{product.compareAtPrice.toLocaleString()}
+                            {formatINR(product.compareAtPrice)}
                           </span>
                         </div>
                       )}
@@ -224,7 +224,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div>
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-medium text-gray-900">
-                          ₹{product.price.toLocaleString()}
+                          {formatINR(product.price)}
                         </span>
                       </div>
                       <p className="text-xs text-gray-600 mt-1">

@@ -38,14 +38,16 @@ export async function GET(request: NextRequest) {
         const featured = searchParams.get("featured");
         const slug = searchParams.get("slug");
         const search = searchParams.get("search");
-        const page = parseInt(searchParams.get("page") || "1");
+        const sortBy = searchParams.get("sortBy") || "created_at";
+        const sortOrder = searchParams.get("sortOrder") || "desc";
         const limit = parseInt(searchParams.get("limit") || "50");
+        const startAfter = searchParams.get("startAfter"); // Cursor for pagination
 
         // For public requests, show only published products
         const role = user?.role ? (user.role as UserRole) : UserRole.USER;
         const userId = user?.uid;
 
-        // Build query based on role
+        // Build base query based on role
         let query = getProductsQuery(
           role,
           role === "seller" ? shopId || userId : undefined
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
           query = query.where("status", "==", "published");
         }
 
-        // Apply filters one at a time to avoid composite index requirements
+        // Apply equality filters (these can be combined)
         if (shopId) {
           query = query.where("shop_id", "==", shopId);
         }
@@ -73,9 +75,64 @@ export async function GET(request: NextRequest) {
           query = query.where("slug", "==", slug);
         }
 
-        // Get total count first (before pagination)
-        const countSnapshot = await query.get();
-        let allProducts = countSnapshot.docs.map((doc) => {
+        // Price range filters (Firebase supports these with proper indexes)
+        if (minPrice) {
+          const min = parseFloat(minPrice);
+          if (!isNaN(min)) {
+            query = query.where("price", ">=", min);
+          }
+        }
+        if (maxPrice) {
+          const max = parseFloat(maxPrice);
+          if (!isNaN(max)) {
+            query = query.where("price", "<=", max);
+          }
+        }
+
+        // Add sorting (required for pagination)
+        // If we have price filters, we must order by price
+        // Otherwise order by the requested field
+        if (minPrice || maxPrice) {
+          query = query.orderBy("price", sortOrder as any);
+          // Add secondary sort by created_at for consistent ordering
+          if (sortBy !== "price") {
+            query = query.orderBy("created_at", "desc");
+          }
+        } else {
+          // Order by requested field
+          const validSortFields = ["created_at", "updated_at", "price", "name"];
+          const sortField = validSortFields.includes(sortBy)
+            ? sortBy
+            : "created_at";
+          query = query.orderBy(sortField, sortOrder as any);
+        }
+
+        // Apply cursor-based pagination
+        if (startAfter) {
+          try {
+            const startDoc = await Collections.products().doc(startAfter).get();
+            if (startDoc.exists) {
+              query = query.startAfter(startDoc);
+            }
+          } catch (error) {
+            console.error("Invalid cursor:", error);
+            // Continue without cursor if invalid
+          }
+        }
+
+        // Fetch one extra document to check if there's a next page
+        query = query.limit(limit + 1);
+
+        // Execute the query
+        const snapshot = await query.get();
+        const docs = snapshot.docs;
+
+        // Check if there's a next page
+        const hasNextPage = docs.length > limit;
+        const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+        // Transform documents
+        let products = resultDocs.map((doc) => {
           const data: any = doc.data();
           return {
             id: doc.id,
@@ -91,44 +148,37 @@ export async function GET(request: NextRequest) {
           };
         });
 
-        // Apply price filters
-        if (minPrice) {
-          const min = parseFloat(minPrice);
-          allProducts = allProducts.filter((p: any) => (p.price ?? 0) >= min);
-        }
-        if (maxPrice) {
-          const max = parseFloat(maxPrice);
-          allProducts = allProducts.filter((p: any) => (p.price ?? 0) <= max);
-        }
-
-        // Apply search filter
+        // Apply text search filter (if no other solution available)
+        // TODO: Replace with Algolia/Typesense for better performance
         if (search) {
           const searchLower = search.toLowerCase();
-          allProducts = allProducts.filter(
+          products = products.filter(
             (p: any) =>
               p.name?.toLowerCase().includes(searchLower) ||
               p.description?.toLowerCase().includes(searchLower) ||
-              p.slug?.toLowerCase().includes(searchLower)
+              p.slug?.toLowerCase().includes(searchLower) ||
+              p.tags?.some((tag: string) =>
+                tag.toLowerCase().includes(searchLower)
+              )
           );
         }
 
-        // Calculate pagination
-        const total = allProducts.length;
-        const totalPages = Math.ceil(total / limit);
-        const offset = (page - 1) * limit;
-        const paginatedProducts = allProducts.slice(offset, offset + limit);
+        // Get cursor for next page (last document ID)
+        const nextCursor =
+          hasNextPage && resultDocs.length > 0
+            ? resultDocs[resultDocs.length - 1].id
+            : null;
 
         return NextResponse.json({
           success: true,
-          data: paginatedProducts,
-          count: paginatedProducts.length,
+          data: products,
+          count: products.length,
           pagination: {
-            page,
             limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
+            hasNextPage: hasNextPage && products.length >= limit,
+            nextCursor,
+            // Note: We don't return total count for performance reasons
+            // Getting total count would require a separate query
           },
         });
       } catch (error) {
