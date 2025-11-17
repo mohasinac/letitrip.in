@@ -45,8 +45,10 @@ export function SellerProducts({
 
       // Sort: same category first, then others
       const sorted = filtered.sort((a, b) => {
-        if (a.categoryId === categoryId && b.categoryId !== categoryId) return -1;
-        if (a.categoryId !== categoryId && b.categoryId === categoryId) return 1;
+        if (a.categoryId === categoryId && b.categoryId !== categoryId)
+          return -1;
+        if (a.categoryId !== categoryId && b.categoryId === categoryId)
+          return 1;
         return 0;
       });
 

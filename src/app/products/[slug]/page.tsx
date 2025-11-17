@@ -54,8 +54,6 @@ export default function ProductPage({ params }: ProductPageProps) {
           console.error("Failed to load shop:", error);
         }
       }
-
-
     } catch (error: any) {
       console.error("Failed to load product:", error);
       router.push(notFound.product(slug, error));
@@ -63,8 +61,6 @@ export default function ProductPage({ params }: ProductPageProps) {
       setLoading(false);
     }
   };
-
-
 
   if (loading) {
     return (
@@ -395,7 +391,9 @@ export default function ProductPage({ params }: ProductPageProps) {
           <div className="max-w-7xl mx-auto px-4 py-6">
             <SimilarProducts
               productId={product.id}
-              parentCategoryIds={product.categoryIds.filter((id: string) => id !== product.categoryId)}
+              parentCategoryIds={product.categoryIds.filter(
+                (id: string) => id !== product.categoryId
+              )}
               currentShopId={product.shopId}
               parentCategoryName="related categories"
             />

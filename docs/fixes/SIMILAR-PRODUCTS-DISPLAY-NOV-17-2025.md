@@ -13,6 +13,7 @@ Implemented an enhanced "Similar Products" carousel on product detail pages that
 ### Before
 
 The existing similar products section had limitations:
+
 - Basic vertical grid layout
 - Limited to 10 products only
 - No way to see more products
@@ -23,6 +24,7 @@ The existing similar products section had limitations:
 ### After
 
 Enhanced similar products carousel with:
+
 - **Exact Category Matching:** Only shows products from the same category
 - **Horizontal Carousel:** Smooth scrollable with arrow buttons
 - **Show All Modal:** View all similar products in a grid
@@ -57,9 +59,7 @@ const data = await productsService.list({
 
 // Ensure EXACT category match (not parent categories)
 const filtered = (data.products || []).filter(
-  (p: ProductCardFE) => 
-    p.id !== productId && 
-    p.categoryId === categoryId // Double-check exact match
+  (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId // Double-check exact match
 );
 ```
 
@@ -79,6 +79,7 @@ const filtered = (data.products || []).filter(
 ```
 
 **Features:**
+
 - Fixed width cards (192px / w-48)
 - Horizontal flex layout
 - Hidden scrollbar (CSS)
@@ -106,6 +107,7 @@ const handleScroll = (direction: "left" | "right") => {
 ```
 
 **Visibility Logic:**
+
 ```typescript
 const updateScrollButtons = () => {
   const container = document.getElementById("similar-products-scroll");
@@ -119,6 +121,7 @@ const updateScrollButtons = () => {
 ```
 
 **Button Behavior:**
+
 - Appears only on hover (desktop)
 - Shows only when there's content to scroll
 - Positioned absolutely over carousel
@@ -128,36 +131,39 @@ const updateScrollButtons = () => {
 #### 4. Show All Modal
 
 ```typescript
-{showAllModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b">
-        <h3>All Products in {categoryName}</h3>
-        <button onClick={() => setShowAllModal(false)}>
-          <X />
-        </button>
-      </div>
-      
-      {/* Grid of all products */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
+{
+  showAllModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b">
+          <h3>All Products in {categoryName}</h3>
+          <button onClick={() => setShowAllModal(false)}>
+            <X />
+          </button>
+        </div>
+
+        {/* Grid of all products */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+        </div>
+
+        {/* Footer with count */}
+        <div className="p-6 border-t bg-gray-50">
+          <p>Showing {products.length} products from the same category</p>
         </div>
       </div>
-      
-      {/* Footer with count */}
-      <div className="p-6 border-t bg-gray-50">
-        <p>Showing {products.length} products from the same category</p>
-      </div>
     </div>
-  </div>
-)}
+  );
+}
 ```
 
 **Features:**
+
 - Full-screen overlay with backdrop
 - Responsive grid (2-5 columns)
 - Scrollable content area
@@ -167,10 +173,7 @@ const updateScrollButtons = () => {
 #### 5. Product Diversity Algorithm
 
 ```typescript
-const diversifyByShop = (
-  products: ProductCardFE[],
-  currentShopId: string
-) => {
+const diversifyByShop = (products: ProductCardFE[], currentShopId: string) => {
   const otherShops: ProductCardFE[] = [];
   const sameShop: ProductCardFE[] = [];
 
@@ -188,6 +191,7 @@ const diversifyByShop = (
 ```
 
 **Benefits:**
+
 - Shows products from different sellers first
 - Increases marketplace variety
 - Improves cross-selling opportunities
@@ -196,12 +200,11 @@ const diversifyByShop = (
 #### 6. Category Name Display
 
 ```typescript
-<h2 className="text-2xl font-bold text-gray-900">
-  More from {categoryName}
-</h2>
+<h2 className="text-2xl font-bold text-gray-900">More from {categoryName}</h2>
 ```
 
 **Passed from parent:**
+
 ```typescript
 <SimilarProducts
   productId={product.id}
@@ -259,6 +262,7 @@ if (loading) {
 ```
 
 **Features:**
+
 - Skeleton cards matching real card dimensions
 - Pulse animation
 - Horizontal layout matching carousel
@@ -273,6 +277,7 @@ if (!products || products.length === 0) {
 ```
 
 **Behavior:**
+
 - Section completely hidden if no products
 - No empty state message needed
 - Clean page appearance
@@ -280,16 +285,19 @@ if (!products || products.length === 0) {
 ### ✅ Responsive Design
 
 **Mobile (< 768px):**
+
 - Touch swipe to scroll
 - Full-width carousel
 - 2 columns in modal
 
 **Tablet (768px - 1024px):**
+
 - Touch or scroll
 - 3 columns in modal
 - Hover buttons available
 
 **Desktop (> 1024px):**
+
 - Hover for scroll buttons
 - 4-5 columns in modal
 - Smooth scroll experience
@@ -299,22 +307,27 @@ if (!products || products.length === 0) {
 ### Before → After
 
 **1. Finding Similar Products**
+
 - ❌ Before: Vertical grid, limited view
 - ✅ After: Horizontal carousel, easy browsing
 
 **2. Viewing More Products**
+
 - ❌ Before: No way to see more than 10
 - ✅ After: "Show All" button with full modal
 
 **3. Understanding Context**
+
 - ❌ Before: Generic "Similar Products"
 - ✅ After: "More from [Category Name]"
 
 **4. Mobile Experience**
+
 - ❌ Before: Vertical scroll required
 - ✅ After: Natural horizontal swipe
 
 **5. Product Variety**
+
 - ❌ Before: Random order
 - ✅ After: Different shops prioritized
 
@@ -367,6 +380,7 @@ useEffect(() => {
 ```
 
 **Updates scroll buttons on:**
+
 - Component mount
 - Scroll position change
 - Window resize
@@ -392,30 +406,36 @@ scroll-behavior: smooth;
 ## Edge Cases Handled
 
 ### ✅ No Similar Products
+
 - Section completely hidden
 - No error messages
 
 ### ✅ Single Similar Product
+
 - Carousel still shows
 - No scroll buttons (not needed)
 - No "Show All" button
 
 ### ✅ Exactly 12 Products
+
 - Fills carousel perfectly
 - No "Show All" button
 - No count indicator
 
 ### ✅ Many Products (>50)
+
 - API limit prevents overload
 - Carousel shows 12
 - Modal shows all loaded
 - Smooth performance maintained
 
 ### ✅ Current Product in Results
+
 - Filtered out explicitly
 - Never shows same product twice
 
 ### ✅ Same Shop Products Only
+
 - Diversity algorithm handles
 - Shows same-shop products if no alternatives
 - Prevents empty results
@@ -440,6 +460,7 @@ scroll-behavior: smooth;
 ## Files Modified
 
 1. **src/components/product/SimilarProducts.tsx**
+
    - Complete redesign with carousel
    - Added scroll navigation
    - Implemented modal view
@@ -471,19 +492,23 @@ scroll-behavior: smooth;
 ### Potential Improvements
 
 1. **Infinite Scroll in Modal**
+
    - Load more products as user scrolls
    - Reduce initial load time
 
 2. **Smart Sorting**
+
    - Price similarity
    - Rating similarity
    - Recent popularity
 
 3. **Quick View**
+
    - Hover preview of product details
    - No page navigation needed
 
 4. **Comparison Mode**
+
    - Select multiple products
    - Side-by-side comparison
 
