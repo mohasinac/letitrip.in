@@ -67,39 +67,33 @@ class ReturnsService {
 
   // Get return by ID
   async getById(id: string): Promise<ReturnFE> {
-    const returnBE = await apiService.get<ReturnBE>(`/returns/${id}`);
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.get(`/returns/${id}`);
+    return returnBEtoFE(response.data);
   }
 
   // Initiate return (customer)
   async initiate(data: ReturnFormFE): Promise<ReturnFE> {
     const request = returnFormFEtoRequestBE(data);
-    const returnBE = await apiService.post<ReturnBE>("/returns", request);
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.post("/returns", request);
+    return returnBEtoFE(response.data);
   }
 
   // Update return (seller/admin)
   async update(id: string, data: UpdateReturnData): Promise<ReturnFE> {
-    const returnBE = await apiService.patch<ReturnBE>(`/returns/${id}`, data);
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.patch(`/returns/${id}`, data);
+    return returnBEtoFE(response.data);
   }
 
   // Approve/reject return (seller/admin)
   async approve(id: string, data: ApproveReturnData): Promise<ReturnFE> {
-    const returnBE = await apiService.post<ReturnBE>(
-      `/returns/${id}/approve`,
-      data
-    );
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.post(`/returns/${id}/approve`, data);
+    return returnBEtoFE(response.data);
   }
 
   // Process refund (seller/admin)
   async processRefund(id: string, data: ProcessRefundData): Promise<ReturnFE> {
-    const returnBE = await apiService.post<ReturnBE>(
-      `/returns/${id}/refund`,
-      data
-    );
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.post(`/returns/${id}/refund`, data);
+    return returnBEtoFE(response.data);
   }
 
   // Resolve dispute (admin only)
@@ -107,11 +101,8 @@ class ReturnsService {
     id: string,
     data: ResolveDisputeData
   ): Promise<ReturnFE> {
-    const returnBE = await apiService.post<ReturnBE>(
-      `/returns/${id}/resolve`,
-      data
-    );
-    return returnBEtoFE(returnBE);
+    const response: any = await apiService.post(`/returns/${id}/resolve`, data);
+    return returnBEtoFE(response.data);
   }
 
   // Upload media for return

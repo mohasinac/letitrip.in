@@ -37,7 +37,7 @@ class ProductsService {
     filters?: ProductFiltersFE
   ): Promise<{ products: ProductCardFE[]; pagination: any }> {
     // Convert FE filters to BE filters - simplified mapping
-    const beFilters: Partial<ProductFiltersBE> = {
+    const beFilters: any = {
       shopId: filters?.shopId,
       categoryId: filters?.categoryId,
       search: filters?.search,
@@ -46,14 +46,13 @@ class ProductsService {
       status: filters?.status?.[0],
       inStock: filters?.inStock,
       isFeatured: filters?.isFeatured,
-      page: 1,
-      limit: 20,
+      page: filters?.page || 1,
+      limit: filters?.limit || 20,
+      sortBy: filters?.sortBy,
     };
 
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, beFilters);
-    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
-      endpoint
-    );
+    const response: any = await apiService.get(endpoint);
 
     // Transform BE list items to FE cards
     return {
@@ -66,18 +65,16 @@ class ProductsService {
    * Get product by ID (returns full UI-optimized product)
    */
   async getById(id: string): Promise<ProductFE> {
-    const productBE = await apiService.get<ProductBE>(PRODUCT_ROUTES.BY_ID(id));
-    return toFEProduct(productBE);
+    const response: any = await apiService.get(PRODUCT_ROUTES.BY_ID(id));
+    return toFEProduct(response.data);
   }
 
   /**
    * Get product by slug (returns full UI-optimized product)
    */
   async getBySlug(slug: string): Promise<ProductFE> {
-    const productBE = await apiService.get<ProductBE>(
-      PRODUCT_ROUTES.BY_SLUG(slug)
-    );
-    return toFEProduct(productBE);
+    const response: any = await apiService.get(PRODUCT_ROUTES.BY_SLUG(slug));
+    return toFEProduct(response.data);
   }
 
   /**
@@ -85,11 +82,11 @@ class ProductsService {
    */
   async create(formData: ProductFormFE): Promise<ProductFE> {
     const createRequest = toBEProductCreate(formData);
-    const productBE = await apiService.post<ProductBE>(
+    const response: any = await apiService.post(
       PRODUCT_ROUTES.LIST,
       createRequest
     );
-    return toFEProduct(productBE);
+    return toFEProduct(response.data);
   }
 
   /**
@@ -100,11 +97,11 @@ class ProductsService {
     formData: Partial<ProductFormFE>
   ): Promise<ProductFE> {
     const updateRequest = toBEProductUpdate(formData);
-    const productBE = await apiService.patch<ProductBE>(
+    const response: any = await apiService.patch(
       PRODUCT_ROUTES.BY_SLUG(slug),
       updateRequest
     );
-    return toFEProduct(productBE);
+    return toFEProduct(response.data);
   }
 
   /**
@@ -126,10 +123,10 @@ class ProductsService {
    * Get product variants (returns FE types)
    */
   async getVariants(slug: string): Promise<ProductCardFE[]> {
-    const response = await apiService.get<ProductListItemBE[]>(
+    const response: any = await apiService.get(
       `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
     );
-    return toFEProductCards(response);
+    return toFEProductCards(response.data || []);
   }
 
   /**
@@ -139,8 +136,8 @@ class ProductsService {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/similar`, {
       limit,
     });
-    const response = await apiService.get<ProductListItemBE[]>(endpoint);
-    return toFEProductCards(response);
+    const response: any = await apiService.get(endpoint);
+    return toFEProductCards(response.data || []);
   }
 
   /**
@@ -153,30 +150,28 @@ class ProductsService {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
       limit,
     });
-    const response = await apiService.get<ProductListItemBE[]>(endpoint);
-    return toFEProductCards(response);
+    const response: any = await apiService.get(endpoint);
+    return toFEProductCards(response.data || []);
   }
 
   /**
    * Update product stock
    */
   async updateStock(slug: string, stockCount: number): Promise<ProductFE> {
-    const productBE = await apiService.patch<ProductBE>(
-      PRODUCT_ROUTES.BY_SLUG(slug),
-      { stockCount }
-    );
-    return toFEProduct(productBE);
+    const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
+      stockCount,
+    });
+    return toFEProduct(response.data);
   }
 
   /**
    * Update product status
    */
   async updateStatus(slug: string, status: string): Promise<ProductFE> {
-    const productBE = await apiService.patch<ProductBE>(
-      PRODUCT_ROUTES.BY_SLUG(slug),
-      { status }
-    );
-    return toFEProduct(productBE);
+    const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
+      status,
+    });
+    return toFEProduct(response.data);
   }
 
   /**

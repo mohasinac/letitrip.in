@@ -76,20 +76,15 @@ class SupportService {
 
   // Get ticket by ID (owner, related seller, or admin only)
   async getTicket(id: string): Promise<SupportTicketFE> {
-    const ticketBE = await apiService.get<SupportTicketBE>(
-      TICKET_ROUTES.BY_ID(id)
-    );
-    return toFESupportTicket(ticketBE);
+    const response: any = await apiService.get(TICKET_ROUTES.BY_ID(id));
+    return toFESupportTicket(response.data);
   }
 
   // Create ticket (authenticated users only)
   async createTicket(data: SupportTicketFormFE): Promise<SupportTicketFE> {
     const request = toBECreateSupportTicketRequest(data);
-    const ticketBE = await apiService.post<SupportTicketBE>(
-      TICKET_ROUTES.LIST,
-      request
-    );
-    return toFESupportTicket(ticketBE);
+    const response: any = await apiService.post(TICKET_ROUTES.LIST, request);
+    return toFESupportTicket(response.data);
   }
 
   // Update ticket (owner with limited fields, admin with all fields)
@@ -98,20 +93,19 @@ class SupportService {
     data: UpdateTicketFormFE
   ): Promise<SupportTicketFE> {
     const request = toBEUpdateSupportTicketRequest(data);
-    const ticketBE = await apiService.patch<SupportTicketBE>(
+    const response: any = await apiService.patch(
       TICKET_ROUTES.BY_ID(id),
       request
     );
-    return toFESupportTicket(ticketBE);
+    return toFESupportTicket(response.data);
   }
 
   // Close ticket (now uses PATCH with status update)
   async closeTicket(id: string): Promise<SupportTicketFE> {
-    const ticketBE = await apiService.patch<SupportTicketBE>(
-      TICKET_ROUTES.BY_ID(id),
-      { status: "closed" }
-    );
-    return toFESupportTicket(ticketBE);
+    const response: any = await apiService.patch(TICKET_ROUTES.BY_ID(id), {
+      status: "closed",
+    });
+    return toFESupportTicket(response.data);
   }
 
   // Get ticket messages
@@ -149,11 +143,11 @@ class SupportService {
     data: ReplyToTicketFormFE
   ): Promise<SupportTicketMessageFE> {
     const request = toBEReplyToTicketRequest(data);
-    const messageBE = await apiService.post<SupportTicketMessageBE>(
+    const response: any = await apiService.post(
       TICKET_ROUTES.REPLY(ticketId),
       request
     );
-    return toFESupportTicketMessage(messageBE);
+    return toFESupportTicketMessage(response.data);
   }
 
   // Assign ticket (admin only - now uses bulk endpoint)

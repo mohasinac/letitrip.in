@@ -37,6 +37,8 @@ export async function GET(request: NextRequest) {
         const maxPrice = searchParams.get("maxPrice");
         const isFeatured = searchParams.get("isFeatured");
         const slug = searchParams.get("slug");
+        const search = searchParams.get("search");
+        const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "50");
 
         // For public requests, show only published products
@@ -71,8 +73,9 @@ export async function GET(request: NextRequest) {
           query = query.where("slug", "==", slug);
         }
 
-        const snapshot = await query.limit(limit).get();
-        let products = snapshot.docs.map((doc) => {
+        // Get total count first (before pagination)
+        const countSnapshot = await query.get();
+        let allProducts = countSnapshot.docs.map((doc) => {
           const data: any = doc.data();
           return {
             id: doc.id,
@@ -88,19 +91,45 @@ export async function GET(request: NextRequest) {
           };
         });
 
+        // Apply price filters
         if (minPrice) {
           const min = parseFloat(minPrice);
-          products = products.filter((p: any) => (p.price ?? 0) >= min);
+          allProducts = allProducts.filter((p: any) => (p.price ?? 0) >= min);
         }
         if (maxPrice) {
           const max = parseFloat(maxPrice);
-          products = products.filter((p: any) => (p.price ?? 0) <= max);
+          allProducts = allProducts.filter((p: any) => (p.price ?? 0) <= max);
         }
+
+        // Apply search filter
+        if (search) {
+          const searchLower = search.toLowerCase();
+          allProducts = allProducts.filter(
+            (p: any) =>
+              p.name?.toLowerCase().includes(searchLower) ||
+              p.description?.toLowerCase().includes(searchLower) ||
+              p.slug?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        // Calculate pagination
+        const total = allProducts.length;
+        const totalPages = Math.ceil(total / limit);
+        const offset = (page - 1) * limit;
+        const paginatedProducts = allProducts.slice(offset, offset + limit);
 
         return NextResponse.json({
           success: true,
-          data: products,
-          count: products.length,
+          data: paginatedProducts,
+          count: paginatedProducts.length,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+          },
         });
       } catch (error) {
         console.error("Error fetching products:", error);
