@@ -19,51 +19,123 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-    const shopId = searchParams.get("shop_id");
-    const page = parseInt(searchParams.get("page") || "1", 10);
+    
+    // Pagination params
+    const startAfter = searchParams.get("startAfter");
     const limit = parseInt(searchParams.get("limit") || "50", 10);
+    
+    // Filter params
+    const shopId = searchParams.get("shop_id");
+    const status = searchParams.get("status");
+    const categoryId = searchParams.get("categoryId");
+    const minBid = searchParams.get("minBid");
+    const maxBid = searchParams.get("maxBid");
+    const featured = searchParams.get("featured");
+    
+    // Sort params
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc";
 
+    // Build base query with role-based filtering
     let query: FirebaseFirestore.Query = Collections.auctions();
+    
+    // Role-based access control
     if (role === "guest" || role === "user") {
       query = query.where("status", "==", "active");
-    } else if (role === "seller" && shopId) {
+    } else if (role === "seller") {
+      if (!shopId) {
+        // Seller must provide shop_id
+        return NextResponse.json({
+          success: true,
+          data: [],
+          count: 0,
+          pagination: {
+            limit,
+            hasNextPage: false,
+            nextCursor: null,
+          },
+        });
+      }
       query = query.where("shop_id", "==", shopId);
-    } else if (role === "seller" && !shopId) {
-      // require shopId for seller scoped queries
-      return NextResponse.json({
-        success: true,
-        data: [],
-        pagination: {
-          page,
-          limit,
-          total: 0,
-          totalPages: 0,
-          hasNextPage: false,
-          hasPrevPage: false,
-        },
-      });
+    }
+    // Admin sees all auctions (no additional filter)
+
+    // Apply additional filters
+    if (shopId && (role === "admin" || role === "user" || role === "guest")) {
+      query = query.where("shop_id", "==", shopId);
+    }
+    
+    if (status && role !== "guest" && role !== "user") {
+      // Only admin/seller can filter by status other than active
+      query = query.where("status", "==", status);
+    }
+    
+    if (categoryId) {
+      query = query.where("category_id", "==", categoryId);
+    }
+    
+    if (featured === "true") {
+      query = query.where("is_featured", "==", true);
+    }
+    
+    // Price range filters (only if sorting by current_bid or no price sort)
+    const validSortFields = ["created_at", "end_time", "current_bid", "bid_count"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
+    
+    if (sortField === "current_bid") {
+      if (minBid) {
+        const minBidNum = parseFloat(minBid);
+        if (!isNaN(minBidNum)) {
+          query = query.where("current_bid", ">=", minBidNum);
+        }
+      }
+      if (maxBid) {
+        const maxBidNum = parseFloat(maxBid);
+        if (!isNaN(maxBidNum)) {
+          query = query.where("current_bid", "<=", maxBidNum);
+        }
+      }
     }
 
-    // Get all auctions for pagination
-    const snapshot = await query.get();
-    const allAuctions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    // Add sorting
+    query = query.orderBy(sortField, sortOrder);
 
-    // Calculate pagination
-    const total = allAuctions.length;
-    const totalPages = Math.ceil(total / limit);
-    const offset = (page - 1) * limit;
-    const paginatedAuctions = allAuctions.slice(offset, offset + limit);
+    // Apply cursor pagination
+    if (startAfter) {
+      const startDoc = await Collections.auctions().doc(startAfter).get();
+      if (startDoc.exists) {
+        query = query.startAfter(startDoc);
+      }
+    }
+
+    // Fetch limit + 1 to check if there's a next page
+    query = query.limit(limit + 1);
+    const snapshot = await query.get();
+    const docs = snapshot.docs;
+
+    // Check if there's a next page
+    const hasNextPage = docs.length > limit;
+    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+
+    // Transform data
+    const auctions = resultDocs.map((doc) => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    }));
+
+    // Get next cursor
+    const nextCursor = hasNextPage && resultDocs.length > 0
+      ? resultDocs[resultDocs.length - 1].id
+      : null;
 
     return NextResponse.json({
       success: true,
-      data: paginatedAuctions,
+      data: auctions,
+      count: auctions.length,
       pagination: {
-        page,
         limit,
-        total,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
+        hasNextPage,
+        nextCursor,
       },
     });
   } catch (error) {

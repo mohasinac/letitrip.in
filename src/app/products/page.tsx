@@ -25,8 +25,9 @@ function ProductsContent() {
   const [view, setView] = useState<"grid" | "table">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursors, setCursors] = useState<(string | null)[]>([null]); // Track cursors for each page
   const itemsPerPage = 20;
 
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -37,11 +38,62 @@ function ProductsContent() {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // Initialize filters from URL on mount
   useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const initialFilters: Record<string, any> = {};
+
+    // Extract filter values from URL
+    if (params.get("categoryId"))
+      initialFilters.categoryId = params.get("categoryId");
+    if (params.get("shopId")) initialFilters.shopId = params.get("shopId");
+    if (params.get("minPrice"))
+      initialFilters.priceRange = { min: Number(params.get("minPrice")) };
+    if (params.get("maxPrice")) {
+      initialFilters.priceRange = {
+        ...initialFilters.priceRange,
+        max: Number(params.get("maxPrice")),
+      };
+    }
+    if (params.get("status")) initialFilters.status = [params.get("status")];
+    if (params.get("featured") === "true") initialFilters.featured = true;
+    if (params.get("search")) setSearchQuery(params.get("search") || "");
+    if (params.get("sortBy")) setSortBy(params.get("sortBy") || "createdAt");
+    if (params.get("sortOrder"))
+      setSortOrder((params.get("sortOrder") as "asc" | "desc") || "desc");
+    if (params.get("page")) setCurrentPage(Number(params.get("page")) || 1);
+
+    if (Object.keys(initialFilters).length > 0) {
+      setFilterValues(initialFilters);
+    }
+
     loadFilterOptions();
   }, []);
 
+  // Update URL when filters change
   useEffect(() => {
+    const params = new URLSearchParams();
+
+    // Add filter values to URL
+    if (filterValues.categoryId)
+      params.set("categoryId", filterValues.categoryId);
+    if (filterValues.shopId) params.set("shopId", filterValues.shopId);
+    if (filterValues.priceRange?.min)
+      params.set("minPrice", String(filterValues.priceRange.min));
+    if (filterValues.priceRange?.max)
+      params.set("maxPrice", String(filterValues.priceRange.max));
+    if (filterValues.status?.length)
+      params.set("status", filterValues.status[0]);
+    if (filterValues.featured) params.set("featured", "true");
+    if (searchQuery) params.set("search", searchQuery);
+    if (sortBy !== "createdAt") params.set("sortBy", sortBy);
+    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+    if (currentPage > 1) params.set("page", String(currentPage));
+
+    // Update URL without reloading page
+    const newUrl = params.toString() ? `?${params.toString()}` : "/products";
+    router.push(newUrl, { scroll: false });
+
     loadProducts();
   }, [filterValues, sortBy, sortOrder, currentPage, searchQuery]);
 
@@ -103,18 +155,33 @@ function ProductsContent() {
   const loadProducts = async () => {
     try {
       setLoading(true);
+
+      // Get cursor for current page
+      const startAfter = cursors[currentPage - 1];
+
       const response = await productsService.list({
         search: searchQuery || undefined,
         ...filterValues,
         sortBy: sortBy as any,
-        page: currentPage,
+        startAfter: startAfter || undefined,
         limit: itemsPerPage,
       } as any);
 
       const productsData = response.products || [];
       setProducts(productsData);
-      setTotalCount(response.pagination?.total || 0);
-      setTotalPages(response.pagination?.totalPages || 1);
+
+      // Update pagination state
+      setHasNextPage(response.pagination?.hasNextPage || false);
+      setNextCursor(response.pagination?.nextCursor || null);
+
+      // Store cursor for next page if we don't have it yet
+      if (response.pagination?.nextCursor && !cursors[currentPage]) {
+        setCursors((prev) => {
+          const newCursors = [...prev];
+          newCursors[currentPage] = response.pagination.nextCursor;
+          return newCursors;
+        });
+      }
     } catch (error) {
       console.error("Failed to load products:", error);
     } finally {
@@ -128,6 +195,8 @@ function ProductsContent() {
     setSortBy("createdAt");
     setSortOrder("desc");
     setCurrentPage(1);
+    setCursors([null]); // Reset pagination cursors
+    router.push("/products", { scroll: false }); // Clear URL params
   };
 
   const handleAddToCart = async (
@@ -258,6 +327,7 @@ function ProductsContent() {
             }}
             onApply={() => {
               setCurrentPage(1);
+              setCursors([null]); // Reset pagination when filters change
               if (isMobile) setShowFilters(false);
             }}
             onReset={handleResetFilters}
@@ -265,7 +335,7 @@ function ProductsContent() {
             onClose={() => setShowFilters(false)}
             searchable={true}
             mobile={isMobile}
-            resultCount={totalCount}
+            resultCount={products.length}
             isLoading={loading}
           />
 
@@ -274,9 +344,7 @@ function ProductsContent() {
             {/* Results Count */}
             {!loading && products.length > 0 && (
               <div className="mb-4 text-sm text-gray-600">
-                Showing {(currentPage - 1) * itemsPerPage + 1} -{" "}
-                {Math.min(currentPage * itemsPerPage, totalCount)} of{" "}
-                {totalCount} products
+                Showing {products.length} products (Page {currentPage})
               </div>
             )}
 
@@ -426,58 +494,31 @@ function ProductsContent() {
                   </div>
                 )}
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="mt-8 flex justify-center items-center gap-2">
+                {/* Pagination - Cursor Based */}
+                {(currentPage > 1 || hasNextPage) && (
+                  <div className="mt-8 flex justify-center items-center gap-4">
                     <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      onClick={() => {
+                        setCurrentPage((p) => Math.max(1, p - 1));
+                        // Reset to start if going back to page 1
+                        if (currentPage === 2) {
+                          setCursors([null]);
+                        }
+                      }}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                     >
                       Previous
                     </button>
 
-                    {/* Page Numbers */}
-                    <div className="flex gap-2">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter((page) => {
-                          // Show first page, last page, current page, and 2 pages around current
-                          return (
-                            page === 1 ||
-                            page === totalPages ||
-                            Math.abs(page - currentPage) <= 2
-                          );
-                        })
-                        .map((page, idx, arr) => {
-                          // Add ellipsis
-                          const showEllipsis =
-                            idx > 0 && page - arr[idx - 1] > 1;
-                          return (
-                            <Fragment key={page}>
-                              {showEllipsis && (
-                                <span className="px-3 py-2">...</span>
-                              )}
-                              <button
-                                onClick={() => setCurrentPage(page)}
-                                className={`px-4 py-2 rounded-lg ${
-                                  currentPage === page
-                                    ? "bg-blue-600 text-white"
-                                    : "border border-gray-300 hover:bg-gray-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            </Fragment>
-                          );
-                        })}
-                    </div>
+                    <span className="text-sm text-gray-600">
+                      Page {currentPage}
+                    </span>
 
                     <button
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      onClick={() => setCurrentPage((p) => p + 1)}
+                      disabled={!hasNextPage}
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                     >
                       Next
                     </button>
@@ -505,7 +546,7 @@ function ProductsContent() {
             onClose={() => setShowFilters(false)}
             searchable={true}
             mobile={true}
-            resultCount={totalCount}
+            resultCount={products.length}
             isLoading={loading}
           />
         )}

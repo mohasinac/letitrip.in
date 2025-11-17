@@ -18,6 +18,7 @@ import Link from "next/link";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
+import { formatINR, safeToLocaleString } from "@/lib/price.utils";
 import type {
   AuctionFE,
   AuctionCardFE,
@@ -460,12 +461,7 @@ export default function AuctionDetailPage() {
             <div className="border-t border-b border-gray-200 py-4">
               <p className="text-sm text-gray-600">Current Bid</p>
               <p className="text-3xl font-bold text-primary">
-                ₹
-                {(
-                  auction.currentBid ||
-                  auction.currentPrice ||
-                  0
-                ).toLocaleString()}
+                {formatINR(auction.currentBid || auction.currentPrice)}
               </p>
               <p className="text-sm text-gray-600 mt-1">
                 {auction.bidCount || auction.totalBids || 0}{" "}
@@ -562,7 +558,7 @@ export default function AuctionDetailPage() {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Starting Bid:</span>
                 <span className="font-medium text-gray-900">
-                  ₹{auction.startingPrice.toLocaleString()}
+                  {formatINR(auction.startingPrice)}
                 </span>
               </div>
               {auction.reservePrice && auction.reservePrice > 0 && (
