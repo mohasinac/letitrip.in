@@ -133,18 +133,27 @@ export default function AdminOrdersPage() {
       ]);
 
       setOrders(ordersData.data || []);
-      setTotalOrders(ordersData.total || 0);
-      setHasNextPage(ordersData.hasMore || false);
+      setTotalOrders(ordersData.count || 0);
+
+      // Check if it's cursor pagination
+      if ("hasNextPage" in ordersData.pagination) {
+        setHasNextPage(ordersData.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in ordersData.pagination) {
+          const cursorPagination = ordersData.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
+      }
+
       setShops(shopsData.data || []);
       setStats(statsData);
-
-      if (ordersData.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = ordersData.nextCursor || null;
-          return newCursors;
-        });
-      }
 
       hasLoadedRef.current = true;
     } catch (error) {

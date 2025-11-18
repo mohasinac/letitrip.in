@@ -42,7 +42,7 @@ export default function FeaturedShopsSection() {
             } as any);
             return {
               shop,
-              products: productsData.products,
+              products: productsData.data,
             };
           } catch (error) {
             console.error(

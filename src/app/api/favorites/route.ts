@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 // GET /api/favorites - Get user's favorites
 export async function GET(req: NextRequest) {
@@ -8,9 +9,6 @@ export async function GET(req: NextRequest) {
     const db = getFirestoreAdmin();
     const searchParams = req.nextUrl.searchParams;
 
-    // Pagination params
-    const startAfter = searchParams.get("startAfter");
-    const limit = parseInt(searchParams.get("limit") || "50");
     const sortOrder = (searchParams.get("sortOrder") || "desc") as
       | "asc"
       | "desc";
@@ -23,30 +21,20 @@ export async function GET(req: NextRequest) {
       .where("user_id", "==", userId)
       .orderBy("created_at", sortOrder);
 
-    // Apply cursor pagination
-    if (startAfter) {
-      const startDoc = await db
-        .collection(COLLECTIONS.FAVORITES)
-        .doc(startAfter)
-        .get();
-      if (startDoc.exists) {
-        query = query.startAfter(startDoc);
-      }
-    }
+    // Execute paginated query
+    const response = await executeCursorPaginatedQuery(
+      query,
+      searchParams,
+      (id) => db.collection(COLLECTIONS.FAVORITES).doc(id).get(),
+      (doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }),
+      50, // defaultLimit
+      200 // maxLimit
+    );
 
-    // Fetch limit + 1 to check if there's a next page
-    query = query.limit(limit + 1);
-    const snapshot = await query.get();
-    const docs = snapshot.docs;
-
-    // Check if there's a next page
-    const hasNextPage = docs.length > limit;
-    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-    const favorites = resultDocs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const favorites = response.data;
 
     // Get product details for each favorite (batch approach)
     const productIds = favorites.map((fav: any) => fav.product_id);
@@ -67,21 +55,10 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Get next cursor
-    const nextCursor =
-      hasNextPage && resultDocs.length > 0
-        ? resultDocs[resultDocs.length - 1].id
-        : null;
-
     return NextResponse.json({
-      success: true,
+      ...response,
       data: products,
       count: products.length,
-      pagination: {
-        limit,
-        hasNextPage,
-        nextCursor,
-      },
     });
   } catch (error) {
     console.error("Error fetching favorites:", error);

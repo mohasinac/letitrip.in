@@ -51,8 +51,9 @@ export default function AdminCouponsPage() {
         limit: 20,
       });
       setCoupons(response.data || []);
-      setTotalPages(response.totalPages || 1);
-      setTotalCoupons(response.total || 0);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / 20));
+      setTotalCoupons(response.count || 0);
     } catch (error: any) {
       // toast.error(error.message || "Failed to load coupons");
     } finally {

@@ -49,11 +49,8 @@ class CouponsService {
 
     return {
       data: toFECoupons(response.data),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

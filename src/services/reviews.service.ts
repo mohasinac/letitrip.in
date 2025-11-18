@@ -44,12 +44,8 @@ class ReviewsService {
     const response: any = await apiService.get(endpoint);
     return {
       data: toFEReviews(response.data || response.reviews || []),
-      total: response.count || 0,
-      page: 1, // Not used with cursor pagination
-      limit: response.pagination?.limit || 20,
-      totalPages: 1, // Not used with cursor pagination
-      hasMore: response.pagination?.hasNextPage || false,
-      nextCursor: response.pagination?.nextCursor || null,
+      count: response.count || 0,
+      pagination: response.pagination,
     };
   }
 

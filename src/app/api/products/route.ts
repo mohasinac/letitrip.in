@@ -12,6 +12,7 @@ import {
 import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
  * GET /api/products
@@ -40,8 +41,6 @@ export async function GET(request: NextRequest) {
         const search = searchParams.get("search");
         const sortBy = searchParams.get("sortBy") || "created_at";
         const sortOrder = searchParams.get("sortOrder") || "desc";
-        const limit = parseInt(searchParams.get("limit") || "50");
-        const startAfter = searchParams.get("startAfter"); // Cursor for pagination
 
         // For public requests, show only published products
         const role = user?.role ? (user.role as UserRole) : UserRole.USER;
@@ -107,52 +106,35 @@ export async function GET(request: NextRequest) {
           query = query.orderBy(sortField, sortOrder as any);
         }
 
-        // Apply cursor-based pagination
-        if (startAfter) {
-          try {
-            const startDoc = await Collections.products().doc(startAfter).get();
-            if (startDoc.exists) {
-              query = query.startAfter(startDoc);
-            }
-          } catch (error) {
-            console.error("Invalid cursor:", error);
-            // Continue without cursor if invalid
-          }
-        }
-
-        // Fetch one extra document to check if there's a next page
-        query = query.limit(limit + 1);
-
-        // Execute the query
-        const snapshot = await query.get();
-        const docs = snapshot.docs;
-
-        // Check if there's a next page
-        const hasNextPage = docs.length > limit;
-        const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-        // Transform documents
-        let products = resultDocs.map((doc) => {
-          const data: any = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            // Add camelCase aliases for snake_case fields
-            shopId: data.shop_id,
-            categoryId: data.category_id,
-            stockCount: data.stock_count,
-            featured: data.is_featured,
-            isDeleted: data.is_deleted,
-            originalPrice: data.original_price,
-            reviewCount: data.review_count,
-          };
-        });
+        // Execute paginated query
+        const response = await executeCursorPaginatedQuery(
+          query,
+          searchParams,
+          (id) => Collections.products().doc(id).get(),
+          (doc) => {
+            const data: any = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              // Add camelCase aliases for snake_case fields
+              shopId: data.shop_id,
+              categoryId: data.category_id,
+              stockCount: data.stock_count,
+              featured: data.is_featured,
+              isDeleted: data.is_deleted,
+              originalPrice: data.original_price,
+              reviewCount: data.review_count,
+            };
+          },
+          50, // defaultLimit
+          200 // maxLimit
+        );
 
         // Apply text search filter (if no other solution available)
         // TODO: Replace with Algolia/Typesense for better performance
         if (search) {
           const searchLower = search.toLowerCase();
-          products = products.filter(
+          response.data = response.data.filter(
             (p: any) =>
               p.name?.toLowerCase().includes(searchLower) ||
               p.description?.toLowerCase().includes(searchLower) ||
@@ -161,26 +143,10 @@ export async function GET(request: NextRequest) {
                 tag.toLowerCase().includes(searchLower)
               )
           );
+          response.count = response.data.length;
         }
 
-        // Get cursor for next page (last document ID)
-        const nextCursor =
-          hasNextPage && resultDocs.length > 0
-            ? resultDocs[resultDocs.length - 1].id
-            : null;
-
-        return NextResponse.json({
-          success: true,
-          data: products,
-          count: products.length,
-          pagination: {
-            limit,
-            hasNextPage: hasNextPage && products.length >= limit,
-            nextCursor,
-            // Note: We don't return total count for performance reasons
-            // Getting total count would require a separate query
-          },
-        });
+        return NextResponse.json(response);
       } catch (error) {
         console.error("Error fetching products:", error);
         return NextResponse.json(

@@ -114,8 +114,8 @@ export default function CreateAuctionWizardPage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const data = await categoriesService.list({});
-        setCategories(data || []);
+        const response = await categoriesService.list({});
+        setCategories(response.data || []);
       } catch (err) {
         console.error("Error loading categories:", err);
       }

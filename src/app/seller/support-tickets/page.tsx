@@ -59,7 +59,7 @@ function SellerSupportTicketsContent() {
         ...filterValues,
       });
       setTickets(response.data || []);
-      setTotalTickets(response.total || 0);
+      setTotalTickets(response.count || 0);
     } catch (error) {
       console.error("Failed to load tickets:", error);
     } finally {

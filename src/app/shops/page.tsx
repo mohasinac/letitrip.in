@@ -57,16 +57,23 @@ function ShopsContent() {
       });
 
       setShops(response.data || []);
-      setTotalShops(response.total || 0);
-      setHasNextPage(response.hasMore || false);
+      setTotalShops(response.count || 0);
 
-      // Store cursor for next page
-      if (response.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = response.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if ("hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store cursor for next page
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to load shops:", error);

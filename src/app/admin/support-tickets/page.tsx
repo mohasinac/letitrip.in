@@ -53,8 +53,9 @@ function SupportTicketsContent() {
       });
 
       setTickets(response.data);
-      setTotalPages(response.totalPages);
-      setTotalTickets(response.total);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / 20));
+      setTotalTickets(response.count);
     } catch (err: any) {
       console.error("Failed to load tickets:", err);
       setError(err.message || "Failed to load support tickets");

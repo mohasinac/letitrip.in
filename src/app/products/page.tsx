@@ -113,7 +113,7 @@ function ProductsContent() {
               if (field.key === "category_id") {
                 return {
                   ...field,
-                  options: (categoriesData || []).map((cat) => ({
+                  options: (categoriesData?.data || []).map((cat) => ({
                     label: cat.name,
                     value: cat.id,
                     count: cat.productCount || 0,
@@ -168,7 +168,7 @@ function ProductsContent() {
         limit: itemsPerPage,
       } as any);
 
-      const productsData = response.products || [];
+      const productsData = response.data || [];
       setProducts(productsData);
 
       // Update pagination state

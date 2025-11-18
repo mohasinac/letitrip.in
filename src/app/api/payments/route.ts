@@ -4,6 +4,7 @@ import {
   requireRole,
   getUserFromRequest,
 } from "@/app/api/middleware/rbac-auth";
+import { executeOffsetPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
  * GET /api/payments
@@ -30,8 +31,6 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get("endDate");
     const orderId = searchParams.get("orderId");
     const shopId = searchParams.get("shopId");
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const offset = parseInt(searchParams.get("offset") || "0");
 
     let query = Collections.payments().orderBy("created_at", "desc");
 
@@ -42,7 +41,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           data: [],
-          pagination: { limit, offset, hasMore: false },
+          count: 0,
+          pagination: {
+            page: 1,
+            limit: 20,
+            hasNextPage: false,
+            hasPrevPage: false,
+          },
         });
       }
       query = query.where("shop_id", "==", user.shopId) as any;
@@ -82,22 +87,19 @@ export async function GET(request: NextRequest) {
       ) as any;
     }
 
-    const snapshot = await query.limit(limit).offset(offset).get();
+    // Execute paginated query
+    const response = await executeOffsetPaginatedQuery(
+      query,
+      searchParams,
+      (doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }),
+      20, // defaultLimit
+      100 // maxLimit
+    );
 
-    const payments = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    return NextResponse.json({
-      success: true,
-      data: payments,
-      pagination: {
-        limit,
-        offset,
-        hasMore: snapshot.size === limit,
-      },
-    });
+    return NextResponse.json(response);
   } catch (error: any) {
     console.error("Failed to fetch payments:", error);
     return NextResponse.json(

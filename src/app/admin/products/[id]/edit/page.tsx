@@ -118,7 +118,7 @@ export default function AdminEditProductPage() {
       ]);
 
       setProduct(productData);
-      setCategories(categoriesData || []);
+      setCategories(categoriesData.data || []);
       setShops(shopsData.data || []);
 
       // Populate form

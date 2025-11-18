@@ -66,11 +66,8 @@ class SupportService {
 
     return {
       data: toFESupportTickets(response.data),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 
@@ -129,11 +126,8 @@ class SupportService {
 
     return {
       data: toFESupportTicketMessages(response.data),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

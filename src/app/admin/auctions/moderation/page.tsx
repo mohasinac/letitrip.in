@@ -45,8 +45,9 @@ export default function AuctionModerationPage() {
         limit: 20,
       });
       setAuctions(response.data || []);
-      setTotalPages(response.totalPages || 1);
-      setTotalAuctions(response.total || 0);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / 20));
+      setTotalAuctions(response.count || 0);
     } catch (error: any) {
       console.error("Failed to load auctions:", error);
     } finally {

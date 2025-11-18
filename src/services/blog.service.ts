@@ -1,4 +1,5 @@
 import { apiService } from "./api.service";
+import { PaginatedResponseBE } from "@/types";
 
 export interface BlogPost {
   id: string;
@@ -34,6 +35,7 @@ interface BlogFilters {
   limit?: number;
   sortBy?: "publishedAt" | "views" | "likes" | "createdAt";
   sortOrder?: "asc" | "desc";
+  startAfter?: string;
 }
 
 interface CreateBlogPostData {
@@ -58,7 +60,7 @@ class BlogService {
   // List blog posts (role-filtered)
   async list(
     filters?: BlogFilters
-  ): Promise<{ posts: BlogPost[]; pagination: any }> {
+  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -76,20 +78,12 @@ class BlogService {
     const queryString = params.toString();
     const endpoint = queryString ? `/blog?${queryString}` : "/blog";
 
-    const response = await apiService.get<any>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
-    // Support both old and new cursor-based pagination
     return {
-      posts: response.data || [],
-      pagination: {
-        total: response.count || response.total || 0,
-        page: response.page || 1,
-        limit: response.pagination?.limit || response.limit || 50,
-        totalPages: response.totalPages || 1,
-        hasMore: response.pagination?.hasNextPage || response.hasMore || false,
-        hasNextPage: response.pagination?.hasNextPage,
-        nextCursor: response.pagination?.nextCursor,
-      },
+      data: response.data || [],
+      count: response.count || 0,
+      pagination: response.pagination,
     };
   }
 
@@ -164,7 +158,7 @@ class BlogService {
     category: string,
     page?: number,
     limit?: number
-  ): Promise<{ posts: BlogPost[]; pagination: any }> {
+  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ category, status: "published", page, limit });
   }
 
@@ -173,7 +167,7 @@ class BlogService {
     tag: string,
     page?: number,
     limit?: number
-  ): Promise<{ posts: BlogPost[]; pagination: any }> {
+  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ tag, status: "published", page, limit });
   }
 
@@ -182,7 +176,7 @@ class BlogService {
     authorId: string,
     page?: number,
     limit?: number
-  ): Promise<{ posts: BlogPost[]; pagination: any }> {
+  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ author: authorId, status: "published", page, limit });
   }
 
@@ -191,7 +185,7 @@ class BlogService {
     query: string,
     page?: number,
     limit?: number
-  ): Promise<{ posts: BlogPost[]; pagination: any }> {
+  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ search: query, status: "published", page, limit });
   }
 }

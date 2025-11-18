@@ -64,20 +64,27 @@ export default function BlogListClient() {
       const startAfter = cursors[currentPage - 1];
       const response = await blogService.list({
         ...filters,
-        startAfter,
+        startAfter: startAfter || undefined,
         search: searchQuery || undefined,
       });
 
-      setBlogs(response.posts || []);
-      setHasNextPage(response.pagination?.hasNextPage || false);
+      setBlogs(response.data || []);
 
-      // Store next cursor
-      if (response.pagination?.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = response.pagination.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if (response.pagination && "hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
     } catch (err) {
       setError("Failed to load blog posts. Please try again later.");

@@ -62,16 +62,12 @@ class ShopsService {
       ? `${SHOP_ROUTES.LIST}?${queryString}`
       : SHOP_ROUTES.LIST;
 
-    const response: any = await apiService.get(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
-      data: (response.data || response.shops || []).map(toFEShopCard),
-      total: response.count || 0,
-      page: 1, // Not used with cursor pagination
-      limit: response.pagination?.limit || 20,
-      totalPages: 1, // Not used with cursor pagination
-      hasMore: response.pagination?.hasNextPage || false,
-      nextCursor: response.pagination?.nextCursor || null,
+      data: (response.data || []).map(toFEShopCard),
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 
@@ -163,11 +159,8 @@ class ShopsService {
 
     return {
       data: response.data.map(toFEProductCard),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

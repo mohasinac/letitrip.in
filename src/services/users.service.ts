@@ -51,11 +51,8 @@ class UsersService {
 
     return {
       data: toFEUsers(response.data),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

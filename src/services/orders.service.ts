@@ -33,17 +33,12 @@ class OrdersService {
     filters?: Partial<OrderFiltersBE>
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const endpoint = buildUrl(ORDER_ROUTES.LIST, filters);
-    const response: any = await apiService.get(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
       data: (response.data || []).map(toFEOrderCard),
-      total:
-        response.count || response.pagination?.total || response.total || 0,
-      page: response.pagination?.page || response.page || 1,
-      limit: response.pagination?.limit || response.limit || 50,
-      totalPages: response.pagination?.totalPages || response.totalPages || 1,
-      hasMore: response.pagination?.hasNextPage || response.hasMore || false,
-      nextCursor: response.pagination?.nextCursor,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

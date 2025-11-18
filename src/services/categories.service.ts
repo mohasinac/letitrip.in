@@ -46,32 +46,15 @@ class CategoriesService {
     const queryString = params.toString();
     const endpoint = queryString ? `/categories?${queryString}` : "/categories";
 
-    const response: any = await apiService.get(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<CategoryBE>>(
+      endpoint
+    );
 
-    // Support both old and new response formats
-    if (response.pagination) {
-      // New cursor-based format
-      return {
-        data: toFECategories(response.data || []),
-        total: response.count || 0,
-        page: 1,
-        limit: response.pagination.limit,
-        totalPages: 1,
-        hasMore: response.pagination.hasNextPage,
-        nextCursor: response.pagination.nextCursor,
-      };
-    } else {
-      // Old format or simple array
-      const categories = toFECategories(response.data || response || []);
-      return {
-        data: categories,
-        total: categories.length,
-        page: 1,
-        limit: categories.length,
-        totalPages: 1,
-        hasMore: false,
-      };
-    }
+    return {
+      data: toFECategories(response.data || []),
+      count: response.count,
+      pagination: response.pagination,
+    };
   }
 
   // Get category by ID
@@ -250,11 +233,8 @@ class CategoriesService {
     );
     return {
       data: res.data.map(toFEProductCard),
-      total: res.total,
-      page: res.page,
-      limit: res.limit,
-      totalPages: res.totalPages,
-      hasMore: res.hasMore,
+      count: res.count,
+      pagination: res.pagination,
     };
   }
 

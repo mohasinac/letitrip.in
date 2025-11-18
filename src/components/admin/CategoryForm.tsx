@@ -77,8 +77,8 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const data = await categoriesService.list();
-        const transformed = data.map((cat: any) => ({
+        const response = await categoriesService.list();
+        const transformed = response.data.map((cat: any) => ({
           id: cat.id,
           name: cat.name,
           slug: cat.slug,
