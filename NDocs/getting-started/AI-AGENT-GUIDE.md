@@ -28,6 +28,7 @@
 **Code Over Docs**: Focus on implementation, not documentation
 
 **Key Facts**:
+
 - 🏗️ **Architecture**: Service Layer Pattern (25+ services)
 - 🔥 **Backend**: Firebase (Firestore, Storage, Realtime DB, Auth)
 - 💰 **Cost**: $0/month (100% FREE tier)
@@ -42,13 +43,14 @@
 ### ALWAYS DO ✅
 
 1. **Use Service Layer** - NEVER call APIs directly from components
+
    ```typescript
    // ✅ CORRECT
-   import { productsService } from '@/services/products.service';
+   import { productsService } from "@/services/products.service";
    const products = await productsService.getProducts();
-   
+
    // ❌ WRONG
-   const response = await fetch('/api/products');
+   const response = await fetch("/api/products");
    ```
 
 2. **Read Existing Code First** - Before making changes, understand the current implementation
@@ -138,12 +140,14 @@ src/
 ### Technology Stack
 
 **Frontend**:
+
 - Next.js 16+ (App Router)
 - React 19
 - TypeScript 5.3 (Strict)
 - Tailwind CSS 3.4
 
 **Backend**:
+
 - Next.js API Routes
 - Firebase Admin SDK
 - Firestore (NoSQL Database)
@@ -152,6 +156,7 @@ src/
 - Firebase Auth
 
 **Hosting**:
+
 - Vercel (FREE tier)
 - Firebase Functions (Scheduled jobs)
 
@@ -182,36 +187,38 @@ Firebase Services (Firestore, Storage, etc.)
 **Rule**: All API calls MUST go through the service layer.
 
 **Bad Pattern** ❌:
+
 ```typescript
 // Component making direct API call
 export default function ProductList() {
   const [products, setProducts] = useState([]);
-  
+
   useEffect(() => {
     // ❌ NEVER DO THIS
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => setProducts(data.products));
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data.products));
   }, []);
 }
 ```
 
 **Good Pattern** ✅:
+
 ```typescript
 // Component using service layer
-import { productsService } from '@/services/products.service';
+import { productsService } from "@/services/products.service";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         // ✅ CORRECT - Use service layer
-        const data = await productsService.getProducts({ status: 'published' });
+        const data = await productsService.getProducts({ status: "published" });
         setProducts(data);
       } catch (err: any) {
         setError(err.message);
@@ -219,16 +226,16 @@ export default function ProductList() {
         setLoading(false);
       }
     };
-    
+
     fetchProducts();
   }, []);
-  
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  
+
   return (
     <div>
-      {products.map(product => (
+      {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
@@ -237,33 +244,34 @@ export default function ProductList() {
 ```
 
 **Creating a New Service**:
+
 ```typescript
 // src/services/feature.service.ts
-import { apiService } from './api.service';
-import { Feature, FeatureFilters } from '@/types/feature';
+import { apiService } from "./api.service";
+import { Feature, FeatureFilters } from "@/types/feature";
 
 class FeatureService {
-  private readonly BASE_PATH = '/api/features';
-  
+  private readonly BASE_PATH = "/api/features";
+
   async getAll(filters?: FeatureFilters): Promise<Feature[]> {
     const params = new URLSearchParams();
-    if (filters?.status) params.set('status', filters.status);
-    
-    const url = params.toString() 
-      ? `${this.BASE_PATH}?${params}` 
+    if (filters?.status) params.set("status", filters.status);
+
+    const url = params.toString()
+      ? `${this.BASE_PATH}?${params}`
       : this.BASE_PATH;
-    
+
     const response = await apiService.get<{ features: Feature[] }>(url);
     return response.features;
   }
-  
+
   async getById(id: string): Promise<Feature> {
     const response = await apiService.get<{ feature: Feature }>(
       `${this.BASE_PATH}/${id}`
     );
     return response.feature;
   }
-  
+
   async create(data: Partial<Feature>): Promise<Feature> {
     const response = await apiService.post<{ feature: Feature }>(
       this.BASE_PATH,
@@ -271,7 +279,7 @@ class FeatureService {
     );
     return response.feature;
   }
-  
+
   async update(id: string, data: Partial<Feature>): Promise<Feature> {
     const response = await apiService.patch<{ feature: Feature }>(
       `${this.BASE_PATH}/${id}`,
@@ -279,7 +287,7 @@ class FeatureService {
     );
     return response.feature;
   }
-  
+
   async delete(id: string): Promise<void> {
     await apiService.delete(`${this.BASE_PATH}/${id}`);
   }
@@ -293,6 +301,7 @@ export const featureService = new FeatureService();
 **Default to Server Components** (no `"use client"` directive needed).
 
 **Use Server Components for**:
+
 - Data fetching
 - Static content
 - Reading cookies/headers
@@ -300,15 +309,20 @@ export const featureService = new FeatureService();
 
 ```typescript
 // Server Component (default)
-export default async function ProductPage({ params }: { params: { id: string } }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   // Runs on server
   const product = await productsService.getById(params.id);
-  
+
   return <ProductDisplay product={product} />;
 }
 ```
 
 **Use Client Components when you need**:
+
 - Event handlers (onClick, onChange)
 - State hooks (useState, useReducer)
 - Effect hooks (useEffect)
@@ -316,22 +330,22 @@ export default async function ProductPage({ params }: { params: { id: string } }
 - Context (useContext)
 
 ```typescript
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function AddToCartButton({ productId }: { productId: string }) {
   const [loading, setLoading] = useState(false);
-  
+
   const handleClick = async () => {
     setLoading(true);
     await cartService.add(productId, 1);
     setLoading(false);
   };
-  
+
   return (
     <button onClick={handleClick} disabled={loading}>
-      {loading ? 'Adding...' : 'Add to Cart'}
+      {loading ? "Adding..." : "Add to Cart"}
     </button>
   );
 }
@@ -342,41 +356,41 @@ export default function AddToCartButton({ productId }: { productId: string }) {
 **Rule**: All file uploads must use `mediaService.upload()`.
 
 ```typescript
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { mediaService } from '@/services/media.service';
+import { useState } from "react";
+import { mediaService } from "@/services/media.service";
 
 export default function ProductForm() {
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    
+
     const files = Array.from(e.target.files);
     setUploading(true);
-    
+
     try {
-      const uploadPromises = files.map(file => 
+      const uploadPromises = files.map((file) =>
         mediaService.upload({
           file,
-          context: 'product' // or 'auction', 'shop', etc.
+          context: "product", // or 'auction', 'shop', etc.
         })
       );
-      
+
       const results = await Promise.all(uploadPromises);
-      const urls = results.map(r => r.url);
-      
-      setImages(prev => [...prev, ...urls]);
+      const urls = results.map((r) => r.url);
+
+      setImages((prev) => [...prev, ...urls]);
     } catch (error) {
-      console.error('Upload failed:', error);
-      alert('Failed to upload images');
+      console.error("Upload failed:", error);
+      alert("Failed to upload images");
     } finally {
       setUploading(false);
     }
   };
-  
+
   return (
     <div>
       <input
@@ -386,9 +400,9 @@ export default function ProductForm() {
         onChange={handleImageUpload}
         disabled={uploading}
       />
-      
+
       {uploading && <div>Uploading...</div>}
-      
+
       <div className="grid grid-cols-3 gap-4">
         {images.map((url, index) => (
           <img key={index} src={url} alt={`Product ${index + 1}`} />
@@ -405,7 +419,7 @@ export default function ProductForm() {
 
 ```typescript
 // ❌ WRONG
-const data: any = await fetch('/api/products');
+const data: any = await fetch("/api/products");
 
 // ✅ CORRECT
 interface ProductResponse {
@@ -416,15 +430,16 @@ const data: ProductResponse = await productsService.getProducts();
 ```
 
 **Use Utility Types**:
+
 ```typescript
 // Partial - Make all properties optional
 type ProductUpdate = Partial<Product>;
 
 // Pick - Select specific properties
-type ProductSummary = Pick<Product, 'id' | 'name' | 'price'>;
+type ProductSummary = Pick<Product, "id" | "name" | "price">;
 
 // Omit - Exclude specific properties
-type ProductInput = Omit<Product, 'id' | 'createdAt'>;
+type ProductInput = Omit<Product, "id" | "createdAt">;
 ```
 
 ### 5. Error Handling Pattern
@@ -435,11 +450,11 @@ Always handle errors in async operations:
 async function createProduct(data: ProductInput) {
   try {
     const product = await productsService.create(data);
-    toast.success('Product created successfully');
+    toast.success("Product created successfully");
     router.push(`/products/${product.id}`);
   } catch (error: any) {
-    console.error('Failed to create product:', error);
-    toast.error(error.message || 'Failed to create product');
+    console.error("Failed to create product:", error);
+    toast.error(error.message || "Failed to create product");
   }
 }
 ```
@@ -451,24 +466,26 @@ async function createProduct(data: ProductInput) {
 ### Task 1: Adding a New Page
 
 **Steps**:
+
 1. Create page in `src/app/(routes)/your-page/page.tsx`
 2. Decide if Server or Client Component
 3. Fetch data using service layer
 4. Style with Tailwind CSS
 
 **Example**:
+
 ```typescript
 // src/app/products/[id]/page.tsx
-import { productsService } from '@/services/products.service';
-import ProductDisplay from '@/components/products/ProductDisplay';
+import { productsService } from "@/services/products.service";
+import ProductDisplay from "@/components/products/ProductDisplay";
 
-export default async function ProductPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function ProductPage({
+  params,
+}: {
+  params: { id: string };
 }) {
   const product = await productsService.getById(params.id);
-  
+
   return <ProductDisplay product={product} />;
 }
 ```
@@ -476,40 +493,42 @@ export default async function ProductPage({
 ### Task 2: Adding a New API Route
 
 **Steps**:
+
 1. Create route in `src/app/api/your-endpoint/route.ts`
 2. Implement HTTP methods (GET, POST, PATCH, DELETE)
 3. Use Firebase Admin SDK for database operations
 4. Return consistent JSON responses
 
 **Example**:
+
 ```typescript
 // src/app/api/products/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    
+    const status = searchParams.get("status");
+
     const db = getFirestoreAdmin();
-    let query = db.collection('products');
-    
+    let query = db.collection("products");
+
     if (status) {
-      query = query.where('status', '==', status);
+      query = query.where("status", "==", status);
     }
-    
+
     const snapshot = await query.get();
-    const products = snapshot.docs.map(doc => ({
+    const products = snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
-    
+
     return NextResponse.json({ products });
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error("Error fetching products:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
+      { error: "Failed to fetch products" },
       { status: 500 }
     );
   }
@@ -518,30 +537,27 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     if (!body.name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
-    
+
     const db = getFirestoreAdmin();
-    const docRef = await db.collection('products').add({
+    const docRef = await db.collection("products").add({
       ...body,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     });
-    
+
     const doc = await docRef.get();
     const product = { id: doc.id, ...doc.data() };
-    
+
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error("Error creating product:", error);
     return NextResponse.json(
-      { error: 'Failed to create product' },
+      { error: "Failed to create product" },
       { status: 500 }
     );
   }
@@ -551,6 +567,7 @@ export async function POST(request: NextRequest) {
 ### Task 3: Adding a New Service
 
 **Steps**:
+
 1. Create service file in `src/services/your-service.service.ts`
 2. Define service class with methods
 3. Use `apiService` for HTTP calls
@@ -562,6 +579,7 @@ export async function POST(request: NextRequest) {
 ### Task 4: Creating a Component
 
 **Steps**:
+
 1. Determine if Server or Client Component
 2. Create in appropriate directory (`src/components/`)
 3. Define prop types with TypeScript
@@ -569,11 +587,12 @@ export async function POST(request: NextRequest) {
 5. Follow existing component patterns
 
 **Example**:
+
 ```typescript
 // src/components/products/ProductCard.tsx
-import Image from 'next/image';
-import Link from 'next/link';
-import { Product } from '@/types/product';
+import Image from "next/image";
+import Link from "next/link";
+import { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
@@ -581,25 +600,25 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link 
+    <Link
       href={`/products/${product.id}`}
       className="block rounded-lg border p-4 hover:shadow-lg transition"
     >
       <div className="relative h-48 mb-4">
         <Image
-          src={product.images[0] || '/placeholder.png'}
+          src={product.images[0] || "/placeholder.png"}
           alt={product.name}
           fill
           className="object-cover rounded"
         />
       </div>
-      
+
       <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
       <p className="text-gray-600 mb-2">{product.description}</p>
       <p className="text-2xl font-bold text-blue-600">
-        ₹{product.price.toLocaleString('en-IN')}
+        ₹{product.price.toLocaleString("en-IN")}
       </p>
-      
+
       {product.featured && (
         <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
           Featured
@@ -617,21 +636,25 @@ export default function ProductCard({ product }: ProductCardProps) {
 ### After Making Changes
 
 **1. Type Check**:
+
 ```bash
 npm run type-check
 ```
 
 **2. Build Test**:
+
 ```bash
 npm run build
 ```
 
 **3. Manual Testing**:
+
 - Test the specific feature you changed
 - Check related functionality
 - Test error scenarios
 
 **4. Use Test Workflows**:
+
 ```bash
 # Run all test workflows
 npm run test:workflows:all
@@ -643,6 +666,7 @@ npm run test:workflow:1
 ### Verification Checklist
 
 After implementing a feature:
+
 - ✅ TypeScript compiles without errors
 - ✅ Build succeeds
 - ✅ Feature works as expected
@@ -652,6 +676,7 @@ After implementing a feature:
 - ✅ Service layer used correctly
 
 #### Type Directory Structure
+
 ```
 src/types/
   /frontend/       - UI-optimized types (ProductFE, UserFE, etc.)
@@ -661,6 +686,7 @@ src/types/
 ```
 
 #### Usage Pattern
+
 ```typescript
 // Backend type matches API response
 interface ProductBE {
@@ -699,6 +725,7 @@ const ProductCard: React.FC<{ product: ProductFE }> = ({ product }) => (
 ```
 
 #### Documentation
+
 - **[TYPE-MIGRATION-GUIDE.md](../../TYPE-MIGRATION-GUIDE.md)** - Examples and best practices
 - **[TYPE-REFACTOR-PLAN.md](../../TYPE-REFACTOR-PLAN.md)** - Implementation roadmap
 - **[TYPE-SYSTEM-STATUS.md](../../TYPE-SYSTEM-STATUS.md)** - Current completion status
@@ -714,26 +741,26 @@ export default function ProductPage() {
 
   useEffect(() => {
     // DON'T DO THIS
-    fetch('/api/products')
-      .then(res => res.json())
+    fetch("/api/products")
+      .then((res) => res.json())
       .then(setProducts);
   }, []);
 }
 
 // ❌ WRONG: Direct apiService in component
-import { apiService } from '@/services/api.service';
+import { apiService } from "@/services/api.service";
 
 export default function ProductPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // DON'T DO THIS
-    apiService.get('/api/products').then(setProducts);
+    apiService.get("/api/products").then(setProducts);
   }, []);
 }
 
 // ✅ CORRECT: Use service layer
-import { productService } from '@/services/products.service';
+import { productService } from "@/services/products.service";
 
 export default function ProductPage() {
   const [products, setProducts] = useState([]);
@@ -745,6 +772,7 @@ export default function ProductPage() {
 ```
 
 **Service Layer Benefits**:
+
 - Centralized business logic
 - Consistent error handling
 - Type safety for all requests/responses
@@ -756,16 +784,16 @@ export default function ProductPage() {
 
 ```typescript
 // src/services/feature.service.ts
-import { apiService } from './api.service';
-import { Feature, FeatureFilters } from '@/types/feature';
+import { apiService } from "./api.service";
+import { Feature, FeatureFilters } from "@/types/feature";
 
 class FeatureService {
-  private readonly BASE_PATH = '/api/features';
+  private readonly BASE_PATH = "/api/features";
 
   async getFeatures(filters?: FeatureFilters): Promise<Feature[]> {
     const params = new URLSearchParams();
-    if (filters?.status) params.set('status', filters.status);
-    if (filters?.category) params.set('category', filters.category);
+    if (filters?.status) params.set("status", filters.status);
+    if (filters?.category) params.set("category", filters.category);
 
     const url = params.toString()
       ? `${this.BASE_PATH}?${params}`
@@ -810,8 +838,8 @@ export const featureService = new FeatureService();
 
 ```typescript
 // ✅ CORRECT: Service layer in hooks
-import { useState, useEffect } from 'react';
-import { productService } from '@/services/products.service';
+import { useState, useEffect } from "react";
+import { productService } from "@/services/products.service";
 
 export function useProducts(filters?) {
   const [products, setProducts] = useState([]);
@@ -841,12 +869,14 @@ export function useProducts(filters?) {
 **Error Handling in Services**:
 
 All services inherit error handling from `apiService`, which:
+
 - Automatically retries on network errors
 - Parses error responses
 - Throws typed errors
 - Logs errors to console (dev) or tracking service (prod)
 
 **Available Services** (always check before creating new ones):
+
 - `authService` - Authentication (login, register, logout)
 - `productService` - Product CRUD and search
 - `auctionService` - Auction operations and bidding
@@ -864,7 +894,7 @@ All services inherit error handling from `apiService`, which:
 
 ### 2. Component Patterns
 
-```typescript
+`````typescript
 // Client Components (interactive)
 "use client";
 import { useState } from "react";
@@ -888,7 +918,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   // Handle POST requests
 }
-```
+`````
 
 ### 4. Media Upload Pattern (Images & Videos)
 
@@ -1573,12 +1603,13 @@ Stay on FREE tier until reaching these thresholds:
 **Cause**: Import path incorrect or file doesn't exist
 
 **Solution**:
+
 ```typescript
 // Check import path uses @ alias
-import { productsService } from '@/services/products.service';
+import { productsService } from "@/services/products.service";
 
 // Not relative paths from deeply nested files
-import { productsService } from '../../../services/products.service';
+import { productsService } from "../../../services/products.service";
 ```
 
 **Issue 2: "Property does not exist on type" error**
@@ -1586,6 +1617,7 @@ import { productsService } from '../../../services/products.service';
 **Cause**: Using wrong type or type not updated
 
 **Solution**:
+
 1. Check type definition in `src/types/`
 2. Ensure service returns correct type
 3. Use proper TypeScript utility types
@@ -1595,6 +1627,7 @@ import { productsService } from '../../../services/products.service';
 **Cause**: Server-rendered HTML doesn't match client
 
 **Solution**:
+
 - Don't use browser-only APIs (localStorage, window) in Server Components
 - Use `useEffect` for browser-only code in Client Components
 - Ensure data fetching is consistent
@@ -1604,6 +1637,7 @@ import { productsService } from '../../../services/products.service';
 **Cause**: Route file not in correct location
 
 **Solution**:
+
 - API routes must be in `src/app/api/`
 - File must be named `route.ts`
 - Example: `src/app/api/products/route.ts` → `/api/products`
@@ -1613,6 +1647,7 @@ import { productsService } from '../../../services/products.service';
 **Cause**: Firestore security rules blocking request
 
 **Solution**:
+
 1. Check user is authenticated
 2. Verify security rules in Firebase Console
 3. Ensure correct permissions for role
@@ -1622,11 +1657,12 @@ import { productsService } from '../../../services/products.service';
 **Cause**: Not using mediaService or incorrect context
 
 **Solution**:
+
 ```typescript
 // ✅ CORRECT
 const result = await mediaService.upload({
   file,
-  context: 'product' // Use correct context
+  context: "product", // Use correct context
 });
 
 // ❌ WRONG
@@ -1649,36 +1685,42 @@ await uploadBytes(ref(storage, path), file); // Don't use Firebase SDK directly
 ### When to Use Each Tool
 
 **`semantic_search`** - Find code by concept or functionality
+
 ```
 Good query: "product creation form with image upload"
 Use when: Looking for implementation examples
 ```
 
 **`grep_search`** - Find exact strings or patterns
+
 ```
 Good query: "mediaService.upload"
 Use when: Finding all usages of specific function/variable
 ```
 
 **`file_search`** - Find files by name pattern
+
 ```
 Good query: "**/products/**/*.tsx"
 Use when: Locating specific files
 ```
 
 **`read_file`** - Read file contents
+
 ```
 Use when: Need to understand existing code before editing
 Always read before editing!
 ```
 
 **`insert_edit_into_file`** - Make changes to existing files
+
 ```
 Use when: Adding or modifying code
 Prefer this over replace_string_in_file for new code
 ```
 
 **`replace_string_in_file`** - Replace exact strings
+
 ```
 Use when: Updating specific text (like variable names)
 Include 3-5 lines of context before and after
@@ -1687,12 +1729,14 @@ Include 3-5 lines of context before and after
 ### Tool Usage Best Practices
 
 **Before Editing Any File**:
+
 1. Use `semantic_search` to understand the feature
 2. Use `read_file` to see current implementation
 3. Use `grep_search` to find related code
 4. Then make your edits
 
 **Example Workflow**:
+
 ```
 Task: "Add featured filter to product page"
 
@@ -1722,37 +1766,46 @@ Step 6: Verify
 ### Constants (Check These First!)
 
 **`src/constants/api-routes.ts`**
+
 - All API endpoint definitions
 - Use these constants instead of hardcoding URLs
 
 **`src/constants/database.ts`**
+
 - Firestore collection names
 - Always use these constants
 
 **`src/constants/inline-fields.ts`**
+
 - Form field configurations
 - For inline editing features
 
 **`src/constants/bulk-actions.ts`**
+
 - Bulk operation definitions
 - Admin/seller bulk actions
 
 ### Services (Never Skip!)
 
 **`src/services/api.service.ts`**
+
 - Base HTTP client
 - DON'T use directly; use specific services
 
 **`src/services/products.service.ts`**
+
 - Product CRUD operations
 
 **`src/services/auctions.service.ts`**
+
 - Auction operations & bidding
 
 **`src/services/cart.service.ts`**
+
 - Shopping cart management
 
 **`src/services/orders.service.ts`**
+
 - Order processing
 
 **25+ other services** - Check `src/services/index.ts`
@@ -1760,32 +1813,39 @@ Step 6: Verify
 ### Custom Libraries (FREE Tier)
 
 **`src/lib/memory-cache.ts`**
+
 - In-memory caching (Redis replacement)
 - Use for temporary data storage
 
 **`src/lib/rate-limiter.ts`**
+
 - API rate limiting
 - Prevents abuse
 
 **`src/lib/firebase-realtime.ts`**
+
 - Real-time auction bidding
 - WebSocket replacement
 
 **`src/lib/firebase-error-logger.ts`**
+
 - Error tracking (Sentry replacement)
 - Logs to Firebase Analytics
 
 **`src/lib/discord-notifier.ts`**
+
 - Team notifications
 - Sends alerts to Discord
 
 **`src/lib/date-utils.ts`**
+
 - Safe date handling
 - Always use `safeToISOString()`
 
 ### Types
 
 **`src/types/`**
+
 - All TypeScript type definitions
 - Check here before creating new types
 
@@ -1796,18 +1856,21 @@ Step 6: Verify
 ### First Time Working on This Project?
 
 **Phase 1: Foundation (30 minutes)**
+
 1. Read this AI Agent Guide completely
 2. Skim [Architecture Overview](../architecture/ARCHITECTURE-OVERVIEW.md)
 3. Review [Service Layer Guide](../architecture/SERVICE-LAYER-GUIDE.md)
 4. Check project structure in IDE
 
 **Phase 2: Patterns (30 minutes)**
+
 1. Read [Component Patterns](../architecture/COMPONENT-PATTERNS.md)
 2. Study [Development Guide](../development/DEVELOPMENT-GUIDE.md)
 3. Review existing services in `src/services/`
 4. Look at existing components in `src/components/`
 
 **Phase 3: Hands-On (Start Coding!)**
+
 1. Pick a simple task
 2. Search for similar implementations
 3. Read related code
@@ -1817,6 +1880,7 @@ Step 6: Verify
 ### Quick Reference Checklist
 
 Before starting any task, verify:
+
 - [ ] I understand the service layer pattern
 - [ ] I know to use Server Components by default
 - [ ] I will never call APIs directly from components
@@ -1860,33 +1924,34 @@ Before starting any task, verify:
 
 ### Core Services
 
-| Service | Import Path | Purpose |
-|---------|-------------|---------|
-| `productsService` | `@/services/products.service` | Product CRUD |
-| `auctionsService` | `@/services/auctions.service` | Auction management |
-| `cartService` | `@/services/cart.service` | Shopping cart |
-| `ordersService` | `@/services/orders.service` | Order processing |
-| `shopsService` | `@/services/shops.service` | Shop management |
-| `categoriesService` | `@/services/categories.service` | Categories |
-| `usersService` | `@/services/users.service` | User profiles |
-| `authService` | `@/services/auth.service` | Authentication |
-| `reviewsService` | `@/services/reviews.service` | Product reviews |
-| `addressesService` | `@/services/addresses.service` | User addresses |
-| `couponsService` | `@/services/coupons.service` | Discount coupons |
-| `supportService` | `@/services/support.service` | Support tickets |
-| `notificationsService` | `@/services/notifications.service` | Notifications |
-| `mediaService` | `@/services/media.service` | File uploads |
-| `favoritesService` | `@/services/favorites.service` | Wishlist |
+| Service                | Import Path                        | Purpose            |
+| ---------------------- | ---------------------------------- | ------------------ |
+| `productsService`      | `@/services/products.service`      | Product CRUD       |
+| `auctionsService`      | `@/services/auctions.service`      | Auction management |
+| `cartService`          | `@/services/cart.service`          | Shopping cart      |
+| `ordersService`        | `@/services/orders.service`        | Order processing   |
+| `shopsService`         | `@/services/shops.service`         | Shop management    |
+| `categoriesService`    | `@/services/categories.service`    | Categories         |
+| `usersService`         | `@/services/users.service`         | User profiles      |
+| `authService`          | `@/services/auth.service`          | Authentication     |
+| `reviewsService`       | `@/services/reviews.service`       | Product reviews    |
+| `addressesService`     | `@/services/addresses.service`     | User addresses     |
+| `couponsService`       | `@/services/coupons.service`       | Discount coupons   |
+| `supportService`       | `@/services/support.service`       | Support tickets    |
+| `notificationsService` | `@/services/notifications.service` | Notifications      |
+| `mediaService`         | `@/services/media.service`         | File uploads       |
+| `favoritesService`     | `@/services/favorites.service`     | Wishlist           |
 
 **Usage Example**:
+
 ```typescript
-import { productsService } from '@/services/products.service';
+import { productsService } from "@/services/products.service";
 
 const products = await productsService.getProducts({
-  status: 'published',
-  categoryId: 'electronics',
+  status: "published",
+  categoryId: "electronics",
   page: 1,
-  limit: 20
+  limit: 20,
 });
 ```
 
@@ -1895,6 +1960,7 @@ const products = await productsService.getProducts({
 ## 📞 Getting Help
 
 **Documentation**:
+
 - 📖 [Complete Docs](../README.md) - Master index
 - 🏗️ [Architecture](../architecture/ARCHITECTURE-OVERVIEW.md) - System design
 - 💻 [Development](../development/DEVELOPMENT-GUIDE.md) - Coding guide
@@ -1902,12 +1968,14 @@ const products = await productsService.getProducts({
 - 🔧 [Common Issues](../guides/COMMON-ISSUES.md) - Troubleshooting
 
 **Code Examples**:
+
 - Services: `src/services/`
 - Components: `src/components/`
 - API Routes: `src/app/api/`
 - Types: `src/types/`
 
 **Test Workflows**:
+
 - Location: `src/lib/test-workflows/`
 - Run all: `npm run test:workflows:all`
 - 11 comprehensive E2E workflows with 140+ steps
@@ -1934,14 +2002,17 @@ Before completing any task:
 ## 🎯 Quick Decision Tree
 
 **"Should I use Server or Client Component?"**
+
 - Need interactivity? → Client
 - Just displaying data? → Server
 
 **"How do I fetch data?"**
+
 - Always use service layer
 - Never direct API calls
 
 **"Where do I put this code?"**
+
 - Page? → `src/app/(routes)/`
 - API? → `src/app/api/`
 - Component? → `src/components/`
@@ -1949,10 +2020,12 @@ Before completing any task:
 - Service? → `src/services/`
 
 **"How do I upload files?"**
+
 - Always use `mediaService.upload()`
 - Never use Firebase SDK directly
 
 **"I'm stuck, what do I do?"**
+
 1. Read this guide
 2. Search existing code
 3. Check [Common Issues](../guides/COMMON-ISSUES.md)
