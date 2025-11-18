@@ -340,3 +340,37 @@ export interface PaginatedResponseFE<T> {
   count: number;
   pagination: CursorPaginationMeta | OffsetPaginationMeta;
 }
+
+// ==================== BULK ACTIONS ====================
+
+/**
+ * Result of a bulk action operation on a single item
+ */
+export interface BulkActionResult {
+  id: string;
+  success: boolean;
+  error?: string;
+  data?: any;
+}
+
+/**
+ * Response from bulk action API
+ */
+export interface BulkActionResponse {
+  success: boolean;
+  results: BulkActionResult[];
+  summary?: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+}
+
+/**
+ * Bulk action request
+ */
+export interface BulkActionRequest {
+  action: string;
+  ids: string[];
+  data?: any;
+}
