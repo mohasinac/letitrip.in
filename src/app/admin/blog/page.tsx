@@ -82,13 +82,13 @@ export default function AdminBlogPage() {
         ...filterValues,
       });
 
-      const data = Array.isArray(response) ? response : response.posts || [];
+      const data = Array.isArray(response) ? response : response.data || [];
       setPosts(data);
       setTotalPages(
-        Array.isArray(response) ? 1 : response.pagination?.totalPages || 1
+        Array.isArray(response) ? 1 : Math.ceil((response.count || 0) / limit)
       );
       setTotalPosts(
-        Array.isArray(response) ? data.length : response.pagination?.total || 0
+        Array.isArray(response) ? data.length : response.count || 0
       );
 
       // Calculate stats

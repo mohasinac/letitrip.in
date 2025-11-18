@@ -96,7 +96,7 @@ export default function ShopPage({ params }: ShopPageProps) {
   const loadProducts = async () => {
     try {
       setProductsLoading(true);
-      const data = await productsService.list({
+      const response = await productsService.list({
         shopId: slug,
         search: searchQuery || undefined,
         categoryId: productFilters.categories?.[0],
@@ -117,7 +117,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         rating: productFilters.rating,
       });
 
-      const productsData = data.products || [];
+      const productsData = response.data || [];
       setProducts(productsData);
 
       // TODO: Brand extraction requires full ProductFE, not ProductCardFE
@@ -159,8 +159,8 @@ export default function ShopPage({ params }: ShopPageProps) {
         apiFilters.endingSoon = true;
       }
 
-      const data = await auctionsService.list(apiFilters);
-      setAuctions(data.data || []);
+      const response = await auctionsService.list(apiFilters);
+      setAuctions(response.data || []);
     } catch (error) {
       console.error("Failed to load auctions:", error);
     } finally {

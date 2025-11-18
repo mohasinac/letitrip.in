@@ -126,11 +126,11 @@ function CategoryDetailContent({ params }: PageProps) {
       }
 
       // Load subcategories
-      const subcats = await categoriesService.list({
+      const subcatsResponse = await categoriesService.list({
         parentId: categoryData.id,
         isActive: true,
       });
-      setSubcategories(subcats);
+      setSubcategories(subcatsResponse.data);
     } catch (error: any) {
       console.error("Failed to load category:", error);
       router.push(notFound.category(slug, error));
@@ -151,10 +151,8 @@ function CategoryDetailContent({ params }: PageProps) {
         sortBy: sortBy as any,
         limit: 100,
       });
-      setProducts(response.products || []);
-      setTotalProducts(
-        response.pagination?.total || response.products?.length || 0
-      );
+      setProducts(response.data || []);
+      setTotalProducts(response.count || response.data?.length || 0);
     } catch (error) {
       console.error("Failed to load products:", error);
       setProducts([]);

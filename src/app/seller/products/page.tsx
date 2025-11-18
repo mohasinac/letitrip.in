@@ -73,10 +73,8 @@ export default function ProductsPage() {
         search: searchQuery || undefined,
         ...filterValues,
       });
-      setProducts(response.products || []);
-      setTotalProducts(
-        response.pagination?.total || response.products?.length || 0
-      );
+      setProducts(response.data || []);
+      setTotalProducts(response.count || response.data?.length || 0);
     } catch (error) {
       console.error("Failed to load products:", error);
     } finally {
@@ -87,7 +85,9 @@ export default function ProductsPage() {
   const loadCategories = async () => {
     try {
       const categories = await categoriesService.list({ isActive: true });
-      setCategories(categories.map((cat) => ({ id: cat.id, name: cat.name })));
+      setCategories(
+        categories.data.map((cat) => ({ id: cat.id, name: cat.name }))
+      );
     } catch (error) {
       console.error("Failed to load categories:", error);
     }

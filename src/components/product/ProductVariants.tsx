@@ -32,14 +32,14 @@ export function ProductVariants({
     try {
       setLoading(true);
       // Fetch products from EXACT same category only
-      const data = await productsService.list({
+      const response = await productsService.list({
         categoryId,
         status: "active" as any,
         limit: 20,
       });
 
       // Filter out current product and ensure exact category match
-      const filtered = (data.products || []).filter(
+      const filtered = (response.data || []).filter(
         (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId
       );
 

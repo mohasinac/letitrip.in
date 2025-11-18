@@ -17,22 +17,39 @@ export interface PaginationParams {
 }
 
 /**
- * Pagination Metadata (Response)
+ * Cursor-based pagination metadata
  */
-export interface PaginationMeta {
+export interface CursorPaginationMeta {
+  limit: number;
+  hasNextPage: boolean;
+  nextCursor: string | null;
+  count: number;
+}
+
+/**
+ * Offset-based pagination metadata
+ */
+export interface OffsetPaginationMeta {
   page: number;
   limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  total?: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  totalPages?: number;
 }
+
+/**
+ * Pagination Metadata (Response) - Union of cursor and offset types
+ */
+export type PaginationMeta = CursorPaginationMeta | OffsetPaginationMeta;
 
 /**
  * Paginated Response
  */
 export interface PaginatedResponse<T> {
+  success: boolean;
   data: T[];
+  count: number;
   pagination: PaginationMeta;
 }
 

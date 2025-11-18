@@ -112,16 +112,24 @@ export default function AdminUsersPage() {
       if (statusFilter !== "all") filters.status = statusFilter;
 
       console.log("[Users] Loading users with filters:", filters);
-      const data = await usersService.list(filters);
-      setUsers((data.data || []) as any);
-      setHasNextPage(data.hasMore || false);
+      const response = await usersService.list(filters);
+      setUsers((response.data || []) as any);
 
-      if (data.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = data.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if ("hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
 
       hasLoadedRef.current = true;

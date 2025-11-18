@@ -34,10 +34,10 @@ function SearchContent() {
       });
       // For now, just return products - proper multi-type search would need separate services
       setResults({
-        products: response.products || [],
+        products: response.data || [],
         shops: [],
         categories: [],
-        total: response.pagination?.total || 0,
+        total: response.count || 0,
       });
     } catch (error) {
       console.error("Search failed:", error);

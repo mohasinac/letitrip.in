@@ -52,11 +52,11 @@ export default function CategorySelectorWithCreate({
     try {
       setLoading(true);
       // Add timestamp to bypass cache
-      const data = await categoriesService.list({
+      const response = await categoriesService.list({
         isActive: true,
         _t: Date.now(), // Cache buster
       });
-      const transformed = data.map((cat: any) => ({
+      const transformed = response.data.map((cat: any) => ({
         id: cat.id,
         name: cat.name,
         slug: cat.slug,

@@ -6,6 +6,7 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
  * GET /api/orders
@@ -19,10 +20,6 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-
-    // Pagination params
-    const startAfter = searchParams.get("startAfter");
-    const limit = parseInt(searchParams.get("limit") || "50", 10);
 
     // Filter params
     const shopId = searchParams.get("shop_id");
@@ -47,9 +44,10 @@ export async function GET(request: NextRequest) {
           data: [],
           count: 0,
           pagination: {
-            limit,
+            limit: 50,
             hasNextPage: false,
             nextCursor: null,
+            count: 0,
           },
         });
       const owns = await userOwnsShop(shopId, user!.uid);
@@ -67,9 +65,10 @@ export async function GET(request: NextRequest) {
         data: [],
         count: 0,
         pagination: {
-          limit,
+          limit: 50,
           hasNextPage: false,
           nextCursor: null,
+          count: 0,
         },
       });
     }
@@ -87,41 +86,17 @@ export async function GET(request: NextRequest) {
     const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
     query = query.orderBy(sortField, sortOrder);
 
-    // Apply cursor pagination
-    if (startAfter) {
-      const startDoc = await Collections.orders().doc(startAfter).get();
-      if (startDoc.exists) {
-        query = query.startAfter(startDoc);
-      }
-    }
+    // Execute paginated query
+    const response = await executeCursorPaginatedQuery(
+      query,
+      searchParams,
+      (id) => Collections.orders().doc(id).get(),
+      (doc) => ({ id: doc.id, ...doc.data() }),
+      50, // defaultLimit
+      200 // maxLimit
+    );
 
-    // Fetch limit + 1 to check if there's a next page
-    query = query.limit(limit + 1);
-    const snapshot = await query.get();
-    const docs = snapshot.docs;
-
-    // Check if there's a next page
-    const hasNextPage = docs.length > limit;
-    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-    const orders = resultDocs.map((d) => ({ id: d.id, ...d.data() }));
-
-    // Get next cursor
-    const nextCursor =
-      hasNextPage && resultDocs.length > 0
-        ? resultDocs[resultDocs.length - 1].id
-        : null;
-
-    return NextResponse.json({
-      success: true,
-      data: orders,
-      count: orders.length,
-      pagination: {
-        limit,
-        hasNextPage,
-        nextCursor,
-      },
-    });
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Orders list error:", error);
     return NextResponse.json(

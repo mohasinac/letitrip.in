@@ -143,9 +143,9 @@ export default function CategoriesPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await categoriesService.list();
+      const response = await categoriesService.list();
       // Map Category type to component's expected format
-      const mappedData = data.map((cat) => ({
+      const mappedData = response.data.map((cat) => ({
         ...cat,
         parent_id: cat.parentId || null,
         is_featured: cat.featured || false,

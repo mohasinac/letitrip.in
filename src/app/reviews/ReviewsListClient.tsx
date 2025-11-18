@@ -34,7 +34,8 @@ export default function ReviewsListClient() {
         setTotalPages(1);
       } else {
         setReviews(response.data || []);
-        setTotalPages(response.totalPages || 1);
+        // Calculate total pages from count
+        setTotalPages(Math.ceil((response.count || 0) / 20));
       }
     } catch (err) {
       setError("Failed to load reviews. Please try again later.");

@@ -69,15 +69,22 @@ export default function CategoriesPage() {
       });
 
       setCategories(response.data || []);
-      setHasNextPage(response.hasMore || false);
 
-      // Store next cursor
-      if (response.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = response.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if ("hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to load categories:", error);

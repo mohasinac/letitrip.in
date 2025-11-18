@@ -35,7 +35,7 @@ class ProductsService {
    */
   async list(
     filters?: ProductFiltersFE
-  ): Promise<{ products: ProductCardFE[]; pagination: any }> {
+  ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     // Convert FE filters to BE filters - simplified mapping
     const beFilters: any = {
       shopId: filters?.shopId,
@@ -56,7 +56,8 @@ class ProductsService {
 
     // Transform BE list items to FE cards
     return {
-      products: toFEProductCards(response.data || []),
+      data: toFEProductCards(response.data || []),
+      count: response.count || 0,
       pagination: response.pagination,
     };
   }

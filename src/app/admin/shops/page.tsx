@@ -103,8 +103,9 @@ export default function AdminShopsPage() {
       const response = await shopsService.list(filters);
 
       setShops(response.data || []);
-      setTotalPages(response.totalPages || 1);
-      setTotalShops(response.total || 0);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / limit));
+      setTotalShops(response.count || 0);
       hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load shops:", error);

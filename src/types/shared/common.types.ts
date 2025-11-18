@@ -301,28 +301,42 @@ export enum ReturnReason {
 // ==================== PAGINATION ====================
 
 /**
- * Paginated Response (Backend) - API response with nested pagination
+ * Cursor-based pagination metadata (from API)
  */
-export interface PaginatedResponseBE<T> {
-  data: T[];
-  total: number;
-  page: number;
+export interface CursorPaginationMeta {
   limit: number;
-  totalPages: number;
-  hasMore: boolean;
+  hasNextPage: boolean;
+  nextCursor: string | null;
+  count: number;
 }
 
 /**
- * Paginated Response (Frontend) - Flat structure for UI
- * Supports both page-based and cursor-based pagination
+ * Offset-based pagination metadata (from API)
+ */
+export interface OffsetPaginationMeta {
+  page: number;
+  limit: number;
+  total?: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  totalPages?: number;
+}
+
+/**
+ * Paginated Response (Backend) - API response with cursor-based pagination
+ */
+export interface PaginatedResponseBE<T> {
+  success: boolean;
+  data: T[];
+  count: number;
+  pagination: CursorPaginationMeta | OffsetPaginationMeta;
+}
+
+/**
+ * Paginated Response (Frontend) - Simplified for UI consumption
  */
 export interface PaginatedResponseFE<T> {
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  hasMore: boolean;
-  nextCursor?: string | null; // For cursor-based pagination
-  prevCursor?: string | null; // For cursor-based pagination
+  count: number;
+  pagination: CursorPaginationMeta | OffsetPaginationMeta;
 }

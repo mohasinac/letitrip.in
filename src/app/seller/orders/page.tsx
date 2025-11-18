@@ -58,15 +58,23 @@ export default function SellerOrdersPage() {
       } as any);
 
       setOrders(response.data || []);
-      setTotalOrders(response.total || 0);
-      setHasNextPage(response.hasMore || false);
+      setTotalOrders(response.count || 0);
 
-      if (response.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = response.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if ("hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
     } catch (error: any) {
       console.error("Failed to load orders:", error);

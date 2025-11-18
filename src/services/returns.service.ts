@@ -57,11 +57,8 @@ class ReturnsService {
 
     return {
       data: response.data.map(returnBEtoFE),
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
-      hasMore: response.hasMore,
+      count: response.count,
+      pagination: response.pagination,
     };
   }
 

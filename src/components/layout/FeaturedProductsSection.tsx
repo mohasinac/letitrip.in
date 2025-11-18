@@ -24,7 +24,7 @@ export default function FeaturedProductsSection() {
         limit: 10,
       });
 
-      const productsList = response.products || [];
+      const productsList = response.data || [];
 
       // If less than 10, try to fill with featured products
       if (productsList.length < 10) {
@@ -33,7 +33,7 @@ export default function FeaturedProductsSection() {
           limit: 10 - productsList.length,
         });
 
-        const additionalProducts = additionalResponse.products || [];
+        const additionalProducts = additionalResponse.data || [];
 
         setProducts([...productsList, ...additionalProducts].slice(0, 10));
       } else {

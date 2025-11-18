@@ -32,14 +32,14 @@ export function SellerProducts({
     try {
       setLoading(true);
       // Fetch seller's other products from same category or parent categories
-      const data = await productsService.list({
+      const response = await productsService.list({
         shopId,
         status: "active" as any,
         limit: 30,
       });
 
       // Filter out current product and prioritize same category
-      const filtered = (data.products || []).filter(
+      const filtered = (response.data || []).filter(
         (p: ProductCardFE) => p.id !== productId
       );
 

@@ -55,6 +55,7 @@ export function applyFilters(query: Query, filters: QueryFilter[]): Query {
 
 /**
  * Apply pagination to a query
+ * @deprecated Use the pagination utilities from @/app/api/lib/utils/pagination instead
  */
 export function applyPagination(
   query: Query,

@@ -102,9 +102,10 @@ export default function AdminProductsPage() {
       console.log("[Products] Loading with filters:", filters);
       const response = await productsService.list(filters);
 
-      setProducts(response.products || []);
-      setTotalPages(response.pagination?.totalPages || 1);
-      setTotalProducts(response.pagination?.total || 0);
+      setProducts(response.data || []);
+      // Note: Cursor pagination doesn't have totalPages, using count for total
+      setTotalPages(Math.ceil((response.count || 0) / limit));
+      setTotalProducts(response.count || 0);
       hasLoadedRef.current = true;
     } catch (error) {
       console.error("Failed to load products:", error);

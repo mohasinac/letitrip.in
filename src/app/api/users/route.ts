@@ -5,6 +5,10 @@ import {
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
 import { ApiError } from "@/lib/api-errors";
+import {
+  parsePaginationParams,
+  executeCursorPaginatedQuery,
+} from "@/app/api/lib/utils/pagination";
 
 /**
  * GET /api/users
@@ -20,10 +24,6 @@ export async function GET(request: NextRequest) {
 
     const { user } = authResult;
     const { searchParams } = new URL(request.url);
-
-    // Pagination params
-    const startAfter = searchParams.get("startAfter");
-    const limit = parseInt(searchParams.get("limit") || "50");
 
     // Filter params
     const role = searchParams.get("role");
@@ -55,55 +55,32 @@ export async function GET(request: NextRequest) {
     const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
     query = query.orderBy(sortField, sortOrder);
 
-    // Apply cursor pagination
-    if (startAfter) {
-      const startDoc = await Collections.users().doc(startAfter).get();
-      if (startDoc.exists) {
-        query = query.startAfter(startDoc);
-      }
-    }
-
-    // Fetch limit + 1 to check if there's a next page
-    query = query.limit(limit + 1);
-    const snapshot = await query.get();
-    const docs = snapshot.docs;
-
-    // Check if there's a next page
-    const hasNextPage = docs.length > limit;
-    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-    let users = resultDocs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Execute paginated query
+    const response = await executeCursorPaginatedQuery(
+      query,
+      searchParams,
+      (id) => Collections.users().doc(id).get(),
+      (doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }),
+      50, // defaultLimit
+      200 // maxLimit
+    );
 
     // Client-side search filter (Firestore doesn't support full-text search)
     if (search) {
       const searchLower = search.toLowerCase();
-      users = users.filter(
+      response.data = response.data.filter(
         (user: any) =>
           user.email?.toLowerCase().includes(searchLower) ||
           user.name?.toLowerCase().includes(searchLower) ||
           user.phone?.includes(search)
       );
+      response.count = response.data.length;
     }
 
-    // Get next cursor
-    const nextCursor =
-      hasNextPage && resultDocs.length > 0
-        ? resultDocs[resultDocs.length - 1].id
-        : null;
-
-    return NextResponse.json({
-      success: true,
-      data: users,
-      count: users.length,
-      pagination: {
-        limit,
-        hasNextPage,
-        nextCursor,
-      },
-    });
+    return NextResponse.json(response);
   } catch (error: any) {
     console.error("Failed to fetch users:", error);
 

@@ -101,8 +101,9 @@ export default function AdminAuctionsPage() {
       const response = await auctionsService.list(filters);
 
       setAuctions(response.data || []);
-      setTotalPages(response.totalPages || 1);
-      setTotalAuctions(response.total || 0);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / limit));
+      setTotalAuctions(response.count || 0);
     } catch (error) {
       console.error("Failed to load auctions:", error);
       setError(
@@ -126,10 +127,10 @@ export default function AdminAuctionsPage() {
       );
 
       setStats({
-        live: liveRes.total || 0,
-        scheduled: scheduledRes.total || 0,
-        ended: endedRes.total || 0,
-        cancelled: cancelledRes.total || 0,
+        live: liveRes.count || 0,
+        scheduled: scheduledRes.count || 0,
+        ended: endedRes.count || 0,
+        cancelled: cancelledRes.count || 0,
       });
     } catch (error) {
       console.error("Failed to load stats:", error);

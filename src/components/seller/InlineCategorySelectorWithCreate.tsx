@@ -49,8 +49,8 @@ export default function InlineCategorySelectorWithCreate({
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await categoriesService.list({ isActive: true });
-      const leafCategories = data
+      const response = await categoriesService.list({ isActive: true });
+      const leafCategories = response.data
         .filter((cat: any) => !cat.has_children)
         .map((cat: any) => ({
           id: cat.id,

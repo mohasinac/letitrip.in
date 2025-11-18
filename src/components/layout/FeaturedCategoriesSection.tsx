@@ -39,7 +39,7 @@ export default function FeaturedCategoriesSection() {
             } as any);
             return {
               category,
-              products: productsData.products,
+              products: productsData.data,
             };
           } catch (error) {
             console.error(

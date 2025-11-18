@@ -52,22 +52,29 @@ export default function OrdersPage() {
     try {
       setLoading(true);
       const startAfter = cursors[currentPage - 1];
-      const data = await ordersService.list({
+      const response = await ordersService.list({
         ...filters,
         startAfter: startAfter || undefined,
         limit: 20,
       } as any);
 
-      setOrders(data.data || []);
-      setHasNextPage(data.hasMore || false);
+      setOrders(response.data || []);
 
-      // Store next cursor
-      if (data.nextCursor) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[currentPage] = data.nextCursor || null;
-          return newCursors;
-        });
+      // Check if it's cursor pagination
+      if ("hasNextPage" in response.pagination) {
+        setHasNextPage(response.pagination.hasNextPage || false);
+
+        // Store next cursor
+        if ("nextCursor" in response.pagination) {
+          const cursorPagination = response.pagination as any;
+          if (cursorPagination.nextCursor) {
+            setCursors((prev) => {
+              const newCursors = [...prev];
+              newCursors[currentPage] = cursorPagination.nextCursor || null;
+              return newCursors;
+            });
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to load orders:", error);

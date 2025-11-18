@@ -41,8 +41,9 @@ export default function AdminReviewsPage() {
         limit: 20,
       });
       setReviews(response.data || []);
-      setTotalPages(response.totalPages || 1);
-      setTotalReviews(response.total || 0);
+      // Calculate total pages from count
+      setTotalPages(Math.ceil((response.count || 0) / 20));
+      setTotalReviews(response.count || 0);
     } catch (error: any) {
       // toast.error(error.message || "Failed to load reviews");
     } finally {

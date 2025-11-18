@@ -5,6 +5,7 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
  * Unified Reviews API with RBAC
@@ -18,10 +19,6 @@ export async function GET(req: NextRequest) {
     const db = getFirestoreAdmin();
     const user = await getUserFromRequest(req);
     const { searchParams } = new URL(req.url);
-
-    // Pagination params
-    const startAfter = searchParams.get("startAfter");
-    const limit = parseInt(searchParams.get("limit") || "20");
 
     // Filter params
     const productId = searchParams.get("product_id");
@@ -85,37 +82,18 @@ export async function GET(req: NextRequest) {
     // Add sorting
     query = query.orderBy(sortField, sortOrder);
 
-    // Apply cursor pagination
-    if (startAfter) {
-      const startDoc = await db
-        .collection(COLLECTIONS.REVIEWS)
-        .doc(startAfter)
-        .get();
-      if (startDoc.exists) {
-        query = query.startAfter(startDoc);
-      }
-    }
-
-    // Fetch limit + 1 to check if there's a next page
-    query = query.limit(limit + 1);
-    const snapshot = await query.get();
-    const docs = snapshot.docs;
-
-    // Check if there's a next page
-    const hasNextPage = docs.length > limit;
-    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-    // Transform data
-    const reviews = resultDocs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Get next cursor
-    const nextCursor =
-      hasNextPage && resultDocs.length > 0
-        ? resultDocs[resultDocs.length - 1].id
-        : null;
+    // Execute paginated query
+    const response = await executeCursorPaginatedQuery(
+      query,
+      searchParams,
+      (id) => db.collection(COLLECTIONS.REVIEWS).doc(id).get(),
+      (doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }),
+      20, // defaultLimit
+      100 // maxLimit
+    );
 
     // Calculate stats if filtering by product
     let stats = null;
@@ -153,15 +131,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
-      data: reviews,
-      count: reviews.length,
+      ...response,
       stats,
-      pagination: {
-        limit,
-        hasNextPage,
-        nextCursor,
-      },
     });
   } catch (error) {
     console.error("Error fetching reviews:", error);

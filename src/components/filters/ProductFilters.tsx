@@ -47,8 +47,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
   const loadCategories = async () => {
     try {
-      const data = await categoriesService.list({ isActive: true });
-      setCategories(data);
+      const response = await categoriesService.list({ isActive: true });
+      setCategories(response.data);
     } catch (error) {
       console.error("Failed to load categories:", error);
     } finally {
