@@ -88,10 +88,11 @@ export default function MainNavBar({
         {/* Mobile Menu Button */}
         <button
           onClick={onMobileMenuToggle}
-          className="lg:hidden p-2 hover:bg-gray-700 rounded"
-          aria-label="Toggle menu"
+          className="lg:hidden p-2 hover:bg-gray-700 rounded focus-visible-ring touch-target"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-6 h-6" aria-hidden="true" />
         </button>
 
         {/* Logo */}
@@ -117,11 +118,14 @@ export default function MainNavBar({
                   setIsSellerMenuOpen(false);
                   setIsUserMenuOpen(false);
                 }}
-                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
+                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
+                aria-expanded={isAdminMenuOpen}
+                aria-haspopup="true"
+                aria-label="Admin menu"
               >
-                <LayoutDashboard className="w-5 h-5" />
+                <LayoutDashboard className="w-5 h-5" aria-hidden="true" />
                 <span>Admin</span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </button>
 
               {/* Admin Dropdown */}
@@ -175,11 +179,14 @@ export default function MainNavBar({
                   setIsAdminMenuOpen(false);
                   setIsUserMenuOpen(false);
                 }}
-                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded"
+                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
+                aria-expanded={isSellerMenuOpen}
+                aria-haspopup="true"
+                aria-label="Seller menu"
               >
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag className="w-5 h-5" aria-hidden="true" />
                 <span>Seller</span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </button>
 
               {/* Seller Dropdown */}
@@ -239,10 +246,10 @@ export default function MainNavBar({
           {/* Search Icon */}
           <button
             onClick={onSearchClick}
-            className="hover:bg-gray-700 p-2 rounded"
-            aria-label="Search"
+            className="hover:bg-gray-700 p-2 rounded focus-visible-ring touch-target"
+            aria-label="Search products"
           >
-            <Search className="w-6 h-6" />
+            <Search className="w-6 h-6" aria-hidden="true" />
           </button>
 
           {/* Cart - Hidden on mobile/tablet when bottom nav is visible */}

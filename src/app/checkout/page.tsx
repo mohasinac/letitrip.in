@@ -17,6 +17,7 @@ import { useCart } from "@/hooks/useCart";
 import { AddressSelector } from "@/components/checkout/AddressSelector";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { checkoutService } from "@/services/checkout.service";
 
 declare global {
@@ -51,6 +52,10 @@ export default function CheckoutPage() {
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [notes, setNotes] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [shopCoupons, setShopCoupons] = useState<
     Record<string, { code: string; discountAmount: number }>
   >({});
@@ -110,17 +115,32 @@ export default function CheckoutPage() {
   const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
 
   const handleContinue = () => {
+    // Clear previous errors
+    setValidationErrors({});
+    setError(null);
+
     if (currentStep === "address") {
+      const errors: Record<string, string> = {};
+
       if (!shippingAddressId) {
-        alert("Please select a shipping address");
-        return;
+        errors.shipping = "Please select a shipping address";
       }
       if (!useSameAddress && !billingAddressId) {
-        alert("Please select a billing address");
+        errors.billing = "Please select a billing address";
+      }
+
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        setError("Please complete all required fields to continue.");
         return;
       }
+
       setCurrentStep("payment");
     } else if (currentStep === "payment") {
+      if (!paymentMethod) {
+        setError("Please select a payment method");
+        return;
+      }
       setCurrentStep("review");
     }
   };
@@ -134,34 +154,58 @@ export default function CheckoutPage() {
   };
 
   const handleApplyCoupon = async (shopId: string, code: string) => {
-    // Mock coupon validation - in real implementation, call API
-    // For now, apply 10% discount
-    const shop = shopGroups.find((s) => s.shopId === shopId);
-    if (!shop) return;
+    try {
+      setError(null);
 
-    const subtotal = shop.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const discountAmount = Math.round(subtotal * 0.1); // 10% discount
+      // Mock coupon validation - in real implementation, call API
+      // For now, apply 10% discount
+      const shop = shopGroups.find((s) => s.shopId === shopId);
+      if (!shop) {
+        throw new Error("Shop not found");
+      }
 
-    setShopCoupons((prev) => ({
-      ...prev,
-      [shopId]: { code, discountAmount },
-    }));
+      const subtotal = shop.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const discountAmount = Math.round(subtotal * 0.1); // 10% discount
+
+      setShopCoupons((prev) => ({
+        ...prev,
+        [shopId]: { code, discountAmount },
+      }));
+    } catch (error: any) {
+      console.error("Coupon error:", error);
+      setError(error.message || "Failed to apply coupon. Please try again.");
+    }
   };
 
   const handleRemoveCoupon = async (shopId: string) => {
-    setShopCoupons((prev) => {
-      const updated = { ...prev };
-      delete updated[shopId];
-      return updated;
-    });
+    try {
+      setError(null);
+      setShopCoupons((prev) => {
+        const updated = { ...prev };
+        delete updated[shopId];
+        return updated;
+      });
+    } catch (error: any) {
+      console.error("Remove coupon error:", error);
+      setError(error.message || "Failed to remove coupon.");
+    }
   };
 
   const handlePlaceOrder = async () => {
     try {
       setProcessing(true);
+      setError(null);
+
+      // Validate before submission
+      if (!shippingAddressId) {
+        throw new Error("Please select a shipping address");
+      }
+      if (!paymentMethod) {
+        throw new Error("Please select a payment method");
+      }
 
       const orderData = {
         shippingAddressId,
@@ -179,6 +223,13 @@ export default function CheckoutPage() {
       const result = await checkoutService.createOrder(orderData);
 
       if (paymentMethod === "razorpay") {
+        // Check if Razorpay is loaded
+        if (!window.Razorpay) {
+          throw new Error(
+            "Payment gateway not available. Please try Cash on Delivery or refresh the page."
+          );
+        }
+
         // Initialize Razorpay
         const orderIds = result.orders.map((o: any) => o.id);
         const options = {
@@ -202,7 +253,11 @@ export default function CheckoutPage() {
                 `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
-              alert(error.message || "Payment verification failed");
+              console.error("Payment verification failed:", error);
+              const errorMessage =
+                error.message ||
+                "Payment verification failed. Please contact support with your payment ID.";
+              setError(errorMessage);
               setProcessing(false);
             }
           },
@@ -215,12 +270,23 @@ export default function CheckoutPage() {
           },
           modal: {
             ondismiss: function () {
+              setError(
+                "Payment was cancelled. Your order has not been placed."
+              );
               setProcessing(false);
             },
           },
         };
 
         const razorpay = new window.Razorpay(options);
+        razorpay.on("payment.failed", function (response: any) {
+          console.error("Payment failed:", response.error);
+          setError(
+            response.error.description ||
+              "Payment failed. Please try again or use a different payment method."
+          );
+          setProcessing(false);
+        });
         razorpay.open();
       } else {
         // COD - redirect to success (first order or multi-order page)
@@ -229,14 +295,16 @@ export default function CheckoutPage() {
       }
     } catch (error: any) {
       console.error("Checkout error:", error);
-      alert(error.message || "Failed to place order");
+      const errorMessage =
+        error.message || "Failed to place order. Please try again.";
+      setError(errorMessage);
       setProcessing(false);
     }
   };
 
   if (!user || cartLoading || !cart) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
@@ -246,6 +314,34 @@ export default function CheckoutPage() {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-5xl mx-auto px-4">
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6">
+              <ErrorMessage
+                message={error}
+                showRetry={!processing}
+                onRetry={() => {
+                  setError(null);
+                  setValidationErrors({});
+                }}
+              />
+            </div>
+          )}
+
+          {/* Validation Errors */}
+          {Object.keys(validationErrors).length > 0 && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-red-800 mb-2">
+                Please fix the following errors:
+              </h4>
+              <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
+                {Object.values(validationErrors).map((err, idx) => (
+                  <li key={idx}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Header */}
           <div className="mb-8">
             <button

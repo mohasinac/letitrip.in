@@ -140,7 +140,9 @@ class ProductsService {
    */
   async delete(slug: string): Promise<{ message: string }> {
     try {
-      return apiService.delete<{ message: string }>(PRODUCT_ROUTES.BY_SLUG(slug));
+      return apiService.delete<{ message: string }>(
+        PRODUCT_ROUTES.BY_SLUG(slug)
+      );
     } catch (error) {
       this.handleError(error, `delete(${slug})`);
     }

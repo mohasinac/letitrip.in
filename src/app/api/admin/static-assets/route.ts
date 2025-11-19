@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   listAssets,
-  generateUploadUrl,
   saveAssetMetadata,
-  getDownloadUrl,
 } from "@/app/api/lib/static-assets-server.service";
 
 // GET /admin/static-assets - List all static assets

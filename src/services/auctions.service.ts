@@ -64,7 +64,9 @@ class AuctionsService {
   // Get auction by ID
   async getById(id: string): Promise<AuctionFE> {
     try {
-      const auctionBE = await apiService.get<AuctionBE>(AUCTION_ROUTES.BY_ID(id));
+      const auctionBE = await apiService.get<AuctionBE>(
+        AUCTION_ROUTES.BY_ID(id)
+      );
       return toFEAuction(auctionBE);
     } catch (error) {
       this.handleError(error, `getById(${id})`);
@@ -143,33 +145,43 @@ class AuctionsService {
     startAfter?: string | null,
     sortOrder: "asc" | "desc" = "desc"
   ): Promise<PaginatedResponseFE<BidFE>> {
-    const params = new URLSearchParams();
-    if (startAfter) params.append("startAfter", startAfter);
-    if (limit) params.append("limit", limit.toString());
-    if (sortOrder) params.append("sortOrder", sortOrder);
+    try {
+      const params = new URLSearchParams();
+      if (startAfter) params.append("startAfter", startAfter);
+      if (limit) params.append("limit", limit.toString());
+      if (sortOrder) params.append("sortOrder", sortOrder);
 
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `/auctions/${id}/bid?${queryString}`
-      : `/auctions/${id}/bid`;
+      const queryString = params.toString();
+      const endpoint = queryString
+        ? `/auctions/${id}/bid?${queryString}`
+        : `/auctions/${id}/bid`;
 
-    const response = await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
+      const response = await apiService.get<PaginatedResponseBE<BidBE>>(
+        endpoint
+      );
 
-    return {
-      data: response.data.map((bid) => toFEBid(bid)),
-      count: response.count,
-      pagination: response.pagination,
-    };
+      return {
+        data: response.data.map((bid) => toFEBid(bid)),
+        count: response.count,
+        pagination: response.pagination,
+      };
+    } catch (error) {
+      this.handleError(error, `getBids(${id})`);
+    }
   }
 
   // Place bid (authenticated users)
   async placeBid(id: string, formData: PlaceBidFormFE): Promise<BidFE> {
-    const bidBE = await apiService.post<BidBE>(`/auctions/${id}/bid`, {
-      amount: formData.amount,
-      isAutoBid: formData.isAutoBid,
-      maxAutoBidAmount: formData.maxAutoBidAmount,
-    });
-    return toFEBid(bidBE);
+    try {
+      const bidBE = await apiService.post<BidBE>(`/auctions/${id}/bid`, {
+        amount: formData.amount,
+        isAutoBid: formData.isAutoBid,
+        maxAutoBidAmount: formData.maxAutoBidAmount,
+      });
+      return toFEBid(bidBE);
+    } catch (error) {
+      this.handleError(error, `placeBid(${id}, ${formData.amount})`);
+    }
   }
 
   // Set featured auction (admin only)
@@ -244,20 +256,34 @@ class AuctionsService {
 
   // Get user's watchlist
   async getWatchlist(): Promise<AuctionFE[]> {
-    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/watchlist");
-    return toFEAuctions(auctionsBE);
+    try {
+      const auctionsBE = await apiService.get<AuctionBE[]>(
+        "/auctions/watchlist"
+      );
+      return toFEAuctions(auctionsBE);
+    } catch (error) {
+      this.handleError(error, "getWatchlist()");
+    }
   }
 
   // Get user's active bids
   async getMyBids(): Promise<BidFE[]> {
-    const bidsBE = await apiService.get<BidBE[]>("/auctions/my-bids");
-    return bidsBE.map((bid) => toFEBid(bid));
+    try {
+      const bidsBE = await apiService.get<BidBE[]>("/auctions/my-bids");
+      return bidsBE.map((bid) => toFEBid(bid));
+    } catch (error) {
+      this.handleError(error, "getMyBids()");
+    }
   }
 
   // Get user's won auctions
   async getWonAuctions(): Promise<AuctionFE[]> {
-    const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/won");
-    return toFEAuctions(auctionsBE);
+    try {
+      const auctionsBE = await apiService.get<AuctionBE[]>("/auctions/won");
+      return toFEAuctions(auctionsBE);
+    } catch (error) {
+      this.handleError(error, "getWonAuctions()");
+    }
   }
 
   /**
