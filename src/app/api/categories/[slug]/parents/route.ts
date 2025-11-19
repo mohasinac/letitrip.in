@@ -6,7 +6,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * Get all parent categories for a given category
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

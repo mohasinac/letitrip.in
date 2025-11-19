@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import {
-  safeToISOString,
-  toDateInputValue,
-  getTodayDateInputValue,
-} from "@/lib/date-utils";
+import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 
 export async function GET(
   _request: Request,

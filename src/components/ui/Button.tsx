@@ -52,22 +52,34 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={`
           inline-flex items-center justify-center gap-2 rounded-lg font-medium
           transition-colors duration-200
+          focus-visible-ring
+          touch-target
           disabled:opacity-50 disabled:cursor-not-allowed
           ${variantStyles[variant]}
           ${sizeStyles[size]}
           ${fullWidth ? "w-full" : ""}
           ${className}
         `}
+        aria-busy={isLoading}
         {...props}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            <span className="sr-only">Loading...</span>
+          </>
         ) : (
-          leftIcon && <span className="flex-shrink-0">{leftIcon}</span>
+          leftIcon && (
+            <span className="flex-shrink-0" aria-hidden="true">
+              {leftIcon}
+            </span>
+          )
         )}
         {children}
         {!isLoading && rightIcon && (
-          <span className="flex-shrink-0">{rightIcon}</span>
+          <span className="flex-shrink-0" aria-hidden="true">
+            {rightIcon}
+          </span>
         )}
       </button>
     );

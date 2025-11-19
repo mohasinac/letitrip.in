@@ -7,7 +7,7 @@ import {
 
 // GET /admin/static-assets/[id] - Get single asset
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -69,7 +69,7 @@ export async function PATCH(
 
 // DELETE /admin/static-assets/[id] - Delete asset
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

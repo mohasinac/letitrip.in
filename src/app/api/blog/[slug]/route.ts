@@ -5,7 +5,7 @@ const COLLECTION = "blog_posts";
 
 // GET /api/blog/[slug] - Get single blog post by slug
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
@@ -115,7 +115,7 @@ export async function PATCH(
 
 // DELETE /api/blog/[slug] - Delete blog post (admin only)
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

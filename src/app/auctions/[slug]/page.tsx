@@ -19,6 +19,8 @@ import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
 import { formatINR, safeToLocaleString } from "@/lib/price.utils";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
 import type {
   AuctionFE,
   AuctionCardFE,
@@ -42,6 +44,7 @@ export default function AuctionDetailPage() {
   const [similarAuctions, setSimilarAuctions] = useState<AuctionCardFE[]>([]);
   const [shopAuctions, setShopAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [bidAmount, setBidAmount] = useState("");
   const [isPlacingBid, setIsPlacingBid] = useState(false);
   const [bidError, setBidError] = useState("");
@@ -57,6 +60,7 @@ export default function AuctionDetailPage() {
   const loadAuction = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await auctionsService.getBySlug(slug);
       setAuction(data);
 
@@ -81,6 +85,7 @@ export default function AuctionDetailPage() {
           );
         } catch (error) {
           console.error("Failed to load shop:", error);
+          // Non-critical error, continue showing auction
         }
       }
 
@@ -95,6 +100,7 @@ export default function AuctionDetailPage() {
         );
       } catch (error) {
         console.error("Failed to load similar auctions:", error);
+        // Non-critical error, continue showing auction
       }
 
       // Set default bid amount (current bid + minimum increment)
@@ -103,7 +109,7 @@ export default function AuctionDetailPage() {
       setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
     } catch (error: any) {
       console.error("Failed to load auction:", error);
-      router.push(notFound.auction(slug, error));
+      setError(error.message || "Failed to load auction. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -137,7 +143,12 @@ export default function AuctionDetailPage() {
       alert("Bid placed successfully!");
     } catch (error: any) {
       console.error("Failed to place bid:", error);
-      setBidError(error.message || "Failed to place bid");
+      const errorMessage =
+        error.message || "Failed to place bid. Please try again.";
+      setBidError(errorMessage);
+
+      // Also show as alert for better visibility
+      alert(`Error: ${errorMessage}`);
     } finally {
       setIsPlacingBid(false);
     }
@@ -206,28 +217,52 @@ export default function AuctionDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-6">
+            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse mb-2"></div>
+          </div>
+          <AuctionCardSkeletonGrid count={1} />
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorMessage
+          message={error}
+          showRetry
+          onRetry={loadAuction}
+          onGoBack={() => router.back()}
+        />
       </div>
     );
   }
 
   if (!auction) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Auction not found
-          </h2>
-          <Link
-            href="/auctions"
-            className="mt-4 inline-block text-primary hover:underline"
-          >
-            Browse all auctions
-          </Link>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorMessage
+          message="Auction not found. It may have ended or been removed."
+          onGoBack={() => router.push("/auctions")}
+        />
+      </div>
+    );
+  }
+
+  // Check if auction has ended
+  const auctionEnded =
+    auction.endTime && new Date(auction.endTime) < new Date();
+
+  if (auctionEnded && auction.status === AuctionStatus.ENDED) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorMessage
+          message="This auction has ended. Check out other active auctions."
+          onGoBack={() => router.push("/auctions")}
+        />
       </div>
     );
   }

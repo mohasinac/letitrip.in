@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../lib/session";
-import { COLLECTIONS } from "@/constants/database";
 
 // GET /api/cart - Get user cart with summary
 export async function GET(request: NextRequest) {

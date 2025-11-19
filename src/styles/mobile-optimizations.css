@@ -1,0 +1,253 @@
+/* Mobile-First Utility Classes
+ * Add these classes to components that need better mobile touch targets
+ * and spacing optimization
+ */
+
+/* Touch Target Utilities */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-sm {
+  min-height: 38px;
+  min-width: 38px;
+}
+
+.touch-target-lg {
+  min-height: 52px;
+  min-width: 52px;
+}
+
+/* Mobile-Optimized Buttons */
+@layer components {
+  .btn-mobile {
+    @apply px-6 py-3 min-h-[44px] text-base font-medium rounded-lg transition-all;
+  }
+
+  .btn-mobile-sm {
+    @apply px-4 py-2 min-h-[38px] text-sm font-medium rounded-lg transition-all;
+  }
+
+  .btn-mobile-lg {
+    @apply px-8 py-4 min-h-[52px] text-lg font-semibold rounded-lg transition-all;
+  }
+}
+
+/* Mobile Typography Scale */
+@layer utilities {
+  .text-mobile-xs {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.25rem; /* 20px */
+  }
+
+  .text-mobile-sm {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.375rem; /* 22px */
+  }
+
+  .text-mobile-base {
+    font-size: 1rem; /* 16px */
+    line-height: 1.5rem; /* 24px */
+  }
+
+  .text-mobile-lg {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+  }
+
+  .text-mobile-xl {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.875rem; /* 30px */
+  }
+
+  .text-mobile-2xl {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+  }
+
+  .text-mobile-3xl {
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.375rem; /* 38px */
+  }
+}
+
+/* Mobile-Optimized Spacing */
+@layer utilities {
+  .mobile-section-padding {
+    @apply px-4 py-6;
+  }
+
+  .mobile-card-padding {
+    @apply p-4;
+  }
+
+  .mobile-container {
+    @apply px-4 mx-auto max-w-7xl;
+  }
+}
+
+/* Mobile-Optimized Forms */
+@layer components {
+  .form-input-mobile {
+    @apply w-full px-4 py-3 text-base border border-gray-300 rounded-lg;
+    @apply focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply min-h-[44px];
+  }
+
+  .form-textarea-mobile {
+    @apply w-full px-4 py-3 text-base border border-gray-300 rounded-lg;
+    @apply focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply min-h-[100px];
+  }
+
+  .form-select-mobile {
+    @apply w-full px-4 py-3 text-base border border-gray-300 rounded-lg;
+    @apply focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply min-h-[44px];
+  }
+
+  .form-checkbox-mobile {
+    @apply w-5 h-5 text-primary border-gray-300 rounded;
+    @apply focus:ring-2 focus:ring-primary;
+  }
+
+  .form-radio-mobile {
+    @apply w-5 h-5 text-primary border-gray-300;
+    @apply focus:ring-2 focus:ring-primary;
+  }
+}
+
+/* Mobile Navigation */
+@layer components {
+  .mobile-nav-item {
+    @apply flex items-center gap-3 px-4 py-3 text-base;
+    @apply hover:bg-gray-100 active:bg-gray-200;
+    @apply min-h-[48px] touch-manipulation;
+  }
+
+  .mobile-bottom-nav-item {
+    @apply flex flex-col items-center justify-center gap-1;
+    @apply py-2 px-3 text-xs min-h-[56px];
+    @apply touch-manipulation;
+  }
+}
+
+/* Mobile Cards */
+@layer components {
+  .mobile-product-card {
+    @apply flex flex-col bg-white rounded-lg shadow-sm;
+    @apply hover:shadow-md transition-shadow;
+    @apply min-h-[280px];
+  }
+
+  .mobile-auction-card {
+    @apply flex flex-col bg-white rounded-lg shadow-sm;
+    @apply hover:shadow-md transition-shadow;
+    @apply min-h-[300px];
+  }
+}
+
+/* Mobile Modals */
+@layer components {
+  .mobile-modal {
+    @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center;
+    @apply p-0 sm:p-4;
+  }
+
+  .mobile-modal-content {
+    @apply bg-white rounded-t-2xl sm:rounded-lg;
+    @apply w-full sm:max-w-lg;
+    @apply max-h-[90vh] overflow-y-auto;
+    @apply shadow-xl;
+  }
+
+  .mobile-modal-header {
+    @apply sticky top-0 bg-white z-10;
+    @apply px-4 py-4 border-b;
+    @apply flex items-center justify-between;
+  }
+
+  .mobile-modal-body {
+    @apply px-4 py-4;
+  }
+
+  .mobile-modal-footer {
+    @apply sticky bottom-0 bg-white z-10;
+    @apply px-4 py-4 border-t;
+    @apply flex gap-2;
+  }
+}
+
+/* Mobile-Optimized Images */
+@layer utilities {
+  .mobile-product-image {
+    @apply w-full aspect-square object-cover rounded-lg;
+  }
+
+  .mobile-hero-image {
+    @apply w-full aspect-video sm:aspect-[21/9] object-cover;
+  }
+
+  .mobile-thumbnail {
+    @apply w-16 h-16 sm:w-20 sm:h-20 object-cover rounded;
+  }
+}
+
+/* Touch-Friendly Interactions */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Mobile Safe Areas (for notched devices) */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Mobile Viewport Height Fix (for iOS Safari) */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen-mobile {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Horizontal Scroll Prevention */
+.no-scroll-x {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Mobile-Optimized Grid Gaps */
+@layer utilities {
+  .mobile-grid-gap {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .mobile-stack-gap {
+    @apply space-y-3 sm:space-y-4 lg:space-y-6;
+  }
+}

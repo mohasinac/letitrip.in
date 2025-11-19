@@ -17,6 +17,8 @@ import { notFound } from "@/lib/error-redirects";
 import { formatINR, formatDiscount } from "@/lib/price.utils";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/components/admin/Toast";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
@@ -33,6 +35,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [product, setProduct] = useState<ProductFE | null>(null);
   const [shop, setShop] = useState<ShopFE | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const { addItem, loading: cartLoading } = useCart();
@@ -40,9 +43,11 @@ export default function ProductPage({ params }: ProductPageProps) {
   useEffect(() => {
     loadProduct();
   }, [slug]);
+
   const loadProduct = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await productsService.getBySlug(slug);
       setProduct(data);
 
@@ -53,11 +58,12 @@ export default function ProductPage({ params }: ProductPageProps) {
           setShop(shopData);
         } catch (error) {
           console.error("Failed to load shop:", error);
+          // Non-critical error, continue showing product
         }
       }
     } catch (error: any) {
       console.error("Failed to load product:", error);
-      router.push(notFound.product(slug, error));
+      setError(error.message || "Failed to load product. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,14 +71,39 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-6">
+            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse mb-2"></div>
+          </div>
+          <ProductCardSkeletonGrid count={1} />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorMessage
+          message={error}
+          showRetry
+          onRetry={loadProduct}
+          onGoBack={() => router.back()}
+        />
       </div>
     );
   }
 
   if (!product) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorMessage
+          message="Product not found. It may have been removed or is no longer available."
+          onGoBack={() => router.push("/products")}
+        />
+      </div>
+    );
   }
 
   // Prepare media for gallery
